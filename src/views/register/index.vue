@@ -89,7 +89,6 @@
 export default {
   data () {
     return {
-      // 协议框状态
       checked: false,
       // 验证表单数据
       ruleForm: {
