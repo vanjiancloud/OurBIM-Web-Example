@@ -24,13 +24,17 @@
         v-show="isshow == 0"
       >
         <!--  账号密码通过双向绑定获取里面的值 -->
-        <el-form-item prop="mobile">
-          <el-input v-model="form.mobile" placeholder="请输入邮箱">
+        <el-form-item prop="email">
+          <el-input v-model="form.email" placeholder="请输入邮箱">
             <i slot="prefix" class="el-input__icon el-icon-s-custom"></i>
           </el-input>
         </el-form-item>
         <el-form-item prop="code">
-          <el-input v-model="form.code" placeholder="请输入登录密码">
+          <el-input
+            v-model="form.code"
+            placeholder="请输入登录密码"
+            type="password"
+          >
             <i slot="prefix" class="el-input__icon el-icon-unlock"></i>
           </el-input>
         </el-form-item>
@@ -65,15 +69,15 @@
             <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
           </el-input>
         </el-form-item>
-        <el-form-item prop="code">
+        <el-form-item prop="Verification">
           <el-input
-            v-model="form.code"
+            v-model="form.Verification"
             placeholder="请输入短信验证码"
             class="input"
           >
             <i slot="prefix" class="el-input__icon el-icon-message"></i>
           </el-input>
-          <el-button type="warning">获取验证码</el-button>
+          <el-button type="primary">获取验证码</el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" class="login-btn" :loading="isLoading"
@@ -105,17 +109,52 @@ export default {
       form: {
         isAgree: false, // 复选框的状态
         mobile: '',
-        code: ''
+        code: '',
+        email: '',
+        Verification: ''
       },
       // 定义验证规则rules
+      // 邮箱验证
       rules: {
-        mobile: [
+        email: [
           { required: true, message: '请输入合法邮箱', trigger: 'blur' },
-          { pattern: /^1\d{10}$/, message: '请输入正确的邮箱,字符为英文&数字，结尾必须有“@xx.com/cn”字符', trigger: 'blur' }
+          {
+            pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+            message:
+              '请输入正确的邮箱,字符为英文&数字，结尾必须有“@xx.com/cn”字符',
+            trigger: 'blur'
+          }
+        ],
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          {
+            pattern: /^[1][3,4,5,7,8][0-9]{9}$/,
+            message: '请输入正确的11位手机号',
+            trigger: 'blur'
+          }
         ],
         code: [
-          { required: true, message: '请输入密码', trigger: 'blur' },
-          { pattern: /^\d{6}$/, message: '您输入的账号或不正确', trigger: 'blur' }
+          {
+            required: true,
+            message: '请输入密码,已字符为英文&数字&英文符号，位数6-20',
+            trigger: 'blur'
+          },
+          {
+            pattern: /^\d{6}$/,
+            message: '您输入的账号或不正确',
+            trigger: 'blur'
+          }
+        ],
+        Verification: [
+          {
+            required: true,
+            message: '请输入验证码',
+            trigger: 'blur'
+          },
+          {
+            message: '您输入的账号或不正确',
+            trigger: 'blur'
+          }
         ]
       }
     }
@@ -128,6 +167,39 @@ export default {
     // 忘记密码
     changePassword () {
       this.$router.push('../../changepassword')
+    },
+    doLogin () {
+      // // 解构赋值
+      alert(1)
+      // const { mobile, code } = this.form
+      // console.log(mobile, code)
+      // //  axios发请求(下载, 导入)
+      // // 加载
+      // this.isLoading = true
+      // // 14.查看文档获取axios请求数据
+      // this.$axios({
+      //   method: 'POST',
+      //   url: '/UserCenter/login',
+      //   data: {
+      //     mobile,
+      //     code
+      //   }
+      //   // 14.1成功的时候
+      // })
+      //   .then(res => {
+      //     this.isLoading = false // 加载
+      //     // 把res的token保存下来,以便后续发送请求时带上
+      //     localStorage.setItem('tokenStr', res.data.data.token)
+      //     console.log(res)
+      //     this.$message.success('恭喜登陆成功')
+      //     this.$router.push('/')
+      //     // 14.2失败的时候
+      //   })
+      //   .catch(err => {
+      //     this.isLoading = false // 加载
+      //     console.log(err)
+      //     this.$message.error('登陆失败，用户名密码错误')
+      //   })
     }
   }
 }
