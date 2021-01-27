@@ -4,12 +4,23 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [
+  // 路由重定项
   {
-    // 5.配置路由
+    path: '/',
+    name: 'login',
+    component: () => import('../views/login/index.vue')
+  },
+  {
+    // 登录页面
     path: '/login',
     name: 'login',
-    // 6.懒加载只用打开该网页加载
     component: () => import('../views/login/index.vue')
+  },
+  {
+    // 忘记密码
+    path: '/changepassword',
+    name: 'changepassword',
+    component: () => import('../views/changepassword/index.vue')
   },
   {
     // 5.配置路由
