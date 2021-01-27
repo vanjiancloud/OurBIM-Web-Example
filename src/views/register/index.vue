@@ -71,7 +71,11 @@
           <el-checkbox v-model="checked" class="xieyi"
             >我同意《OurBIM用户服务协议》</el-checkbox
           >
-          <div><el-button type="primary" class="btn">注册</el-button></div>
+          <div>
+            <el-button type="primary" class="btn" @click="doRegister"
+              >注册</el-button
+            >
+          </div>
           <div class="footer-size">
             <span
               ><a href="../login/index.vue" style="text-decoration : none "
@@ -148,6 +152,29 @@ export default {
   methods: {
     onSubmit () {
       console.log('submit!')
+    },
+    doRegister () {
+      this.$axios({
+        method: 'POST',
+        url: '/UserCenter/addUser',
+        data: {
+          code: 0,
+          count: 0,
+          data: {},
+          message: 'string',
+          page: 0,
+          pageSize: 0
+        }
+      })
+        .then(res => {
+          console.log(res)
+          this.$message.success('注册成功')
+          this.$router.push('../login')
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('注册失败')
+        })
     }
   }
 }
