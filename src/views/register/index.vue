@@ -1,14 +1,19 @@
 <template>
+  <!-- 背景 -->
   <div class="container">
+    <!-- 注册页面 -->
     <div class="zhuce">
+      <!-- 头部区域 -->
       <div class="header">
         <i class="el-icon-arrow-left"></i>
         <span class="logo"> </span>
       </div>
+      <!-- 主体区域 -->
       <div class="body">
-        <el-form ref="form" :model="form">
-          <el-form-item label="">
-            <el-input v-model="form.email" placeholder="请输入邮箱">
+        <el-form ref="ruleForm" :model="ruleForm" :rules="rules">
+          <!-- 邮箱 -->
+          <el-form-item label="" prop="email">
+            <el-input v-model="ruleForm.email" placeholder="请输入邮箱">
               <i slot="prefix" class="el-icon-s-custom"></i>
             </el-input>
             <div class="hint">
@@ -17,15 +22,21 @@
                 您将同意我们不定期给您发送OurBIM产品相关资讯邮件
               </span>
             </div>
+          </el-form-item>
+          <!-- 手机号 -->
+          <el-form-item label="" prop="phone">
             <el-input
-              v-model="form.phone"
+              v-model="ruleForm.phone"
               placeholder="请输入手机号码"
               class="input"
             >
               <i slot="prefix" class="el-icon-mobile-phone"></i>
             </el-input>
+          </el-form-item>
+          <!-- 验证码 -->
+          <el-form-item label="" prop="code">
             <el-input
-              v-model="form.code"
+              v-model="ruleForm.code"
               placeholder="请输入短信验证码"
               label-width="80px"
               class="input width"
@@ -33,15 +44,21 @@
               <i slot="prefix" class="el-icon-message"></i>
             </el-input>
             <el-button type="primary" class="btn-one">获取验证码</el-button>
+          </el-form-item>
+          <!-- 密码 -->
+          <el-form-item label="" prop="password">
             <el-input
-              v-model="form.password"
+              v-model="ruleForm.password"
               placeholder="请设置6至20位登录密码"
               class="input"
             >
               <i slot="prefix" class="el-icon-lock"></i>
             </el-input>
+          </el-form-item>
+          <!-- 再次输入密码 -->
+          <el-form-item label="" prop="newPassword">
             <el-input
-              v-model="form.newPassword"
+              v-model="ruleForm.newPassword"
               placeholder="请再次输入登录密码"
               class="input"
             >
@@ -49,18 +66,19 @@
             </el-input>
           </el-form-item>
         </el-form>
+        <!-- 底部区域 -->
         <div class="footer">
-          <el-checkbox v-model="checked"
+          <el-checkbox v-model="checked" class="xieyi"
             >我同意《OurBIM用户服务协议》</el-checkbox
           >
-        </div>
-        <div><el-button type="primary" class="btn">注册</el-button></div>
-        <div class="footer-size">
-          <span
-            ><a href="javaScript" style="text-decoration : none "
-              >已有账号，立即登录</a
-            ></span
-          >
+          <div><el-button type="primary" class="btn">注册</el-button></div>
+          <div class="footer-size">
+            <span
+              ><a href="../login/index.vue" style="text-decoration : none "
+                >已有账号，立即登录</a
+              ></span
+            >
+          </div>
         </div>
       </div>
     </div>
@@ -71,13 +89,59 @@
 export default {
   data () {
     return {
-      checked: true,
-      form: {
-        email: '',
-        phone: '',
-        code: '',
-        password: '',
-        newPassword: ''
+      checked: false,
+      // 验证表单数据
+      ruleForm: {
+        email: null,
+        phone: null,
+        code: null,
+        password: null,
+        newPassword: null
+      },
+      // 验证规则
+      rules: {
+        phone: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          {
+            pattern: /^1\d{10}$/,
+            message: '请输入正确的十一位手机号',
+            trigger: 'change'
+          }
+        ],
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          {
+            pattern: /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/,
+            message: '请输入正确的邮箱',
+            trigger: 'change'
+          }
+        ],
+        password: [
+          {
+            required: true,
+            message: '请设置密码,字符为英文&数字&英文符号，位数6-20',
+            trigger: 'blur'
+          }
+        ],
+        newPassword: [
+          {
+            required: true,
+            message: '请再次输入您设置的密码',
+            trigger: 'blur'
+          }
+        ],
+        code: [
+          {
+            required: true,
+            message: '请输入验证码',
+            trigger: 'blur'
+          },
+          {
+            pattern: /^\d{6}$/,
+            message: '您输入的验证码不正确',
+            trigger: 'change'
+          }
+        ]
       }
     }
   },
@@ -114,16 +178,20 @@ export default {
         text-align: center;
       }
       .hint {
-        margin: -5px 0;
+        margin-top: -5px;
+        margin-bottom: -25px;
         font-size: 4px;
         color: #999999;
       }
       .btn {
         width: 300px;
-        margin: 30px 0;
+        margin-bottom: 30px;
       }
       .footer {
         margin-top: -25px;
+        .xieyi {
+          margin: 20px 0;
+        }
       }
       .btn-one {
         width: 106px;
@@ -151,7 +219,7 @@ export default {
       }
     }
     .input {
-      margin-bottom: 25px;
+      margin-bottom: -20px;
     }
     .width {
       width: 180px;
