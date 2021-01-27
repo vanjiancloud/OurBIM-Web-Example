@@ -10,6 +10,12 @@ const routes = [
     name: 'login',
     component: () => import('../views/login/index.vue')
   },
+  // 登录成功显示主页
+  {
+    path: '/home',
+    name: 'home',
+    component: () => import('../views/home/index.vue')
+  },
   {
     // 登录页面
     path: '/login',
