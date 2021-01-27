@@ -39,7 +39,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="login-btn" :loading="isLoading"
+          <el-button @click="doLogin" type="primary" class="login-btn" :loading="isLoading"
             >登陆</el-button
           >
         </el-form-item>
@@ -109,8 +109,8 @@ export default {
       form: {
         isAgree: false, // 复选框的状态
         mobile: '',
-        code: '',
-        email: '',
+        code: '139911',
+        email: '1399116021@QQ.com',
         Verification: ''
       },
       // 定义验证规则rules
@@ -171,35 +171,35 @@ export default {
     doLogin () {
       // // 解构赋值
       alert(1)
-      // const { mobile, code } = this.form
-      // console.log(mobile, code)
-      // //  axios发请求(下载, 导入)
-      // // 加载
-      // this.isLoading = true
-      // // 14.查看文档获取axios请求数据
-      // this.$axios({
-      //   method: 'POST',
-      //   url: '/UserCenter/login',
-      //   data: {
-      //     mobile,
-      //     code
-      //   }
-      //   // 14.1成功的时候
-      // })
-      //   .then(res => {
-      //     this.isLoading = false // 加载
-      //     // 把res的token保存下来,以便后续发送请求时带上
-      //     localStorage.setItem('tokenStr', res.data.data.token)
-      //     console.log(res)
-      //     this.$message.success('恭喜登陆成功')
-      //     this.$router.push('/')
-      //     // 14.2失败的时候
-      //   })
-      //   .catch(err => {
-      //     this.isLoading = false // 加载
-      //     console.log(err)
-      //     this.$message.error('登陆失败，用户名密码错误')
-      //   })
+      const { email, code } = this.form
+      console.log(email, code)
+      //  axios发请求(下载, 导入)
+      // 加载
+      this.isLoading = true
+      // 14.查看文档获取axios请求数据
+      this.$axios({
+        method: 'POST',
+        url: '/UserCenter/login',
+        data: {
+          email,
+          code
+        }
+        // 14.1成功的时候
+      })
+        .then(res => {
+          this.isLoading = false // 加载
+          // 把res的token保存下来,以便后续发送请求时带上
+          localStorage.setItem('tokenStr', res.data.data.token)
+          console.log(res)
+          this.$message.success('恭喜登陆成功')
+          this.$router.push('/')
+          // 14.2失败的时候
+        })
+        .catch(err => {
+          this.isLoading = false // 加载
+          console.log(err)
+          this.$message.error('登陆失败，用户名密码错误')
+        })
     }
   }
 }
