@@ -174,7 +174,7 @@ export default {
         .then(res => {
           console.log(res)
           this.$message.success('注册成功')
-          this.$router.push('../login')
+          this.$router.push('/registerSucceed')
         })
         .catch(err => {
           console.log(err)
