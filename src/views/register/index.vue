@@ -72,7 +72,7 @@
             >我同意《OurBIM用户服务协议》</el-checkbox
           >
           <div>
-            <el-button type="primary" class="btn" @click="doRegister"
+            <el-button type="primary" class="btn" @click="register"
               >注册</el-button
             >
           </div>
@@ -150,8 +150,14 @@ export default {
     }
   },
   methods: {
-    onSubmit () {
-      console.log('submit!')
+    register () {
+      this.$refs.ruleForm.validate(valid => {
+        // 验证通过把结构赋值写载这里
+        alert('请输入邮箱和密码')
+        if (valid) {
+          this.doRegister()
+        }
+      })
     },
     doRegister () {
       this.$axios({
