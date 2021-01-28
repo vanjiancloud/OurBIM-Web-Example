@@ -28,9 +28,9 @@ export function loginMobile (data) {
 }
 
 // 获取注册
-export function register (data) {
+export function getRegister (data) {
   return request({
-    url: '/serCenter/addUser',
+    url: '/UserCenter/addUser',
     method: 'POST',
     data
   })

@@ -193,8 +193,8 @@ export default {
           console.log(res)
           this.isLoading = false // 加载
           // 把res的token保存下来,以便后续发送请求时带上
-          localStorage.setItem('tokenStr', res.data.data.token)
-          console.log(res)
+          // localStorage.setItem('tokenStr', res.data.data.token)
+          // console.log(res)
           this.$message.success('恭喜登陆成功')
           this.$router.push('../home')
           // 14.2失败的时候
