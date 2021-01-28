@@ -29,7 +29,7 @@ export function loginMobile (data) {
 
 // 获取注册
 export function getRegister (data) {
-  const { email, mobile, code, password, newPassword } = data
+  const { email, mobile, code, password } = data
   return request({
     url: '/UserCenter/addUser',
     method: 'POST',
@@ -37,8 +37,7 @@ export function getRegister (data) {
       email,
       mobile,
       code,
-      password,
-      newPassword
+      password
     }
   })
 }
