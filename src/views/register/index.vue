@@ -43,9 +43,7 @@
             >
               <i slot="prefix" class="el-icon-message"></i>
             </el-input>
-            <el-button type="primary" class="btn-one" @click="getCode"
-              >获取验证码</el-button
-            >
+            <el-button @click="getcode" type="primary" class="btn-one">获取验证码</el-button>
           </el-form-item>
           <!-- 密码 -->
           <el-form-item label="" prop="password">
@@ -92,6 +90,7 @@
 </template>
 
 <script>
+import { getRegister, sendMsgCode } from '@/api/my.js'
 export default {
   data () {
     return {
@@ -99,11 +98,12 @@ export default {
       msgType: null,
       // 验证表单数据
       ruleForm: {
-        email: null,
-        mobile: null,
-        code: null,
-        password: null,
-        newPassword: null
+        email: 'liuxiaolongtong@163.com',
+        mobile: '13292706730',
+        code: '',
+        password: '1399116021',
+        newPassword: '1399116021',
+        msgType: '1'
       },
       // 验证规则
       rules: {
@@ -155,27 +155,22 @@ export default {
   methods: {
     // 校验不能为空
     register () {
-      this.$refs.ruleForm.validate(valid => {
-        alert('不能有内容为空！')
-        if (valid) {
-          this.doRegister()
-        }
-      })
+      if (
+        (this.ruleForm.email !== null) &
+        (this.ruleForm.mobile !== null) &
+        (this.ruleForm.code !== null) &
+        (this.ruleForm.password !== null) &
+        (this.ruleForm.newPassword !== null) &
+        (this.checked === true)
+      ) {
+        this.doRegister()
+      }
     },
-    // 注册事件
+    // 获取注册信息
     doRegister () {
-      this.$axios({
-        method: 'POST',
-        url: '/UserCenter/addUser',
-        data: {
-          code: 0,
-          count: 0,
-          data: {},
-          message: 'string',
-          page: 0,
-          pageSize: 0
-        }
-      })
+      const { email, mobile, code, password, newPassword } = this.ruleForm
+      console.log(email, mobile, code, password, newPassword)
+      getRegister()
         .then(res => {
           console.log(res)
           this.$message.success('注册成功')
@@ -187,23 +182,16 @@ export default {
         })
     },
     // 获取验证码
-    getCode () {
-      this.$axios({
-        method: 'POST',
-        url: '/UserCenter/sendMsgCode',
-        data: {
-          mobile: '',
-          msgType: Number
-        }
+    getcode () {
+      const { mobile, msgType } = this.ruleForm
+      // console.log(mobile, msgType)
+      sendMsgCode(mobile, msgType).then(res => {
+        console.log(res)
+        this.$message.success('获取成功')
+      }).catch(err => {
+        console.log(err)
+        this.$message.error('获取失败')
       })
-        .then(res => {
-          console.log(res)
-          this.$message.success('获取成功')
-        })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('获取失败')
-        })
     }
   }
 }
