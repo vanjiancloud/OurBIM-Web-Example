@@ -24,9 +24,9 @@
             </div>
           </el-form-item>
           <!-- 手机号 -->
-          <el-form-item label="" prop="phone">
+          <el-form-item label="" prop="mobile">
             <el-input
-              v-model="ruleForm.phone"
+              v-model="ruleForm.mobile"
               placeholder="请输入手机号码"
               class="input"
             >
@@ -97,14 +97,14 @@ export default {
       // 验证表单数据
       ruleForm: {
         email: null,
-        phone: null,
+        mobile: null,
         code: null,
         password: null,
         newPassword: null
       },
       // 验证规则
       rules: {
-        phone: [
+        mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
           {
             pattern: /^1\d{10}$/,
@@ -151,13 +151,17 @@ export default {
   },
   methods: {
     register () {
-      this.$refs.ruleForm.validate(valid => {
-        // 验证通过把结构赋值写载这里
-        alert('请输入邮箱和密码')
-        if (valid) {
-          this.doRegister()
-        }
-      })
+      if (
+        (this.ruleForm.email !== null) &
+        (this.ruleForm.mobile !== null) &
+        (this.ruleForm.code !== null) &
+        (this.ruleForm.password !== null) &
+        (this.ruleForm.password !== null) &
+        (this.ruleForm.newPassword !== null) &
+        (this.checked === true)
+      ) {
+        this.doRegister()
+      }
     },
     doRegister () {
       this.$axios({

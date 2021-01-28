@@ -29,9 +29,9 @@
             <i slot="prefix" class="el-input__icon el-icon-s-custom"></i>
           </el-input>
         </el-form-item>
-        <el-form-item prop="code">
+        <el-form-item prop="password">
           <el-input
-            v-model="form.code"
+            v-model="form.password"
             placeholder="请输入登录密码"
             type="password"
           >
@@ -39,7 +39,11 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button @click="doLogin" type="primary" class="login-btn" :loading="isLoading"
+          <el-button
+            @click="hLogin"
+            type="primary"
+            class="login-btn"
+            :loading="isLoading"
             >登陆</el-button
           >
         </el-form-item>
@@ -69,9 +73,9 @@
             <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
           </el-input>
         </el-form-item>
-        <el-form-item prop="Verification">
+        <el-form-item prop="code">
           <el-input
-            v-model="form.Verification"
+            v-model="form.code"
             placeholder="请输入短信验证码"
             class="input"
           >
@@ -100,6 +104,7 @@
 </template>
 
 <script>
+import { login } from '@/api/my.js'
 export default {
   // 声明账号和密码
   data () {
@@ -109,9 +114,9 @@ export default {
       form: {
         isAgree: false, // 复选框的状态
         mobile: '',
-        code: '139911',
-        email: '1399116021@QQ.com',
-        Verification: ''
+        password: '1399116021',
+        email: 'liuxiaolongtong@163.com',
+        code: ''
       },
       // 定义验证规则rules
       // 邮箱验证
@@ -133,7 +138,7 @@ export default {
             trigger: 'blur'
           }
         ],
-        code: [
+        password: [
           {
             required: true,
             message: '请输入密码,已字符为英文&数字&英文符号，位数6-20',
@@ -145,7 +150,7 @@ export default {
             trigger: 'blur'
           }
         ],
-        Verification: [
+        code: [
           {
             required: true,
             message: '请输入验证码',
@@ -168,31 +173,30 @@ export default {
     changePassword () {
       this.$router.push('../../changepassword')
     },
+    hLogin () {
+      if (this.form.email === '' || this.form.password === '') {
+        alert('请输入邮箱和密码')
+      } else {
+        this.doLogin()
+      }
+    },
     doLogin () {
-      // // 解构赋值
-      alert(1)
-      const { email, code } = this.form
-      console.log(email, code)
+      // 解构赋值
+      const { email, password } = this.form
+      console.log(email, password)
       //  axios发请求(下载, 导入)
       // 加载
       this.isLoading = true
-      // 14.查看文档获取axios请求数据
-      this.$axios({
-        method: 'POST',
-        url: '/UserCenter/login',
-        data: {
-          email,
-          code
-        }
-        // 14.1成功的时候
-      })
+      // 查看文档获取axios请求数据
+      login()
         .then(res => {
+          console.log(res)
           this.isLoading = false // 加载
           // 把res的token保存下来,以便后续发送请求时带上
           localStorage.setItem('tokenStr', res.data.data.token)
           console.log(res)
           this.$message.success('恭喜登陆成功')
-          this.$router.push('/')
+          this.$router.push('../home')
           // 14.2失败的时候
         })
         .catch(err => {
