@@ -29,11 +29,34 @@ const routes = [
     component: () => import('../views/changepassword/index.vue')
   },
   {
-    // 5.配置路由
+    // 注册页
     path: '/register',
     name: 'register',
-    // 6.懒加载只用打开该网页加载
     component: () => import('../views/register/index.vue')
+  },
+  {
+    // 协议书
+    path: '/protocol',
+    name: 'protocol',
+    component: () => import('../views/register/protocol.vue')
+  },
+  {
+    // 注册成功
+    path: '/registerSucceed',
+    name: 'registerSucceed',
+    component: () => import('../views/register/registerSucceed.vue')
+  },
+  {
+    // 查看邮件
+    path: '/lookEmail',
+    name: 'lookEmail',
+    component: () => import('../views/register/lookEmail.vue')
+  },
+  {
+    // 激活成功
+    path: '/activateSucceed',
+    name: 'activateSucceed',
+    component: () => import('../views/register/activateSucceed.vue')
   }
 ]
 

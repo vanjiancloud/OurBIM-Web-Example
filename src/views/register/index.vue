@@ -24,9 +24,9 @@
             </div>
           </el-form-item>
           <!-- 手机号 -->
-          <el-form-item label="" prop="phone">
+          <el-form-item label="" prop="mobile">
             <el-input
-              v-model="ruleForm.phone"
+              v-model="ruleForm.mobile"
               placeholder="请输入手机号码"
               class="input"
             >
@@ -43,7 +43,9 @@
             >
               <i slot="prefix" class="el-icon-message"></i>
             </el-input>
-            <el-button type="primary" class="btn-one">获取验证码</el-button>
+            <el-button type="primary" class="btn-one" @click="getCode"
+              >获取验证码</el-button
+            >
           </el-form-item>
           <!-- 密码 -->
           <el-form-item label="" prop="password">
@@ -94,17 +96,18 @@ export default {
   data () {
     return {
       checked: false,
+      msgType: null,
       // 验证表单数据
       ruleForm: {
         email: null,
-        phone: null,
+        mobile: null,
         code: null,
         password: null,
         newPassword: null
       },
       // 验证规则
       rules: {
-        phone: [
+        mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
           {
             pattern: /^1\d{10}$/,
@@ -150,15 +153,16 @@ export default {
     }
   },
   methods: {
+    // 校验不能为空
     register () {
       this.$refs.ruleForm.validate(valid => {
-        // 验证通过把结构赋值写载这里
-        alert('请输入邮箱和密码')
+        alert('不能有内容为空！')
         if (valid) {
           this.doRegister()
         }
       })
     },
+    // 注册事件
     doRegister () {
       this.$axios({
         method: 'POST',
@@ -180,6 +184,25 @@ export default {
         .catch(err => {
           console.log(err)
           this.$message.error('注册失败')
+        })
+    },
+    // 获取验证码
+    getCode () {
+      this.$axios({
+        method: 'POST',
+        url: '/UserCenter/sendMsgCode',
+        data: {
+          mobile: '',
+          msgType: Number
+        }
+      })
+        .then(res => {
+          console.log(res)
+          this.$message.success('获取成功')
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('获取失败')
         })
     }
   }
