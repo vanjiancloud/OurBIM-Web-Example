@@ -4,6 +4,8 @@ import router from './router'
 // 引入element
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+// 引入全局样式
+import './assets/css/global.css'
 // 引入less
 import less from 'less'
 // 加载axios组件

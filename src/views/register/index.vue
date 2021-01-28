@@ -94,6 +94,7 @@ export default {
   data () {
     return {
       checked: false,
+      msgType: null,
       // 验证表单数据
       ruleForm: {
         email: 'liuxiaolongtong@163.com',
@@ -151,6 +152,7 @@ export default {
     }
   },
   methods: {
+    // 校验不能为空
     register () {
       if (
         (this.ruleForm.email !== null) &
