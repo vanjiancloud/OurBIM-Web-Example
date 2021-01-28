@@ -29,10 +29,16 @@ export function loginMobile (data) {
 
 // 获取注册
 export function getRegister (data) {
+  const { email, mobile, code, password } = data
   return request({
     url: '/UserCenter/addUser',
     method: 'POST',
-    data
+    params: {
+      email,
+      mobile,
+      code,
+      password
+    }
   })
 }
 
@@ -47,10 +53,14 @@ export function sendEmail (data) {
 
 // 发送验证码
 export function sendMsgCode (data) {
+  const { mobile, msgType } = data
   return request({
     url: '/UserCenter/sendMsgCode',
     method: 'POST',
-    data
+    params: {
+      mobile,
+      msgType
+    }
   })
 }
 

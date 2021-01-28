@@ -88,7 +88,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import { getRegister, sendMsgCode } from '@/api/my.js'
 export default {
@@ -168,9 +167,12 @@ export default {
     },
     // 获取注册信息
     doRegister () {
-      const { email, mobile, code, password, newPassword } = this.ruleForm
-      console.log(email, mobile, code, password, newPassword)
-      getRegister()
+      getRegister({
+        email: this.ruleForm.email,
+        mobile: this.ruleForm.mobile,
+        code: this.ruleForm.code,
+        password: this.ruleForm.password
+      })
         .then(res => {
           console.log(res)
           this.$message.success('注册成功')
@@ -183,9 +185,10 @@ export default {
     },
     // 获取验证码
     getcode () {
-      const { mobile, msgType } = this.ruleForm
-      // console.log(mobile, msgType)
-      sendMsgCode(mobile, msgType).then(res => {
+      sendMsgCode({
+        mobile: this.ruleForm.mobile,
+        msgType: this.ruleForm.msgType
+      }).then(res => {
         console.log(res)
         this.$message.success('获取成功')
       }).catch(err => {
