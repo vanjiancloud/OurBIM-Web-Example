@@ -67,12 +67,18 @@
               <i slot="prefix" class="el-icon-lock"></i>
             </el-input>
           </el-form-item>
+          <!-- 勾选状态 -->
+          <el-form-item label="" prop="checked">
+            <el-checkbox v-model="ruleForm.checked"
+              >我同意
+              <a @click="toxieyi" style="text-decoration:none">
+                《OurBIM用户服务协议》</a
+              >
+            </el-checkbox>
+          </el-form-item>
         </el-form>
         <!-- 底部区域 -->
         <div class="footer">
-          <el-checkbox v-model="checked" class="xieyi"
-            >我同意《OurBIM用户服务协议》</el-checkbox
-          >
           <div>
             <el-button type="primary" class="btn" @click="register"
               >注册</el-button
@@ -97,7 +103,6 @@ export default {
     return {
       id: 1, // 添加用户临时id
       template: '', // 模板
-      checked: false,
       // 倒计时
       delay: 0,
       // 按钮的文本
@@ -109,7 +114,8 @@ export default {
         code: '',
         password: '1399116021',
         newPassword: '1399116021',
-        msgType: '1'
+        msgType: '1',
+        checked: false // 复选框的状态
       },
       // 验证规则
       rules: {
@@ -137,7 +143,7 @@ export default {
           },
           {
             pattern: /^[\w.]{6,20}$/,
-            message: '您输入的账号或不正确',
+            message: '请设置密码,字符为英文&数字&英文符号，位数6-20',
             trigger: 'blur'
           }
         ],
@@ -145,6 +151,18 @@ export default {
           {
             required: true,
             message: '请再次输入您设置的密码',
+            trigger: 'blur'
+          },
+          {
+            validator: (rule, value, callback) => {
+              if (value === '') {
+                callback(new Error('请再次输入密码'))
+              } else if (value !== this.ruleForm.password) {
+                callback(new Error('两次输入密码不一致'))
+              } else {
+                callback()
+              }
+            },
             trigger: 'blur'
           }
         ],
@@ -159,6 +177,21 @@ export default {
             message: '您输入的验证码不正确',
             trigger: 'change'
           }
+        ],
+        checked: [
+          {
+            // 自定义规则
+            validator: function (rule, value, callback) {
+              if (value) {
+                // 选中
+                callback()
+              } else {
+                // 用户不同意
+                callback(new Error('请勾选！'))
+              }
+            },
+            trigger: 'change'
+          }
         ]
       }
     }
@@ -166,17 +199,12 @@ export default {
   methods: {
     // 校验不能为空
     register () {
-      if (
-        (this.ruleForm.email !== null) &
-        (this.ruleForm.mobile !== null) &
-        (this.ruleForm.code !== null) &
-        (this.ruleForm.password !== null) &
-        (this.ruleForm.newPassword !== null) &
-        (this.checked === true)
-      ) {
-        this.doRegister()
-        this.doemail()
-      }
+      this.$refs.ruleForm.validate(valid => {
+        // 验证通过把结构赋值写载这里
+        if (valid) {
+          this.doRegister()
+        }
+      })
     },
     // 获取注册信息
     doRegister () {
@@ -196,20 +224,10 @@ export default {
           this.$message.error('注册失败')
         })
     },
-    // 发送邮件
-    // doemail () {
-    //   sendEmail({
-    //     email: this.ruleForm.email,
-    //     id: this.id,
-    //     template: this.template
-    //   }).then(res => {
-    //     console.log(res)
-    //     // this.$message.success('发送邮箱请求')
-    //   }).catch(err => {
-    //     console.log(err)
-    //     this.$message.error('请求失败')
-    //   })
-    // },
+    // 点击跳转说明
+    toxieyi () {
+      this.$router.push('/protocol')
+    },
     // 获取验证码
     getcode () {
       sendMsgCode({
@@ -272,14 +290,9 @@ export default {
         color: #999999;
       }
       .btn {
-        width: 300px;
-        margin-bottom: 30px;
-      }
-      .footer {
-        margin-top: -25px;
-        .xieyi {
-          margin: 20px 0;
-        }
+        width: 308px;
+        margin-bottom: 11px;
+        margin-top: 8px;
       }
       .btn-one {
         width: 106px;
