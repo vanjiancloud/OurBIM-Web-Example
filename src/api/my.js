@@ -44,10 +44,15 @@ export function getRegister (data) {
 
 // 发送邮件
 export function sendEmail (data) {
+  const { email, id, template } = data
   return request({
     url: '/UserCenter/sendEmail',
     method: 'POST',
-    data
+    params: {
+      email,
+      id,
+      template
+    }
   })
 }
 

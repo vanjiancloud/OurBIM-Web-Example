@@ -11,16 +11,14 @@ axios.defaults.transformResponse = [function (data) {
     return data
   }
 }]
-axios.defaults.timeout = 10000
-axios.defaults.headers.post['Content-Type'] = 'application/json;charset=UTF-8'
 // 3. 添加请求拦截器主要时设置token
-axios.interceptors.request.use(function (config) {
-  const tokenStr = localStorage.getItem('tokenStr')
-  if (tokenStr) {
-    config.headers.Authorization = `Bearer ${tokenStr}`
-  }
-  return config
-}, function (error) {
-  return Promise.reject(error)
-})
+// axios.interceptors.request.use(function (config) {
+//   const tokenStr = localStorage.getItem('tokenStr')
+//   if (tokenStr) {
+//     config.headers.Authorization = `Bearer ${tokenStr}`
+//   }
+//   return config
+// }, function (error) {
+//   return Promise.reject(error)
+// })
 export default axios

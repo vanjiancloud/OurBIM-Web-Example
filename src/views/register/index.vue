@@ -43,7 +43,9 @@
             >
               <i slot="prefix" class="el-icon-message"></i>
             </el-input>
-            <el-button @click="getcode" type="primary" class="btn-one">获取验证码</el-button>
+            <el-button @click="getcode" type="primary" class="btn-one">{{
+              btnMes
+            }}</el-button>
           </el-form-item>
           <!-- 密码 -->
           <el-form-item label="" prop="password">
@@ -93,8 +95,13 @@ import { getRegister, sendMsgCode } from '@/api/my.js'
 export default {
   data () {
     return {
+      id: 1, // 添加用户临时id
+      template: '', // 模板
       checked: false,
-      msgType: null,
+      // 倒计时
+      delay: 0,
+      // 按钮的文本
+      btnMes: '获取验证码',
       // 验证表单数据
       ruleForm: {
         email: 'liuxiaolongtong@163.com',
@@ -109,7 +116,7 @@ export default {
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
           {
-            pattern: /^1\d{10}$/,
+            pattern: /^[1][3,4,5,7,8][0-9]{9}$/,
             message: '请输入正确的十一位手机号',
             trigger: 'change'
           }
@@ -117,7 +124,7 @@ export default {
         email: [
           { required: true, message: '请输入邮箱', trigger: 'blur' },
           {
-            pattern: /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*/,
+            pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
             message: '请输入正确的邮箱',
             trigger: 'change'
           }
@@ -126,6 +133,11 @@ export default {
           {
             required: true,
             message: '请设置密码,字符为英文&数字&英文符号，位数6-20',
+            trigger: 'blur'
+          },
+          {
+            pattern: /^[\w.]{6,20}$/,
+            message: '您输入的账号或不正确',
             trigger: 'blur'
           }
         ],
@@ -143,7 +155,7 @@ export default {
             trigger: 'blur'
           },
           {
-            pattern: /^\d{6}$/,
+            pattern: /^\d{4}|\d{6}$/,
             message: '您输入的验证码不正确',
             trigger: 'change'
           }
@@ -163,6 +175,7 @@ export default {
         (this.checked === true)
       ) {
         this.doRegister()
+        this.doemail()
       }
     },
     // 获取注册信息
@@ -183,18 +196,46 @@ export default {
           this.$message.error('注册失败')
         })
     },
+    // 发送邮件
+    // doemail () {
+    //   sendEmail({
+    //     email: this.ruleForm.email,
+    //     id: this.id,
+    //     template: this.template
+    //   }).then(res => {
+    //     console.log(res)
+    //     // this.$message.success('发送邮箱请求')
+    //   }).catch(err => {
+    //     console.log(err)
+    //     this.$message.error('请求失败')
+    //   })
+    // },
     // 获取验证码
     getcode () {
       sendMsgCode({
         mobile: this.ruleForm.mobile,
         msgType: this.ruleForm.msgType
-      }).then(res => {
-        console.log(res)
-        this.$message.success('获取成功')
-      }).catch(err => {
-        console.log(err)
-        this.$message.error('获取失败')
       })
+        .then(res => {
+          console.log(res)
+          this.delay = 600
+          this.$message.success('获取成功')
+          this.btnMes = `${this.delay}S后继续`
+          // 开启定时器
+          const interId = setInterval(() => {
+            this.delay--
+            if (this.delay === 0) {
+              clearInterval(interId)
+              this.btnMes = '获取验证码'
+              return
+            }
+            this.btnMes = `${this.delay}S后继续`
+          }, 1000)
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('获取失败')
+        })
     }
   }
 }

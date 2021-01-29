@@ -124,7 +124,7 @@ export default {
         email: [
           { required: true, message: '请输入合法邮箱', trigger: 'blur' },
           {
-            pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+            pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
             message:
               '请输入正确的邮箱,字符为英文&数字，结尾必须有“@xx.com/cn”字符',
             trigger: 'blur'
@@ -145,7 +145,7 @@ export default {
             trigger: 'blur'
           },
           {
-            pattern: /^\d{6}$/,
+            pattern: /^[\w.]{6,20}$/,
             message: '您输入的账号或不正确',
             trigger: 'blur'
           }
@@ -157,7 +157,8 @@ export default {
             trigger: 'blur'
           },
           {
-            message: '您输入的账号或不正确',
+            pattern: /^\d{4}|\d{6}$/,
+            message: '您输入的验证码不正确',
             trigger: 'blur'
           }
         ]
