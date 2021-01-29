@@ -57,6 +57,18 @@ const routes = [
     path: '/activateSucceed',
     name: 'activateSucceed',
     component: () => import('../views/register/activateSucceed.vue')
+  },
+  {
+    // 用户中心
+    path: '/userSetting',
+    name: 'userSetting',
+    component: () => import('../views/userSetting/index.vue')
+  },
+  {
+    // 平台预览
+    path: '/preview',
+    name: 'preview',
+    component: () => import('../views/preview/index.vue')
   }
 ]
 
