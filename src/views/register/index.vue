@@ -69,7 +69,10 @@
         <!-- 底部区域 -->
         <div class="footer">
           <el-checkbox v-model="checked" class="xieyi"
-            >我同意《OurBIM用户服务协议》</el-checkbox
+            >我同意
+            <a @click="toxieyi" style="text-decoration:none">
+            《OurBIM用户服务协议》</a>
+            </el-checkbox
           >
           <div>
             <el-button type="primary" class="btn" @click="register"
@@ -182,6 +185,9 @@ export default {
           console.log(err)
           this.$message.error('注册失败')
         })
+    },
+    toxieyi () {
+      this.$router.push('/protocol')
     },
     // 获取验证码
     getcode () {
