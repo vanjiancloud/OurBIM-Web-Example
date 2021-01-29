@@ -8,7 +8,7 @@
         <img src="../register/icon.png" alt="" class="icon-img" />
       </div>
       <div class="write">
-        <h3>你的账户：example@vanjian.com激活成功</h3>
+        <h3>你的账户：{{email}}激活成功</h3>
       </div>
       <div class="btn">
         <el-button class="button" @click="toHome">进入首页</el-button>
@@ -19,7 +19,11 @@
 
 <script>
 export default {
-  data () {},
+  data () {
+    return {
+      email: ''
+    }
+  },
   methods: {
     toHome () {
       this.$router.replace('/home')

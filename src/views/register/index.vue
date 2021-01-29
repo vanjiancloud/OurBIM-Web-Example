@@ -228,10 +228,9 @@ export default {
         password: this.ruleForm.password
       })
         .then(res => {
-          this.isLoading = false // 加载
           console.log(res)
           this.$message.success('注册成功')
-          this.$router.push('/registerSucceed')
+          // this.$router.push('/registerSucceed')
         })
         .catch(err => {
           this.isLoading = false // 加载
@@ -251,7 +250,7 @@ export default {
       })
         .then(res => {
           console.log(res)
-          this.delay = 600
+          this.delay = 60
           this.$message.success('获取成功')
           this.btnMes = `${this.delay}S后继续`
           // 开启定时器
