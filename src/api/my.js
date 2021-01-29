@@ -42,21 +42,31 @@ export function getRegister (data) {
   })
 }
 
-// 发送邮件
-export function sendEmail (data) {
-  const { email, id, template } = data
+// 手机号查重
+export function repeatMobile (data) {
+  const { mobile } = data
   return request({
-    url: '/UserCenter/sendEmail',
+    url: '/UserCenter/repeatMobile',
     method: 'POST',
     params: {
-      email,
-      id,
-      template
+      mobile
     }
   })
 }
 
-// 发送验证码
+// 邮箱查重
+export function repeatEmail (data) {
+  const { email } = data
+  return request({
+    url: '/UserCenter/repeatEmail',
+    method: 'POST',
+    params: {
+      email
+    }
+  })
+}
+
+// 获取验证码
 export function sendMsgCode (data) {
   const { mobile, msgType } = data
   return request({

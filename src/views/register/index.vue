@@ -13,7 +13,11 @@
         <el-form ref="ruleForm" :model="ruleForm" :rules="rules">
           <!-- 邮箱 -->
           <el-form-item label="" prop="email">
-            <el-input v-model="ruleForm.email" placeholder="请输入邮箱">
+            <el-input
+              v-model="ruleForm.email"
+              placeholder="请输入邮箱"
+              @blur="emailBlur"
+            >
               <i slot="prefix" class="el-icon-s-custom"></i>
             </el-input>
             <div class="hint">
@@ -29,6 +33,7 @@
               v-model="ruleForm.mobile"
               placeholder="请输入手机号码"
               class="input"
+              @blur="mobileBlur"
             >
               <i slot="prefix" class="el-icon-mobile-phone"></i>
             </el-input>
@@ -80,7 +85,11 @@
         <!-- 底部区域 -->
         <div class="footer">
           <div>
-            <el-button type="primary" class="btn" @click="register"
+            <el-button
+              type="primary"
+              class="btn"
+              @click="register"
+              :loading="isLoading"
               >注册</el-button
             >
           </div>
@@ -97,14 +106,17 @@
   </div>
 </template>
 <script>
-import { getRegister, sendMsgCode } from '@/api/my.js'
+import {
+  getRegister,
+  sendMsgCode,
+  repeatMobile,
+  repeatEmail
+} from '@/api/my.js'
 export default {
   data () {
     return {
-      id: 1, // 添加用户临时id
-      template: '', // 模板
-      // 倒计时
-      delay: 0,
+      isLoading: false, // 是否正在登陆
+      delay: 0, // 倒计时
       // 按钮的文本
       btnMes: '获取验证码',
       // 验证表单数据
@@ -208,6 +220,7 @@ export default {
     },
     // 获取注册信息
     doRegister () {
+      this.isLoading = true
       getRegister({
         email: this.ruleForm.email,
         mobile: this.ruleForm.mobile,
@@ -215,11 +228,13 @@ export default {
         password: this.ruleForm.password
       })
         .then(res => {
+          this.isLoading = false // 加载
           console.log(res)
           this.$message.success('注册成功')
           this.$router.push('/registerSucceed')
         })
         .catch(err => {
+          this.isLoading = false // 加载
           console.log(err)
           this.$message.error('注册失败')
         })
@@ -253,6 +268,34 @@ export default {
         .catch(err => {
           console.log(err)
           this.$message.error('获取失败')
+        })
+    },
+    // 失去焦点获取手机号
+    mobileBlur () {
+      repeatMobile({
+        mobile: this.ruleForm.mobile
+      })
+        .then(res => {
+          console.log(res)
+          this.$message.success('可以使用此手机号')
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('此手机号已经注册过了')
+        })
+    },
+    // 失去焦点获取邮箱
+    emailBlur () {
+      repeatEmail({
+        mobile: this.ruleForm.email
+      })
+        .then(res => {
+          console.log(res)
+          this.$message.success('可以使用此邮箱')
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('此邮箱已经注册过了')
         })
     }
   }
