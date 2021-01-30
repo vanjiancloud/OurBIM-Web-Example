@@ -9,7 +9,7 @@
       <!-- 登录的不同状态 -->
       <div class="state">
         <span>
-          重置密码
+          设置新密码
         </span>
       </div>
       <!-- 短信登录的表单 -->
@@ -31,11 +31,7 @@
           <el-button type="warning">获取验证码</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button
-            @click="toNext"
-            type="primary"
-            class="login-btn"
-            :loading="isLoading"
+          <el-button @click="toNext" type="primary" class="login-btn" :loading="isLoading"
             >下一步</el-button
           >
         </el-form-item>
@@ -75,10 +71,10 @@ export default {
   methods: {
     // 返回登录页
     toReturn () {
-      this.$router.push('../../login')
+      this.$router.push('../../changePassword')
     },
     toNext () {
-      this.$router.push('../../newPassword')
+      this.$router.push('../../sucPassword')
     }
   }
 }

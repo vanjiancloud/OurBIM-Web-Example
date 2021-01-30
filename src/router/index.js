@@ -24,9 +24,9 @@ const routes = [
   },
   {
     // 忘记密码
-    path: '/changepassword',
-    name: 'changepassword',
-    component: () => import('../views/changepassword/index.vue')
+    path: '/changePassword',
+    name: 'changePassword',
+    component: () => import('../views/changePassword/index.vue')
   },
   {
     // 注册页
@@ -69,6 +69,18 @@ const routes = [
     path: '/preview',
     name: 'preview',
     component: () => import('../views/preview/index.vue')
+  },
+  {
+    // 新密码
+    path: '/newPassword',
+    name: 'newPassword',
+    component: () => import('../views/newPassword/index.vue')
+  },
+  {
+    // 修改密码成功
+    path: '/sucPassword',
+    name: 'sucPassword',
+    component: () => import('../views/sucPassword/index.vue')
   }
 ]
 

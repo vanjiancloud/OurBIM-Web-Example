@@ -40,7 +40,7 @@
         </el-form-item>
         <el-form-item>
           <el-button
-            @click="hLogin"
+            @click="emailLogin"
             type="primary"
             class="login-btn"
             :loading="isLoading"
@@ -62,26 +62,28 @@
       <!-- 短信登录的表单 -->
       <el-form
         :rules="rules"
-        :model="form"
-        ref="form"
+        :model="mobForm"
+        ref="mobForm"
         class="login-form"
         v-show="isshow == 1"
       >
         <!--  账号密码通过双向绑定获取里面的值 -->
         <el-form-item prop="mobile">
-          <el-input v-model="form.mobile" placeholder="请输入手机号">
+          <el-input v-model="mobForm.mobile" placeholder="请输入手机号">
             <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
           </el-input>
         </el-form-item>
         <el-form-item prop="code">
           <el-input
-            v-model="form.code"
+            v-model="mobForm.code"
             placeholder="请输入短信验证码"
             class="input"
           >
             <i slot="prefix" class="el-input__icon el-icon-message"></i>
           </el-input>
-          <el-button @click="getVerification" type="primary">获取验证码</el-button>
+          <el-button @click="getVerification" type="primary"
+            >获取验证码</el-button
+          >
         </el-form-item>
         <el-form-item>
           <el-button
@@ -108,19 +110,22 @@
 </template>
 
 <script>
-import { login, loginMobile } from '@/api/my.js'
+import { login, loginMobile, sendMsgCode } from '@/api/my.js'
 export default {
   // 声明账号和密码
   data () {
     return {
+      mobForm: {
+        mobile: '13292706730',
+        code: '',
+        msgType: '2'
+      },
       isshow: 0, // 切换登录类别
       isLoading: false, // 是否正在登陆
       form: {
         isAgree: false, // 复选框的状态
-        mobile: '13292706730',
         password: '1399116021',
-        email: 'liuxiaolongtong@163.com',
-        code: ''
+        email: 'liuxiaolongtong@163.com'
       },
       // 定义验证规则rules
       // 邮箱验证
@@ -176,10 +181,10 @@ export default {
     },
     // 忘记密码
     changePassword () {
-      this.$router.push('../../changepassword')
+      this.$router.push('../../changePassword')
     },
-    // 点击登录
-    hLogin () {
+    // 点击邮箱登录
+    emailLogin () {
       this.$refs.form.validate(valid => {
         // 验证通过把结构赋值写载这里
         if (valid) {
@@ -189,48 +194,73 @@ export default {
     },
     // 邮箱登录
     doLogin () {
-      // 解构赋值
-      //  axios发请求(下载, 导入)
-      // 加载
-      this.isLoading = true
-      // 邮箱登录
       login({
         email: this.form.email,
         password: this.form.password
       })
         .then(res => {
           console.log(res)
-          this.isLoading = false // 加载
+          // this.isLoading = false
           // 把res的token保存下来,以便后续发送请求时带上
           // localStorage.setItem('tokenStr', res.data.token)
           // console.log(res)
           this.$message.success('恭喜登陆成功')
           this.$router.push('../home')
-          // 14.2失败的时候
         })
         .catch(err => {
-          this.isLoading = false // 加载
+          // this.isLoading = false
           console.log(err)
           this.$message.error('登陆失败，用户名密码错误')
         })
     },
+
     // 手机登录
     Mobilelogin () {
+      this.$refs.mobForm.validate(valid => {
+        // 验证通过把结构赋值写载这里
+        if (valid) {
+          this.mobLogin()
+        }
+      })
+    },
+    mobLogin () {
       loginMobile({
-        mobile: this.form.mobile,
-        code: this.form.code
+        mobile: this.mobForm.mobile,
+        code: this.mobForm.code
       })
         .then(res => {
           console.log(res)
-          this.$message.success('恭喜登录成功哦')
-          this.$router.push('../home')
+          if (res.data.code === 0) {
+            this.$message.success('恭喜登录成功哦')
+            this.$router.push('../home')
+          } else {
+            this.$message.error('登录失败,验证码错误')
+          }
         })
         .catch(err => {
           console.log(err)
           this.$message.error('登录失败,验证码错误')
         })
     },
-    getVerification () {}
+    // 点击获取验证码
+    getVerification () {
+      sendMsgCode({
+        mobile: this.mobForm.mobile,
+        msgType: this.mobForm.msgType
+      })
+        .then(res => {
+          console.log(res)
+          if (res.data.code === 0) {
+            this.$message.success('获取成功')
+          } else {
+            this.$message.error('获取失败')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('获取失败')
+        })
+    }
   }
 }
 </script>
