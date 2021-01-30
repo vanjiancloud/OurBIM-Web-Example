@@ -234,7 +234,7 @@ export default {
             this.$message.success('恭喜登录成功哦')
             this.$router.push('../home')
           } else {
-            this.$message.error('登录失败,验证码错误')
+            this.$message.error('登录失败了哦,验证码错误')
           }
         })
         .catch(err => {

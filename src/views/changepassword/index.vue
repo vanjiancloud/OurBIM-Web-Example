@@ -16,7 +16,7 @@
       <el-form :rules="rules" :model="form" ref="form" class="login-form">
         <!--  账号密码通过双向绑定获取里面的值 -->
         <el-form-item prop="mobile">
-          <el-input v-model="form.mobile" placeholder="请输入账号手机号">
+          <el-input v-model="form.mobile" placeholder="请输入账号手机号码">
             <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
           </el-input>
         </el-form-item>
@@ -28,7 +28,7 @@
           >
             <i slot="prefix" class="el-input__icon el-icon-message"></i>
           </el-input>
-          <el-button type="warning">获取验证码</el-button>
+          <el-button @click="getCode" type="warning">获取验证码</el-button>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -45,6 +45,7 @@
 </template>
 
 <script>
+import { sendMsgCode } from '../../api/my'
 export default {
   // 声明账号和密码
   data () {
@@ -52,7 +53,7 @@ export default {
       isLoading: false, // 是否正在登陆
       form: {
         isAgree: false, // 复选框的状态
-        mobile: '',
+        mobile: '13292706730',
         code: ''
       },
       // 定义验证规则rules
@@ -66,8 +67,12 @@ export default {
           }
         ],
         code: [
-          { required: true, message: '请输入手机号', trigger: 'blur' },
-          { pattern: /^\d{6}$/, message: '请输入合法的验证码', trigger: 'blur' }
+          { required: true, message: '请输入验证码', trigger: 'blur' },
+          {
+            pattern: /^\d{4}|\d{6}$/,
+            message: '请输入合法的验证码',
+            trigger: 'blur'
+          }
         ]
       }
     }
@@ -77,8 +82,31 @@ export default {
     toReturn () {
       this.$router.push('../../login')
     },
+    // 跳转到重制密码
     toNext () {
+      this.$refs.form.validate(valid => {
+        // 验证通过把结构赋值写载这里
+        if (valid) {
+          this.remakePas()
+        }
+      })
+    },
+    remakePas () {
       this.$router.push('../../newPassword')
+    },
+    // 获取验证码
+    getCode () {
+      sendMsgCode({
+        code: this.form.code
+      })
+        .then(res => {
+          console.log(res)
+          this.$message.success('获取验证码成功')
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('获取失败请重新获取')
+        })
     }
   }
 }

@@ -15,23 +15,29 @@
       <!-- 短信登录的表单 -->
       <el-form :rules="rules" :model="form" ref="form" class="login-form">
         <!--  账号密码通过双向绑定获取里面的值 -->
-        <el-form-item prop="mobile">
-          <el-input v-model="form.mobile" placeholder="请输入账号手机号">
+        <el-form-item prop="password">
+          <el-input
+            v-model="form.password"
+            placeholder="设置设置6至20位登录密码"
+          >
             <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
           </el-input>
         </el-form-item>
-        <el-form-item prop="code">
+        <el-form-item prop="newPassword">
           <el-input
-            v-model="form.code"
-            placeholder="请输入短信验证码"
+            v-model="form.newPassword"
+            placeholder="请再次输入登录密码"
             class="input"
           >
             <i slot="prefix" class="el-input__icon el-icon-message"></i>
           </el-input>
-          <el-button type="warning">获取验证码</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button @click="toNext" type="primary" class="login-btn" :loading="isLoading"
+          <el-button
+            @click="toNext"
+            type="primary"
+            class="login-btn"
+            :loading="isLoading"
             >下一步</el-button
           >
         </el-form-item>
@@ -41,29 +47,48 @@
 </template>
 
 <script>
+import { updatePassword } from '../../api/my'
 export default {
   // 声明账号和密码
   data () {
     return {
       isLoading: false, // 是否正在登陆
       form: {
-        isAgree: false, // 复选框的状态
-        mobile: '',
-        code: ''
+        password: '13292706730',
+        newPassword: '13292706730'
       },
       // 定义验证规则rules
       rules: {
-        mobile: [
-          { required: true, message: '请输入手机号', trigger: 'blur' },
+        password: [
           {
-            pattern: /^[1][3,4,5,7,8][0-9]{9}$/,
-            message: '请输入合法的手机号',
+            required: true,
+            message: '请设置密码,字符为英文&数字&英文符号，位数6-20',
+            trigger: 'blur'
+          },
+          {
+            pattern: /^[\w.]{6,20}$/,
+            message: '请设置密码,字符为英文&数字&英文符号，位数6-20',
             trigger: 'blur'
           }
         ],
-        code: [
-          { required: true, message: '请输入手机号', trigger: 'blur' },
-          { pattern: /^\d{6}$/, message: '请输入合法的验证码', trigger: 'blur' }
+        newPassword: [
+          {
+            required: true,
+            message: '请再次输入您设置的密码',
+            trigger: 'blur'
+          },
+          {
+            validator: (rule, value, callback) => {
+              if (value === '') {
+                callback(new Error('请再次输入密码'))
+              } else if (value !== this.form.password) {
+                callback(new Error('两次输入密码不一致'))
+              } else {
+                callback()
+              }
+            },
+            trigger: 'blur'
+          }
         ]
       }
     }
@@ -73,8 +98,29 @@ export default {
     toReturn () {
       this.$router.push('../../changePassword')
     },
+    // 跳转到成功页面
     toNext () {
-      this.$router.push('../../sucPassword')
+      this.$refs.form.validate(valid => {
+        // 验证通过把结构赋值写载这里
+        if (valid) {
+          this.newPas()
+        }
+      })
+    },
+    newPas () {
+      updatePassword({
+        password: this.form.password,
+        newPassword: this.form.newPassword
+      })
+        .then(res => {
+          console.log(res)
+          this.$message.success('修改成功')
+          this.$router.push('../../sucPassword')
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('修改失败')
+        })
     }
   }
 }
@@ -133,10 +179,6 @@ export default {
     .login-form {
       .login-btn {
         width: 100%;
-      }
-      .input {
-        width: 315px;
-        margin-right: 10px;
       }
       span {
         padding-left: 20px;
