@@ -6,7 +6,7 @@ export function activation (data) {
   const { code } = data
   return request({
     url: 'UserCenter/ActiveServlet',
-    method: 'GET',
+    method: 'POST',
     params: {
       code
     }
@@ -14,19 +14,27 @@ export function activation (data) {
 }
 // 获取邮箱密码登录
 export function login (data) {
+  const { email, password } = data
   return request({
     url: '/UserCenter/login',
     method: 'POST',
-    data
+    params: {
+      email,
+      password
+    }
   })
 }
 
 // 获取手机短信登录
 export function loginMobile (data) {
+  const { mobile, code } = data
   return request({
     url: '/UserCenter/loginMobile',
     method: 'POST',
-    data
+    params: {
+      mobile,
+      code
+    }
   })
 }
 

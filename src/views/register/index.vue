@@ -16,7 +16,7 @@
             <el-input
               v-model="ruleForm.email"
               placeholder="请输入邮箱"
-              @blur="emailBlur"
+              @blur.once="emailBlur"
             >
               <i slot="prefix" class="el-icon-s-custom"></i>
             </el-input>
@@ -33,7 +33,7 @@
               v-model="ruleForm.mobile"
               placeholder="请输入手机号码"
               class="input"
-              @blur="mobileBlur"
+              @blur.once="mobileBlur"
             >
               <i slot="prefix" class="el-icon-mobile-phone"></i>
             </el-input>
@@ -233,12 +233,12 @@ export default {
         password: this.ruleForm.password
       })
         .then(res => {
-          console.log(res.data.code)
+          // console.log(res.data.code)
           if (res.data.code === 0) {
             this.$message.success('注册成功')
             this.$router.push('/registerSucceed')
           } else {
-            this.$message.success('验证码错误')
+            this.$message.error('验证码错误')
           }
         })
         .catch(err => {
@@ -256,28 +256,29 @@ export default {
       sendMsgCode({
         mobile: this.ruleForm.mobile,
         msgType: this.ruleForm.msgType
-      }).then(res => {
-        console.log(res)
-        this.delay = 60
-        this.$message.success('获取成功')
-        this.btnMes = `${this.delay}S后继续`
-        this.isSend = true
-        // 开启定时器
-        const interId = setInterval(() => {
-          this.delay--
-          if (this.delay === 0) {
-            clearInterval(interId)
-            this.btnMes = '获取验证码'
-            this.isSend = false
-            return
-          }
+      })
+        .then(res => {
+          console.log(res)
+          this.delay = 60
+          this.$message.success('获取成功')
           this.btnMes = `${this.delay}S后继续`
-        }, 1000)
-      })
-      this.isSend = false.catch(err => {
-        console.log(err)
-        this.$message.error('获取失败')
-      })
+          this.isSend = true
+          // 开启定时器
+          const interId = setInterval(() => {
+            this.delay--
+            if (this.delay === 0) {
+              clearInterval(interId)
+              this.btnMes = '获取验证码'
+              this.isSend = false
+              return
+            }
+            this.btnMes = `${this.delay}S后继续`
+          }, 1000)
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('获取失败')
+        })
     },
     // 失去焦点获取手机号
     mobileBlur () {
@@ -286,7 +287,11 @@ export default {
       })
         .then(res => {
           console.log(res)
-          this.$message.success('可以使用此手机号')
+          if (res.data.code === 0) {
+            this.$message.success('可以使用此手机号')
+          } else {
+            this.$message.error('此手机号已经注册过了')
+          }
         })
         .catch(err => {
           console.log(err)
@@ -296,11 +301,15 @@ export default {
     // 失去焦点获取邮箱
     emailBlur () {
       repeatEmail({
-        mobile: this.ruleForm.email
+        email: this.ruleForm.email
       })
         .then(res => {
           console.log(res)
-          this.$message.success('可以使用此邮箱')
+          if (res.data.code === 0) {
+            this.$message.success('可以使用此邮箱')
+          } else {
+            this.$message.error('此邮箱已经注册过了')
+          }
         })
         .catch(err => {
           console.log(err)

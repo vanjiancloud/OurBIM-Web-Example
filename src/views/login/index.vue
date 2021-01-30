@@ -81,10 +81,14 @@
           >
             <i slot="prefix" class="el-input__icon el-icon-message"></i>
           </el-input>
-          <el-button type="primary">获取验证码</el-button>
+          <el-button @click="getVerification" type="primary">获取验证码</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" class="login-btn" :loading="isLoading"
+          <el-button
+            @click="Mobilelogin"
+            type="primary"
+            class="login-btn"
+            :loading="isLoading"
             >登陆</el-button
           >
         </el-form-item>
@@ -104,7 +108,7 @@
 </template>
 
 <script>
-import { login } from '@/api/my.js'
+import { login, loginMobile } from '@/api/my.js'
 export default {
   // 声明账号和密码
   data () {
@@ -113,7 +117,7 @@ export default {
       isLoading: false, // 是否正在登陆
       form: {
         isAgree: false, // 复选框的状态
-        mobile: '',
+        mobile: '13292706730',
         password: '1399116021',
         email: 'liuxiaolongtong@163.com',
         code: ''
@@ -174,27 +178,31 @@ export default {
     changePassword () {
       this.$router.push('../../changepassword')
     },
+    // 点击登录
     hLogin () {
-      if (this.form.email === '' || this.form.password === '') {
-        alert('请输入邮箱和密码')
-      } else {
-        this.doLogin()
-      }
+      this.$refs.form.validate(valid => {
+        // 验证通过把结构赋值写载这里
+        if (valid) {
+          this.doLogin()
+        }
+      })
     },
+    // 邮箱登录
     doLogin () {
       // 解构赋值
-      const { email, password } = this.form
-      console.log(email, password)
       //  axios发请求(下载, 导入)
       // 加载
       this.isLoading = true
-      // 查看文档获取axios请求数据
-      login()
+      // 邮箱登录
+      login({
+        email: this.form.email,
+        password: this.form.password
+      })
         .then(res => {
           console.log(res)
           this.isLoading = false // 加载
           // 把res的token保存下来,以便后续发送请求时带上
-          // localStorage.setItem('tokenStr', res.data.data.token)
+          // localStorage.setItem('tokenStr', res.data.token)
           // console.log(res)
           this.$message.success('恭喜登陆成功')
           this.$router.push('../home')
@@ -205,7 +213,24 @@ export default {
           console.log(err)
           this.$message.error('登陆失败，用户名密码错误')
         })
-    }
+    },
+    // 手机登录
+    Mobilelogin () {
+      loginMobile({
+        mobile: this.form.mobile,
+        code: this.form.code
+      })
+        .then(res => {
+          console.log(res)
+          this.$message.success('恭喜登录成功哦')
+          this.$router.push('../home')
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('登录失败,验证码错误')
+        })
+    },
+    getVerification () {}
   }
 }
 </script>

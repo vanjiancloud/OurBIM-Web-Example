@@ -8,7 +8,7 @@
         <img src="../register/icon.png" alt="" class="icon-img" />
       </div>
       <div class="write">
-        <h3>你的账户：{{email}}激活成功</h3>
+        <h3>你的账户：激活成功</h3>
       </div>
       <div class="btn">
         <el-button class="button" @click="toHome">进入首页</el-button>
@@ -18,11 +18,27 @@
 </template>
 
 <script>
+import { activation } from '@/api/my.js'
 export default {
   data () {
     return {
-      email: ''
+      // email: '',
+      code: 'this.$route.query.code'
     }
+  },
+  created () {
+    console.log(this.$route.query.code)
+    activation({
+      code: this.$route.query.code
+    })
+      .then(res => {
+        console.log(res)
+        this.$message.success('注册成功')
+      })
+      .catch(err => {
+        console.log(err)
+        this.$message.error('注册失败')
+      })
   },
   methods: {
     toHome () {

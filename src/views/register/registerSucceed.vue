@@ -25,31 +25,16 @@
 </template>
 
 <script>
-import { activation } from '@/api/my.js'
 export default {
   data () {
-    return {
-      code: '499790'
-    }
+    return {}
   },
   methods: {
     toHome () {
       this.$router.replace('/home')
     },
     toLookEmail () {
-      // 激活账号
-      activation({
-        code: this.code
-      })
-        .then(res => {
-          console.log(res)
-          this.$message.success('注册成功')
-          this.$router.replace('/lookEmail')
-        })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('注册失败')
-        })
+      this.$router.replace('/lookEmail')
     }
   }
 }
