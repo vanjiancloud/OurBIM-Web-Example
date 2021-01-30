@@ -3,10 +3,13 @@ import request from '../utils/request'
 
 // 激活账号
 export function activation (data) {
+  const { code } = data
   return request({
     url: 'UserCenter/ActiveServlet',
     method: 'GET',
-    data
+    params: {
+      code
+    }
   })
 }
 // 获取邮箱密码登录

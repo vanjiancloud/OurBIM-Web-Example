@@ -15,7 +15,9 @@
         请及时登录邮箱，点击邮件中的链接激活帐户。
       </div>
       <div class="btn">
-        <el-button type="primary" class="button" @click="toLookEmail">查看邮件</el-button>
+        <el-button type="primary" class="button" @click="toLookEmail"
+          >查看邮件</el-button
+        >
         <el-button class="button" @click="toHome">进入首页</el-button>
       </div>
     </div>
@@ -23,14 +25,31 @@
 </template>
 
 <script>
+import { activation } from '@/api/my.js'
 export default {
-  data () {},
+  data () {
+    return {
+      code: '499790'
+    }
+  },
   methods: {
     toHome () {
       this.$router.replace('/home')
     },
     toLookEmail () {
-      this.$router.replace('/lookEmail')
+      // 激活账号
+      activation({
+        code: this.code
+      })
+        .then(res => {
+          console.log(res)
+          this.$message.success('注册成功')
+          this.$router.replace('/lookEmail')
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('注册失败')
+        })
     }
   }
 }

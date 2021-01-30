@@ -48,9 +48,13 @@
             >
               <i slot="prefix" class="el-icon-message"></i>
             </el-input>
-            <el-button @click="getcode" type="primary" class="btn-one">{{
-              btnMes
-            }}</el-button>
+            <el-button
+              :disabled="isSend"
+              @click="getcode"
+              type="primary"
+              class="btn-one"
+              >{{ btnMes }}</el-button
+            >
           </el-form-item>
           <!-- 密码 -->
           <el-form-item label="" prop="password">
@@ -108,13 +112,14 @@
 <script>
 import {
   getRegister,
-  sendMsgCode,
   repeatMobile,
-  repeatEmail
+  repeatEmail,
+  sendMsgCode
 } from '@/api/my.js'
 export default {
   data () {
     return {
+      isSend: false, // 是否显示
       isLoading: false, // 是否正在登陆
       delay: 0, // 倒计时
       // 按钮的文本
@@ -220,7 +225,7 @@ export default {
     },
     // 获取注册信息
     doRegister () {
-      this.isLoading = true
+      // this.isLoading = true
       getRegister({
         email: this.ruleForm.email,
         mobile: this.ruleForm.mobile,
@@ -228,12 +233,16 @@ export default {
         password: this.ruleForm.password
       })
         .then(res => {
-          console.log(res)
-          this.$message.success('注册成功')
-          // this.$router.push('/registerSucceed')
+          console.log(res.data.code)
+          if (res.data.code === 0) {
+            this.$message.success('注册成功')
+            this.$router.push('/registerSucceed')
+          } else {
+            this.$message.success('验证码错误')
+          }
         })
         .catch(err => {
-          this.isLoading = false // 加载
+          // this.isLoading = false // 加载
           console.log(err)
           this.$message.error('注册失败')
         })
@@ -247,27 +256,28 @@ export default {
       sendMsgCode({
         mobile: this.ruleForm.mobile,
         msgType: this.ruleForm.msgType
-      })
-        .then(res => {
-          console.log(res)
-          this.delay = 60
-          this.$message.success('获取成功')
+      }).then(res => {
+        console.log(res)
+        this.delay = 60
+        this.$message.success('获取成功')
+        this.btnMes = `${this.delay}S后继续`
+        this.isSend = true
+        // 开启定时器
+        const interId = setInterval(() => {
+          this.delay--
+          if (this.delay === 0) {
+            clearInterval(interId)
+            this.btnMes = '获取验证码'
+            this.isSend = false
+            return
+          }
           this.btnMes = `${this.delay}S后继续`
-          // 开启定时器
-          const interId = setInterval(() => {
-            this.delay--
-            if (this.delay === 0) {
-              clearInterval(interId)
-              this.btnMes = '获取验证码'
-              return
-            }
-            this.btnMes = `${this.delay}S后继续`
-          }, 1000)
-        })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('获取失败')
-        })
+        }, 1000)
+      })
+      this.isSend = false.catch(err => {
+        console.log(err)
+        this.$message.error('获取失败')
+      })
     },
     // 失去焦点获取手机号
     mobileBlur () {
