@@ -99,7 +99,7 @@
             class="checkbox"
             label="记住登录手机号"
             name="type"
-            v-model="form.isAgree"
+            v-model="mobForm.checkbox"
           ></el-checkbox>
           <span @click="changePassword">忘记密码?</span>
           <span @click="register">注册新用户</span>
@@ -118,7 +118,8 @@ export default {
       mobForm: {
         mobile: '13292706730',
         code: '',
-        msgType: '2'
+        msgType: '2',
+        checkbox: false
       },
       isshow: 0, // 切换登录类别
       isLoading: false, // 是否正在登陆
@@ -185,6 +186,10 @@ export default {
     },
     // 点击邮箱登录
     emailLogin () {
+      var email = this.form.email
+      if (this.form.isAgree === true) {
+        this.getCookie(email, 7)
+      }
       this.$refs.form.validate(valid => {
         // 验证通过把结构赋值写载这里
         if (valid) {
@@ -201,11 +206,12 @@ export default {
         .then(res => {
           console.log(res)
           // this.isLoading = false
-          // 把res的token保存下来,以便后续发送请求时带上
-          // localStorage.setItem('tokenStr', res.data.token)
-          // console.log(res)
-          this.$message.success('恭喜登陆成功')
-          this.$router.push('../home')
+          if (res.data.code === 0) {
+            this.$message.success('恭喜登陆成功')
+            this.$router.push('../home')
+          } else {
+            this.$message.error('用户名或密码不正确，请重新输入')
+          }
         })
         .catch(err => {
           // this.isLoading = false
@@ -213,7 +219,40 @@ export default {
           this.$message.error('登陆失败，用户名密码错误')
         })
     },
-
+    // 设置cookie
+    setCookie (cemail, cpassword, exdays) {
+      var exdate = new Date()
+      exdate.setTime(exdate.getTime() + (24 * 60 * 60 * 1000 * exdays))
+      // 字符串拼接cookie
+      window.document.cookie =
+        this.form.email +
+        '=' +
+        cemail +
+        ';path=/;expires=' +
+        exdate.toGMTString()
+      window.document.cookie =
+        this.form.password +
+        '=' +
+        cpassword +
+        ';path=/;expires=' +
+        exdate.toGMTString()
+      // 'this.form.email' = 'cemail' + ':path=/expires' + 'exdate.toGMTString()'
+    },
+    // 读取cookie
+    getCookie: function () {
+      console.log(document.cookie)
+      if (document.cookie.length > 0) {
+        var arr = document.cookie.split(';')
+        for (var i = 0; i < arr.length; i++) {
+          var arr2 = arr[i].split('=')
+          if (arr2[0] === 'email') {
+            this.form.email = arr2[1]
+          } else if (arr2[0] === 'password') {
+            this.form.password = arr2[1]
+          }
+        }
+      }
+    },
     // 手机登录
     Mobilelogin () {
       this.$refs.mobForm.validate(valid => {
@@ -261,6 +300,9 @@ export default {
           this.$message.error('获取失败')
         })
     }
+  },
+  mounted () {
+    this.getCookie()
   }
 }
 </script>
@@ -309,6 +351,8 @@ export default {
       justify-content: center;
       align-items: center;
       padding-bottom: 30px;
+      cursor: pointer;
+
       .color {
         color: #0097fe;
         border-bottom: 1px solid #0097fe;
@@ -334,9 +378,13 @@ export default {
         float: right;
         color: #0097fe;
         display: inline;
+        cursor: pointer;
       }
       .checkbox {
         color: #999999;
+        span {
+          cursor: pointer;
+        }
       }
       .tips {
         color: #0097de;
