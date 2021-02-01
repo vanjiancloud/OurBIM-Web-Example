@@ -32,10 +32,10 @@ const routes = [
     }
   },
   {
-    // 忘记密码
-    path: '/changePassword',
-    name: 'changePassword',
-    component: () => import('../views/changePassword/index.vue'),
+    // 忘记密码ppp
+    path: '/changepassword',
+    name: 'changepassword',
+    component: () => import('../views/changepassword/index.vue'),
     meta: {
       title: 'OurBIM忘记密码'
     }
