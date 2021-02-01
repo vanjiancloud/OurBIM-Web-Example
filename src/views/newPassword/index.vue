@@ -96,7 +96,7 @@ export default {
   methods: {
     // 返回登录页
     toReturn () {
-      this.$router.push('../../changePassword')
+      this.$router.push('../../changepassword')
     },
     // 跳转到成功页面
     toNext () {

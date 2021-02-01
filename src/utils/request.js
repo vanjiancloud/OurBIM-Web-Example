@@ -11,14 +11,4 @@ axios.defaults.transformResponse = [function (data) {
     return data
   }
 }]
-// 3. 添加请求拦截器主要时设置token
-// axios.interceptors.request.use(function (config) {
-//   const tokenStr = localStorage.getItem('tokenStr')
-//   if (tokenStr) {
-//     config.headers.Authorization = `Bearer ${tokenStr}`
-//   }
-//   return config
-// }, function (error) {
-//   return Promise.reject(error)
-// })
 export default axios

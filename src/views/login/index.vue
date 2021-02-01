@@ -125,8 +125,8 @@ export default {
       isLoading: false, // 是否正在登陆
       form: {
         isAgree: false, // 复选框的状态
-        password: '1399116021',
-        email: 'liuxiaolongtong@163.com'
+        password: '',
+        email: ''
       },
       // 定义验证规则rules
       // 邮箱验证
