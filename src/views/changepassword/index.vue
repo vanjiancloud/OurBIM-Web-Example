@@ -47,21 +47,22 @@
 <script>
 import { sendMsgCode } from '../../api/my'
 export default {
+  name: 'changepassword',
   // 声明账号和密码
   data () {
     return {
       isLoading: false, // 是否正在登陆
       form: {
-        isAgree: false, // 复选框的状态
-        mobile: '13292706730',
-        code: ''
+        mobile: '',
+        code: '',
+        msgType: '3'
       },
       // 定义验证规则rules
       rules: {
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
           {
-            pattern: /^[1][3,4,5,7,8][0-9]{9}$/,
+            pattern: /^1[3|4|5|7|8][0-9]{9}$/,
             message: '请输入合法的手机号',
             trigger: 'blur'
           }
@@ -92,16 +93,43 @@ export default {
       })
     },
     remakePas () {
-      this.$router.push('../../newPassword')
+      this.$router.push({
+        name: 'newPassword',
+        query: {
+          mobile: this.form.mobile,
+          code: this.form.code
+        }
+      })
+      // loginMobile({
+      //   mobile: this.form.mobile,
+      //   code: this.form.code
+      // })
+      //   .then(res => {
+      //     console.log(res)
+      //     if (res.data.code === 0) {
+      //       this.$router.push('../../newPassword')
+      //     } else {
+      //       this.$message.error('验证码错误请重新获取')
+      //     }
+      //   })
+      //   .catch(err => {
+      //     console.log(err)
+      //     this.$message.error('验证码错误')
+      //   })
     },
     // 获取验证码
     getCode () {
       sendMsgCode({
-        code: this.form.code
+        mobile: this.form.mobile,
+        msgType: this.form.msgType
       })
         .then(res => {
           console.log(res)
-          this.$message.success('获取验证码成功')
+          if (res.data.code === 0) {
+            this.$message.success('获取验证码成功')
+          } else {
+            this.$message.error('获取失败请重新获取')
+          }
         })
         .catch(err => {
           console.log(err)
@@ -111,7 +139,6 @@ export default {
   }
 }
 </script>
-
 <style scoped lang="less">
 // 10.书写样式铺满整屏
 .login-container {

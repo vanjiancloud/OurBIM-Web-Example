@@ -23,9 +23,9 @@
             <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
           </el-input>
         </el-form-item>
-        <el-form-item prop="newPassword">
+        <el-form-item prop="toPassword">
           <el-input
-            v-model="form.newPassword"
+            v-model="form.toPassword"
             placeholder="请再次输入登录密码"
             class="input"
           >
@@ -49,13 +49,16 @@
 <script>
 import { updatePassword } from '../../api/my'
 export default {
+  name: 'newPassword',
   // 声明账号和密码
   data () {
     return {
       isLoading: false, // 是否正在登陆
       form: {
-        password: '13292706730',
-        newPassword: '13292706730'
+        password: '',
+        toPassword: '',
+        mobile: this.$route.query.mobile,
+        code: this.$route.query.code
       },
       // 定义验证规则rules
       rules: {
@@ -71,7 +74,7 @@ export default {
             trigger: 'blur'
           }
         ],
-        newPassword: [
+        toPassword: [
           {
             required: true,
             message: '请再次输入您设置的密码',
@@ -109,19 +112,27 @@ export default {
     },
     newPas () {
       updatePassword({
-        password: this.form.password,
-        newPassword: this.form.newPassword
+        mobile: this.form.mobile,
+        code: this.form.code,
+        password: this.form.password
       })
         .then(res => {
           console.log(res)
-          this.$message.success('修改成功')
-          this.$router.push('../../sucPassword')
+          if (res.data.code === 0) {
+            // this.$message.success('修改成功')
+            this.$router.push('../../sucPassword')
+          } else {
+            this.$message.error('验证码验证失败')
+          }
         })
         .catch(err => {
           console.log(err)
-          this.$message.error('修改失败')
+          this.$message.error('验证码验证失败')
         })
     }
+  },
+  created () {
+    console.log(this.$route.query.mobile, this.$route.query.code)
   }
 }
 </script>

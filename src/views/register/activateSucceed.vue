@@ -8,7 +8,7 @@
         <img src="../register/icon.png" alt="" class="icon-img" />
       </div>
       <div class="write">
-        <h3>你的账户：激活成功</h3>
+        <h3 :title="title">你的账户：{{ title }}</h3>
       </div>
       <div class="btn">
         <el-button class="button" @click="toHome">进入首页</el-button>
@@ -23,7 +23,8 @@ export default {
   data () {
     return {
       // email: '',
-      code: 'this.$route.query.code'
+      code: 'this.$route.query.code',
+      title: '激活成功'
     }
   },
   created () {
@@ -33,11 +34,16 @@ export default {
     })
       .then(res => {
         console.log(res)
-        this.$message.success('注册成功')
+        if (res.data.code === 0) {
+          this.$message.success('激活成功')
+        } else {
+          this.$message.error('激活码无效')
+          this.title = '激活码无效'
+        }
       })
       .catch(err => {
         console.log(err)
-        this.$message.error('注册失败')
+        this.$message.error('激活码无效')
       })
   },
   methods: {

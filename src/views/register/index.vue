@@ -16,7 +16,7 @@
             <el-input
               v-model="ruleForm.email"
               placeholder="请输入邮箱"
-              @blur.once="emailBlur"
+              @blur="emailBlur"
             >
               <i slot="prefix" class="el-icon-s-custom"></i>
             </el-input>
@@ -33,7 +33,7 @@
               v-model="ruleForm.mobile"
               placeholder="请输入手机号码"
               class="input"
-              @blur.once="mobileBlur"
+              @blur="mobileBlur"
             >
               <i slot="prefix" class="el-icon-mobile-phone"></i>
             </el-input>
@@ -59,6 +59,7 @@
           <!-- 密码 -->
           <el-form-item label="" prop="password">
             <el-input
+              show-password
               v-model="ruleForm.password"
               placeholder="请设置6至20位登录密码"
               class="input"
@@ -69,6 +70,7 @@
           <!-- 再次输入密码 -->
           <el-form-item label="" prop="newPassword">
             <el-input
+              show-password
               v-model="ruleForm.newPassword"
               placeholder="请再次输入登录密码"
               class="input"
@@ -126,20 +128,21 @@ export default {
       btnMes: '获取验证码',
       // 验证表单数据
       ruleForm: {
-        email: 'liuxiaolongtong@163.com',
-        mobile: '13292706730',
+        email: '',
+        mobile: '',
         code: '',
-        password: '1399116021',
-        newPassword: '1399116021',
+        password: '',
+        newPassword: '',
         msgType: '1',
-        checked: false // 复选框的状态
+        checked: false, // 复选框的状态
+        activeUrl: 'window.location.href'
       },
       // 验证规则
       rules: {
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
           {
-            pattern: /^[1][3,4,5,7,8][0-9]{9}$/,
+            pattern: /^1[3|4|5|7|8][0-9]{9}$/,
             message: '请输入正确的十一位手机号',
             trigger: 'change'
           }
@@ -225,12 +228,13 @@ export default {
     },
     // 获取注册信息
     doRegister () {
-      // this.isLoading = true
+      this.isLoading = true
       getRegister({
         email: this.ruleForm.email,
         mobile: this.ruleForm.mobile,
         code: this.ruleForm.code,
-        password: this.ruleForm.password
+        password: this.ruleForm.password,
+        activeUrl: window.location.href
       })
         .then(res => {
           // console.log(res.data.code)
@@ -242,7 +246,6 @@ export default {
           }
         })
         .catch(err => {
-          // this.isLoading = false // 加载
           console.log(err)
           this.$message.error('注册失败')
         })
@@ -282,6 +285,14 @@ export default {
     },
     // 失去焦点获取手机号
     mobileBlur () {
+      this.$refs.ruleForm.validateField('mobile', mobileError => {
+        // 验证通过把结构赋值写载这里
+        if (!mobileError) {
+          this.getmobileBlur()
+        }
+      })
+    },
+    getmobileBlur () {
       repeatMobile({
         mobile: this.ruleForm.mobile
       })
@@ -290,7 +301,7 @@ export default {
           if (res.data.code === 0) {
             this.$message.success('可以使用此手机号')
           } else {
-            this.$message.error('此手机号已经注册过了')
+            this.$message.error('该手机号已被注册，请通过忘记密码功能找回')
           }
         })
         .catch(err => {
@@ -300,6 +311,14 @@ export default {
     },
     // 失去焦点获取邮箱
     emailBlur () {
+      this.$refs.ruleForm.validateField('email', emailError => {
+        // 验证通过把结构赋值写载这里
+        if (!emailError) {
+          this.getemailBlur()
+        }
+      })
+    },
+    getemailBlur () {
       repeatEmail({
         email: this.ruleForm.email
       })
@@ -308,7 +327,7 @@ export default {
           if (res.data.code === 0) {
             this.$message.success('可以使用此邮箱')
           } else {
-            this.$message.error('此邮箱已经注册过了')
+            this.$message.error('该邮箱已被注册，请通过忘记密码功能找回')
           }
         })
         .catch(err => {

@@ -25,7 +25,10 @@
       >
         <!--  账号密码通过双向绑定获取里面的值 -->
         <el-form-item prop="email">
-          <el-input v-model="form.email" placeholder="请输入邮箱">
+          <el-input
+            v-model="form.email"
+            placeholder="请输入邮箱"
+          >
             <i slot="prefix" class="el-input__icon el-icon-s-custom"></i>
           </el-input>
         </el-form-item>
@@ -116,7 +119,7 @@ export default {
   data () {
     return {
       mobForm: {
-        mobile: '13292706730',
+        mobile: '',
         code: '',
         msgType: '2',
         checkbox: false
@@ -143,7 +146,7 @@ export default {
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
           {
-            pattern: /^[1][3,4,5,7,8][0-9]{9}$/,
+            pattern: /^1[3|4|5|7|8][0-9]{9}$/,
             message: '请输入正确的11位手机号',
             trigger: 'blur'
           }
@@ -187,8 +190,9 @@ export default {
     // 点击邮箱登录
     emailLogin () {
       var email = this.form.email
+      var password = this.form.password
       if (this.form.isAgree === true) {
-        this.getCookie(email, 7)
+        this.getCookie(email, password, 7)
       }
       this.$refs.form.validate(valid => {
         // 验证通过把结构赋值写载这里
@@ -199,6 +203,7 @@ export default {
     },
     // 邮箱登录
     doLogin () {
+      this.setCookie(this.form.email, this.form.password, 2)
       login({
         email: this.form.email,
         password: this.form.password
@@ -222,7 +227,7 @@ export default {
     // 设置cookie
     setCookie (cemail, cpassword, exdays) {
       var exdate = new Date()
-      exdate.setTime(exdate.getTime() + (24 * 60 * 60 * 1000 * exdays))
+      exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays)
       // 字符串拼接cookie
       window.document.cookie =
         this.form.email +
@@ -240,7 +245,7 @@ export default {
     },
     // 读取cookie
     getCookie: function () {
-      console.log(document.cookie)
+      // console.log(document.cookie)
       if (document.cookie.length > 0) {
         var arr = document.cookie.split(';')
         for (var i = 0; i < arr.length; i++) {
@@ -273,12 +278,12 @@ export default {
             this.$message.success('恭喜登录成功哦')
             this.$router.push('../home')
           } else {
-            this.$message.error('登录失败了哦,验证码错误')
+            this.$message.error('验证码验证失败')
           }
         })
         .catch(err => {
           console.log(err)
-          this.$message.error('登录失败,验证码错误')
+          this.$message.error('验证码验证失败')
         })
     },
     // 点击获取验证码
@@ -300,6 +305,7 @@ export default {
           this.$message.error('获取失败')
         })
     }
+    // 邮箱聚焦
   },
   mounted () {
     this.getCookie()

@@ -40,7 +40,7 @@ export function loginMobile (data) {
 
 // 获取注册
 export function getRegister (data) {
-  const { email, mobile, code, password } = data
+  const { email, mobile, code, password, activeUrl } = data
   return request({
     url: '/UserCenter/addUser',
     method: 'POST',
@@ -48,7 +48,8 @@ export function getRegister (data) {
       email,
       mobile,
       code,
-      password
+      password,
+      activeUrl
     }
   })
 }
@@ -92,10 +93,15 @@ export function sendMsgCode (data) {
 
 // 修改密码
 export function updatePassword (data) {
+  const { mobile, code, password } = data
   return request({
     url: '/UserCenter/updatePassword',
     method: 'POST',
-    data
+    params: {
+      mobile,
+      code,
+      password
+    }
   })
 }
 
