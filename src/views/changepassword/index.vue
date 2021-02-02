@@ -6,7 +6,6 @@
         <i class="el-icon-arrow-left" @click="toReturn"></i>
         <span class="logo"> </span>
       </div>
-      <!-- 登录的不同状态 -->
       <div class="state">
         <span>
           重置密码
@@ -14,7 +13,6 @@
       </div>
       <!-- 短信登录的表单 -->
       <el-form :rules="rules" :model="form" ref="form" class="login-form">
-        <!--  账号密码通过双向绑定获取里面的值 -->
         <el-form-item prop="mobile">
           <el-input v-model="form.mobile" placeholder="请输入账号手机号码">
             <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
@@ -28,7 +26,9 @@
           >
             <i slot="prefix" class="el-input__icon el-icon-message"></i>
           </el-input>
-          <el-button @click="getCode" type="warning">获取验证码</el-button>
+          <el-button class="btnMes" :disabled="isSend" @click="getCode" type="primary">{{
+            btnMes
+          }}</el-button>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -45,12 +45,15 @@
 </template>
 
 <script>
-import { sendMsgCode } from '../../api/my'
+import { sendMsgCode, updateJudgeMsg } from '../../api/my'
 export default {
   name: 'changepassword',
-  // 声明账号和密码
   data () {
     return {
+      isSend: false, // 是否显示
+      delay: 0, // 倒计时
+      // 按钮的文本
+      btnMes: '获取验证码',
       isLoading: false, // 是否正在登陆
       form: {
         mobile: '',
@@ -86,39 +89,41 @@ export default {
     // 跳转到重制密码
     toNext () {
       this.$refs.form.validate(valid => {
-        // 验证通过把结构赋值写载这里
         if (valid) {
           this.remakePas()
         }
       })
     },
+    // 重制密码
     remakePas () {
-      this.$router.push({
-        name: 'newPassword',
-        query: {
-          mobile: this.form.mobile,
-          code: this.form.code
+      updateJudgeMsg({
+        mobile: this.form.mobile,
+        code: this.form.code
+      }).then(res => {
+        console.log(res)
+        if (res.data.code === 0) {
+          this.$router.push({
+            name: 'newPassword',
+            query: {
+              mobile: this.form.mobile,
+              code: this.form.code
+            }
+          })
+        } else {
+          this.$message.error('您输入的验证码不正确')
         }
       })
-      // loginMobile({
-      //   mobile: this.form.mobile,
-      //   code: this.form.code
-      // })
-      //   .then(res => {
-      //     console.log(res)
-      //     if (res.data.code === 0) {
-      //       this.$router.push('../../newPassword')
-      //     } else {
-      //       this.$message.error('验证码错误请重新获取')
-      //     }
-      //   })
-      //   .catch(err => {
-      //     console.log(err)
-      //     this.$message.error('验证码错误')
-      //   })
+    },
+    // 点击获取验证码
+    getCode () {
+      this.$refs.form.validateField('mobile', codeError => {
+        if (!codeError) {
+          this.toGetCode()
+        }
+      })
     },
     // 获取验证码
-    getCode () {
+    toGetCode () {
       sendMsgCode({
         mobile: this.form.mobile,
         msgType: this.form.msgType
@@ -126,9 +131,22 @@ export default {
         .then(res => {
           console.log(res)
           if (res.data.code === 0) {
-            this.$message.success('获取验证码成功')
+            this.$message.success('获取成功')
+            this.delay = 60
+            this.btnMes = `${this.delay}S后继续`
+            this.isSend = true
+            const interId = setInterval(() => {
+              this.delay--
+              if (this.delay === 0) {
+                clearInterval(interId)
+                this.btnMes = '获取验证码'
+                this.isSend = false
+                return
+              }
+              this.btnMes = `${this.delay}S后继续`
+            }, 1000)
           } else {
-            this.$message.error('获取失败请重新获取')
+            this.$message.error('短信请求失败，您的操作过于频繁，请稍后在试')
           }
         })
         .catch(err => {
@@ -140,7 +158,6 @@ export default {
 }
 </script>
 <style scoped lang="less">
-// 10.书写样式铺满整屏
 .login-container {
   position: fixed;
   left: 0;
@@ -196,6 +213,10 @@ export default {
       .input {
         width: 315px;
         margin-right: 10px;
+      }
+      .btnMes {
+        width: 104px;
+        height: 41px;
       }
       span {
         padding-left: 20px;

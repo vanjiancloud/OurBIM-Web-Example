@@ -22,7 +22,6 @@ import { activation } from '@/api/my.js'
 export default {
   data () {
     return {
-      // email: '',
       code: 'this.$route.query.code',
       title: '激活成功'
     }

@@ -124,8 +124,7 @@ export default {
       isSend: false, // 是否显示
       isLoading: false, // 是否正在登陆
       delay: 0, // 倒计时
-      // 按钮的文本
-      btnMes: '获取验证码',
+      btnMes: '获取验证码', // 按钮的文本
       // 验证表单数据
       ruleForm: {
         email: '',
@@ -217,18 +216,16 @@ export default {
     }
   },
   methods: {
-    // 校验不能为空
+    // 点击注册
     register () {
       this.$refs.ruleForm.validate(valid => {
-        // 验证通过把结构赋值写载这里
         if (valid) {
           this.doRegister()
         }
       })
     },
-    // 获取注册信息
+    // 注册信息
     doRegister () {
-      this.isLoading = true
       getRegister({
         email: this.ruleForm.email,
         mobile: this.ruleForm.mobile,
@@ -237,7 +234,6 @@ export default {
         activeUrl: window.location.href
       })
         .then(res => {
-          // console.log(res.data.code)
           if (res.data.code === 0) {
             this.$message.success('注册成功')
             this.$router.push('/registerSucceed')
@@ -254,29 +250,43 @@ export default {
     toxieyi () {
       this.$router.push('/protocol')
     },
-    // 获取验证码
+
+    // 点击获取验证码
     getcode () {
+      this.$refs.ruleForm.validateField('mobile', codeError => {
+        if (!codeError) {
+          this.toGetCode()
+        }
+      })
+    },
+    // 获取验证码
+    toGetCode () {
       sendMsgCode({
         mobile: this.ruleForm.mobile,
         msgType: this.ruleForm.msgType
       })
         .then(res => {
           console.log(res)
-          this.delay = 60
-          this.$message.success('获取成功')
-          this.btnMes = `${this.delay}S后继续`
-          this.isSend = true
-          // 开启定时器
-          const interId = setInterval(() => {
-            this.delay--
-            if (this.delay === 0) {
-              clearInterval(interId)
-              this.btnMes = '获取验证码'
-              this.isSend = false
-              return
-            }
+          if (res.data.code === 0) {
+            this.$message.success('获取成功')
+            this.delay = 60
             this.btnMes = `${this.delay}S后继续`
-          }, 1000)
+            this.isSend = true
+            const interId = setInterval(() => {
+              this.delay--
+              if (this.delay === 0) {
+                clearInterval(interId)
+                this.btnMes = '获取验证码'
+                this.isSend = false
+                return
+              }
+              this.btnMes = `${this.delay}S后继续`
+            }, 1000)
+          } else if (res.data.code === 1) {
+            this.$message.error('短信请求失败')
+          } else {
+            this.$message.error('短信请求失败，您的操作过于频繁，请稍后在试')
+          }
         })
         .catch(err => {
           console.log(err)
@@ -286,7 +296,6 @@ export default {
     // 失去焦点获取手机号
     mobileBlur () {
       this.$refs.ruleForm.validateField('mobile', mobileError => {
-        // 验证通过把结构赋值写载这里
         if (!mobileError) {
           this.getmobileBlur()
         }
@@ -312,7 +321,6 @@ export default {
     // 失去焦点获取邮箱
     emailBlur () {
       this.$refs.ruleForm.validateField('email', emailError => {
-        // 验证通过把结构赋值写载这里
         if (!emailError) {
           this.getemailBlur()
         }
@@ -371,7 +379,7 @@ export default {
       }
       .btn {
         width: 308px;
-        margin-bottom: 11px;
+        margin-bottom: 12px;
         margin-top: 8px;
       }
       .btn-one {
@@ -395,7 +403,7 @@ export default {
       }
       .el-icon-arrow-left {
         color: #ff6600;
-        padding: 40px 150px 0 0;
+        padding: 40px 0 0 40px;
         font-size: 40px;
       }
     }

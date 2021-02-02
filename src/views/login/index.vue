@@ -23,12 +23,9 @@
         class="login-form"
         v-show="isshow == 0"
       >
-        <!--  账号密码通过双向绑定获取里面的值 -->
+        <!--  邮箱密码通过双向绑定获取里面的值 -->
         <el-form-item prop="email">
-          <el-input
-            v-model="form.email"
-            placeholder="请输入邮箱"
-          >
+          <el-input v-model="form.email" placeholder="请输入邮箱">
             <i slot="prefix" class="el-input__icon el-icon-s-custom"></i>
           </el-input>
         </el-form-item>
@@ -70,7 +67,7 @@
         class="login-form"
         v-show="isshow == 1"
       >
-        <!--  账号密码通过双向绑定获取里面的值 -->
+        <!--  手机号验证码通过双向绑定获取里面的值 -->
         <el-form-item prop="mobile">
           <el-input v-model="mobForm.mobile" placeholder="请输入手机号">
             <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
@@ -84,8 +81,12 @@
           >
             <i slot="prefix" class="el-input__icon el-icon-message"></i>
           </el-input>
-          <el-button @click="getVerification" type="primary"
-            >获取验证码</el-button
+          <el-button
+            class="btnMes"
+            :disabled="isSend"
+            @click="getVerification"
+            type="primary"
+            >{{ btnMes }}</el-button
           >
         </el-form-item>
         <el-form-item>
@@ -113,16 +114,19 @@
 </template>
 
 <script>
-import { login, loginMobile, sendMsgCode } from '@/api/my.js'
+import { sendMsgCode, login, loginMobile } from '@/api/my.js'
+// const Base64 = require('js-base64').Base64
 export default {
-  // 声明账号和密码
   data () {
     return {
+      isSend: false, // 是否显示
+      delay: 0, // 倒计时
+      btnMes: '获取验证码', // 按钮的文本
       mobForm: {
         mobile: '',
         code: '',
-        msgType: '2',
-        checkbox: false
+        msgType: '2', // 验证状态
+        checkbox: false // 复选框的状态
       },
       isshow: 0, // 切换登录类别
       isLoading: false, // 是否正在登陆
@@ -132,7 +136,6 @@ export default {
         email: ''
       },
       // 定义验证规则rules
-      // 邮箱验证
       rules: {
         email: [
           { required: true, message: '请输入合法邮箱', trigger: 'blur' },
@@ -189,13 +192,7 @@ export default {
     },
     // 点击邮箱登录
     emailLogin () {
-      var email = this.form.email
-      var password = this.form.password
-      if (this.form.isAgree === true) {
-        this.getCookie(email, password, 7)
-      }
       this.$refs.form.validate(valid => {
-        // 验证通过把结构赋值写载这里
         if (valid) {
           this.doLogin()
         }
@@ -203,70 +200,82 @@ export default {
     },
     // 邮箱登录
     doLogin () {
-      this.setCookie(this.form.email, this.form.password, 2)
       login({
         email: this.form.email,
         password: this.form.password
       })
         .then(res => {
           console.log(res)
-          // this.isLoading = false
           if (res.data.code === 0) {
             this.$message.success('恭喜登陆成功')
+            this.setCookie('email', this.form.email)
+            this.setCookie('password', this.form.password)
             this.$router.push('../home')
+            this.setUserInfo()
           } else {
             this.$message.error('用户名或密码不正确，请重新输入')
           }
         })
         .catch(err => {
-          // this.isLoading = false
           console.log(err)
           this.$message.error('登陆失败，用户名密码错误')
         })
     },
-    // 设置cookie
-    setCookie (cemail, cpassword, exdays) {
-      var exdate = new Date()
-      exdate.setTime(exdate.getTime() + 24 * 60 * 60 * 1000 * exdays)
-      // 字符串拼接cookie
-      window.document.cookie =
-        this.form.email +
-        '=' +
-        cemail +
-        ';path=/;expires=' +
-        exdate.toGMTString()
-      window.document.cookie =
-        this.form.password +
-        '=' +
-        cpassword +
-        ';path=/;expires=' +
-        exdate.toGMTString()
-      // 'this.form.email' = 'cemail' + ':path=/expires' + 'exdate.toGMTString()'
-    },
-    // 读取cookie
-    getCookie: function () {
-      // console.log(document.cookie)
-      if (document.cookie.length > 0) {
-        var arr = document.cookie.split(';')
-        for (var i = 0; i < arr.length; i++) {
-          var arr2 = arr[i].split('=')
-          if (arr2[0] === 'email') {
-            this.form.email = arr2[1]
-          } else if (arr2[0] === 'password') {
-            this.form.password = arr2[1]
-          }
-        }
+    // cookie邮箱
+    setUserInfo: function () {
+      // 判断用户是否勾选记住密码，如果勾选，向cookie中储存登录信息，
+      // 如果没有勾选，储存的信息为空
+      if (this.form.isAgree) {
+        this.setCookie('email', this.form.email)
+        // base64加密密码
+        this.setCookie('password', this.form.password)
+        // const passWord = Base64.encode(this.form.password)
+        // this.setCookie('isAgree', passWord)
+      } else {
+        this.setCookie('email', '')
+        this.setCookie('password', '')
       }
     },
-    // 手机登录
+    // cookie手机
+    getUserInfo: function () {
+      if (this.mobForm.checkbox) {
+        this.setCookie('mobile', this.mobForm.mobile)
+      } else {
+        this.setCookie('mobile', '')
+      }
+    },
+    // 获取cookie
+    getCookie: function (key) {
+      if (document.cookie.length > 0) {
+        var start = document.cookie.indexOf(key + '=')
+        if (start !== -1) {
+          start = start + key.length + 1
+          var end = document.cookie.indexOf(';', start)
+          if (end === -1) end = document.cookie.length
+          return unescape(document.cookie.substring(start, end))
+        }
+      }
+      return ''
+    },
+    // 保存cookie
+    setCookie: function (cName, value, expiredays) {
+      var exdate = new Date()
+      exdate.setDate(exdate.getDate() + expiredays)
+      document.cookie =
+        cName +
+        '=' +
+        decodeURIComponent(value) +
+        (expiredays == null ? '' : ';expires=' + exdate.toGMTString())
+    },
+    // 点击手机登录
     Mobilelogin () {
       this.$refs.mobForm.validate(valid => {
-        // 验证通过把结构赋值写载这里
         if (valid) {
           this.mobLogin()
         }
       })
     },
+    // 手机登录
     mobLogin () {
       loginMobile({
         mobile: this.mobForm.mobile,
@@ -275,10 +284,14 @@ export default {
         .then(res => {
           console.log(res)
           if (res.data.code === 0) {
-            this.$message.success('恭喜登录成功哦')
+            this.$message.success('恭喜登录成功')
+            this.setCookie('mobile', this.form.mobile)
             this.$router.push('../home')
-          } else {
+            this.getUserInfo()
+          } else if (res.data.code === 1) {
             this.$message.error('验证码验证失败')
+          } else {
+            this.$message.error('验证码验证失败，您的操作过于频繁，请稍后再试')
           }
         })
         .catch(err => {
@@ -288,6 +301,15 @@ export default {
     },
     // 点击获取验证码
     getVerification () {
+      this.$refs.mobForm.validateField('mobile', codeError => {
+        // 验证通过把结构赋值写载这里
+        if (!codeError) {
+          this.toGetCode()
+        }
+      })
+    },
+    // 获取验证码
+    toGetCode () {
       sendMsgCode({
         mobile: this.mobForm.mobile,
         msgType: this.mobForm.msgType
@@ -296,8 +318,24 @@ export default {
           console.log(res)
           if (res.data.code === 0) {
             this.$message.success('获取成功')
+            this.delay = 60
+            this.btnMes = `${this.delay}S后继续`
+            this.isSend = true
+            // 开启定时器
+            const interId = setInterval(() => {
+              this.delay--
+              if (this.delay === 0) {
+                clearInterval(interId)
+                this.btnMes = '获取验证码'
+                this.isSend = false
+                return
+              }
+              this.btnMes = `${this.delay}S后继续`
+            }, 1000)
+          } else if (res.data.code === 1) {
+            this.$message.error('短信请求失败')
           } else {
-            this.$message.error('获取失败')
+            this.$message.error('短信请求失败，您的操作过于频繁，请稍后在试')
           }
         })
         .catch(err => {
@@ -305,16 +343,26 @@ export default {
           this.$message.error('获取失败')
         })
     }
-    // 邮箱聚焦
   },
-  mounted () {
-    this.getCookie()
+  // 在页面加载时从cookie获取登录信息
+  created () {
+    const email = this.getCookie('email')
+    const password = this.getCookie('password')
+    const mobile = this.getCookie('mobile')
+    // 如果存在赋值给表单，并且将记住密码勾选
+    if (email) {
+      this.form.email = email
+      this.form.password = password
+      // this.form.isAgree = true
+      this.mobForm.mobile = mobile
+      // this.mobForm.checkbox = true
+    }
   }
 }
 </script>
 
 <style scoped lang="less">
-// 10.书写样式铺满整屏
+// 书写样式铺满整屏
 .login-container {
   position: fixed;
   left: 0;
@@ -335,7 +383,6 @@ export default {
     .login-head {
       position: relative;
       display: flex;
-      // justify-content: center;
       .logo {
         width: 250px;
         height: 65px;
@@ -374,6 +421,10 @@ export default {
     .login-form {
       .login-btn {
         width: 100%;
+      }
+      .btnMes {
+        width: 115px;
+        height: 41px;
       }
       .input {
         width: 315px;

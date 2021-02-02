@@ -172,9 +172,6 @@ const router = new VueRouter({
   routes
 })
 router.afterEach((to, from) => {
-  // ...
-  // console.log('to:', to)
-  // 获取并设置
   document.title = to.meta.title
 })
 export default router

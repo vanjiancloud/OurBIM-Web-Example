@@ -6,15 +6,12 @@
         <i class="el-icon-arrow-left" @click="toReturn"></i>
         <span class="logo"> </span>
       </div>
-      <!-- 登录的不同状态 -->
       <div class="state">
         <span>
           设置新密码
         </span>
       </div>
-      <!-- 短信登录的表单 -->
       <el-form :rules="rules" :model="form" ref="form" class="login-form">
-        <!--  账号密码通过双向绑定获取里面的值 -->
         <el-form-item prop="password">
           <el-input
             v-model="form.password"
@@ -37,7 +34,6 @@
             @click="toNext"
             type="primary"
             class="login-btn"
-            :loading="isLoading"
             >下一步</el-button
           >
         </el-form-item>
@@ -47,10 +43,9 @@
 </template>
 
 <script>
-// import { updatePassword } from '../../api/my'
+import { updatePassword } from '../../api/my'
 export default {
   name: 'newPassword',
-  // 声明账号和密码
   data () {
     return {
       isLoading: false, // 是否正在登陆
@@ -104,41 +99,36 @@ export default {
     // 跳转到成功页面
     toNext () {
       this.$refs.form.validate(valid => {
-        // 验证通过把结构赋值写载这里
         if (valid) {
           this.newPas()
         }
       })
     },
+    // 成功页面
     newPas () {
-      this.$router.push('../../resetSucceed')
-      // updatePassword({
-      //   mobile: this.form.mobile,
-      //   code: this.form.code,
-      //   password: this.form.password
-      // })
-      //   .then(res => {
-      //     console.log(res)
-      //     if (res.data.code === 0) {
-      //       this.$router.push('../../restSucceed')
-      //     } else {
-      //       this.$message.error('验证码验证失败')
-      //     }
-      //   })
-      //   .catch(err => {
-      //     console.log(err)
-      //     this.$message.error('验证码验证失败')
-      //   })
+      updatePassword({
+        mobile: this.form.mobile,
+        code: this.form.code,
+        password: this.form.password
+      })
+        .then(res => {
+          console.log(res)
+          if (res.data.code === 0) {
+            this.$router.push('../../resetSucceed')
+          } else {
+            this.$message.error('验证码验证失败')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('验证码验证失败')
+        })
     }
-  },
-  created () {
-    console.log(this.$route.query.mobile, this.$route.query.code)
   }
 }
 </script>
 
 <style scoped lang="less">
-// 10.书写样式铺满整屏
 .login-container {
   position: fixed;
   left: 0;

@@ -91,6 +91,19 @@ export function sendMsgCode (data) {
   })
 }
 
+// 修改密码验证手机号密码
+export function updateJudgeMsg (data) {
+  const { mobile, code } = data
+  return request({
+    url: '/UserCenter/judgeMsg',
+    method: 'POST',
+    params: {
+      mobile,
+      code
+    }
+  })
+}
+
 // 修改密码
 export function updatePassword (data) {
   const { mobile, code, password } = data
