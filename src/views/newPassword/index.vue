@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { updatePassword } from '../../api/my'
+// import { updatePassword } from '../../api/my'
 export default {
   name: 'newPassword',
   // 声明账号和密码
@@ -111,24 +111,24 @@ export default {
       })
     },
     newPas () {
-      updatePassword({
-        mobile: this.form.mobile,
-        code: this.form.code,
-        password: this.form.password
-      })
-        .then(res => {
-          console.log(res)
-          if (res.data.code === 0) {
-            // this.$message.success('修改成功')
-            this.$router.push('../../sucPassword')
-          } else {
-            this.$message.error('验证码验证失败')
-          }
-        })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('验证码验证失败')
-        })
+      this.$router.push('../../resetSucceed')
+      // updatePassword({
+      //   mobile: this.form.mobile,
+      //   code: this.form.code,
+      //   password: this.form.password
+      // })
+      //   .then(res => {
+      //     console.log(res)
+      //     if (res.data.code === 0) {
+      //       this.$router.push('../../restSucceed')
+      //     } else {
+      //       this.$message.error('验证码验证失败')
+      //     }
+      //   })
+      //   .catch(err => {
+      //     console.log(err)
+      //     this.$message.error('验证码验证失败')
+      //   })
     }
   },
   created () {

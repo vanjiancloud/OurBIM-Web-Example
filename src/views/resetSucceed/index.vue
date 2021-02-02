@@ -9,14 +9,23 @@
         请妥善保管您的账户信息
       </div>
       <div class="btn">
-        <el-button class="button" @click="toHome">重新登录</el-button>
+        <el-button class="button" @click="toLogin">重新登录</el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data () {
+    return {}
+  },
+  methods: {
+    toLogin () {
+      this.$router.push('../../login')
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
