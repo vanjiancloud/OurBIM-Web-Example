@@ -1,27 +1,36 @@
 <template>
-  <el-menu
-    :default-active="activeIndex"
-    class="el-menu-demo"
-    mode="horizontal"
-    router="true"
-    background-color="#f9f9f9"
-    text-color="#000"
-    active-text-color="#ffd04b"
-  >
-    <el-menu-item index="1" route="./apply">我的应用</el-menu-item>
-    <el-menu-item index="2" route="./issue">我的发布</el-menu-item>
-    <el-menu-item index="3" route="./manage">应用管理</el-menu-item>
-    <el-menu-item index="4" route="./found">创建应用</el-menu-item>
-    <el-menu-item index="5" route="./account">账户管理</el-menu-item>
-  </el-menu>
+  <div class="box">
+    <!-- 头部 -->
+    <my-header></my-header>
+    <!-- 内容 -->
+    <my-main></my-main>
+    <!-- 需要写的内容 -->
+    <!-- 尾部 -->
+    <my-footer></my-footer>
+  </div>
 </template>
 
 <script>
-export default {}
+import myMain from '../components/my-main.vue'
+import myHeader from '../components/my-header.vue'
+import MyFooter from '../components/my-footer.vue'
+
+export default {
+  components: { myMain, myHeader, MyFooter },
+  data () {
+    return {}
+  },
+  methods: {
+    handleClick () {
+      alert('button click')
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
-.el-menu-demo {
-  height: 85px;
+.box {
+  width: 100%;
+  height: 100%;
 }
 </style>
