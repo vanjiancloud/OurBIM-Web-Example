@@ -87,9 +87,9 @@ const routes = [
   },
   {
     // 用户中心
-    path: '/userSetting',
-    name: 'userSetting',
-    component: () => import('../views/userSetting/index.vue'),
+    path: '/userCenter',
+    name: 'userCenter',
+    component: () => import('../views/userCenter/index.vue'),
     meta: {
       title: 'OurBIM用户中心'
     }
@@ -114,11 +114,56 @@ const routes = [
   },
   {
     // 修改密码成功
-    path: '/sucPassword',
-    name: 'sucPassword',
-    component: () => import('../views/sucPassword/index.vue'),
+    path: '/resetSucceed',
+    name: 'resetSucceed',
+    component: () => import('../views/resetSucceed/index.vue'),
     meta: {
-      title: 'OurBIM重制密码成功'
+      title: 'OurBIM重置密码成功'
+    }
+  },
+  {
+    // 我的应用
+    path: '/apply',
+    name: 'apply',
+    component: () => import('../views/userCenter/apply.vue'),
+    meta: {
+      title: '我的应用'
+    }
+  },
+  {
+    // 我的发布
+    path: '/issue',
+    name: 'issue',
+    component: () => import('../views/userCenter/issue.vue'),
+    meta: {
+      title: '我的发布'
+    }
+  },
+  {
+    // 应用管理
+    path: '/manage',
+    name: 'manage',
+    component: () => import('../views/userCenter/manage.vue'),
+    meta: {
+      title: '应用管理'
+    }
+  },
+  {
+    // 创建应用
+    path: '/found',
+    name: 'found',
+    component: () => import('../views/userCenter/found.vue'),
+    meta: {
+      title: '创建应用'
+    }
+  },
+  {
+    // 账户管理
+    path: '/account',
+    name: 'account',
+    component: () => import('../views/userCenter/account.vue'),
+    meta: {
+      title: '账户管理'
     }
   }
 ]

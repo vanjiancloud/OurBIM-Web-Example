@@ -10,6 +10,8 @@ import './assets/css/global.css'
 import less from 'less'
 // 加载axios组件
 import axios from '@/utils/request.js'
+// 自动计算rem大小
+import 'amfe-flexible'
 Vue.use(less)
 Vue.use(ElementUI)
 // 把axiox放到原型上

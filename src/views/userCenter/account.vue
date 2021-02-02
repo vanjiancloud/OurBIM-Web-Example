@@ -1,5 +1,5 @@
 <template>
-  <div>恭喜登录成功</div>
+  <div>账户管理</div>
 </template>
 
 <script>
