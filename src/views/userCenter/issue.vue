@@ -28,22 +28,147 @@
       </div>
       <!-- 列表展示 -->
       <div class="list">
-        <ul>
+        <ul style="padding: 0;margin: 0;">
           <li>
-            <div></div>
-          </li>
-          <!-- <li>
-            <div></div>
+            <div class="img">
+              <img src="../components/aotu.jpg" alt="" class="tupian" />
+            </div>
+            <div class="write">
+              <h3>测试模型 .skp</h3>
+              下载次数：1234
+            </div>
+            <div class="line"></div>
+            <div class="photo">
+              <div class="big">
+                <img src="../components/vue.jpg" alt="" class="min" />
+              </div>
+              <span>夺命VUE</span>
+            </div>
           </li>
           <li>
-            <div></div>
+            <div class="img">
+              <img src="../components/aotu.jpg" alt="" class="tupian" />
+            </div>
+            <div class="write">
+              <h3>测试模型 .skp</h3>
+              下载次数：1234
+            </div>
+            <div class="line"></div>
+            <div class="photo">
+              <div class="big">
+                <img src="../components/vue.jpg" alt="" class="min" />
+              </div>
+              <span>夺命VUE</span>
+            </div>
           </li>
-          <li class="end">
-            <div></div>
-          </li> -->
-
+          <li>
+            <div class="img">
+              <img src="../components/aotu.jpg" alt="" class="tupian" />
+            </div>
+            <div class="write">
+              <h3>测试模型 .skp</h3>
+              下载次数：1234
+            </div>
+            <div class="line"></div>
+            <div class="photo">
+              <div class="big">
+                <img src="../components/vue.jpg" alt="" class="min" />
+              </div>
+              <span>夺命VUE</span>
+            </div>
+          </li>
+          <li>
+            <div class="img">
+              <img src="../components/aotu.jpg" alt="" class="tupian" />
+            </div>
+            <div class="write">
+              <h3>测试模型 .skp</h3>
+              下载次数：1234
+            </div>
+            <div class="line"></div>
+            <div class="photo">
+              <div class="big">
+                <img src="../components/vue.jpg" alt="" class="min" />
+              </div>
+              <span>夺命VUE</span>
+            </div>
+          </li>
+          <li>
+            <div class="img">
+              <img src="../components/aotu.jpg" alt="" class="tupian" />
+            </div>
+            <div class="write">
+              <h3>测试模型 .skp</h3>
+              下载次数：1234
+            </div>
+            <div class="line"></div>
+            <div class="photo">
+              <div class="big">
+                <img src="../components/vue.jpg" alt="" class="min" />
+              </div>
+              <span>夺命VUE</span>
+            </div>
+          </li>
+          <li>
+            <div class="img">
+              <img src="../components/aotu.jpg" alt="" class="tupian" />
+            </div>
+            <div class="write">
+              <h3>测试模型 .skp</h3>
+              下载次数：1234
+            </div>
+            <div class="line"></div>
+            <div class="photo">
+              <div class="big">
+                <img src="../components/vue.jpg" alt="" class="min" />
+              </div>
+              <span>夺命VUE</span>
+            </div>
+          </li>
+          <li>
+            <div class="img">
+              <img src="../components/aotu.jpg" alt="" class="tupian" />
+            </div>
+            <div class="write">
+              <h3>测试模型 .skp</h3>
+              下载次数：1234
+            </div>
+            <div class="line"></div>
+            <div class="photo">
+              <div class="big">
+                <img src="../components/vue.jpg" alt="" class="min" />
+              </div>
+              <span>夺命VUE</span>
+            </div>
+          </li>
+          <li>
+            <div class="img">
+              <img src="../components/aotu.jpg" alt="" class="tupian" />
+            </div>
+            <div class="write">
+              <h3>测试模型 .skp</h3>
+              下载次数：1234
+            </div>
+            <div class="line"></div>
+            <div class="photo">
+              <div class="big">
+                <img src="../components/vue.jpg" alt="" class="min" />
+              </div>
+              <span>夺命VUE</span>
+            </div>
+          </li>
         </ul>
       </div>
+    </div>
+    <!-- 分页 -->
+    <div class="page">
+      <el-pagination
+        @current-change="handleCurrentChange"
+        layout="prev, pager, next"
+        background="blue"
+        :total="400"
+      >
+      </el-pagination>
     </div>
     <!-- 尾部 -->
     <my-footer></my-footer>
@@ -58,11 +183,17 @@ import MyFooter from '../components/my-footer.vue'
 export default {
   components: { myMain, myHeader, MyFooter },
   data () {
-    return {}
+    return {
+      // currentPage4: 4
+    }
   },
   methods: {
     handleClick () {
       alert('button click')
+    },
+    // 分页之当前页
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
     }
   }
 }
@@ -79,7 +210,9 @@ export default {
       width: 100%;
       height: 40px;
       position: relative;
-      background-color: red;
+      // background-color: red;
+      margin-top: -20px;
+
       .left {
         height: 40px;
       }
@@ -91,24 +224,65 @@ export default {
     }
     .list {
       width: 1300px;
-      height: 866px;
-      background-color: palevioletred;
-      margin-top: -10px;
-
+      height: 840px;
+      // background-color: palevioletred;
+      margin-top: 5px;
       li {
         width: 300px;
         height: 400px;
-        background-color: green;
-        margin-right: 33px;
-        margin-bottom: 33px;
-        // float: left;
+        // background-color: green;
+        margin-left: 20px;
+        margin-bottom: 20px;
+        float: left;
         list-style: none;
         box-sizing: border-box;
-      }
-      .end {
-        margin-right: 1px;
+        overflow: hidden;
+        .img {
+          width: 300px;
+          height: 210px;
+          .tupian {
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .write {
+          width: 300px;
+          height: 89px;
+          background-color: #fff;
+          padding-top: 5px;
+          padding-left: 20px;
+        }
+        .line {
+          width: 300px;
+          height: 1px;
+          background-color: #e4e4e4;
+        }
+        .photo {
+          width: 300px;
+          height: 100px;
+          background-color: #fff;
+          padding-left: 15px;
+          line-height: 100px;
+          .big {
+            width: 60px;
+            height: 60px;
+            // background-color: pink;
+            border-radius: 50%;
+            float: left;
+            margin-top: 20px;
+            .min {
+              width: 100%;
+              height: 100%;
+            }
+          }
+        }
       }
     }
+  }
+  .page {
+    width: 550px;
+    margin: 0 auto;
+    margin-bottom: 40px;
   }
 }
 </style>

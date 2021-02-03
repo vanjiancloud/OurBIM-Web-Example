@@ -5,6 +5,15 @@
     <!-- 内容 -->
     <my-main></my-main>
     <!-- 需要写的内容 -->
+    <div class="content">
+      <!-- 消息提示 -->
+      <div class="message">
+        您还可上传2个项目
+      </div>
+      <div class="btn">
+        <el-button type="primary" >下一步</el-button>
+      </div>
+    </div>
     <!-- 尾部 -->
     <my-footer></my-footer>
   </div>
@@ -32,5 +41,16 @@ export default {
 .box {
   width: 100%;
   height: 100%;
+  .content {
+    width: 1300px;
+    margin-left: 60px;
+    .message {
+      margin-top: -20px;
+    }
+    .btn {
+      width: 100px;
+      margin: 0 auto;
+    }
+  }
 }
 </style>
