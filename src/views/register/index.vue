@@ -82,7 +82,7 @@
           <el-form-item label="" prop="checked">
             <el-checkbox v-model="ruleForm.checked"
               >我同意
-              <a @click="toxieyi" style="text-decoration:none">
+              <a class="link" @click="toxieyi" style="text-decoration:none">
                 《OurBIM用户服务协议》</a
               >
             </el-checkbox>
@@ -142,16 +142,16 @@ export default {
           { required: true, message: '请输入手机号', trigger: 'blur' },
           {
             pattern: /^1[3|4|5|7|8][0-9]{9}$/,
-            message: '请输入正确的十一位手机号',
-            trigger: 'change'
+            message: '请输入正确的11位手机号',
+            trigger: 'blur'
           }
         ],
         email: [
-          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { required: true, message: '请输入合法邮箱', trigger: 'blur' },
           {
             pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
             message: '请输入正确的邮箱',
-            trigger: 'change'
+            trigger: 'blur'
           }
         ],
         password: [
@@ -194,7 +194,7 @@ export default {
           {
             pattern: /^\d{4}|\d{6}$/,
             message: '您输入的验证码不正确',
-            trigger: 'change'
+            trigger: 'blur'
           }
         ],
         checked: [
@@ -209,7 +209,7 @@ export default {
                 callback(new Error('请勾选！'))
               }
             },
-            trigger: 'change'
+            trigger: 'blur'
           }
         ]
       }
@@ -237,6 +237,10 @@ export default {
           if (res.data.code === 0) {
             this.$message.success('注册成功')
             this.$router.push('/registerSucceed')
+          } else if (res.data.code === 2) {
+            this.$message.error('该邮箱已经注册过了')
+          } else if (res.data.code === 3) {
+            this.$message.error('该手机号已经注册过了')
           } else {
             this.$message.error('验证码错误')
           }
@@ -310,7 +314,7 @@ export default {
           if (res.data.code === 0) {
             this.$message.success('可以使用此手机号')
           } else {
-            this.$message.error('该手机号已被注册，请通过忘记密码功能找回')
+            this.$message.error('该手机号已被注册，请更换手机号')
           }
         })
         .catch(err => {
@@ -335,7 +339,7 @@ export default {
           if (res.data.code === 0) {
             this.$message.success('可以使用此邮箱')
           } else {
-            this.$message.error('该邮箱已被注册，请通过忘记密码功能找回')
+            this.$message.error('该邮箱已被注册，请更换邮箱')
           }
         })
         .catch(err => {
@@ -370,6 +374,9 @@ export default {
       .footer-size {
         color: #0079fe;
         text-align: center;
+      }
+      .link:hover {
+        color: #409eff;
       }
       .hint {
         margin-top: -5px;

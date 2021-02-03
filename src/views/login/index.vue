@@ -212,6 +212,8 @@ export default {
             this.setCookie('password', this.form.password)
             this.$router.push('../home')
             this.setUserInfo()
+          } else if (res.data.code === 2) {
+            this.$message.error('登录失败,请去激活')
           } else {
             this.$message.error('用户名或密码不正确，请重新输入')
           }
