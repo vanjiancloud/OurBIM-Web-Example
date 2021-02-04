@@ -51,17 +51,17 @@
             <i class="el-icon-search"></i>
           </el-menu-item>
           <el-menu-item index="8" route="../login">
-            <i class="el-icon-s-custom"></i>登录
+            <i class="el-icon-s-custom"></i> {{ $t('login') }}
           </el-menu-item>
           <el-menu-item index="9" route="../register">
-            <i class="el-icon-edit"></i>注册
+            <i class="el-icon-edit"></i>{{ $t('register') }}
           </el-menu-item>
         </el-menu>
       </div>
       <!-- 国际化 -->
       <div class="national">
-        <a href="">EN</a><br />
-        <a href="">中文(CH)</a>
+        <a @click="English" href="javascript:;">EN</a><br />
+        <a @click="Chinese" href="javascript:;">中文(CH)</a>
       </div>
     </div>
     <!-- 内容 -->
@@ -117,11 +117,21 @@
             router="true"
             background-color="#f9f9f9"
           >
-            <el-menu-item index="1" route="./apply" class="item">我的应用</el-menu-item>
-            <el-menu-item index="2" route="./issue" class="item">我的发布</el-menu-item>
-            <el-menu-item index="3" route="./manage" class="item">应用管理</el-menu-item>
-            <el-menu-item index="4" route="./found" class="item">创建应用</el-menu-item>
-            <el-menu-item index="5" route="./account" class="item">账户管理</el-menu-item>
+            <el-menu-item index="1" route="./apply" class="item"
+              >我的应用</el-menu-item
+            >
+            <el-menu-item index="2" route="./issue" class="item"
+              >我的发布</el-menu-item
+            >
+            <el-menu-item index="3" route="./manage" class="item"
+              >应用管理</el-menu-item
+            >
+            <el-menu-item index="4" route="./found" class="item"
+              >创建应用</el-menu-item
+            >
+            <el-menu-item index="5" route="./account" class="item"
+              >账户管理</el-menu-item
+            >
           </el-menu>
         </div>
       </div>
@@ -152,6 +162,12 @@ export default {
   methods: {
     handleCommand (command) {
       this.$message('click on item ' + command)
+    },
+    English () {
+      this.$i18n.locale = 'en'
+    },
+    Chinese () {
+      this.$i18n.locale = 'zh'
     }
   }
 }
@@ -188,6 +204,9 @@ export default {
     }
     .national {
       padding-top: 25px;
+      a:hover {
+        color: #409eff;
+      }
     }
   }
   .main {

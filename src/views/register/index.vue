@@ -322,7 +322,7 @@ export default {
           this.$message.error('此手机号已经注册过了')
         })
     },
-    // 失去焦点获取邮箱
+    // 失去焦点获取
     emailBlur () {
       this.$refs.ruleForm.validateField('email', emailError => {
         if (!emailError) {
