@@ -26,7 +26,7 @@
           :header-cell-style="{ textAlign: 'center' }"
           :cell-style="{ textAlign: 'center' }"
         >
-          <el-table-column prop="ID" label="应用ID"> </el-table-column>
+          <el-table-column prop="ID" label="">应用ID</el-table-column>
           <el-table-column prop="name" label="应用名称"> </el-table-column>
           <el-table-column prop="data" label="最大并发数量"> </el-table-column>
           <el-table-column prop="state" label="状态"> </el-table-column

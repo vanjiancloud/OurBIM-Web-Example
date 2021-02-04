@@ -290,10 +290,10 @@ export default {
             this.setCookie('mobile', this.form.mobile)
             this.$router.push('../home')
             this.getUserInfo()
-          } else if (res.data.code === 1) {
-            this.$message.error('验证码验证失败')
           } else if (res.data.code === 2) {
             this.$message.error('登录失败,请去激活')
+          } else if (res.data.code === 1) {
+            this.$message.error('验证码验证失败')
           } else {
             this.$message.error('验证码验证失败，您的操作过于频繁，请稍后再试')
           }

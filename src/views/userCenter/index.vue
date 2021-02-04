@@ -16,31 +16,35 @@
           @select="handleSelect"
           active-text-color="#1890FF"
         >
-          <el-menu-item index="1" route="">功能介绍</el-menu-item>
-          <el-menu-item index="2" route="">解决方案</el-menu-item>
-          <el-menu-item index="3" route="">成功案例</el-menu-item>
-          <el-menu-item index="4" route="">产品订价</el-menu-item>
-          <el-menu-item index="5" route="">最新咨询</el-menu-item>
+          <el-menu-item index="1" route="">{{
+            $t('introduction')
+          }}</el-menu-item>
+          <el-menu-item index="2" route="">{{ $t('Solution') }}</el-menu-item>
+          <el-menu-item index="3" route="">{{ $t('cases') }}</el-menu-item>
+          <el-menu-item index="4" route="">{{ $t('Pricing') }}</el-menu-item>
+          <el-menu-item index="5" route="">{{
+            $t('consultation')
+          }}</el-menu-item>
           <el-submenu index="6">
-            <template slot="title">开发者</template>
-            <el-menu-item index="6-1">API文档</el-menu-item>
-            <el-menu-item index="6-2">示例项目</el-menu-item>
-            <el-menu-item index="6-3">模型中心</el-menu-item>
-            <el-menu-item index="6-4">服务中心</el-menu-item>
-            <el-menu-item index="6-5">更新日志</el-menu-item>
+            <template slot="title">{{ $t('developer') }}</template>
+            <el-menu-item index="6-1">{{ $t('APIdov') }}</el-menu-item>
+            <el-menu-item index="6-2">{{ $t('project') }}</el-menu-item>
+            <el-menu-item index="6-3">{{ $t('Mcenter') }}</el-menu-item>
+            <el-menu-item index="6-4">{{ $t('Service') }}</el-menu-item>
+            <el-menu-item index="6-5">{{ $t('log') }}</el-menu-item>
           </el-submenu>
           <el-menu-item index="7">
             <el-dropdown @command="handleCommand">
               <span class="el-dropdown-link">
-                全部
+                {{ $t('whole') }}
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="a">全部</el-dropdown-item>
-                <el-dropdown-item command="b">资讯</el-dropdown-item>
-                <el-dropdown-item command="c">案例</el-dropdown-item>
-                <el-dropdown-item command="d">活动</el-dropdown-item>
-                <el-dropdown-item command="e">模型</el-dropdown-item>
+                <el-dropdown-item command="a"> {{ $t('whole') }}</el-dropdown-item>
+                <el-dropdown-item command="b">{{ $t('info') }}</el-dropdown-item>
+                <el-dropdown-item command="c">{{ $t('case') }}</el-dropdown-item>
+                <el-dropdown-item command="d">{{ $t('activity') }}</el-dropdown-item>
+                <el-dropdown-item command="e">{{ $t('Model') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
             <el-input
@@ -90,21 +94,21 @@
             </div>
             <div class="shuju">
               <div class="hezi">
-                <span style="font-weight:bold">资源占用</span><br />
-                剩余存储&nbsp;2.4Gb/10Gb <br />
+                <span style="font-weight:bold">{{ $t('occupancy') }}</span><br />
+                {{ $t('storage') }}&nbsp;2.4Gb/10Gb <br />
                 <span style="font-size: 30px;">78%</span>
                 <el-progress :percentage="78"></el-progress>
                 <div class="neicun">
-                  剩余应用：无限 剩余节点 3/3
+                  {{ $t('node') }}
                 </div>
               </div>
             </div>
           </div>
           <div class="right">
             <div class="qixian">
-              服务有效期
-              <h2>2021-01-01至2026-01-01</h2>
-              <el-button>延长有效期</el-button>
+              {{ $t('service') }}
+              <h2>{{ $t('daty') }}</h2>
+              <el-button>{{ $t('Extension') }}</el-button>
             </div>
           </div>
         </div>
@@ -118,19 +122,19 @@
             background-color="#f9f9f9"
           >
             <el-menu-item index="1" route="./apply" class="item"
-              >我的应用</el-menu-item
+              >{{ $t('app') }}</el-menu-item
             >
             <el-menu-item index="2" route="./issue" class="item"
-              >我的发布</el-menu-item
+              >{{ $t('release') }}</el-menu-item
             >
             <el-menu-item index="3" route="./manage" class="item"
-              >应用管理</el-menu-item
+              >{{ $t('management') }}</el-menu-item
             >
             <el-menu-item index="4" route="./found" class="item"
-              >创建应用</el-menu-item
+              >{{ $t('Create') }}</el-menu-item
             >
             <el-menu-item index="5" route="./account" class="item"
-              >账户管理</el-menu-item
+              >{{ $t('Account') }}</el-menu-item
             >
           </el-menu>
         </div>
@@ -241,7 +245,7 @@ export default {
           .shuju {
             flex: 1;
             .hezi {
-              width: 240px;
+              width: 340px;
               height: 147px;
               border: solid 1px #f0f2f5;
               margin: 5px 0;

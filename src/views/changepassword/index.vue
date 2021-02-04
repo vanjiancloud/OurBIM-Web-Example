@@ -26,9 +26,13 @@
           >
             <i slot="prefix" class="el-input__icon el-icon-message"></i>
           </el-input>
-          <el-button class="btnMes" :disabled="isSend" @click="getCode" type="primary">{{
-            btnMes
-          }}</el-button>
+          <el-button
+            class="btnMes"
+            :disabled="isSend"
+            @click="getCode"
+            type="primary"
+            >{{ btnMes }}</el-button
+          >
         </el-form-item>
         <el-form-item>
           <el-button
@@ -109,6 +113,10 @@ export default {
               code: this.form.code
             }
           })
+        } else if (res.data.code === 2) {
+          this.$message.error('该手机号没有注册')
+        } else if (res.data.code === 3) {
+          this.$message.error('登录失败,请去完成注册功能')
         } else {
           this.$message.error('您输入的验证码不正确')
         }
