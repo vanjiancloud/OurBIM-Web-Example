@@ -367,6 +367,9 @@ export default {
 
 <style scoped lang="less">
 // 书写样式铺满整屏
+body {
+  font-size: 0;
+}
 .login-container {
   position: fixed;
   left: 0;
