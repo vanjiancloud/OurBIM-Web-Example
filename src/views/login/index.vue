@@ -366,7 +366,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-// 书写样式铺满整屏
+// 书写样式铺满整
 body {
   font-size: 0;
 }
