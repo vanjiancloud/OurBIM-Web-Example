@@ -114,29 +114,11 @@
         </div>
         <!-- tab栏 -->
         <div class="tab">
-          <el-menu
-            :default-active="activeIndex"
-            class="el-menu-demo"
-            mode="horizontal"
-            router="true"
-            background-color="#f9f9f9"
-          >
-            <el-menu-item index="1" route="./apply" class="item"
-              >{{ $t('app') }}</el-menu-item
-            >
-            <el-menu-item index="2" route="./issue" class="item"
-              >{{ $t('release') }}</el-menu-item
-            >
-            <el-menu-item index="3" route="./manage" class="item"
-              >{{ $t('management') }}</el-menu-item
-            >
-            <el-menu-item index="4" route="./found" class="item"
-              >{{ $t('Create') }}</el-menu-item
-            >
-            <el-menu-item index="5" route="./account" class="item"
-              >{{ $t('Account') }}</el-menu-item
-            >
-          </el-menu>
+          <button>我的应用</button>
+          <button>我的发布</button>
+          <button>应用管理</button>
+          <button>创建应用</button>
+          <button>账单管理</button>
         </div>
       </div>
       <!-- 中间部分 -->
@@ -281,10 +263,8 @@ export default {
         height: 85px;
         background-color: #f9f9f9;
         padding-top: 25px;
-        .item {
-          font-size: 16px;
-          font-weight: bold;
-          margin-left: 60px;
+        button {
+          margin-left: 50px;
         }
       }
     }

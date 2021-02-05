@@ -380,8 +380,8 @@ export default {
   background-color: #f0f2f5;
   background-size: cover;
   .login-form-wrap {
-    min-width: 430px;
-    min-height: 450px;
+    min-width: 130px;
+    min-height: 150px;
     padding: 5px 50px 1px 40px;
     background-color: #fff;
     .login-head {
