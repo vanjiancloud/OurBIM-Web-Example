@@ -12,13 +12,7 @@ import less from 'less'
 import axios from '@/utils/request.js'
 // import store from './store'
 // 自动计算rem大小
-<<<<<<< HEAD
 import 'lib-flexible'
-=======
-import 'amfe-flexible'
-// import 'lib-flexible'
-import 'lib-flexible/flexible'
->>>>>>> dbc8181da47e50b8bbfe03f2703edd3aa470fb94
 import VueI18n from 'vue-i18n'
 import './utils/rem'
 Vue.use(VueI18n)
