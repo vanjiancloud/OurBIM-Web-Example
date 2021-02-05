@@ -84,11 +84,10 @@
             <div class="touxiang">
               <div class="demo-fit">
                 <div class="block">
-                  <span class="title">{{ fit }}</span>
+                  <span class="title"></span>
                   <el-avatar
                     shape="circle"
                     :size="100"
-                    :fit="fit"
                     :src="url"
                   ></el-avatar>
                 </div>
@@ -121,11 +120,11 @@
         </div>
         <!-- tab栏 -->
         <div class="tab">
-          <el-button plain class="one" @click="tiaozhuan">我的应用</el-button>
-          <el-button plain @click="tiaozhuan">我的发布</el-button>
-          <el-button plain @click="tiaozhuan">应用管理</el-button>
-          <el-button plain @click="tiaozhuan">创建应用</el-button>
-          <el-button plain @click="tiaozhuan">账单管理</el-button>
+          <el-button plain class="one" @click="isShow = 1">我的应用</el-button>
+          <el-button plain @click="isShow = 2">我的发布</el-button>
+          <el-button plain @click="isShow = 3">应用管理</el-button>
+          <el-button plain @click="isShow = 4">创建应用</el-button>
+          <el-button plain @click="isShow = 5">账单管理</el-button>
         </div>
       </div>
       <!-- 中间部分 -->
@@ -133,7 +132,7 @@
       <!-- 下半部分 -->
       <div class="bottom">
         <!-- 我的应用 -->
-        <div class="content" v-show="isShow">
+        <div class="content" v-show="isShow == 1">
           <!-- 消息提示 -->
           <div class="record">
             <div class="left">
@@ -254,14 +253,14 @@
             <el-pagination
               @current-change="handleCurrentChange"
               layout="prev, pager, next"
-              background="blue"
+              background
               :total="400"
             >
             </el-pagination>
           </div>
         </div>
         <!-- 我的发布 -->
-        <div class="content" v-show="isShow">
+        <div class="content" v-show="isShow == 2">
           <!-- 消息提示和选择器 -->
           <div class="record">
             <!-- 消息提示 -->
@@ -420,14 +419,14 @@
             <el-pagination
               @current-change="handleCurrentChange"
               layout="prev, pager, next"
-              background="blue"
+              background
               :total="400"
             >
             </el-pagination>
           </div>
         </div>
         <!-- 应用管理 -->
-        <div class="content" v-show="isShow">
+        <div class="content" v-show="isShow == 3">
           <!-- 消息提示 -->
           <div class="record">
             <!-- 消息提示 -->
@@ -443,7 +442,7 @@
           <div class="table">
             <el-table
               :data="tableData"
-              border="true"
+              :border="true"
               style="width:100%;"
               :header-cell-style="{ textAlign: 'center' }"
               :cell-style="{ textAlign: 'center' }"
@@ -468,14 +467,14 @@
             <el-pagination
               @current-change="handleCurrentChange"
               layout="prev, pager, next"
-              background="blue"
+              background
               :total="400"
             >
             </el-pagination>
           </div>
         </div>
         <!-- 创建应用 -->
-        <div class="content">
+        <div class="content" v-show="isShow == 4">
           <!-- 消息提示 -->
           <div class="message">
             您还可上传2个项目
@@ -485,7 +484,7 @@
           </div>
         </div>
         <!-- 账单管理 -->
-        <div class="content" v-show="isShow">
+        <div class="content" v-show="isShow == 5">
           <el-tabs type="border-card" tab-position="left">
             <el-tab-pane label="用户管理">
               <div class="demo">
@@ -500,10 +499,9 @@
           <!-- dwadwdddw -->
           <!-- 垂直菜单 -->
           <el-menu
-            :default-active="activeIndex"
             class="el-menu-demo"
             mode="horizontal"
-            @select="handleSelect"
+
           >
             <el-submenu index="2">
               <template slot="title">我的工作台</template>
@@ -530,7 +528,7 @@ export default {
   data () {
     return {
       input: '',
-      isShow: false,
+      isShow: 1,
       url:
         'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
       tableData: [
@@ -582,12 +580,11 @@ export default {
     Chinese () {
       this.$i18n.locale = 'zh'
     },
-    tiaozhuan () {
-      this.isShow = true
-      console.log('11111')
-    },
     handleClick () {
       alert('button click')
+    },
+    // 分页
+    handleCurrentChange () {
     }
   }
 }
@@ -645,7 +642,6 @@ export default {
     }
     .serach {
       height: 100px;
-      // background-color: red;
       float: left;
       .menu {
         height: 100px;
@@ -735,7 +731,6 @@ export default {
           .qixian {
             width: 350px;
             height: 160px;
-            // background-color: purple;
             margin: 0 auto;
             margin-left: 200px;
             text-align: center;
@@ -777,7 +772,6 @@ export default {
           width: 100%;
           height: 40px;
           position: relative;
-          // background-color: red;
           margin-top: -20px;
 
           .left {
@@ -792,12 +786,10 @@ export default {
         .list {
           width: 1300px;
           height: 840px;
-          // background-color: palevioletred;
           margin-top: 5px;
           li {
             width: 300px;
             height: 400px;
-            // background-color: green;
             margin-left: 20px;
             margin-bottom: 20px;
             float: left;
@@ -840,7 +832,6 @@ export default {
               .big {
                 width: 60px;
                 height: 60px;
-                // background-color: pink;
                 border-radius: 50%;
                 float: left;
                 margin-top: 20px;
