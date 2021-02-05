@@ -27,9 +27,6 @@
           }}</el-menu-item>
           <el-submenu index="6">
             <template slot="title">{{ $t('developer') }}</template>
-            <el-menu-item index="6-1">{{ $t('APIdov') }}</el-menu-item>
-            <el-menu-item index="6-2">{{ $t('project') }}</el-menu-item>
-            <el-menu-item index="6-3">{{ $t('Mcenter') }}</el-menu-item>
             <el-menu-item index="6-4">{{ $t('Service') }}</el-menu-item>
             <el-menu-item index="6-5">{{ $t('log') }}</el-menu-item>
           </el-submenu>
@@ -40,11 +37,21 @@
                 <i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="a"> {{ $t('whole') }}</el-dropdown-item>
-                <el-dropdown-item command="b">{{ $t('info') }}</el-dropdown-item>
-                <el-dropdown-item command="c">{{ $t('case') }}</el-dropdown-item>
-                <el-dropdown-item command="d">{{ $t('activity') }}</el-dropdown-item>
-                <el-dropdown-item command="e">{{ $t('Model') }}</el-dropdown-item>
+                <el-dropdown-item command="a">
+                  {{ $t('whole') }}</el-dropdown-item
+                >
+                <el-dropdown-item command="b">{{
+                  $t('info')
+                }}</el-dropdown-item>
+                <el-dropdown-item command="c">{{
+                  $t('case')
+                }}</el-dropdown-item>
+                <el-dropdown-item command="d">{{
+                  $t('activity')
+                }}</el-dropdown-item>
+                <el-dropdown-item command="e">{{
+                  $t('Model')
+                }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
             <el-input
@@ -94,7 +101,8 @@
             </div>
             <div class="shuju">
               <div class="hezi">
-                <span style="font-weight:bold">{{ $t('occupancy') }}</span><br />
+                <span style="font-weight:bold">{{ $t('occupancy') }}</span
+                ><br />
                 {{ $t('storage') }}&nbsp;2.4Gb/10Gb <br />
                 <span style="font-size: 30px;">78%</span>
                 <el-progress :percentage="78"></el-progress>
@@ -121,21 +129,21 @@
             router="true"
             background-color="#f9f9f9"
           >
-            <el-menu-item index="1" route="./apply" class="item"
-              >{{ $t('app') }}</el-menu-item
-            >
-            <el-menu-item index="2" route="./issue" class="item"
-              >{{ $t('release') }}</el-menu-item
-            >
-            <el-menu-item index="3" route="./manage" class="item"
-              >{{ $t('management') }}</el-menu-item
-            >
-            <el-menu-item index="4" route="./found" class="item"
-              >{{ $t('Create') }}</el-menu-item
-            >
-            <el-menu-item index="5" route="./account" class="item"
-              >{{ $t('Account') }}</el-menu-item
-            >
+            <el-menu-item index="1" route="./apply" class="item">{{
+              $t('app')
+            }}</el-menu-item>
+            <el-menu-item index="2" route="./issue" class="item">{{
+              $t('release')
+            }}</el-menu-item>
+            <el-menu-item index="3" route="./manage" class="item">{{
+              $t('management')
+            }}</el-menu-item>
+            <el-menu-item index="4" route="./found" class="item">{{
+              $t('Create')
+            }}</el-menu-item>
+            <el-menu-item index="5" route="./account" class="item">{{
+              $t('Account')
+            }}</el-menu-item>
           </el-menu>
         </div>
       </div>
@@ -149,7 +157,7 @@
       <div class="url">
         Copyright © 2021 www.OurBIM.com, All Rights Reserved.
       </div>
-      <div class="mobile">24小时客服热线<br />022-8633-0370</div>
+      <div class="mobile">{{ $t('servicehotline') }}<br />022-8633-0370</div>
     </div>
   </div>
 </template>
@@ -176,7 +184,12 @@ export default {
   }
 }
 </script>
-
+<style>
+* {
+  margin: 0;
+  padding: 0;
+}
+</style>
 <style lang="less" scoped>
 .box {
   width: 100%;

@@ -3,7 +3,7 @@
       <div class="url">
         Copyright © 2021 www.OurBIM.com, All Rights Reserved.
       </div>
-      <div class="mobile">24小时客服热线<br />022-8633-0370</div>
+      <div class="mobile">{{ $t('servicehotline') }}<br />022-8633-0370</div>
     </div>
 </template>
 

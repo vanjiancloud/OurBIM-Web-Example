@@ -6,14 +6,17 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 // 引入全局样式
 import './assets/css/global.css'
-// 引入less
+// // 引入less
 import less from 'less'
 // 加载axios组件
 import axios from '@/utils/request.js'
 // import store from './store'
 // 自动计算rem大小
 import 'amfe-flexible'
+// import 'lib-flexible'
+import 'lib-flexible/flexible'
 import VueI18n from 'vue-i18n'
+import './utils/rem'
 Vue.use(VueI18n)
 Vue.use(less)
 Vue.use(ElementUI)
@@ -116,7 +119,8 @@ const i18n = new VueI18n({
       Newpassword: '新密码',
       Confirmpassword: '确认密码',
       VerificationCode: '验证码',
-      Sendverificationcode: '发送验证码'
+      Sendverificationcode: '发送验证码',
+      servicehotline: '24小时客服热线'
     },
     en: {
       register: 'register',
@@ -211,7 +215,8 @@ const i18n = new VueI18n({
       Newpassword: 'New password',
       Confirmpassword: 'Confirm password',
       VerificationCode: 'Verification Code',
-      Sendverificationcode: 'Send verification code'
+      Sendverificationcode: 'Send verification code',
+      servicehotline: '24-hour customer service hotline'
     }
   }
 })

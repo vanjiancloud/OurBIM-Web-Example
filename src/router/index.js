@@ -165,6 +165,15 @@ const routes = [
     meta: {
       title: '账户管理'
     }
+  },
+  {
+    // 账户管理
+    path: '/ren',
+    name: 'ren',
+    component: () => import('../views/ren/index.vue'),
+    meta: {
+      title: '账户管理'
+    }
   }
 ]
 
