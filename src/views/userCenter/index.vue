@@ -8,66 +8,65 @@
       </div>
       <!-- 导航 -->
       <div class="nav">
-        <el-menu
-          :default-active="activeIndex"
-          class="demo"
-          router="true"
-          mode="horizontal"
-          @select="handleSelect"
-          active-text-color="#1890FF"
-        >
-          <el-menu-item index="1" route="">{{
-            $t('introduction')
-          }}</el-menu-item>
-          <el-menu-item index="2" route="">{{ $t('Solution') }}</el-menu-item>
-          <el-menu-item index="3" route="">{{ $t('cases') }}</el-menu-item>
-          <el-menu-item index="4" route="">{{ $t('Pricing') }}</el-menu-item>
-          <el-menu-item index="5" route="">{{
-            $t('consultation')
-          }}</el-menu-item>
-          <el-submenu index="6">
-            <template slot="title">{{ $t('developer') }}</template>
-            <el-menu-item index="6-4">{{ $t('Service') }}</el-menu-item>
-            <el-menu-item index="6-5">{{ $t('log') }}</el-menu-item>
-          </el-submenu>
-          <el-menu-item index="7">
-            <el-dropdown @command="handleCommand">
-              <span class="el-dropdown-link">
-                {{ $t('whole') }}
-                <i class="el-icon-arrow-down el-icon--right"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="a">
-                  {{ $t('whole') }}</el-dropdown-item
-                >
-                <el-dropdown-item command="b">{{
-                  $t('info')
-                }}</el-dropdown-item>
-                <el-dropdown-item command="c">{{
-                  $t('case')
-                }}</el-dropdown-item>
-                <el-dropdown-item command="d">{{
-                  $t('activity')
-                }}</el-dropdown-item>
-                <el-dropdown-item command="e">{{
-                  $t('Model')
-                }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-            <el-input
-              v-model="input"
-              placeholder="请输入搜索内容"
-              class="input"
-            ></el-input>
-            <i class="el-icon-search"></i>
-          </el-menu-item>
-          <el-menu-item index="8" route="../login">
-            <i class="el-icon-s-custom"></i> {{ $t('login') }}
-          </el-menu-item>
-          <el-menu-item index="9" route="../register">
-            <i class="el-icon-edit"></i>{{ $t('register') }}
-          </el-menu-item>
-        </el-menu>
+        <a href="">功能介绍</a>
+      </div>
+      <div class="nav">
+        <a href="">解决方案</a>
+      </div>
+      <div class="nav">
+        <a href="">成功案例</a>
+      </div>
+      <div class="nav">
+        <a href="">产品定价</a>
+      </div>
+      <div class="nav">
+        <a href="">最新咨询</a>
+      </div>
+      <!-- 下拉菜单 -->
+      <div class="nav">
+        <el-dropdown>
+          <span class="el-dropdown-link">
+            开发者<i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item>API文档</el-dropdown-item>
+            <el-dropdown-item>示例项目</el-dropdown-item>
+            <el-dropdown-item>模型中心</el-dropdown-item>
+            <el-dropdown-item>服务中心</el-dropdown-item>
+            <el-dropdown-item>更新日志</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
+      <!-- 搜索框 -->
+      <div class="serach">
+        <div class="menu">
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              全部<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item>全部</el-dropdown-item>
+              <el-dropdown-item>资讯</el-dropdown-item>
+              <el-dropdown-item>案例</el-dropdown-item>
+              <el-dropdown-item>活动</el-dropdown-item>
+              <el-dropdown-item>模型</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+        <div class="in">
+          <el-input v-model="input" placeholder="请输入搜索内容"> </el-input>
+        </div>
+      </div>
+      <div class="big">
+        <span class="span"><i class="el-icon-search"></i></span>
+      </div>
+      <!-- 登录 -->
+      <div class="nav">
+        <a href=""><i class="el-icon-s-custom"></i>登录</a>
+      </div>
+      <!-- 注册 -->
+      <div class="nav">
+        <a href=""><i class="el-icon-edit"></i>注册</a>
       </div>
       <!-- 国际化 -->
       <div class="national">
@@ -122,40 +121,399 @@
         </div>
         <!-- tab栏 -->
         <div class="tab">
-          <button>我的应用</button>
-          <button>我的发布</button>
-          <button>应用管理</button>
-          <button>创建应用</button>
-          <button>账单管理</button>
-          <el-menu
-            :default-active="activeIndex"
-            class="el-menu-demo"
-            mode="horizontal"
-            router="true"
-            background-color="#f9f9f9"
-          >
-            <el-menu-item index="1" route="./apply" class="item">{{
-              $t('app')
-            }}</el-menu-item>
-            <el-menu-item index="2" route="./issue" class="item">{{
-              $t('release')
-            }}</el-menu-item>
-            <el-menu-item index="3" route="./manage" class="item">{{
-              $t('management')
-            }}</el-menu-item>
-            <el-menu-item index="4" route="./found" class="item">{{
-              $t('Create')
-            }}</el-menu-item>
-            <el-menu-item index="5" route="./account" class="item">{{
-              $t('Account')
-            }}</el-menu-item>
-          </el-menu>
+          <el-button plain class="one" @click="tiaozhuan">我的应用</el-button>
+          <el-button plain @click="tiaozhuan">我的发布</el-button>
+          <el-button plain @click="tiaozhuan">应用管理</el-button>
+          <el-button plain @click="tiaozhuan">创建应用</el-button>
+          <el-button plain @click="tiaozhuan">账单管理</el-button>
         </div>
       </div>
       <!-- 中间部分 -->
       <div class="zhongjian"></div>
       <!-- 下半部分 -->
-      <div class="bottom"></div>
+      <div class="bottom">
+        <!-- 我的应用 -->
+        <div class="content" v-show="isShow">
+          <!-- 消息提示 -->
+          <div class="record">
+            <div class="left">
+              您共有3个应用
+            </div>
+          </div>
+          <!-- 列表展示 -->
+          <div class="list">
+            <ul style="padding: 0;margin: 0;">
+              <li>
+                <div class="img">
+                  <img src="../components/timg.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>钱龙广场1.0</h3>
+                  节点: 0/5
+                </div>
+                <div class="line"></div>
+                <div class="btn">
+                  <el-button>进入应用</el-button>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/timg.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>钱龙广场1.0</h3>
+                  节点: 0/5
+                </div>
+                <div class="line"></div>
+                <div class="btn">
+                  <el-button>进入应用</el-button>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/timg.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>钱龙广场1.0</h3>
+                  节点: 0/5
+                </div>
+                <div class="line"></div>
+                <div class="btn">
+                  <el-button>进入应用</el-button>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/timg.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>钱龙广场1.0</h3>
+                  节点: 0/5
+                </div>
+                <div class="line"></div>
+                <div class="btn">
+                  <el-button>进入应用</el-button>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/timg.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>钱龙广场1.0</h3>
+                  节点: 0/5
+                </div>
+                <div class="line"></div>
+                <div class="btn">
+                  <el-button>进入应用</el-button>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/timg.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>钱龙广场1.0</h3>
+                  节点: 0/5
+                </div>
+                <div class="line"></div>
+                <div class="btn">
+                  <el-button>进入应用</el-button>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/timg.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>钱龙广场1.0</h3>
+                  节点: 0/5
+                </div>
+                <div class="line"></div>
+                <div class="btn">
+                  <el-button>进入应用</el-button>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/timg.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>钱龙广场1.0</h3>
+                  节点: 0/5
+                </div>
+                <div class="line"></div>
+                <div class="btn">
+                  <el-button>进入应用</el-button>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <!-- 分页 -->
+          <div class="page">
+            <el-pagination
+              @current-change="handleCurrentChange"
+              layout="prev, pager, next"
+              background="blue"
+              :total="400"
+            >
+            </el-pagination>
+          </div>
+        </div>
+        <!-- 我的发布 -->
+        <div class="content" v-show="isShow">
+          <!-- 消息提示和选择器 -->
+          <div class="record">
+            <!-- 消息提示 -->
+            <div class="left">
+              您共发布了123组作品
+            </div>
+            <!-- 选择器 -->
+            <div class="right">
+              <el-dropdown>
+                <el-button plain>
+                  全部<i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item>全部</el-dropdown-item>
+                  <el-dropdown-item>文章</el-dropdown-item>
+                  <el-dropdown-item>模型</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </div>
+          </div>
+          <!-- 列表展示 -->
+          <div class="list">
+            <ul style="padding: 0;margin: 0;">
+              <li>
+                <div class="img">
+                  <img src="../components/aotu.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>测试模型 .skp</h3>
+                  下载次数：1234
+                </div>
+                <div class="line"></div>
+                <div class="photo">
+                  <div class="big">
+                    <img src="../components/vue.jpg" alt="" class="min" />
+                  </div>
+                  <span>夺命VUE</span>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/aotu.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>测试模型 .skp</h3>
+                  下载次数：1234
+                </div>
+                <div class="line"></div>
+                <div class="photo">
+                  <div class="big">
+                    <img src="../components/vue.jpg" alt="" class="min" />
+                  </div>
+                  <span>夺命VUE</span>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/aotu.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>测试模型 .skp</h3>
+                  下载次数：1234
+                </div>
+                <div class="line"></div>
+                <div class="photo">
+                  <div class="big">
+                    <img src="../components/vue.jpg" alt="" class="min" />
+                  </div>
+                  <span>夺命VUE</span>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/aotu.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>测试模型 .skp</h3>
+                  下载次数：1234
+                </div>
+                <div class="line"></div>
+                <div class="photo">
+                  <div class="big">
+                    <img src="../components/vue.jpg" alt="" class="min" />
+                  </div>
+                  <span>夺命VUE</span>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/aotu.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>测试模型 .skp</h3>
+                  下载次数：1234
+                </div>
+                <div class="line"></div>
+                <div class="photo">
+                  <div class="big">
+                    <img src="../components/vue.jpg" alt="" class="min" />
+                  </div>
+                  <span>夺命VUE</span>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/aotu.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>测试模型 .skp</h3>
+                  下载次数：1234
+                </div>
+                <div class="line"></div>
+                <div class="photo">
+                  <div class="big">
+                    <img src="../components/vue.jpg" alt="" class="min" />
+                  </div>
+                  <span>夺命VUE</span>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/aotu.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>测试模型 .skp</h3>
+                  下载次数：1234
+                </div>
+                <div class="line"></div>
+                <div class="photo">
+                  <div class="big">
+                    <img src="../components/vue.jpg" alt="" class="min" />
+                  </div>
+                  <span>夺命VUE</span>
+                </div>
+              </li>
+              <li>
+                <div class="img">
+                  <img src="../components/aotu.jpg" alt="" class="tupian" />
+                </div>
+                <div class="write">
+                  <h3>测试模型 .skp</h3>
+                  下载次数：1234
+                </div>
+                <div class="line"></div>
+                <div class="photo">
+                  <div class="big">
+                    <img src="../components/vue.jpg" alt="" class="min" />
+                  </div>
+                  <span>夺命VUE</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <!-- 分页 -->
+          <div class="page">
+            <el-pagination
+              @current-change="handleCurrentChange"
+              layout="prev, pager, next"
+              background="blue"
+              :total="400"
+            >
+            </el-pagination>
+          </div>
+        </div>
+        <!-- 应用管理 -->
+        <div class="content" v-show="isShow">
+          <!-- 消息提示 -->
+          <div class="record">
+            <!-- 消息提示 -->
+            <div class="left">
+              您共有3个项目
+            </div>
+            <!-- 按钮 -->
+            <div class="right">
+              <el-button type="primary">添加团队链接</el-button>
+            </div>
+          </div>
+          <!-- 表格 -->
+          <div class="table">
+            <el-table
+              :data="tableData"
+              border="true"
+              style="width:100%;"
+              :header-cell-style="{ textAlign: 'center' }"
+              :cell-style="{ textAlign: 'center' }"
+            >
+              <el-table-column prop="ID" label="">应用ID</el-table-column>
+              <el-table-column prop="name" label="应用名称"> </el-table-column>
+              <el-table-column prop="data" label="最大并发数量">
+              </el-table-column>
+              <el-table-column prop="state" label="状态"> </el-table-column
+              ><el-table-column prop="date" label="上传日期"> </el-table-column
+              ><el-table-column prop="handle" label="操作">
+                <div class="link">
+                  <a href="">分享</a>
+                  <a href="">编辑</a>
+                  <a href="" style="color:#E0001B">删除</a>
+                </div>
+              </el-table-column>
+            </el-table>
+          </div>
+          <!-- 分页 -->
+          <div class="page">
+            <el-pagination
+              @current-change="handleCurrentChange"
+              layout="prev, pager, next"
+              background="blue"
+              :total="400"
+            >
+            </el-pagination>
+          </div>
+        </div>
+        <!-- 创建应用 -->
+        <div class="content">
+          <!-- 消息提示 -->
+          <div class="message">
+            您还可上传2个项目
+          </div>
+          <div class="btn">
+            <el-button type="primary">下一步</el-button>
+          </div>
+        </div>
+        <!-- 账单管理 -->
+        <div class="content" v-show="isShow">
+          <el-tabs type="border-card" tab-position="left">
+            <el-tab-pane label="用户管理">
+              <div class="demo">
+                用户管理
+              </div>
+              <span slot="label"><i class="el-icon-date"></i> 我的行程</span>
+            </el-tab-pane>
+            <el-tab-pane label="配置管理">配置管理</el-tab-pane>
+            <el-tab-pane label="角色管理">角色管理</el-tab-pane>
+            <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
+          </el-tabs>
+          <!-- dwadwdddw -->
+          <!-- 垂直菜单 -->
+          <el-menu
+            :default-active="activeIndex"
+            class="el-menu-demo"
+            mode="horizontal"
+            @select="handleSelect"
+          >
+            <el-submenu index="2">
+              <template slot="title">我的工作台</template>
+              <el-menu-item index="2-1">选项1</el-menu-item>
+              <el-menu-item index="2-2">选项2</el-menu-item>
+              <el-menu-item index="2-3">选项3</el-menu-item>
+            </el-submenu>
+          </el-menu>
+        </div>
+      </div>
     </div>
     <!-- 尾部 -->
     <div class="footer">
@@ -172,8 +530,46 @@ export default {
   data () {
     return {
       input: '',
+      isShow: false,
       url:
-        'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+        'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+      tableData: [
+        {
+          ID: 'ID43321432',
+          name: '钱龙广场1.0',
+          data: '5',
+          state: '转换完成',
+          date: '2021-01-01 12：34'
+        },
+        {
+          ID: 'ID43321432',
+          name: '钱龙广场1.0',
+          data: '5',
+          state: '转换完成',
+          date: '2021-01-01 12：34'
+        },
+        {
+          ID: 'ID43321432',
+          name: '钱龙广场1.0',
+          data: '5',
+          state: '转换完成',
+          date: '2021-01-01 12：34'
+        },
+        {
+          ID: 'ID43321432',
+          name: '钱龙广场1.0',
+          data: '5',
+          state: '转换完成',
+          date: '2021-01-01 12：34'
+        },
+        {
+          ID: 'ID43321432',
+          name: '钱龙广场1.0',
+          data: '5',
+          state: '转换完成',
+          date: '2021-01-01 12：34'
+        }
+      ]
     }
   },
   methods: {
@@ -185,6 +581,13 @@ export default {
     },
     Chinese () {
       this.$i18n.locale = 'zh'
+    },
+    tiaozhuan () {
+      this.isShow = true
+      console.log('11111')
+    },
+    handleClick () {
+      alert('button click')
     }
   }
 }
@@ -199,30 +602,78 @@ export default {
 .box {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
   .header {
     width: 100%;
     height: 100px;
     background-color: #fff;
     .logo {
       width: 240px;
-      height: 80px;
       float: left;
-      margin-left: 25px;
-      // margin-right: 15px;
+      margin: 0 25px;
       .img {
         width: 100%;
         height: 100%;
       }
     }
     .nav {
+      height: 97px;
       float: left;
-
-      .input {
-        width: 200px;
+      padding: 0 15px;
+      display: flex;
+      align-items: center;
+      a {
+        text-decoration: none;
+        font-size: 16px;
+        color: #000;
       }
-      .demo {
-        margin-top: 20px;
+      a:hover {
+        color: #409eff;
       }
+      .el-dropdown-link {
+        cursor: pointer;
+        color: #000;
+        font-size: 16px;
+      }
+      .el-icon-arrow-down {
+        font-size: 16px;
+      }
+    }
+    .nav:hover {
+      border-top: 3px solid skyblue;
+    }
+    .serach {
+      height: 100px;
+      // background-color: red;
+      float: left;
+      .menu {
+        height: 100px;
+        line-height: 100px;
+        float: left;
+        .el-dropdown-link {
+          cursor: pointer;
+          color: #000;
+          font-size: 16px;
+        }
+        .el-icon-arrow-down {
+          font-size: 16px;
+        }
+      }
+      .in {
+        height: 100px;
+        float: left;
+        line-height: 100px;
+      }
+    }
+    .big {
+      height: 100px;
+      float: left;
+      font-size: 26px;
+      line-height: 100px;
+    }
+    .span:hover {
+      color: #409eff;
     }
     .national {
       padding-top: 25px;
@@ -296,11 +747,18 @@ export default {
       }
       .tab {
         width: 100%;
-        height: 85px;
+        height: 70px;
         background-color: #f9f9f9;
         padding-top: 25px;
         button {
-          margin-left: 50px;
+          margin-right: 75px;
+          font-size: 16px;
+          font-weight: bold;
+          border: none;
+          background-color: transparent;
+        }
+        .one {
+          margin-left: 60px;
         }
       }
     }
@@ -311,7 +769,114 @@ export default {
     }
     .bottom {
       width: 100%;
-      height: 500px;
+      // height: 500px;
+      .content {
+        width: 100%;
+        // margin-left: 60px;
+        .record {
+          width: 100%;
+          height: 40px;
+          position: relative;
+          // background-color: red;
+          margin-top: -20px;
+
+          .left {
+            height: 40px;
+          }
+          .right {
+            position: absolute;
+            right: 20px;
+            top: 0px;
+          }
+        }
+        .list {
+          width: 1300px;
+          height: 840px;
+          // background-color: palevioletred;
+          margin-top: 5px;
+          li {
+            width: 300px;
+            height: 400px;
+            // background-color: green;
+            margin-left: 20px;
+            margin-bottom: 20px;
+            float: left;
+            list-style: none;
+            box-sizing: border-box;
+            overflow: hidden;
+            .img {
+              width: 300px;
+              height: 210px;
+              .tupian {
+                width: 100%;
+                height: 100%;
+              }
+            }
+            .write {
+              width: 300px;
+              height: 89px;
+              background-color: #fff;
+              padding-top: 5px;
+              padding-left: 20px;
+            }
+            .line {
+              width: 300px;
+              height: 1px;
+              background-color: #e4e4e4;
+            }
+            .btn {
+              width: 300px;
+              height: 100px;
+              background-color: #fff;
+              padding-left: 15px;
+              line-height: 100px;
+            }
+            .photo {
+              width: 300px;
+              height: 100px;
+              background-color: #fff;
+              padding-left: 15px;
+              line-height: 100px;
+              .big {
+                width: 60px;
+                height: 60px;
+                // background-color: pink;
+                border-radius: 50%;
+                float: left;
+                margin-top: 20px;
+                .min {
+                  width: 100%;
+                  height: 100%;
+                }
+              }
+            }
+          }
+        }
+        .message {
+          margin-top: -20px;
+        }
+        .btn {
+          width: 100px;
+          margin: 0 auto;
+        }
+        .table {
+          width: 100%;
+          margin-top: 5px;
+          margin-bottom: 50px;
+          .link {
+            padding-left: 25px;
+            a {
+              margin-right: 28px;
+              color: #02a7f0;
+            }
+          }
+        }
+      }
+      .page {
+        width: 550px;
+        margin: 0 auto;
+        margin-bottom: 40px;
+      }
     }
   }
   .footer {

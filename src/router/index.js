@@ -95,6 +95,15 @@ const routes = [
     }
   },
   {
+    // demo
+    path: '/demo',
+    name: 'demo',
+    component: () => import('../views/demo/index.vue'),
+    meta: {
+      title: 'demo'
+    }
+  },
+  {
     // 平台预览
     path: '/preview',
     name: 'preview',
