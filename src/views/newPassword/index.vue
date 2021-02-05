@@ -30,10 +30,7 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-button
-            @click="toNext"
-            type="primary"
-            class="login-btn"
+          <el-button @click="toNext" type="primary" class="login-btn"
             >下一步</el-button
           >
         </el-form-item>
@@ -114,7 +111,7 @@ export default {
         .then(res => {
           console.log(res)
           if (res.data.code === 0) {
-            this.$router.push('../../resetSucceed')
+            this.$router.replace('../../resetSucceed')
           } else {
             this.$message.error('验证码验证失败')
           }

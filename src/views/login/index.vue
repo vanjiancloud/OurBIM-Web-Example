@@ -287,7 +287,7 @@ export default {
           console.log(res)
           if (res.data.code === 0) {
             this.$message.success('恭喜登录成功')
-            this.setCookie('mobile', this.form.mobile)
+            this.setCookie('mobile', this.mobForm.mobile)
             this.$router.push('../home')
             this.getUserInfo()
           } else if (res.data.code === 2) {
@@ -353,8 +353,9 @@ export default {
     const email = this.getCookie('email')
     const password = this.getCookie('password')
     const mobile = this.getCookie('mobile')
+    console.log(mobile)
     // 如果存在赋值给表单，并且将记住密码勾选
-    if (email) {
+    if ((email, mobile)) {
       this.form.email = email
       this.form.password = password
       // this.form.isAgree = true
