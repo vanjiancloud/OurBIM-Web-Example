@@ -16,10 +16,7 @@
     "less": "^4.1.0",
     "less-loader": "^7.3.0",
     "lib-flexible": "^0.3.2",
-<<<<<<< HEAD
-=======
     "postcss-px2rem": "^0.3.0",
->>>>>>> dbc8181da47e50b8bbfe03f2703edd3aa470fb94
     "vue": "^2.6.11",
     "vue-i18n": "^8.22.4",
     "vue-router": "^3.2.0",
@@ -46,7 +43,7 @@
     "plugins": {
       "autoprefixer": {},
       "postcss-pxtorem": {
-        "rootValue": 37.5,
+        "rootValue": 75,
         "propList": [
           "*"
         ]
