@@ -522,7 +522,7 @@
           <!-- 下拉菜单 -->
           <div class="dropdown">
             <div>
-              <button ><i icon="el-icon-postcard"></i> 账户管理</button>
+              <button><i icon="el-icon-postcard"></i> 账户管理</button>
             </div>
             <div>
               <button @click="isHand = 6">个人信息</button>
@@ -634,7 +634,6 @@
               style="width: 100%"
               row-key="id"
               border
-
               :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
             >
               <el-table-column prop="use" label="应用" width="180">
@@ -673,27 +672,6 @@
               </tr>
             </table>
           </div>
-          <el-tabs type="border-card" tab-position="left">
-            <el-tab-pane label="用户管理">
-              <div class="demo">
-                用户管理
-              </div>
-              <span slot="label"><i class="el-icon-date"></i> 我的行程</span>
-            </el-tab-pane>
-            <el-tab-pane label="配置管理">配置管理</el-tab-pane>
-            <el-tab-pane label="角色管理">角色管理</el-tab-pane>
-            <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
-          </el-tabs>
-          <!-- dwadwdddw -->
-          <!-- 垂直菜单 -->
-          <el-menu class="el-menu-demo" mode="horizontal">
-            <el-submenu index="2">
-              <template slot="title">我的工作台</template>
-              <el-menu-item index="2-1">选项1</el-menu-item>
-              <el-menu-item index="2-2">选项2</el-menu-item>
-              <el-menu-item index="2-3">选项3</el-menu-item>
-            </el-submenu>
-          </el-menu>
         </div>
       </div>
     </div>
@@ -1092,7 +1070,7 @@ export default {
             }
             button:hover {
               color: #41b19c;
-              cursor:pointer;
+              cursor: pointer;
             }
           }
         }
