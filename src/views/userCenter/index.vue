@@ -85,11 +85,7 @@
               <div class="demo-fit">
                 <div class="block">
                   <span class="title"></span>
-                  <el-avatar
-                    shape="circle"
-                    :size="100"
-                    :src="url"
-                  ></el-avatar>
+                  <el-avatar shape="circle" :size="100" :src="url"></el-avatar>
                 </div>
               </div>
               <div class="mark">
@@ -439,29 +435,52 @@
             </div>
           </div>
           <!-- 表格 -->
-          <div class="table">
-            <el-table
-              :data="tableData"
-              :border="true"
-              style="width:100%;"
-              :header-cell-style="{ textAlign: 'center' }"
-              :cell-style="{ textAlign: 'center' }"
-            >
-              <el-table-column prop="ID" label="">应用ID</el-table-column>
-              <el-table-column prop="name" label="应用名称"> </el-table-column>
-              <el-table-column prop="data" label="最大并发数量">
-              </el-table-column>
-              <el-table-column prop="state" label="状态"> </el-table-column
-              ><el-table-column prop="date" label="上传日期"> </el-table-column
-              ><el-table-column prop="handle" label="操作">
-                <div class="link">
-                  <a href="">分享</a>
-                  <a href="">编辑</a>
-                  <a href="" style="color:#E0001B">删除</a>
-                </div>
-              </el-table-column>
-            </el-table>
-          </div>
+          <table>
+            <tr>
+              <th>应用ID</th>
+              <th>应用名称</th>
+              <th>最大并发数量</th>
+              <th>状态</th>
+              <th>上传日期</th>
+              <th>操作</th>
+            </tr>
+            <tr>
+              <td>ID43321432</td>
+              <td>钱龙广场1.0</td>
+              <td>5</td>
+              <td>转换完成</td>
+              <td>2021-01-0112：34</td>
+              <td>
+                <button>分享</button>
+                <button>编辑</button>
+                <button>删除</button>
+              </td>
+            </tr>
+            <tr>
+              <td>ID43321432</td>
+              <td>钱龙广场1.0</td>
+              <td>5</td>
+              <td>转换完成</td>
+              <td>2021-01-0112：34</td>
+              <td>
+                <button>分享</button>
+                <button>编辑</button>
+                <button>删除</button>
+              </td>
+            </tr>
+            <tr>
+              <td>ID43321432</td>
+              <td>钱龙广场1.0</td>
+              <td>5</td>
+              <td>转换完成</td>
+              <td>2021-01-0112：34</td>
+              <td>
+                <button>分享</button>
+                <button>编辑</button>
+                <button>删除</button>
+              </td>
+            </tr>
+          </table>
           <!-- 分页 -->
           <div class="page">
             <el-pagination
@@ -475,41 +494,167 @@
         </div>
         <!-- 创建应用 -->
         <div class="content" v-show="isShow == 4">
-          <!-- 消息提示 -->
-          <div class="message">
-            您还可上传2个项目
-          </div>
+          您还可上传2个项目
           <div class="btn">
             <el-button type="primary">下一步</el-button>
           </div>
         </div>
         <!-- 账单管理 -->
         <div class="content" v-show="isShow == 5">
-          <el-tabs type="border-card" tab-position="left">
-            <el-tab-pane label="用户管理">
-              <div class="demo">
-                用户管理
-              </div>
-              <span slot="label"><i class="el-icon-date"></i> 我的行程</span>
-            </el-tab-pane>
-            <el-tab-pane label="配置管理">配置管理</el-tab-pane>
-            <el-tab-pane label="角色管理">角色管理</el-tab-pane>
-            <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
-          </el-tabs>
-          <!-- dwadwdddw -->
-          <!-- 垂直菜单 -->
-          <el-menu
-            class="el-menu-demo"
-            mode="horizontal"
+          <!-- 下拉菜单 -->
+          <div class="dropdown">
+            <div>
+              <button ><i icon="el-icon-postcard"></i> 账户管理</button>
+            </div>
+            <div>
+              <button @click="isHand = 6">个人信息</button>
+            </div>
+            <div>
+              <button @click="isHand = 7">授权码</button>
+            </div>
+            <div>
+              <button @click="isHand = 8">服务订单</button>
+            </div>
+            <div>
+              <button @click="isHand = 9">团队</button>
+            </div>
+            <div>
+              <button @click="isHand = 10">修改密码</button>
+            </div>
+          </div>
+          <!-- 个人信息 -->
+          <div class="neirong" v-show="isHand == 6">
+            <div class="geren">
+              个人信息：
+            </div>
+            <table>
+              <tr>
+                <td>ID</td>
+                <td>Mark</td>
+              </tr>
+              <tr>
+                <td>签名</td>
+                <td>Mark@OurBIM</td>
+              </tr>
+              <tr>
+                <td>邮箱</td>
+                <td>vanjian@ourbim.com</td>
+              </tr>
+              <tr>
+                <td>手机号</td>
+                <td>13333333333</td>
+              </tr>
+              <tr>
+                <td>公司</td>
+                <td>万间科技</td>
+              </tr>
+              <tr>
+                <td>职位</td>
+                <td>产品</td>
+              </tr>
+            </table>
+            <div class="xia">
+              <el-button type="primary">主要按钮</el-button>
+            </div>
+          </div>
+          <!-- 授权码 -->
+          <div class="neirong" v-show="isHand == 7">
+            授权码：
 
-          >
-            <el-submenu index="2">
-              <template slot="title">我的工作台</template>
-              <el-menu-item index="2-1">选项1</el-menu-item>
-              <el-menu-item index="2-2">选项2</el-menu-item>
-              <el-menu-item index="2-3">选项3</el-menu-item>
-            </el-submenu>
-          </el-menu>
+            <el-input v-model="input" placeholder="请输入内容"></el-input>
+            <el-button type="primary">主要按钮</el-button>
+          </div>
+          <!-- 服务订单 -->
+          <div class="neirong" v-show="isHand == 8">
+            <table class="dingdan">
+              <tr>
+                <th>编号</th>
+                <th>时间</th>
+                <th>服务</th>
+                <th>授权码</th>
+                <th>状态</th>
+                <th>金额</th>
+              </tr>
+              <tr>
+                <td>20210101123456123</td>
+                <td>2021-01-01 12:34:56</td>
+                <td>高级开发版</td>
+                <td>高级开发版</td>
+                <td>失效</td>
+                <td>50,000.00</td>
+              </tr>
+              <tr>
+                <td>20210101123456123</td>
+                <td>2021-01-01 12:34:56</td>
+                <td>高级开发版</td>
+                <td>高级开发版</td>
+                <td>失效</td>
+                <td>50,000.00</td>
+              </tr>
+              <tr>
+                <td>20210101123456123</td>
+                <td>2021-01-01 12:34:56</td>
+                <td>高级开发版</td>
+                <td>高级开发版</td>
+                <td>失效</td>
+                <td>50,000.00</td>
+              </tr>
+              <tr>
+                <td>20210101123456123</td>
+                <td>2021-01-01 12:34:56</td>
+                <td>高级开发版</td>
+                <td>高级开发版</td>
+                <td>失效</td>
+                <td>50,000.00</td>
+              </tr>
+            </table>
+          </div>
+          <!-- 团队 -->
+          <div class="neirong" v-show="isHand == 9">
+            <el-table
+              :data="tableData"
+              style="width: 100%"
+              row-key="id"
+              border
+
+              :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+            >
+              <el-table-column prop="use" label="应用" width="180">
+              </el-table-column>
+              <el-table-column prop="time" label="成立时间" width="180">
+              </el-table-column>
+              <el-table-column prop="role" label="角色"> </el-table-column>
+              <el-table-column prop="handle" label="操作"> </el-table-column>
+            </el-table>
+          </div>
+          <!-- 修改密码 -->
+          <div class="neirong" v-show="isHand == 10">
+            <div class="geren">
+              修改密码：
+            </div>
+            <table>
+              <tr>
+                <td>原密码</td>
+                <td>请输入</td>
+              </tr>
+              <tr>
+                <td>新密码</td>
+                <td>请输入</td>
+              </tr>
+              <tr>
+                <td>确认密码</td>
+                <td>请输入</td>
+              </tr>
+              <tr>
+                <td>手机号</td>
+                <td>请输入</td>
+              </tr>
+              <tr>
+                <td>验证码</td>
+                <td>请输入</td>
+              </tr>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -529,43 +674,47 @@ export default {
     return {
       input: '',
       isShow: 1,
+      isHand: 6,
       url:
         'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
       tableData: [
         {
-          ID: 'ID43321432',
-          name: '钱龙广场1.0',
-          data: '5',
-          state: '转换完成',
-          date: '2021-01-01 12：34'
+          id: '1',
+          use: '钱龙房产',
+          time: '2021-01-01 12:34:56',
+          children: [
+            {
+              id: 11,
+              handle: 'lalal',
+              role: '王小虎',
+              address: '上海市普陀区金沙江路 1519 弄'
+            },
+            {
+              id: 12,
+              handle: '66666666',
+              role: '虎',
+              address: '上海市普陀区金沙江路 1519 弄'
+            }
+          ]
         },
         {
-          ID: 'ID43321432',
-          name: '钱龙广场1.0',
-          data: '5',
-          state: '转换完成',
-          date: '2021-01-01 12：34'
-        },
-        {
-          ID: 'ID43321432',
-          name: '钱龙广场1.0',
-          data: '5',
-          state: '转换完成',
-          date: '2021-01-01 12：34'
-        },
-        {
-          ID: 'ID43321432',
-          name: '钱龙广场1.0',
-          data: '5',
-          state: '转换完成',
-          date: '2021-01-01 12：34'
-        },
-        {
-          ID: 'ID43321432',
-          name: '钱龙广场1.0',
-          data: '5',
-          state: '转换完成',
-          date: '2021-01-01 12：34'
+          id: '2',
+          use: '钱龙',
+          time: '2021-01-01 12:34:56',
+          children: [
+            {
+              id: 21,
+              date: '2016-05-01',
+              name: '王小虎',
+              address: '上海市普陀区金沙江路 1519 弄'
+            },
+            {
+              id: 22,
+              date: '2016-05-01',
+              name: '王小虎',
+              address: '上海市普陀区金沙江路 1519 弄'
+            }
+          ]
         }
       ]
     }
@@ -584,8 +733,7 @@ export default {
       alert('button click')
     },
     // 分页
-    handleCurrentChange () {
-    }
+    handleCurrentChange () {}
   }
 }
 </script>
@@ -684,7 +832,7 @@ export default {
     margin-left: 60px;
     margin-right: 180px;
     margin-bottom: 25px;
-    background-color: #f9f9f9;
+    background-color: #f0f2f5;
     .top {
       width: 100%;
       .list {
@@ -767,13 +915,11 @@ export default {
       // height: 500px;
       .content {
         width: 100%;
-        // margin-left: 60px;
+        overflow: hidden;
         .record {
           width: 100%;
           height: 40px;
           position: relative;
-          margin-top: -20px;
-
           .left {
             height: 40px;
           }
@@ -843,24 +989,104 @@ export default {
             }
           }
         }
-        .message {
-          margin-top: -20px;
-        }
         .btn {
           width: 100px;
           margin: 0 auto;
         }
-        .table {
+        table {
           width: 100%;
           margin-top: 5px;
           margin-bottom: 50px;
-          .link {
-            padding-left: 25px;
-            a {
-              margin-right: 28px;
-              color: #02a7f0;
+          border-collapse: collapse;
+          font-size: 16px;
+          tr {
+            height: 50px;
+          }
+          th {
+            background-color: #fafafa;
+          }
+          td {
+            background-color: #fff;
+          }
+        }
+        table,
+        th,
+        td {
+          border: 1px solid black;
+          text-align: center;
+        }
+        .dropdown {
+          width: 200px;
+          height: 300px;
+          float: left;
+          margin-right: 100px;
+          div {
+            width: 100%;
+            height: 50px;
+            border-bottom: 1px solid #f2f2f2;
+            line-height: 50px;
+
+            margin-right: 50px;
+            button:focus {
+              background-color: #fff;
+            }
+            button {
+              padding-left: 50px;
+              height: 100%;
+              width: 100%;
+              border: none;
+              outline: none;
+              font-size: 16px;
+              text-align: left;
+              background-color: #f9f9f9;
+            }
+            button:hover {
+              color: #41b19c;
+              cursor:pointer;
             }
           }
+        }
+        .neirong {
+          float: left;
+          width: 1000px;
+          // background-color: orange;
+          .geren {
+            float: left;
+          }
+          .xinxi {
+            float: left;
+          }
+          table,
+          th,
+          td {
+            border: 1px solid black;
+            text-align: center;
+          }
+          table {
+            width: 400px;
+          }
+          .el-input {
+            width: 400px;
+          }
+          .dingdan {
+            width: 100%;
+          }
+          .demo-table-expand {
+            font-size: 0;
+          }
+          .demo-table-expand label {
+            width: 90px;
+            color: #99a9bf;
+          }
+          .demo-table-expand .el-form-item {
+            margin-right: 0;
+            margin-bottom: 0;
+            width: 50%;
+          }
+        }
+        .xia {
+          text-align: center;
+          margin-bottom: 100px;
         }
       }
       .page {
