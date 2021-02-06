@@ -39,26 +39,38 @@
         </el-dropdown>
       </div>
       <!-- 搜索框 -->
-      <div class="serach" v-show="islive">
-        <div class="menu">
-          <el-dropdown>
-            <span class="el-dropdown-link">
-              {{ $t('whole') }}<i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>{{ $t('whole') }}</el-dropdown-item>
-              <el-dropdown-item>{{ $t('info') }}</el-dropdown-item>
-              <el-dropdown-item>{{ $t('case') }}</el-dropdown-item>
-              <el-dropdown-item>{{ $t('activity') }}</el-dropdown-item>
-              <el-dropdown-item>{{ $t('Model') }}</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+      <transition>
+        <div class="serach" v-show="islive">
+          <div class="menu">
+            <el-dropdown @command="checkitem">
+              <span class="el-dropdown-link">
+                {{ classify }}<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="$t('whole')">{{
+                  $t('whole')
+                }}</el-dropdown-item>
+                <el-dropdown-item :command="$t('info')">{{
+                  $t('info')
+                }}</el-dropdown-item>
+                <el-dropdown-item :command="$t('case')">{{
+                  $t('case')
+                }}</el-dropdown-item>
+                <el-dropdown-item :command="$t('activity')">{{
+                  $t('activity')
+                }}</el-dropdown-item>
+                <el-dropdown-item :command="$t('Model')">{{
+                  $t('Model')
+                }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          <div class="in">
+            <el-input v-model="input" placeholder="请输入搜索内容"> </el-input>
+          </div>
         </div>
-        <div class="in">
-          <el-input v-model="input" placeholder="请输入搜索内容"> </el-input>
-        </div>
-      </div>
-      <div class="big">
+      </transition>
+      <div class="big" :class="{ leftMar: !islive }">
         <span @click="toshow" class="span"><i class="el-icon-search"></i></span>
       </div>
       <!-- 登录 -->
@@ -528,6 +540,7 @@ export default {
       islive: false,
       input: '',
       isShow: 1,
+      classify: '全部',
       url:
         'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
       tableData: [
@@ -570,14 +583,16 @@ export default {
     }
   },
   methods: {
-    handleCommand (command) {
-      this.$message('click on item ' + command)
+    checkitem (item) {
+      this.classify = item
     },
     English () {
       this.$i18n.locale = 'en'
+      this.classify = 'whole'
     },
     Chinese () {
       this.$i18n.locale = 'zh'
+      this.classify = '全部'
     },
     handleClick () {
       alert('button click')
@@ -670,9 +685,11 @@ export default {
       font-size: 26px;
       line-height: 100px;
     }
+    .leftMar {
+      margin-left: 256px;
+    }
     .span:hover {
       color: #409eff;
-      position: absolute;
     }
     .national {
       padding-top: 25px;
