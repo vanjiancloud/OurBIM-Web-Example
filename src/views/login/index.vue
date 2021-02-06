@@ -23,7 +23,7 @@
         class="login-form"
         v-show="isshow == 0"
       >
-        <!--  邮箱密码通过双向绑定获取里面的值 -->
+        <!--  邮箱密码通过双向绑定获取 -->
         <el-form-item prop="email">
           <el-input v-model="form.email" placeholder="请输入邮箱">
             <i slot="prefix" class="el-input__icon el-icon-s-custom"></i>
