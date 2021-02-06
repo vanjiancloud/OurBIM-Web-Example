@@ -8,48 +8,49 @@
       </div>
       <!-- 导航 -->
       <div class="nav">
-        <a href="">功能介绍</a>
+        <a href="">{{ $t('introduction') }}</a>
       </div>
       <div class="nav">
-        <a href="">解决方案</a>
+        <a href="">{{ $t('Solution') }}</a>
       </div>
       <div class="nav">
-        <a href="">成功案例</a>
+        <a href="">{{ $t('cases') }}</a>
       </div>
       <div class="nav">
-        <a href="">产品定价</a>
+        <a href="">{{ $t('Pricing') }}</a>
       </div>
       <div class="nav">
-        <a href="">最新咨询</a>
+        <a href="">{{ $t('consultation') }}</a>
       </div>
       <!-- 下拉菜单 -->
       <div class="nav">
         <el-dropdown>
           <span class="el-dropdown-link">
-            开发者<i class="el-icon-arrow-down el-icon--right"></i>
+            {{ $t('consultation')
+            }}<i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>API文档</el-dropdown-item>
-            <el-dropdown-item>示例项目</el-dropdown-item>
-            <el-dropdown-item>模型中心</el-dropdown-item>
-            <el-dropdown-item>服务中心</el-dropdown-item>
-            <el-dropdown-item>更新日志</el-dropdown-item>
+            <el-dropdown-item>{{ $t('APIdov') }}</el-dropdown-item>
+            <el-dropdown-item>{{ $t('project') }}</el-dropdown-item>
+            <el-dropdown-item>{{ $t('Mcenter') }}</el-dropdown-item>
+            <el-dropdown-item>{{ $t('Service') }}</el-dropdown-item>
+            <el-dropdown-item>{{ $t('log') }}</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </div>
       <!-- 搜索框 -->
-      <div class="serach">
+      <div class="serach" v-show="islive">
         <div class="menu">
           <el-dropdown>
             <span class="el-dropdown-link">
-              全部<i class="el-icon-arrow-down el-icon--right"></i>
+              {{ $t('whole') }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>全部</el-dropdown-item>
-              <el-dropdown-item>资讯</el-dropdown-item>
-              <el-dropdown-item>案例</el-dropdown-item>
-              <el-dropdown-item>活动</el-dropdown-item>
-              <el-dropdown-item>模型</el-dropdown-item>
+              <el-dropdown-item>{{ $t('whole') }}</el-dropdown-item>
+              <el-dropdown-item>{{ $t('info') }}</el-dropdown-item>
+              <el-dropdown-item>{{ $t('case') }}</el-dropdown-item>
+              <el-dropdown-item>{{ $t('activity') }}</el-dropdown-item>
+              <el-dropdown-item>{{ $t('Model') }}</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
@@ -58,15 +59,15 @@
         </div>
       </div>
       <div class="big">
-        <span class="span"><i class="el-icon-search"></i></span>
+        <span @click="toshow" class="span"><i class="el-icon-search"></i></span>
       </div>
       <!-- 登录 -->
       <div class="nav">
-        <a href=""><i class="el-icon-s-custom"></i>登录</a>
+        <a href=""><i class="el-icon-s-custom"></i>{{ $t('register') }}</a>
       </div>
       <!-- 注册 -->
       <div class="nav">
-        <a href=""><i class="el-icon-edit"></i>注册</a>
+        <a href=""><i class="el-icon-edit"></i>{{ $t('login') }}</a>
       </div>
       <!-- 国际化 -->
       <div class="national">
@@ -85,11 +86,7 @@
               <div class="demo-fit">
                 <div class="block">
                   <span class="title"></span>
-                  <el-avatar
-                    shape="circle"
-                    :size="100"
-                    :src="url"
-                  ></el-avatar>
+                  <el-avatar shape="circle" :size="100" :src="url"></el-avatar>
                 </div>
               </div>
               <div class="mark">
@@ -120,11 +117,15 @@
         </div>
         <!-- tab栏 -->
         <div class="tab">
-          <el-button plain class="one" @click="isShow = 1">我的应用</el-button>
-          <el-button plain @click="isShow = 2">我的发布</el-button>
-          <el-button plain @click="isShow = 3">应用管理</el-button>
-          <el-button plain @click="isShow = 4">创建应用</el-button>
-          <el-button plain @click="isShow = 5">账单管理</el-button>
+          <el-button plain class="one" @click="isShow = 1">{{
+            $t('app')
+          }}</el-button>
+          <el-button plain @click="isShow = 2">{{ $t('release') }}</el-button>
+          <el-button plain @click="isShow = 3">{{
+            $t('management')
+          }}</el-button>
+          <el-button plain @click="isShow = 4">{{ $t('Create') }}</el-button>
+          <el-button plain @click="isShow = 5">{{ $t('Account') }}</el-button>
         </div>
       </div>
       <!-- 中间部分 -->
@@ -271,12 +272,13 @@
             <div class="right">
               <el-dropdown>
                 <el-button plain>
-                  全部<i class="el-icon-arrow-down el-icon--right"></i>
+                  {{ $t('wholes')
+                  }}<i class="el-icon-arrow-down el-icon--right"></i>
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item>全部</el-dropdown-item>
-                  <el-dropdown-item>文章</el-dropdown-item>
-                  <el-dropdown-item>模型</el-dropdown-item>
+                  <el-dropdown-item>{{ $t('wholes') }}</el-dropdown-item>
+                  <el-dropdown-item>{{ $t('article') }}</el-dropdown-item>
+                  <el-dropdown-item>{{ $t('Models') }}</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </div>
@@ -435,7 +437,7 @@
             </div>
             <!-- 按钮 -->
             <div class="right">
-              <el-button type="primary">添加团队链接</el-button>
+              <el-button type="primary">{{ $t('link') }}</el-button>
             </div>
           </div>
           <!-- 表格 -->
@@ -498,11 +500,7 @@
           </el-tabs>
           <!-- dwadwdddw -->
           <!-- 垂直菜单 -->
-          <el-menu
-            class="el-menu-demo"
-            mode="horizontal"
-
-          >
+          <el-menu class="el-menu-demo" mode="horizontal">
             <el-submenu index="2">
               <template slot="title">我的工作台</template>
               <el-menu-item index="2-1">选项1</el-menu-item>
@@ -527,6 +525,7 @@
 export default {
   data () {
     return {
+      islive: false,
       input: '',
       isShow: 1,
       url:
@@ -584,7 +583,9 @@ export default {
       alert('button click')
     },
     // 分页
-    handleCurrentChange () {
+    handleCurrentChange () {},
+    toshow () {
+      this.islive = !this.islive
     }
   }
 }
@@ -643,6 +644,7 @@ export default {
     .serach {
       height: 100px;
       float: left;
+      position: relative;
       .menu {
         height: 100px;
         line-height: 100px;
@@ -670,6 +672,7 @@ export default {
     }
     .span:hover {
       color: #409eff;
+      position: absolute;
     }
     .national {
       padding-top: 25px;
