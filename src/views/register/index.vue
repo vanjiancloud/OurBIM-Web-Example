@@ -1,6 +1,8 @@
 <template>
   <!-- 背景 -->
   <div class="container">
+    <div class="Decorationmap">
+    </div>
     <!-- 注册页面 -->
     <div class="zhuce">
       <!-- 头部区域 -->
@@ -353,17 +355,16 @@ export default {
 
 <style lang="less" scoped>
 .container {
-  position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: #f0f2f5;
   background-size: cover;
+  background: url(../../assets/img/bigtu.png) no-repeat;
+  .Decorationmap {
+     padding-top: 122px;
+     padding-left: 206px;
+     background-size: cover;
+     width: 652px;
+     height: 802px;
+     background: url(../../assets/img/Decorationmap.png) no-repeat;
+  }
   .zhuce {
     width: 460px;
     height: 650px;

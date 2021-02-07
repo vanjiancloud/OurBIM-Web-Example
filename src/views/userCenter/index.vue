@@ -40,7 +40,7 @@
       </div>
       <!-- 搜索框 -->
       <transition>
-        <div class="serach" v-show="islive">
+        <div class="serach" v-if="islive">
           <div class="menu">
             <el-dropdown @command="checkitem">
               <span class="el-dropdown-link">
@@ -70,8 +70,8 @@
           </div>
         </div>
       </transition>
-      <div class="big" :class="{ leftMar: !islive }">
-        <span @click="toshow" class="span"><i class="el-icon-search"></i></span>
+      <div class="bigs leftMar" @click="toshow">
+        <span class="span"><i class="el-icon-search"></i></span>
       </div>
       <!-- 登录 -->
       <div class="nav">
@@ -768,6 +768,15 @@ export default {
 }
 </style>
 <style lang="less" scoped>
+.v-enter,
+.v-leave-to {
+  opacity: 0;
+  transform: translateX(150px);
+}
+.v-enter-active,
+.v-leave-active {
+  transition: all 0.5s ease;
+}
 .box {
   width: 100%;
   height: 100%;
@@ -814,8 +823,8 @@ export default {
     }
     .serach {
       height: 100px;
-      float: left;
-      position: relative;
+      position: absolute;
+      left: 870px;
       .menu {
         height: 100px;
         line-height: 100px;
@@ -835,7 +844,7 @@ export default {
         line-height: 100px;
       }
     }
-    .big {
+    .bigs {
       height: 100px;
       float: left;
       font-size: 26px;
