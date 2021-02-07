@@ -210,7 +210,7 @@ export default {
             this.$message.success('恭喜登陆成功')
             this.setCookie('email', this.form.email)
             this.setCookie('password', this.form.password)
-            this.$router.push('../home')
+            this.$router.push('../userCenter')
             this.setUserInfo()
           } else if (res.data.code === 2) {
             this.$message.error('登录失败,请去激活')
@@ -288,7 +288,7 @@ export default {
           if (res.data.code === 0) {
             this.$message.success('恭喜登录成功')
             this.setCookie('mobile', this.mobForm.mobile)
-            this.$router.push('../home')
+            this.$router.push('../userCenter')
             this.getUserInfo()
           } else if (res.data.code === 2) {
             this.$message.error('登录失败,请去激活')

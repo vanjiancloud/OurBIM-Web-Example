@@ -1,7 +1,8 @@
 <template>
   <!-- 背景 -->
-  <div class="container">
-    <div class="Decorationmap">
+  <div class="container" :style="dgjt">
+    <div class="Decorationmap" :style="Decorationmap">
+
     </div>
     <!-- 注册页面 -->
     <div class="zhuce">
@@ -123,6 +124,19 @@ import {
 export default {
   data () {
     return {
+      // 背景图
+      dgjt: {
+        background:
+          ' url(' +
+          require('../../assets/img/bigtu.png') +
+          ') no-repeat scroll 0 bottom'
+      },
+      Decorationmap: {
+        background:
+          ' url(' +
+          require('../../assets/img/Decorationmap.png') +
+          ') no-repeat '
+      },
       isSend: false, // 是否显示
       isLoading: false, // 是否正在登陆
       delay: 0, // 倒计时
@@ -352,20 +366,22 @@ export default {
   }
 }
 </script>
-
 <style lang="less" scoped>
 .container {
-  background-size: cover;
-  background: url(../../assets/img/bigtu.png) no-repeat;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
   .Decorationmap {
-     padding-top: 122px;
-     padding-left: 206px;
-     background-size: cover;
-     width: 652px;
-     height: 802px;
-     background: url(../../assets/img/Decorationmap.png) no-repeat;
+    position: relative;
+    float: left;
+    width: 652px;
+    height: 802px;
+    background-size: cover;
   }
   .zhuce {
+    float: left;
     width: 460px;
     height: 650px;
     background-color: #fff;
