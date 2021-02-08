@@ -13,9 +13,7 @@ import axios from '@/utils/request.js'
 // import store from './store'
 // 自动计算rem大小
 import 'lib-flexible'
-import 'amfe-flexible'
 import VueI18n from 'vue-i18n'
-import './utils/rem'
 Vue.use(VueI18n)
 Vue.use(less)
 Vue.use(ElementUI)

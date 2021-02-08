@@ -91,7 +91,43 @@ const routes = [
     name: 'userCenter',
     component: () => import('../views/userCenter/index.vue'),
     meta: {
-      title: 'OurBIM用户中心'
+      title: '用户中心'
+    }
+  },
+  {
+    // 我的发布
+    path: '/issue',
+    name: 'issue',
+    component: () => import('../views/userCenter/issue'),
+    meta: {
+      title: '我的发布'
+    }
+  },
+  {
+    // 应用管理
+    path: '/manage',
+    name: 'manage',
+    component: () => import('../views/userCenter/manage'),
+    meta: {
+      title: '应用管理'
+    }
+  },
+  {
+    // 创建应用
+    path: '/found',
+    name: 'found',
+    component: () => import('../views/userCenter/found'),
+    meta: {
+      title: '创建应用'
+    }
+  },
+  {
+    // 账户管理
+    path: '/bill',
+    name: 'bill',
+    component: () => import('../views/userCenter/bill'),
+    meta: {
+      title: '账户管理'
     }
   },
   {
