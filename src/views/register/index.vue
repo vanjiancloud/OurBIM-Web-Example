@@ -1,15 +1,18 @@
 <template>
-  <!-- 背景 -->
-  <div class="container" :style="dgjt">
-    <div class="Decorationmap" :style="Decorationmap">
-
+  <div class="box">
+    <div class="picture">
+      <img src="../login/img.png" alt="" />
     </div>
     <!-- 注册页面 -->
     <div class="zhuce">
       <!-- 头部区域 -->
       <div class="header">
-        <i class="el-icon-arrow-left"></i>
-        <span class="logo"> </span>
+        <div class="icon">
+          <img src="./sicon.png" alt="" />
+        </div>
+        <div class="logo">
+          <img src="./logo.png" alt="" />
+        </div>
       </div>
       <!-- 主体区域 -->
       <div class="body">
@@ -21,11 +24,11 @@
               placeholder="请输入邮箱"
               @blur="emailBlur"
             >
-              <i slot="prefix" class="el-icon-s-custom"></i>
+              <i slot="prefix" class="el-icon-message"></i>
             </el-input>
             <div class="hint">
-              <span>
-                <i style="color:#e4551b">*</i>
+              <span style="font-size: 14px;">
+                <i style="color:#e4551b;">*</i>
                 您将同意我们不定期给您发送OurBIM产品相关资讯邮件
               </span>
             </div>
@@ -35,7 +38,6 @@
             <el-input
               v-model="ruleForm.mobile"
               placeholder="请输入手机号码"
-              class="input"
               @blur="mobileBlur"
             >
               <i slot="prefix" class="el-icon-mobile-phone"></i>
@@ -47,17 +49,25 @@
               v-model="ruleForm.code"
               placeholder="请输入短信验证码"
               label-width="80px"
-              class="input width"
             >
-              <i slot="prefix" class="el-icon-message"></i>
+              <el-button
+                style="padding-right:27px;padding-top:18px"
+                slot="suffix"
+                type="text"
+                :disabled="isSend"
+                @click="getcode"
+              >
+                发送验证码
+              </el-button>
+              <i slot="prefix" class="el-icon-s-comment"></i>
             </el-input>
-            <el-button
+            <!-- <el-button
               :disabled="isSend"
               @click="getcode"
               type="primary"
               class="btn-one"
               >{{ btnMes }}</el-button
-            >
+            > -->
           </el-form-item>
           <!-- 密码 -->
           <el-form-item label="" prop="password">
@@ -65,7 +75,6 @@
               show-password
               v-model="ruleForm.password"
               placeholder="请设置6至20位登录密码"
-              class="input"
             >
               <i slot="prefix" class="el-icon-lock"></i>
             </el-input>
@@ -76,16 +85,19 @@
               show-password
               v-model="ruleForm.newPassword"
               placeholder="请再次输入登录密码"
-              class="input"
             >
               <i slot="prefix" class="el-icon-lock"></i>
             </el-input>
           </el-form-item>
           <!-- 勾选状态 -->
-          <el-form-item label="" prop="checked">
+          <el-form-item label="" prop="checked" class="check">
             <el-checkbox v-model="ruleForm.checked"
               >我同意
-              <a class="link" @click="toxieyi" style="text-decoration:none">
+              <a
+                class="link"
+                @click="toxieyi"
+                style="text-decoration:none; font-size: 14px;"
+              >
                 《OurBIM用户服务协议》</a
               >
             </el-checkbox>
@@ -104,13 +116,18 @@
           </div>
           <div class="footer-size">
             <span
-              ><a href="../login/index.vue" style="text-decoration : none "
+              ><a
+                href="../login/index.vue"
+                style="text-decoration:none;font-size: 14px;color:#00AAF0 "
                 >已有账号，立即登录</a
               ></span
             >
           </div>
         </div>
       </div>
+    </div>
+    <div class="wenzi">
+      Copyright © 2021 www.OurBIM.com, All Rights Reserved.
     </div>
   </div>
 </template>
@@ -367,27 +384,86 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.container {
+.box {
+  width: 100%;
+  height: 100%;
   position: fixed;
   left: 0;
   top: 0;
   right: 0;
   bottom: 0;
-  .Decorationmap {
-    position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url(../login/bg.png);
+  .picture {
     float: left;
-    width: 652px;
+    width: 625px;
     height: 802px;
-    background-size: cover;
+    margin-right: 623px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
   }
   .zhuce {
     float: left;
-    width: 460px;
-    height: 650px;
-    background-color: #fff;
+    width: 521px;
+    height: 802px;
     border-radius: 10px;
+    .header {
+      width: 521px;
+      height: 46px;
+      margin-bottom: 50px;
+      display: flex;
+      align-items: center;
+      .logo {
+        width: 232px;
+        height: 46px;
+        margin-left: 128px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .icon {
+        width: 16px;
+        height: 32px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
     .body {
-      padding: 0 76px;
+      /deep/ .el-form-item__error {
+        position: absolute;
+        left: 0;
+        top: 60px;
+      }
+      /deep/ .el-input__inner {
+        height: 65px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        background-color: transparent;
+      }
+      /deep/ .el-checkbox__label {
+        font-size: 20px;
+      }
+      /deep/ .el-checkbox__inner {
+        width: 20px;
+        height: 20px;
+        background-color: transparent;
+      }
+      /deep/ .el-input__prefix {
+        font-size: 20px;
+        margin-top: 13px;
+        // margin-left: 10px;
+      }
+      /deep/ .el-checkbox__inner::after {
+        width: 9px;
+        height: 13px;
+      }
       .footer-size {
         color: #0079fe;
         text-align: center;
@@ -402,41 +478,22 @@ export default {
         color: #999999;
       }
       .btn {
-        width: 308px;
+        width: 100%;
+        height: 60px;
         margin-bottom: 12px;
-        margin-top: 8px;
       }
-      .btn-one {
-        width: 106px;
-        margin-left: 20px;
+      .check {
+        margin-top: -30px;
       }
     }
-    .header {
-      position: relative;
-      display: flex;
-      margin-bottom: 30px;
-      .logo {
-        width: 250px;
-        height: 65px;
-        padding-bottom: 30px;
-        position: absolute;
-        left: 80px;
-        background: url(../../assets/logo_index.png) no-repeat;
-        background-size: contain;
-        margin-left: 25px;
-      }
-      .el-icon-arrow-left {
-        color: #ff6600;
-        padding: 40px 0 0 40px;
-        font-size: 40px;
-      }
-    }
-    .input {
-      margin-bottom: -20px;
-    }
-    .width {
-      width: 180px;
-    }
+  }
+  .wenzi {
+    width: 100%;
+    color: #999999;
+    position: fixed;
+    bottom: 21px;
+    text-align: center;
+    font-size: 12px;
   }
 }
 </style>

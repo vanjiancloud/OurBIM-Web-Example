@@ -1,5 +1,8 @@
 <template>
   <div class="container">
+    <div class="picture">
+      <img src="./img.png" alt="" />
+    </div>
     <div class="box">
       <div class="logo">
         <img src="../register/logo.png" alt="" class="img" />
@@ -20,6 +23,9 @@
         >
         <el-button class="button" @click="toHome">进入首页</el-button>
       </div>
+    </div>
+    <div class="wenzi">
+      Copyright © 2021 www.OurBIM.com, All Rights Reserved.
     </div>
   </div>
 </template>
@@ -44,9 +50,26 @@ export default {
 .container {
   width: 100%;
   height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-image: url(./bg.png);
+  background-size: cover;
+  .picture {
+    float: left;
+    width: 625px;
+    height: 802px;
+    margin-right: 623px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
   .box {
     width: 580px;
     height: 580px;
@@ -95,6 +118,14 @@ export default {
         height: 100%;
       }
     }
+  }
+   .wenzi {
+    width: 100%;
+    color: #999999;
+    position: fixed;
+    bottom: 21px;
+    text-align: center;
+    font-size: 12px;
   }
 }
 </style>

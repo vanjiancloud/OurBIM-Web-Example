@@ -1,5 +1,8 @@
 <template>
   <div class="login-container">
+    <div class="picture">
+      <img src="./img.png" alt="" />
+    </div>
     <div class="login-form-wrap">
       <!-- .logo区域 -->
       <div class="login-head">
@@ -44,6 +47,9 @@
           >
         </el-form-item>
       </el-form>
+    </div>
+    <div class="wenzi">
+      Copyright © 2021 www.OurBIM.com, All Rights Reserved.
     </div>
   </div>
 </template>
@@ -167,22 +173,59 @@ export default {
 </script>
 <style scoped lang="less">
 .login-container {
+  width: 100%;
+  height: 100%;
   position: fixed;
   left: 0;
   top: 0;
   right: 0;
   bottom: 0;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  background-color: #f0f2f5;
+  justify-content: center;
+  background-image: url(./bg.png);
   background-size: cover;
+  .picture {
+    float: left;
+    width: 625px;
+    height: 802px;
+    margin-right: 623px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
   .login-form-wrap {
-    min-width: 430px;
-    min-height: 450px;
-    padding: 5px 50px 1px 40px;
-    background-color: #fff;
+    /deep/ .el-form-item__error {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+    }
+    /deep/ .el-input__inner {
+      height: 65px;
+      margin-top: 25px;
+      font-size: 20px;
+      background-color: transparent;
+    }
+    /deep/ .el-checkbox__label {
+      font-size: 20px;
+    }
+    /deep/ .el-checkbox__inner {
+      width: 20px;
+      height: 20px;
+      background-color: transparent;
+    }
+    /deep/ .el-input__icon {
+      font-size: 25px;
+      margin-top: 15px;
+    }
+    /deep/ .el-checkbox__inner::after {
+      width: 9px;
+      height: 13px;
+    }
+    float: left;
+    width: 520px;
+    height: 636px;
     .login-head {
       position: relative;
       display: flex;
@@ -203,11 +246,12 @@ export default {
       }
     }
     .state {
-      font-size: 20px;
+      font-size: 25px;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding-bottom: 30px;
+      margin-top: 20px;
+      margin-bottom: 30px;
       span {
         padding-right: 20px;
         padding: 15px 70px 15px 70px;
@@ -217,14 +261,18 @@ export default {
     .login-form {
       .login-btn {
         width: 100%;
+        height: 60px;
+        font-size: 22px;
       }
       .input {
-        width: 315px;
+        width: 350px;
         margin-right: 10px;
       }
       .btnMes {
-        width: 104px;
-        height: 41px;
+        height: 65px;
+        float: right;
+        margin-top: 25px;
+        font-size: 20px;
       }
       span {
         padding-left: 20px;
@@ -233,6 +281,14 @@ export default {
         display: inline;
       }
     }
+  }
+  .wenzi {
+    width: 100%;
+    color: #999999;
+    position: fixed;
+    bottom: 21px;
+    text-align: center;
+    font-size: 12px;
   }
 }
 </style>

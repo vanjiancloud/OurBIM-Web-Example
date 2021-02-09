@@ -1,5 +1,8 @@
 <template>
   <div class="login-container">
+    <div class="picture">
+      <img src="./img.png" alt="" />
+    </div>
     <div class="login-form-wrap">
       <!-- .logo区域 -->
       <div class="login-head">
@@ -8,10 +11,18 @@
       </div>
       <!-- 登录的不同状态 -->
       <div class="state">
-        <span @click="isshow = 0" :class="{ color: isshow == 0 }">
+        <span
+          @click="isshow = 0"
+          :class="{ color: isshow == 0 }"
+          style="font-size: 20px;"
+        >
           邮箱登录
         </span>
-        <span @click="isshow = 1" :class="{ color: isshow == 1 }">
+        <span
+          @click="isshow = 1"
+          :class="{ color: isshow == 1 }"
+          style="font-size: 20px;"
+        >
           短信登录
         </span>
       </div>
@@ -25,11 +36,17 @@
       >
         <!--  邮箱密码通过双向绑定获取 -->
         <el-form-item prop="email">
+          <div style="color:#999999;font-size: 18px;">
+            邮箱
+          </div>
           <el-input v-model="form.email" placeholder="请输入邮箱">
-            <i slot="prefix" class="el-input__icon el-icon-s-custom"></i>
+            <i slot="prefix" class="el-input__icon el-icon-message"></i>
           </el-input>
         </el-form-item>
         <el-form-item prop="password">
+          <div style="color:#999999;font-size: 18px;">
+            密码
+          </div>
           <el-input
             v-model="form.password"
             placeholder="请输入登录密码"
@@ -37,6 +54,18 @@
           >
             <i slot="prefix" class="el-input__icon el-icon-unlock"></i>
           </el-input>
+        </el-form-item>
+        <el-form-item prop="isAgree">
+          <el-checkbox
+            class="checkbox"
+            label="记住登录邮箱"
+            name="type"
+            v-model="form.isAgree"
+          ></el-checkbox>
+          <span @click="changePassword" style="font-size: 16px;"
+            >忘记密码?</span
+          >
+          <span @click="register" style="font-size: 16px;">注册新用户</span>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -46,16 +75,6 @@
             :loading="isLoading"
             >登陆</el-button
           >
-        </el-form-item>
-        <el-form-item prop="isAgree">
-          <el-checkbox
-            class="checkbox"
-            label="记住登录邮箱"
-            name="type"
-            v-model="form.isAgree"
-          ></el-checkbox>
-          <span @click="changePassword">忘记密码?</span>
-          <span @click="register">注册新用户</span>
         </el-form-item>
       </el-form>
 
@@ -69,34 +88,38 @@
       >
         <!--  手机号验证码通过双向绑定获取里面的值 -->
         <el-form-item prop="mobile">
+          <div style="color:#999999;font-size: 18px;">手机号</div>
           <el-input v-model="mobForm.mobile" placeholder="请输入手机号">
             <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
           </el-input>
         </el-form-item>
         <el-form-item prop="code">
+          <div style="color:#999999;font-size: 18px;">
+            验证码
+          </div>
           <el-input
             v-model="mobForm.code"
             placeholder="请输入短信验证码"
             class="input"
           >
-            <i slot="prefix" class="el-input__icon el-icon-message"></i>
+            <el-button
+              style="padding-right:25px;padding-top:35px"
+              slot="suffix"
+              type="text"
+              :disabled="isSend"
+              @click="getVerification"
+            >
+              发送验证码
+            </el-button>
+            <i slot="prefix" class="el-input__icon el-icon-s-comment"></i>
           </el-input>
-          <el-button
+          <!-- <el-button
             class="btnMes"
             :disabled="isSend"
             @click="getVerification"
             type="primary"
             >{{ btnMes }}</el-button
-          >
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            @click="Mobilelogin"
-            type="primary"
-            class="login-btn"
-            :loading="isLoading"
-            >登陆</el-button
-          >
+          > -->
         </el-form-item>
         <el-form-item prop="isAgree">
           <el-checkbox
@@ -105,10 +128,24 @@
             name="type"
             v-model="mobForm.checkbox"
           ></el-checkbox>
-          <span @click="changePassword">忘记密码?</span>
-          <span @click="register">注册新用户</span>
+          <span @click="changePassword" style="font-size: 16px;"
+            >忘记密码?</span
+          >
+          <span @click="register" style="font-size: 16px;">注册新用户</span>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            @click="Mobilelogin"
+            type="primary"
+            class="login-btn"
+            :loading="isLoading"
+            >登录</el-button
+          >
         </el-form-item>
       </el-form>
+    </div>
+    <div class="wenzi">
+      Copyright © 2021 www.OurBIM.com, All Rights Reserved.
     </div>
   </div>
 </template>
@@ -368,26 +405,69 @@ export default {
 
 <style scoped lang="less">
 // 书写样式铺满整
-body {
+body,
+html {
   font-size: 0;
 }
 .login-container {
+  width: 100%;
+  height: 100%;
   position: fixed;
   left: 0;
   top: 0;
   right: 0;
   bottom: 0;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #f0f2f5;
+  vertical-align: middle;
+  background-image: url(./bg.png);
   background-size: cover;
+  .picture {
+    float: left;
+    width: 625px;
+    height: 802px;
+    margin-right: 623px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
   .login-form-wrap {
-    min-width: 130px;
-    min-height: 150px;
-    padding: 5px 50px 1px 40px;
-    background-color: #fff;
+    /deep/ .el-form-item__error {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+    }
+    // 输入框
+    /deep/ .el-input__inner {
+      height: 65px;
+      margin-top: 25px;
+      font-size: 20px;
+      background-color: transparent;
+      padding-left: 90px;
+    }
+    /deep/ .el-checkbox__label {
+      font-size: 20px;
+    }
+    /deep/ .el-checkbox__inner {
+      width: 20px;
+      height: 20px;
+      background-color: transparent;
+    }
+    // 输入框内图标
+    /deep/ .el-input__icon {
+      font-size: 25px;
+      margin-top: 15px;
+      margin-left: 36px;
+    }
+    /deep/ .el-checkbox__inner::after {
+      width: 9px;
+      height: 13px;
+    }
+    float: right;
+    width: 520px;
+    height: 636px;
     .login-head {
       position: relative;
       display: flex;
@@ -413,7 +493,9 @@ body {
       align-items: center;
       padding-bottom: 30px;
       cursor: pointer;
-
+      span {
+        color: #999999;
+      }
       .color {
         color: #0097fe;
         border-bottom: 1px solid #0097fe;
@@ -429,13 +511,16 @@ body {
     .login-form {
       .login-btn {
         width: 100%;
+        height: 60px;
+        margin-top: 40px;
+        font-size: 25px;
       }
       .btnMes {
-        width: 115px;
-        height: 41px;
+        height: 50px;
+        margin-top: 15px;
       }
       .input {
-        width: 315px;
+        width: 100%;
         margin-right: 10px;
       }
       span {
@@ -455,6 +540,14 @@ body {
         color: #0097de;
       }
     }
+  }
+  .wenzi {
+    width: 100%;
+    color: #999999;
+    position: fixed;
+    bottom: 21px;
+    text-align: center;
+    font-size: 12px;
   }
 }
 </style>
