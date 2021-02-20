@@ -2,7 +2,7 @@
  # @Author: zk
  # @Date: 2021-02-20 13:37:06
  # @LastEditors: zk
- # @LastEditTime: 2021-02-20 16:53:40
+ # @LastEditTime: 2021-02-20 17:01:56
  # @description: 
 ### 
 image_version=`date +%Y%m%d%H%M`;
