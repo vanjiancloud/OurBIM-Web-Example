@@ -12,13 +12,16 @@
       应用场景，实现在Web平台中进行漫游浏览和基于API进行二次开发应用，提升BIM数据价值。
     </div>
     <div class="second"></div>
+    <!-- 尾部 -->
+    <my-footer></my-footer>
   </div>
 </template>
 
 <script>
+import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 export default {
-  components: { myHeader }
+  components: { myHeader, MyFooter }
 
 }
 </script>

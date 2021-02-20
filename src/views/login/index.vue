@@ -6,8 +6,12 @@
     <div class="login-form-wrap">
       <!-- .logo区域 -->
       <div class="login-head">
-        <i class="el-icon-arrow-left"></i>
-        <span class="logo"> </span>
+        <div class="icon">
+          <img src="./sicon.png" alt="" />
+        </div>
+        <div class="logo">
+          <img src="./logo.png" alt="" />
+        </div>
       </div>
       <!-- 登录的不同状态 -->
       <div class="state">
@@ -179,7 +183,7 @@ export default {
           {
             pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
             message:
-              '请输入正确的邮箱,字符为英文&数字，结尾必须有“@xx.com/cn”字符',
+              '请输入正确邮箱',
             trigger: 'blur'
           }
         ],
@@ -434,6 +438,7 @@ html {
     }
   }
   .login-form-wrap {
+    // 错误提示
     /deep/ .el-form-item__error {
       position: absolute;
       left: 0;
@@ -446,6 +451,7 @@ html {
       font-size: 20px;
       background-color: transparent;
       padding-left: 90px;
+      color: #fff;
     }
     /deep/ .el-checkbox__label {
       font-size: 20px;
@@ -474,16 +480,13 @@ html {
       .logo {
         width: 250px;
         height: 65px;
-        padding-bottom: 30px;
-        position: absolute;
-        left: 80px;
-        background: url('../../assets/logo_index.png') no-repeat;
-        background-size: contain;
-      }
-      .el-icon-arrow-left {
-        color: #ff6600;
-        padding: 40px 150px 0 0;
-        font-size: 40px;
+        margin-left: 130px;
+        margin-bottom: 60px;
+        margin-top: -10px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
       }
     }
     .state {

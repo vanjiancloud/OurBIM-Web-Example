@@ -7,36 +7,61 @@
       <!-- .logo区域 -->
       <div class="login-head">
         <i class="el-icon-arrow-left" @click="toReturn"></i>
-        <span class="logo"> </span>
+        <div class="logo">
+          <img src="./logo.png" alt="">
+        </div>
       </div>
+
       <div class="state">
         <span>
           重置密码
         </span>
       </div>
+
       <!-- 短信登录的表单 -->
+
       <el-form :rules="rules" :model="form" ref="form" class="login-form">
         <el-form-item prop="mobile">
           <el-input v-model="form.mobile" placeholder="请输入账号手机号码">
             <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
           </el-input>
         </el-form-item>
+
         <el-form-item prop="code">
-          <el-input
+          <!-- <el-input
             v-model="form.code"
             placeholder="请输入短信验证码"
             class="input"
           >
             <i slot="prefix" class="el-input__icon el-icon-message"></i>
           </el-input>
+
           <el-button
             class="btnMes"
             :disabled="isSend"
             @click="getCode"
             type="primary"
             >{{ btnMes }}</el-button
+          > -->
+          <el-input
+            v-model="form.code"
+            placeholder="请输入短信验证码"
+            class="input"
           >
+            <el-button
+              style="padding-right:25px;padding-top:35px"
+              slot="suffix"
+              type="text"
+              class="btnMes"
+              :disabled="isSend"
+              @click="getCode"
+            >
+              发送验证码
+            </el-button>
+            <i slot="prefix" class="el-input__icon el-icon-s-comment"></i>
+          </el-input>
         </el-form-item>
+
         <el-form-item>
           <el-button
             @click="toNext"
@@ -48,55 +73,74 @@
         </el-form-item>
       </el-form>
     </div>
-    <div class="wenzi">
-      Copyright © 2021 www.OurBIM.com, All Rights Reserved.
-    </div>
   </div>
 </template>
 
 <script>
 import { sendMsgCode, updateJudgeMsg } from '../../api/my'
+
 export default {
   name: 'changepassword',
+
   data () {
     return {
       isSend: false, // 是否显示
+
       delay: 0, // 倒计时
+
       // 按钮的文本
+
       btnMes: '获取验证码',
+
       isLoading: false, // 是否正在登陆
+
       form: {
         mobile: '',
+
         code: '',
+
         msgType: '3'
       },
+
       // 定义验证规则rules
+
       rules: {
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
+
           {
             pattern: /^1[3|4|5|7|8][0-9]{9}$/,
+
             message: '请输入合法的手机号',
+
             trigger: 'blur'
           }
         ],
+
         code: [
           { required: true, message: '请输入验证码', trigger: 'blur' },
+
           {
             pattern: /^\d{4}|\d{6}$/,
+
             message: '请输入合法的验证码',
+
             trigger: 'blur'
           }
         ]
       }
     }
   },
+
   methods: {
     // 返回登录页
+
     toReturn () {
       this.$router.push('../../login')
     },
+
     // 跳转到重制密码
+
     toNext () {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -104,18 +148,24 @@ export default {
         }
       })
     },
+
     // 重制密码
+
     remakePas () {
       updateJudgeMsg({
         mobile: this.form.mobile,
+
         code: this.form.code
       }).then(res => {
         console.log(res)
+
         if (res.data.code === 0) {
           this.$router.push({
             name: 'newPassword',
+
             query: {
               mobile: this.form.mobile,
+
               code: this.form.code
             }
           })
@@ -128,7 +178,9 @@ export default {
         }
       })
     },
+
     // 点击获取验证码
+
     getCode () {
       this.$refs.form.validateField('mobile', codeError => {
         if (!codeError) {
@@ -136,41 +188,57 @@ export default {
         }
       })
     },
+
     // 获取验证码
+
     toGetCode () {
       sendMsgCode({
         mobile: this.form.mobile,
+
         msgType: this.form.msgType
       })
         .then(res => {
           console.log(res)
+
           if (res.data.code === 0) {
             this.$message.success('获取成功')
+
             this.delay = 60
+
             this.btnMes = `${this.delay}S后继续`
+
             this.isSend = true
+
             const interId = setInterval(() => {
               this.delay--
+
               if (this.delay === 0) {
                 clearInterval(interId)
+
                 this.btnMes = '获取验证码'
+
                 this.isSend = false
+
                 return
               }
+
               this.btnMes = `${this.delay}S后继续`
             }, 1000)
           } else {
             this.$message.error('短信请求失败，您的操作过于频繁，请稍后在试')
           }
         })
+
         .catch(err => {
           console.log(err)
+
           this.$message.error('获取失败请重新获取')
         })
     }
   }
 }
 </script>
+
 <style scoped lang="less">
 .login-container {
   width: 100%;
@@ -181,8 +249,8 @@ export default {
   right: 0;
   bottom: 0;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   background-image: url(./bg.png);
   background-size: cover;
   .picture {
@@ -196,83 +264,72 @@ export default {
     }
   }
   .login-form-wrap {
-    /deep/ .el-form-item__error {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-    }
+    width: 520px;
+    height: 636px;
+    // background-color: #fff;
+    // 输入框
     /deep/ .el-input__inner {
       height: 65px;
       margin-top: 25px;
       font-size: 20px;
       background-color: transparent;
+      padding-left: 90px;
+      color: #fff;
     }
-    /deep/ .el-checkbox__label {
-      font-size: 20px;
-    }
-    /deep/ .el-checkbox__inner {
-      width: 20px;
-      height: 20px;
-      background-color: transparent;
-    }
+    // 输入框内图标
     /deep/ .el-input__icon {
       font-size: 25px;
       margin-top: 15px;
+      margin-left: 36px;
     }
-    /deep/ .el-checkbox__inner::after {
-      width: 9px;
-      height: 13px;
+    // 按钮内文字
+    /deep/ .el-button--primary {
+      font-size: 25px;
     }
-    float: left;
-    width: 520px;
-    height: 636px;
     .login-head {
       position: relative;
       display: flex;
-      // justify-content: center;
       .logo {
-        width: 250px;
-        height: 65px;
-        padding-bottom: 30px;
-        position: absolute;
-        left: 80px;
-        background: url('../../assets/logo_index.png') no-repeat;
-        background-size: contain;
+        width: 232px;
+        height: 56px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
       }
       .el-icon-arrow-left {
-        color: #ff6600;
-        padding: 40px 150px 0 0;
-        font-size: 40px;
+        color: #0097fe;
+        // padding-top: 10px;
+        margin-right: 100px;
+        font-size: 60px;
       }
     }
     .state {
-      font-size: 25px;
+      font-size: 30px;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin-top: 20px;
-      margin-bottom: 30px;
+      padding-bottom: 30px;
+      padding-top: 20px;
       span {
         padding-right: 20px;
         padding: 15px 70px 15px 70px;
         color: #999999;
       }
     }
+
     .login-form {
       .login-btn {
         width: 100%;
         height: 60px;
-        font-size: 22px;
+        margin-top: 50px;
       }
       .input {
-        width: 350px;
         margin-right: 10px;
       }
       .btnMes {
-        height: 65px;
-        float: right;
-        margin-top: 25px;
-        font-size: 20px;
+        width: 104px;
+        height: 41px;
       }
       span {
         padding-left: 20px;
@@ -281,14 +338,6 @@ export default {
         display: inline;
       }
     }
-  }
-  .wenzi {
-    width: 100%;
-    color: #999999;
-    position: fixed;
-    bottom: 21px;
-    text-align: center;
-    font-size: 12px;
   }
 }
 </style>

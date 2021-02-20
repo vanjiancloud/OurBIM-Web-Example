@@ -180,7 +180,7 @@ export default {
           }
         ],
         email: [
-          { required: true, message: '请输入合法邮箱', trigger: 'blur' },
+          { required: true, message: '请输入正确邮箱,字符为英文&数字，结尾必须有“@xx.com/cn”字符', trigger: 'blur' },
           {
             pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
             message: '请输入正确的邮箱',
@@ -441,11 +441,14 @@ export default {
         left: 0;
         top: 60px;
       }
+      // 输入框
       /deep/ .el-input__inner {
         height: 65px;
         margin-bottom: 20px;
         font-size: 20px;
+        padding-left: 90px;
         background-color: transparent;
+        color: #fff;
       }
       /deep/ .el-checkbox__label {
         font-size: 20px;
@@ -458,7 +461,7 @@ export default {
       /deep/ .el-input__prefix {
         font-size: 20px;
         margin-top: 13px;
-        // margin-left: 10px;
+        margin-left: 36px;
       }
       /deep/ .el-checkbox__inner::after {
         width: 9px;

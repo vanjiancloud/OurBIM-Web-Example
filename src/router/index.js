@@ -98,7 +98,7 @@ const routes = [
     // 我的发布
     path: '/issue',
     name: 'issue',
-    component: () => import('../views/userCenter/issue'),
+    component: () => import('../views/issue/index.vue'),
     meta: {
       title: '我的发布'
     }
@@ -107,7 +107,7 @@ const routes = [
     // 应用管理
     path: '/manage',
     name: 'manage',
-    component: () => import('../views/userCenter/manage'),
+    component: () => import('../views/manage/index.vue'),
     meta: {
       title: '应用管理'
     }
@@ -116,7 +116,7 @@ const routes = [
     // 创建应用
     path: '/found',
     name: 'found',
-    component: () => import('../views/userCenter/found'),
+    component: () => import('../views/found/index.vue'),
     meta: {
       title: '创建应用'
     }
@@ -125,7 +125,7 @@ const routes = [
     // 账户管理
     path: '/bill',
     name: 'bill',
-    component: () => import('../views/userCenter/bill'),
+    component: () => import('../views/bill/index.vue'),
     meta: {
       title: '账户管理'
     }
