@@ -1,0 +1,432 @@
+<template>
+  <div class="box">
+    <!-- 头部 -->
+    <my-header></my-header>
+    <!-- 中间 -->
+    <my-main></my-main>
+    <!-- 内容 -->
+    <div class="detail">
+      <div class="container">
+        <!-- 我的应用 -->
+        <div class="content" v-show="isShow == 1">
+          <!-- 消息提示 -->
+          <div class="record">
+            <div class="left">
+              您共有3个应用
+            </div>
+          </div>
+          <!-- 列表展示 -->
+          <div class="list">
+            <div class="lis">
+              <ul style="padding: 0;margin: 0;">
+                <li>
+                  <div class="img">
+                    <img src="../components/timg.jpg" alt="" class="tupian" />
+                  </div>
+                  <div class="write">
+                    <h3>钱龙广场1.0</h3>
+                    节点: 0/5
+                  </div>
+                  <div class="line"></div>
+                  <div class="btn">
+                    <el-button>进入应用</el-button>
+                  </div>
+                </li>
+                <li>
+                  <div class="img">
+                    <img src="../components/timg.jpg" alt="" class="tupian" />
+                  </div>
+                  <div class="write">
+                    <h3>钱龙广场1.0</h3>
+                    节点: 0/5
+                  </div>
+                  <div class="line"></div>
+                  <div class="btn">
+                    <el-button>进入应用</el-button>
+                  </div>
+                </li>
+                <li>
+                  <div class="img">
+                    <img src="../components/timg.jpg" alt="" class="tupian" />
+                  </div>
+                  <div class="write">
+                    <h3>钱龙广场1.0</h3>
+                    节点: 0/5
+                  </div>
+                  <div class="line"></div>
+                  <div class="btn">
+                    <el-button>进入应用</el-button>
+                  </div>
+                </li>
+                <li>
+                  <div class="img">
+                    <img src="../components/timg.jpg" alt="" class="tupian" />
+                  </div>
+                  <div class="write">
+                    <h3>钱龙广场1.0</h3>
+                    节点: 0/5
+                  </div>
+                  <div class="line"></div>
+                  <div class="btn">
+                    <el-button>进入应用</el-button>
+                  </div>
+                </li>
+                <li>
+                  <div class="img">
+                    <img src="../components/timg.jpg" alt="" class="tupian" />
+                  </div>
+                  <div class="write">
+                    <h3>钱龙广场1.0</h3>
+                    节点: 0/5
+                  </div>
+                  <div class="line"></div>
+                  <div class="btn">
+                    <el-button>进入应用</el-button>
+                  </div>
+                </li>
+                <li>
+                  <div class="img">
+                    <img src="../components/timg.jpg" alt="" class="tupian" />
+                  </div>
+                  <div class="write">
+                    <h3>钱龙广场1.0</h3>
+                    节点: 0/5
+                  </div>
+                  <div class="line"></div>
+                  <div class="btn">
+                    <el-button>进入应用</el-button>
+                  </div>
+                </li>
+                <li>
+                  <div class="img">
+                    <img src="../components/timg.jpg" alt="" class="tupian" />
+                  </div>
+                  <div class="write">
+                    <h3>钱龙广场1.0</h3>
+                    节点: 0/5
+                  </div>
+                  <div class="line"></div>
+                  <div class="btn">
+                    <el-button>进入应用</el-button>
+                  </div>
+                </li>
+                <li>
+                  <div class="img">
+                    <img src="../components/timg.jpg" alt="" class="tupian" />
+                  </div>
+                  <div class="write">
+                    <h3>钱龙广场1.0</h3>
+                    节点: 0/5
+                  </div>
+                  <div class="line"></div>
+                  <div class="btn">
+                    <el-button>进入应用</el-button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <!-- 分页 -->
+            <div class="page">
+              <el-pagination
+                @current-change="handleCurrentChange"
+                layout="prev, pager, next"
+                background
+                :total="400"
+              >
+              </el-pagination>
+            </div>
+          </div>
+        </div>
+
+        <!-- 创建应用 -->
+
+        <!-- 账单管理 -->
+
+      </div>
+    </div>
+    <!-- 尾部 -->
+    <my-footer></my-footer>
+  </div>
+</template>
+
+<script>
+import MyFooter from '../components/myFooter.vue'
+import myHeader from '../components/myHeader.vue'
+import MyMain from '../components/myMain.vue'
+export default {
+  components: { myHeader, MyMain, MyFooter },
+  data () {
+    return {
+      islive: false,
+      input: '',
+      isShow: 1,
+      classify: '全部',
+      isHand: 6,
+      url:
+        'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
+      tableData: [
+        {
+          id: '1',
+          use: '钱龙房产',
+          time: '2021-01-01 12:34:56',
+          children: [
+            {
+              id: 11,
+              handle: 'lalal',
+              role: '王小虎',
+              address: '上海市普陀区金沙江路 1519 弄'
+            },
+            {
+              id: 12,
+              handle: '66666666',
+              role: '虎',
+              address: '上海市普陀区金沙江路 1519 弄'
+            }
+          ]
+        },
+        {
+          id: '2',
+          use: '钱龙',
+          time: '2021-01-01 12:34:56',
+          children: [
+            {
+              id: 21,
+              date: '2016-05-01',
+              name: '王小虎',
+              address: '上海市普陀区金沙江路 1519 弄'
+            },
+            {
+              id: 22,
+              date: '2016-05-01',
+              name: '王小虎',
+              address: '上海市普陀区金沙江路 1519 弄'
+            }
+          ]
+        }
+      ]
+    }
+  },
+  methods: {
+    checkitem (item) {
+      this.classify = item
+    },
+    English () {
+      this.$i18n.locale = 'en'
+      this.classify = 'whole'
+    },
+    Chinese () {
+      this.$i18n.locale = 'zh'
+      this.classify = '全部'
+    },
+    handleClick () {
+      alert('button click')
+    },
+    // 分页
+    handleCurrentChange () {},
+    toshow () {
+      this.islive = !this.islive
+    }
+  }
+}
+</script>
+
+<style lang="less" scoped>
+.v-enter,
+.v-leave-to {
+  opacity: 0;
+  transform: translateX(150px);
+}
+.v-enter-active,
+.v-leave-active {
+  transition: all 0.5s ease;
+}
+a {
+  text-decoration: none;
+  font-size: 16px;
+  color: #000;
+  font-family: PingFang SC;
+}
+a:hover {
+  color: #409eff;
+}
+.detail {
+  .content {
+    margin-left: 41px;
+    overflow: hidden;
+    .record {
+      width: 100%;
+      height: 40px;
+      margin-top: 38px;
+      position: relative;
+      .left {
+        height: 40px;
+      }
+      .right {
+        position: absolute;
+        right: 20px;
+        top: 0px;
+      }
+    }
+    .list {
+      .lis {
+        width: 1379px;
+        height: 668px;
+        li {
+          width: 310px;
+          height: 300px;
+          margin-right: 30px;
+          margin-bottom: 34px;
+          float: left;
+          list-style: none;
+          box-sizing: border-box;
+          overflow: hidden;
+          .img {
+            width: 315px;
+            height: 200px;
+            .tupian {
+              width: 100%;
+              height: 100%;
+            }
+          }
+          .write {
+            height: 100px;
+            background-color: #fff;
+            padding-top: 5px;
+            padding-left: 20px;
+          }
+          .line {
+            width: 300px;
+            height: 1px;
+            background-color: #e4e4e4;
+          }
+          .btn {
+            width: 300px;
+            height: 100px;
+            background-color: #fff;
+            padding-left: 15px;
+            line-height: 100px;
+          }
+          .photo {
+            width: 300px;
+            height: 100px;
+            background-color: #fff;
+            padding-left: 15px;
+            line-height: 100px;
+            .big {
+              width: 60px;
+              height: 60px;
+              border-radius: 50%;
+              float: left;
+              margin-top: 20px;
+              .min {
+                width: 100%;
+                height: 100%;
+              }
+            }
+          }
+        }
+      }
+    }
+    table {
+      width: 100%;
+      margin-top: 5px;
+      margin-bottom: 50px;
+      border-collapse: collapse;
+      font-size: 16px;
+      tr {
+        height: 50px;
+      }
+      th {
+        background-color: #fafafa;
+      }
+      td {
+        background-color: #fff;
+      }
+    }
+    table,
+    th,
+    td {
+      border: 1px solid black;
+      text-align: center;
+    }
+    .dropdown {
+      width: 200px;
+      height: 300px;
+      float: left;
+      margin-right: 100px;
+      div {
+        width: 100%;
+        height: 50px;
+        border-bottom: 1px solid #f2f2f2;
+        line-height: 50px;
+
+        margin-right: 50px;
+        button:focus {
+          background-color: #fff;
+        }
+        button {
+          padding-left: 50px;
+          height: 100%;
+          width: 100%;
+          border: none;
+          outline: none;
+          font-size: 16px;
+          text-align: left;
+          background-color: #f9f9f9;
+        }
+        button:hover {
+          color: #41b19c;
+          cursor: pointer;
+        }
+      }
+    }
+    .neirong {
+      float: left;
+      width: 1000px;
+      // background-color: orange;
+      .geren {
+        float: left;
+      }
+      .xinxi {
+        float: left;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        text-align: center;
+      }
+      table {
+        width: 400px;
+      }
+      .el-input {
+        width: 400px;
+      }
+      .dingdan {
+        width: 100%;
+      }
+      .demo-table-expand {
+        font-size: 0;
+      }
+      .demo-table-expand label {
+        width: 90px;
+        color: #99a9bf;
+      }
+      .demo-table-expand .el-form-item {
+        margin-right: 0;
+        margin-bottom: 0;
+        width: 50%;
+      }
+    }
+    .xia {
+      text-align: center;
+      margin-bottom: 100px;
+    }
+  }
+  .page {
+    width: 550px;
+    margin: 0 auto;
+    margin-bottom: 40px;
+  }
+}
+</style>

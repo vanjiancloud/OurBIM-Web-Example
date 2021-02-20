@@ -1,0 +1,502 @@
+<template>
+  <div class="box">
+    <div class="picture">
+      <img src="../login/img.png" alt="" />
+    </div>
+    <!-- 注册页面 -->
+    <div class="zhuce">
+      <!-- 头部区域 -->
+      <div class="header">
+        <div class="icon">
+          <img src="./sicon.png" alt="" />
+        </div>
+        <div class="logo">
+          <img src="./logo.png" alt="" />
+        </div>
+      </div>
+      <!-- 主体区域 -->
+      <div class="body">
+        <el-form ref="ruleForm" :model="ruleForm" :rules="rules">
+          <!-- 邮箱 -->
+          <el-form-item label="" prop="email">
+            <el-input
+              v-model="ruleForm.email"
+              placeholder="请输入邮箱"
+              @blur="emailBlur"
+            >
+              <i slot="prefix" class="el-icon-message"></i>
+            </el-input>
+            <div class="hint">
+              <span style="font-size: 14px;">
+                <i style="color:#e4551b;">*</i>
+                您将同意我们不定期给您发送OurBIM产品相关资讯邮件
+              </span>
+            </div>
+          </el-form-item>
+          <!-- 手机号 -->
+          <el-form-item label="" prop="mobile">
+            <el-input
+              v-model="ruleForm.mobile"
+              placeholder="请输入手机号码"
+              @blur="mobileBlur"
+            >
+              <i slot="prefix" class="el-icon-mobile-phone"></i>
+            </el-input>
+          </el-form-item>
+          <!-- 验证码 -->
+          <el-form-item label="" prop="code">
+            <el-input
+              v-model="ruleForm.code"
+              placeholder="请输入短信验证码"
+              label-width="80px"
+            >
+              <el-button
+                style="padding-right:27px;padding-top:18px"
+                slot="suffix"
+                type="text"
+                :disabled="isSend"
+                @click="getcode"
+              >
+                发送验证码
+              </el-button>
+              <i slot="prefix" class="el-icon-s-comment"></i>
+            </el-input>
+            <!-- <el-button
+              :disabled="isSend"
+              @click="getcode"
+              type="primary"
+              class="btn-one"
+              >{{ btnMes }}</el-button
+            > -->
+          </el-form-item>
+          <!-- 密码 -->
+          <el-form-item label="" prop="password">
+            <el-input
+              show-password
+              v-model="ruleForm.password"
+              placeholder="请设置6至20位登录密码"
+            >
+              <i slot="prefix" class="el-icon-lock"></i>
+            </el-input>
+          </el-form-item>
+          <!-- 再次输入密码 -->
+          <el-form-item label="" prop="newPassword">
+            <el-input
+              show-password
+              v-model="ruleForm.newPassword"
+              placeholder="请再次输入登录密码"
+            >
+              <i slot="prefix" class="el-icon-lock"></i>
+            </el-input>
+          </el-form-item>
+          <!-- 勾选状态 -->
+          <el-form-item label="" prop="checked" class="check">
+            <el-checkbox v-model="ruleForm.checked"
+              >我同意
+              <a
+                class="link"
+                @click="toxieyi"
+                style="text-decoration:none; font-size: 14px;"
+              >
+                《OurBIM用户服务协议》</a
+              >
+            </el-checkbox>
+          </el-form-item>
+        </el-form>
+        <!-- 底部区域 -->
+        <div class="footer">
+          <div>
+            <el-button
+              type="primary"
+              class="btn"
+              @click="register"
+              :loading="isLoading"
+              >注册</el-button
+            >
+          </div>
+          <div class="footer-size">
+            <span
+              ><a
+                href="../login/index.vue"
+                style="text-decoration:none;font-size: 14px;color:#00AAF0 "
+                >已有账号，立即登录</a
+              ></span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="wenzi">
+      Copyright © 2021 www.OurBIM.com, All Rights Reserved.
+    </div>
+  </div>
+</template>
+<script>
+import {
+  getRegister,
+  repeatMobile,
+  repeatEmail,
+  sendMsgCode
+} from '@/api/my.js'
+export default {
+  data () {
+    return {
+      // 背景图
+      dgjt: {
+        background:
+          ' url(' +
+          require('../../assets/img/bigtu.png') +
+          ') no-repeat scroll 0 bottom'
+      },
+      Decorationmap: {
+        background:
+          ' url(' +
+          require('../../assets/img/Decorationmap.png') +
+          ') no-repeat '
+      },
+      isSend: false, // 是否显示
+      isLoading: false, // 是否正在登陆
+      delay: 0, // 倒计时
+      btnMes: '获取验证码', // 按钮的文本
+      // 验证表单数据
+      ruleForm: {
+        email: '',
+        mobile: '',
+        code: '',
+        password: '',
+        newPassword: '',
+        msgType: '1',
+        checked: false, // 复选框的状态
+        activeUrl: 'window.location.href'
+      },
+      // 验证规则
+      rules: {
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          {
+            pattern: /^1[3|4|5|7|8][0-9]{9}$/,
+            message: '请输入正确的11位手机号',
+            trigger: 'blur'
+          }
+        ],
+        email: [
+          { required: true, message: '请输入正确邮箱,字符为英文&数字，结尾必须有“@xx.com/cn”字符', trigger: 'blur' },
+          {
+            pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+            message: '请输入正确的邮箱',
+            trigger: 'blur'
+          }
+        ],
+        password: [
+          {
+            required: true,
+            message: '请设置密码,字符为英文&数字&英文符号，位数6-20',
+            trigger: 'blur'
+          },
+          {
+            pattern: /^[\w.]{6,20}$/,
+            message: '请设置密码,字符为英文&数字&英文符号，位数6-20',
+            trigger: 'blur'
+          }
+        ],
+        newPassword: [
+          {
+            required: true,
+            message: '请再次输入您设置的密码',
+            trigger: 'blur'
+          },
+          {
+            validator: (rule, value, callback) => {
+              if (value === '') {
+                callback(new Error('请再次输入密码'))
+              } else if (value !== this.ruleForm.password) {
+                callback(new Error('两次输入密码不一致'))
+              } else {
+                callback()
+              }
+            },
+            trigger: 'blur'
+          }
+        ],
+        code: [
+          {
+            required: true,
+            message: '请输入验证码',
+            trigger: 'blur'
+          },
+          {
+            pattern: /^\d{4}|\d{6}$/,
+            message: '您输入的验证码不正确',
+            trigger: 'blur'
+          }
+        ],
+        checked: [
+          {
+            // 自定义规则
+            validator: function (rule, value, callback) {
+              if (value) {
+                // 选中
+                callback()
+              } else {
+                // 用户不同意
+                callback(new Error('请勾选！'))
+              }
+            },
+            trigger: 'blur'
+          }
+        ]
+      }
+    }
+  },
+  methods: {
+    // 点击注册
+    register () {
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          this.doRegister()
+        }
+      })
+    },
+    // 注册信息
+    doRegister () {
+      getRegister({
+        email: this.ruleForm.email,
+        mobile: this.ruleForm.mobile,
+        code: this.ruleForm.code,
+        password: this.ruleForm.password,
+        activeUrl: window.location.href
+      })
+        .then(res => {
+          if (res.data.code === 0) {
+            this.$message.success('注册成功')
+            this.$router.push('/registerSucceed')
+          } else if (res.data.code === 2) {
+            this.$message.error('该邮箱已经注册过了')
+          } else if (res.data.code === 3) {
+            this.$message.error('该手机号已经注册过了')
+          } else {
+            this.$message.error('验证码错误')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('注册失败')
+        })
+    },
+    // 点击跳转说明
+    toxieyi () {
+      this.$router.push('/protocol')
+    },
+
+    // 点击获取验证码
+    getcode () {
+      this.$refs.ruleForm.validateField('mobile', codeError => {
+        if (!codeError) {
+          this.toGetCode()
+        }
+      })
+    },
+    // 获取验证码
+    toGetCode () {
+      sendMsgCode({
+        mobile: this.ruleForm.mobile,
+        msgType: this.ruleForm.msgType
+      })
+        .then(res => {
+          console.log(res)
+          if (res.data.code === 0) {
+            this.$message.success('获取成功')
+            this.delay = 60
+            this.btnMes = `${this.delay}S后继续`
+            this.isSend = true
+            const interId = setInterval(() => {
+              this.delay--
+              if (this.delay === 0) {
+                clearInterval(interId)
+                this.btnMes = '获取验证码'
+                this.isSend = false
+                return
+              }
+              this.btnMes = `${this.delay}S后继续`
+            }, 1000)
+          } else if (res.data.code === 1) {
+            this.$message.error('短信请求失败')
+          } else {
+            this.$message.error('短信请求失败，您的操作过于频繁，请稍后在试')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('获取失败')
+        })
+    },
+    // 失去焦点获取手机号
+    mobileBlur () {
+      this.$refs.ruleForm.validateField('mobile', mobileError => {
+        if (!mobileError) {
+          this.getmobileBlur()
+        }
+      })
+    },
+    getmobileBlur () {
+      repeatMobile({
+        mobile: this.ruleForm.mobile
+      })
+        .then(res => {
+          console.log(res)
+          if (res.data.code === 0) {
+            this.$message.success('可以使用此手机号')
+          } else {
+            this.$message.error('该手机号已被注册，请更换手机号')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('此手机号已经注册过了')
+        })
+    },
+    // 失去焦点获取
+    emailBlur () {
+      this.$refs.ruleForm.validateField('email', emailError => {
+        if (!emailError) {
+          this.getemailBlur()
+        }
+      })
+    },
+    getemailBlur () {
+      repeatEmail({
+        email: this.ruleForm.email
+      })
+        .then(res => {
+          console.log(res)
+          if (res.data.code === 0) {
+            this.$message.success('可以使用此邮箱')
+          } else {
+            this.$message.error('该邮箱已被注册，请更换邮箱')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('此邮箱已经注册过了')
+        })
+    }
+  }
+}
+</script>
+<style lang="less" scoped>
+.box {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url(../login/bg.png);
+  .picture {
+    float: left;
+    width: 625px;
+    height: 802px;
+    margin-right: 623px;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .zhuce {
+    float: left;
+    width: 521px;
+    height: 802px;
+    border-radius: 10px;
+    .header {
+      width: 521px;
+      height: 46px;
+      margin-bottom: 50px;
+      display: flex;
+      align-items: center;
+      .logo {
+        width: 232px;
+        height: 46px;
+        margin-left: 128px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .icon {
+        width: 16px;
+        height: 32px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+    .body {
+      /deep/ .el-form-item__error {
+        position: absolute;
+        left: 0;
+        top: 60px;
+      }
+      // 输入框
+      /deep/ .el-input__inner {
+        height: 65px;
+        margin-bottom: 20px;
+        font-size: 20px;
+        padding-left: 90px;
+        background-color: transparent;
+        color: #fff;
+      }
+      /deep/ .el-checkbox__label {
+        font-size: 20px;
+      }
+      /deep/ .el-checkbox__inner {
+        width: 20px;
+        height: 20px;
+        background-color: transparent;
+      }
+      /deep/ .el-input__prefix {
+        font-size: 20px;
+        margin-top: 13px;
+        margin-left: 36px;
+      }
+      /deep/ .el-checkbox__inner::after {
+        width: 9px;
+        height: 13px;
+      }
+      .footer-size {
+        color: #0079fe;
+        text-align: center;
+      }
+      .link:hover {
+        color: #409eff;
+      }
+      .hint {
+        margin-top: -5px;
+        margin-bottom: -25px;
+        font-size: 4px;
+        color: #999999;
+      }
+      .btn {
+        width: 100%;
+        height: 60px;
+        margin-bottom: 12px;
+      }
+      .check {
+        margin-top: -30px;
+      }
+    }
+  }
+  .wenzi {
+    width: 100%;
+    color: #999999;
+    position: fixed;
+    bottom: 21px;
+    text-align: center;
+    font-size: 12px;
+  }
+}
+</style>
