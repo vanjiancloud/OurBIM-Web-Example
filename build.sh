@@ -2,7 +2,7 @@
  # @Author: zk
  # @Date: 2021-02-20 13:37:06
  # @LastEditors: zk
- # @LastEditTime: 2021-02-20 17:13:24
+ # @LastEditTime: 2021-02-20 17:23:24
  # @description: 
 ### 
 image_version=`date +%Y%m%d%H%M`;
@@ -13,4 +13,4 @@ docker stop ourbim_web_system || true \;
 docker rm ourbim_web_system || true \;
 docker build  -t ourbim/system .;
 docker images;
-docker run -p 7013:80 -d --name ourbim_web_system -v /mnt/web/docker/container/jenkins/jenkins_home/workspace/ourbim-web-system/dist:/usr/share/nginx/html -v /mnt/web/docker/container/jenkins/jenkins_home/workspace/ourbim-web-system/nginx.conf:/etc/nginx/nginx.conf ourbim/system;
+docker run -p 7012:80 -d --name ourbim_web_system -v /mnt/web/docker/container/jenkins/jenkins_home/workspace/ourbim-web-system/dist:/usr/share/nginx/html -v /mnt/web/docker/container/jenkins/jenkins_home/workspace/ourbim-web-system/nginx.conf:/etc/nginx/nginx.conf ourbim/system;
