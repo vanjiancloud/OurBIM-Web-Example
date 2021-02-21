@@ -110,6 +110,7 @@
               style="padding-right:25px;padding-top:35px"
               slot="suffix"
               type="text"
+
               :disabled="isSend"
               @click="getVerification"
             >

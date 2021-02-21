@@ -71,12 +71,12 @@
                 </div>
               </div>
             </transition> -->
-          <div @click="toshow">
+          <!-- <div @click="toshow">
             <span class="span"><i class="el-icon-search"></i></span>
-          </div>
+          </div> -->
         </li>
         <li class="second">
-          <a href="" class="li">{{ $t('register') }}</a>
+          <a href="../register/index.vue" class="li">{{ $t('register') }}</a>
         </li>
         <li>
           <a href="" class="third">{{ $t('login') }}</a>
@@ -92,7 +92,18 @@
 </template>
 
 <script>
-export default {}
+export default {
+  methods: {
+    English () {
+      this.$i18n.locale = 'en'
+      this.classify = 'whole'
+    },
+    Chinese () {
+      this.$i18n.locale = 'zh'
+      this.classify = '全部'
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>

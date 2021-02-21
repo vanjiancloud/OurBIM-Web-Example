@@ -5,15 +5,18 @@
       <div class="top">
         <div class="left">
           <div class="im">
-            <img src="./vue.jpg" alt="" />
+            <img src="./touxiang.png" alt="" />
           </div>
-          <div class="zi">Mark <br />2021-02-08</div>
+          <div class="zi">
+            <h3>Mark</h3>
+            2021-02-08
+            </div>
         </div>
         <div class="middle">
           <h3>资源占用</h3>
           剩余存储 &nbsp; 2.4Gb/10Gb
           <div class="tiao">
-            <h2>78%</h2>
+            <h2>70%</h2>
             <el-progress
               :text-inside="true"
               :stroke-width="20"
@@ -22,13 +25,13 @@
             </el-progress>
             <div class="tu">
               <div class="icon">
-                <img src="./应用.png" alt="" />
+                <img src="./yingyong.png" alt="" />
               </div>
               剩余应用&nbsp;&nbsp;无限
             </div>
             <div class="tutu">
               <div class="icon">
-                <img src="./节点.png" alt="" />
+                <img src="./jiedian.png" alt="" />
               </div>
               剩余节点&nbsp;3/3
             </div>
@@ -46,18 +49,36 @@
       </div>
       <!-- tab栏 -->
       <div class="tab">
-        <div class="first"><a href="">我的应用</a></div>
-        <div><a href="../userCenter/issue.vue">我的发布</a></div>
-        <div><a href="../userCenter/manage.vue">应用管理</a></div>
-        <div><a href="../userCenter/found.vue">创建应用</a></div>
-        <div class="last"><a href="../userCenter/bill.vue">账单管理</a></div>
+        <div class="first"><el-button plain @click="toUserCenter">我的应用</el-button></div>
+        <div><el-button plain @click="toIssue">我的发布</el-button></div>
+        <div><el-button plain @click="toManage">应用管理</el-button></div>
+        <div><el-button plain @click="toFound">创建应用</el-button></div>
+        <div class="last"><el-button plain @click="toBill">账单管理</el-button></div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  methods: {
+    toUserCenter () {
+      this.$router.push('../userCenter')
+    },
+    toIssue () {
+      this.$router.push('../issue')
+    },
+    toManage () {
+      this.$router.push('../manage')
+    },
+    toFound () {
+      this.$router.push('../found')
+    },
+    toBill () {
+      this.$router.push('../bill')
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
@@ -75,6 +96,7 @@ a:hover {
   margin-top: 20px;
   .top {
     height: 152px;
+    background-color: #fff;
     .left {
       height: 152px;
       width: 172px;
@@ -87,17 +109,17 @@ a:hover {
         width: 80px;
         height: 80px;
         float: left;
-        border-radius: 50%;
-        background-color: black;
+        margin-right: 20px;
         img {
           width: 100%;
           height: 100%;
+          border-radius: 50%;
         }
       }
       .zi {
         float: right;
         margin-top: -65px;
-        font-size: 12px;
+        margin-left: 20px;
       }
     }
     .middle {
@@ -166,15 +188,22 @@ a:hover {
   .tab {
     height: 69px;
     background-color: #f1f1f1;
-    display: flex;
-    align-items: center;
+    line-height: 69px;
+    padding: 0 220px;
+    .el-button {
+      border: none;
+      outline: none;
+      background-color: #F1F1F1;
+    }
     div {
       float: left;
       margin-right: 155px;
+      width: 70px;
+      height: 18px;
     }
-    .first {
-      margin-left: 220px;
-    }
+    // .first {
+    //   margin-left: 220px;
+    // }
     .last {
       margin: 0;
     }

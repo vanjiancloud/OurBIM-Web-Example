@@ -33,31 +33,51 @@
           </el-menu>
         </el-col>
         <div class="color"></div>
-        <!-- 个人信息 -->
+        <!-- 服务订单 -->
         <div class="neirong">
-          <h2>个人信息</h2>
-          <div>
-            ID:<el-input v-model="input" placeholder="请输入ID"></el-input>
-          </div>
-          <div>
-            签名:<el-input v-model="input" placeholder="请输入签名"></el-input>
-          </div>
-          <div>
-            邮箱:<el-input v-model="input" placeholder="请输入邮箱"></el-input>
-          </div>
-          <div>
-            手机号:<el-input
-              v-model="input"
-              placeholder="请输入手机号"
-            ></el-input>
-          </div>
-          <div>
-            公司:<el-input v-model="input" placeholder="请输入公司"></el-input>
-          </div>
-          <div>
-            职位:<el-input v-model="input" placeholder="请输入职位"></el-input>
-          </div>
-          <el-button type="primary">主要按钮</el-button>
+          <h2>服务订单</h2>
+          <table>
+            <tr>
+              <th>编号</th>
+              <th>时间</th>
+              <th>服务</th>
+              <th>授权码</th>
+              <th>状态</th>
+              <th>金额</th>
+            </tr>
+            <tr>
+              <td>20210101123456123</td>
+              <td>2021-01-01 12:34:56</td>
+              <td>高级开发版</td>
+              <td>高级开发版</td>
+              <td>失效</td>
+              <td>50,000.00</td>
+            </tr>
+            <tr>
+              <td>20210101123456123</td>
+              <td>2021-01-01 12:34:56</td>
+              <td>高级开发版</td>
+              <td>高级开发版</td>
+              <td>失效</td>
+              <td>50,000.00</td>
+            </tr>
+            <tr>
+              <td>20210101123456123</td>
+              <td>2021-01-01 12:34:56</td>
+              <td>高级开发版</td>
+              <td>高级开发版</td>
+              <td>失效</td>
+              <td>50,000.00</td>
+            </tr>
+            <tr>
+              <td>20210101123456123</td>
+              <td>2021-01-01 12:34:56</td>
+              <td>高级开发版</td>
+              <td>高级开发版</td>
+              <td>失效</td>
+              <td>50,000.00</td>
+            </tr>
+          </table>
         </div>
       </div>
     </div>
@@ -104,18 +124,33 @@ export default {
         background-color: #f1f1f1;
       }
       .neirong {
+        float: left;
         h2 {
           margin-top: 22px;
           margin-left: 41px;
-          margin-bottom: 22px;
+          margin-bottom: 49px;
         }
-        div {
-          margin-left: 50px;
-          margin-bottom: 20px;
-          // padding-left: 30px;
+        table,
+        th,
+        td {
+          border: 1px solid black;
+          text-align: center;
         }
-        .el-input {
-          width: 400px;
+        table {
+          width: 1080px;
+          margin-left: 40px;
+          border-collapse: collapse;
+          font-size: 18px;
+          tr {
+            height: 70px;
+          }
+          th {
+            background-color: #409eff;
+            color: #fff;
+          }
+          td {
+            background-color: #fff;
+          }
         }
       }
     }
