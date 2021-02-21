@@ -7,7 +7,7 @@
     <div class="zhuce">
       <!-- 头部区域 -->
       <div class="header">
-        <div class="icon">
+        <div class="icon" @click="toReturn">
           <img src="./sicon.png" alt="" />
         </div>
         <div class="logo">
@@ -256,6 +256,10 @@ export default {
           this.doRegister()
         }
       })
+    },
+    // 返回登录页
+    toReturn () {
+      this.$router.push('../../login')
     },
     // 注册信息
     doRegister () {

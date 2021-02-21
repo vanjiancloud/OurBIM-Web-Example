@@ -30,53 +30,29 @@
             <th>操作</th>
           </tr>
           <tr>
-            <td>ID43321432</td>
+            <td style="color:skyblue">ID43321432</td>
             <td>钱龙广场1.0</td>
             <td>5</td>
             <td>转换完成</td>
             <td>2021-01-0112：34</td>
             <td>
-              <button>分享</button>
-              <button>编辑</button>
-              <button>删除</button>
-            </td>
-          </tr>
-          <tr>
-            <td>ID43321432</td>
-            <td>钱龙广场1.0</td>
-            <td>5</td>
-            <td>转换完成</td>
-            <td>2021-01-0112：34</td>
-            <td>
-              <button>分享</button>
-              <button>编辑</button>
-              <button>删除</button>
-            </td>
-          </tr>
-          <tr>
-            <td>ID43321432</td>
-            <td>钱龙广场1.0</td>
-            <td>5</td>
-            <td>转换完成</td>
-            <td>2021-01-0112：34</td>
-            <td>
-              <button>分享</button>
-              <button>编辑</button>
-              <button>删除</button>
+              <el-button type="primary" icon="el-icon-share" circle></el-button>
+              <el-button type="primary" icon="el-icon-edit" circle></el-button>
+              <el-button type="danger" icon="el-icon-delete" circle></el-button>
             </td>
           </tr>
         </table>
-        <!-- 分页 -->
-        <div class="page">
-          <el-pagination
-            @current-change="handleCurrentChange"
-            layout="prev, pager, next"
-            background
-            :total="400"
-          >
-          </el-pagination>
-        </div>
       </div>
+    </div>
+    <!-- 分页 -->
+    <div class="page">
+      <el-pagination
+        @current-change="handleCurrentChange"
+        layout="prev, pager, next"
+        background
+        :total="400"
+      >
+      </el-pagination>
     </div>
     <!-- 尾部 -->
     <my-footer></my-footer>
@@ -94,16 +70,9 @@ export default {
 
 <style lang="less" scoped>
 .box {
-  a {
-    text-decoration: none;
-    font-size: 16px;
-    color: #000;
-    font-family: PingFang SC;
-  }
-  a:hover {
-    color: #409eff;
-  }
   .container {
+    background-color: #fff;
+    height: 961px;
     .content {
       margin-left: 41px;
       margin-right: 41px;
@@ -122,78 +91,18 @@ export default {
           top: 0px;
         }
       }
-      .list {
-        .lis {
-          width: 1379px;
-          height: 668px;
-          li {
-            width: 310px;
-            height: 300px;
-            margin-right: 30px;
-            margin-bottom: 34px;
-            float: left;
-            list-style: none;
-            box-sizing: border-box;
-            overflow: hidden;
-            .img {
-              width: 315px;
-              height: 200px;
-              .tupian {
-                width: 100%;
-                height: 100%;
-              }
-            }
-            .write {
-              height: 100px;
-              background-color: #fff;
-              padding-top: 5px;
-              padding-left: 20px;
-            }
-            .line {
-              width: 300px;
-              height: 1px;
-              background-color: #e4e4e4;
-            }
-            .btn {
-              width: 300px;
-              height: 100px;
-              background-color: #fff;
-              padding-left: 15px;
-              line-height: 100px;
-            }
-            .photo {
-              width: 300px;
-              height: 100px;
-              background-color: #fff;
-              padding-left: 15px;
-              line-height: 100px;
-              .big {
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                float: left;
-                margin-top: 20px;
-                .min {
-                  width: 100%;
-                  height: 100%;
-                }
-              }
-            }
-          }
-        }
-      }
       table {
         width: 100%;
         margin-top: 15px;
         margin-bottom: 40px;
         border-collapse: collapse;
-        font-size: 16px;
-
+        font-size: 18px;
         tr {
-          height: 50px;
+          height: 70px;
         }
         th {
-          background-color: #fafafa;
+          background-color: #409eff;
+          color: #fff;
         }
         td {
           background-color: #fff;
@@ -206,11 +115,12 @@ export default {
         text-align: center;
       }
     }
-    .page {
-      width: 550px;
-      margin: 0 auto;
-      margin-bottom: 40px;
-    }
+  }
+  .page {
+    width: 550px;
+    margin: 0 auto;
+    margin-bottom: 40px;
+    margin-top: 40px;
   }
 }
 </style>

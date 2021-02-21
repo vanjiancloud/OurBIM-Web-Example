@@ -33,17 +33,17 @@
           </el-menu>
         </el-col>
         <div class="color"></div>
-        <!-- 个人信息 -->
+        <!-- 修改密码 -->
         <div class="neirong">
-          <h2>个人信息</h2>
+          <h2>修改密码 </h2>
           <div>
-            ID:<el-input v-model="input" placeholder="请输入ID"></el-input>
+            原密码:<el-input v-model="input" placeholder="请输入原密码"></el-input>
           </div>
           <div>
-            签名:<el-input v-model="input" placeholder="请输入签名"></el-input>
+            新密码:<el-input v-model="input" placeholder="请输入新密码"></el-input>
           </div>
           <div>
-            邮箱:<el-input v-model="input" placeholder="请输入邮箱"></el-input>
+            确认密码:<el-input v-model="input" placeholder="请再次输入密码"></el-input>
           </div>
           <div>
             手机号:<el-input
@@ -52,10 +52,7 @@
             ></el-input>
           </div>
           <div>
-            公司:<el-input v-model="input" placeholder="请输入公司"></el-input>
-          </div>
-          <div>
-            职位:<el-input v-model="input" placeholder="请输入职位"></el-input>
+            验证码:<el-input v-model="input" placeholder="请输入验证码"></el-input>
           </div>
           <el-button type="primary">主要按钮</el-button>
         </div>
@@ -104,19 +101,19 @@ export default {
         background-color: #f1f1f1;
       }
       .neirong {
-        h2 {
-          margin-top: 22px;
-          margin-left: 41px;
-          margin-bottom: 22px;
-        }
-        div {
-          margin-left: 50px;
-          margin-bottom: 20px;
-          // padding-left: 30px;
-        }
+        float: left;
         .el-input {
           width: 400px;
         }
+        h2 {
+          margin-top: 22px;
+          margin-left: 41px;
+          margin-bottom: 49px;
+        }
+      }
+      .xia {
+        text-align: center;
+        margin-bottom: 100px;
       }
     }
   }

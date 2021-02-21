@@ -29,150 +29,44 @@
             </el-dropdown>
           </div>
         </div>
-        <!-- 列表展示 -->
+        <!-- 列表和分页 -->
         <div class="list">
           <div class="lis">
             <ul style="padding: 0;margin: 0;">
               <li>
                 <div class="img">
-                  <img src="../components/aotu.jpg" alt="" class="tupian" />
+                  <img src="./banner.jpg" alt="" class="tupian" />
                 </div>
                 <div class="write">
-                  <h3>测试模型 .skp</h3>
-                  下载次数：1234
-                </div>
-                <div class="line"></div>
-                <div class="photo">
-                  <div class="big">
-                    <img src="../components/vue.jpg" alt="" class="min" />
+                  <div class="one">
+                    <div class="touxiang">
+                      <img src="./touxiang.png" alt="" />
+                    </div>
+                    <div class="zi">
+                      <h5>Mark</h5>
+                      2021-02-08
+                      </div>
                   </div>
-                  <span>夺命VUE</span>
+                  <h3>测试模型 .skp</h3>
+                  <div class="two">
+                    <img src="./down.png" alt="">
+                    1234
+                  </div>
                 </div>
               </li>
-              <li>
-                <div class="img">
-                  <img src="../components/aotu.jpg" alt="" class="tupian" />
-                </div>
-                <div class="write">
-                  <h3>测试模型 .skp</h3>
-                  下载次数：1234
-                </div>
-                <div class="line"></div>
-                <div class="photo">
-                  <div class="big">
-                    <img src="../components/vue.jpg" alt="" class="min" />
-                  </div>
-                  <span>夺命VUE</span>
-                </div>
-              </li>
-              <li>
-                <div class="img">
-                  <img src="../components/aotu.jpg" alt="" class="tupian" />
-                </div>
-                <div class="write">
-                  <h3>测试模型 .skp</h3>
-                  下载次数：1234
-                </div>
-                <div class="line"></div>
-                <div class="photo">
-                  <div class="big">
-                    <img src="../components/vue.jpg" alt="" class="min" />
-                  </div>
-                  <span>夺命VUE</span>
-                </div>
-              </li>
-              <li>
-                <div class="img">
-                  <img src="../components/aotu.jpg" alt="" class="tupian" />
-                </div>
-                <div class="write">
-                  <h3>测试模型 .skp</h3>
-                  下载次数：1234
-                </div>
-                <div class="line"></div>
-                <div class="photo">
-                  <div class="big">
-                    <img src="../components/vue.jpg" alt="" class="min" />
-                  </div>
-                  <span>夺命VUE</span>
-                </div>
-              </li>
-              <li>
-                <div class="img">
-                  <img src="../components/aotu.jpg" alt="" class="tupian" />
-                </div>
-                <div class="write">
-                  <h3>测试模型 .skp</h3>
-                  下载次数：1234
-                </div>
-                <div class="line"></div>
-                <div class="photo">
-                  <div class="big">
-                    <img src="../components/vue.jpg" alt="" class="min" />
-                  </div>
-                  <span>夺命VUE</span>
-                </div>
-              </li>
-              <li>
-                <div class="img">
-                  <img src="../components/aotu.jpg" alt="" class="tupian" />
-                </div>
-                <div class="write">
-                  <h3>测试模型 .skp</h3>
-                  下载次数：1234
-                </div>
-                <div class="line"></div>
-                <div class="photo">
-                  <div class="big">
-                    <img src="../components/vue.jpg" alt="" class="min" />
-                  </div>
-                  <span>夺命VUE</span>
-                </div>
-              </li>
-              <li>
-                <div class="img">
-                  <img src="../components/aotu.jpg" alt="" class="tupian" />
-                </div>
-                <div class="write">
-                  <h3>测试模型 .skp</h3>
-                  下载次数：1234
-                </div>
-                <div class="line"></div>
-                <div class="photo">
-                  <div class="big">
-                    <img src="../components/vue.jpg" alt="" class="min" />
-                  </div>
-                  <span>夺命VUE</span>
-                </div>
-              </li>
-              <li>
-                <div class="img">
-                  <img src="../components/aotu.jpg" alt="" class="tupian" />
-                </div>
-                <div class="write">
-                  <h3>测试模型 .skp</h3>
-                  下载次数：1234
-                </div>
-                <div class="line"></div>
-                <div class="photo">
-                  <div class="big">
-                    <img src="../components/vue.jpg" alt="" class="min" />
-                  </div>
-                  <span>夺命VUE</span>
-                </div>
-              </li>
+
             </ul>
           </div>
-        </div>
-        <!-- 分页 -->
-        <div class="page">
-          <el-pagination
-            @current-change="handleCurrentChange"
-            layout="prev, pager, next"
-            background
-            :total="400"
-          >
-          </el-pagination>
+          <!-- 分页 -->
+          <div class="page">
+            <el-pagination
+              @current-change="handleCurrentChange"
+              layout="prev, pager, next"
+              background
+              :total="400"
+            >
+            </el-pagination>
+          </div>
         </div>
       </div>
     </div>
@@ -186,13 +80,18 @@ import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
 export default {
-  components: { myHeader, MyMain, MyFooter }
+  components: { myHeader, MyMain, MyFooter },
+  methods: {
+    handleCurrentChange () {}
+  }
 }
 </script>
 
 <style lang="less" scoped>
 .box {
   .container {
+    background-color: #fff;
+    margin-bottom: 100px;
     .content {
       margin-left: 41px;
       overflow: hidden;
@@ -213,10 +112,10 @@ export default {
       .list {
         .lis {
           width: 1379px;
-          height: 668px;
+          overflow: hidden;
           li {
             width: 310px;
-            height: 300px;
+            height: 345px;
             margin-right: 30px;
             margin-bottom: 34px;
             float: left;
@@ -224,7 +123,7 @@ export default {
             box-sizing: border-box;
             overflow: hidden;
             .img {
-              width: 315px;
+              width: 310px;
               height: 200px;
               .tupian {
                 width: 100%;
@@ -232,39 +131,31 @@ export default {
               }
             }
             .write {
-              height: 100px;
-              background-color: #fff;
-              padding-top: 5px;
-              padding-left: 20px;
-            }
-            .line {
-              width: 300px;
-              height: 1px;
-              background-color: #e4e4e4;
-            }
-            .btn {
-              width: 300px;
-              height: 100px;
-              background-color: #fff;
-              padding-left: 15px;
-              line-height: 100px;
-            }
-            .photo {
-              width: 300px;
-              height: 100px;
-              background-color: #fff;
-              padding-left: 15px;
-              line-height: 100px;
-              .big {
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                float: left;
-                margin-top: 20px;
-                .min {
-                  width: 100%;
-                  height: 100%;
+              width: 310px;
+              height: 145px;
+              background-color: #f1f1f1;
+              position: relative;
+              padding-top: 18px;
+              padding-left: 21px;
+              .one {
+                margin-bottom: 18px;
+                .touxiang {
+                  width: 50px;
+                  height: 50px;
+                  float: left;
+                  margin-right: 10px;
+                  img {
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 50%;
+                  }
                 }
+              }
+              .two {
+                position: absolute;
+                right: 40px;
+                bottom: 30px;
+
               }
             }
           }

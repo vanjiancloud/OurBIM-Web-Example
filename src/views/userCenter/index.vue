@@ -21,106 +21,14 @@
               <ul style="padding: 0;margin: 0;">
                 <li>
                   <div class="img">
-                    <img src="../components/timg.jpg" alt="" class="tupian" />
+                    <img src="./banner.jpg" alt="" class="tupian" />
                   </div>
                   <div class="write">
                     <h3>钱龙广场1.0</h3>
                     节点: 0/5
-                  </div>
-                  <div class="line"></div>
-                  <div class="btn">
-                    <el-button>进入应用</el-button>
-                  </div>
-                </li>
-                <li>
-                  <div class="img">
-                    <img src="../components/timg.jpg" alt="" class="tupian" />
-                  </div>
-                  <div class="write">
-                    <h3>钱龙广场1.0</h3>
-                    节点: 0/5
-                  </div>
-                  <div class="line"></div>
-                  <div class="btn">
-                    <el-button>进入应用</el-button>
-                  </div>
-                </li>
-                <li>
-                  <div class="img">
-                    <img src="../components/timg.jpg" alt="" class="tupian" />
-                  </div>
-                  <div class="write">
-                    <h3>钱龙广场1.0</h3>
-                    节点: 0/5
-                  </div>
-                  <div class="line"></div>
-                  <div class="btn">
-                    <el-button>进入应用</el-button>
-                  </div>
-                </li>
-                <li>
-                  <div class="img">
-                    <img src="../components/timg.jpg" alt="" class="tupian" />
-                  </div>
-                  <div class="write">
-                    <h3>钱龙广场1.0</h3>
-                    节点: 0/5
-                  </div>
-                  <div class="line"></div>
-                  <div class="btn">
-                    <el-button>进入应用</el-button>
-                  </div>
-                </li>
-                <li>
-                  <div class="img">
-                    <img src="../components/timg.jpg" alt="" class="tupian" />
-                  </div>
-                  <div class="write">
-                    <h3>钱龙广场1.0</h3>
-                    节点: 0/5
-                  </div>
-                  <div class="line"></div>
-                  <div class="btn">
-                    <el-button>进入应用</el-button>
-                  </div>
-                </li>
-                <li>
-                  <div class="img">
-                    <img src="../components/timg.jpg" alt="" class="tupian" />
-                  </div>
-                  <div class="write">
-                    <h3>钱龙广场1.0</h3>
-                    节点: 0/5
-                  </div>
-                  <div class="line"></div>
-                  <div class="btn">
-                    <el-button>进入应用</el-button>
-                  </div>
-                </li>
-                <li>
-                  <div class="img">
-                    <img src="../components/timg.jpg" alt="" class="tupian" />
-                  </div>
-                  <div class="write">
-                    <h3>钱龙广场1.0</h3>
-                    节点: 0/5
-                  </div>
-                  <div class="line"></div>
-                  <div class="btn">
-                    <el-button>进入应用</el-button>
-                  </div>
-                </li>
-                <li>
-                  <div class="img">
-                    <img src="../components/timg.jpg" alt="" class="tupian" />
-                  </div>
-                  <div class="write">
-                    <h3>钱龙广场1.0</h3>
-                    节点: 0/5
-                  </div>
-                  <div class="line"></div>
-                  <div class="btn">
-                    <el-button>进入应用</el-button>
+                    <div class="button">
+                      <el-button plain round>进入应用</el-button>
+                    </div>
                   </div>
                 </li>
               </ul>
@@ -141,7 +49,6 @@
         <!-- 创建应用 -->
 
         <!-- 账单管理 -->
-
       </div>
     </div>
     <!-- 尾部 -->
@@ -250,145 +157,81 @@ a:hover {
   color: #409eff;
 }
 .detail {
-  .content {
-    margin-left: 41px;
-    overflow: hidden;
-    .record {
-      width: 100%;
-      height: 40px;
-      margin-top: 38px;
-      position: relative;
-      .left {
+  .container {
+    background-color: #fff;
+    margin-bottom: 100px;
+    .content {
+      margin-left: 41px;
+      overflow: hidden;
+      .record {
+        width: 100%;
         height: 40px;
+        margin-top: 38px;
+        position: relative;
+        .left {
+          height: 40px;
+        }
+        .right {
+          position: absolute;
+          right: 20px;
+          top: 0px;
+        }
       }
-      .right {
-        position: absolute;
-        right: 20px;
-        top: 0px;
-      }
-    }
-    .list {
-      .lis {
-        width: 1379px;
-        height: 668px;
-        li {
-          width: 310px;
-          height: 300px;
-          margin-right: 30px;
-          margin-bottom: 34px;
-          float: left;
-          list-style: none;
-          box-sizing: border-box;
+      .list {
+        .lis {
+          width: 1379px;
           overflow: hidden;
-          .img {
-            width: 315px;
-            height: 200px;
-            .tupian {
-              width: 100%;
-              height: 100%;
-            }
-          }
-          .write {
-            height: 100px;
-            background-color: #fff;
-            padding-top: 5px;
-            padding-left: 20px;
-          }
-          .line {
-            width: 300px;
-            height: 1px;
-            background-color: #e4e4e4;
-          }
-          .btn {
-            width: 300px;
-            height: 100px;
-            background-color: #fff;
-            padding-left: 15px;
-            line-height: 100px;
-          }
-          .photo {
-            width: 300px;
-            height: 100px;
-            background-color: #fff;
-            padding-left: 15px;
-            line-height: 100px;
-            .big {
-              width: 60px;
-              height: 60px;
-              border-radius: 50%;
-              float: left;
-              margin-top: 20px;
-              .min {
+          li {
+            width: 310px;
+            height: 345px;
+            margin-right: 30px;
+            margin-bottom: 34px;
+            float: left;
+            list-style: none;
+            box-sizing: border-box;
+            overflow: hidden;
+            .img {
+              width: 310px;
+              height: 200px;
+              .tupian {
                 width: 100%;
                 height: 100%;
+              }
+            }
+            .write {
+              height: 145px;
+              background-color: #f1f1f1;
+              padding-top: 20px;
+              padding-left: 20px;
+              h3 {
+                margin-bottom: 10px;
+              }
+              .button {
+                margin-left: 80px;
+                margin-top: 10px;
+                .el-button {
+                  background-color: #f1f1f1;
+                }
               }
             }
           }
         }
       }
-    }
-    table {
-      width: 100%;
-      margin-top: 5px;
-      margin-bottom: 50px;
-      border-collapse: collapse;
-      font-size: 16px;
-      tr {
-        height: 50px;
-      }
-      th {
-        background-color: #fafafa;
-      }
-      td {
-        background-color: #fff;
-      }
-    }
-    table,
-    th,
-    td {
-      border: 1px solid black;
-      text-align: center;
-    }
-    .dropdown {
-      width: 200px;
-      height: 300px;
-      float: left;
-      margin-right: 100px;
-      div {
+      table {
         width: 100%;
-        height: 50px;
-        border-bottom: 1px solid #f2f2f2;
-        line-height: 50px;
-
-        margin-right: 50px;
-        button:focus {
+        margin-top: 5px;
+        margin-bottom: 50px;
+        border-collapse: collapse;
+        font-size: 16px;
+        tr {
+          height: 50px;
+        }
+        th {
+          background-color: #fafafa;
+        }
+        td {
           background-color: #fff;
         }
-        button {
-          padding-left: 50px;
-          height: 100%;
-          width: 100%;
-          border: none;
-          outline: none;
-          font-size: 16px;
-          text-align: left;
-          background-color: #f9f9f9;
-        }
-        button:hover {
-          color: #41b19c;
-          cursor: pointer;
-        }
-      }
-    }
-    .neirong {
-      float: left;
-      width: 1000px;
-      // background-color: orange;
-      .geren {
-        float: left;
-      }
-      .xinxi {
-        float: left;
       }
       table,
       th,
@@ -396,37 +239,85 @@ a:hover {
         border: 1px solid black;
         text-align: center;
       }
-      table {
-        width: 400px;
+      .dropdown {
+        width: 200px;
+        height: 300px;
+        float: left;
+        margin-right: 100px;
+        div {
+          width: 100%;
+          height: 50px;
+          border-bottom: 1px solid #f2f2f2;
+          line-height: 50px;
+
+          margin-right: 50px;
+          button:focus {
+            background-color: #fff;
+          }
+          button {
+            padding-left: 50px;
+            height: 100%;
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            text-align: left;
+            background-color: #f9f9f9;
+          }
+          button:hover {
+            color: #41b19c;
+            cursor: pointer;
+          }
+        }
       }
-      .el-input {
-        width: 400px;
+      .neirong {
+        float: left;
+        width: 1000px;
+        // background-color: orange;
+        .geren {
+          float: left;
+        }
+        .xinxi {
+          float: left;
+        }
+        table,
+        th,
+        td {
+          border: 1px solid black;
+          text-align: center;
+        }
+        table {
+          width: 400px;
+        }
+        .el-input {
+          width: 400px;
+        }
+        .dingdan {
+          width: 100%;
+        }
+        .demo-table-expand {
+          font-size: 0;
+        }
+        .demo-table-expand label {
+          width: 90px;
+          color: #99a9bf;
+        }
+        .demo-table-expand .el-form-item {
+          margin-right: 0;
+          margin-bottom: 0;
+          width: 50%;
+        }
       }
-      .dingdan {
-        width: 100%;
-      }
-      .demo-table-expand {
-        font-size: 0;
-      }
-      .demo-table-expand label {
-        width: 90px;
-        color: #99a9bf;
-      }
-      .demo-table-expand .el-form-item {
-        margin-right: 0;
-        margin-bottom: 0;
-        width: 50%;
+      .xia {
+        text-align: center;
+        margin-bottom: 100px;
       }
     }
-    .xia {
-      text-align: center;
-      margin-bottom: 100px;
+    .page {
+      width: 550px;
+      margin: 0 auto;
+      margin-bottom: 40px;
     }
-  }
-  .page {
-    width: 550px;
-    margin: 0 auto;
-    margin-bottom: 40px;
   }
 }
 </style>

@@ -11,17 +11,14 @@
         <img src="../register/icon.png" alt="" class="icon-img" />
       </div>
       <div class="write">
-        <h3>你的账户：example@vanjian.com注册成功</h3>
+        <h3>你的账户：{{email}}注册成功</h3>
       </div>
       <div class="section">
         激活邮件已发送到你的邮箱中，邮件有效期为24小时。
         请及时登录邮箱，点击邮件中的链接激活帐户。
       </div>
       <div class="btn">
-        <el-button type="primary" class="button" @click="toLookEmail"
-          >查看邮件</el-button
-        >
-        <el-button class="button" @click="toHome">进入首页</el-button>
+        <el-button class="button" @click="toHome" type="primary">进入首页</el-button>
       </div>
     </div>
     <div class="wenzi">
@@ -33,7 +30,9 @@
 <script>
 export default {
   data () {
-    return {}
+    return {
+      email: 'this.$route.query.email'
+    }
   },
   methods: {
     toHome () {
@@ -74,7 +73,7 @@ export default {
     width: 580px;
     height: 580px;
     border-radius: 10px;
-    background-color: #fff;
+    // background-color: #fff;
     .logo {
       width: 290px;
       height: 110px;
@@ -86,6 +85,7 @@ export default {
     }
     .write {
       text-align: center;
+      color: #929292;
     }
     .section {
       text-align: center;

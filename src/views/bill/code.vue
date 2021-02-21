@@ -33,31 +33,17 @@
           </el-menu>
         </el-col>
         <div class="color"></div>
-        <!-- 个人信息 -->
+        <!-- 授权码 -->
         <div class="neirong">
-          <h2>个人信息</h2>
-          <div>
-            ID:<el-input v-model="input" placeholder="请输入ID"></el-input>
+          <h2>授权码</h2>
+          <div class="input">
+            授权码：
+            <el-input v-model="input" placeholder="请输入授权码"></el-input>
+            <el-button type="primary" class="btn">验证</el-button>
+            <div>
+              <el-button type="primary" class="btn">修改</el-button>
+            </div>
           </div>
-          <div>
-            签名:<el-input v-model="input" placeholder="请输入签名"></el-input>
-          </div>
-          <div>
-            邮箱:<el-input v-model="input" placeholder="请输入邮箱"></el-input>
-          </div>
-          <div>
-            手机号:<el-input
-              v-model="input"
-              placeholder="请输入手机号"
-            ></el-input>
-          </div>
-          <div>
-            公司:<el-input v-model="input" placeholder="请输入公司"></el-input>
-          </div>
-          <div>
-            职位:<el-input v-model="input" placeholder="请输入职位"></el-input>
-          </div>
-          <el-button type="primary">主要按钮</el-button>
         </div>
       </div>
     </div>
@@ -104,18 +90,26 @@ export default {
         background-color: #f1f1f1;
       }
       .neirong {
+        float: left;
         h2 {
           margin-top: 22px;
           margin-left: 41px;
           margin-bottom: 22px;
         }
-        div {
-          margin-left: 50px;
-          margin-bottom: 20px;
-          // padding-left: 30px;
-        }
-        .el-input {
-          width: 400px;
+        .input {
+          margin-left: 60px;
+          .el-input {
+            width: 462px;
+            margin-right: 20px;
+          }
+          /deep/ .el-input__inner {
+            width: 462px;
+            height: 46px;
+          }
+          .btn {
+            width: 78px;
+            height: 38px;
+          }
         }
       }
     }

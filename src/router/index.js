@@ -14,14 +14,14 @@ const routes = [
     }
   },
   // 登录成功显示主页
-  {
-    path: '/home',
-    name: 'home',
-    component: () => import('../views/home/index.vue'),
-    meta: {
-      title: 'OurBIM用户中心'
-    }
-  },
+  // {
+  //   path: '/home',
+  //   name: 'home',
+  //   component: () => import('../views/home/index.vue'),
+  //   meta: {
+  //     title: 'OurBIM用户中心'
+  //   }
+  // },
   {
     // 登录页面
     path: '/login',
@@ -65,15 +65,6 @@ const routes = [
     component: () => import('../views/register/registerSucceed.vue'),
     meta: {
       title: 'OurBIM注册成功'
-    }
-  },
-  {
-    // 查看邮件
-    path: '/lookEmail',
-    name: 'lookEmail',
-    component: () => import('../views/register/lookEmail.vue'),
-    meta: {
-      title: 'OurBIM产看邮件'
     }
   },
   {
@@ -128,6 +119,48 @@ const routes = [
     component: () => import('../views/bill/index.vue'),
     meta: {
       title: '账户管理'
+    }
+  },
+  {
+    // 个人信息
+    path: '/bill',
+    name: 'bill',
+    component: () => import('../views/bill/index.vue'),
+    meta: {
+      title: '个人信息'
+    }
+  },
+  {
+    // 授权码
+    path: '/code',
+    name: 'code',
+    component: () => import('../views/bill/code.vue'),
+    meta: {
+      title: '授权码'
+    }
+  }, {
+    // 服务订单
+    path: '/order',
+    name: 'order',
+    component: () => import('../views/bill/order.vue'),
+    meta: {
+      title: '服务订单'
+    }
+  }, {
+    // 团队
+    path: '/team',
+    name: 'team',
+    component: () => import('../views/bill/team.vue'),
+    meta: {
+      title: '团队'
+    }
+  }, {
+    // 修改密码
+    path: '/changeCode',
+    name: 'changeCode',
+    component: () => import('../views/bill/changeCode.vue'),
+    meta: {
+      title: '修改密码'
     }
   },
   {
