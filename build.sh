@@ -2,9 +2,8 @@
  # @Author: zk
  # @Date: 2021-02-20 13:37:06
  # @LastEditors: zk
- # @LastEditTime: 2021-02-20 17:23:24
+ # @LastEditTime: 2021-02-21 15:40:15
  # @description: 
-### 
 image_version=`date +%Y%m%d%H%M`;
 echo $image_version;
 # cd vueServe
