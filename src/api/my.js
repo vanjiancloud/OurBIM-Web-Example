@@ -126,3 +126,16 @@ export function updatePhone (data) {
     data
   })
 }
+// 新建项目
+export function addProject (data) {
+  const { userid, name, url } = data
+  return request({
+    url: '/appli/addProject',
+    method: 'POST',
+    params: {
+      userid,
+      name,
+      url
+    }
+  })
+}

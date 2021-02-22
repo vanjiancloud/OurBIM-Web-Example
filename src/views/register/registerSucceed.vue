@@ -11,7 +11,7 @@
         <img src="../register/icon.png" alt="" class="icon-img" />
       </div>
       <div class="write">
-        <h3>你的账户：{{email}}注册成功</h3>
+        <h3>恭喜您注册成功</h3>
       </div>
       <div class="section">
         激活邮件已发送到你的邮箱中，邮件有效期为24小时。
@@ -31,15 +31,12 @@
 export default {
   data () {
     return {
-      email: 'this.$route.query.email'
+      email: ''
     }
   },
   methods: {
     toHome () {
       this.$router.replace('/home')
-    },
-    toLookEmail () {
-      this.$router.replace('/lookEmail')
     }
   }
 }

@@ -38,7 +38,7 @@
           <h2>授权码</h2>
           <div class="input">
             授权码：
-            <el-input v-model="input" placeholder="请输入授权码"></el-input>
+            <el-input v-model="code" placeholder="请输入授权码"></el-input>
             <el-button type="primary" class="btn">验证</el-button>
             <div>
               <el-button type="primary" class="btn">修改</el-button>
@@ -66,7 +66,8 @@ export default {
         { name: '/order', navItem: '服务订单' },
         { name: '/team', navItem: '团队' },
         { name: '/changeCode', navItem: '修改密码' }
-      ]
+      ],
+      code: ''
     }
   }
 }

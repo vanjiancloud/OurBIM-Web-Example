@@ -37,22 +37,22 @@
         <div class="neirong">
           <h2>修改密码 </h2>
           <div>
-            原密码:<el-input v-model="input" placeholder="请输入原密码"></el-input>
+            原密码:<el-input v-model="oldCode" placeholder="请输入原密码"></el-input>
           </div>
           <div>
-            新密码:<el-input v-model="input" placeholder="请输入新密码"></el-input>
+            新密码:<el-input v-model="newCode" placeholder="请输入新密码"></el-input>
           </div>
           <div>
-            确认密码:<el-input v-model="input" placeholder="请再次输入密码"></el-input>
+            确认密码:<el-input v-model="newCode" placeholder="请再次输入密码"></el-input>
           </div>
           <div>
             手机号:<el-input
-              v-model="input"
+              v-model="mobile"
               placeholder="请输入手机号"
             ></el-input>
           </div>
           <div>
-            验证码:<el-input v-model="input" placeholder="请输入验证码"></el-input>
+            验证码:<el-input v-model="code" placeholder="请输入验证码"></el-input>
           </div>
           <el-button type="primary">主要按钮</el-button>
         </div>
@@ -77,7 +77,11 @@ export default {
         { name: '/order', navItem: '服务订单' },
         { name: '/team', navItem: '团队' },
         { name: '/changeCode', navItem: '修改密码' }
-      ]
+      ],
+      oldCode: '',
+      newCode: '',
+      mobile: '',
+      code: ''
     }
   }
 }

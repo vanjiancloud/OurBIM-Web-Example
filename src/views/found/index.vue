@@ -13,7 +13,7 @@
           <el-steps :active="active" finish-status="success">
             <el-step title="步骤 1" description="创建应用项目信息"> </el-step>
             <el-step title="步骤 2" description="上传BIM模型"></el-step>
-            <el-step title="步骤 3" description="上传完成"></el-step>
+            <!-- <el-step title="步骤 3" description="上传完成"></el-step> -->
           </el-steps>
         </div>
 
@@ -30,7 +30,7 @@
           <div class="text"><h3>创建应用</h3></div>
           <div class="input">
             应用名称：
-            <el-input v-model="input" placeholder="请输入内容"></el-input>
+            <el-input v-model="appName" placeholder="请输入项目名称"></el-input>
           </div>
           <div class="picture">
             <div class="news">
@@ -38,7 +38,8 @@
             </div>
             <div class="cover">
               <el-upload
-                action="#"
+                action=""
+                :before-remove="handleRemove"
                 list-type="picture-card"
                 :auto-upload="false"
               >
@@ -56,12 +57,7 @@
                     >
                       <i class="el-icon-zoom-in"></i>
                     </span>
-                    <span
-                      v-if="!disabled"
-                      class="el-upload-list__item-delete"
-                      @click="handleDownload(file)"
-                    >
-                      <i class="el-icon-download"></i>
+                    <span v-if="!disabled" class="el-upload-list__item-delete">
                     </span>
                     <span
                       v-if="!disabled"
@@ -80,8 +76,11 @@
           </div>
         </div>
         <div class="second" v-show="isShow == 2">
-          <el-button style="margin-top: 12px; margin-left: 450px;" @click="two">
-            下一步
+          <el-button
+            style="margin-top: 12px; margin-left: 450px;"
+            @click="update"
+          >
+            上传
           </el-button>
           <div class="img">
             <img src="./icon.png" alt="" />
@@ -107,11 +106,11 @@
         <div class="third" v-show="isShow == 3">
           <el-button
             style="margin-top: 12px; margin-left: 450px;"
-            @click="three"
+            @click="finsh"
           >
             完成
           </el-button>
-          恭喜上传完成！
+          正在上传，请稍后
         </div>
       </div>
     </div>
@@ -124,6 +123,8 @@
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
+import { addProject } from '@/api/my.js'
+
 export default {
   components: { myHeader, MyMain, MyFooter },
   data () {
@@ -133,33 +134,67 @@ export default {
       // 上传图片
       dialogImageUrl: '',
       dialogVisible: false,
-      disabled: false
+      disabled: false,
+      appName: '',
+      userId: ''
     }
   },
   methods: {
+    // 下一步
     next () {
       if (this.active++ > 2) this.active = 0
       this.isShow = 2
     },
-    two () {
+    // 上传
+    update () {
       if (this.active++ > 2) this.active = 0
       this.isShow = 3
+      addProject({
+        userId: this.getCookie('userid'),
+        appName: this.appName,
+        screenImg: this.dialogImageUrl
+      })
+        .then(res => {
+          console.log(res)
+          if (res.data.code === 2) {
+            this.$message.success('新建成功')
+          } else if (res.data.code === 1) {
+            this.$message.error('新建失败')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('上传失败，请上传模型')
+        })
     },
-    three () {
+    // 读取cookie中数据
+    getCookie: function (userid) {
+      if (document.cookie.length > 0) {
+        var start = document.cookie.indexOf(userid + '=')
+        if (start !== -1) {
+          start = start + userid.length + 1
+          var end = document.cookie.indexOf(';', start)
+          if (end === -1) end = document.cookie.length
+          return unescape(document.cookie.substring(start, end))
+        }
+      }
+      console.log()
+      return ''
+    },
+    // 完成
+    finsh () {
       // 数据重新加载
+      this.$router.go(0)
     },
-    // 上传图片
+    // 删除图片
     handleRemove (file) {
       console.log(file)
+      return true
     },
-    // 上传图片
+    // 放大图片
     handlePictureCardPreview (file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
-    },
-    // 上传图片
-    handleDownload (file) {
-      console.log(file)
     }
   }
 }

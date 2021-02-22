@@ -110,7 +110,6 @@
               style="padding-right:25px;padding-top:35px"
               slot="suffix"
               type="text"
-
               :disabled="isSend"
               @click="getVerification"
             >
@@ -183,8 +182,7 @@ export default {
           { required: true, message: '请输入合法邮箱', trigger: 'blur' },
           {
             pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
-            message:
-              '请输入正确邮箱',
+            message: '请输入正确邮箱',
             trigger: 'blur'
           }
         ],
@@ -248,10 +246,13 @@ export default {
       })
         .then(res => {
           console.log(res)
+          console.log(res.data.data.userid)
           if (res.data.code === 0) {
             this.$message.success('恭喜登陆成功')
             this.setCookie('email', this.form.email)
             this.setCookie('password', this.form.password)
+            // 存储用户信息userid
+            this.setCookie('userid', res.data.data.userid)
             this.$router.push('../userCenter')
             this.setUserInfo()
           } else if (res.data.code === 2) {

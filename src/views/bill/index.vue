@@ -36,28 +36,28 @@
         <!-- 个人信息 -->
         <div class="neirong">
           <h2>个人信息</h2>
-          <div>
-            ID:<el-input v-model="input" placeholder="请输入ID"></el-input>
+          <div class="id">
+            ID:<el-input v-model="id" placeholder="请输入ID" class="id"></el-input>
           </div>
           <div>
-            签名:<el-input v-model="input" placeholder="请输入签名"></el-input>
+            签名:<el-input v-model="name" placeholder="请输入签名"></el-input>
           </div>
           <div>
-            邮箱:<el-input v-model="input" placeholder="请输入邮箱"></el-input>
+            邮箱:<el-input v-model="email" placeholder="请输入邮箱"></el-input>
           </div>
           <div>
             手机号:<el-input
-              v-model="input"
+              v-model="mobile"
               placeholder="请输入手机号"
             ></el-input>
           </div>
           <div>
-            公司:<el-input v-model="input" placeholder="请输入公司"></el-input>
+            公司:<el-input v-model="company" placeholder="请输入公司"></el-input>
           </div>
           <div>
-            职位:<el-input v-model="input" placeholder="请输入职位"></el-input>
+            职位:<el-input v-model="post" placeholder="请输入职位"></el-input>
           </div>
-          <el-button type="primary">主要按钮</el-button>
+          <el-button type="primary">修改</el-button>
         </div>
       </div>
     </div>
@@ -80,7 +80,14 @@ export default {
         { name: '/order', navItem: '服务订单' },
         { name: '/team', navItem: '团队' },
         { name: '/changeCode', navItem: '修改密码' }
-      ]
+      ],
+      id: '',
+      name: '',
+      email: '',
+      mobile: '',
+      company: '',
+      post: ''
+
     }
   }
 }
@@ -104,6 +111,7 @@ export default {
         background-color: #f1f1f1;
       }
       .neirong {
+        padding-left: 300px;
         h2 {
           margin-top: 22px;
           margin-left: 41px;
@@ -116,6 +124,9 @@ export default {
         }
         .el-input {
           width: 400px;
+        }
+        .id {
+          margin-left: 50px;
         }
       }
     }
