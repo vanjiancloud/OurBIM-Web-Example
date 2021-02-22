@@ -128,14 +128,14 @@ export function updatePhone (data) {
 }
 // 新建项目
 export function addProject (data) {
-  const { userid, name, url } = data
+  const { userId, appName, screenImg } = data
   return request({
     url: '/appli/addProject',
     method: 'POST',
     params: {
-      userid,
-      name,
-      url
+      userId,
+      appName,
+      screenImg
     }
   })
 }

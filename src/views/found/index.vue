@@ -38,7 +38,7 @@
             </div>
             <div class="cover">
               <el-upload
-                action=""
+                action="/appli/postScreenImg"
                 :before-remove="handleRemove"
                 list-type="picture-card"
                 :auto-upload="false"
@@ -90,7 +90,7 @@
             <el-upload
               class="upload-demo"
               drag
-              action="https://jsonplaceholder.typicode.com/posts/"
+              action=""
               multiple
             >
               <i class="el-icon-upload"></i>
