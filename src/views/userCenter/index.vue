@@ -19,7 +19,7 @@
           <div class="list">
             <div class="lis">
               <ul style="padding: 0;margin: 0;">
-                <li>
+                <li v-for="(item, index) in appList" :key="index" @click="GoApp(item)">
                   <div class="img">
                     <img src="./banner.jpg" alt="" class="tupian" />
                   </div>
@@ -60,6 +60,8 @@
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
+import { getProjectList } from '@/api/my.js'
+
 export default {
   components: { myHeader, MyMain, MyFooter },
   data () {
@@ -71,47 +73,11 @@ export default {
       isHand: 6,
       url:
         'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-      tableData: [
-        {
-          id: '1',
-          use: '钱龙房产',
-          time: '2021-01-01 12:34:56',
-          children: [
-            {
-              id: 11,
-              handle: 'lalal',
-              role: '王小虎',
-              address: '上海市普陀区金沙江路 1519 弄'
-            },
-            {
-              id: 12,
-              handle: '66666666',
-              role: '虎',
-              address: '上海市普陀区金沙江路 1519 弄'
-            }
-          ]
-        },
-        {
-          id: '2',
-          use: '钱龙',
-          time: '2021-01-01 12:34:56',
-          children: [
-            {
-              id: 21,
-              date: '2016-05-01',
-              name: '王小虎',
-              address: '上海市普陀区金沙江路 1519 弄'
-            },
-            {
-              id: 22,
-              date: '2016-05-01',
-              name: '王小虎',
-              address: '上海市普陀区金沙江路 1519 弄'
-            }
-          ]
-        }
-      ]
+      appList: []
     }
+  },
+  created () {
+    this.GetList();
   },
   methods: {
     checkitem (item) {
@@ -132,6 +98,44 @@ export default {
     handleCurrentChange () {},
     toshow () {
       this.islive = !this.islive
+    },
+    // 读取cookie中数据
+    getCookie: function (userid) {
+      if (document.cookie.length > 0) {
+        var start = document.cookie.indexOf(userid + "=");
+        if (start !== -1) {
+          start = start + userid.length + 1;
+          var end = document.cookie.indexOf(";", start);
+          if (end === -1) end = document.cookie.length;
+          return unescape(document.cookie.substring(start, end));
+        }
+      }
+      console.log();
+      return "";
+    },
+    GetList() {
+      /**
+       * @Author: zk
+       * @Date: 2021-02-22 17:43:22
+       * @description: 获取应用列表
+       */
+      getProjectList({
+        userId: this.getCookie("userid"),
+      })
+        .then((res) => {
+          this.appList = res.data.data
+        })
+        .catch((err) => {
+          this.$message.error("请求失败");
+        });
+    },
+    GoApp(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-02-22 17:52:23
+     * @description: 获取应用信息
+     */  
+    console.log(e);
     }
   }
 }

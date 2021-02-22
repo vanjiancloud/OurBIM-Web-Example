@@ -38,10 +38,12 @@
             </div>
             <div class="cover">
               <el-upload
-                action=""
+                :action="baseURL + '/appli/postScreenImg'"
+                :on-success="upLoadImg"
+                name="fileUpload"
+                :on-error="errorImg"
                 :before-remove="handleRemove"
                 list-type="picture-card"
-                :auto-upload="false"
               >
                 <i slot="default" class="el-icon-plus"></i>
                 <div slot="file" slot-scope="{ file }">
@@ -88,9 +90,15 @@
           <div class="text"><h3>上传BIM模型</h3></div>
           <div class="cover">
             <el-upload
+            v-if="appInfo"
               class="upload-demo"
+              :on-success="upLoadModel"
               drag
-              action="https://jsonplaceholder.typicode.com/posts/"
+              :action="baseURL + '/appli/postProjectModel'"
+              name="fileUpload"
+              :data="{
+                appliId: appInfo.appid
+              }"
               multiple
             >
               <i class="el-icon-upload"></i>
@@ -124,6 +132,7 @@ import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
 import { addProject } from '@/api/my.js'
+import axios from '@/utils/request'
 
 export default {
   components: { myHeader, MyMain, MyFooter },
@@ -136,27 +145,56 @@ export default {
       dialogVisible: false,
       disabled: false,
       appName: '',
+      baseURL: axios.defaults.baseURL,
+      appImgSrc: '',
+      appInfo: null,
       userId: ''
     }
   },
   methods: {
+    upLoadImg(response, file, fileList){
+    /**
+     * @Author: zk
+     * @Date: 2021-02-22 16:24:12
+     * @description: 上传图片
+     */  
+      this.appImgSrc = response.data
+    },
+    upLoadModel(response, file, fileList){
+    /**
+     * @Author: zk
+     * @Date: 2021-02-22 17:03:13
+     * @description: 上传模型
+     */  
+      this.appModel = response.data
+    },
+    errorImg(err, file, fileList){
+    /**
+     * @Author: zk
+     * @Date: 2021-02-22 16:28:11
+     * @description: 上传失败
+     */  
+    console.log(err);
+
+    },
     // 下一步
     next () {
       if (this.active++ > 2) this.active = 0
       this.isShow = 2
+      this.update()
     },
     // 上传
     update () {
       if (this.active++ > 2) this.active = 0
-      this.isShow = 3
+      // this.isShow = 3
       addProject({
         userId: this.getCookie('userid'),
         appName: this.appName,
-        screenImg: this.dialogImageUrl
+        screenImg: this.appImgSrc
       })
         .then(res => {
-          console.log(res)
-          if (res.data.code === 2) {
+          if (res.data.code === 0) {
+          this.appInfo = res.data.data
             this.$message.success('新建成功')
           } else if (res.data.code === 1) {
             this.$message.error('新建失败')

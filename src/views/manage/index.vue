@@ -11,12 +11,10 @@
         <!-- 消息提示 -->
         <div class="record">
           <!-- 消息提示 -->
-          <div class="left">
-            您共有3个项目
-          </div>
+          <div class="left">您共有3个项目</div>
           <!-- 按钮 -->
           <div class="right">
-            <el-button type="primary">{{ $t('link') }}</el-button>
+            <el-button type="primary">{{ $t("link") }}</el-button>
           </div>
         </div>
         <!-- 表格 -->
@@ -30,7 +28,7 @@
             <th>操作</th>
           </tr>
           <tr>
-            <td style="color:skyblue">ID43321432</td>
+            <td style="color: skyblue">ID43321432</td>
             <td>钱龙广场1.0</td>
             <td>5</td>
             <td>转换完成</td>
@@ -60,12 +58,55 @@
 </template>
 
 <script>
-import MyFooter from '../components/myFooter.vue'
-import myHeader from '../components/myHeader.vue'
-import MyMain from '../components/myMain.vue'
+import MyFooter from "../components/myFooter.vue";
+import myHeader from "../components/myHeader.vue";
+import MyMain from "../components/myMain.vue";
+import { getProjectList } from '@/api/my.js'
 export default {
-  components: { myHeader, MyMain, MyFooter }
-}
+  components: { myHeader, MyMain, MyFooter },
+  created() {
+    this.GetList();
+  },
+  methods: {
+    // 读取cookie中数据
+    getCookie: function (userid) {
+      if (document.cookie.length > 0) {
+        var start = document.cookie.indexOf(userid + "=");
+        if (start !== -1) {
+          start = start + userid.length + 1;
+          var end = document.cookie.indexOf(";", start);
+          if (end === -1) end = document.cookie.length;
+          return unescape(document.cookie.substring(start, end));
+        }
+      }
+      console.log();
+      return "";
+    },
+    handleCurrentChange(){
+    /**
+     * @Author: zk
+     * @Date: 2021-02-22 17:46:30
+     * @description: 分页
+     */  
+    },
+    GetList() {
+      /**
+       * @Author: zk
+       * @Date: 2021-02-22 17:43:22
+       * @description: 获取应用列表
+       */
+      getProjectList({
+        userId: this.getCookie("userid"),
+      })
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => {
+          this.$message.error("请求失败");
+        });
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
