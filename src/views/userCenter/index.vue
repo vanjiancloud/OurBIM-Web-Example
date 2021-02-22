@@ -123,6 +123,7 @@ export default {
         userId: this.getCookie("userid"),
       })
         .then((res) => {
+          console.log(res);
           this.appList = res.data.data
         })
         .catch((err) => {
