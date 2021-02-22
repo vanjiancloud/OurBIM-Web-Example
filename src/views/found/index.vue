@@ -38,14 +38,10 @@
             </div>
             <div class="cover">
               <el-upload
-<<<<<<< HEAD
-                action="/appli/postScreenImg"
-=======
                 :action="baseURL + '/appli/postScreenImg'"
                 :on-success="upLoadImg"
                 name="fileUpload"
                 :on-error="errorImg"
->>>>>>> 7382a5e76bb25bc45e7b954e086f116294e676cb
                 :before-remove="handleRemove"
                 list-type="picture-card"
               >
@@ -329,5 +325,4 @@ export default {
       }
     }
   }
-}</style
->>
+}</style>
