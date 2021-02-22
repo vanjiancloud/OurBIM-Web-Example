@@ -1,5 +1,6 @@
 // 导入抽取的axios对象
 import request from '../utils/request'
+import qsStringify from "qs-stringify"
 
 // 激活账号
 export function activation (data) {
@@ -128,14 +129,17 @@ export function updatePhone (data) {
 }
 // 新建项目
 export function addProject (data) {
-  const { userId, appName, screenImg } = data
   return request({
     url: '/appli/addProject',
     method: 'POST',
-    params: {
-      userId,
-      appName,
-      screenImg
-    }
+    data: qsStringify(data)
+  })
+}
+// 获取项目
+export function getProjectList (data) {
+  return request({
+    url: '/appli/getApplicationList',
+    method: 'GET',
+    data
   })
 }
