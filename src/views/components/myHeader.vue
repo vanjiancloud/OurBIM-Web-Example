@@ -82,9 +82,9 @@
           <a href="" class="third">{{ $t('login') }}</a>
         </li>
         <li class="forth">
-          <a @click="English" href="javascript:;">中文</a>
+          <a @click="English" href="javascript:;">English</a>
           <span style="margin: 0 5px;font-size: 10px;">|</span>
-          <a @click="Chinese" href="javascript:;">English</a>
+          <a @click="Chinese" href="javascript:;">中文</a>
         </li>
       </ul>
     </div>
