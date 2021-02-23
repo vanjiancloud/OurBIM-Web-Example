@@ -12,19 +12,23 @@
           <!-- 消息提示 -->
           <div class="record">
             <div class="left">
-              您共有3个应用
+              您共有{{appList.length}}个应用
             </div>
           </div>
           <!-- 列表展示 -->
           <div class="list">
             <div class="lis">
               <ul style="padding: 0;margin: 0;">
-                <li v-for="(item, index) in appList" :key="index" @click="GoApp(item)">
+                <li
+                  v-for="(item, index) in appList"
+                  :key="index"
+                  @click="GoApp(item)"
+                >
                   <div class="img">
-                    <img src="./banner.jpg" alt="" class="tupian" />
+                    <img :src="item.screenImg" class="tupian" />
                   </div>
                   <div class="write">
-                    <h3>钱龙广场1.0</h3>
+                    <h3>{{ item.appName }}</h3>
                     节点: 0/5
                     <div class="button">
                       <el-button plain round>进入应用</el-button>
@@ -34,7 +38,7 @@
               </ul>
             </div>
             <!-- 分页 -->
-            <div class="page">
+            <!-- <div class="page">
               <el-pagination
                 @current-change="handleCurrentChange"
                 layout="prev, pager, next"
@@ -42,7 +46,7 @@
                 :total="400"
               >
               </el-pagination>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -77,7 +81,7 @@ export default {
     }
   },
   created () {
-    this.GetList();
+    this.GetList()
   },
   methods: {
     checkitem (item) {
@@ -102,41 +106,42 @@ export default {
     // 读取cookie中数据
     getCookie: function (userid) {
       if (document.cookie.length > 0) {
-        var start = document.cookie.indexOf(userid + "=");
+        var start = document.cookie.indexOf(userid + '=')
         if (start !== -1) {
-          start = start + userid.length + 1;
-          var end = document.cookie.indexOf(";", start);
-          if (end === -1) end = document.cookie.length;
-          return unescape(document.cookie.substring(start, end));
+          start = start + userid.length + 1
+          var end = document.cookie.indexOf(';', start)
+          if (end === -1) end = document.cookie.length
+          return unescape(document.cookie.substring(start, end))
         }
       }
-      console.log();
-      return "";
+      console.log()
+      return ''
     },
-    GetList() {
+    GetList () {
       /**
        * @Author: zk
        * @Date: 2021-02-22 17:43:22
        * @description: 获取应用列表
        */
       getProjectList({
-        userId: this.getCookie("userid"),
+        userId: this.getCookie('userid')
       })
-        .then((res) => {
-          console.log(res);
+        .then(res => {
+          console.log(res)
           this.appList = res.data.data
         })
-        .catch((err) => {
-          this.$message.error("请求失败");
-        });
+        .catch(err => {
+          this.$message.error('请求失败')
+        })
     },
-    GoApp(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-02-22 17:52:23
-     * @description: 获取应用信息
-     */  
-    console.log(e);
+    GoApp (e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-02-22 17:52:23
+       * @description: 获取应用信息
+       */
+
+      console.log(e)
     }
   }
 }

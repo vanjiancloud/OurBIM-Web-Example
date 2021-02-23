@@ -207,4 +207,19 @@ const router = new VueRouter({
 router.afterEach((to, from) => {
   document.title = to.meta.title
 })
+
+// router.beforeEach((to, from, next) => {
+//   if (to.path !== '/login') {
+//     const userInfo = getUserInfo()
+//     if (userInfo && userInfo.token) {
+//       next()
+//     } else {
+//       router.push({
+//         path: '/login'
+//       })
+//     }
+//   } else {
+//     next()
+//   }
+// })
 export default router
