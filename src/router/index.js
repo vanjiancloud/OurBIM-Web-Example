@@ -198,6 +198,15 @@ const routes = [
     meta: {
       title: 'OurBIM重置密码成功'
     }
+  },
+  {
+    // 应用详情
+    path: '/web_client',
+    name: 'web_client',
+    component: () => import('../views/userCenter/subpage/web_client.vue'),
+    meta: {
+      title: '应用详情'
+    }
   }
 ]
 
