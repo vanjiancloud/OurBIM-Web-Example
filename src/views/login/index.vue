@@ -156,6 +156,7 @@
 
 <script>
 import { sendMsgCode, login, loginMobile } from '@/api/my.js'
+import {setuserid} from '@/store/index.js'
 // const Base64 = require('js-base64').Base64
 export default {
   data () {
@@ -252,6 +253,7 @@ export default {
             this.setCookie('email', this.form.email)
             this.setCookie('password', this.form.password)
             // 存储用户信息userid
+            setuserid(res.data.data.userid)
             this.setCookie('userid', res.data.data.userid)
             this.$router.push('../userCenter')
             this.setUserInfo()

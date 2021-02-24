@@ -2,6 +2,7 @@
 import request from '../utils/request'
 import qsStringify from "qs-stringify"
 
+
 // 激活账号
 export function activation (data) {
   const { code } = data
@@ -140,6 +141,16 @@ export function getProjectList (data) {
   return request({
     url: '/appli/getApplicationList',
     method: 'GET',
-    data
+    params:data
   })
 }
+
+// 模型浏览
+export function getModelInfo (data) {
+  return request({
+    url: '/OurBim/requestOurBim',
+    method: 'POST',
+    data: qsStringify(data)
+  })
+}
+

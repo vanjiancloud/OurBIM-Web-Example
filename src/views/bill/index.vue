@@ -35,7 +35,9 @@
         <div class="color"></div>
         <!-- 个人信息 -->
         <div class="neirong">
-          <h2>个人信息</h2>
+          <div class="title">
+            个人信息
+          </div>
           <div class="id">
             ID:<el-input v-model="id" placeholder="请输入ID" class="id"></el-input>
           </div>
@@ -112,15 +114,20 @@ export default {
       }
       .neirong {
         padding-left: 300px;
-        h2 {
-          margin-top: 22px;
-          margin-left: 41px;
-          margin-bottom: 22px;
+        background-color: red;
+        height: 1037px;
+        .title {
+          // background-color: deeppink;
+          height: 54px;
+          line-height: 54px;
+          margin-left: -40px;
+          font-size: 22px;
+          font-weight: bold;
+          border-bottom: 1px solid #f1f1f1;
         }
         div {
           margin-left: 50px;
           margin-bottom: 20px;
-          // padding-left: 30px;
         }
         .el-input {
           width: 400px;

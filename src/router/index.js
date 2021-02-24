@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import { getuserid } from '@/store/index.js'
 
 Vue.use(VueRouter)
 
@@ -198,6 +199,15 @@ const routes = [
     meta: {
       title: 'OurBIM重置密码成功'
     }
+  },
+  {
+    // 应用详情
+    path: '/web_client',
+    name: 'web_client',
+    component: () => import('../views/userCenter/subpage/web_client.vue'),
+    meta: {
+      title: '应用详情'
+    }
   }
 ]
 
@@ -207,19 +217,14 @@ const router = new VueRouter({
 router.afterEach((to, from) => {
   document.title = to.meta.title
 })
-
-// router.beforeEach((to, from, next) => {
-//   if (to.path !== '/login') {
-//     const userInfo = getUserInfo()
-//     if (userInfo && userInfo.token) {
-//       next()
-//     } else {
-//       router.push({
-//         path: '/login'
-//       })
-//     }
-//   } else {
-//     next()
-//   }
-// })
+// 路由前置守卫
+router.beforeEach((to, from, next) => {
+    if (window.localStorage.userid !='') {
+      next()
+    } else {
+      router.push({
+        path: '/login'
+      })
+    }
+})
 export default router

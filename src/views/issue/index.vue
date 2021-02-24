@@ -95,6 +95,7 @@ export default {
     .content {
       margin-left: 41px;
       overflow: hidden;
+      height: 961px;
       .record {
         width: 100%;
         height: 40px;

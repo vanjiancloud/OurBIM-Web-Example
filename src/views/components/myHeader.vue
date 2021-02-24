@@ -76,10 +76,21 @@
           </div> -->
         </li>
         <li class="second">
-          <a href="../register/index.vue" class="li">{{ $t('register') }}</a>
-        </li>
-        <li>
-          <a href="" class="third">{{ $t('login') }}</a>
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              <!-- 下拉菜单<i class="el-icon-arrow-down el-icon--right"></i> -->
+              <img
+                src="../issue/touxiang.png"
+                style="border-radius: 50%;margin-top: 2px;"
+              />
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item @click.native="toUserCenter"
+                >用户中心</el-dropdown-item
+              >
+              <el-dropdown-item @click.native="toLogin">退出</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </li>
         <li class="forth">
           <a @click="English" href="javascript:;">English</a>
@@ -101,6 +112,18 @@ export default {
     Chinese () {
       this.$i18n.locale = 'zh'
       this.classify = '全部'
+    },
+    toUserCenter () {
+      if (this.route !== '/userCenter') {
+        this.$router.push('../userCenter/')
+      } else {
+        this.$router.go(0)
+      }
+    },
+    toLogin () {
+      this.$router.push('../login/')
+
+      window.localStorage.userid = ''
     }
   }
 }
@@ -114,7 +137,7 @@ a {
   font-family: PingFang SC;
 }
 a:hover {
-  color: #409eff;
+  color: #ff6600;
 }
 .header {
   height: 64px;

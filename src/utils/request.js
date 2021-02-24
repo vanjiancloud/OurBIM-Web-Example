@@ -1,3 +1,10 @@
+/*
+ * @Author: zk
+ * @Date: 2021-02-20 13:30:48
+ * @LastEditors: zk
+ * @LastEditTime: 2021-02-23 09:21:26
+ * @description: 
+ */
 // 把通用的一些东西放到里面以便在使用可以节约代码
 import axios from 'axios'
 import JSONBig from 'json-bigint'

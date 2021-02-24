@@ -11,10 +11,10 @@
         <!-- 消息提示 -->
         <div class="record">
           <!-- 消息提示 -->
-          <div class="left">您共有3个项目</div>
+          <div class="left">您共有{{ itemList.length }}个项目</div>
           <!-- 按钮 -->
           <div class="right">
-            <el-button type="primary">{{ $t("link") }}</el-button>
+            <el-button type="primary">{{ $t('link') }}</el-button>
           </div>
         </div>
         <!-- 表格 -->
@@ -27,16 +27,34 @@
             <th>上传日期</th>
             <th>操作</th>
           </tr>
-          <tr>
-            <td style="color: skyblue">ID43321432</td>
-            <td>钱龙广场1.0</td>
-            <td>5</td>
-            <td>转换完成</td>
-            <td>2021-01-0112：34</td>
+          <tr v-for="(item, index) in itemList" :key="index">
+            <td style="color: skyblue">{{ item.appid }}</td>
+            <td>{{ item.appName }}</td>
+            <td>{{ item.maxInstance }}</td>
+            <td>{{ item.applidStatus }}</td>
+            <td>{{ item.createTime }}</td>
             <td>
-              <el-button type="primary" icon="el-icon-share" circle></el-button>
-              <el-button type="primary" icon="el-icon-edit" circle></el-button>
-              <el-button type="danger" icon="el-icon-delete" circle></el-button>
+              <!-- 分享 -->
+              <el-button
+                type="primary"
+                icon="el-icon-share"
+                circle
+                @click="share"
+              ></el-button>
+              <!-- 编辑 -->
+              <el-button
+                type="primary"
+                icon="el-icon-edit"
+                circle
+                @click="edit"
+              ></el-button>
+              <!-- 删除 -->
+              <el-button
+                type="danger"
+                icon="el-icon-delete"
+                circle
+                @click="remove"
+              ></el-button>
             </td>
           </tr>
         </table>
@@ -58,55 +76,67 @@
 </template>
 
 <script>
-import MyFooter from "../components/myFooter.vue";
-import myHeader from "../components/myHeader.vue";
-import MyMain from "../components/myMain.vue";
+import MyFooter from '../components/myFooter.vue'
+import myHeader from '../components/myHeader.vue'
+import MyMain from '../components/myMain.vue'
 import { getProjectList } from '@/api/my.js'
 export default {
   components: { myHeader, MyMain, MyFooter },
-  created() {
-    this.GetList();
+  data () {
+    return {
+      itemList: []
+    }
+  },
+  created () {
+    this.GetList()
   },
   methods: {
-    // 读取cookie中数据
+    // 读取cookie中userid
     getCookie: function (userid) {
       if (document.cookie.length > 0) {
-        var start = document.cookie.indexOf(userid + "=");
+        var start = document.cookie.indexOf(userid + '=')
         if (start !== -1) {
-          start = start + userid.length + 1;
-          var end = document.cookie.indexOf(";", start);
-          if (end === -1) end = document.cookie.length;
-          return unescape(document.cookie.substring(start, end));
+          start = start + userid.length + 1
+          var end = document.cookie.indexOf(';', start)
+          if (end === -1) end = document.cookie.length
+          return unescape(document.cookie.substring(start, end))
         }
       }
-      console.log();
-      return "";
+      console.log()
+      return ''
     },
-    handleCurrentChange(){
-    /**
-     * @Author: zk
-     * @Date: 2021-02-22 17:46:30
-     * @description: 分页
-     */  
+    handleCurrentChange () {
+      /**
+       * @Author: zk
+       * @Date: 2021-02-22 17:46:30
+       * @description: 分页
+       */
     },
-    GetList() {
+    GetList () {
       /**
        * @Author: zk
        * @Date: 2021-02-22 17:43:22
        * @description: 获取应用列表
        */
       getProjectList({
-        userId: this.getCookie("userid"),
+        userId: this.getCookie('userid')
       })
-        .then((res) => {
-          console.log(res.data);
+        .then(res => {
+          console.log(res)
+          this.itemList = res.data.data
         })
-        .catch((err) => {
-          this.$message.error("请求失败");
-        });
+        .catch(err => {
+          this.$message.error('请求失败')
+        })
     },
-  },
-};
+    // 分享
+    share () {},
+    // 编辑
+    edit () {},
+    // 删除按钮
+    remove () {}
+  }
+}
 </script>
 
 <style lang="less" scoped>
@@ -114,6 +144,10 @@ export default {
   .container {
     background-color: #fff;
     height: 961px;
+    /deep/ .el-button--primary {
+    background-color: #00aaf0;
+
+    }
     .content {
       margin-left: 41px;
       margin-right: 41px;
@@ -142,7 +176,7 @@ export default {
           height: 70px;
         }
         th {
-          background-color: #409eff;
+          background-color: #00AAF0;
           color: #fff;
         }
         td {

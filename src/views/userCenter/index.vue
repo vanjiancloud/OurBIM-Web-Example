@@ -29,7 +29,7 @@
                   </div>
                   <div class="write">
                     <h3>{{ item.appName }}</h3>
-                    节点: 0/5
+                    节点: {{item.currentInstance}}/{{item.maxInstance}}
                     <div class="button">
                       <el-button plain round>进入应用</el-button>
                     </div>
@@ -38,7 +38,7 @@
               </ul>
             </div>
             <!-- 分页 -->
-            <!-- <div class="page">
+            <div class="page">
               <el-pagination
                 @current-change="handleCurrentChange"
                 layout="prev, pager, next"
@@ -46,7 +46,7 @@
                 :total="400"
               >
               </el-pagination>
-            </div> -->
+            </div>
           </div>
         </div>
 
@@ -103,7 +103,7 @@ export default {
     toshow () {
       this.islive = !this.islive
     },
-    // 读取cookie中数据
+    // 读取cookie中userid数据
     getCookie: function (userid) {
       if (document.cookie.length > 0) {
         var start = document.cookie.indexOf(userid + '=')
@@ -124,7 +124,8 @@ export default {
        * @description: 获取应用列表
        */
       getProjectList({
-        userId: this.getCookie('userid')
+        userId: this.getCookie("userid"),
+        isHandle: 1
       })
         .then(res => {
           console.log(res)
@@ -134,14 +135,19 @@ export default {
           this.$message.error('请求失败')
         })
     },
-    GoApp (e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-02-22 17:52:23
-       * @description: 获取应用信息
-       */
-
-      console.log(e)
+    GoApp(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-02-22 17:52:23
+     * @description: 获取应用信息
+     */
+      const { href } = this.$router.resolve({
+          name: "web_client",
+          query: {
+              appid: e.appid
+          }
+      });
+      window.open(href, '_blank');
     }
   }
 }
@@ -169,6 +175,8 @@ a:hover {
 .detail {
   .container {
     background-color: #fff;
+    // background-color: red;
+    height: 961px;
     margin-bottom: 100px;
     .content {
       margin-left: 41px;
