@@ -35,13 +35,18 @@
         <div class="color"></div>
         <!-- 授权码 -->
         <div class="neirong">
-          <h2>授权码</h2>
+          <div class="title">
+            授权码
+          </div>
           <div class="input">
             授权码：
             <el-input v-model="code" placeholder="请输入授权码"></el-input>
             <el-button type="primary" class="btn">验证</el-button>
             <div>
-              <el-button type="primary" class="btn">修改</el-button>
+              如授权码不可用请联系售后
+            </div>
+            <div class="xiugai">
+              <el-button type="primary">修改</el-button>
             </div>
           </div>
         </div>
@@ -91,14 +96,19 @@ export default {
         background-color: #f1f1f1;
       }
       .neirong {
-        float: left;
-        h2 {
-          margin-top: 22px;
-          margin-left: 41px;
-          margin-bottom: 22px;
+        padding-left: 300px;
+        height: 1037px;
+        .title {
+          height: 54px;
+          line-height: 54px;
+          margin-left: -40px;
+          font-size: 22px;
+          font-weight: bold;
+          border-bottom: 1px solid #f1f1f1;
         }
         .input {
           margin-left: 60px;
+          margin-top: 20px;
           .el-input {
             width: 462px;
             margin-right: 20px;
@@ -109,7 +119,17 @@ export default {
           }
           .btn {
             width: 78px;
-            height: 38px;
+            height: 46px;
+            background-color: #00AAF0;
+          }
+        }
+        .xiugai {
+          margin-top: 190px;
+          text-align: center;
+          /deep/ .el-button--primary {
+            width: 140px;
+            height: 40px;
+            background-color: #00AAF0;
           }
         }
       }

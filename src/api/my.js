@@ -145,6 +145,42 @@ export function getProjectList (data) {
   })
 }
 
+// 获取用户已有信息
+export function getUserInfo (data) {
+  return request({
+    url: '/CountManager/getUserCount',
+    method: 'GET',
+    params:data
+  })
+}
+
+// 修改用户信息
+export function modifyUserInfo (data) {
+  return request({
+    url: '/CountManager/ModifyUserCount',
+    method: 'POST',
+    data
+  })
+}
+
+// 上传头像
+export function uploadImg (data) {
+  return request({
+    url: '/CountManager/postUserImg',
+    method: 'POST',
+    params:data
+  })
+}
+
+// 当前用户信息展示
+export function showDetail (data) {
+  return request({
+    url: '/CountManager/getCountDetail',
+    method: 'GET',
+    params:data
+  })
+}
+
 // 模型浏览
 export function getModelInfo (data) {
   return request({

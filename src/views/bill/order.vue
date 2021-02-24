@@ -35,7 +35,9 @@
         <div class="color"></div>
         <!-- 服务订单 -->
         <div class="neirong">
-          <h2>服务订单</h2>
+          <div class="title">
+            服务订单
+          </div>
           <table>
             <tr>
               <th>编号</th>
@@ -124,11 +126,15 @@ export default {
         background-color: #f1f1f1;
       }
       .neirong {
-        float: left;
-        h2 {
-          margin-top: 22px;
-          margin-left: 41px;
-          margin-bottom: 49px;
+        padding-left: 300px;
+        height: 1037px;
+        .title {
+          height: 54px;
+          line-height: 54px;
+          margin-left: -40px;
+          font-size: 22px;
+          font-weight: bold;
+          border-bottom: 1px solid #f1f1f1;
         }
         table,
         th,
@@ -138,9 +144,9 @@ export default {
         }
         table {
           width: 1080px;
-          margin-left: 40px;
           border-collapse: collapse;
           font-size: 18px;
+          margin-top: 30px;
           tr {
             height: 70px;
           }

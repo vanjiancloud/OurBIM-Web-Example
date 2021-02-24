@@ -35,26 +35,52 @@
         <div class="color"></div>
         <!-- 修改密码 -->
         <div class="neirong">
-          <h2>修改密码 </h2>
-          <div>
-            原密码:<el-input v-model="oldCode" placeholder="请输入原密码"></el-input>
+          <div class="title">
+            修改密码
           </div>
-          <div>
-            新密码:<el-input v-model="newCode" placeholder="请输入新密码"></el-input>
+          <div class="message" style="margin-top: 30px;">
+            <div class="one">原密码:</div>
+            <div class="input">
+              <el-input v-model="id" placeholder="请输入原密码"></el-input>
+            </div>
           </div>
-          <div>
-            确认密码:<el-input v-model="newCode" placeholder="请再次输入密码"></el-input>
+          <div class="message" style="margin-top: 30px;">
+            <div class="one">新密码:</div>
+            <div class="input">
+              <el-input v-model="id" placeholder="请输入新密码"></el-input>
+            </div>
           </div>
-          <div>
-            手机号:<el-input
-              v-model="mobile"
-              placeholder="请输入手机号"
-            ></el-input>
+          <div class="message" style="margin-top: 30px;">
+            <div class="one">确认密码:</div>
+            <div class="input">
+              <el-input v-model="id" placeholder="请再次输入密码"></el-input>
+            </div>
           </div>
-          <div>
-            验证码:<el-input v-model="code" placeholder="请输入验证码"></el-input>
+          <div class="message" style="margin-top: 30px;">
+            <div class="one">手机号:</div>
+            <div class="input">
+              <el-input v-model="id" placeholder="请输入手机号"></el-input>
+            </div>
           </div>
-          <el-button type="primary">主要按钮</el-button>
+          <div class="message" style="margin-top: 30px;">
+            <div class="one">验证码:</div>
+            <div class="input">
+              <el-input v-model="id" placeholder="请输入验证码">
+                <el-button
+              style="padding-right:25px;color:#00AAF0;"
+              slot="suffix"
+              type="text"
+              :disabled="isSend"
+              @click="getVerification"
+            >
+              发送验证码
+            </el-button>
+              </el-input>
+            </div>
+          </div>
+          <div class="btn">
+            <el-button type="primary">修改</el-button>
+          </div>
         </div>
       </div>
     </div>
@@ -105,19 +131,44 @@ export default {
         background-color: #f1f1f1;
       }
       .neirong {
-        float: left;
-        .el-input {
-          width: 400px;
+        padding-left: 300px;
+        height: 1037px;
+        .title {
+          height: 54px;
+          line-height: 54px;
+          margin-left: -40px;
+          font-size: 22px;
+          font-weight: bold;
+          border-bottom: 1px solid #f1f1f1;
         }
-        h2 {
-          margin-top: 22px;
-          margin-left: 41px;
-          margin-bottom: 49px;
+        .message {
+          width: 660px;
+          height: 46px;
+          margin-bottom: 30px;
+          .one {
+            float: left;
+            height: 46px;
+            width: 80px;
+            line-height: 46px;
+            margin-right: 35px;
+            margin-left: 56px;
+          }
+          .input {
+            float: left;
+          }
+          /deep/ .el-input__inner {
+            width: 460px;
+            height: 46px;
+          }
         }
-      }
-      .xia {
-        text-align: center;
-        margin-bottom: 100px;
+        .btn {
+          margin-left: 300px;
+          /deep/ .el-button--primary {
+            width: 140px;
+            height: 40px;
+            background-color: #00aaf0;
+          }
+        }
       }
     }
   }

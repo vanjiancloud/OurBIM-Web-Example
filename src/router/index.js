@@ -218,13 +218,13 @@ router.afterEach((to, from) => {
   document.title = to.meta.title
 })
 // 路由前置守卫
-router.beforeEach((to, from, next) => {
-    if (window.localStorage.userid !='') {
-      next()
-    } else {
-      router.push({
-        path: '/login'
-      })
-    }
-})
+// router.beforeEach((to, from, next) => {
+//     if (window.localStorage.userid !='') {
+//       next()
+//     } else {
+//       router.push({
+//         path: '/login'
+//       })
+//     }
+// })
 export default router
