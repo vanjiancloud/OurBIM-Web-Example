@@ -29,6 +29,7 @@
 
 <script>
 import { getModelInfo } from '@/api/my.js'
+import MODELAPI from "@/api/model_api"
 
 export default {
   name: "look_app",
@@ -36,6 +37,7 @@ export default {
   data() {
     return {
       webUrl: null,
+      taskId: null,
       isFade: true,
       viewHeight: 0,
       runTimeCode: 0,
@@ -43,7 +45,10 @@ export default {
       loadTimer: null,
       timerCount: 0,
       moreCount: 10,
-      hiddenState: 0
+      hiddenState: 0,
+      websock: null,
+      isSocket: false,
+      socketTimer: null
     }
   },
   watch: {
@@ -66,7 +71,6 @@ export default {
       this.runTimeCode = 0
     }
     this.getSceneUrl()
-
     window.addEventListener("message", (e) => {
       if (e.data.data && e.data.data.frameHeight > 0 && e.data.type !== 500) {
         this.viewHeight = e.data.data.frameHeight
@@ -75,8 +79,34 @@ export default {
   },
   destroyed() {
     this.clearTimePass()
+    this.websock.close() //离开路由之后断开websocket连接
+    this.isSocket = false
+    if (this.socketTimer) {
+      clearInterval(this.socketTimer)
+    }
   },
   methods: {
+    initWebSocket(){ //初始化weosocket
+    /**
+         * @Author: zk
+         * @Date: 2021-02-24 13:42:13
+         * @description: 初始化socket通信
+         */
+        const wsuri = MODELAPI.CREATESOCKET(this.taskId);
+        this.websock = new WebSocket(wsuri);
+        this.websock.onmessage = (e) => {
+          // console.log(e);
+        };
+        this.websock.onopen = (e) => {
+          this.isSocket = true
+					this.socketTimer = setInterval(() => {
+            this.websock.send('heartbeat');
+					}, 1000 * 60)
+        };
+        this.websock.onerror = (e) => {
+          // console.log(e);
+        };
+      },
     getSceneUrl() {
       let appId = this.$route.query.appid
       getModelInfo({
@@ -85,6 +115,8 @@ export default {
         .then((res) => {
           if (res.data.code === 0 && res.data.data) {
             this.webUrl = res.data.data.url
+            this.taskId = res.data.data.taskId
+            this.initWebSocket()
             this.getMonitor();
             let timer = setTimeout(() => {
               window.clearTimeout(timer);
