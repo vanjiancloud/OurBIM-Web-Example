@@ -124,7 +124,7 @@ export default {
        * @description: 获取应用列表
        */
       getProjectList({
-        userId: this.getCookie('userid'),
+        userId: this.getCookie("userid"),
         isHandle: 1
       })
         .then(res => {
@@ -135,19 +135,19 @@ export default {
           this.$message.error('请求失败')
         })
     },
-    GoApp (e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-02-22 17:52:23
-       * @description: 获取应用信息
-       */
+    GoApp(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-02-22 17:52:23
+     * @description: 获取应用信息
+     */
       const { href } = this.$router.resolve({
-        name: 'web_client',
-        query: {
-          appid: e.appid
-        }
-      })
-      window.open(href, '_blank')
+          name: "web_client",
+          query: {
+              appid: e.appid
+          }
+      });
+      window.open(href, '_blank');
     }
   }
 }

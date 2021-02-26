@@ -189,4 +189,3 @@ export function getModelInfo (data) {
     data: qsStringify(data)
   })
 }
-
