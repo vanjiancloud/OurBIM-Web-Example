@@ -5,7 +5,7 @@
     <my-header></my-header>
     <!-- 中间 -->
     <my-main></my-main>
-    <!-- 手写内容 -->
+    <!-- 主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 消息提示和选择器 -->
@@ -81,6 +81,7 @@ import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
 export default {
   components: { myHeader, MyMain, MyFooter },
+  name: "issue",
   methods: {
     handleCurrentChange () {}
   }

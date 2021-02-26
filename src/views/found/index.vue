@@ -5,7 +5,7 @@
     <my-header></my-header>
     <!-- 中间 -->
     <my-main></my-main>
-    <!-- 自己写的 -->
+    <!-- 主体内容 -->
     <div class="container">
       <div class="content">
         <div class="text">您还可上传2个项目</div>
@@ -90,7 +90,7 @@
           <div class="text"><h3>上传BIM模型</h3></div>
           <div class="cover">
             <el-upload
-            v-if="appInfo"
+              v-if="appInfo"
               class="upload-demo"
               :on-success="upLoadModel"
               drag
@@ -136,6 +136,7 @@ import axios from '@/utils/request'
 
 export default {
   components: { myHeader, MyMain, MyFooter },
+  name: 'found',
   data () {
     return {
       active: 0,
@@ -152,30 +153,32 @@ export default {
     }
   },
   methods: {
-    upLoadImg(response, file, fileList){
-    /**
-     * @Author: zk
-     * @Date: 2021-02-22 16:24:12
-     * @description: 上传图片
-     */  
+    upLoadImg (response, file, fileList) {
+      /**
+       * @Author: zk
+       * @Date: 2021-02-22 16:24:12
+       * @description: 上传图片
+       */
+
       this.appImgSrc = response.data
     },
-    upLoadModel(response, file, fileList){
-    /**
-     * @Author: zk
-     * @Date: 2021-02-22 17:03:13
-     * @description: 上传模型
-     */  
+    upLoadModel (response, file, fileList) {
+      /**
+       * @Author: zk
+       * @Date: 2021-02-22 17:03:13
+       * @description: 上传模型
+       */
+
       this.appModel = response.data
     },
-    errorImg(err, file, fileList){
-    /**
-     * @Author: zk
-     * @Date: 2021-02-22 16:28:11
-     * @description: 上传失败
-     */  
-    console.log(err);
+    errorImg (err, file, fileList) {
+      /**
+       * @Author: zk
+       * @Date: 2021-02-22 16:28:11
+       * @description: 上传失败
+       */
 
+      console.log(err)
     },
     // 下一步
     next () {
@@ -186,7 +189,6 @@ export default {
     // 上传
     update () {
       if (this.active++ > 2) this.active = 0
-      // this.isShow = 3
       addProject({
         userId: this.getCookie('userid'),
         appName: this.appName,
@@ -194,7 +196,7 @@ export default {
       })
         .then(res => {
           if (res.data.code === 0) {
-          this.appInfo = res.data.data
+            this.appInfo = res.data.data
             this.$message.success('新建成功')
           } else if (res.data.code === 1) {
             this.$message.error('新建失败')
@@ -325,4 +327,5 @@ export default {
       }
     }
   }
-}</style>
+}
+</style>

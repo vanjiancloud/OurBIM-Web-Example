@@ -1,11 +1,11 @@
 <template>
-  <!-- 账单管理 -->
+  <!-- 授权码 -->
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
     <!-- 中间 -->
     <my-main></my-main>
-    <!-- 自己写 -->
+    <!-- 主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 导航菜单 -->
@@ -63,6 +63,7 @@ import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
 export default {
   components: { myHeader, MyMain, MyFooter },
+  name: 'code',
   data () {
     return {
       navList: [
@@ -120,7 +121,7 @@ export default {
           .btn {
             width: 78px;
             height: 46px;
-            background-color: #00AAF0;
+            background-color: #00aaf0;
           }
         }
         .xiugai {
@@ -129,7 +130,7 @@ export default {
           /deep/ .el-button--primary {
             width: 140px;
             height: 40px;
-            background-color: #00AAF0;
+            background-color: #00aaf0;
           }
         }
       }

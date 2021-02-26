@@ -5,21 +5,21 @@
       <div class="top">
         <div class="left">
           <div class="im">
-            <img src="./touxiang.png" alt="" />
+            <img src="imgUrl" alt="" />
           </div>
-          <div class="zi">
-            <h3>Mark</h3>
-            2021-02-08
+          <div class="Info">
+            <h3>{{ name }}</h3>
+            {{ note }}
           </div>
         </div>
         <div class="middle">
           <h3>资源占用</h3>
           <div class="tiao">
-            <h3 style="color: #00AAF0;">78%</h3>
+            <h3 style="color: #00AAF0;">{{ spacePer }}</h3>
             <el-progress
               :text-inside="true"
               :stroke-width="15"
-              :percentage="78"
+              :percentage="0"
               :show-text="false"
               :color="customColor"
             >
@@ -28,16 +28,16 @@
               <div class="icon">
                 <img src="./cunchu.png" alt="" />
               </div>
-              剩余存储&nbsp;&nbsp;2.4G/10G
+              剩余存储&nbsp;&nbsp;{{ currentCountSpace }}/{{ countSpace }}
             </div>
           </div>
         </div>
         <div class="jindu">
-          <h3>3/6</h3>
+          <h3>{{ bfPer }}</h3>
           <el-progress
             :text-inside="true"
             :stroke-width="15"
-            :percentage="50"
+            :percentage="0"
             :show-text="false"
             :color="customColor"
           >
@@ -46,13 +46,13 @@
             <div class="icon">
               <img src="./jiedian.png" alt="" />
             </div>
-            剩余节点&nbsp;3/6
+            剩余节点&nbsp;{{ currentCountBF }}/{{ countBF }}
           </div>
         </div>
         <div class="right">
           <div class="content">
             <div>服务有效期</div>
-            <div>2021-01-01至2026-01-01</div>
+            <div>{{ countStartTime }}至{{ countendTime }}</div>
             <el-button
               plain
               round
@@ -87,14 +87,53 @@
 </template>
 
 <script>
+import { showDetail } from '@/api/my.js'
+import { getuserid } from '@/store/index.js'
 export default {
   name: 'myMain',
   data () {
     return {
-      customColor: '#00AAF0'
+      customColor: '#00AAF0',
+      note: '', //签名
+      name: '', //用户名
+      imgUrl: '', //用户头像
+      countStartTime: '', //账户生效开始时间
+      countendTime: '', //账户生效结束时间
+      spacePer: '', //空间使用率，第一个进度条
+      bfPer: '', //并发使用率，第二个进度条
+      countSpace: '', //当前用户的存储量最大值
+      currentCountSpace: '', //当前用户已使用的存储率
+      countBF: '', //当前用户的并发总数最大值
+      currentCountBF: '' //当前用户的并发数
     }
   },
+  created () {
+    this.showData()
+  },
   methods: {
+    //展示当前用户信息
+    showData () {
+      showDetail({
+        userid: getuserid()
+      })
+        .then(res => {
+          console.log(res)
+          this.name = res.data.data.name
+          this.note = res.data.data.note
+          this.imgUrl = res.data.data.imgUrl
+          this.countStartTime = res.data.data.countStartTime
+          this.countendTime = res.data.data.countendTime
+          this.countSpace = res.data.data.countSpace
+          this.spacePer = res.data.data.spacePer
+          this.bfPer = res.data.data.bfPer
+          this.currentCountSpace = res.data.data.currentCountSpace
+          this.countBF = res.data.data.countBF
+          this.currentCountBF = res.data.data.currentCountBF
+        })
+        .catch(err => {
+          this.$message.error('信息展示失败')
+        })
+    },
     toUserCenter () {
       this.$router.push('../userCenter')
     },
@@ -124,27 +163,31 @@ export default {
       background-color: #fff;
       .left {
         height: 152px;
-        width: 192px;
-        margin-right: 95px;
+        width: 287px;
+        margin-right:20px;
         margin-left: 42px;
         float: left;
         background-color: #fff;
+        // background-color: green;
         .im {
           margin-top: 36px;
           width: 80px;
           height: 80px;
           float: left;
           border-radius: 50%;
-          margin-right: 20px;
           img {
             width: 100%;
             height: 100%;
             border-radius: 50%;
           }
         }
-        .zi {
-          float: right;
-          margin-top: -65px;
+        .Info {
+          float: left;
+          margin-top:35px;
+          // background-color: red;
+          width: 207px;
+          height: 115px;
+          text-align: center;
         }
       }
       .middle {

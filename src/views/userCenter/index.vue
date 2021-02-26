@@ -1,19 +1,18 @@
 <template>
+  <!-- 我的应用 -->
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
     <!-- 中间 -->
     <my-main></my-main>
-    <!-- 内容 -->
+    <!-- 主体内容 -->
     <div class="detail">
       <div class="container">
         <!-- 我的应用 -->
         <div class="content" v-show="isShow == 1">
           <!-- 消息提示 -->
           <div class="record">
-            <div class="left">
-              您共有{{appList.length}}个应用
-            </div>
+            <div class="left">您共有{{ appList.length }}个应用</div>
           </div>
           <!-- 列表展示 -->
           <div class="list">
@@ -29,7 +28,7 @@
                   </div>
                   <div class="write">
                     <h3>{{ item.appName }}</h3>
-                    节点: {{item.currentInstance}}/{{item.maxInstance}}
+                    节点: {{ item.currentInstance }}/{{ item.maxInstance }}
                     <div class="button">
                       <el-button plain round>进入应用</el-button>
                     </div>
@@ -68,6 +67,7 @@ import { getProjectList } from '@/api/my.js'
 
 export default {
   components: { myHeader, MyMain, MyFooter },
+  name: 'userCenter',
   data () {
     return {
       islive: false,
@@ -124,7 +124,7 @@ export default {
        * @description: 获取应用列表
        */
       getProjectList({
-        userId: this.getCookie("userid"),
+        userId: this.getCookie('userid'),
         isHandle: 1
       })
         .then(res => {
@@ -135,19 +135,19 @@ export default {
           this.$message.error('请求失败')
         })
     },
-    GoApp(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-02-22 17:52:23
-     * @description: 获取应用信息
-     */
+    GoApp (e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-02-22 17:52:23
+       * @description: 获取应用信息
+       */
       const { href } = this.$router.resolve({
-          name: "web_client",
-          query: {
-              appid: e.appid
-          }
-      });
-      window.open(href, '_blank');
+        name: 'web_client',
+        query: {
+          appid: e.appid
+        }
+      })
+      window.open(href, '_blank')
     }
   }
 }

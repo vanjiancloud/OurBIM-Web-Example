@@ -1,11 +1,11 @@
 <template>
-  <!-- 账单管理 -->
+  <!-- 账户管理，个人信息 -->
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
     <!-- 中间 -->
     <my-main></my-main>
-    <!-- 自己写 -->
+    <!-- 主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 导航菜单 -->
@@ -38,44 +38,66 @@
           <div class="title">
             个人信息
           </div>
+          <!-- 用户名 -->
           <div class="message" style="margin-top: 30px;">
-            <div class="one">ID:</div>
+            <div class="one">用户名:</div>
             <div class="input">
-              <el-input v-model="id" placeholder="请输入ID"></el-input>
+              <el-input v-model="name" placeholder="请输入用户名"></el-input>
             </div>
           </div>
+          <!-- 签名 -->
           <div class="message">
             <div class="one">签名:</div>
             <div class="input">
-              <el-input v-model="name" placeholder="请输入签名"></el-input>
+              <el-input v-model="note" placeholder="请输入签名"></el-input>
             </div>
           </div>
+          <!-- 邮箱 -->
           <div class="message">
             <div class="one">邮箱:</div>
             <div class="input">
-              <el-input v-model="email" placeholder="请输入邮箱"></el-input>
+              <el-input
+                v-model="email"
+                placeholder="请输入邮箱"
+                :disabled="true"
+              ></el-input>
             </div>
           </div>
+          <!-- 手机号 -->
           <div class="message">
             <div class="one">手机号:</div>
             <div class="input">
-              <el-input v-model="mobile" placeholder="请输入手机号"></el-input>
+              <el-input
+                v-model="mobile"
+                placeholder="请输入手机号"
+                :disabled="true"
+              ></el-input>
             </div>
           </div>
+          <!-- 公司 -->
           <div class="message">
             <div class="one">公司:</div>
             <div class="input">
               <el-input v-model="company" placeholder="请输入公司"></el-input>
             </div>
           </div>
+          <!-- 职位 -->
           <div class="message">
             <div class="one">职位:</div>
             <div class="input">
               <el-input v-model="position" placeholder="请输入职位"></el-input>
             </div>
           </div>
+          <!-- 上传头像 -->
           <div class="photo">
-            上传头像
+            <el-upload action="" :on-remove="handleRemove" multiple :limit="1">
+              <el-button type="primary" icon="el-icon-upload2" @click="upImg">
+                上传头像
+              </el-button>
+              <div slot="tip" class="el-upload__tip">
+                支持扩展名：.png.jpg.jpeg
+              </div>
+            </el-upload>
           </div>
           <div class="btn">
             <el-button type="primary" @click="changeUserInfo">修改</el-button>
@@ -93,12 +115,13 @@ import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
 import { getUserInfo } from '@/api/my.js'
-// import { modifyUserInfo } from '@/api/my.js'
-// import { uploadImg } from '@/api/my.js'
+import { modifyUserInfo } from '@/api/my.js'
+import { uploadImg } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 
 export default {
   components: { myHeader, MyMain, MyFooter },
+  name: 'bill',
   data () {
     return {
       navList: [
@@ -108,12 +131,14 @@ export default {
         { name: '/team', navItem: '团队' },
         { name: '/changeCode', navItem: '修改密码' }
       ],
-      id: '',
-      name: '', //签名
+      name: '',
+      note: '', //签名
       email: '',
       mobile: '',
       company: '',
-      position: '' //职位
+      position: '', //职位
+      imgUrl: ''
+      // baseURL: axios.defaults.baseURL,
     }
   },
   created () {
@@ -127,7 +152,8 @@ export default {
       })
         .then(res => {
           console.log(res)
-          this.id = res.data.data.id
+          this.note = res.data.data.note
+          this.imgUrl = res.data.data.imgUrl
           this.name = res.data.data.name
           this.email = res.data.data.email
           this.mobile = res.data.data.mobile
@@ -142,17 +168,18 @@ export default {
     changeUserInfo () {
       modifyUserInfo({
         userid: getuserid(),
-        id: this.id,
+        note: this.note,
         name: this.name,
-        email: this.email,
-        mobile: this.mobile,
+        imgUrl: this.imgUrl,
         company: this.company,
         position: this.position
       })
         .then(res => {
           if (res.data.code === 0) {
+            console.log(res)
             this.$message.success('修改成功')
           } else if (res.data.code === 1) {
+            console.log(res)
             this.$message.error('修改失败')
           }
         })
@@ -162,14 +189,21 @@ export default {
         })
     },
     //上传头像
-    updata () {
+    upImg () {
       uploadImg()
         .then(res => {
           console.log(res)
+          console.log('调取接口成功')
+
+          this.$message.success('上传头像成功')
         })
         .catch(err => {
-          this.message.error('上传失败')
+          this.$message.error('上传头像失败')
         })
+    },
+    // 删除头像
+    handleRemove (file, fileList) {
+      console.log(file, fileList)
     }
   }
 }
@@ -177,6 +211,140 @@ export default {
 
 <style lang="less" scoped>
 .box {
+  .main {
+    height: 221px;
+    margin-top: 20px;
+    .container {
+      .top {
+        height: 152px;
+        background-color: #fff;
+        .left {
+          height: 152px;
+          width: 192px;
+          margin-right: 95px;
+          margin-left: 42px;
+          float: left;
+          background-color: #fff;
+          .im {
+            margin-top: 36px;
+            width: 80px;
+            height: 80px;
+            float: left;
+            border-radius: 50%;
+            margin-right: 20px;
+            img {
+              width: 100%;
+              height: 100%;
+              border-radius: 50%;
+            }
+          }
+          .Info {
+            float: right;
+            margin-top: 35px;
+          }
+        }
+        .middle {
+          height: 152px;
+          float: left;
+          margin-right: 30px;
+          // background-color: red;
+          h3 {
+            margin-top: 6px;
+          }
+          .tiao {
+            width: 318px;
+            float: left;
+            margin-top: -10px;
+            margin-left: 100px;
+            .tu {
+              float: left;
+              margin-right: 29px;
+              margin-top: 15px;
+              .icon {
+                width: 20px;
+                height: 20px;
+                float: left;
+                margin-right: 10px;
+                img {
+                  width: 100%;
+                  height: 100%;
+                }
+              }
+            }
+          }
+        }
+        .jindu {
+          width: 318px;
+          height: 152px;
+          // background-color: pink;
+          float: left;
+          h3 {
+            margin-top: 28px;
+            color: #00aaf0;
+          }
+          .tutu {
+            float: left;
+            margin-top: 15px;
+            .icon {
+              width: 20px;
+              height: 20px;
+              float: left;
+              margin-right: 10px;
+              img {
+                width: 100%;
+                height: 100%;
+              }
+            }
+          }
+        }
+        .right {
+          height: 152px;
+          width: 207px;
+          margin-right: 42px;
+          float: right;
+          text-align: center;
+          // background-color: green;
+          .content {
+            margin-top: 36px;
+            width: 207px;
+            div {
+              margin-bottom: 10px;
+            }
+            .btn {
+              width: 132px;
+            }
+          }
+        }
+      }
+      .tab {
+        height: 69px;
+        background-color: #f1f1f1;
+        line-height: 69px;
+        padding: 0 220px;
+        .el-button {
+          color: #000;
+        }
+        .el-button:hover {
+          color: #ff6600;
+        }
+        div {
+          float: left;
+          margin-right: 155px;
+          width: 70px;
+          height: 50px;
+          // background-color: pink;
+          border-bottom: 5px solid #f1f1f1;
+          border-radius: 3px;
+        }
+        div:hover {
+          border-bottom-color: #ff6600;
+        }
+        .last {
+          margin: 0;
+        }
+      }
+    }
+  }
   .container {
     background-color: #fff;
     margin-bottom: 34px;
@@ -223,11 +391,21 @@ export default {
             height: 46px;
           }
         }
+        .photo {
+          margin-top: 35px;
+          margin-left: 70px;
+          /deep/ .el-button--primary {
+            width: 130px;
+            height: 45px;
+            background-color: #00aaf0;
+          }
+        }
         .btn {
+          margin-top: 70px;
           margin-left: 300px;
           /deep/ .el-button--primary {
             width: 140px;
-            height: 40px;
+            height: 45px;
             background-color: #00aaf0;
           }
         }

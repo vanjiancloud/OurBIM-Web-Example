@@ -5,7 +5,7 @@
     <my-header></my-header>
     <!-- 中间 -->
     <my-main></my-main>
-    <!-- 自己写的内容 -->
+    <!-- 主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 消息提示 -->
@@ -82,6 +82,7 @@ import MyMain from '../components/myMain.vue'
 import { getProjectList } from '@/api/my.js'
 export default {
   components: { myHeader, MyMain, MyFooter },
+  name: 'manage',
   data () {
     return {
       itemList: []
@@ -143,10 +144,8 @@ export default {
 .box {
   .container {
     background-color: #fff;
-    height: 961px;
     /deep/ .el-button--primary {
-    background-color: #00aaf0;
-
+      background-color: #00aaf0;
     }
     .content {
       margin-left: 41px;
@@ -176,7 +175,7 @@ export default {
           height: 70px;
         }
         th {
-          background-color: #00AAF0;
+          background-color: #00aaf0;
           color: #fff;
         }
         td {

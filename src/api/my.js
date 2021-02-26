@@ -159,7 +159,7 @@ export function modifyUserInfo (data) {
   return request({
     url: '/CountManager/ModifyUserCount',
     method: 'POST',
-    data
+    data: qsStringify(data)
   })
 }
 

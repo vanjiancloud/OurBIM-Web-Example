@@ -1,11 +1,11 @@
 <template>
-  <!-- 账单管理 -->
+  <!-- 团队 -->
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
     <!-- 中间 -->
     <my-main></my-main>
-    <!-- 自己写 -->
+    <!-- 主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 导航菜单 -->
@@ -66,6 +66,7 @@ import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
 export default {
   components: { myHeader, MyMain, MyFooter },
+  name: 'team',
   data () {
     return {
       navList: [
@@ -95,7 +96,7 @@ export default {
         width: 25px;
         height: 1037px;
         float: left;
-        background-color: #F1F1F1;
+        background-color: #f1f1f1;
       }
       .neirong {
         padding-left: 300px;

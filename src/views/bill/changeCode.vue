@@ -1,11 +1,11 @@
 <template>
-  <!-- 账单管理 -->
+  <!-- 修改密码 -->
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
     <!-- 中间 -->
     <my-main></my-main>
-    <!-- 自己写 -->
+    <!-- 主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 导航菜单 -->
@@ -41,40 +41,42 @@
           <div class="message" style="margin-top: 30px;">
             <div class="one">原密码:</div>
             <div class="input">
-              <el-input v-model="id" placeholder="请输入原密码"></el-input>
+              <el-input v-model="oldCode" placeholder="请输入原密码"></el-input>
             </div>
           </div>
           <div class="message" style="margin-top: 30px;">
             <div class="one">新密码:</div>
             <div class="input">
-              <el-input v-model="id" placeholder="请输入新密码"></el-input>
+              <el-input v-model="newCode" placeholder="请输入新密码"></el-input>
             </div>
           </div>
           <div class="message" style="margin-top: 30px;">
             <div class="one">确认密码:</div>
             <div class="input">
-              <el-input v-model="id" placeholder="请再次输入密码"></el-input>
+              <el-input
+                v-model="newCode"
+                placeholder="请再次输入密码"
+              ></el-input>
             </div>
           </div>
           <div class="message" style="margin-top: 30px;">
             <div class="one">手机号:</div>
             <div class="input">
-              <el-input v-model="id" placeholder="请输入手机号"></el-input>
+              <el-input v-model="mobile" placeholder="请输入手机号"></el-input>
             </div>
           </div>
           <div class="message" style="margin-top: 30px;">
             <div class="one">验证码:</div>
             <div class="input">
-              <el-input v-model="id" placeholder="请输入验证码">
+              <el-input v-model="code" placeholder="请输入验证码">
                 <el-button
-              style="padding-right:25px;color:#00AAF0;"
-              slot="suffix"
-              type="text"
-              :disabled="isSend"
-              @click="getVerification"
-            >
-              发送验证码
-            </el-button>
+                  style="padding-right:25px;color:#00AAF0;"
+                  slot="suffix"
+                  type="text"
+                  @click="getCode"
+                >
+                  发送验证码
+                </el-button>
               </el-input>
             </div>
           </div>
@@ -95,6 +97,7 @@ import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
 export default {
   components: { myHeader, MyMain, MyFooter },
+  name: 'changeCode',
   data () {
     return {
       navList: [
@@ -108,6 +111,12 @@ export default {
       newCode: '',
       mobile: '',
       code: ''
+    }
+  },
+  methods: {
+    // 获取验证码
+    getCode () {
+      console.log('点击发送验证码按钮')
     }
   }
 }

@@ -1,11 +1,11 @@
 <template>
-  <!-- 账单管理 -->
+  <!-- 服务订单 -->
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
     <!-- 中间 -->
     <my-main></my-main>
-    <!-- 自己写 -->
+    <!-- 主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 导航菜单 -->
@@ -94,6 +94,7 @@ import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
 export default {
   components: { myHeader, MyMain, MyFooter },
+  name: 'order',
   data () {
     return {
       navList: [
