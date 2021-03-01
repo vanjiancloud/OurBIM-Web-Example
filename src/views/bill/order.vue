@@ -38,7 +38,19 @@
           <div class="title">
             服务订单
           </div>
-          <table>
+          <template>
+            <div class="table">
+              <el-table :data="tableData" style="width: 100%">
+                <el-table-column prop="date" label="编号"></el-table-column>
+                <el-table-column prop="name" label="时间" ></el-table-column>
+                <el-table-column prop="name" label="服务"> </el-table-column>
+                <el-table-column prop="name" label="授权码"></el-table-column>
+                <el-table-column prop="name" label="状态"> </el-table-column>
+                <el-table-column prop="name" label="金额"> </el-table-column>
+              </el-table>
+            </div>
+          </template>
+          <!-- <table>
             <tr>
               <th>编号</th>
               <th>时间</th>
@@ -79,7 +91,7 @@
               <td>失效</td>
               <td>50,000.00</td>
             </tr>
-          </table>
+          </table> -->
         </div>
       </div>
     </div>
@@ -92,6 +104,7 @@
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
+
 export default {
   components: { myHeader, MyMain, MyFooter },
   name: 'order',
@@ -103,6 +116,18 @@ export default {
         { name: '/order', navItem: '服务订单' },
         { name: '/team', navItem: '团队' },
         { name: '/changeCode', navItem: '修改密码' }
+      ],
+      tableData: [
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        },
+        {
+          date: '2016-05-02',
+          name: '王小虎',
+          address: '上海市普陀区金沙江路 1518 弄'
+        }
       ]
     }
   }
@@ -137,26 +162,36 @@ export default {
           font-weight: bold;
           border-bottom: 1px solid #f1f1f1;
         }
-        table,
-        th,
-        td {
-          border: 1px solid black;
-          text-align: center;
-        }
-        table {
-          width: 1080px;
-          border-collapse: collapse;
-          font-size: 18px;
-          margin-top: 30px;
-          tr {
-            height: 70px;
-          }
-          th {
-            background-color: #409eff;
+        .table {
+          margin-right: 40px;
+          margin-top: 20px;
+          /deep/ .el-table thead {
             color: #fff;
           }
-          td {
-            background-color: #fff;
+          /deep/ .el-table th {
+            background-color: #00aaf0;
+            text-align: center;
+            font-size: 15px;
+            font-weight: normal;
+          }
+          /deep/ .el-table td {
+            text-align: center;
+          }
+          //表格去横线
+          /deep/ .el-table__row > td {
+            border: none;
+          }
+          //表格去横线之去掉最下面的那一条线
+          /deep/ .el-table::before {
+            height: 0px;
+          }
+          // 第二列字体颜色
+          /deep/ .el-table_1_column_2 {
+            color: #00aaf0;
+          }
+          // 表头字体颜色
+          /deep/ .el-table th > .cell {
+            color: #fff;
           }
         }
       }

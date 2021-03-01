@@ -124,7 +124,7 @@ export default {
        * @description: 获取应用列表
        */
       getProjectList({
-        userId: this.getCookie("userid"),
+        userid: this.getCookie("userid"),
         isHandle: 1
       })
         .then(res => {

@@ -39,11 +39,12 @@
             授权码
           </div>
           <div class="input">
-            授权码：
+            授权码
             <el-input v-model="code" placeholder="请输入授权码"></el-input>
             <el-button type="primary" class="btn">验证</el-button>
-            <div>
-              如授权码不可用请联系售后
+            <div class="news">
+                <div>*</div>
+               如授权码不可用请联系售后
             </div>
             <div class="xiugai">
               <el-button type="primary">修改</el-button>
@@ -61,9 +62,10 @@
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
+
 export default {
   components: { myHeader, MyMain, MyFooter },
-  name: 'code',
+  name: 'authorizationCode',
   data () {
     return {
       navList: [
@@ -112,11 +114,28 @@ export default {
           margin-top: 20px;
           .el-input {
             width: 462px;
+            margin-left: 20px;
             margin-right: 20px;
           }
           /deep/ .el-input__inner {
             width: 462px;
             height: 46px;
+          }
+          .news {
+            width: 224px;
+            height: 36px;
+            margin-top: 10px;
+            background-color: #EEEEEE;
+            color: #ccc;
+            text-align: center;
+            line-height: 36px;
+            div {
+              color: red;
+              float: left;
+              font-size: 20px;
+              margin-left: 5px;
+              margin-top: 3px;
+            }
           }
           .btn {
             width: 78px;

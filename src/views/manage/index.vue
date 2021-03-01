@@ -18,46 +18,39 @@
           </div>
         </div>
         <!-- 表格 -->
-        <table>
-          <tr>
-            <th>应用ID</th>
-            <th>应用名称</th>
-            <th>最大并发数量</th>
-            <th>状态</th>
-            <th>上传日期</th>
-            <th>操作</th>
-          </tr>
-          <tr v-for="(item, index) in itemList" :key="index">
-            <td style="color: skyblue">{{ item.appid }}</td>
-            <td>{{ item.appName }}</td>
-            <td>{{ item.maxInstance }}</td>
-            <td>{{ item.applidStatus }}</td>
-            <td>{{ item.createTime }}</td>
-            <td>
+        <div class="table">
+          <el-table :data="itemList" style="width: 100%;">
+            <el-table-column prop="appid" label="应用ID">
+            </el-table-column>
+            <el-table-column prop="appName" label="应用名称">
+            </el-table-column>
+            <el-table-column prop="maxInstance" label="最大并发数量">
+            </el-table-column>
+            <el-table-column prop="applidStatus" label="状态"> </el-table-column
+            ><el-table-column prop="createTime" label="上传日期">
+            </el-table-column>
+            <el-table-column prop="" label="操作">
               <!-- 分享 -->
-              <el-button
-                type="primary"
-                icon="el-icon-share"
-                circle
-                @click="share"
-              ></el-button>
+               <button @click="share">
+                <span>
+                  <img src="../components/share.png" />
+                </span>
+              </button>
               <!-- 编辑 -->
-              <el-button
-                type="primary"
-                icon="el-icon-edit"
-                circle
-                @click="edit"
-              ></el-button>
+               <button @click="edit">
+                <span>
+                  <img src="../components/edit.png" />
+                </span>
+              </button>
               <!-- 删除 -->
-              <el-button
-                type="danger"
-                icon="el-icon-delete"
-                circle
-                @click="remove"
-              ></el-button>
-            </td>
-          </tr>
-        </table>
+               <button @click="remove">
+                <span>
+                  <img src="../components/del.png" />
+                </span>
+              </button>
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
     </div>
     <!-- 分页 -->
@@ -80,12 +73,18 @@ import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
 import { getProjectList } from '@/api/my.js'
+
 export default {
   components: { myHeader, MyMain, MyFooter },
   name: 'manage',
   data () {
     return {
-      itemList: []
+      itemList: [],
+      appid: '',
+      appName: '',
+      maxInstance: '',
+      applidStatus: '',
+      createTime: ''
     }
   },
   created () {
@@ -125,17 +124,28 @@ export default {
         .then(res => {
           console.log(res)
           this.itemList = res.data.data
+          this.appid = res.data.data.appid
+          this.appName = res.data.data.appName
+          this.maxInstance = res.data.data.maxInstance
+          this.applidStatus = res.data.data.applidStatus
+          this.createTime = res.data.data.createTime
         })
         .catch(err => {
           this.$message.error('请求失败')
         })
     },
     // 分享
-    share () {},
+    share () {
+      console.log('点击了分享');
+    },
     // 编辑
-    edit () {},
+    edit () {
+      console.log('点击了编辑');
+    },
     // 删除按钮
-    remove () {}
+    remove () {
+      console.log('点击了删除');
+    }
   }
 }
 </script>
@@ -165,28 +175,46 @@ export default {
           top: 0px;
         }
       }
-      table {
-        width: 100%;
-        margin-top: 15px;
-        margin-bottom: 40px;
-        border-collapse: collapse;
-        font-size: 18px;
-        tr {
-          height: 70px;
-        }
-        th {
-          background-color: #00aaf0;
+      .table {
+        margin-top: 20px;
+        /deep/ .el-table thead {
           color: #fff;
         }
-        td {
+        /deep/ .el-table th {
+          background-color: #00aaf0;
+          text-align: center;
+          font-size: 15px;
+          font-weight: normal;
+        }
+        /deep/ .el-table td {
+          text-align: center;
+        }
+        // 表头字体颜色
+        /deep/ .el-table th>.cell {
+          color: #fff;
+        }
+        //表格去横线
+        /deep/ .el-table__row > td {
+          border: none;
+        }
+        //表格去横线之去掉最下面的那一条线
+        /deep/ .el-table::before {
+          height: 0px;
+        }
+        // 第一列字体颜色
+        /deep/ .el-table_1_column_1 {
+          color: #00aaf0;
+        }
+        button {
+          border: none;
+          outline: none;
+          height: 20px;
+          margin-left: 30px;
           background-color: #fff;
         }
-      }
-      table,
-      th,
-      td {
-        border: 1px solid black;
-        text-align: center;
+        button:hover {
+          cursor: pointer;
+        }
       }
     }
   }

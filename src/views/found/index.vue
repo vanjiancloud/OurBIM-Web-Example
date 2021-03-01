@@ -8,34 +8,42 @@
     <!-- 主体内容 -->
     <div class="container">
       <div class="content">
+        <!-- 提示 -->
         <div class="text">您还可上传2个项目</div>
-        <div class="buzhou">
-          <el-steps :active="active" finish-status="success">
-            <el-step title="步骤 1" description="创建应用项目信息"> </el-step>
-            <el-step title="步骤 2" description="上传BIM模型"></el-step>
-            <!-- <el-step title="步骤 3" description="上传完成"></el-step> -->
+        <!-- 步骤条 -->
+        <div class="buzhou" v-show="isHandle == 1">
+          <el-steps :active="active">
+            <el-step title="步骤一" description="创建应用项目信息"> </el-step>
+            <el-step title="步骤二" description="上传BIM模型"></el-step>
+            <el-step title="步骤三" description="上传完成"></el-step>
           </el-steps>
         </div>
-
+        <div class="buzhou" v-show="isHandle == 2">
+          <el-steps :active="active">
+            <el-step title="步骤一" description="创建应用项目信息"> </el-step>
+            <el-step title="步骤二" description="上传BIM模型"></el-step>
+            <el-step title="步骤三" description="同时上传倾斜摄影"></el-step>
+            <el-step title="步骤四" description="上传完成"></el-step>
+          </el-steps>
+        </div>
+        <!-- 第一步 创建应用项目信息-->
         <div class="first" v-show="isShow == 1">
-          <el-button
-            style="margin-top: 12px; margin-left: 450px;"
-            @click="next"
-          >
-            下一步
-          </el-button>
+          <!-- 图片 -->
           <div class="img">
             <img src="./icon.png" alt="" />
           </div>
           <div class="text"><h3>创建应用</h3></div>
+          <!-- input框 -->
           <div class="input">
             应用名称：
-            <el-input v-model="appName" placeholder="请输入项目名称"></el-input>
+            <el-input v-model="appName" placeholder="请输入应用名称"></el-input>
           </div>
+          <!-- 上传图片 -->
           <div class="picture">
             <div class="news">
               上传封面：
             </div>
+            <!-- 上传封面 -->
             <div class="cover">
               <el-upload
                 :action="baseURL + '/appli/postScreenImg'"
@@ -44,6 +52,8 @@
                 :on-error="errorImg"
                 :before-remove="handleRemove"
                 list-type="picture-card"
+                :limit="1"
+                :on-exceed="handleExceed"
               >
                 <i slot="default" class="el-icon-plus"></i>
                 <div slot="file" slot-scope="{ file }">
@@ -76,18 +86,36 @@
               </el-dialog>
             </div>
           </div>
+          <!-- 按钮 -->
+          <div class="btn">
+            <el-button @click="next" type="primary">
+              下一步
+            </el-button>
+          </div>
         </div>
+        <!-- 第二步 上传BIM模型-->
         <div class="second" v-show="isShow == 2">
-          <el-button
-            style="margin-top: 12px; margin-left: 450px;"
-            @click="update"
-          >
-            上传
-          </el-button>
+          <!-- 图标 -->
           <div class="img">
             <img src="./icon.png" alt="" />
           </div>
-          <div class="text"><h3>上传BIM模型</h3></div>
+          <div class="text"><h3>上传模型</h3></div>
+          <!-- 复选框 -->
+          <span style="margin-right: 40px; ">
+            <input
+              type="radio"
+              name="upload"
+              class="radio"
+              @click="isHandle = 1"
+            />仅上传BIM模型
+          </span>
+          <input
+            type="radio"
+            name="upload"
+            class="radio"
+            @click="isHandle = 2"
+          />同时上传倾斜摄影模型
+          <!-- 上传BIM模型 -->
           <div class="cover">
             <el-upload
               v-if="appInfo"
@@ -101,17 +129,71 @@
               }"
               multiple
             >
-              <i class="el-icon-upload"></i>
+              <img src="./file.png" alt="" />
               <div class="el-upload__text">
-                将文件拖到此处，或<em>点击上传</em>
-              </div>
-              <div class="el-upload__tip" slot="tip">
-                只能上传jpg/png文件，且不超过500kb
+                点击或将文件拖拽到这里上传 <br />
+                支持扩展名：.rar .3dm .rvt .stl .fbx .skp...
               </div>
             </el-upload>
           </div>
+          <div class="btn">
+            <el-button @click="update" type="primary">
+              开始转换
+            </el-button>
+          </div>
         </div>
-        <div class="third" v-show="isShow == 3">
+        <!-- 第三步 同时上传倾斜摄影-->
+        <div class="second" v-show="isShow == 3">
+          <!-- 图标 -->
+          v-show="isShow == 3"
+          <div class="img">
+            <img src="./book.png" alt="" />
+          </div>
+          <div class="text"><h3>上传模型</h3></div>
+          <!-- 复选框 -->
+          <span style="margin-right: 40px; ">
+            <input
+              type="radio"
+              name="upload"
+              class="radio"
+              @click="isHandle = 1"
+            />仅上传BIM模型
+          </span>
+          <input
+            type="radio"
+            name="upload"
+            class="radio"
+            @click="isHandle = 2"
+          />同时上传倾斜摄影模型
+          <!-- 上传BIM模型 -->
+          <div class="cover">
+            <el-upload
+              v-if="appInfo"
+              class="upload-demo"
+              :on-success="upLoadModel"
+              drag
+              :action="baseURL + '/appli/postProjectModel'"
+              name="fileUpload"
+              :data="{
+                appliId: appInfo.appid
+              }"
+              multiple
+            >
+              <img src="./file.png" alt="" />
+              <div class="el-upload__text">
+                点击或将文件拖拽到这里上传 <br />
+                支持扩展名：.rar .3dm .rvt .stl .fbx .skp...
+              </div>
+            </el-upload>
+          </div>
+          <div class="btn">
+            <el-button @click="update" type="primary">
+              开始转换
+            </el-button>
+          </div>
+        </div>
+        <!-- 第四步 上传完成-->
+        <div class="fourth" v-show="isShow == 4">
           <el-button
             style="margin-top: 12px; margin-left: 450px;"
             @click="finsh"
@@ -141,6 +223,7 @@ export default {
     return {
       active: 0,
       isShow: 1,
+      isHandle: 1,
       // 上传图片
       dialogImageUrl: '',
       dialogVisible: false,
@@ -186,9 +269,10 @@ export default {
       this.isShow = 2
       this.update()
     },
-    // 上传
+    // 开始转换
     update () {
       if (this.active++ > 2) this.active = 0
+      this.isShow = 4
       addProject({
         userId: this.getCookie('userid'),
         appName: this.appName,
@@ -226,10 +310,15 @@ export default {
       // 数据重新加载
       this.$router.go(0)
     },
+    // 限制上传图片张数
+    handleExceed () {
+      this.$message.warning(`您只能上传一张图片`)
+    },
     // 删除图片
-    handleRemove (file) {
-      console.log(file)
-      return true
+    handleRemove (file, appImgSrc) {
+      return this.$confirm(`确定移除该图片吗？`)
+      this.appImgSrc = ''
+      console.log(file, appImgSrc)
     },
     // 放大图片
     handlePictureCardPreview (file) {
@@ -259,13 +348,28 @@ export default {
       }
       .first {
         width: 561px;
-        margin: 0 auto;
+        height: 450px;
+        box-shadow: 0px 1px 13px 0px rgba(4, 0, 0, 0.1);
+        border-radius: 12px;
+        margin-left: 430px;
         margin-top: 50px;
+        padding-top: 30px;
+        position: absolute;
+        /deep/ .el-button--primary {
+          width: 140px;
+          height: 40px;
+          vertical-align: middle;
+          background-color: #00aaf0;
+        }
+        .btn {
+          position: relative;
+          top: 180px;
+          left: -140px;
+        }
         .img {
           width: 50px;
           height: 50px;
           margin: 0 auto;
-          margin-top: -30px;
           margin-bottom: 10px;
           img {
             width: 100%;
@@ -296,24 +400,40 @@ export default {
       }
       .second {
         width: 561px;
-        margin: 0 auto;
+        height: 600px;
+        box-shadow: 0px 1px 13px 0px rgba(4, 0, 0, 0.1);
+        border-radius: 12px;
+        margin-left: 430px;
         margin-top: 50px;
-        .img {
-          width: 50px;
-          height: 50px;
-          margin: 0 auto;
-          margin-top: -30px;
-          margin-bottom: 10px;
-          img {
-            width: 100%;
-            height: 100%;
-          }
+        padding-top: 30px;
+        text-align: center;
+        /deep/ .el-button--primary {
+          width: 140px;
+          height: 40px;
+          vertical-align: middle;
+          background-color: #00aaf0;
         }
-        .text {
-          margin-left: 220px;
+        .radio {
+          margin-right: 10px;
         }
         .cover {
-          margin-left: 100px;
+          margin-top: 30px;
+          margin-bottom: 50px;
+          /deep/ .el-upload-dragger {
+            width: 476px;
+            height: 232px;
+            background-color: #f5f5f5;
+          }
+          img {
+            margin-top: 60px;
+          }
+        }
+        .btn {
+          margin-bottom: 25px;
+        }
+        .text {
+          margin-top: 20px;
+          margin-left: 1px;
         }
       }
       .third {

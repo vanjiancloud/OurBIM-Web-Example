@@ -38,20 +38,21 @@
           <div class="title">
             团队
           </div>
-          <table>
-            <tr>
-              <th>应用</th>
-              <th>成立时间</th>
-              <th>角色</th>
-              <th>操作</th>
-            </tr>
-            <tr>
-              <td>广场</td>
-              <td>2021-01-01 12:34:56</td>
-              <td>组织者</td>
-              <td>高级开发版</td>
-            </tr>
-          </table>
+          <div class="table">
+            <el-table
+              :data="tableData"
+              style="width: 100%;"
+              row-key="id"
+              default-expand-all
+            >
+              <el-table-column prop="name" label="应用"></el-table-column>
+              <el-table-column prop="time" label="成立时间"></el-table-column>
+              <el-table-column prop="role" label="角色"> </el-table-column>
+              <el-table-column prop="operation" label="操作">
+                <el-button type="primary" @click="quit">退出</el-button>
+              </el-table-column>
+            </el-table>
+          </div>
         </div>
       </div>
     </div>
@@ -64,6 +65,7 @@
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
+
 export default {
   components: { myHeader, MyMain, MyFooter },
   name: 'team',
@@ -75,8 +77,57 @@ export default {
         { name: '/order', navItem: '服务订单' },
         { name: '/team', navItem: '团队' },
         { name: '/changeCode', navItem: '修改密码' }
+      ],
+      tableData: [
+        {
+          id: 1,
+          time: '2021-05-01',
+          name: '钱龙广场',
+          children: [
+            {
+              id: 11,
+              name: 'mark',
+              role: '成员',
+              operation: '移除'
+            },
+            {
+              id: 12,
+              name: 'admin',
+              role: '组织者',
+              operation: '退出'
+            }
+          ]
+        },
+        {
+          id: 2,
+          time: '2021-05-01',
+          name: '万达广场',
+          children: [
+            {
+              id: 21,
+              name: 'admin',
+              role: '成员',
+              operation: '移除'
+            },
+            {
+              id: 22,
+              name: 'user',
+              role: '成员',
+              operation: '移除'
+            },
+            {
+              id: 23,
+              name: 'mark',
+              role: '成员',
+              operation: '退出'
+            }
+          ]
+        }
       ]
     }
+  },
+  methods: {
+    quit () {}
   }
 }
 </script>
@@ -101,6 +152,7 @@ export default {
       .neirong {
         padding-left: 300px;
         height: 1037px;
+        // background-color: red;
         .title {
           height: 54px;
           line-height: 54px;
@@ -109,32 +161,38 @@ export default {
           font-weight: bold;
           border-bottom: 1px solid #f1f1f1;
         }
-        table,
-        th,
-        td {
-          border: 1px solid black;
-          text-align: center;
-        }
-        table {
-          width: 1080px;
-          margin-top: 30px;
-          border-collapse: collapse;
-          font-size: 18px;
-          tr {
-            height: 70px;
-          }
-          th {
-            background-color: #409eff;
+        .table {
+          margin-right: 40px;
+          margin-top: 20px;
+          /deep/ .el-table thead {
             color: #fff;
           }
-          td {
-            background-color: #fff;
+          /deep/ .el-table th {
+            background-color: #00aaf0;
+            text-align: center;
+            font-size: 15px;
+            font-weight: normal;
+          }
+          /deep/ .el-table td {
+            text-align: center;
+          }
+          //表格去横线
+          /deep/ .el-table__row > td {
+            border: none;
+          }
+          //表格去横线之去掉最下面的那一条线
+          /deep/ .el-table::before {
+            height: 0px;
+          }
+          // 第二列字体颜色
+          /deep/ .el-table_1_column_2 {
+            color: #00aaf0;
+          }
+          // 表头字体颜色
+          /deep/ .el-table th > .cell {
+            color: #fff;
           }
         }
-      }
-      .xia {
-        text-align: center;
-        margin-bottom: 100px;
       }
     }
   }

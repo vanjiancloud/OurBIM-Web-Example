@@ -134,6 +134,11 @@ export default {
           this.$message.error('信息展示失败')
         })
     },
+    //定时器，每隔5秒更新一次数据
+    get () {
+      this.showData()
+      console.log('定时器运行中')
+    },
     toUserCenter () {
       this.$router.push('../userCenter')
     },
@@ -149,6 +154,12 @@ export default {
     toBill () {
       this.$router.push('../bill')
     }
+  },
+  mounted () {
+    this.timer = setInterval(this.get, 10000)
+  },
+  beforeDestroy () {
+    clearInterval(this.timer)
   }
 }
 </script>
@@ -164,7 +175,7 @@ export default {
       .left {
         height: 152px;
         width: 287px;
-        margin-right:20px;
+        margin-right: 20px;
         margin-left: 42px;
         float: left;
         background-color: #fff;
@@ -183,7 +194,7 @@ export default {
         }
         .Info {
           float: left;
-          margin-top:35px;
+          margin-top: 35px;
           // background-color: red;
           width: 207px;
           height: 115px;

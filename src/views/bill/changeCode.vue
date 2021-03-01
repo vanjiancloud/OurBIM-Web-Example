@@ -95,6 +95,7 @@
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
+
 export default {
   components: { myHeader, MyMain, MyFooter },
   name: 'changeCode',
