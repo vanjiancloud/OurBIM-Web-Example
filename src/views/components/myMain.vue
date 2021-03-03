@@ -69,9 +69,9 @@
         <div>
           <el-button type="text" @click="toUserCenter">我的应用 </el-button>
         </div>
-        <div>
+        <!-- <div>
           <el-button @click="toIssue" type="text">我的发布</el-button>
-        </div>
+        </div> -->
         <div>
           <el-button type="text" @click="toManage">应用管理</el-button>
         </div>
@@ -134,16 +134,13 @@ export default {
           this.$message.error('信息展示失败')
         })
     },
-    //定时器，每隔5秒更新一次数据
+    //定时器，每隔10秒更新一次数据
     get () {
       this.showData()
       console.log('定时器运行中')
     },
     toUserCenter () {
       this.$router.push('../userCenter')
-    },
-    toIssue () {
-      this.$router.push('../issue')
     },
     toManage () {
       this.$router.push('../manage')
@@ -278,7 +275,7 @@ export default {
       height: 69px;
       background-color: #f1f1f1;
       line-height: 69px;
-      padding: 0 220px;
+      padding-left: 228px;
       .el-button {
         color: #000;
       }
@@ -287,7 +284,7 @@ export default {
       }
       div {
         float: left;
-        margin-right: 155px;
+        margin-right: 228px;
         width: 70px;
         height: 50px;
         // background-color: pink;

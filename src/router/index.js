@@ -14,17 +14,8 @@ const routes = [
       title: 'OurBIM请登录'
     }
   },
-  // 登录成功显示主页
-  // {
-  //   path: '/home',
-  //   name: 'home',
-  //   component: () => import('../views/home/index.vue'),
-  //   meta: {
-  //     title: 'OurBIM用户中心'
-  //   }
-  // },
+  // 登录页面
   {
-    // 登录页面
     path: '/login',
     name: 'login',
     component: () => import('../views/login/index.vue'),
@@ -32,8 +23,8 @@ const routes = [
       title: 'OurBIM请登录'
     }
   },
+  // 忘记密码ppp
   {
-    // 忘记密码ppp
     path: '/changepassword',
     name: 'changepassword',
     component: () => import('../views/changepassword/index.vue'),
@@ -41,8 +32,8 @@ const routes = [
       title: 'OurBIM忘记密码'
     }
   },
+  // 注册页
   {
-    // 注册页
     path: '/register',
     name: 'register',
     component: () => import('../views/register/index.vue'),
@@ -50,8 +41,8 @@ const routes = [
       title: 'OurBIM请注册'
     }
   },
+  // 协议书
   {
-    // 协议书
     path: '/protocol',
     name: 'protocol',
     component: () => import('../views/register/protocol.vue'),
@@ -59,8 +50,8 @@ const routes = [
       title: 'OurBIM用户须知'
     }
   },
+  // 注册成功
   {
-    // 注册成功
     path: '/registerSucceed',
     name: 'registerSucceed',
     component: () => import('../views/register/registerSucceed.vue'),
@@ -68,8 +59,8 @@ const routes = [
       title: 'OurBIM注册成功'
     }
   },
+  // 激活成功
   {
-    // 激活成功
     path: '/activateSucceed',
     name: 'activateSucceed',
     component: () => import('../views/register/activateSucceed.vue'),
@@ -77,8 +68,8 @@ const routes = [
       title: 'OurBIM激活成功'
     }
   },
+  // 用户中心
   {
-    // 用户中心
     path: '/userCenter',
     name: 'userCenter',
     component: () => import('../views/userCenter/index.vue'),
@@ -86,17 +77,8 @@ const routes = [
       title: '用户中心'
     }
   },
+  // 应用管理
   {
-    // 我的发布
-    path: '/issue',
-    name: 'issue',
-    component: () => import('../views/issue/index.vue'),
-    meta: {
-      title: '我的发布'
-    }
-  },
-  {
-    // 应用管理
     path: '/manage',
     name: 'manage',
     component: () => import('../views/manage/index.vue'),
@@ -104,8 +86,8 @@ const routes = [
       title: '应用管理'
     }
   },
+  // 创建应用
   {
-    // 创建应用
     path: '/found',
     name: 'found',
     component: () => import('../views/found/index.vue'),
@@ -113,8 +95,8 @@ const routes = [
       title: '创建应用'
     }
   },
+  // 账户管理
   {
-    // 账户管理
     path: '/bill',
     name: 'bill',
     component: () => import('../views/bill/index.vue'),
@@ -122,8 +104,8 @@ const routes = [
       title: '账户管理'
     }
   },
+  // 个人信息
   {
-    // 个人信息
     path: '/bill',
     name: 'bill',
     component: () => import('../views/bill/index.vue'),
@@ -131,41 +113,26 @@ const routes = [
       title: '个人信息'
     }
   },
+  // 授权码
   {
-    // 授权码
     path: '/code',
     name: 'code',
     component: () => import('../views/bill/code.vue'),
     meta: {
       title: '授权码'
     }
-  }, {
-    // 服务订单
+  },
+  // 服务订单
+  {
     path: '/order',
     name: 'order',
     component: () => import('../views/bill/order.vue'),
     meta: {
       title: '服务订单'
     }
-  }, {
-    // 团队
-    path: '/team',
-    name: 'team',
-    component: () => import('../views/bill/team.vue'),
-    meta: {
-      title: '团队'
-    }
-  }, {
-    // 修改密码
-    path: '/changeCode',
-    name: 'changeCode',
-    component: () => import('../views/bill/changeCode.vue'),
-    meta: {
-      title: '修改密码'
-    }
   },
+  // demo
   {
-    // demo
     path: '/demo',
     name: 'demo',
     component: () => import('../views/demo/index.vue'),
@@ -173,17 +140,8 @@ const routes = [
       title: 'demo'
     }
   },
+  // 新密码
   {
-    // 平台预览
-    path: '/preview',
-    name: 'preview',
-    component: () => import('../views/preview/index.vue'),
-    meta: {
-      title: 'OurBIM平台预览'
-    }
-  },
-  {
-    // 新密码
     path: '/newPassword',
     name: 'newPassword',
     component: () => import('../views/newPassword/index.vue'),
@@ -191,8 +149,8 @@ const routes = [
       title: 'OurBIM找回密码'
     }
   },
+  // 修改密码成功
   {
-    // 修改密码成功
     path: '/resetSucceed',
     name: 'resetSucceed',
     component: () => import('../views/resetSucceed/index.vue'),
@@ -200,8 +158,8 @@ const routes = [
       title: 'OurBIM重置密码成功'
     }
   },
+  // 应用详情
   {
-    // 应用详情
     path: '/web_client',
     name: 'web_client',
     component: () => import('../views/userCenter/subpage/web_client.vue'),
@@ -214,17 +172,70 @@ const routes = [
 const router = new VueRouter({
   routes
 })
+
+// 路由前置守卫
+router.beforeEach((to, from, next) => {
+  if (to.path === '/manage') {
+    if (window.localStorage.userid != '') {
+      next()
+    } else {
+      router.push({
+        path: '/login'
+      })
+    }
+  } 
+  else if (to.path === '/found') {
+    if (window.localStorage.userid != '') {
+      next()
+    } else {
+      router.push({
+        path: '/login'
+      })
+    }
+  } 
+  else if (to.path === '/userCenter') {
+    if (window.localStorage.userid != '') {
+      next()
+    } else {
+      router.push({
+        path: '/login'
+      })
+    }
+  }
+  else if (to.path === '/bill') {
+    if (window.localStorage.userid != '') {
+      next()
+    } else {
+      router.push({
+        path: '/login'
+      })
+    }
+  } 
+  else if (to.path === '/code') {
+    if (window.localStorage.userid != '') {
+      next()
+    } else {
+      router.push({
+        path: '/login'
+      })
+    }
+  } 
+  else if (to.path === '/order') {
+    if (window.localStorage.userid != '') {
+      next()
+    } else {
+      router.push({
+        path: '/login'
+      })
+    }
+  } 
+  else {
+    next()
+  }
+})
+
 router.afterEach((to, from) => {
   document.title = to.meta.title
 })
-// 路由前置守卫
-// router.beforeEach((to, from, next) => {
-//     if (window.localStorage.userid !='') {
-//       next()
-//     } else {
-//       router.push({
-//         path: '/login'
-//       })
-//     }
-// })
+
 export default router

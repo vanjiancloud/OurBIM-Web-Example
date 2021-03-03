@@ -10,7 +10,7 @@
       <div class="content">
         <!-- 提示 -->
         <div class="text">您还可上传2个项目</div>
-        <!-- 步骤条 -->
+        <!-- 3步步骤条 -->
         <div class="buzhou" v-show="isHandle == 1">
           <el-steps :active="active">
             <el-step title="步骤一" description="创建应用项目信息"> </el-step>
@@ -18,6 +18,7 @@
             <el-step title="步骤三" description="上传完成"></el-step>
           </el-steps>
         </div>
+        <!-- 4步步骤条 -->
         <div class="buzhou" v-show="isHandle == 2">
           <el-steps :active="active">
             <el-step title="步骤一" description="创建应用项目信息"> </el-step>
@@ -87,7 +88,7 @@
             </div>
           </div>
           <!-- 按钮 -->
-          <div class="btn">
+          <div class="anNiu">
             <el-button @click="next" type="primary">
               下一步
             </el-button>
@@ -100,21 +101,11 @@
             <img src="./icon.png" alt="" />
           </div>
           <div class="text"><h3>上传模型</h3></div>
-          <!-- 复选框 -->
-          <span style="margin-right: 40px; ">
-            <input
-              type="radio"
-              name="upload"
-              class="radio"
-              @click="isHandle = 1"
-            />仅上传BIM模型
-          </span>
-          <input
-            type="radio"
-            name="upload"
-            class="radio"
-            @click="isHandle = 2"
-          />同时上传倾斜摄影模型
+          <!-- 单选框 -->
+          <el-radio v-model="radio" label="1">仅上传BIM模型</el-radio>
+          <el-radio disabled v-model="radio" label="2"
+            >同时上传倾斜摄影模型</el-radio
+          >
           <!-- 上传BIM模型 -->
           <div class="cover">
             <el-upload
@@ -145,26 +136,15 @@
         <!-- 第三步 同时上传倾斜摄影-->
         <div class="second" v-show="isShow == 3">
           <!-- 图标 -->
-          v-show="isShow == 3"
           <div class="img">
             <img src="./book.png" alt="" />
           </div>
           <div class="text"><h3>上传模型</h3></div>
-          <!-- 复选框 -->
-          <span style="margin-right: 40px; ">
-            <input
-              type="radio"
-              name="upload"
-              class="radio"
-              @click="isHandle = 1"
-            />仅上传BIM模型
-          </span>
-          <input
-            type="radio"
-            name="upload"
-            class="radio"
-            @click="isHandle = 2"
-          />同时上传倾斜摄影模型
+          <!-- 单选框 -->
+          <el-radio v-model="radio" label="1">仅上传BIM模型</el-radio>
+          <el-radio disabled v-model="radio" label="2"
+            >同时上传倾斜摄影模型</el-radio
+          >
           <!-- 上传BIM模型 -->
           <div class="cover">
             <el-upload
@@ -192,16 +172,6 @@
             </el-button>
           </div>
         </div>
-        <!-- 第四步 上传完成-->
-        <div class="fourth" v-show="isShow == 4">
-          <el-button
-            style="margin-top: 12px; margin-left: 450px;"
-            @click="finsh"
-          >
-            完成
-          </el-button>
-          正在上传，请稍后
-        </div>
       </div>
     </div>
     <!-- 尾部 -->
@@ -221,6 +191,7 @@ export default {
   name: 'found',
   data () {
     return {
+      radio: '1', //单选框
       active: 0,
       isShow: 1,
       isHandle: 1,
@@ -267,12 +238,7 @@ export default {
     next () {
       if (this.active++ > 2) this.active = 0
       this.isShow = 2
-      this.update()
-    },
-    // 开始转换
-    update () {
-      if (this.active++ > 2) this.active = 0
-      this.isShow = 4
+      // this.update()
       addProject({
         userId: this.getCookie('userid'),
         appName: this.appName,
@@ -281,6 +247,7 @@ export default {
         .then(res => {
           if (res.data.code === 0) {
             this.appInfo = res.data.data
+            console.log(this.appInfo)
             this.$message.success('新建成功')
           } else if (res.data.code === 1) {
             this.$message.error('新建失败')
@@ -290,6 +257,29 @@ export default {
           console.log(err)
           this.$message.error('上传失败，请上传模型')
         })
+    },
+    // 开始转换
+    update () {
+      if (this.active++ > 2) this.active = 0
+      addProject({
+        userId: this.getCookie('userid'),
+        appName: this.appName,
+        screenImg: this.appImgSrc
+      })
+        .then(res => {
+          if (res.data.code === 0) {
+            this.appInfo = res.data.data
+            console.log(this.appInfo)
+            this.$message.success('上传成功')
+          } else if (res.data.code === 1) {
+            this.$message.error('上传失败')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('上传失败，请上传模型')
+        })
+      this.$router.go(0)
     },
     // 读取cookie中数据
     getCookie: function (userid) {
@@ -305,20 +295,15 @@ export default {
       console.log()
       return ''
     },
-    // 完成
-    finsh () {
-      // 数据重新加载
-      this.$router.go(0)
-    },
     // 限制上传图片张数
     handleExceed () {
       this.$message.warning(`您只能上传一张图片`)
     },
     // 删除图片
     handleRemove (file, appImgSrc) {
-      return this.$confirm(`确定移除该图片吗？`)
       this.appImgSrc = ''
       console.log(file, appImgSrc)
+      return this.$confirm(`确定移除该图片吗？`)
     },
     // 放大图片
     handlePictureCardPreview (file) {
@@ -361,11 +346,6 @@ export default {
           vertical-align: middle;
           background-color: #00aaf0;
         }
-        .btn {
-          position: relative;
-          top: 180px;
-          left: -140px;
-        }
         .img {
           width: 50px;
           height: 50px;
@@ -389,13 +369,20 @@ export default {
         .picture {
           margin-left: 120px;
           margin-top: 40px;
+          overflow: hidden;
           .news {
             float: left;
             margin-right: 5px;
           }
           .cover {
+            // background-color: red;
             float: left;
           }
+        }
+        .anNiu {
+          margin-top: 30px;
+          // background-color: green;
+          text-align: center;
         }
       }
       .second {

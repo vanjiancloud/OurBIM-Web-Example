@@ -41,57 +41,54 @@
           <template>
             <div class="table">
               <el-table :data="tableData" style="width: 100%">
-                <el-table-column prop="date" label="编号"></el-table-column>
-                <el-table-column prop="name" label="时间" ></el-table-column>
-                <el-table-column prop="name" label="服务"> </el-table-column>
-                <el-table-column prop="name" label="授权码"></el-table-column>
-                <el-table-column prop="name" label="状态"> </el-table-column>
-                <el-table-column prop="name" label="金额"> </el-table-column>
+                <el-table-column
+                  prop="dingdancode"
+                  label="编号"
+                  width="115"
+                ></el-table-column>
+                <el-table-column
+                  prop="createTime"
+                  label="时间"
+                  width="135"
+                ></el-table-column>
+                <el-table-column label="服务">
+                  <template slot-scope="scope">
+                    {{ formatDingdanStatus(scope.row.dingdanStatus) }}
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sqm" label="授权码" width="260">
+                  <template slot-scope="scope">
+                    <template v-if="scope.row.eyseShow">
+                    ****************************************
+                    </template>
+                    <template v-if="!scope.row.eyseShow">
+                      {{ scope.row.sqm }}
+                    </template>
+                    <div class="imageEye" @click="lookEyes(scope.row)">
+                      <div :class="scope.row.imgeeyes"></div>
+                    </div>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="sqMISUsed" label="状态">
+                  <template slot-scope="scope">
+                    {{ formatSqMISUsed(scope.row.sqMISUsed) }}
+                  </template>
+                </el-table-column>
+                <el-table-column prop="dcount" label="金额"> </el-table-column>
               </el-table>
             </div>
           </template>
-          <!-- <table>
-            <tr>
-              <th>编号</th>
-              <th>时间</th>
-              <th>服务</th>
-              <th>授权码</th>
-              <th>状态</th>
-              <th>金额</th>
-            </tr>
-            <tr>
-              <td>20210101123456123</td>
-              <td>2021-01-01 12:34:56</td>
-              <td>高级开发版</td>
-              <td>高级开发版</td>
-              <td>失效</td>
-              <td>50,000.00</td>
-            </tr>
-            <tr>
-              <td>20210101123456123</td>
-              <td>2021-01-01 12:34:56</td>
-              <td>高级开发版</td>
-              <td>高级开发版</td>
-              <td>失效</td>
-              <td>50,000.00</td>
-            </tr>
-            <tr>
-              <td>20210101123456123</td>
-              <td>2021-01-01 12:34:56</td>
-              <td>高级开发版</td>
-              <td>高级开发版</td>
-              <td>失效</td>
-              <td>50,000.00</td>
-            </tr>
-            <tr>
-              <td>20210101123456123</td>
-              <td>2021-01-01 12:34:56</td>
-              <td>高级开发版</td>
-              <td>高级开发版</td>
-              <td>失效</td>
-              <td>50,000.00</td>
-            </tr>
-          </table> -->
+          <!-- 分页 -->
+          <div class="page">
+            <el-pagination
+              background
+              layout="prev, pager, next"
+              :total="total"
+              @current-change="pageChange"
+              :hide-on-single-page="value"
+            >
+            </el-pagination>
+          </div>
         </div>
       </div>
     </div>
@@ -104,37 +101,117 @@
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
+import { getOrder } from '@/api/my.js'
+import { getuserid } from '@/store/index.js'
 
 export default {
   components: { myHeader, MyMain, MyFooter },
   name: 'order',
   data () {
     return {
+      show: true,
+      // 导航菜单跳转
       navList: [
         { name: '/bill', navItem: '个人信息' },
         { name: '/code', navItem: '授权码' },
-        { name: '/order', navItem: '服务订单' },
-        { name: '/team', navItem: '团队' },
-        { name: '/changeCode', navItem: '修改密码' }
+        { name: '/order', navItem: '服务订单' }
       ],
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        }
-      ]
+      tableData: [],
+      editForm: {
+        dingdancode: '', //编号
+        createTime: '', //时间
+        dingdanStatus: '', //服务
+        sqm: '', //授权码默认隐藏，点击查看
+        sqMISUsed: '', //状态
+        dcount: '', //金额
+        pageSize: 10, //每页条数
+        currentPage: 1, //当前页
+        userid: getuserid()
+      },
+      total: 0, //总条数
+      value: true //只有一页时隐藏分页
+    }
+  },
+  created () {
+    this.getList()
+  },
+  methods: {
+    getList () {
+      const { pageSize, currentPage, userid } = this.editForm
+      const editParams = new FormData()
+      editParams.append('userid', userid)
+      editParams.append('pageNo', currentPage)
+      editParams.append('pageSize', pageSize)
+      getOrder(editParams)
+        .then(res => {
+          console.log(res)
+          console.log('获取数据成功')
+          let arr = res.data.data
+          arr.forEach(b => {
+            b.eyseShow = true
+            b.imgeeyes = 'closeEye'
+          })
+          this.tableData = res.data.data
+        })
+        .catch(err => {
+          this.$message.error('获取数据失败')
+        })
+    },
+    lookEyes (row) {
+      row.eyseShow = !row.eyseShow
+      if (row.eyseShow) {
+        row.imgeeyes = 'closeEye'
+      } else {
+        row.imgeeyes = 'openEye'
+      }
+    },
+    // 以当前点击的页数作为参数去请求当前页的数据
+    pageChange (currentPage) {
+      this.currentPage = currentPage
+      this.getList()
+    },
+    //服务
+    // 根据传入的dingdanStatus做适配
+    formatDingdanStatus (dingdanStatus) {
+      const statusObj = {
+        0: '升级旗舰版',
+        1: '购买节点',
+        2: '购买空间'
+      }
+      return statusObj[dingdanStatus]
+    },
+    //状态
+    // 根据传入的sqMISUsed做适配
+    formatSqMISUsed (sqMISUsed) {
+      const statusObj = {
+        0: '未使用',
+        1: '已使用'
+      }
+      return statusObj[sqMISUsed]
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
+.imageEye {
+  // 眼睛图片
+  display: inline-block;
+  cursor: pointer;
+  div {
+    width: 22px;
+    height: 22px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+  }
+}
+.closeEye {
+  background-image: url('./close.png');
+}
+.openEye {
+  background-image: url('./open.png');
+}
 .box {
   .container {
     background-color: #fff;
@@ -154,6 +231,7 @@ export default {
       .neirong {
         padding-left: 300px;
         height: 1037px;
+        text-align: center;
         .title {
           height: 54px;
           line-height: 54px;
@@ -192,6 +270,14 @@ export default {
           // 表头字体颜色
           /deep/ .el-table th > .cell {
             color: #fff;
+          }
+          .icon {
+            width: 10px;
+            height: 10px;
+            img {
+              width: 30px;
+              height: 30px;
+            }
           }
         }
       }

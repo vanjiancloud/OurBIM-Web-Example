@@ -181,6 +181,33 @@ export function showDetail (data) {
   })
 }
 
+// 获取服务订单数据列表
+export function getOrder (data) {
+  return request({
+    url: '/dingdanManager/searchDingdan',
+    method: 'POST',
+    data
+  })
+}
+
+// 提交授权码
+export function updateSQM (data) {
+  return request({
+    url: '/dingdanManager/updateSQM',
+    method: 'POST',
+    data: qsStringify(data)
+  })
+}
+
+// 验证授权码
+export function verification (data) {
+  return request({
+    url: '/dingdanManager/verification',
+    method: 'POST',
+    data: qsStringify(data)
+  })
+}
+
 // 模型浏览
 export function getModelInfo (data) {
   return request({

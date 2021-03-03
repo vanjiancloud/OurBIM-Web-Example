@@ -90,8 +90,12 @@
           </div>
           <!-- 上传头像 -->
           <div class="photo">
-            <el-upload action="" :on-remove="handleRemove" multiple :limit="1">
-              <el-button type="primary" icon="el-icon-upload2" @click="upImg">
+            <el-upload
+              action="http://192.168.3.235:11011/vjapi/CountManager/postUserImg"
+              multiple
+              :limit="1"
+            >
+              <el-button type="primary" icon="el-icon-upload2">
                 上传头像
               </el-button>
               <div slot="tip" class="el-upload__tip">
@@ -127,9 +131,7 @@ export default {
       navList: [
         { name: '/bill', navItem: '个人信息' },
         { name: '/code', navItem: '授权码' },
-        { name: '/order', navItem: '服务订单' },
-        { name: '/team', navItem: '团队' },
-        { name: '/changeCode', navItem: '修改密码' }
+        { name: '/order', navItem: '服务订单' }
       ],
       name: '',
       note: '', //签名
@@ -138,7 +140,6 @@ export default {
       company: '',
       position: '', //职位
       imgUrl: ''
-      // baseURL: axios.defaults.baseURL,
     }
   },
   created () {
@@ -166,6 +167,7 @@ export default {
     },
     //修改用户信息
     changeUserInfo () {
+      upImg()
       modifyUserInfo({
         userid: getuserid(),
         note: this.note,
@@ -190,20 +192,19 @@ export default {
     },
     //上传头像
     upImg () {
-      uploadImg()
+      uploadImg({
+        imgUrl:this.imgUrl
+      })
         .then(res => {
-          console.log(res)
-          console.log('调取接口成功')
-
-          this.$message.success('上传头像成功')
+          if (res.data.code === 0) {
+            console.log(res)
+            this.$message.success('上传成功')
+          }
         })
         .catch(err => {
-          this.$message.error('上传头像失败')
+          console.log(err)
+          this.$message.error('上传失败')
         })
-    },
-    // 删除头像
-    handleRemove (file, fileList) {
-      console.log(file, fileList)
     }
   }
 }

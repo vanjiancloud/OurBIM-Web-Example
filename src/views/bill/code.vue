@@ -40,14 +40,16 @@
           </div>
           <div class="input">
             授权码
-            <el-input v-model="code" placeholder="请输入授权码"></el-input>
-            <el-button type="primary" class="btn">验证</el-button>
+            <el-input v-model="SQM" placeholder="请输入授权码"></el-input>
+            <el-button type="primary" class="btn" @click="verification"
+              >验证</el-button
+            >
             <div class="news">
-                <div>*</div>
-               如授权码不可用请联系售后
+              <div>*</div>
+              如授权码不可用请联系售后
             </div>
             <div class="xiugai">
-              <el-button type="primary">修改</el-button>
+              <el-button type="primary" :disabled="dis" @click="update">提交</el-button>
             </div>
           </div>
         </div>
@@ -62,6 +64,9 @@
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import MyMain from '../components/myMain.vue'
+import { updateSQM } from '@/api/my.js'
+import { verification } from '@/api/my.js'
+import { getuserid } from '@/store/index.js'
 
 export default {
   components: { myHeader, MyMain, MyFooter },
@@ -71,11 +76,53 @@ export default {
       navList: [
         { name: '/bill', navItem: '个人信息' },
         { name: '/code', navItem: '授权码' },
-        { name: '/order', navItem: '服务订单' },
-        { name: '/team', navItem: '团队' },
-        { name: '/changeCode', navItem: '修改密码' }
+        { name: '/order', navItem: '服务订单' }
       ],
-      code: ''
+      SQM: '',
+      dis: true
+    }
+  },
+  methods: {
+    // 验证授权码
+    verification () {
+      verification({
+        userid: getuserid(),
+        SQM: this.SQM
+      })
+        .then(res => {
+          if (res.data.code === 0) {
+            console.log(res)
+            this.$message.success('授权码验证成功')
+            this.dis = false
+          } else if (res.data.code === 1) {
+            console.log(res)
+            this.$message.error('授权码验证失败')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+            this.$message.error('授权码验证失败,请重新填写')
+        })
+    },
+    // 提交授权码
+    update () {
+      updateSQM({
+        userid: getuserid(),
+        SQM: this.SQM
+      })
+        .then(res => {
+          if (res.data.code === 0) {
+            console.log(res)
+            this.$message.success('提交授权码成功')
+          } else if (res.data.code === 1) {
+            console.log(res)
+            this.$message.error('提交授权码失败')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+            this.$message.error('授权码提交失败,请重新提交')
+        })
     }
   }
 }
@@ -125,7 +172,7 @@ export default {
             width: 224px;
             height: 36px;
             margin-top: 10px;
-            background-color: #EEEEEE;
+            background-color: #eeeeee;
             color: #ccc;
             text-align: center;
             line-height: 36px;
@@ -149,7 +196,6 @@ export default {
           /deep/ .el-button--primary {
             width: 140px;
             height: 40px;
-            background-color: #00aaf0;
           }
         }
       }

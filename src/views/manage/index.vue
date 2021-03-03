@@ -20,30 +20,33 @@
         <!-- 表格 -->
         <div class="table">
           <el-table :data="itemList" style="width: 100%;">
-            <el-table-column prop="appid" label="应用ID">
-            </el-table-column>
-            <el-table-column prop="appName" label="应用名称">
-            </el-table-column>
+            <el-table-column prop="appid" label="应用ID"> </el-table-column>
+            <el-table-column prop="appName" label="应用名称"> </el-table-column>
             <el-table-column prop="maxInstance" label="最大并发数量">
             </el-table-column>
-            <el-table-column prop="applidStatus" label="状态"> </el-table-column
-            ><el-table-column prop="createTime" label="上传日期">
+            <el-table-column label="状态">
+              <template slot-scope="scope">
+                <!-- 做自定义操作 需要改成template的形式,scope.row代表的是表格数据itemList中的每一项 -->
+                {{ formatStatus(scope.row.applidStatus) }}
+              </template>
+            </el-table-column>
+            <el-table-column prop="createTime" label="上传日期">
             </el-table-column>
             <el-table-column prop="" label="操作">
               <!-- 分享 -->
-               <button @click="share">
+              <button @click="share">
                 <span>
                   <img src="../components/share.png" />
                 </span>
               </button>
               <!-- 编辑 -->
-               <button @click="edit">
+              <button @click="edit">
                 <span>
                   <img src="../components/edit.png" />
                 </span>
               </button>
               <!-- 删除 -->
-               <button @click="remove">
+              <button @click="remove">
                 <span>
                   <img src="../components/del.png" />
                 </span>
@@ -83,7 +86,7 @@ export default {
       appid: '',
       appName: '',
       maxInstance: '',
-      applidStatus: '',
+      applidStatus: null,
       createTime: ''
     }
   },
@@ -134,17 +137,26 @@ export default {
           this.$message.error('请求失败')
         })
     },
+    // 根据传入的status做适配
+    formatStatus (status) {
+      const statusObj = {
+        0: '未上传',
+        1: '转换中',
+        2: '转换完成'
+      }
+      return statusObj[status]
+    },
     // 分享
     share () {
-      console.log('点击了分享');
+      console.log('点击了分享')
     },
     // 编辑
     edit () {
-      console.log('点击了编辑');
+      console.log('点击了编辑')
     },
     // 删除按钮
     remove () {
-      console.log('点击了删除');
+      console.log('点击了删除')
     }
   }
 }
@@ -190,7 +202,7 @@ export default {
           text-align: center;
         }
         // 表头字体颜色
-        /deep/ .el-table th>.cell {
+        /deep/ .el-table th > .cell {
           color: #fff;
         }
         //表格去横线
