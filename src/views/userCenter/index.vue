@@ -64,7 +64,7 @@
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 // import MyMain from '../components/myMain.vue'
-import { getProjectList } from '@/api/my.js'
+import { getProjectList, getModelInfo } from '@/api/my.js'
 
 export default {
   components: { myHeader,  MyFooter },
@@ -146,7 +146,8 @@ export default {
         appliId: e.appid,
       })
         .then((res) => {
-          if (res.code === 0) {
+          if (res.data.code === 0) {
+            console.log(11);
             const { href } = this.$router.resolve({
               name: "web_client",
               query: {
@@ -155,7 +156,7 @@ export default {
             });
             window.open(href, "_blank");
           } else {
-            this.$message.warning(res.message)
+            this.$message.warning(res.data.message)
           }
         })
         .catch((err) => {
