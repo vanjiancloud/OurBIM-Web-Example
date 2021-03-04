@@ -4,7 +4,7 @@
     <!-- 头部 -->
     <my-header></my-header>
     <!-- 中间 -->
-    <my-main></my-main>
+    <!-- <my-main></my-main> -->
     <!-- 主体内容 -->
     <div class="container">
       <div class="content">
@@ -20,7 +20,7 @@
             <el-submenu index="1">
               <template slot="title">
                 <i class="el-icon-menu"></i>
-                <span>账户管理</span>
+                <span>{{ $t('accountManage') }}</span>
               </template>
               <el-menu-item
                 v-for="(item, i) in navList"
@@ -36,25 +36,25 @@
         <!-- 个人信息 -->
         <div class="neirong">
           <div class="title">
-            个人信息
+            {{ $t('information') }}
           </div>
           <!-- 用户名 -->
           <div class="message" style="margin-top: 30px;">
-            <div class="one">用户名:</div>
+            <div class="one">{{ $t('username') }}</div>
             <div class="input">
               <el-input v-model="name" placeholder="请输入用户名"></el-input>
             </div>
           </div>
           <!-- 签名 -->
           <div class="message">
-            <div class="one">签名:</div>
+            <div class="one">{{ $t('autograph') }}</div>
             <div class="input">
               <el-input v-model="note" placeholder="请输入签名"></el-input>
             </div>
           </div>
           <!-- 邮箱 -->
           <div class="message">
-            <div class="one">邮箱:</div>
+            <div class="one">{{ $t('email') }}</div>
             <div class="input">
               <el-input
                 v-model="email"
@@ -65,7 +65,7 @@
           </div>
           <!-- 手机号 -->
           <div class="message">
-            <div class="one">手机号:</div>
+            <div class="one">{{ $t('Mobilephone') }}</div>
             <div class="input">
               <el-input
                 v-model="mobile"
@@ -76,14 +76,14 @@
           </div>
           <!-- 公司 -->
           <div class="message">
-            <div class="one">公司:</div>
+            <div class="one">{{ $t('company') }}</div>
             <div class="input">
               <el-input v-model="company" placeholder="请输入公司"></el-input>
             </div>
           </div>
           <!-- 职位 -->
           <div class="message">
-            <div class="one">职位:</div>
+            <div class="one">{{ $t('position') }}</div>
             <div class="input">
               <el-input v-model="position" placeholder="请输入职位"></el-input>
             </div>
@@ -96,15 +96,17 @@
               :limit="1"
             >
               <el-button type="primary" icon="el-icon-upload2">
-                上传头像
+                {{ $t('UploadAvatar') }}
               </el-button>
               <div slot="tip" class="el-upload__tip">
-                支持扩展名：.png.jpg.jpeg
+                {{ $t('extensions') }}：.png.jpg.jpeg
               </div>
             </el-upload>
           </div>
           <div class="btn">
-            <el-button type="primary" @click="changeUserInfo">修改</el-button>
+            <el-button type="primary" @click="changeUserInfo">
+              {{ $t('modify') }}
+            </el-button>
           </div>
         </div>
       </div>
@@ -117,14 +119,14 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import MyMain from '../components/myMain.vue'
+// import MyMain from '../components/myMain.vue'
 import { getUserInfo } from '@/api/my.js'
 import { modifyUserInfo } from '@/api/my.js'
 import { uploadImg } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 
 export default {
-  components: { myHeader, MyMain, MyFooter },
+  components: { myHeader, MyFooter },
   name: 'bill',
   data () {
     return {
@@ -193,7 +195,7 @@ export default {
     //上传头像
     upImg () {
       uploadImg({
-        imgUrl:this.imgUrl
+        imgUrl: this.imgUrl
       })
         .then(res => {
           if (res.data.code === 0) {
@@ -366,6 +368,7 @@ export default {
         height: 1037px;
         .title {
           height: 54px;
+          text-align: center;
           line-height: 54px;
           margin-left: -40px;
           font-size: 22px;
@@ -396,7 +399,7 @@ export default {
           margin-top: 35px;
           margin-left: 70px;
           /deep/ .el-button--primary {
-            width: 130px;
+            // width: 130px;
             height: 45px;
             background-color: #00aaf0;
           }

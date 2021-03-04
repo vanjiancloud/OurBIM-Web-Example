@@ -4,7 +4,7 @@
     <!-- 头部 -->
     <my-header></my-header>
     <!-- 中间 -->
-    <my-main></my-main>
+    <!-- <my-main></my-main> -->
     <!-- 主体内容 -->
     <div class="container">
       <div class="content">
@@ -36,7 +36,8 @@
         <!-- 服务订单 -->
         <div class="neirong">
           <div class="title">
-            服务订单
+            <!-- 服务订单 -->
+              {{ $t('servicesorder') }}
           </div>
           <template>
             <div class="table">
@@ -100,12 +101,12 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import MyMain from '../components/myMain.vue'
+// import MyMain from '../components/myMain.vue'
 import { getOrder } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 
 export default {
-  components: { myHeader, MyMain, MyFooter },
+  components: { myHeader,  MyFooter },
   name: 'order',
   data () {
     return {
@@ -239,7 +240,7 @@ export default {
         .title {
           height: 54px;
           line-height: 54px;
-          margin-left: -40px;
+          // margin-left: -40px;
           font-size: 22px;
           font-weight: bold;
           border-bottom: 1px solid #f1f1f1;
