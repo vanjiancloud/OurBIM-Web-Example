@@ -4,7 +4,7 @@
     <!-- 头部 -->
     <my-header></my-header>
     <!-- 中间 -->
-    <my-main></my-main>
+    <!-- <my-main></my-main> -->
     <!-- 主体内容 -->
     <div class="detail">
       <div class="container">
@@ -12,7 +12,8 @@
         <div class="content" v-show="isShow == 1">
           <!-- 消息提示 -->
           <div class="record">
-            <div class="left">您共有{{ appList.length }}个应用</div>
+            <div class="left">{{ $t('Youhave') }}{{ appList.length }}
+              {{ $t('application') }}</div>
           </div>
           <!-- 列表展示 -->
           <div class="list">
@@ -62,11 +63,11 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import MyMain from '../components/myMain.vue'
+// import MyMain from '../components/myMain.vue'
 import { getProjectList } from '@/api/my.js'
 
 export default {
-  components: { myHeader, MyMain, MyFooter },
+  components: { myHeader,  MyFooter },
   name: 'userCenter',
   data () {
     return {
@@ -174,8 +175,8 @@ a:hover {
 }
 .detail {
   .container {
-    // background-color: #fff;
-    background-color: green;
+    background-color: #fff;
+    // background-color: green;
     height: 961px;
     margin-bottom: 100px;
     .content {

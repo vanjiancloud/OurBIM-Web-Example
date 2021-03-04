@@ -4,12 +4,12 @@
     <!-- 头部 -->
     <my-header></my-header>
     <!-- 中间 -->
-    <my-main></my-main>
+    <!-- <my-main></my-main> -->
     <!-- 主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 提示 -->
-        <div class="text">您还可上传2个项目</div>
+        <div class="text">{{ $t('Youcanalsoupload') }}2{{ $t('project') }}</div>
         <!-- 3步步骤条 -->
         <div class="buzhou" v-show="isHandle == 1">
           <el-steps :active="active">
@@ -33,16 +33,18 @@
           <div class="img">
             <img src="./icon.png" alt="" />
           </div>
-          <div class="text"><h3>创建应用</h3></div>
+          <div class="text">
+            <h3>{{ $t('toCreate') }}</h3>
+          </div>
           <!-- input框 -->
           <div class="input">
-            应用名称：
+            {{ $t('application') }}
             <el-input v-model="appName" placeholder="请输入应用名称"></el-input>
           </div>
           <!-- 上传图片 -->
           <div class="picture">
             <div class="news">
-              上传封面：
+              {{ $t('Uploadc') }}
             </div>
             <!-- 上传封面 -->
             <div class="cover">
@@ -88,7 +90,7 @@
           <!-- 按钮 -->
           <div class="anNiu">
             <el-button @click="next('ruleForm')" type="primary">
-              下一步
+              {{ $t('nextstep') }}
             </el-button>
           </div>
         </div>
@@ -98,11 +100,13 @@
           <div class="img">
             <img src="./icon.png" alt="" />
           </div>
-          <div class="text"><h3>上传模型</h3></div>
+          <div class="text">
+            <h3>{{ $t('Upload') }}</h3>
+          </div>
           <!-- 单选框 -->
-          <el-radio v-model="radio" label="1">仅上传BIM模型</el-radio>
+          <el-radio v-model="radio" label="1">{{ $t('UploadBIM') }}</el-radio>
           <el-radio disabled v-model="radio" label="2"
-            >同时上传倾斜摄影模型</el-radio
+            >{{ $t('Uploadto') }}</el-radio
           >
           <!-- 上传BIM模型 -->
           <div class="cover">
@@ -120,14 +124,14 @@
             >
               <img src="./file.png" alt="" />
               <div class="el-upload__text">
-                点击或将文件拖拽到这里上传 <br />
-                支持扩展名：.rar .3dm .rvt .stl .fbx .skp...
+                {{ $t('methods') }}<br />
+                {{ $t('limit') }}
               </div>
             </el-upload>
           </div>
           <div class="btn">
             <el-button @click="update" type="primary">
-              开始转换
+                              {{ $t('Totransform') }}
             </el-button>
           </div>
         </div>
@@ -180,12 +184,12 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import MyMain from '../components/myMain.vue'
+// import MyMain from '../components/myMain.vue'
 import { addProject } from '@/api/my.js'
 import axios from '@/utils/request'
 
 export default {
-  components: { myHeader, MyMain, MyFooter },
+  components: { myHeader, MyFooter },
   name: 'found',
   data () {
     return {
@@ -236,7 +240,6 @@ export default {
     next () {
       if (this.active++ > 2) this.active = 0
       this.isShow = 2
-      // this.update()
       addProject({
         userId: this.getCookie('userid'),
         appName: this.appName,
@@ -299,8 +302,7 @@ export default {
     },
     // 删除图片
     handleRemove () {
-            this.$message.warning(`上传图片无法删除`)
-
+      this.$message.warning(`上传图片无法删除`)
     },
     // 放大图片
     handlePictureCardPreview (file) {

@@ -3,8 +3,6 @@
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
-    <!-- 中间 -->
-    <my-main></my-main>
     <!-- 主体内容 -->
     <div class="container">
       <div class="content">
@@ -94,10 +92,9 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import MyMain from '../components/myMain.vue'
 
 export default {
-  components: { myHeader, MyMain, MyFooter },
+  components: { myHeader, MyFooter },
   name: 'changeCode',
   data () {
     return {

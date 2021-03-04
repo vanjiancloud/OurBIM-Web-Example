@@ -28,7 +28,9 @@
               <div class="icon">
                 <img src="./cunchu.png" alt="" />
               </div>
-              {{ $t('storage') }}&nbsp;&nbsp;{{ currentCountSpace }}/{{ countSpace }}
+              {{ $t('storage') }}&nbsp;&nbsp;{{ currentCountSpace }}/{{
+                countSpace
+              }}
             </div>
           </div>
         </div>
@@ -64,19 +66,41 @@
         </div>
       </div>
       <!-- tab栏 -->
-      <div class="tab">
+      <div class="tab" v-show="isShow == 1">
         <span>
-          <el-button type="text" @click="toUserCenter">我的应用 </el-button>
+          <el-button type="text" @click="toUserCenter">{{
+            $t('app')
+          }}</el-button>
         </span>
         <span>
-          <el-button type="text" @click="toManage">应用管理</el-button>
-       </span>
-       <span>
-          <el-button type="text" @click="toFound">创建应用</el-button>
-       </span>
-       <span>
-          <el-button type="text" @click="toBill">账户管理</el-button>
-       </span>
+          <el-button type="text" @click="toManage">{{
+            $t('management')
+          }}</el-button>
+        </span>
+        <span>
+          <el-button type="text" @click="toFound">{{ $t('Create') }}</el-button>
+        </span>
+        <span class="last">
+          <el-button type="text" @click="toBill">{{ $t('Account') }}</el-button>
+        </span>
+      </div>
+      <div class="tabTwo" v-show="isShow == 2" >
+        <span>
+          <el-button type="text" @click="toUserCenter">{{
+            $t('app')
+          }}</el-button>
+        </span>
+        <span>
+          <el-button type="text" @click="toManage">{{
+            $t('management')
+          }}</el-button>
+        </span>
+        <span>
+          <el-button type="text" @click="toFound">{{ $t('Create') }}</el-button>
+        </span>
+        <span class="last">
+          <el-button type="text" @click="toBill">{{ $t('Account') }}</el-button>
+        </span>
       </div>
     </div>
   </div>
@@ -100,7 +124,8 @@ export default {
       countSpace: '', //当前用户的存储量最大值
       currentCountSpace: '', //当前用户已使用的存储率
       countBF: '', //当前用户的并发总数最大值
-      currentCountBF: '' //当前用户的并发数
+      currentCountBF: '', //当前用户的并发数
+      isShow: 1
     }
   },
   created () {
@@ -265,9 +290,10 @@ export default {
         }
       }
     }
+    // 中文tab栏
     .tab {
       height: 69px;
-      // background-color: #f1f1f1;
+      background-color: #f1f1f1;
       // background-color: red;
       line-height: 69px;
       padding-left: 228px;
@@ -278,14 +304,41 @@ export default {
         color: #ff6600;
       }
       span {
-        margin-right: 20px;
         margin-right: 228px;
-        width: 70px;
         height: 50px;
         // background-color: pink;
-        border-bottom: 5px solid #f1f1f1;
+        border-bottom: 6px solid #f1f1f1;
         border-radius: 3px;
-        // margin-top: -40px;
+      }
+      .last {
+        margin: 0;
+      }
+      span:hover {
+        border-bottom-color: #ff6600;
+      }
+    }
+    // 英文tab栏
+    .tabTwo {
+      height: 69px;
+      background-color: #f1f1f1;
+      // background-color: red;
+      line-height: 69px;
+      padding: 0 228px;
+      .el-button {
+        color: #000;
+      }
+      .el-button:hover {
+        color: #ff6600;
+      }
+      span {
+        margin-right: 150px;
+        height: 50px;
+        // background-color: pink;
+        border-bottom: 6px solid #f1f1f1;
+        border-radius: 3px;
+      }
+      .last {
+        margin: 0;
       }
       span:hover {
         border-bottom-color: #ff6600;

@@ -4,14 +4,14 @@
     <!-- 头部 -->
     <my-header></my-header>
     <!-- 中间 -->
-    <my-main></my-main>
+    <!-- <my-main></my-main> -->
     <!-- 主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 消息提示 -->
         <div class="record">
           <!-- 消息提示 -->
-          <div class="left">您共有{{ itemList.length }}个项目</div>
+          <div class="left">{{ $t('Youhave') }}{{ itemList.length }}{{ $t('project') }}</div>
           <!-- 按钮 -->
           <div class="right">
             <el-button type="primary">{{ $t('link') }}</el-button>
@@ -74,11 +74,11 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import MyMain from '../components/myMain.vue'
+// import MyMain from '../components/myMain.vue'
 import { getProjectList } from '@/api/my.js'
 
 export default {
-  components: { myHeader, MyMain, MyFooter },
+  components: { myHeader,  MyFooter },
   name: 'manage',
   data () {
     return {

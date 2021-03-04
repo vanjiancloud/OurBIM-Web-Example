@@ -1,44 +1,46 @@
 <template>
-  <div class="header">
-    <div class="container">
-      <!-- logo -->
-      <div class="logo">
-        <img src="./logo.png" alt="" class="img" />
-      </div>
-      <!-- 导航 -->
-      <ul>
-        <li>
-          <a href="">{{ $t('introduction') }}</a>
-        </li>
-        <li>
-          <a href="">{{ $t('Solution') }}</a>
-        </li>
-        <li>
-          <a href="">{{ $t('cases') }}</a>
-        </li>
-        <li>
-          <a href="">{{ $t('Pricing') }}</a>
-        </li>
-        <li>
-          <a href="">{{ $t('consultation') }}</a>
-        </li>
-        <li>
-          <el-dropdown>
-            <span class="el-dropdown-link">
-              {{ $t('consultation')
-              }}<i class="el-icon-arrow-down el-icon--right"></i>
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>{{ $t('APIdov') }}</el-dropdown-item>
-              <el-dropdown-item>{{ $t('project') }}</el-dropdown-item>
-              <el-dropdown-item>{{ $t('Mcenter') }}</el-dropdown-item>
-              <el-dropdown-item>{{ $t('Service') }}</el-dropdown-item>
-              <el-dropdown-item>{{ $t('log') }}</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </li>
-        <li class="first">
-          <!-- <transition>
+  <div class="rongqi">
+    <!-- 头部 -->
+    <div class="header">
+      <div class="container">
+        <!-- logo -->
+        <div class="logo">
+          <img src="./logo.png" alt="" class="img" />
+        </div>
+        <!-- 导航 -->
+        <ul>
+          <li>
+            <a href="">{{ $t('introduction') }}</a>
+          </li>
+          <li>
+            <a href="">{{ $t('Solution') }}</a>
+          </li>
+          <li>
+            <a href="">{{ $t('cases') }}</a>
+          </li>
+          <li>
+            <a href="">{{ $t('Pricing') }}</a>
+          </li>
+          <li>
+            <a href="">{{ $t('consultation') }}</a>
+          </li>
+          <li>
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                {{ $t('consultation')
+                }}<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>{{ $t('APIdov') }}</el-dropdown-item>
+                <el-dropdown-item>{{ $t('project') }}</el-dropdown-item>
+                <el-dropdown-item>{{ $t('Mcenter') }}</el-dropdown-item>
+                <el-dropdown-item>{{ $t('Service') }}</el-dropdown-item>
+                <el-dropdown-item>{{ $t('log') }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </li>
+          <li class="first">
+            <!-- <transition>
               <div class="serach" v-if="islive">
                 <div class="menu">
                   <el-dropdown @command="checkitem">
@@ -71,46 +73,188 @@
                 </div>
               </div>
             </transition> -->
-          <!-- <div @click="toshow">
+            <!-- <div @click="toshow">
             <span class="span"><i class="el-icon-search"></i></span>
           </div> -->
-        </li>
-        <li class="second">
-          <el-dropdown>
-            <span class="el-dropdown-link">
-              <img
-                src="../issue/touxiang.png"
-                style="border-radius: 50%;margin-top: 2px;"
-              />
-            </span>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item @click.native="toUserCenter"
-                >用户中心</el-dropdown-item
+          </li>
+          <li class="second">
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                <img
+                  src="../issue/touxiang.png"
+                  style="border-radius: 50%;margin-top: 2px;"
+                />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="toUserCenter">{{
+                  $t('userCenter')
+                }}</el-dropdown-item>
+                <el-dropdown-item @click.native="toLogin">{{
+                  $t('quit')
+                }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </li>
+          <li class="forth">
+            <a @click="English" href="javascript:;">English</a>
+            <span style="margin: 0 5px;font-size: 10px;">|</span>
+            <a @click="Chinese" href="javascript:;">中文</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <!-- 个人信息展示 -->
+    <div class="main">
+      <div class="container">
+        <!-- 上半部分 -->
+        <div class="top">
+          <div class="left">
+            <div class="im">
+              <img src="imgUrl" alt="" />
+            </div>
+            <div class="Info">
+              <h3>{{ name }}</h3>
+              {{ note }}
+            </div>
+          </div>
+          <div class="middle">
+            <h3>{{ $t('occupancy') }}</h3>
+            <div class="tiao">
+              <h3 style="color: #00AAF0;">{{ spacePer }}%</h3>
+              <el-progress
+                :text-inside="true"
+                :stroke-width="15"
+                :percentage="spacePer"
+                :show-text="false"
+                :color="customColor"
               >
-              <el-dropdown-item @click.native="toLogin">退出</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </li>
-        <li class="forth">
-          <a @click="English" href="javascript:;">English</a>
-          <span style="margin: 0 5px;font-size: 10px;">|</span>
-          <a @click="Chinese" href="javascript:;">中文</a>
-        </li>
-      </ul>
+              </el-progress>
+              <div class="tu">
+                <div class="icon">
+                  <img src="./cunchu.png" alt="" />
+                </div>
+                {{ $t('storage') }}&nbsp;&nbsp;{{ currentCountSpace }}/{{
+                  countSpace
+                }}
+              </div>
+            </div>
+          </div>
+          <div class="jindu">
+            <h3>{{ bfPer }}%</h3>
+            <el-progress
+              :text-inside="true"
+              :stroke-width="15"
+              :percentage="bfPer"
+              :show-text="false"
+              :color="customColor"
+            >
+            </el-progress>
+            <div class="tutu">
+              <div class="icon">
+                <img src="./jiedian.png" alt="" />
+              </div>
+              {{ $t('node') }}&nbsp;&nbsp;{{ currentCountBF }}/{{ countBF }}
+            </div>
+          </div>
+          <div class="right">
+            <div class="content">
+              <div>{{ $t('service') }}</div>
+              <div>{{ countStartTime }}{{ $t('to') }}{{ countendTime }}</div>
+              <el-button
+                plain
+                round
+                size="mini"
+                style="color: #00AAF0;border-color:#00aaf0;"
+                >{{ $t('Extension') }}</el-button
+              >
+            </div>
+          </div>
+        </div>
+        <!-- tab栏 -->
+        <div class="tab" v-show="isCut == 1">
+          <span>
+            <el-button type="text" @click="goUserCenter">{{
+              $t('app')
+            }}</el-button>
+          </span>
+          <span>
+            <el-button type="text" @click="toManage">{{
+              $t('management')
+            }}</el-button>
+          </span>
+          <span>
+            <el-button type="text" @click="toFound">{{
+              $t('Create')
+            }}</el-button>
+          </span>
+          <span class="last">
+            <el-button type="text" @click="toBill">{{
+              $t('Account')
+            }}</el-button>
+          </span>
+        </div>
+        <div class="tabTwo" v-show="isCut == 2">
+          <span>
+            <el-button type="text" @click="goUserCenter">{{
+              $t('app')
+            }}</el-button>
+          </span>
+          <span>
+            <el-button type="text" @click="toManage">{{
+              $t('management')
+            }}</el-button>
+          </span>
+          <span>
+            <el-button type="text" @click="toFound">{{
+              $t('Create')
+            }}</el-button>
+          </span>
+          <span class="last">
+            <el-button type="text" @click="toBill">{{
+              $t('Account')
+            }}</el-button>
+          </span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { showDetail } from '@/api/my.js'
+import { getuserid } from '@/store/index.js'
 export default {
+  name: 'myHeader',
+  data () {
+    return {
+      customColor: '#00AAF0',
+      note: '', //签名
+      name: '', //用户名
+      imgUrl: '', //用户头像
+      countStartTime: '', //账户生效开始时间
+      countendTime: '', //账户生效结束时间
+      spacePer: '', //空间使用率，第一个进度条
+      bfPer: '', //并发使用率，第二个进度条
+      countSpace: '', //当前用户的存储量最大值
+      currentCountSpace: '', //当前用户已使用的存储率
+      countBF: '', //当前用户的并发总数最大值
+      currentCountBF: '', //当前用户的并发数
+      isCut: 1
+    }
+  },
+  created () {
+    this.showData()
+  },
   methods: {
     English () {
       this.$i18n.locale = 'en'
       this.classify = 'whole'
+      this.isCut = 2
     },
     Chinese () {
       this.$i18n.locale = 'zh'
       this.classify = '全部'
+      this.isCut = 1
     },
     toUserCenter () {
       if (this.route !== '/userCenter') {
@@ -123,75 +267,286 @@ export default {
       this.$router.push('../login/')
 
       window.localStorage.userid = ''
+    },
+    //展示当前用户信息
+    showData () {
+      showDetail({
+        userid: getuserid()
+      })
+        .then(res => {
+          console.log(res)
+          this.name = res.data.data.name
+          this.note = res.data.data.note
+          this.imgUrl = res.data.data.imgUrl
+          this.countStartTime = res.data.data.countStartTime
+          this.countendTime = res.data.data.countendTime
+          this.countSpace = res.data.data.countSpace
+          this.spacePer = res.data.data.spacePer
+          this.bfPer = res.data.data.bfPer
+          this.currentCountSpace = res.data.data.currentCountSpace
+          this.countBF = res.data.data.countBF
+          this.currentCountBF = res.data.data.currentCountBF
+        })
+        .catch(err => {
+          this.$message.error('信息展示失败')
+        })
+    },
+    //定时器，每隔10秒更新一次数据
+    get () {
+      this.showData()
+      console.log('定时器运行中')
+    },
+    goUserCenter () {
+      this.$router.push('../userCenter')
+    },
+    toManage () {
+      this.$router.push('../manage')
+    },
+    toFound () {
+      this.$router.push('../found')
+    },
+    toBill () {
+      this.$router.push('../bill')
     }
+  },
+  mounted () {
+    this.timer = setInterval(this.get, 10000)
+  },
+  beforeDestroy () {
+    clearInterval(this.timer)
   }
 }
 </script>
 
 <style lang="less" scoped>
-a {
-  text-decoration: none;
-  font-size: 16px;
-  color: #000;
-  font-family: PingFang SC;
-}
-a:hover {
-  color: #ff6600;
-}
-.header {
-  height: 64px;
-  background-color: #fff;
-  line-height: 64px;
-  .logo {
-    width: 151px;
-    height: 30px;
-    float: left;
-    margin: 10px 169px 24px 0;
-    img {
-      width: 100%;
-      height: 100%;
-    }
-  }
-  li {
-    height: 16px;
-    float: left;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    margin-right: 47px;
+.rongqi {
+  .header {
     a {
+      text-decoration: none;
       font-size: 16px;
-    }
-    .li {
-      font-size: 14px;
-      color: #999999;
-    }
-
-    .el-dropdown-link {
-      cursor: pointer;
       color: #000;
-      font-size: 16px;
+      font-family: PingFang SC;
     }
-    .el-icon-arrow-down {
-      font-size: 16px;
+    a:hover {
+      color: #ff6600;
+    }
+    height: 64px;
+    background-color: #fff;
+    line-height: 64px;
+    .logo {
+      width: 151px;
+      height: 30px;
+      float: left;
+      margin: 10px 169px 24px 0;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    li {
+      height: 16px;
+      float: left;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      margin-right: 47px;
+      a {
+        font-size: 16px;
+      }
+      .li {
+        font-size: 14px;
+        color: #999999;
+      }
+
+      .el-dropdown-link {
+        cursor: pointer;
+        color: #000;
+        font-size: 16px;
+      }
+      .el-icon-arrow-down {
+        font-size: 16px;
+      }
+    }
+    .second {
+      margin-left: -20px;
+      margin-right: 20px;
+    }
+    .third {
+      margin-right: 40px;
+    }
+    .forth {
+      // background-color: green;
+      float: right;
+      margin: 0;
+      height: 16px;
+      font-size: 14px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: #333333;
     }
   }
-  .second {
-    margin-left: -20px;
-    margin-right: 20px;
-  }
-  .third {
-    margin-right: 40px;
-  }
-  .forth {
-    // background-color: green;
-    float: right;
-    margin: 0;
-    height: 16px;
-    font-size: 14px;
-    font-family: PingFang SC;
-    font-weight: 500;
-    color: #333333;
+  .main {
+    height: 221px;
+    margin-top: 20px;
+    .container {
+      .top {
+        height: 152px;
+        background-color: #fff;
+        .left {
+          height: 152px;
+          width: 287px;
+          margin-right: 20px;
+          margin-left: 42px;
+          float: left;
+          background-color: #fff;
+          // background-color: green;
+          .im {
+            margin-top: 36px;
+            width: 80px;
+            height: 80px;
+            float: left;
+            border-radius: 50%;
+            img {
+              width: 100%;
+              height: 100%;
+              border-radius: 50%;
+            }
+          }
+          .Info {
+            float: left;
+            margin-top: 35px;
+            // background-color: red;
+            width: 207px;
+            height: 115px;
+            text-align: center;
+          }
+        }
+        .middle {
+          height: 152px;
+          float: left;
+          margin-right: 30px;
+          // background-color: red;
+          h3 {
+            margin-top: 6px;
+          }
+          .tiao {
+            width: 318px;
+            float: left;
+            margin-top: 20px;
+            margin-left: 100px;
+            // background-color: red;
+            .tu {
+              float: left;
+              margin-right: 29px;
+              margin-top: 15px;
+              .icon {
+                width: 20px;
+                height: 20px;
+                float: left;
+                margin-right: 10px;
+                img {
+                  width: 100%;
+                  height: 100%;
+                }
+              }
+            }
+          }
+        }
+        .jindu {
+          width: 318px;
+          height: 152px;
+          // background-color: pink;
+          float: left;
+          h3 {
+            margin-top: 56px;
+            color: #00aaf0;
+          }
+          .tutu {
+            float: left;
+            margin-top: 15px;
+            .icon {
+              width: 20px;
+              height: 20px;
+              float: left;
+              margin-right: 10px;
+              img {
+                width: 100%;
+                height: 100%;
+              }
+            }
+          }
+        }
+        .right {
+          height: 152px;
+          width: 207px;
+          margin-right: 42px;
+          float: right;
+          text-align: center;
+          // background-color: green;
+          .content {
+            margin-top: 36px;
+            width: 207px;
+            div {
+              margin-bottom: 10px;
+            }
+          }
+        }
+      }
+      // 中文tab栏
+      .tab {
+        height: 69px;
+        background-color: #f1f1f1;
+        // background-color: red;
+        line-height: 69px;
+        padding-left: 228px;
+        .el-button {
+          color: #000;
+        }
+        .el-button:hover {
+          color: #ff6600;
+        }
+        span {
+          margin-right: 228px;
+          height: 50px;
+          // background-color: pink;
+          border-bottom: 6px solid #f1f1f1;
+          border-radius: 3px;
+        }
+        .last {
+          margin: 0;
+        }
+        span:hover {
+          border-bottom-color: #ff6600;
+        }
+      }
+      // 英文tab栏
+      .tabTwo {
+        height: 69px;
+        background-color: #f1f1f1;
+        // background-color: red;
+        line-height: 69px;
+        padding: 0 228px;
+        .el-button {
+          color: #000;
+        }
+        .el-button:hover {
+          color: #ff6600;
+        }
+        span {
+          margin-right: 150px;
+          height: 50px;
+          // background-color: pink;
+          border-bottom: 6px solid #f1f1f1;
+          border-radius: 3px;
+        }
+        .last {
+          margin: 0;
+        }
+        span:hover {
+          border-bottom-color: #ff6600;
+        }
+      }
+    }
   }
 }
 </style>

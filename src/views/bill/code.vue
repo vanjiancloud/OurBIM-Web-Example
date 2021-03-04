@@ -4,7 +4,7 @@
     <!-- 头部 -->
     <my-header></my-header>
     <!-- 中间 -->
-    <my-main></my-main>
+    <!-- <my-main></my-main> -->
     <!-- 主体内容 -->
     <div class="container">
       <div class="content">
@@ -36,22 +36,29 @@
         <!-- 授权码 -->
         <div class="neirong">
           <div class="title">
-            授权码
+            {{ $t('Authorization') }}
+            <!-- 授权码 -->
           </div>
           <div class="input">
-            授权码
+            {{ $t('Authorization') }}
+            <!-- 授权码 -->
             <el-input v-model="SQM" placeholder="请输入授权码"></el-input>
-            <el-button type="primary" class="btn" @click="verification"
-              >验证</el-button
-            >
+            <el-button type="primary" class="btn" @click="verification">
+              <!-- 验证 -->
+              {{ $t('verification') }}
+            </el-button>
             <div class="news">
               <div>*</div>
-              如授权码不可用请联系售后
-            </div>
-            <div class="xiugai">
-              <el-button type="primary" :disabled="dis" @click="update">提交</el-button>
+              <!-- 联系售后 -->
+              {{ $t('nouse') }}
             </div>
           </div>
+          <!-- 提交按钮 -->
+          <div class="submit">
+              <el-button type="primary" :disabled="dis" @click="update">
+                {{ $t('submit') }}
+              </el-button>
+            </div>
         </div>
       </div>
     </div>
@@ -63,13 +70,13 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import MyMain from '../components/myMain.vue'
+// import MyMain from '../components/myMain.vue'
 import { updateSQM } from '@/api/my.js'
 import { verification } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 
 export default {
-  components: { myHeader, MyMain, MyFooter },
+  components: { myHeader, MyFooter },
   name: 'authorizationCode',
   data () {
     return {
@@ -101,7 +108,7 @@ export default {
         })
         .catch(err => {
           console.log(err)
-            this.$message.error('授权码验证失败,请重新填写')
+          this.$message.error('授权码验证失败,请重新填写')
         })
     },
     // 提交授权码
@@ -121,7 +128,7 @@ export default {
         })
         .catch(err => {
           console.log(err)
-            this.$message.error('授权码提交失败,请重新提交')
+          this.$message.error('授权码提交失败,请重新提交')
         })
     }
   }
@@ -146,10 +153,11 @@ export default {
         background-color: #f1f1f1;
       }
       .neirong {
-        padding-left: 300px;
+        // padding-left: 300px;
         height: 1037px;
         .title {
           height: 54px;
+          text-align: center;
           line-height: 54px;
           margin-left: -40px;
           font-size: 22px;
@@ -157,7 +165,7 @@ export default {
           border-bottom: 1px solid #f1f1f1;
         }
         .input {
-          margin-left: 60px;
+          margin-left: 360px;
           margin-top: 20px;
           .el-input {
             width: 462px;
@@ -170,9 +178,10 @@ export default {
           }
           .news {
             width: 224px;
-            height: 36px;
             margin-top: 10px;
+            // margin-left: 300px;
             background-color: #eeeeee;
+            // background-color: red;
             color: #ccc;
             text-align: center;
             line-height: 36px;
@@ -185,17 +194,16 @@ export default {
             }
           }
           .btn {
-            width: 78px;
             height: 46px;
             background-color: #00aaf0;
           }
         }
-        .xiugai {
+        .submit {
           margin-top: 190px;
           text-align: center;
           /deep/ .el-button--primary {
-            width: 140px;
             height: 40px;
+            width: 140px;
           }
         }
       }
