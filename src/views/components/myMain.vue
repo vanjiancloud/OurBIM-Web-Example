@@ -65,18 +65,18 @@
       </div>
       <!-- tab栏 -->
       <div class="tab">
-        <div class="one">
+        <span>
           <el-button type="text" @click="toUserCenter">我的应用 </el-button>
-        </div>
-        <div class="two">
+        </span>
+        <span>
           <el-button type="text" @click="toManage">应用管理</el-button>
-        </div>
-        <div class="three">
+       </span>
+       <span>
           <el-button type="text" @click="toFound">创建应用</el-button>
-        </div>
-        <div class="last">
+       </span>
+       <span>
           <el-button type="text" @click="toBill">账户管理</el-button>
-        </div>
+       </span>
       </div>
     </div>
   </div>
@@ -228,12 +228,10 @@ export default {
       .jindu {
         width: 318px;
         height: 152px;
-          margin-top: 28px;
-
         // background-color: pink;
         float: left;
         h3 {
-          margin-top: 28px;
+          margin-top: 56px;
           color: #00aaf0;
         }
         .tutu {
@@ -269,10 +267,8 @@ export default {
     }
     .tab {
       height: 69px;
-      
-      
       // background-color: #f1f1f1;
-      background-color: red;
+      // background-color: red;
       line-height: 69px;
       padding-left: 228px;
       .el-button {
@@ -281,43 +277,18 @@ export default {
       .el-button:hover {
         color: #ff6600;
       }
-      .one {
-        float: left;
+      span {
+        margin-right: 20px;
         margin-right: 228px;
-        
         width: 70px;
         height: 50px;
-        background-color: pink;
+        // background-color: pink;
         border-bottom: 5px solid #f1f1f1;
         border-radius: 3px;
         // margin-top: -40px;
       }
-      .two {
-        // float: left;
-        margin-right: 228px;
-        
-        width: 70px;
-        height: 50px;
-        background-color: pink;
-        border-bottom: 5px solid #f1f1f1;
-        border-radius: 3px;
-        // margin-top: -40px;
-      }.three {
-        float: left;
-        margin-right: 228px;
-        
-        width: 70px;
-        height: 50px;
-        background-color: pink;
-        border-bottom: 5px solid #f1f1f1;
-        border-radius: 3px;
-        // margin-top: -40px;
-      }
-      div:hover {
+      span:hover {
         border-bottom-color: #ff6600;
-      }
-      .last {
-        margin: 0;
       }
     }
   }
