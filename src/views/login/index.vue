@@ -174,8 +174,8 @@ export default {
       isLoading: false, // 是否正在登陆
       form: {
         isAgree: false, // 复选框的状态
-        password: '',
-        email: ''
+        password: '123456',
+        email: 'aa@vanjian.com'
       },
       // 定义验证规则rules
       rules: {
