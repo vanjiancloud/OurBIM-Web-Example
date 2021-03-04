@@ -1,21 +1,26 @@
 <template>
   <div class="bim-main">
-   <iframe class="bim-web" :class="runTimeCode === 0 ? '' : 'phone-bim'" v-if="webUrl && hiddenState === 0"
+    <!-- <iframe class="bim-web" :class="runTimeCode === 0 ? '' : 'phone-bim'" v-if="webUrl && hiddenState === 0"
            :src="webUrl" frameborder="0" id="show-bim"></iframe>
     <div class="time-log" v-if="moreCount < 10">
       <div class="log-main" :class="runTimeCode === 0 ? '' : 'phone-log-main'">
         <div>
-          <img class="show-logo" src="@/assets/img/ourbim-logo.png" alt="">
+          <img class="show-logo" src="@/assets/img/ourbim-logo.png" alt="" />
         </div>
         <span v-text="moreCount"></span>
         秒后将超过免费体验时长，可刷新重新进入。
       </div>
     </div>
-    <div class="hidden-bim" :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'" v-if="isFade">
-      <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="">
+    <div
+      class="hidden-bim"
+      :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
+      v-if="isFade"
+    >
+      <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
       <div class="hidden-text load-text" v-if="hiddenState === 0">
-        Model loading
-        <span v-if="runTimeCode === 0" class="loading"></span>
+        <div class="model-loading">Model loading</div>
+        <div class="dot">...</div>
+        <div class="wait-main"></div>
       </div>
       <div class="hidden-text learn-text" v-if="hiddenState === 1">
         超过免费体验时长，可刷新重新进入。
@@ -23,19 +28,95 @@
       <div class="hidden-text learn-text" v-if="hiddenState === 2">
         模型长时间未响应，请刷新重试。
       </div>
+    </div> -->
+    <div v-if="runTimeCode === 0">
+      <div class="mutual-bim">
+				<div class="tree-main" v-if="browserInfo && browserInfo.type === 10 && browserInfo.state === 1">
+					<div class="tree-title">
+						<div class="">
+							模型浏览器
+						</div>
+						<div class="close-part">
+							<i class="el-icon-close" @click="closePart(browserInfo.type)"></i>
+						</div>
+					</div>
+					<div class="tree-content">
+						<!-- <ly-tree class="bim-tree" lazy :defaultExpandedKeys="treeOpen" highlightCurrent :load="getLoadNode" :showNodeIcon="true"
+						 :tree-data="treeData" :ready="readyTree" :showCheckbox="true" node-key="mn" :props="memberProps" @node-click="handleNodeClick"
+						 @node-collapse="closeNode">
+						</ly-tree> -->
+            <el-tree
+              :props="propsMember"
+              :load="loadNode"
+              lazy
+              show-checkbox>
+            </el-tree>
+					</div>
+				</div>
+				<div class="bim-info" v-if="natureInfo && natureInfo.type === 11 && natureInfo.state === 1">
+					<div class="bim-title">
+						<div class="">
+							属性
+						</div>
+						<div class="close-part">
+							<i class="el-icon-close" @click="closePart(natureInfo.type)"></i>
+						</div>
+					</div>
+					<table class="detail-table">
+						<tr>
+							<td>
+								所属模型
+							</td>
+							<td v-text="detailedInfo ? detailedInfo.deviceProducer : ''"></td>
+						</tr>
+						<tr>
+							<td>
+								属性名
+							</td>
+							<td v-text="detailedInfo ? detailedInfo.name : ''"></td>
+						</tr>
+						<tr>
+							<td>
+								设备编号
+							</td>
+							<td>
+								<view class="">
+									<text v-text="detailedInfo ? detailedInfo.mn : ''"></text>
+								</view>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								类型
+							</td>
+							<td v-text="detailedInfo ? detailedInfo.type : ''"></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+      <todo-footer ref="getFooter" @listenTodo="listenTodo"></todo-footer>
     </div>
   </div>
 </template>
 
 <script>
-import { getModelInfo } from '@/api/my.js'
-import MODELAPI from "@/api/model_api"
+import { getModelInfo } from "@/api/my.js";
+import MODELAPI from "@/api/model_api";
+import todoFooter from "@/components/todo_footer/todo_footer";
 
 export default {
   name: "look_app",
-  layout: 'reset',
+  layout: "reset",
+  components: {
+    todoFooter,
+  },
   data() {
     return {
+      propsMember: {
+          label: 'name',
+          children: 'zones',
+          isLeaf: 'leaf'
+        },
       webUrl: null,
       taskId: null,
       isFade: true,
@@ -48,75 +129,137 @@ export default {
       hiddenState: 0,
       websock: null,
       isSocket: false,
-      socketTimer: null
-    }
+      socketTimer: null,
+      browserInfo: null,
+      detailedInfo: null,
+      natureInfo: null
+    };
   },
   watch: {
-    viewHeight(val, oldVal) { //普通的watch监听
+    viewHeight(val, oldVal) {
+      //普通的watch监听
       if (this.isFade) {
         this.$message({
           type: "success",
-          message: "免费体验3分钟"
-        })
+          message: "免费体验3分钟",
+        });
       }
       this.isFade = false;
       this.setTimePass()
     },
   },
-  mounted() {
-    this.setTimeLoad()
+  mounted() {    
+    this.setTimeLoad();
     if (this.isMobile()) {
-      this.runTimeCode = 1
+      this.runTimeCode = 1;
     } else {
-      this.runTimeCode = 0
+      this.runTimeCode = 0;
     }
-    this.getSceneUrl()
-    window.addEventListener("message", (e) => {
-      if (e.data.data && e.data.data.frameHeight > 0 && e.data.type !== 500) {
-        this.viewHeight = e.data.data.frameHeight
-      }
-    }, false);
+    this.getSceneUrl();
+    window.addEventListener(
+      "message",
+      (e) => {
+        if (e.data.data && e.data.data.frameHeight > 0 && e.data.type !== 500) {
+          this.viewHeight = e.data.data.frameHeight;
+        }
+      },
+      false
+    );
   },
   destroyed() {
-    this.clearTimePass()
-    this.websock.close() //离开路由之后断开websocket连接
-    this.isSocket = false
+    this.clearTimePass();
+    this.websock.close(); //离开路由之后断开websocket连接
+    this.isSocket = false;
     if (this.socketTimer) {
-      clearInterval(this.socketTimer)
+      clearInterval(this.socketTimer);
     }
   },
   methods: {
-    initWebSocket(){ //初始化weosocket
-    /**
-         * @Author: zk
-         * @Date: 2021-02-24 13:42:13
-         * @description: 初始化socket通信
-         */
-        const wsuri = MODELAPI.CREATESOCKET(this.taskId);
-        this.websock = new WebSocket(wsuri);
-        this.websock.onmessage = (e) => {
-          // console.log(e);
-        };
-        this.websock.onopen = (e) => {
-          this.isSocket = true
-					this.socketTimer = setInterval(() => {
-            this.websock.send('heartbeat');
-					}, 1000 * 60)
-        };
-        this.websock.onerror = (e) => {
-          // console.log(e);
-        };
+    getMemberList(){
+      let params = {
+        appliId: 'test'
+      }
+      MODELAPI.LISTMEMBERTREE(params)
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.error(err);
+      })
+    },
+    loadNode(node, resolve) {
+        if (node.level === 0) {
+          this.getMemberList()
+          return resolve([{ name: 'region' }]);
+        }
+        if (node.level > 1) return resolve([]);
+
+        setTimeout(() => {
+          const data = [{
+            name: 'leaf',
+            leaf: true
+          }, {
+            name: 'zone'
+          }];
+
+          resolve(data);
+        }, 500);
       },
+    // 关闭模块
+			closePart(e){
+				if(e === 10){
+					this.browserInfo = null
+				}
+				if(e === 11){
+					this.natureInfo = null
+				}
+				this.$refs.getFooter.editTool(e)
+			},
+    listenTodo(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-04 14:06:09
+     * @description: 监听操作栏
+     */  
+      if(e.type === 10){
+					this.browserInfo = e
+				}
+				if(e.type === 11){
+					this.natureInfo = e
+				}
+    },
+    initWebSocket() {
+      //初始化weosocket
+      /**
+       * @Author: zk
+       * @Date: 2021-02-24 13:42:13
+       * @description: 初始化socket通信
+       */
+      const wsuri = MODELAPI.CREATESOCKET(this.taskId);
+      this.websock = new WebSocket(wsuri);
+      this.websock.onmessage = (e) => {
+        // console.log(e);
+      };
+      this.websock.onopen = (e) => {
+        this.isSocket = true;
+        this.socketTimer = setInterval(() => {
+          this.websock.send("heartbeat");
+        }, 1000 * 60);
+      };
+      this.websock.onerror = (e) => {
+        // console.log(e);
+      };
+    },
     getSceneUrl() {
-      let appId = this.$route.query.appid
+      let appId = this.$route.query.appid;
       getModelInfo({
-        appliId: appId
+        appliId: appId,
       })
         .then((res) => {
           if (res.data.code === 0 && res.data.data) {
-            this.webUrl = res.data.data.url
-            this.taskId = res.data.data.taskId
-            this.initWebSocket()
+            this.webUrl = res.data.data.url;
+            this.taskId = res.data.data.taskId;
+            this.initWebSocket();
             this.getMonitor();
             let timer = setTimeout(() => {
               window.clearTimeout(timer);
@@ -128,41 +271,43 @@ export default {
         });
     },
     isMobile() {
-      let flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
+      let flag = navigator.userAgent.match(
+        /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+      );
       return flag;
     },
     // 设置加载时间超时提醒
     setTimeLoad() {
       this.loadTimer = setTimeout(() => {
         if (this.isFade === true) {
-          this.hiddenState = 2
+          this.hiddenState = 2;
         }
-        clearTimeout(this.loadTimer)
-      }, 1000 * 60)
+        clearTimeout(this.loadTimer);
+      }, 1000 * 60);
     },
     // 清除定时器
     clearTimePass() {
       if (this.timerInfo) {
-        clearInterval(this.timerInfo)
+        clearInterval(this.timerInfo);
       }
       if (this.loadTimer) {
-        clearTimeout(this.loadTimer)
+        clearTimeout(this.loadTimer);
       }
     },
     // 设置超时时间
     setTimePass() {
-      this.clearTimePass()
+      this.clearTimePass();
       this.timerInfo = setInterval(() => {
-        this.timerCount++
+        this.timerCount++;
         if (this.timerCount >= 170) {
-          this.moreCount = 180 - this.timerCount
+          this.moreCount = 180 - this.timerCount;
         }
         if (this.moreCount === 0) {
-          this.isFade = true
-          this.hiddenState = 1
-          this.clearTimePass()
+          this.isFade = true;
+          this.hiddenState = 1;
+          this.clearTimePass();
         }
-      }, 1000)
+      }, 1000);
     },
     getMonitor() {
       /**
@@ -174,7 +319,8 @@ export default {
         // 鼠标移出
         document.getElementById("show-bim").onmouseout = () => {
           this.sendToIframe(
-            10002, {
+            10002,
+            {
               button: "left",
               x: 500,
               y: 500,
@@ -196,7 +342,8 @@ export default {
        */
       let realIframe = document.getElementById("show-bim").contentWindow;
       if (realIframe) {
-        realIframe.postMessage({
+        realIframe.postMessage(
+          {
             prex: "pxymessage", // 约定的消息头部
             type: type, // 消息类型
             data: data, // 具体数据
@@ -208,11 +355,12 @@ export default {
         console.warn("content window not find.");
       }
     },
-  }
-}
+  },
+};
 </script>
 
 <style lang="less" scoped>
+@font-c: center;
 @-webkit-keyframes fadeIt {
   0% {
     background-color: #092b4c;
@@ -292,7 +440,7 @@ export default {
       border-radius: 3px;
       background-color: rgba(0, 0, 0, 0.36);
       text-align: center;
-      color: #FFFFFF;
+      color: #ffffff;
 
       .show-logo {
         width: 80px;
@@ -336,23 +484,58 @@ export default {
     }
 
     .load-text {
-      //left: 42vw;
-      max-width: 350px;
-      min-width: 260px;
-      left: calc(50% - 140px);
       letter-spacing: 5px;
-      font-size: 30px;
-    }
+      font-size: 22px;
+      display: flex;
 
+      .model-loading {
+        margin-right: 10px;
+      }
+    }
+    @-webkit-keyframes dot {
+      0% {
+        left: -30px;
+      }
+
+      25% {
+        left: -30px;
+      }
+
+      50% {
+        left: -20px;
+      }
+      75% {
+        left: -10px;
+      }
+      100% {
+        left: 0px;
+      }
+    }
+    .wait-main {
+      width: 30px;
+      position: relative;
+      left: 0px;
+      background: #000;
+      animation: dot 3s infinite step-start;
+    }
     .learn-text {
       letter-spacing: 1px;
-      font-size: 30px;
+      // font-size: 30px;
     }
 
     .hidden-text {
       margin-top: 130px;
       position: absolute;
-      background-image: linear-gradient(to right, #B9FFFC, #A2D8F4, #9AB3F5, #7579E7, #9AB3F5, #A2D8F4, #B9FFFC);
+      background-image: linear-gradient(
+        to right,
+        #b9fffc,
+        #a2d8f4,
+        #9ab3f5,
+        #7579e7,
+        #9ab3f5,
+        #a2d8f4,
+        #b9fffc
+      );
       -webkit-text-fill-color: transparent;
       -webkit-background-clip: text;
       -webkit-background-size: 200% 100%;
@@ -387,13 +570,188 @@ export default {
 
   .phone-hidden-bim {
     .load-text {
-      left: 0vw;
-      width: 100%;
+      letter-spacing: 5rpx;
+      font-size: 20px;
+      display: flex;
       text-align: center;
-      letter-spacing: 5px;
-      font-size: 1.2rem;
+      letter-spacing: 5rpx;
+      font-size: 40px;
+    }
+    @-webkit-keyframes dotPhone {
+      0% {
+        left: -25px;
+      }
+
+      25% {
+        left: -20px;
+      }
+
+      50% {
+        left: -15px;
+      }
+
+      75% {
+        left: -10px;
+      }
+
+      100% {
+        left: -0px;
+      }
+    }
+
+    .wait-main {
+      width: 30px;
+      position: relative;
+      left: -30px;
+      background: #000;
+      animation: dotPhone 3s infinite step-start;
     }
   }
+
+  // 视图层
+		.mutual-bim {
+			position: absolute;
+			z-index: 9;
+			top: 0;
+			left: 0;
+			height: 100vh;
+			width: 100vw;
+			pointer-events: none;
+
+			.leaf-slide {
+				position: absolute;
+				width: 10vw;
+				bottom: 8vh;
+				left: 45vw;
+				pointer-events: auto;
+			}
+
+			.tree-main {
+				pointer-events: auto;
+				height: 47vh;
+				width: 400px;
+				margin: 2vh 0 0 20px;
+				border-radius: 10px;
+				background: rgba(0, 0, 0, 0.5);
+				
+				.tree-title{
+					display: flex;
+					padding: 20px 15px 0 15px;
+					color: #FFFFFF;
+					.close-part{
+						margin-left: auto;
+						cursor: pointer;
+					}
+				}
+				.tree-content{
+					margin-top: 1vh;
+					height: 40vh;
+					width: 99.5%;
+					overflow-x: hidden;
+					overflow-y: auto;
+					&::-webkit-scrollbar {
+						/*滚动条整体样式*/
+						width: 6px;
+						/*高宽分别对应横竖滚动条的尺寸*/
+						height: 1px;
+					}
+					
+					&::-webkit-scrollbar-thumb {
+						/*滚动条里面小方块*/
+						border-radius: 10px;
+						background: #09abf7;
+					}
+					
+					&::-webkit-scrollbar-track {
+						/*滚动条里面轨道*/
+						border-radius: 10px;
+						background: rgba(255, 255, 255, 0.295);
+					}
+				}
+			}
+
+			.bim-info {
+				position: absolute;
+				bottom: 2vh;
+				pointer-events: auto;
+				margin-top: 1vh;
+				height: 47vh;
+				margin: 1vh 0 0 20px;
+				border-radius: 10px;
+				width: 400px;
+				overflow-x: hidden;
+				overflow-y: auto;
+				background: rgba(0, 0, 0, 0.5);
+				color: #FFFFFF;
+				.bim-title{
+					display: flex;
+					padding: 20px 15px 0 15px;
+					color: #FFFFFF;
+					.close-part{
+						margin-left: auto;
+						cursor: pointer;
+					}
+				}
+				.detail-table {
+					width: 100%;
+					line-height: 35px;
+					text-align: center;
+
+					tr td {
+						&:first-child {
+							width: 30%;
+						}
+
+						&:last-child {
+							width: 70%;
+							word-break: break-all;
+						}
+					}
+				}
+			}
+
+			.handle-body {
+				pointer-events: auto;
+				position: absolute;
+				top: 3vh;
+				right: 3vh;
+			}
+
+			.show-footer {
+				position: absolute;
+				pointer-events: auto;
+				padding: 10px 0;
+				width: 100%;
+				display: flex;
+				align-items: center;
+				left: 0;
+				bottom: 0;
+				color: #FFFFFF;
+
+				.foot-title {
+					width: 100%;
+					overflow: hidden;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+				}
+
+				.footer-main {
+					margin: 0 auto;
+					width: 680px;
+					background-color: rgba(0, 0, 0, 0.5);
+					display: flex;
+					flex-wrap: wrap;
+					justify-content: @font-c;
+					align-items: @font-c;
+					text-align: @font-c;
+
+					.main-content {
+						flex: 0 0 16.66%;
+						width: 16.66%;
+					}
+				}
+			}
+		}
 
   #show-bim {
     height: 110vh;

@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-02-20 13:30:47
  * @LastEditors: zk
- * @LastEditTime: 2021-02-22 16:00:00
+ * @LastEditTime: 2021-03-04 14:33:33
  * @description: 
  */
 module.exports = {
@@ -19,6 +19,7 @@ module.exports = {
   },
   rules: {
     // 'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off'
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'vue/no-parsing-error': [2, { 'x-invalid-end-tag': false }]
   }
 }

@@ -17,7 +17,7 @@
           <!-- 列表展示 -->
           <div class="list">
             <div class="lis">
-              <ul style="padding: 0;margin: 0;">
+              <ul style="padding: 0; margin: 0">
                 <li
                   v-for="(item, index) in appList"
                   :key="index"
@@ -60,64 +60,64 @@
 </template>
 
 <script>
-import MyFooter from '../components/myFooter.vue'
-import myHeader from '../components/myHeader.vue'
-import MyMain from '../components/myMain.vue'
-import { getProjectList } from '@/api/my.js'
+import MyFooter from "../components/myFooter.vue";
+import myHeader from "../components/myHeader.vue";
+import MyMain from "../components/myMain.vue";
+import { getProjectList } from "@/api/my.js";
 
 export default {
   components: { myHeader, MyMain, MyFooter },
-  name: 'userCenter',
-  data () {
+  name: "userCenter",
+  data() {
     return {
       islive: false,
-      input: '',
+      input: "",
       isShow: 1,
-      classify: '全部',
+      classify: "全部",
       isHand: 6,
       url:
-        'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg',
-      appList: []
-    }
+        "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
+      appList: [],
+    };
   },
-  created () {
-    this.GetList()
+  created() {
+    this.GetList();
   },
   methods: {
-    checkitem (item) {
-      this.classify = item
+    checkitem(item) {
+      this.classify = item;
     },
-    English () {
-      this.$i18n.locale = 'en'
-      this.classify = 'whole'
+    English() {
+      this.$i18n.locale = "en";
+      this.classify = "whole";
     },
-    Chinese () {
-      this.$i18n.locale = 'zh'
-      this.classify = '全部'
+    Chinese() {
+      this.$i18n.locale = "zh";
+      this.classify = "全部";
     },
-    handleClick () {
-      alert('button click')
+    handleClick() {
+      alert("button click");
     },
     // 分页
-    handleCurrentChange () {},
-    toshow () {
-      this.islive = !this.islive
+    handleCurrentChange() {},
+    toshow() {
+      this.islive = !this.islive;
     },
     // 读取cookie中userid数据
     getCookie: function (userid) {
       if (document.cookie.length > 0) {
-        var start = document.cookie.indexOf(userid + '=')
+        var start = document.cookie.indexOf(userid + "=");
         if (start !== -1) {
-          start = start + userid.length + 1
-          var end = document.cookie.indexOf(';', start)
-          if (end === -1) end = document.cookie.length
-          return unescape(document.cookie.substring(start, end))
+          start = start + userid.length + 1;
+          var end = document.cookie.indexOf(";", start);
+          if (end === -1) end = document.cookie.length;
+          return unescape(document.cookie.substring(start, end));
         }
       }
-      console.log()
-      return ''
+      console.log();
+      return "";
     },
-    GetList () {
+    GetList() {
       /**
        * @Author: zk
        * @Date: 2021-02-22 17:43:22
@@ -125,32 +125,44 @@ export default {
        */
       getProjectList({
         userid: this.getCookie("userid"),
-        isHandle: 1
+        isHandle: 1,
       })
-        .then(res => {
-          console.log(res)
-          this.appList = res.data.data
+        .then((res) => {
+          console.log(res);
+          this.appList = res.data.data;
         })
-        .catch(err => {
-          this.$message.error('请求失败')
-        })
+        .catch((err) => {
+          this.$message.error("请求失败");
+        });
     },
-    GoApp(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-02-22 17:52:23
-     * @description: 获取应用信息
-     */
-      const { href } = this.$router.resolve({
-          name: "web_client",
-          query: {
-              appid: e.appid
+    GoApp(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-02-22 17:52:23
+       * @description: 获取应用信息
+       */
+      getModelInfo({
+        appliId: e.appid,
+      })
+        .then((res) => {
+          if (res.code === 0) {
+            const { href } = this.$router.resolve({
+              name: "web_client",
+              query: {
+                appid: e.appid,
+              },
+            });
+            window.open(href, "_blank");
+          } else {
+            this.$message.warning(res.message)
           }
-      });
-      window.open(href, '_blank');
-    }
-  }
-}
+        })
+        .catch((err) => {
+          this.$message.error("请求失败");
+        });
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
