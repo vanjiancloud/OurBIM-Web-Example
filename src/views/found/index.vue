@@ -51,7 +51,7 @@
                 :on-success="upLoadImg"
                 name="fileUpload"
                 :on-error="errorImg"
-                :before-remove="handleRemove"
+                :on-remove="handleRemove"
                 list-type="picture-card"
                 :limit="1"
                 :on-exceed="handleExceed"
@@ -70,8 +70,6 @@
                     >
                       <i class="el-icon-zoom-in"></i>
                     </span>
-                    <span v-if="!disabled" class="el-upload-list__item-delete">
-                    </span>
                     <span
                       v-if="!disabled"
                       class="el-upload-list__item-delete"
@@ -89,7 +87,7 @@
           </div>
           <!-- 按钮 -->
           <div class="anNiu">
-            <el-button @click="next" type="primary">
+            <el-button @click="next('ruleForm')" type="primary">
               下一步
             </el-button>
           </div>
@@ -300,10 +298,9 @@ export default {
       this.$message.warning(`您只能上传一张图片`)
     },
     // 删除图片
-    handleRemove (file, appImgSrc) {
-      this.appImgSrc = ''
-      console.log(file, appImgSrc)
-      return this.$confirm(`确定移除该图片吗？`)
+    handleRemove () {
+            this.$message.warning(`上传图片无法删除`)
+
     },
     // 放大图片
     handlePictureCardPreview (file) {

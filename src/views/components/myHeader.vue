@@ -78,7 +78,6 @@
         <li class="second">
           <el-dropdown>
             <span class="el-dropdown-link">
-              <!-- 下拉菜单<i class="el-icon-arrow-down el-icon--right"></i> -->
               <img
                 src="../issue/touxiang.png"
                 style="border-radius: 50%;margin-top: 2px;"

@@ -152,6 +152,10 @@ export default {
             b.imgeeyes = 'closeEye'
           })
           this.tableData = res.data.data
+          this.editForm.currentPage = res.data.page  //当前页
+          this.editForm.pageSize = res.data.pageSize         //每页条数
+          this.total = res.data.count            //总条数
+
         })
         .catch(err => {
           this.$message.error('获取数据失败')
@@ -166,8 +170,8 @@ export default {
       }
     },
     // 以当前点击的页数作为参数去请求当前页的数据
-    pageChange (currentPage) {
-      this.currentPage = currentPage
+    pageChange (page) {
+      this.editForm.currentPage = page 
       this.getList()
     },
     //服务

@@ -13,13 +13,13 @@
           </div>
         </div>
         <div class="middle">
-          <h3>资源占用</h3>
+          <h3>{{ $t('occupancy') }}</h3>
           <div class="tiao">
             <h3 style="color: #00AAF0;">{{ spacePer }}</h3>
             <el-progress
               :text-inside="true"
               :stroke-width="15"
-              :percentage="0"
+              :percentage="spacePer"
               :show-text="false"
               :color="customColor"
             >
@@ -28,7 +28,7 @@
               <div class="icon">
                 <img src="./cunchu.png" alt="" />
               </div>
-              剩余存储&nbsp;&nbsp;{{ currentCountSpace }}/{{ countSpace }}
+              {{ $t('storage') }}&nbsp;&nbsp;{{ currentCountSpace }}/{{ countSpace }}
             </div>
           </div>
         </div>
@@ -37,7 +37,7 @@
           <el-progress
             :text-inside="true"
             :stroke-width="15"
-            :percentage="0"
+            :percentage="bfPer"
             :show-text="false"
             :color="customColor"
           >
@@ -46,36 +46,32 @@
             <div class="icon">
               <img src="./jiedian.png" alt="" />
             </div>
-            剩余节点&nbsp;{{ currentCountBF }}/{{ countBF }}
+            {{ $t('node') }}&nbsp;&nbsp;{{ currentCountBF }}/{{ countBF }}
           </div>
         </div>
         <div class="right">
           <div class="content">
-            <div>服务有效期</div>
-            <div>{{ countStartTime }}至{{ countendTime }}</div>
+            <div>{{ $t('service') }}</div>
+            <div>{{ countStartTime }}{{ $t('to') }}{{ countendTime }}</div>
             <el-button
               plain
               round
-              class="btn"
               size="mini"
               style="color: #00AAF0;border-color:#00aaf0;"
-              >延长有效期</el-button
+              >{{ $t('Extension') }}</el-button
             >
           </div>
         </div>
       </div>
       <!-- tab栏 -->
       <div class="tab">
-        <div>
+        <div class="one">
           <el-button type="text" @click="toUserCenter">我的应用 </el-button>
         </div>
-        <!-- <div>
-          <el-button @click="toIssue" type="text">我的发布</el-button>
-        </div> -->
-        <div>
+        <div class="two">
           <el-button type="text" @click="toManage">应用管理</el-button>
         </div>
-        <div>
+        <div class="three">
           <el-button type="text" @click="toFound">创建应用</el-button>
         </div>
         <div class="last">
@@ -99,8 +95,8 @@ export default {
       imgUrl: '', //用户头像
       countStartTime: '', //账户生效开始时间
       countendTime: '', //账户生效结束时间
-      spacePer: '', //空间使用率，第一个进度条
-      bfPer: '', //并发使用率，第二个进度条
+      spacePer: 0, //空间使用率，第一个进度条
+      bfPer: 0, //并发使用率，第二个进度条
       countSpace: '', //当前用户的存储量最大值
       currentCountSpace: '', //当前用户已使用的存储率
       countBF: '', //当前用户的并发总数最大值
@@ -209,8 +205,9 @@ export default {
         .tiao {
           width: 318px;
           float: left;
-          margin-top: -10px;
+          margin-top: 20px;
           margin-left: 100px;
+          // background-color: red;
           .tu {
             float: left;
             margin-right: 29px;
@@ -231,6 +228,8 @@ export default {
       .jindu {
         width: 318px;
         height: 152px;
+          margin-top: 28px;
+
         // background-color: pink;
         float: left;
         h3 {
@@ -265,15 +264,15 @@ export default {
           div {
             margin-bottom: 10px;
           }
-          .btn {
-            width: 132px;
-          }
         }
       }
     }
     .tab {
       height: 69px;
-      background-color: #f1f1f1;
+      
+      
+      // background-color: #f1f1f1;
+      background-color: red;
       line-height: 69px;
       padding-left: 228px;
       .el-button {
@@ -282,14 +281,37 @@ export default {
       .el-button:hover {
         color: #ff6600;
       }
-      div {
+      .one {
         float: left;
         margin-right: 228px;
+        
         width: 70px;
         height: 50px;
-        // background-color: pink;
+        background-color: pink;
         border-bottom: 5px solid #f1f1f1;
         border-radius: 3px;
+        // margin-top: -40px;
+      }
+      .two {
+        // float: left;
+        margin-right: 228px;
+        
+        width: 70px;
+        height: 50px;
+        background-color: pink;
+        border-bottom: 5px solid #f1f1f1;
+        border-radius: 3px;
+        // margin-top: -40px;
+      }.three {
+        float: left;
+        margin-right: 228px;
+        
+        width: 70px;
+        height: 50px;
+        background-color: pink;
+        border-bottom: 5px solid #f1f1f1;
+        border-radius: 3px;
+        // margin-top: -40px;
       }
       div:hover {
         border-bottom-color: #ff6600;
