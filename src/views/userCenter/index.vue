@@ -174,8 +174,8 @@ a:hover {
 }
 .detail {
   .container {
-    background-color: #fff;
-    // background-color: red;
+    // background-color: #fff;
+    background-color: green;
     height: 961px;
     margin-bottom: 100px;
     .content {
