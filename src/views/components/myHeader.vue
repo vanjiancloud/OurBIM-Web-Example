@@ -81,8 +81,8 @@
             <el-dropdown>
               <span class="el-dropdown-link">
                 <img
-                  src="../issue/touxiang.png"
-                  style="border-radius: 50%;margin-top: 2px;"
+                  src="../components/dalao.jpg"
+                  alt="未上传"
                 />
               </span>
               <el-dropdown-menu slot="dropdown">
@@ -110,7 +110,7 @@
         <div class="top">
           <div class="left">
             <div class="im">
-              <img src="imgUrl" alt="" />
+              <img :src="imgUrl" alt="未上传头像" />
             </div>
             <div class="Info">
               <h3>{{ name }}</h3>
@@ -124,7 +124,7 @@
               <el-progress
                 :text-inside="true"
                 :stroke-width="15"
-                :percentage="spacePer"
+                :percentage="Number(spacePer)"
                 :show-text="false"
                 :color="customColor"
               >
@@ -144,7 +144,7 @@
             <el-progress
               :text-inside="true"
               :stroke-width="15"
-              :percentage="bfPer"
+              :percentage="Number(bfPer)"
               :show-text="false"
               :color="customColor"
             >
@@ -164,7 +164,7 @@
                 plain
                 round
                 size="mini"
-                style="color: #00AAF0;border-color:#00aaf0;"
+                style="color: #00AAF0;border-color:#00aaf0;font-size: 16px;"
                 >{{ $t('Extension') }}</el-button
               >
             </div>
@@ -228,13 +228,13 @@ export default {
   data () {
     return {
       customColor: '#00AAF0',
-      note: '', //签名
-      name: '', //用户名
+      note: '未上传签名', //签名
+      name: '未上传用户名', //用户名
       imgUrl: '', //用户头像
       countStartTime: '', //账户生效开始时间
       countendTime: '', //账户生效结束时间
-      spacePer: '', //空间使用率，第一个进度条
-      bfPer: '', //并发使用率，第二个进度条
+      spacePer: 0, //空间使用率，第一个进度条
+      bfPer: 0, //并发使用率，第二个进度条
       countSpace: '', //当前用户的存储量最大值
       currentCountSpace: '', //当前用户已使用的存储率
       countBF: '', //当前用户的并发总数最大值
@@ -310,7 +310,7 @@ export default {
     }
   },
   mounted () {
-    this.timer = setInterval(this.get, 10000)
+    this.timer = setInterval(this.get, 30000)
   },
   beforeDestroy () {
     clearInterval(this.timer)
@@ -323,14 +323,14 @@ export default {
   .header {
     a {
       text-decoration: none;
-      font-size: 16px;
+      font-size: 17px;
       color: #000;
       font-family: PingFang SC;
     }
     a:hover {
       color: #ff6600;
     }
-    height: 64px;
+    height: 64px; 
     background-color: #fff;
     line-height: 64px;
     .logo {
@@ -370,6 +370,12 @@ export default {
     .second {
       margin-left: -20px;
       margin-right: 20px;
+        img {
+          width: 64px;
+          height: 64px;
+          border-radius: 50%;
+        }
+      
     }
     .third {
       margin-right: 40px;
@@ -501,6 +507,7 @@ export default {
         padding-left: 228px;
         .el-button {
           color: #000;
+          font-size: 19px;
         }
         .el-button:hover {
           color: #ff6600;
@@ -522,6 +529,7 @@ export default {
       // 英文tab栏
       .tabTwo {
         height: 69px;
+        font-size: 16px;
         background-color: #f1f1f1;
         // background-color: red;
         line-height: 69px;
@@ -538,6 +546,7 @@ export default {
           // background-color: pink;
           border-bottom: 6px solid #f1f1f1;
           border-radius: 3px;
+          
         }
         .last {
           margin: 0;

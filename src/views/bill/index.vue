@@ -3,9 +3,7 @@
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
-    <!-- 中间 -->
-    <!-- <my-main></my-main> -->
-    <!-- 主体内容 -->
+    <!-- 中间主体内容-->
     <div class="container">
       <div class="content">
         <!-- 导航菜单 -->
@@ -22,12 +20,13 @@
                 <i class="el-icon-menu"></i>
                 <span>{{ $t('accountManage') }}</span>
               </template>
-              <el-menu-item
-                v-for="(item, i) in navList"
-                :key="i"
-                :index="item.name"
-              >
-                {{ item.navItem }}
+                <el-menu-item index="/bill">
+                <span slot="title">{{ $t('information') }}</span>
+              </el-menu-item>
+              <el-menu-item index="/code">
+                <span slot="title">{{ $t('Authorization') }}</span>
+              </el-menu-item><el-menu-item index="/order">
+                <span slot="title">{{ $t('Serviceorder') }}</span>
               </el-menu-item>
             </el-submenu>
           </el-menu>
@@ -91,7 +90,7 @@
           <!-- 上传头像 -->
           <div class="photo">
             <el-upload
-              action="http://192.168.3.235:11011/vjapi/CountManager/postUserImg"
+              :action="baseURL + '/CountManager/postUserImg'"
               multiple
               :limit="1"
             >
@@ -119,7 +118,6 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-// import MyMain from '../components/myMain.vue'
 import { getUserInfo } from '@/api/my.js'
 import { modifyUserInfo } from '@/api/my.js'
 import { uploadImg } from '@/api/my.js'
@@ -130,6 +128,7 @@ export default {
   name: 'bill',
   data () {
     return {
+      // 导航菜单跳转
       navList: [
         { name: '/bill', navItem: '个人信息' },
         { name: '/code', navItem: '授权码' },
@@ -141,7 +140,8 @@ export default {
       mobile: '',
       company: '',
       position: '', //职位
-      imgUrl: ''
+      imgUrl: '',
+      baseURL: axios.defaults.baseURL
     }
   },
   created () {
@@ -169,7 +169,7 @@ export default {
     },
     //修改用户信息
     changeUserInfo () {
-      upImg()
+      
       modifyUserInfo({
         userid: getuserid(),
         note: this.note,
@@ -192,20 +192,26 @@ export default {
           this.$message.error('修改信息失败,请重新修改')
         })
     },
-    //上传头像
+    // 上传头像
+    uploadImg(response){
+      this.imgUrl = response.data
+    },
     upImg () {
       uploadImg({
         imgUrl: this.imgUrl
       })
         .then(res => {
+          console.log(res)
           if (res.data.code === 0) {
             console.log(res)
-            this.$message.success('上传成功')
+            this.$message.success('上传头像成功')
+          } else if (res.data.code === 1) {
+            this.$message.error('上传头像失败')
           }
         })
         .catch(err => {
           console.log(err)
-          this.$message.error('上传失败')
+          this.$message.error('上传失败，请重新上传头像')
         })
     }
   }
@@ -357,6 +363,12 @@ export default {
       ul.el-menu {
         height: 1037px;
       }
+      /deep/ .el-submenu__title {
+        font-size: 17px; 
+      }
+      /deep/ .el-menu-item   {
+        font-size: 17px;
+      }
       .color {
         width: 25px;
         height: 1037px;
@@ -402,6 +414,10 @@ export default {
             // width: 130px;
             height: 45px;
             background-color: #00aaf0;
+          font-size: 16px;
+          }
+          .el-upload__tip {
+            font-size: 16px;
           }
         }
         .btn {
@@ -411,6 +427,7 @@ export default {
             width: 140px;
             height: 45px;
             background-color: #00aaf0;
+          font-size: 16px;
           }
         }
       }
