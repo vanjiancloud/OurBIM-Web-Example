@@ -252,6 +252,7 @@ export default {
             this.$message.success('恭喜登陆成功')
             this.setCookie('email', this.form.email)
             this.setCookie('password', this.form.password)
+            this.setCookie('userInfo', JSON.stringify(res.data.data))
             // 存储用户信息userid
             setuserid(res.data.data.userid)
             this.setCookie('userid', res.data.data.userid)
