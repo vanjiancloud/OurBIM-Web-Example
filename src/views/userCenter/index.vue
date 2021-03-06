@@ -135,26 +135,13 @@ export default {
        * @Date: 2021-02-22 17:52:23
        * @description: 获取应用信息
        */
-      getModelInfo({
-        appliId: e.appid,
-      })
-        .then((res) => {
-          if (res.data.code === 0) {
-            console.log(11);
-            const { href } = this.$router.resolve({
+      const { href } = this.$router.resolve({
               name: "web_client",
               query: {
                 appid: e.appid,
               },
             });
             window.open(href, "_blank");
-          } else {
-            this.$message.warning(res.data.message)
-          }
-        })
-        .catch((err) => {
-          this.$message.error("请求失败");
-        });
     },
   },
 };

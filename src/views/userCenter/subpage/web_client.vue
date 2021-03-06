@@ -50,11 +50,13 @@
             </div>
           </div>
           <div class="tree-content">
-            <!-- <ly-tree class="bim-tree" lazy :defaultExpandedKeys="treeOpen" highlightCurrent :load="getLoadNode" :showNodeIcon="true"
-						 :tree-data="treeData" :ready="readyTree" :showCheckbox="true" node-key="mn" :props="memberProps" @node-click="handleNodeClick"
-						 @node-collapse="closeNode">
-						</ly-tree> -->
-            <el-tree :props="propsMember" :load="loadNode" node-key="uuid" lazy show-checkbox>
+            <el-tree :props="propsMember" :load="loadNode" node-key="uuid" lazy>
+              <span class="custom-tree-node" slot-scope="{ node }">
+                <span>{{ node.label }}</span>
+                <span>
+                  sdf
+                </span>
+              </span>
             </el-tree>
           </div>
         </div>
@@ -112,7 +114,14 @@ export default {
     return {
       propsMember: {
         label: "name",
-        isLeaf: "haveChild",
+        isLeaf: (e) => {
+          if (e.haveChild === "1") {
+            return false
+          }          
+          if (e.haveChild === "0") {
+            return true
+          }
+        }
       },
       webUrl: null,
       appId: null,
@@ -178,16 +187,15 @@ export default {
       let params = {
         appliId: this.appId,
       };
-      e ? params.uuid = e : ''
+      e ? (params.uuid = e) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params)
         .then((res) => {
           if (res.data.code === 0) {
             return res.data.data;
+          }else{
+            return []
           }
         })
-        .catch((err) => {
-          console.error(err);
-        });
       return realMember;
     },
     loadNode(node, resolve) {
@@ -195,11 +203,12 @@ export default {
         this.getMemberList(node.key).then((res) => {
           return resolve(res);
         });
+      }      
+      if (node.level >= 1) {        
+        this.getMemberList(node.key).then((res) => {
+          return resolve(res);
+        });
       }
-      console.log(node);
-      if (node.level > 1) {
-        console.log(1);
-      };
     },
     // 关闭模块
     closePart(e) {
@@ -260,6 +269,8 @@ export default {
             let timer = setTimeout(() => {
               window.clearTimeout(timer);
             }, 1000 * 10);
+          }else{
+            this.$message.warning(res.data.message)
           }
         })
         .catch((err) => {
@@ -655,13 +666,20 @@ export default {
         &::-webkit-scrollbar-thumb {
           /*滚动条里面小方块*/
           border-radius: 10px;
-          background: #09abf7;
+          background: rgba(0, 0, 0, 0.3);
         }
 
         &::-webkit-scrollbar-track {
           /*滚动条里面轨道*/
           border-radius: 10px;
           background: rgba(255, 255, 255, 0.295);
+        }
+        .custom-tree-node{
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-right: 8px;
         }
       }
     }
@@ -758,6 +776,28 @@ export default {
   .phone-bim {
     height: 120vh !important;
     width: 900px !important;
+  }
+}
+</style>
+<style lang="less" >
+.tree-content {
+  .el-tree {
+    background: none;
+    color: #fff;
+    .el-tree-node {
+      .el-tree-node__content {
+        background: none;
+        &:hover {
+          background: none;
+        }
+      }
+      .el-tree-node__expand-icon {
+        color: #fff;
+      }
+      .is-leaf{
+        color: transparent;
+      }
+    }
   }
 }
 </style>
