@@ -13,6 +13,9 @@ import axios from '@/utils/request.js'
 // import store from './store'
 // 自动计算rem大小
 import 'lib-flexible'
+// import 'lib-flexible/flexible'
+
+
 import VueI18n from 'vue-i18n'
 Vue.use(VueI18n)
 Vue.use(less)
@@ -121,6 +124,8 @@ const i18n = new VueI18n({
       number: '编号',
       time: '时间',
       services: '服务',
+      state: '状态',
+      authorizationcode: '授权码',
       amountofmoney: '金额',
       // 团队
       organized: '我组织的',
@@ -234,6 +239,8 @@ const i18n = new VueI18n({
       number: 'number',
       time: 'time',
       services: 'service',
+      authorizationcode: 'authorization code',
+
       amountofmoney: 'amount of money',
       // 团队
       organized: 'I organized it',

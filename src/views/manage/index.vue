@@ -13,32 +13,33 @@
           <!-- 消息提示 -->
           <div class="left">{{ $t('Youhave') }}{{ itemList.length }}{{ $t('project') }}</div>
           <!-- 按钮 -->
-          <div class="right">
+          <!-- <div class="right">
             <el-button type="primary">{{ $t('link') }}</el-button>
-          </div>
+          </div> -->
         </div>
         <!-- 表格 -->
         <div class="table">
-          <el-table :data="itemList" style="width: 100%;">
-            <el-table-column prop="appid" label="应用ID"> </el-table-column>
-            <el-table-column prop="appName" label="应用名称"> </el-table-column>
-            <el-table-column prop="maxInstance" label="最大并发数量">
+          <el-table :data="itemList" style="width: 100%;font-size: 17px;">
+            <el-table-column prop="appid" :label="$t('applicationid')"
+            ></el-table-column>
+            <el-table-column prop="appName" :label="$t('applyname')"> </el-table-column>
+            <el-table-column prop="maxInstance" :label="$t('maximum')">
             </el-table-column>
-            <el-table-column label="状态">
+            <el-table-column :label="$t('state')">
               <template slot-scope="scope">
                 <!-- 做自定义操作 需要改成template的形式,scope.row代表的是表格数据itemList中的每一项 -->
                 {{ formatStatus(scope.row.applidStatus) }}
               </template>
             </el-table-column>
-            <el-table-column prop="createTime" label="上传日期">
+            <el-table-column prop="createTime" :label="$t('uploaddate')">
             </el-table-column>
-            <el-table-column prop="" label="操作">
+            <el-table-column prop="" :label="$t('operation')">
               <!-- 分享 -->
-              <button @click="share">
+              <!-- <button @click="share">
                 <span>
                   <img src="../components/share.png" />
                 </span>
-              </button>
+              </button> -->
               <!-- 编辑 -->
               <button @click="edit">
                 <span>
@@ -122,7 +123,7 @@ export default {
        * @description: 获取应用列表
        */
       getProjectList({
-        userId: this.getCookie('userid')
+        userid: this.getCookie('userid')
       })
         .then(res => {
           console.log(res)
@@ -167,7 +168,7 @@ export default {
   .container {
     background-color: #fff;
     /deep/ .el-button--primary {
-      background-color: #00aaf0;
+      background-color: #00aaf0; 
     }
     .content {
       margin-left: 41px;
@@ -195,7 +196,7 @@ export default {
         /deep/ .el-table th {
           background-color: #00aaf0;
           text-align: center;
-          font-size: 15px;
+          font-size: 17px;
           font-weight: normal;
         }
         /deep/ .el-table td {

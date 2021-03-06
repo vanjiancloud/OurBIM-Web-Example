@@ -4,7 +4,6 @@
     <!-- 头部 -->
     <my-header></my-header>
     <!-- 中间 -->
-    <!-- <my-main></my-main> -->
     <!-- 主体内容 -->
     <div class="container">
       <div class="content">
@@ -20,14 +19,15 @@
             <el-submenu index="1">
               <template slot="title">
                 <i class="el-icon-menu"></i>
-                <span>账户管理</span>
+                <span>{{ $t('accountManage') }}</span>
               </template>
-              <el-menu-item
-                v-for="(item, i) in navList"
-                :key="i"
-                :index="item.name"
-              >
-                {{ item.navItem }}
+                <el-menu-item index="/bill">
+                <span slot="title">{{ $t('information') }}</span>
+              </el-menu-item>
+              <el-menu-item index="/code">
+                <span slot="title">{{ $t('Authorization') }}</span>
+              </el-menu-item><el-menu-item index="/order">
+                <span slot="title">{{ $t('Serviceorder') }}</span>
               </el-menu-item>
             </el-submenu>
           </el-menu>
@@ -37,30 +37,34 @@
         <div class="neirong">
           <div class="title">
             <!-- 服务订单 -->
-              {{ $t('servicesorder') }}
+            {{ $t('servicesorder') }}
           </div>
           <template>
             <div class="table">
-              <el-table :data="tableData" style="width: 100%">
+              <el-table :data="tableData" style="width: 100% font-size: 17px;">
                 <el-table-column
                   prop="dingdancode"
-                  label="编号"
+                  :label="$t('number')"
                   width="115"
                 ></el-table-column>
                 <el-table-column
                   prop="createTime"
-                  label="时间"
+                  :label="$t('time')"
                   width="135"
                 ></el-table-column>
-                <el-table-column label="服务">
+                <el-table-column :label="$t('services')">
                   <template slot-scope="scope">
                     {{ formatDingdanStatus(scope.row.dingdanStatus) }}
                   </template>
                 </el-table-column>
-                <el-table-column prop="sqm" label="授权码" width="260">
+                <el-table-column
+                  prop="sqm"
+                  :label="$t('authorizationcode')"
+                  width="260"
+                >
                   <template slot-scope="scope">
                     <template v-if="scope.row.eyseShow">
-                    ****************************************
+                      ****************************************
                     </template>
                     <template v-if="!scope.row.eyseShow">
                       {{ scope.row.sqm }}
@@ -70,12 +74,13 @@
                     </div>
                   </template>
                 </el-table-column>
-                <el-table-column prop="sqMISUsed" label="状态">
+                <el-table-column prop="sqMISUsed" :label="$t('state')">
                   <template slot-scope="scope">
                     {{ formatSqMISUsed(scope.row.sqMISUsed) }}
                   </template>
                 </el-table-column>
-                <el-table-column prop="dcount" label="金额"> </el-table-column>
+                <el-table-column prop="dcount" :label="$t('amountofmoney')">
+                </el-table-column>
               </el-table>
             </div>
           </template>
@@ -101,22 +106,15 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-// import MyMain from '../components/myMain.vue'
 import { getOrder } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 
 export default {
-  components: { myHeader,  MyFooter },
+  components: { myHeader, MyFooter },
   name: 'order',
   data () {
     return {
       show: true,
-      // 导航菜单跳转
-      navList: [
-        { name: '/bill', navItem: '个人信息' },
-        { name: '/code', navItem: '授权码' },
-        { name: '/order', navItem: '服务订单' }
-      ],
       tableData: [],
       editForm: {
         dingdancode: '', //编号
@@ -153,10 +151,9 @@ export default {
             b.imgeeyes = 'closeEye'
           })
           this.tableData = res.data.data
-          this.editForm.currentPage = res.data.page  //当前页
-          this.editForm.pageSize = res.data.pageSize         //每页条数
-          this.total = res.data.count            //总条数
-
+          this.editForm.currentPage = res.data.page //当前页
+          this.editForm.pageSize = res.data.pageSize //每页条数
+          this.total = res.data.count //总条数
         })
         .catch(err => {
           this.$message.error('获取数据失败')
@@ -172,7 +169,7 @@ export default {
     },
     // 以当前点击的页数作为参数去请求当前页的数据
     pageChange (page) {
-      this.editForm.currentPage = page 
+      this.editForm.currentPage = page
       this.getList()
     },
     //服务
@@ -227,6 +224,12 @@ export default {
       ul.el-menu {
         height: 1037px;
       }
+      /deep/ .el-submenu__title * {
+        font-size: 17px; 
+      }
+      /deep/ .el-menu-item   {
+        font-size: 17px;
+      }
       .color {
         width: 25px;
         height: 1037px;
@@ -248,13 +251,14 @@ export default {
         .table {
           margin-right: 40px;
           margin-top: 20px;
+          font-size: 17px;
           /deep/ .el-table thead {
             color: #fff;
           }
           /deep/ .el-table th {
             background-color: #00aaf0;
             text-align: center;
-            font-size: 15px;
+            font-size: 17px;
             font-weight: normal;
           }
           /deep/ .el-table td {

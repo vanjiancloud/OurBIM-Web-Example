@@ -3,8 +3,6 @@
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
-    <!-- 中间 -->
-    <!-- <my-main></my-main> -->
     <!-- 主体内容 -->
     <div class="detail">
       <div class="container">
@@ -38,7 +36,7 @@
               </ul>
             </div>
             <!-- 分页 -->
-            <div class="page">
+            <!-- <div class="page">
               <el-pagination
                 @current-change="handleCurrentChange"
                 layout="prev, pager, next"
@@ -46,13 +44,9 @@
                 :total="400"
               >
               </el-pagination>
-            </div>
+            </div> -->
           </div>
         </div>
-
-        <!-- 创建应用 -->
-
-        <!-- 账单管理 -->
       </div>
     </div>
     <!-- 尾部 -->
@@ -63,7 +57,6 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-// import MyMain from '../components/myMain.vue'
 import { getProjectList, getModelInfo } from '@/api/my.js'
 
 export default {
@@ -179,7 +172,7 @@ export default {
 }
 a {
   text-decoration: none;
-  font-size: 16px;
+  font-size: 17px;
   color: #000;
   font-family: PingFang SC;
 }
@@ -254,7 +247,7 @@ a:hover {
         margin-top: 5px;
         margin-bottom: 50px;
         border-collapse: collapse;
-        font-size: 16px;
+        font-size: 17px;
         tr {
           height: 50px;
         }
@@ -292,7 +285,7 @@ a:hover {
             width: 100%;
             border: none;
             outline: none;
-            font-size: 16px;
+            font-size: 17px;
             text-align: left;
             background-color: #f9f9f9;
           }

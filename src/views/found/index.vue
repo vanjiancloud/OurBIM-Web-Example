@@ -3,9 +3,7 @@
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
-    <!-- 中间 -->
-    <!-- <my-main></my-main> -->
-    <!-- 主体内容 -->
+    <!-- 中间主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 提示 -->
@@ -38,12 +36,14 @@
           </div>
           <!-- input框 -->
           <div class="input">
+            <span style="color:red">*</span>
             {{ $t('application') }}
-            <el-input v-model="appName" placeholder="请输入应用名称"></el-input>
+            <el-input v-model="appName"></el-input>
           </div>
           <!-- 上传图片 -->
           <div class="picture">
             <div class="news">
+              <span style="color:red">*</span>
               {{ $t('Uploadc') }}
             </div>
             <!-- 上传封面 -->
@@ -57,6 +57,7 @@
                 list-type="picture-card"
                 :limit="1"
                 :on-exceed="handleExceed"
+                :before-upload="beforeUpload"
               >
                 <i slot="default" class="el-icon-plus"></i>
                 <div slot="file" slot-scope="{ file }">
@@ -89,7 +90,7 @@
           </div>
           <!-- 按钮 -->
           <div class="anNiu">
-            <el-button @click="next('ruleForm')" type="primary">
+            <el-button @click="next" type="primary">
               {{ $t('nextstep') }}
             </el-button>
           </div>
@@ -105,22 +106,18 @@
           </div>
           <!-- 单选框 -->
           <el-radio v-model="radio" label="1">{{ $t('UploadBIM') }}</el-radio>
-          <el-radio disabled v-model="radio" label="2"
-            >{{ $t('Uploadto') }}</el-radio
-          >
+          <el-radio disabled v-model="radio" label="2">{{
+            $t('Uploadto')
+          }}</el-radio>
           <!-- 上传BIM模型 -->
           <div class="cover">
             <el-upload
-              v-if="appInfo"
-              class="upload-demo"
               :on-success="upLoadModel"
               drag
               :action="baseURL + '/appli/postProjectModel'"
               name="fileUpload"
-              :data="{
-                appliId: appInfo.appid
-              }"
               multiple
+              :before-upload="beforeAvatarUpload"
             >
               <img src="./file.png" alt="" />
               <div class="el-upload__text">
@@ -131,46 +128,7 @@
           </div>
           <div class="btn">
             <el-button @click="update" type="primary">
-                              {{ $t('Totransform') }}
-            </el-button>
-          </div>
-        </div>
-        <!-- 第三步 同时上传倾斜摄影-->
-        <div class="second" v-show="isShow == 3">
-          <!-- 图标 -->
-          <div class="img">
-            <img src="./book.png" alt="" />
-          </div>
-          <div class="text"><h3>上传模型</h3></div>
-          <!-- 单选框 -->
-          <el-radio v-model="radio" label="1">仅上传BIM模型</el-radio>
-          <el-radio disabled v-model="radio" label="2"
-            >同时上传倾斜摄影模型</el-radio
-          >
-          <!-- 上传BIM模型 -->
-          <div class="cover">
-            <el-upload
-              v-if="appInfo"
-              class="upload-demo"
-              :on-success="upLoadModel"
-              drag
-              :action="baseURL + '/appli/postProjectModel'"
-              name="fileUpload"
-              :data="{
-                appliId: appInfo.appid
-              }"
-              multiple
-            >
-              <img src="./file.png" alt="" />
-              <div class="el-upload__text">
-                点击或将文件拖拽到这里上传 <br />
-                支持扩展名：.rar .3dm .rvt .stl .fbx .skp...
-              </div>
-            </el-upload>
-          </div>
-          <div class="btn">
-            <el-button @click="update" type="primary">
-              开始转换
+              {{ $t('Totransform') }}
             </el-button>
           </div>
         </div>
@@ -184,7 +142,6 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-// import MyMain from '../components/myMain.vue'
 import { addProject } from '@/api/my.js'
 import axios from '@/utils/request'
 
@@ -204,7 +161,8 @@ export default {
       appName: '',
       baseURL: axios.defaults.baseURL,
       appImgSrc: '',
-      appInfo: null,
+      appInfo: '',
+      appModel : '',
       userId: ''
     }
   },
@@ -238,30 +196,17 @@ export default {
     },
     // 下一步
     next () {
-      if (this.active++ > 2) this.active = 0
-      this.isShow = 2
-      addProject({
-        userId: this.getCookie('userid'),
-        appName: this.appName,
-        screenImg: this.appImgSrc
-      })
-        .then(res => {
-          if (res.data.code === 0) {
-            this.appInfo = res.data.data
-            console.log(this.appInfo)
-            this.$message.success('新建成功')
-          } else if (res.data.code === 1) {
-            this.$message.error('新建失败')
-          }
-        })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('上传失败，请上传模型')
-        })
+      if (!this.appName == '' && !this.appImgSrc == '') {
+        if (this.active++ > 2) this.active = 0
+        this.isShow = 2
+      } else {
+        this.$message.warning('请先输入名称并上传封面')
+      }
     },
     // 开始转换
     update () {
-      if (this.active++ > 2) this.active = 0
+      // if (!this.appModel == '' ) {
+          if (this.active++ > 2) this.active = 0
       addProject({
         userId: this.getCookie('userid'),
         appName: this.appName,
@@ -281,6 +226,11 @@ export default {
           this.$message.error('上传失败，请上传模型')
         })
       this.$router.go(0)
+      // } 
+      // else {
+      //   this.$message.warning('请先上传模型')
+      // }
+    
     },
     // 读取cookie中数据
     getCookie: function (userid) {
@@ -301,13 +251,36 @@ export default {
       this.$message.warning(`您只能上传一张图片`)
     },
     // 删除图片
-    handleRemove () {
-      this.$message.warning(`上传图片无法删除`)
+    handleRemove (file) {
+      this.$confirm('此操作将删除当前图片, 是否继续?', '提示')
+      if (this.$confirm == '确定') {
+        file.url == ''
+      }
     },
     // 放大图片
     handlePictureCardPreview (file) {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
+    },
+    // 限制上传封面格式
+    beforeUpload (file) {
+      var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+      const one = testmsg === 'jpg'
+      const two = testmsg === 'jpeg'
+      const three = testmsg === 'png'
+      if (!one && !two && !three) {
+        this.$message.error('上传封面只能是 jpg,jpeg,png 格式!')
+      }
+      return one || two || three
+    },
+    // 限制上传模型格式
+    beforeAvatarUpload (file) {
+      var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+      const extension = testmsg === 'rvt'
+      if (!extension) {
+        this.$message.error('上传模型只能是 .rvt 格式!')
+      }
+      return extension
     }
   }
 }
@@ -329,6 +302,9 @@ export default {
         width: 800px;
         margin: 0 auto;
         margin-top: 50px;
+        /deep/ .el-step__description {
+          font-size: 17px;
+        }
       }
       .first {
         width: 561px;
@@ -344,6 +320,8 @@ export default {
           height: 40px;
           vertical-align: middle;
           background-color: #00aaf0;
+          font-size: 17px;
+
         }
         .img {
           width: 50px;
@@ -397,10 +375,18 @@ export default {
           width: 140px;
           height: 40px;
           vertical-align: middle;
+          font-size: 16px;
           background-color: #00aaf0;
         }
         .radio {
           margin-right: 10px;
+          
+        }
+        /deep/ .el-radio__label {
+          font-size: 16px;
+        }
+        .el-upload__text {
+          font-size: 16px;
         }
         .cover {
           margin-top: 30px;

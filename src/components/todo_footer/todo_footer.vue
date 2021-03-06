@@ -12,7 +12,7 @@
 				<img @click="handleOrder(0)" class="footer-image" :src="imgList[0].url" mode="" />
 			</div>
 			<div class="image-main">
-				<img @click="handleOrder(1)" class="footer-image" :src="imgList[1].url" mode=""></img>
+				<img @click="handleOrder(1)" class="footer-image" :src="imgList[1].url" mode=""/>
 				<el-collapse-transition>
 					<div class="show-speed" v-if="imgList[1].state === 1">
 						<el-slider v-model="imgList[1].data.speed"></el-slider>
