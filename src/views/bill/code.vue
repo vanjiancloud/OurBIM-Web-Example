@@ -21,12 +21,14 @@
                 <i class="el-icon-menu"></i>
                 <span>{{ $t('accountManage') }}</span>
               </template>
-                <el-menu-item index="/bill">
+              <el-menu-item index="/bill">
                 <span slot="title">{{ $t('information') }}</span>
               </el-menu-item>
               <el-menu-item index="/code">
-                <span slot="title">{{ $t('Authorization') }}</span>
-              </el-menu-item><el-menu-item index="/order">
+                <span slot="title">{{
+                  $t('Authorization')
+                }}</span> </el-menu-item
+              ><el-menu-item index="/order">
                 <span slot="title">{{ $t('Serviceorder') }}</span>
               </el-menu-item>
             </el-submenu>
@@ -42,13 +44,13 @@
           <div class="input">
             {{ $t('Authorization') }}
             <!-- 授权码 -->
-            <el-input v-model="SQM" placeholder="请输入授权码"></el-input>
+            <el-input v-model="SQM"></el-input>
             <el-button type="primary" class="btn" @click="verification">
               <!-- 验证 -->
               {{ $t('verification') }}
             </el-button>
             <div class="news">
-              <div>*</div>
+              <span>*</span>
               <!-- 联系售后 -->
               {{ $t('nouse') }}
             </div>
@@ -70,8 +72,8 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import { updateSQM } from '@/api/my.js'
-import { verification } from '@/api/my.js'
+import { updateSQM, verification } from '@/api/my.js'
+// import { verification } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 
 export default {
@@ -79,12 +81,6 @@ export default {
   name: 'authorizationCode',
   data () {
     return {
-      // 导航菜单跳转
-      navList: [
-        { name: '/bill', navItem: '个人信息' },
-        { name: '/code', navItem: '授权码' },
-        { name: '/order', navItem: '服务订单' }
-      ],
       SQM: '',
       dis: true
     }
@@ -147,9 +143,9 @@ export default {
         height: 1037px;
       }
       /deep/ .el-submenu__title * {
-        font-size: 17px; 
+        font-size: 17px;
       }
-      /deep/ .el-menu-item   {
+      /deep/ .el-menu-item {
         font-size: 17px;
       }
       .color {
@@ -181,21 +177,18 @@ export default {
           /deep/ .el-input__inner {
             width: 462px;
             height: 46px;
+            font-size: 16px;
           }
           .news {
-            width: 224px;
             margin-top: 10px;
-            // margin-left: 300px;
-            background-color: #eeeeee;
-            // background-color: red;
+            // background-color: #eeeeee;
             color: #ccc;
-            text-align: center;
             line-height: 36px;
-            div {
+            span {
               color: red;
               float: left;
               font-size: 20px;
-              margin-left: 5px;
+              margin-right: 5px;
               margin-top: 3px;
             }
           }
@@ -203,7 +196,6 @@ export default {
             height: 46px;
             background-color: #00aaf0;
             font-size: 16px;
-
           }
         }
         .submit {

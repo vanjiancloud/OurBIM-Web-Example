@@ -1,7 +1,7 @@
 // 导入抽取的axios对象
 import request from '../utils/request'
+// 导入字符串转换工具
 import qsStringify from "qs-stringify"
-
 
 // 激活账号
 export function activation (data) {
@@ -14,6 +14,7 @@ export function activation (data) {
     }
   })
 }
+
 // 获取邮箱密码登录
 export function login (data) {
   const { email, password } = data
@@ -128,6 +129,7 @@ export function updatePhone (data) {
     data
   })
 }
+
 // 新建项目
 export function addProject (data) {
   return request({
@@ -136,6 +138,7 @@ export function addProject (data) {
     data: qsStringify(data)
   })
 }
+
 // 获取项目
 export function getProjectList (data) {
   return request({

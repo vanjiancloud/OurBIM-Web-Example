@@ -20,12 +20,14 @@
                 <i class="el-icon-menu"></i>
                 <span>{{ $t('accountManage') }}</span>
               </template>
-                <el-menu-item index="/bill">
+              <el-menu-item index="/bill">
                 <span slot="title">{{ $t('information') }}</span>
               </el-menu-item>
               <el-menu-item index="/code">
-                <span slot="title">{{ $t('Authorization') }}</span>
-              </el-menu-item><el-menu-item index="/order">
+                <span slot="title">{{
+                  $t('Authorization')
+                }}</span> </el-menu-item
+              ><el-menu-item index="/order">
                 <span slot="title">{{ $t('Serviceorder') }}</span>
               </el-menu-item>
             </el-submenu>
@@ -91,8 +93,12 @@
           <div class="photo">
             <el-upload
               :action="baseURL + '/CountManager/postUserImg'"
-              multiple
               :limit="1"
+              name="fileUpload"
+              :on-success="upLoadImg"
+              :on-error="errorImg"
+              :on-exceed="handleExceed"
+              :before-upload="beforeUpload"
             >
               <el-button type="primary" icon="el-icon-upload2">
                 {{ $t('UploadAvatar') }}
@@ -118,29 +124,22 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import { getUserInfo } from '@/api/my.js'
-import { modifyUserInfo } from '@/api/my.js'
-import { uploadImg } from '@/api/my.js'
+import { getUserInfo, modifyUserInfo, uploadImg } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
+import axios from '@/utils/request'
 
 export default {
   components: { myHeader, MyFooter },
   name: 'bill',
   data () {
     return {
-      // 导航菜单跳转
-      navList: [
-        { name: '/bill', navItem: '个人信息' },
-        { name: '/code', navItem: '授权码' },
-        { name: '/order', navItem: '服务订单' }
-      ],
-      name: '',
+      name: '', //用户名
       note: '', //签名
-      email: '',
-      mobile: '',
-      company: '',
+      email: '', //邮箱
+      mobile: '', //手机号
+      company: '', //公司
       position: '', //职位
-      imgUrl: '',
+      imgUrl: '',//用户头像
       baseURL: axios.defaults.baseURL
     }
   },
@@ -169,7 +168,6 @@ export default {
     },
     //修改用户信息
     changeUserInfo () {
-      
       modifyUserInfo({
         userid: getuserid(),
         note: this.note,
@@ -192,27 +190,32 @@ export default {
           this.$message.error('修改信息失败,请重新修改')
         })
     },
-    // 上传头像
-    uploadImg(response){
+
+    // 上传头像成功
+    upLoadImg (response, file, fileList) {
+      console.log(response)
+      console.log(response.data);
       this.imgUrl = response.data
     },
-    upImg () {
-      uploadImg({
-        imgUrl: this.imgUrl
-      })
-        .then(res => {
-          console.log(res)
-          if (res.data.code === 0) {
-            console.log(res)
-            this.$message.success('上传头像成功')
-          } else if (res.data.code === 1) {
-            this.$message.error('上传头像失败')
-          }
-        })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('上传失败，请重新上传头像')
-        })
+
+    // 上传头像失败
+    errorImg (err, file, fileList) {
+      console.log(err)
+    },
+    // 限制上传头像格式
+    beforeUpload (file) {
+      var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+      const one = testmsg === 'jpg'
+      const two = testmsg === 'jpeg'
+      const three = testmsg === 'png'
+      if (!one && !two && !three) {
+        this.$message.error('头像格式只能是.jpg .jpeg .png格式!')
+      }
+      return one || two || three
+    },
+    // 限制上传图片张数
+    handleExceed () {
+      this.$message.error(`您只能上传一张图片`)
     }
   }
 }
@@ -364,9 +367,9 @@ export default {
         height: 1037px;
       }
       /deep/ .el-submenu__title {
-        font-size: 17px; 
+        font-size: 17px;
       }
-      /deep/ .el-menu-item   {
+      /deep/ .el-menu-item {
         font-size: 17px;
       }
       .color {
@@ -414,10 +417,10 @@ export default {
             // width: 130px;
             height: 45px;
             background-color: #00aaf0;
-          font-size: 16px;
+            font-size: 16px;
           }
           .el-upload__tip {
-            font-size: 16px;
+            font-size: 14px;
           }
         }
         .btn {
@@ -427,7 +430,7 @@ export default {
             width: 140px;
             height: 45px;
             background-color: #00aaf0;
-          font-size: 16px;
+            font-size: 16px;
           }
         }
       }
