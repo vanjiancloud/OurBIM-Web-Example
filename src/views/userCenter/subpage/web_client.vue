@@ -1,8 +1,14 @@
 <template>
   <div class="bim-main">
-    <!-- <iframe class="bim-web" :class="runTimeCode === 0 ? '' : 'phone-bim'" v-if="webUrl && hiddenState === 0"
-           :src="webUrl" frameborder="0" id="show-bim"></iframe>
-    <div class="time-log" v-if="moreCount < 10">
+    <iframe
+      class="bim-web"
+      :class="runTimeCode === 0 ? '' : 'phone-bim'"
+      v-if="webUrl && hiddenState === 0"
+      :src="webUrl"
+      frameborder="0"
+      id="show-bim"
+    ></iframe>
+    <!-- <div class="time-log" v-if="moreCount < 10">
       <div class="log-main" :class="runTimeCode === 0 ? '' : 'phone-log-main'">
         <div>
           <img class="show-logo" src="@/assets/img/ourbim-logo.png" alt="" />
@@ -31,69 +37,61 @@
     </div> -->
     <div v-if="runTimeCode === 0">
       <div class="mutual-bim">
-				<div class="tree-main" v-if="browserInfo && browserInfo.type === 10 && browserInfo.state === 1">
-					<div class="tree-title">
-						<div class="">
-							模型浏览器
-						</div>
-						<div class="close-part">
-							<i class="el-icon-close" @click="closePart(browserInfo.type)"></i>
-						</div>
-					</div>
-					<div class="tree-content">
-						<!-- <ly-tree class="bim-tree" lazy :defaultExpandedKeys="treeOpen" highlightCurrent :load="getLoadNode" :showNodeIcon="true"
+        <div
+          class="tree-main"
+          v-if="
+            browserInfo && browserInfo.type === 10 && browserInfo.state === 1
+          "
+        >
+          <div class="tree-title">
+            <div class="">模型浏览器</div>
+            <div class="close-part">
+              <i class="el-icon-close" @click="closePart(browserInfo.type)"></i>
+            </div>
+          </div>
+          <div class="tree-content">
+            <!-- <ly-tree class="bim-tree" lazy :defaultExpandedKeys="treeOpen" highlightCurrent :load="getLoadNode" :showNodeIcon="true"
 						 :tree-data="treeData" :ready="readyTree" :showCheckbox="true" node-key="mn" :props="memberProps" @node-click="handleNodeClick"
 						 @node-collapse="closeNode">
 						</ly-tree> -->
-            <el-tree
-              :props="propsMember"
-              :load="loadNode"
-              lazy
-              show-checkbox>
+            <el-tree :props="propsMember" :load="loadNode" node-key="uuid" lazy show-checkbox>
             </el-tree>
-					</div>
-				</div>
-				<div class="bim-info" v-if="natureInfo && natureInfo.type === 11 && natureInfo.state === 1">
-					<div class="bim-title">
-						<div class="">
-							属性
-						</div>
-						<div class="close-part">
-							<i class="el-icon-close" @click="closePart(natureInfo.type)"></i>
-						</div>
-					</div>
-					<table class="detail-table">
-						<tr>
-							<td>
-								所属模型
-							</td>
-							<td v-text="detailedInfo ? detailedInfo.deviceProducer : ''"></td>
-						</tr>
-						<tr>
-							<td>
-								属性名
-							</td>
-							<td v-text="detailedInfo ? detailedInfo.name : ''"></td>
-						</tr>
-						<tr>
-							<td>
-								设备编号
-							</td>
-							<td>
-								<view class="">
-									<text v-text="detailedInfo ? detailedInfo.mn : ''"></text>
-								</view>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								类型
-							</td>
-							<td v-text="detailedInfo ? detailedInfo.type : ''"></td>
-						</tr>
-					</table>
-				</div>
-			</div>
+          </div>
+        </div>
+        <div
+          class="bim-info"
+          v-if="natureInfo && natureInfo.type === 11 && natureInfo.state === 1"
+        >
+          <div class="bim-title">
+            <div class="">属性</div>
+            <div class="close-part">
+              <i class="el-icon-close" @click="closePart(natureInfo.type)"></i>
+            </div>
+          </div>
+          <table class="detail-table">
+            <tr>
+              <td>所属模型</td>
+              <td v-text="detailedInfo ? detailedInfo.deviceProducer : ''"></td>
+            </tr>
+            <tr>
+              <td>属性名</td>
+              <td v-text="detailedInfo ? detailedInfo.name : ''"></td>
+            </tr>
+            <tr>
+              <td>设备编号</td>
+              <td>
+                <view class="">
+                  <text v-text="detailedInfo ? detailedInfo.mn : ''"></text>
+                </view>
+              </td>
+            </tr>
+            <tr>
+              <td>类型</td>
+              <td v-text="detailedInfo ? detailedInfo.type : ''"></td>
+            </tr>
+          </table>
+        </div>
+      </div>
       <todo-footer ref="getFooter" @listenTodo="listenTodo"></todo-footer>
     </div>
   </div>
@@ -113,11 +111,11 @@ export default {
   data() {
     return {
       propsMember: {
-          label: 'name',
-          children: 'zones',
-          isLeaf: 'leaf'
-        },
+        label: "name",
+        isLeaf: "haveChild",
+      },
       webUrl: null,
+      appId: null,
       taskId: null,
       isFade: true,
       viewHeight: 0,
@@ -132,7 +130,7 @@ export default {
       socketTimer: null,
       browserInfo: null,
       detailedInfo: null,
-      natureInfo: null
+      natureInfo: null,
     };
   },
   watch: {
@@ -145,10 +143,11 @@ export default {
         });
       }
       this.isFade = false;
-      this.setTimePass()
+      this.setTimePass();
     },
   },
-  mounted() {    
+  mounted() {
+    this.appId = this.$route.query.appid;
     this.setTimeLoad();
     if (this.isMobile()) {
       this.runTimeCode = 1;
@@ -175,58 +174,55 @@ export default {
     }
   },
   methods: {
-    getMemberList(){
+    async getMemberList(e) {
       let params = {
-        appliId: 'test'
-      }
-      MODELAPI.LISTMEMBERTREE(params)
-      .then(res => {
-        console.log(res);
-      })
-      .catch(err => {
-        console.error(err);
-      })
+        appliId: this.appId,
+      };
+      e ? params.uuid = e : ''
+      let realMember = await MODELAPI.LISTMEMBERTREE(params)
+        .then((res) => {
+          if (res.data.code === 0) {
+            return res.data.data;
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+        });
+      return realMember;
     },
     loadNode(node, resolve) {
-        if (node.level === 0) {
-          this.getMemberList()
-          return resolve([{ name: 'region' }]);
-        }
-        if (node.level > 1) return resolve([]);
-
-        setTimeout(() => {
-          const data = [{
-            name: 'leaf',
-            leaf: true
-          }, {
-            name: 'zone'
-          }];
-
-          resolve(data);
-        }, 500);
-      },
+      if (node.level === 0) {
+        this.getMemberList(node.key).then((res) => {
+          return resolve(res);
+        });
+      }
+      console.log(node);
+      if (node.level > 1) {
+        console.log(1);
+      };
+    },
     // 关闭模块
-			closePart(e){
-				if(e === 10){
-					this.browserInfo = null
-				}
-				if(e === 11){
-					this.natureInfo = null
-				}
-				this.$refs.getFooter.editTool(e)
-			},
-    listenTodo(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-03-04 14:06:09
-     * @description: 监听操作栏
-     */  
-      if(e.type === 10){
-					this.browserInfo = e
-				}
-				if(e.type === 11){
-					this.natureInfo = e
-				}
+    closePart(e) {
+      if (e === 10) {
+        this.browserInfo = null;
+      }
+      if (e === 11) {
+        this.natureInfo = null;
+      }
+      this.$refs.getFooter.editTool(e);
+    },
+    listenTodo(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-04 14:06:09
+       * @description: 监听操作栏
+       */
+      if (e.type === 10) {
+        this.browserInfo = e;
+      }
+      if (e.type === 11) {
+        this.natureInfo = e;
+      }
     },
     initWebSocket() {
       //初始化weosocket
@@ -609,149 +605,149 @@ export default {
   }
 
   // 视图层
-		.mutual-bim {
-			position: absolute;
-			z-index: 9;
-			top: 0;
-			left: 0;
-			height: 100vh;
-			width: 100vw;
-			pointer-events: none;
+  .mutual-bim {
+    position: absolute;
+    z-index: 9;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    pointer-events: none;
 
-			.leaf-slide {
-				position: absolute;
-				width: 10vw;
-				bottom: 8vh;
-				left: 45vw;
-				pointer-events: auto;
-			}
+    .leaf-slide {
+      position: absolute;
+      width: 10vw;
+      bottom: 8vh;
+      left: 45vw;
+      pointer-events: auto;
+    }
 
-			.tree-main {
-				pointer-events: auto;
-				height: 47vh;
-				width: 400px;
-				margin: 2vh 0 0 20px;
-				border-radius: 10px;
-				background: rgba(0, 0, 0, 0.5);
-				
-				.tree-title{
-					display: flex;
-					padding: 20px 15px 0 15px;
-					color: #FFFFFF;
-					.close-part{
-						margin-left: auto;
-						cursor: pointer;
-					}
-				}
-				.tree-content{
-					margin-top: 1vh;
-					height: 40vh;
-					width: 99.5%;
-					overflow-x: hidden;
-					overflow-y: auto;
-					&::-webkit-scrollbar {
-						/*滚动条整体样式*/
-						width: 6px;
-						/*高宽分别对应横竖滚动条的尺寸*/
-						height: 1px;
-					}
-					
-					&::-webkit-scrollbar-thumb {
-						/*滚动条里面小方块*/
-						border-radius: 10px;
-						background: #09abf7;
-					}
-					
-					&::-webkit-scrollbar-track {
-						/*滚动条里面轨道*/
-						border-radius: 10px;
-						background: rgba(255, 255, 255, 0.295);
-					}
-				}
-			}
+    .tree-main {
+      pointer-events: auto;
+      height: 47vh;
+      width: 400px;
+      margin: 2vh 0 0 20px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.5);
 
-			.bim-info {
-				position: absolute;
-				bottom: 2vh;
-				pointer-events: auto;
-				margin-top: 1vh;
-				height: 47vh;
-				margin: 1vh 0 0 20px;
-				border-radius: 10px;
-				width: 400px;
-				overflow-x: hidden;
-				overflow-y: auto;
-				background: rgba(0, 0, 0, 0.5);
-				color: #FFFFFF;
-				.bim-title{
-					display: flex;
-					padding: 20px 15px 0 15px;
-					color: #FFFFFF;
-					.close-part{
-						margin-left: auto;
-						cursor: pointer;
-					}
-				}
-				.detail-table {
-					width: 100%;
-					line-height: 35px;
-					text-align: center;
+      .tree-title {
+        display: flex;
+        padding: 20px 15px 0 15px;
+        color: #ffffff;
+        .close-part {
+          margin-left: auto;
+          cursor: pointer;
+        }
+      }
+      .tree-content {
+        margin-top: 1vh;
+        height: 40vh;
+        width: 99.5%;
+        overflow-x: hidden;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+          /*滚动条整体样式*/
+          width: 6px;
+          /*高宽分别对应横竖滚动条的尺寸*/
+          height: 1px;
+        }
 
-					tr td {
-						&:first-child {
-							width: 30%;
-						}
+        &::-webkit-scrollbar-thumb {
+          /*滚动条里面小方块*/
+          border-radius: 10px;
+          background: #09abf7;
+        }
 
-						&:last-child {
-							width: 70%;
-							word-break: break-all;
-						}
-					}
-				}
-			}
+        &::-webkit-scrollbar-track {
+          /*滚动条里面轨道*/
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.295);
+        }
+      }
+    }
 
-			.handle-body {
-				pointer-events: auto;
-				position: absolute;
-				top: 3vh;
-				right: 3vh;
-			}
+    .bim-info {
+      position: absolute;
+      bottom: 2vh;
+      pointer-events: auto;
+      margin-top: 1vh;
+      height: 47vh;
+      margin: 1vh 0 0 20px;
+      border-radius: 10px;
+      width: 400px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background: rgba(0, 0, 0, 0.5);
+      color: #ffffff;
+      .bim-title {
+        display: flex;
+        padding: 20px 15px 0 15px;
+        color: #ffffff;
+        .close-part {
+          margin-left: auto;
+          cursor: pointer;
+        }
+      }
+      .detail-table {
+        width: 100%;
+        line-height: 35px;
+        text-align: center;
 
-			.show-footer {
-				position: absolute;
-				pointer-events: auto;
-				padding: 10px 0;
-				width: 100%;
-				display: flex;
-				align-items: center;
-				left: 0;
-				bottom: 0;
-				color: #FFFFFF;
+        tr td {
+          &:first-child {
+            width: 30%;
+          }
 
-				.foot-title {
-					width: 100%;
-					overflow: hidden;
-					white-space: nowrap;
-					text-overflow: ellipsis;
-				}
+          &:last-child {
+            width: 70%;
+            word-break: break-all;
+          }
+        }
+      }
+    }
 
-				.footer-main {
-					margin: 0 auto;
-					width: 680px;
-					background-color: rgba(0, 0, 0, 0.5);
-					display: flex;
-					flex-wrap: wrap;
-					justify-content: @font-c;
-					align-items: @font-c;
-					text-align: @font-c;
+    .handle-body {
+      pointer-events: auto;
+      position: absolute;
+      top: 3vh;
+      right: 3vh;
+    }
 
-					.main-content {
-						flex: 0 0 16.66%;
-						width: 16.66%;
-					}
-				}
-			}
-		}
+    .show-footer {
+      position: absolute;
+      pointer-events: auto;
+      padding: 10px 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      left: 0;
+      bottom: 0;
+      color: #ffffff;
+
+      .foot-title {
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .footer-main {
+        margin: 0 auto;
+        width: 680px;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: @font-c;
+        align-items: @font-c;
+        text-align: @font-c;
+
+        .main-content {
+          flex: 0 0 16.66%;
+          width: 16.66%;
+        }
+      }
+    }
+  }
 
   #show-bim {
     height: 110vh;
