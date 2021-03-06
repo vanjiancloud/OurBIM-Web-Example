@@ -3,6 +3,7 @@
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
+
     <!-- 主体内容 -->
     <div class="container">
       <div class="content">
@@ -84,6 +85,7 @@
         </div>
       </div>
     </div>
+
     <!-- 尾部 -->
     <my-footer></my-footer>
   </div>
@@ -98,13 +100,6 @@ export default {
   name: 'changeCode',
   data () {
     return {
-      navList: [
-        { name: '/bill', navItem: '个人信息' },
-        { name: '/code', navItem: '授权码' },
-        { name: '/order', navItem: '服务订单' },
-        { name: '/team', navItem: '团队' },
-        { name: '/changeCode', navItem: '修改密码' }
-      ],
       oldCode: '',
       newCode: '',
       mobile: '',
@@ -114,7 +109,7 @@ export default {
   methods: {
     // 获取验证码
     getCode () {
-      console.log('点击发送验证码按钮')
+      console.log('点击了发送验证码按钮')
     }
   }
 }

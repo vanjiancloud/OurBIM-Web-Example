@@ -3,15 +3,18 @@
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
-    <!-- 中间 -->
-    <!-- <my-main></my-main> -->
-    <!-- 主体内容 -->
+
+    <!-- 中间主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 消息提示 -->
         <div class="record">
           <!-- 消息提示 -->
-          <div class="left">{{ $t('Youhave') }}{{ itemList.length }}{{ $t('project') }}</div>
+          <div class="left">
+            {{ $t('Youhave') }}&nbsp;
+            <span style="color:#00aaf0;">{{ itemList.length }} </span>&nbsp;
+            {{ $t('project') }}
+          </div>
           <!-- 按钮 -->
           <!-- <div class="right">
             <el-button type="primary">{{ $t('link') }}</el-button>
@@ -20,9 +23,12 @@
         <!-- 表格 -->
         <div class="table">
           <el-table :data="itemList" style="width: 100%;font-size: 17px;">
-            <el-table-column prop="appid" :label="$t('applicationid')"
+            <el-table-column
+              prop="appid"
+              :label="$t('applicationid')"
             ></el-table-column>
-            <el-table-column prop="appName" :label="$t('applyname')"> </el-table-column>
+            <el-table-column prop="appName" :label="$t('applyname')">
+            </el-table-column>
             <el-table-column prop="maxInstance" :label="$t('maximum')">
             </el-table-column>
             <el-table-column :label="$t('state')">
@@ -67,6 +73,7 @@
       >
       </el-pagination>
     </div>
+
     <!-- 尾部 -->
     <my-footer></my-footer>
   </div>
@@ -75,20 +82,19 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-// import MyMain from '../components/myMain.vue'
 import { getProjectList } from '@/api/my.js'
 
 export default {
-  components: { myHeader,  MyFooter },
+  components: { myHeader, MyFooter },
   name: 'manage',
   data () {
     return {
-      itemList: [],
-      appid: '',
-      appName: '',
-      maxInstance: '',
-      applidStatus: null,
-      createTime: ''
+      itemList: [], //数据列表
+      appid: '', //应用ID
+      appName: '', //应用名称
+      maxInstance: '', //最大并发数量
+      applidStatus: null, //状态
+      createTime: '' //上传日期
     }
   },
   created () {
@@ -138,6 +144,7 @@ export default {
           this.$message.error('请求失败')
         })
     },
+
     // 根据传入的status做适配
     formatStatus (status) {
       const statusObj = {
@@ -147,14 +154,17 @@ export default {
       }
       return statusObj[status]
     },
+
     // 分享
     share () {
       console.log('点击了分享')
     },
+
     // 编辑
     edit () {
       console.log('点击了编辑')
     },
+
     // 删除按钮
     remove () {
       console.log('点击了删除')
@@ -168,7 +178,7 @@ export default {
   .container {
     background-color: #fff;
     /deep/ .el-button--primary {
-      background-color: #00aaf0; 
+      background-color: #00aaf0;
     }
     .content {
       margin-left: 41px;
@@ -222,7 +232,7 @@ export default {
           border: none;
           outline: none;
           height: 20px;
-          margin-left: 30px;
+          margin-left: 20px;
           background-color: #fff;
         }
         button:hover {

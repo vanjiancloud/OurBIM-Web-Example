@@ -3,17 +3,22 @@
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
+
     <!-- 中间主体内容 -->
     <div class="container">
       <div class="content">
-        <!-- 提示 -->
-        <div class="text">{{ $t('Youcanalsoupload') }}2{{ $t('project') }}</div>
         <!-- 3步步骤条 -->
         <div class="buzhou" v-show="isHandle == 1">
           <el-steps :active="active">
-            <el-step title="步骤一" description="创建应用项目信息"> </el-step>
-            <el-step title="步骤二" description="上传BIM模型"></el-step>
-            <el-step title="步骤三" description="上传完成"></el-step>
+            <el-step :title="$t('Step')" :description="$t('setUP')"> </el-step>
+            <el-step
+              :title="$t('twoStep')"
+              :description="$t('shangchuan')"
+            ></el-step>
+            <el-step
+              :title="$t('threeStep')"
+              :description="$t('finsh')"
+            ></el-step>
           </el-steps>
         </div>
         <!-- 4步步骤条 -->
@@ -36,15 +41,15 @@
           </div>
           <!-- input框 -->
           <div class="input">
-            <span style="color:red">*</span>
-            {{ $t('application') }}
+            <span style="color:red;margin-right:5px">*</span>
+            <span style="margin-right:5px">{{ $t('application') }}</span>
             <el-input v-model="appName"></el-input>
           </div>
           <!-- 上传图片 -->
           <div class="picture">
             <div class="news">
-              <span style="color:red">*</span>
-              {{ $t('Uploadc') }}
+              <span style="color:red;margin-right:5px">*</span>
+              <span style="margin-right:5px">{{ $t('Uploadc') }}</span>
             </div>
             <!-- 上传封面 -->
             <div class="cover">
@@ -88,6 +93,9 @@
               </el-dialog>
             </div>
           </div>
+          <div class="xiaoxi">
+            <span style="color:red;margin-right:5px">*</span>{{ $t('format') }}
+          </div>
           <!-- 按钮 -->
           <div class="anNiu">
             <el-button @click="next" type="primary">
@@ -117,7 +125,7 @@
               :action="baseURL + '/appli/postProjectModel'"
               name="fileUpload"
               multiple
-              :before-upload="beforeAvatarUpload"
+              :before-upload="beforeModelUpload"
             >
               <img src="./file.png" alt="" />
               <div class="el-upload__text">
@@ -134,6 +142,7 @@
         </div>
       </div>
     </div>
+
     <!-- 尾部 -->
     <my-footer></my-footer>
   </div>
@@ -162,7 +171,7 @@ export default {
       baseURL: axios.defaults.baseURL,
       appImgSrc: '',
       appInfo: '',
-      appModel : '',
+      appModel: '',
       userId: ''
     }
   },
@@ -205,8 +214,7 @@ export default {
     },
     // 开始转换
     update () {
-      // if (!this.appModel == '' ) {
-          if (this.active++ > 2) this.active = 0
+      if (this.active++ > 2) this.active = 0
       addProject({
         userId: this.getCookie('userid'),
         appName: this.appName,
@@ -226,13 +234,8 @@ export default {
           this.$message.error('上传失败，请上传模型')
         })
       this.$router.go(0)
-      // } 
-      // else {
-      //   this.$message.warning('请先上传模型')
-      // }
-    
     },
-    // 读取cookie中数据
+    // 读取cookie中的数据：userid
     getCookie: function (userid) {
       if (document.cookie.length > 0) {
         var start = document.cookie.indexOf(userid + '=')
@@ -251,12 +254,13 @@ export default {
       this.$message.warning(`您只能上传一张图片`)
     },
     // 删除图片
-    handleRemove (file) {
-      this.$confirm('此操作将删除当前图片, 是否继续?', '提示')
-      if (this.$confirm == '确定') {
-        file.url == ''
-      }
-    },
+    // handleRemove (file) {
+    //   this.$confirm('此操作将删除当前图片, 是否继续?', '提示')
+    //   if (this.$confirm == '确定') {
+    //     file.url == ''
+    //   }
+    // },
+
     // 放大图片
     handlePictureCardPreview (file) {
       this.dialogImageUrl = file.url
@@ -269,16 +273,16 @@ export default {
       const two = testmsg === 'jpeg'
       const three = testmsg === 'png'
       if (!one && !two && !three) {
-        this.$message.error('上传封面只能是 jpg,jpeg,png 格式!')
+        this.$message.error('上传封面只能是.jpg .jpeg .png格式!')
       }
       return one || two || three
     },
     // 限制上传模型格式
-    beforeAvatarUpload (file) {
+    beforeModelUpload (file) {
       var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
       const extension = testmsg === 'rvt'
       if (!extension) {
-        this.$message.error('上传模型只能是 .rvt 格式!')
+        this.$message.error('上传模型只能是.rvt格式!')
       }
       return extension
     }
@@ -294,10 +298,6 @@ export default {
     height: 1037px;
     padding-top: 38px;
     .content {
-      .text {
-        margin-left: 40px;
-        margin-bottom: 30px;
-      }
       .buzhou {
         width: 800px;
         margin: 0 auto;
@@ -308,25 +308,23 @@ export default {
       }
       .first {
         width: 561px;
-        height: 450px;
+        height: 480px;
         box-shadow: 0px 1px 13px 0px rgba(4, 0, 0, 0.1);
         border-radius: 12px;
         margin-left: 430px;
         margin-top: 50px;
         padding-top: 30px;
-        position: absolute;
         /deep/ .el-button--primary {
           width: 140px;
           height: 40px;
           vertical-align: middle;
           background-color: #00aaf0;
           font-size: 17px;
-
         }
         .img {
           width: 50px;
           height: 50px;
-          margin: 0 auto;
+          margin-left: 275px;
           margin-bottom: 10px;
           img {
             width: 100%;
@@ -334,17 +332,17 @@ export default {
           }
         }
         .text {
-          margin-left: 240px;
+          text-align: center;
         }
         .input {
-          margin-left: 120px;
+          margin-left: 100px;
           .el-input {
             width: 237px;
             margin: 0 auto;
           }
         }
         .picture {
-          margin-left: 120px;
+          margin-left: 100px;
           margin-top: 40px;
           overflow: hidden;
           .news {
@@ -356,8 +354,13 @@ export default {
             float: left;
           }
         }
+        .xiaoxi {
+          font-size: 14px;
+          text-align: center;
+          margin-top: 5px;
+        }
         .anNiu {
-          margin-top: 30px;
+          margin-top: 20px;
           // background-color: green;
           text-align: center;
         }
@@ -380,7 +383,6 @@ export default {
         }
         .radio {
           margin-right: 10px;
-          
         }
         /deep/ .el-radio__label {
           font-size: 16px;

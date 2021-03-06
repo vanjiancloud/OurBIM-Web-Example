@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import { getuserid } from '@/store/index.js'
 
 Vue.use(VueRouter)
 
@@ -129,15 +128,6 @@ const routes = [
     component: () => import('../views/bill/order.vue'),
     meta: {
       title: '服务订单'
-    }
-  },
-  // demo
-  {
-    path: '/demo',
-    name: 'demo',
-    component: () => import('../views/demo/index.vue'),
-    meta: {
-      title: 'demo'
     }
   },
   // 新密码

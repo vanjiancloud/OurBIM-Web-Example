@@ -80,10 +80,7 @@
           <li class="second">
             <el-dropdown>
               <span class="el-dropdown-link">
-                <img
-                  src="../components/dalao.jpg"
-                  alt="未上传"
-                />
+                <img :src="imgUrl" alt="未上传" />
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="toUserCenter">{{
@@ -171,29 +168,7 @@
           </div>
         </div>
         <!-- tab栏 -->
-        <div class="tab" v-show="isCut == 1">
-          <span>
-            <el-button type="text" @click="goUserCenter">{{
-              $t('app')
-            }}</el-button>
-          </span>
-          <span>
-            <el-button type="text" @click="toManage">{{
-              $t('management')
-            }}</el-button>
-          </span>
-          <span>
-            <el-button type="text" @click="toFound">{{
-              $t('Create')
-            }}</el-button>
-          </span>
-          <span class="last">
-            <el-button type="text" @click="toBill">{{
-              $t('Account')
-            }}</el-button>
-          </span>
-        </div>
-        <div class="tabTwo" v-show="isCut == 2">
+        <div class="tab" >
           <span>
             <el-button type="text" @click="goUserCenter">{{
               $t('app')
@@ -239,7 +214,6 @@ export default {
       currentCountSpace: '', //当前用户已使用的存储率
       countBF: '', //当前用户的并发总数最大值
       currentCountBF: '', //当前用户的并发数
-      isCut: 1
     }
   },
   created () {
@@ -249,12 +223,12 @@ export default {
     English () {
       this.$i18n.locale = 'en'
       this.classify = 'whole'
-      this.isCut = 2
+      // this.isCut = 2
     },
     Chinese () {
       this.$i18n.locale = 'zh'
       this.classify = '全部'
-      this.isCut = 1
+      // this.isCut = 1
     },
     toUserCenter () {
       if (this.route !== '/userCenter') {
@@ -330,7 +304,7 @@ export default {
     a:hover {
       color: #ff6600;
     }
-    height: 64px; 
+    height: 64px;
     background-color: #fff;
     line-height: 64px;
     .logo {
@@ -370,12 +344,11 @@ export default {
     .second {
       margin-left: -20px;
       margin-right: 20px;
-        img {
-          width: 64px;
-          height: 64px;
-          border-radius: 50%;
-        }
-      
+      img {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+      }
     }
     .third {
       margin-right: 40px;
@@ -438,13 +411,13 @@ export default {
           .tiao {
             width: 318px;
             float: left;
-            margin-top: 20px;
             margin-left: 100px;
-            // background-color: red;
             .tu {
               float: left;
+              width: 318px;
               margin-right: 29px;
-              margin-top: 15px;
+              margin-top: 10px;
+              // background-color: red;
               .icon {
                 width: 20px;
                 height: 20px;
@@ -460,16 +433,16 @@ export default {
         }
         .jindu {
           width: 318px;
-          height: 152px;
+          // height: 152px;
           // background-color: pink;
           float: left;
           h3 {
-            margin-top: 56px;
+            margin-top: 37px;
             color: #00aaf0;
           }
           .tutu {
             float: left;
-            margin-top: 15px;
+            margin-top: 10px;
             .icon {
               width: 20px;
               height: 20px;
@@ -504,7 +477,7 @@ export default {
         background-color: #f1f1f1;
         // background-color: red;
         line-height: 69px;
-        padding-left: 228px;
+        padding-left: 220px;
         .el-button {
           color: #000;
           font-size: 19px;
@@ -513,7 +486,7 @@ export default {
           color: #ff6600;
         }
         span {
-          margin-right: 228px;
+          margin-right: 210px;
           height: 50px;
           // background-color: pink;
           border-bottom: 6px solid #f1f1f1;
@@ -529,24 +502,23 @@ export default {
       // 英文tab栏
       .tabTwo {
         height: 69px;
-        font-size: 16px;
-        background-color: #f1f1f1;
-        // background-color: red;
+        // background-color: #f1f1f1;
+        background-color: red;
         line-height: 69px;
-        padding: 0 228px;
+        padding: 0 200px;
         .el-button {
           color: #000;
+          font-size: 19px;
         }
         .el-button:hover {
           color: #ff6600;
         }
         span {
-          margin-right: 150px;
+          margin-right: 140px;
           height: 50px;
           // background-color: pink;
           border-bottom: 6px solid #f1f1f1;
           border-radius: 3px;
-          
         }
         .last {
           margin: 0;

@@ -3,6 +3,7 @@
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
+
     <!-- 主体内容 -->
     <div class="detail">
       <div class="container">
@@ -10,8 +11,12 @@
         <div class="content" v-show="isShow == 1">
           <!-- 消息提示 -->
           <div class="record">
-            <div class="left">{{ $t('Youhave') }}{{ appList.length }}
-              {{ $t('application') }}</div>
+            <div class="left">
+              {{ $t('Youhave') }}&nbsp;
+              <span style="color:#00aaf0;">{{ appList.length }}</span
+              >&nbsp;
+              {{ $t('Application') }}
+            </div>
           </div>
           <!-- 列表展示 -->
           <div class="list">
@@ -26,29 +31,25 @@
                     <img :src="item.screenImg" class="tupian" />
                   </div>
                   <div class="write">
+                    <!-- 应用名称 -->
                     <h3>{{ item.appName }}</h3>
-                    节点: {{ item.currentInstance }}/{{ item.maxInstance }}
+                    <!-- 节点 -->
+                    {{ $t('node') }}&nbsp; {{ item.currentInstance }}/{{
+                      item.maxInstance
+                    }}
+                    <!-- 进入应用 -->
                     <div class="button">
-                      <el-button plain round>进入应用</el-button>
+                      <el-button plain round>{{ $t('into') }}</el-button>
                     </div>
                   </div>
                 </li>
               </ul>
             </div>
-            <!-- 分页 -->
-            <!-- <div class="page">
-              <el-pagination
-                @current-change="handleCurrentChange"
-                layout="prev, pager, next"
-                background
-                :total="400"
-              >
-              </el-pagination>
-            </div> -->
           </div>
         </div>
       </div>
     </div>
+
     <!-- 尾部 -->
     <my-footer></my-footer>
   </div>
@@ -60,104 +61,99 @@ import myHeader from '../components/myHeader.vue'
 import { getProjectList, getModelInfo } from '@/api/my.js'
 
 export default {
-  components: { myHeader,  MyFooter },
+  components: { myHeader, MyFooter },
   name: 'userCenter',
   data () {
     return {
       islive: false,
-      input: "",
+      input: '',
       isShow: 1,
-      classify: "全部",
+      classify: '全部',
       isHand: 6,
-      url:
-        "https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg",
-      appList: [],
-    };
+      appList: []
+    }
   },
-  created() {
-    this.GetList();
+  created () {
+    this.GetList()
   },
   methods: {
-    checkitem(item) {
-      this.classify = item;
+    // 切换英文
+    English () {
+      this.$i18n.locale = 'en'
+      this.classify = 'whole'
     },
-    English() {
-      this.$i18n.locale = "en";
-      this.classify = "whole";
+
+    // 切换中文
+    Chinese () {
+      this.$i18n.locale = 'zh'
+      this.classify = '全部'
     },
-    Chinese() {
-      this.$i18n.locale = "zh";
-      this.classify = "全部";
-    },
-    handleClick() {
-      alert("button click");
-    },
-    // 分页
-    handleCurrentChange() {},
-    toshow() {
-      this.islive = !this.islive;
-    },
+
     // 读取cookie中userid数据
     getCookie: function (userid) {
       if (document.cookie.length > 0) {
-        var start = document.cookie.indexOf(userid + "=");
+        var start = document.cookie.indexOf(userid + '=')
         if (start !== -1) {
-          start = start + userid.length + 1;
-          var end = document.cookie.indexOf(";", start);
-          if (end === -1) end = document.cookie.length;
-          return unescape(document.cookie.substring(start, end));
+          start = start + userid.length + 1
+          var end = document.cookie.indexOf(';', start)
+          if (end === -1) end = document.cookie.length
+          return unescape(document.cookie.substring(start, end))
         }
       }
-      console.log();
-      return "";
+      console.log()
+      return ''
     },
-    GetList() {
+
+    // 获取应用列表
+    GetList () {
       /**
        * @Author: zk
        * @Date: 2021-02-22 17:43:22
        * @description: 获取应用列表
        */
       getProjectList({
-        userid: this.getCookie("userid"),
-        isHandle: 1,
+        userid: this.getCookie('userid'),
+        isHandle: 1
       })
-        .then((res) => {
-          console.log(res);
-          this.appList = res.data.data;
+        .then(res => {
+          console.log(res)
+          this.appList = res.data.data
         })
-        .catch((err) => {
-          this.$message.error("请求失败");
-        });
+        .catch(err => {
+          this.$message.error('请求失败')
+        })
     },
-    GoApp(e) {
+
+    // 进入应用
+    GoApp (e) {
       /**
        * @Author: zk
        * @Date: 2021-02-22 17:52:23
        * @description: 获取应用信息
        */
       getModelInfo({
-        appliId: e.appid,
+        appliId: e.appid
       })
-        .then((res) => {
+        .then(res => {
           if (res.data.code === 0) {
-            console.log(11);
+            console.log(11)
             const { href } = this.$router.resolve({
-              name: "web_client",
+              name: 'web_client',
               query: {
-                appid: e.appid,
-              },
-            });
-            window.open(href, "_blank");
+                appid: e.appid
+              }
+            })
+            window.open(href, '_blank')
           } else {
             this.$message.warning(res.data.message)
           }
         })
-        .catch((err) => {
-          this.$message.error("请求失败");
-        });
-    },
-  },
-};
+        .catch(err => {
+          this.$message.error('请求失败')
+        })
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>

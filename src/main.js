@@ -10,16 +10,15 @@ import './assets/css/global.css'
 import less from 'less'
 // 加载axios组件
 import axios from '@/utils/request.js'
-// import store from './store'
 // 自动计算rem大小
 import 'lib-flexible'
-// import 'lib-flexible/flexible'
-
-
+// 引入国际化语言包
 import VueI18n from 'vue-i18n'
+
 Vue.use(VueI18n)
 Vue.use(less)
 Vue.use(ElementUI)
+
 // 把axiox放到原型上
 Vue.prototype.$axios = axios
 // 把$EventBus放到原型上
@@ -60,8 +59,9 @@ const i18n = new VueI18n({
       // 我的应用
       app: '我的应用',
       Youhave: '您共有',
-      application: '应用',
-
+      Application: '个应用',
+      node: '节点:',
+      into: '进入应用',
       release: '我的发布',
       management: '应用管理',
       Create: '创建应用',
@@ -84,10 +84,15 @@ const i18n = new VueI18n({
       operation: '操作',
       // 创建应用
       Step: '步骤一',
+      twoStep: '步骤二',
+      threeStep: '步骤三',
+      setUP: '创建应用项目信息',
+      shangchuan: '上传BIM模型',
+      finsh: '上传完成',
       Youcanalsoupload: '您还可上传',
       toCreate: '创建应用',
-      twoStep: '步骤二',
       Upload: '上传模型',
+      format: '仅支持.jpg.jpeg.png格式!',
       UploadBIM: '仅上传BIM模型',
       Uploadto: '同时上传倾斜摄影模型',
       methods: '点击或将文件拖拽到这里上传',
@@ -102,7 +107,7 @@ const i18n = new VueI18n({
       accountManage: '账户管理',
       information: '个人信息',
       Authorization: '授权码',
-      nouse: '如授权码不可用请联系售后',
+      nouse: '如授权码不可，用请联系售后。',
       submit: '提交',
       Authorizations: '授权码:',
       Serviceorder: '服务订单',
@@ -175,12 +180,14 @@ const i18n = new VueI18n({
       Extension: 'Extension of validity',
       // 我的应用
       app: 'My app',
-      Youhave: 'Youhave',
-      application: 'application',
+      Youhave: 'You have',
+      Application: 'application',
+      node: 'node:',
+      into: 'application',
       release: 'release',
-      management: 'Application management',
+      management: 'Application',
       Create: 'Create app',
-      Account: 'Account management',
+      Account: 'Account',
       // 我的发布
       wholes: 'whole',
       article: 'article',
@@ -193,16 +200,21 @@ const i18n = new VueI18n({
       delete: 'delete',
       applicationid: 'applicationID',
       applyname: 'apply name',
-      maximum: 'Maximum concurrent quantity',
+      maximum: 'Maximum number of concurrency',
       state: 'state',
       uploaddate: 'Upload date',
       operation: 'operation',
       // 创建应用
       Step: 'Step one',
-      Youcanalsoupload: 'Youcanalsoupload',
-      toCreate: 'Create application project information',
       twoStep: 'Step two',
+      threeStep: 'Step three',
+      setUP: 'Create application project information',
+      shangchuan: 'upload BIM model',
+      finsh: 'upload finshed',
+      Youcanalsoupload: 'You can also upload',
+      toCreate: 'Create application project information',
       Upload: 'Upload model',
+      format: 'Only support .jpg .jpeg .png format!',
       UploadBIM: 'Upload BIM model',
       Uploadto: 'Upload the tilt photography model as well',
       methods: 'Click or drag the file here to upload',
@@ -217,7 +229,8 @@ const i18n = new VueI18n({
       accountManage: 'accountManage',
       information: 'personal information',
       Authorization: 'Authorization code',
-      nouse: 'If the authorization code is not available, please contact the customer service',
+      nouse:
+        'If the authorization code is not available, please contact the customer service.',
       submit: 'submit',
       Authorizations: 'Authorization code:',
       Serviceorder: 'Service order',

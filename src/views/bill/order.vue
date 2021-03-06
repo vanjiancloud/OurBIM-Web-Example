@@ -21,12 +21,14 @@
                 <i class="el-icon-menu"></i>
                 <span>{{ $t('accountManage') }}</span>
               </template>
-                <el-menu-item index="/bill">
+              <el-menu-item index="/bill">
                 <span slot="title">{{ $t('information') }}</span>
               </el-menu-item>
               <el-menu-item index="/code">
-                <span slot="title">{{ $t('Authorization') }}</span>
-              </el-menu-item><el-menu-item index="/order">
+                <span slot="title">{{
+                  $t('Authorization')
+                }}</span> </el-menu-item
+              ><el-menu-item index="/order">
                 <span slot="title">{{ $t('Serviceorder') }}</span>
               </el-menu-item>
             </el-submenu>
@@ -45,12 +47,12 @@
                 <el-table-column
                   prop="dingdancode"
                   :label="$t('number')"
-                  width="115"
+                  width="130"
                 ></el-table-column>
                 <el-table-column
                   prop="createTime"
                   :label="$t('time')"
-                  width="135"
+                  width="160"
                 ></el-table-column>
                 <el-table-column :label="$t('services')">
                   <template slot-scope="scope">
@@ -60,7 +62,7 @@
                 <el-table-column
                   prop="sqm"
                   :label="$t('authorizationcode')"
-                  width="260"
+                  width="310"
                 >
                   <template slot-scope="scope">
                     <template v-if="scope.row.eyseShow">
@@ -79,7 +81,12 @@
                     {{ formatSqMISUsed(scope.row.sqMISUsed) }}
                   </template>
                 </el-table-column>
-                <el-table-column prop="dcount" :label="$t('amountofmoney')">
+
+                <el-table-column
+                  prop="dcount"
+                  :label="$t('amountofmoney')"
+                  width="165"
+                >
                 </el-table-column>
               </el-table>
             </div>
@@ -115,7 +122,7 @@ export default {
   data () {
     return {
       show: true,
-      tableData: [],
+      tableData: [], //数据列表数组
       editForm: {
         dingdancode: '', //编号
         createTime: '', //时间
@@ -135,6 +142,7 @@ export default {
     this.getList()
   },
   methods: {
+    // 获取数据列表
     getList () {
       const { pageSize, currentPage, userid } = this.editForm
       const editParams = new FormData()
@@ -159,6 +167,8 @@ export default {
           this.$message.error('获取数据失败')
         })
     },
+
+    // 显示隐藏授权码
     lookEyes (row) {
       row.eyseShow = !row.eyseShow
       if (row.eyseShow) {
@@ -167,13 +177,14 @@ export default {
         row.imgeeyes = 'openEye'
       }
     },
+
     // 以当前点击的页数作为参数去请求当前页的数据
     pageChange (page) {
       this.editForm.currentPage = page
       this.getList()
     },
-    //服务
-    // 根据传入的dingdanStatus做适配
+
+    //服务栏状态适配，根据传入的dingdanStatus做适配
     formatDingdanStatus (dingdanStatus) {
       const statusObj = {
         0: '升级旗舰版',
@@ -182,8 +193,8 @@ export default {
       }
       return statusObj[dingdanStatus]
     },
-    //状态
-    // 根据传入的sqMISUsed做适配
+
+    //状态栏状态适配，根据传入的sqMISUsed做适配
     formatSqMISUsed (sqMISUsed) {
       const statusObj = {
         0: '未使用',
@@ -196,8 +207,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
+// 眼睛图片
 .imageEye {
-  // 眼睛图片
   display: inline-block;
   cursor: pointer;
   div {
@@ -225,9 +236,9 @@ export default {
         height: 1037px;
       }
       /deep/ .el-submenu__title * {
-        font-size: 17px; 
+        font-size: 17px;
       }
-      /deep/ .el-menu-item   {
+      /deep/ .el-menu-item {
         font-size: 17px;
       }
       .color {
