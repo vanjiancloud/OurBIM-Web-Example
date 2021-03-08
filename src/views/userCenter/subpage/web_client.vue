@@ -8,7 +8,7 @@
       frameborder="0"
       id="show-bim"
     ></iframe>
-    <div class="time-log" v-if="moreCount < 10">
+    <!-- <div class="time-log" v-if="moreCount < 10">
       <div class="log-main" :class="runTimeCode === 0 ? '' : 'phone-log-main'">
         <div>
           <img class="show-logo" src="@/assets/img/ourbim-logo.png" alt="" />
@@ -34,7 +34,7 @@
       <div class="hidden-text learn-text" v-if="hiddenState === 2">
         模型长时间未响应，请刷新重试。
       </div>
-    </div>
+    </div> -->
     <div v-if="runTimeCode === 0">
       <div class="mutual-bim">
         <div
@@ -50,11 +50,12 @@
             </div>
           </div>
           <div class="tree-content">
-            <el-tree :props="propsMember" :load="loadNode" node-key="uuid" lazy>
-              <span class="custom-tree-node" slot-scope="{ node }">
+            <el-tree :props="propsMember" :load="loadNode" node-key="uuid" lazy accordion>
+              <span class="custom-tree-node" slot-scope="{ node }" @click="handleTree(0, node)">
                 <span>{{ node.label }}</span>
                 <span>
-                  sdf
+                  <i class="iconfont icon-xianshi2" v-if="node.activeState === 0 || node.activeState === undefined" @click.stop="handleTree(node)"></i>
+                  <i class="iconfont icon-yincang1" v-if="node.activeState === 1" @click.stop="handleTree(node)"></i>
                 </span>
               </span>
             </el-tree>
@@ -188,6 +189,27 @@ export default {
     }
   },
   methods: {
+    handleTree(index, e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-08 14:39:51
+     * @description: 构件树的指令
+     */
+    console.log(e);
+    if (index === 0) {
+      // 选中
+
+    } else {
+      
+    }
+      // if (e.activeState === undefined || e.activeState === 0) {
+      //   e.activeState = 1
+      // } else {
+      //   e.activeState = 0        
+      // }
+      // console.log(e);
+      // return e
+    },
     handleOrder(e){
     /**
      * @Author: zk

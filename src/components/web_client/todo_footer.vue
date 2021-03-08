@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-08 09:21:06
+ * @LastEditTime: 2021-03-08 15:49:16
  * @description: 
 -->
 <template>
@@ -118,10 +118,10 @@
 				<img @click="handleOrder(11)" class="footer-image" :src="imgList[11].url" mode="" />
 			</div>
 			<div class="image-main">
-				<img @click="handleOrder(12)" class="footer-image" :src="imgList[12].url" mode="" />
+				<img class="footer-image" :src="imgList[12].url" mode="" />
 			</div>
 			<div class="image-main">
-				<img @click="handleOrder(13)" class="footer-image" :src="imgList[13].url" mode="" />
+				<img class="footer-image" :src="imgList[13].url" mode="" />
 			</div>
 		</div>
 	</div>
