@@ -50,12 +50,31 @@
             </div>
           </div>
           <div class="tree-content">
-            <el-tree :props="propsMember" :load="loadNode" node-key="uuid" lazy accordion>
-              <span class="custom-tree-node" slot-scope="{ node }" @click="handleTree(0, node)">
-                <span>{{ node.label }}</span>
+            <el-tree
+              :props="propsMember"
+              :load="loadNode"
+              node-key="uuid"
+              lazy
+              accordion
+            >
+              <span
+                class="custom-tree-node"
+                :class="node.data.activeSelect === 1 && node.data.haveChild === '0' ? 'tree-select' : ''"
+                slot-scope="{ node }"
+                @click.stop="handleTree(node, 0)"
+              >
+                <span class="label-span">{{ node.label }}</span>
                 <span>
-                  <i class="iconfont icon-xianshi2" v-if="node.activeState === 0 || node.activeState === undefined" @click.stop="handleTree(node)"></i>
-                  <i class="iconfont icon-yincang1" v-if="node.activeState === 1" @click.stop="handleTree(node)"></i>
+                  <i
+                    class="iconfont icon-xianshi2"
+                    v-if="node.data.activeState === 0"
+                    @click.stop="handleTree(node, 1)"
+                  ></i>
+                  <i
+                    class="iconfont icon-yincang1"
+                    v-if="node.data.activeState === 1"
+                    @click.stop="handleTree(node, 2)"
+                  ></i>
                 </span>
               </span>
             </el-tree>
@@ -112,7 +131,7 @@ export default {
   layout: "reset",
   components: {
     todoFooter,
-    viewCube
+    viewCube,
   },
   data() {
     return {
@@ -120,18 +139,19 @@ export default {
         label: "name",
         isLeaf: (e) => {
           if (e.haveChild === "1") {
-            return false
-          }          
-          if (e.haveChild === "0") {
-            return true
+            return false;
           }
-        }
+          if (e.haveChild === "0") {
+            return true;
+          }
+        },
       },
       webUrl: null,
       appId: null,
       taskId: null,
       isFade: true,
       handleState: 0,
+      leafInfo: null,
       cubeState: 6,
       viewHeight: 0,
       runTimeCode: 0,
@@ -189,158 +209,169 @@ export default {
     }
   },
   methods: {
-    handleTree(index, e){
-    /**
-     * @Author: zk
-     * @Date: 2021-03-08 14:39:51
-     * @description: 构件树的指令
-     */
-    console.log(e);
-    if (index === 0) {
-      // 选中
-
-    } else {
-      
-    }
-      // if (e.activeState === undefined || e.activeState === 0) {
-      //   e.activeState = 1
-      // } else {
-      //   e.activeState = 0        
-      // }
-      // console.log(e);
-      // return e
+    handleTree(e, index) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-08 14:39:51
+       * @description: 构件树的指令
+       */
+      this.leafInfo = e
+      if (index === 0) {
+        // 选中
+        e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
+        this.handleState = 9
+        if (e.data.haveChild === "0") {
+          this.updateOrder();          
+        }
+      } else if (index === 1) {
+        this.handleState = 8
+        e.data.activeState = 1;
+      this.updateOrder();
+      } else if (index === 2) {
+        this.handleState = 8
+        e.data.activeState = 0;
+      this.updateOrder();
+      }
     },
-    handleOrder(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-03-08 10:40:10
-     * @description: cube指令
-     */  
+    handleOrder(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-08 10:40:10
+       * @description: cube指令
+       */
       this.handleState = 6;
-				switch (e) {
-					case 0:
-						this.cubeState = 6;
-						break;
-					case 1:
-						this.cubeState = 7;
-						break;
-					case 2:
-						this.cubeState = 2;
-						break;
-					case 3:
-						this.cubeState = 3;
-						break;
-					case 4:
-						this.cubeState = 4;
-						break;
-					case 5:
-						this.cubeState = 5;
-						break;
-					case 6:
-						this.cubeState = 1;
-						break;
-					default:
-						break;
-				}
-        this.updateOrder()
+      switch (e) {
+        case 0:
+          this.cubeState = 6;
+          break;
+        case 1:
+          this.cubeState = 7;
+          break;
+        case 2:
+          this.cubeState = 2;
+          break;
+        case 3:
+          this.cubeState = 3;
+          break;
+        case 4:
+          this.cubeState = 4;
+          break;
+        case 5:
+          this.cubeState = 5;
+          break;
+        case 6:
+          this.cubeState = 1;
+          break;
+        default:
+          break;
+      }
+      this.updateOrder();
     },
     async updateOrder() {
-				/**
-				 * @Author: zk
-				 * @Date: 2020-09-14 15:16:16
-				 * @description: 操作指令
-				 */
-				if (!this.taskId) {
-					this.$message({
-						message: "场景未加载，请刷新",
-						type: "error",
-					});
-					return
-				}
-				let params = {
-					taskid: this.taskId,
-				};
-				switch (this.handleState) {
-					case 3:
-						// 缩放
-						params.id = this.mouseState.roller;
-						break;
-					case 4:
-						// 视角切换
-						params.id = this.mouseState.angle;
-						break;
-					case 5:
-						// 视角切换
-						params.id = 12;
-						params.sjid = this.angleInfo.tid;
-						break;
-					case 6:
-						// 六面体
-						params.id = this.cubeState;
-						break;
-					case 8:
-						// 构件显示 隐藏 半透明
-						params.mn = this.leafInfo.data.key
-						if (this.leafInfo.state === 0) {
-							params.id = 26
-						} else if (this.leafInfo.state === 1) {
-							params.id = 27
-						} else {
-							params.id = 30
-							params.Opacity = 0.5
-						}
-						break;
-					case 9:
-						// 当前 focus + 高亮 /取消
-						params.mn = this.leafInfo.data.key
-						this.leafInfo.isAvtive ? params.id = 28 : params.id = 29
-						break;
-					default:
-						break;
-				}
-				if (this.isAngle) {
-					params = {
-						taskid: this.taskId,
-						id: 20,
-					};
-				}
-        await MODELAPI.UPDATEORDER(params)
-        .then(res => {
-            this.$message({
-							message: "指令下发成功",
-							type: "success",
-						});
+      /**
+       * @Author: zk
+       * @Date: 2020-09-14 15:16:16
+       * @description: 操作指令
+       */
+      if (!this.taskId) {
+        this.$message({
+          message: "场景未加载，请刷新",
+          type: "error",
+        });
+        return;
+      }
+      let params = {
+        taskid: this.taskId,
+      };
+      switch (this.handleState) {
+        case 3:
+          // 缩放
+          params.id = this.mouseState.roller;
+          break;
+        case 4:
+          // 视角切换
+          params.id = this.mouseState.angle;
+          break;
+        case 5:
+          // 视角切换
+          params.id = 12;
+          params.sjid = this.angleInfo.tid;
+          break;
+        case 6:
+          // 六面体
+          params.id = this.cubeState;
+          break;
+        case 8:
+          // 构件显示 隐藏 半透明
+          console.log(this.leafInfo);
+          params.mn = this.leafInfo.key;
+          if (this.leafInfo.data.activeState === 0) {
+            params.id = 26;
+          } else if (this.leafInfo.data.activeState === 1) {
+            params.id = 27;
+          } else {
+            params.id = 30;
+            params.Opacity = 0.5;
+          }
+          break;
+        case 9:
+          // 当前 focus + 高亮 /取消
+          params.mn = this.leafInfo.key;
+          this.leafInfo.data.activeSelect === 0 ? (params.id = 29) : (params.id = 28);
+          break;
+        default:
+          break;
+      }
+      if (this.isAngle) {
+        params = {
+          taskid: this.taskId,
+          id: 20,
+        };
+      }
+      await MODELAPI.UPDATEORDER(params)
+        .then((res) => {
+          this.$message({
+            message: "指令下发成功",
+            type: "success",
+          });
         })
         .catch(() => {
-						this.$message({
-							message: "指令下发失败",
-							type: "error",
-						});
-					});
-			},
+          this.$message({
+            message: "指令下发失败",
+            type: "error",
+          });
+        });
+    },
     async getMemberList(e) {
       let params = {
         appliId: this.appId,
       };
       e ? (params.uuid = e) : "";
-      let realMember = await MODELAPI.LISTMEMBERTREE(params)
-        .then((res) => {
-          if (res.data.code === 0) {
-            return res.data.data;
-          }else{
-            return []
-          }
-        })
+      let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
+        if (res.data.code === 0) {
+          return res.data.data;
+        } else {
+          return [];
+        }
+      });
       return realMember;
     },
     loadNode(node, resolve) {
       if (node.level === 0) {
         this.getMemberList(node.key).then((res) => {
+          res.forEach((item) => {
+            item.activeState = 0;
+            item.activeSelect = 0;
+          });
           return resolve(res);
         });
-      }      
-      if (node.level >= 1) {        
+      }
+      if (node.level >= 1) {
         this.getMemberList(node.key).then((res) => {
+          res.forEach((item) => {
+            item.activeState = 0;
+            item.activeSelect = 0;
+          });
           return resolve(res);
         });
       }
@@ -404,8 +435,8 @@ export default {
             let timer = setTimeout(() => {
               window.clearTimeout(timer);
             }, 1000 * 10);
-          }else{
-            this.$message.warning(res.data.message)
+          } else {
+            this.$message.warning(res.data.message);
           }
         })
         .catch((err) => {
@@ -809,12 +840,15 @@ export default {
           border-radius: 10px;
           background: rgba(255, 255, 255, 0.295);
         }
-        .custom-tree-node{
+        .custom-tree-node {
           flex: 1;
           display: flex;
           align-items: center;
           justify-content: space-between;
           padding-right: 8px;
+          .label-span{
+            padding-left: 5px;
+          }
         }
       }
     }
@@ -913,6 +947,9 @@ export default {
     width: 900px !important;
   }
 }
+.tree-select{
+  background: rgba(255, 255, 255, 0.2);
+}
 </style>
 <style lang="less" >
 .tree-content {
@@ -921,6 +958,7 @@ export default {
     color: #fff;
     .el-tree-node {
       .el-tree-node__content {
+        line-height: 200%;
         background: none;
         &:hover {
           background: none;
@@ -929,7 +967,7 @@ export default {
       .el-tree-node__expand-icon {
         color: #fff;
       }
-      .is-leaf{
+      .is-leaf {
         color: transparent;
       }
     }
