@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-04 14:53:23
+ * @LastEditTime: 2021-03-08 09:21:06
  * @description: 
 -->
 <template>
@@ -341,7 +341,7 @@
 				width: 50%;
 				left: 25%;
 				border-radius: 10px 10px 0 0;
-				top: -151px;
+				top: -147px;
 				padding-bottom: 5px;
 				background-color: rgba(0, 0, 0, 0.6);
 
@@ -358,7 +358,7 @@
 				left: -60%;
 				padding: 10%;
 				border-radius: 10px 10px 0 0;
-				top: -140px;
+				top: -139px;
 				background-color: rgba(0, 0, 0, 0.6);
 			}
 
@@ -445,11 +445,11 @@
 			margin-bottom: 0;
 		}
 
-		/deep/ .el-form-item__content {
+		.el-form-item__content {
 			margin-left: 0 !important;
 		}
 
-		/deep/ .el-form-item__label {
+		.el-form-item__label {
 			text-align: left;
 			color: #FFFFFF;
 			line-height: 26px;
@@ -457,7 +457,7 @@
 
 		.el-input,
 		.el-select {
-			/deep/ .el-input__inner {
+			.el-input__inner {
 				background: rgba(255, 255 ,255, 0.2);
 				border: 1px solid rgba(255, 255, 255, 0.25);
 				color: #FFFFFF;

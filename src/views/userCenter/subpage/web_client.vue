@@ -95,6 +95,7 @@
         </div>
       </div>
       <todo-footer ref="getFooter" @listenTodo="listenTodo"></todo-footer>
+      <view-cube></view-cube>
     </div>
   </div>
 </template>
@@ -102,13 +103,15 @@
 <script>
 import { getModelInfo } from "@/api/my.js";
 import MODELAPI from "@/api/model_api";
-import todoFooter from "@/components/todo_footer/todo_footer";
+import todoFooter from "@/components/web_client/todo_footer";
+import viewCube from "@/components/web_client/view_cube";
 
 export default {
   name: "look_app",
   layout: "reset",
   components: {
     todoFooter,
+    viewCube
   },
   data() {
     return {
