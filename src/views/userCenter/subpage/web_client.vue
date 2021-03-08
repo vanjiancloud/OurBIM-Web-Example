@@ -8,7 +8,7 @@
       frameborder="0"
       id="show-bim"
     ></iframe>
-    <!-- <div class="time-log" v-if="moreCount < 10">
+    <div class="time-log" v-if="moreCount < 10">
       <div class="log-main" :class="runTimeCode === 0 ? '' : 'phone-log-main'">
         <div>
           <img class="show-logo" src="@/assets/img/ourbim-logo.png" alt="" />
@@ -34,7 +34,7 @@
       <div class="hidden-text learn-text" v-if="hiddenState === 2">
         模型长时间未响应，请刷新重试。
       </div>
-    </div> -->
+    </div>
     <div v-if="runTimeCode === 0">
       <div class="mutual-bim">
         <div
@@ -95,7 +95,7 @@
         </div>
       </div>
       <todo-footer ref="getFooter" @listenTodo="listenTodo"></todo-footer>
-      <view-cube></view-cube>
+      <view-cube @handleOrder="handleOrder"></view-cube>
     </div>
   </div>
 </template>
@@ -130,6 +130,8 @@ export default {
       appId: null,
       taskId: null,
       isFade: true,
+      handleState: 0,
+      cubeState: 6,
       viewHeight: 0,
       runTimeCode: 0,
       timerInfo: null,
@@ -186,6 +188,114 @@ export default {
     }
   },
   methods: {
+    handleOrder(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-08 10:40:10
+     * @description: cube指令
+     */  
+      this.handleState = 6;
+				switch (e) {
+					case 0:
+						this.cubeState = 6;
+						break;
+					case 1:
+						this.cubeState = 7;
+						break;
+					case 2:
+						this.cubeState = 2;
+						break;
+					case 3:
+						this.cubeState = 3;
+						break;
+					case 4:
+						this.cubeState = 4;
+						break;
+					case 5:
+						this.cubeState = 5;
+						break;
+					case 6:
+						this.cubeState = 1;
+						break;
+					default:
+						break;
+				}
+        this.updateOrder()
+    },
+    async updateOrder() {
+				/**
+				 * @Author: zk
+				 * @Date: 2020-09-14 15:16:16
+				 * @description: 操作指令
+				 */
+				if (!this.taskId) {
+					this.$message({
+						message: "场景未加载，请刷新",
+						type: "error",
+					});
+					return
+				}
+				let params = {
+					taskid: this.taskId,
+				};
+				switch (this.handleState) {
+					case 3:
+						// 缩放
+						params.id = this.mouseState.roller;
+						break;
+					case 4:
+						// 视角切换
+						params.id = this.mouseState.angle;
+						break;
+					case 5:
+						// 视角切换
+						params.id = 12;
+						params.sjid = this.angleInfo.tid;
+						break;
+					case 6:
+						// 六面体
+						params.id = this.cubeState;
+						break;
+					case 8:
+						// 构件显示 隐藏 半透明
+						params.mn = this.leafInfo.data.key
+						if (this.leafInfo.state === 0) {
+							params.id = 26
+						} else if (this.leafInfo.state === 1) {
+							params.id = 27
+						} else {
+							params.id = 30
+							params.Opacity = 0.5
+						}
+						break;
+					case 9:
+						// 当前 focus + 高亮 /取消
+						params.mn = this.leafInfo.data.key
+						this.leafInfo.isAvtive ? params.id = 28 : params.id = 29
+						break;
+					default:
+						break;
+				}
+				if (this.isAngle) {
+					params = {
+						taskid: this.taskId,
+						id: 20,
+					};
+				}
+        await MODELAPI.UPDATEORDER(params)
+        .then(res => {
+            this.$message({
+							message: "指令下发成功",
+							type: "success",
+						});
+        })
+        .catch(() => {
+						this.$message({
+							message: "指令下发失败",
+							type: "error",
+						});
+					});
+			},
     async getMemberList(e) {
       let params = {
         appliId: this.appId,

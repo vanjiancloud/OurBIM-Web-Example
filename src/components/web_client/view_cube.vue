@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-03-08 09:41:31
+ * @LastEditTime: 2021-03-08 10:41:21
  * @description: 
 -->
 <template>
@@ -101,8 +101,8 @@
         top: 26px;
         right: 36px;
 		.go-front {
-			width: 0.83vw;
-			height: 1.48vh;
+			width: 16px;
+			height: 16px;
 			position: absolute;
 			top: -10px;
 			left: -20px;
@@ -131,7 +131,7 @@
 		top: 0;
 		left: 0;
 		background-size: cover;
-		color: #04D8FC;
+		color: #a5a5a4;
 	}
     .front {
 		transform: translateZ(17px);
