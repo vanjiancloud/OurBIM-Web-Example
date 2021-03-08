@@ -223,140 +223,6 @@ export default {
 
 <style lang="less" scoped>
 .box {
-  .main {
-    height: 221px;
-    margin-top: 20px;
-    .container {
-      .top {
-        height: 152px;
-        background-color: #fff;
-        .left {
-          height: 152px;
-          width: 192px;
-          margin-right: 95px;
-          margin-left: 42px;
-          float: left;
-          background-color: #fff;
-          .im {
-            margin-top: 36px;
-            width: 80px;
-            height: 80px;
-            float: left;
-            border-radius: 50%;
-            margin-right: 20px;
-            img {
-              width: 100%;
-              height: 100%;
-              border-radius: 50%;
-            }
-          }
-          .Info {
-            float: right;
-            margin-top: 35px;
-          }
-        }
-        .middle {
-          height: 152px;
-          float: left;
-          margin-right: 30px;
-          // background-color: red;
-          h3 {
-            margin-top: 6px;
-          }
-          .tiao {
-            width: 318px;
-            float: left;
-            margin-top: -10px;
-            margin-left: 100px;
-            .tu {
-              float: left;
-              margin-right: 29px;
-              margin-top: 15px;
-              .icon {
-                width: 20px;
-                height: 20px;
-                float: left;
-                margin-right: 10px;
-                img {
-                  width: 100%;
-                  height: 100%;
-                }
-              }
-            }
-          }
-        }
-        .jindu {
-          width: 318px;
-          height: 152px;
-          // background-color: pink;
-          float: left;
-          h3 {
-            margin-top: 28px;
-            color: #00aaf0;
-          }
-          .tutu {
-            float: left;
-            margin-top: 15px;
-            .icon {
-              width: 20px;
-              height: 20px;
-              float: left;
-              margin-right: 10px;
-              img {
-                width: 100%;
-                height: 100%;
-              }
-            }
-          }
-        }
-        .right {
-          height: 152px;
-          width: 207px;
-          margin-right: 42px;
-          float: right;
-          text-align: center;
-          // background-color: green;
-          .content {
-            margin-top: 36px;
-            width: 207px;
-            div {
-              margin-bottom: 10px;
-            }
-            .btn {
-              width: 132px;
-            }
-          }
-        }
-      }
-      .tab {
-        height: 69px;
-        background-color: #f1f1f1;
-        line-height: 69px;
-        padding: 0 220px;
-        .el-button {
-          color: #000;
-        }
-        .el-button:hover {
-          color: #ff6600;
-        }
-        div {
-          float: left;
-          margin-right: 155px;
-          width: 70px;
-          height: 50px;
-          // background-color: pink;
-          border-bottom: 5px solid #f1f1f1;
-          border-radius: 3px;
-        }
-        div:hover {
-          border-bottom-color: #ff6600;
-        }
-        .last {
-          margin: 0;
-        }
-      }
-    }
-  }
   .container {
     background-color: #fff;
     margin-bottom: 34px;
@@ -408,6 +274,7 @@ export default {
           /deep/ .el-input__inner {
             width: 460px;
             height: 46px;
+            font-size: 17px;
           }
         }
         .photo {
