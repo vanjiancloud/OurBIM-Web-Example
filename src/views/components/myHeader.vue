@@ -150,7 +150,7 @@
               <div class="icon">
                 <img src="./jiedian.png" alt="" />
               </div>
-              {{ $t('node') }}&nbsp;&nbsp;{{ currentCountBF }}/{{ countBF }}
+              {{ $t('Node') }}&nbsp;&nbsp;{{ currentCountBF }}/{{ countBF }}
             </div>
           </div>
           <div class="right">
