@@ -43,14 +43,17 @@
             browserInfo && browserInfo.type === 10 && browserInfo.state === 1
           "
         >
+        <!-- 模型浏览器 -->
           <div class="tree-title">
-            <div class="">模型浏览器</div>
+            <div class="" v-text="$t('webClient.browser.title')"></div>
             <div class="close-part">
               <i class="el-icon-close" @click="closePart(browserInfo.type)"></i>
             </div>
           </div>
           <div class="tree-content">
             <el-tree
+              ref="setTree"
+              :empty-text="$t('webClient.browser.tips')"
               :props="propsMember"
               :load="loadNode"
               node-key="uuid"
@@ -59,7 +62,7 @@
             >
               <span
                 class="custom-tree-node"
-                :class="node.data.activeSelect === 1 && node.data.haveChild === '0' ? 'tree-select' : ''"
+                :class="node.checked && node.data.haveChild === '0' ? 'tree-select' : ''"
                 slot-scope="{ node }"
                 @click.stop="handleTree(node, 0)"
               >
@@ -84,8 +87,9 @@
           class="bim-info"
           v-if="natureInfo && natureInfo.type === 11 && natureInfo.state === 1"
         >
+        <!-- 属性 -->
           <div class="bim-title">
-            <div class="">属性</div>
+            <div class="" v-text="$t('webClient.attribute.title')"></div>
             <div class="close-part">
               <i class="el-icon-close" @click="closePart(natureInfo.type)"></i>
             </div>
@@ -218,6 +222,11 @@ export default {
       this.leafInfo = e
       if (index === 0) {
         // 选中
+        if (e.checked) {
+          e.checked = false
+        } else {
+          this.$refs.setTree.setCheckedKeys([e.key])
+        }
         e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
         this.handleState = 9
         if (e.data.haveChild === "0") {

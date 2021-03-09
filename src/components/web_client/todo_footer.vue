@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-08 15:49:16
+ * @LastEditTime: 2021-03-09 10:10:02
  * @description: 
 -->
 <template>
@@ -34,14 +34,14 @@
 						 manual>
 							<div slot="content">
 								<el-form class="set-form" ref="form" :model="setForm" label-width="80px">
-									<el-form-item label="单位">
-										<el-select size="mini" v-model="setForm.unit" placeholder="请选择单位">
+									<el-form-item :label="$t('webClient.setting[0].label')">
+										<el-select size="mini" v-model="setForm.unit" :placeholder="$t('webClient.setting[0].tips')">
 											<el-option label="区域一" value="shanghai"></el-option>
 											<el-option label="区域二" value="beijing"></el-option>
 										</el-select>
 									</el-form-item>
-									<el-form-item label="精度">
-										<el-select size="mini" v-model="setForm.unit" placeholder="请选择精度">
+									<el-form-item :label="$t('webClient.setting[1].label')">
+										<el-select size="mini" v-model="setForm.unit" :placeholder="$t('webClient.setting[1].tips')">
 											<el-option label="区域一" value="shanghai"></el-option>
 											<el-option label="区域二" value="beijing"></el-option>
 										</el-select>
@@ -95,13 +95,13 @@
 				<el-collapse-transition>
 					<div class="show-weather" v-if="imgList[9].state === 1">
 						<el-form class="set-form" :model="setForm" label-width="80px">
-							<el-form-item label="天气">
-								<el-select size="mini" v-model="setForm.weather" placeholder="请选择天气">
+							<el-form-item :label="$t('webClient.weather[0].label')">
+								<el-select size="mini" v-model="setForm.weather" :placeholder="$t('webClient.weather[0].tips')">
 									<el-option label="区域一" value="shanghai"></el-option>
 									<el-option label="区域二" value="beijing"></el-option>
 								</el-select>
 							</el-form-item>
-							<el-form-item label="时间">
+							<el-form-item :label="$t('webClient.weather[1].label')">
 								<div class="show-speed weahter-speed" v-if="imgList[9].state === 1">
 									<el-slider v-model="imgList[9].data.speed"></el-slider>
 								</div>
