@@ -64,7 +64,7 @@
       </div>
     </div>
     <!-- 分页 -->
-    <div class="page">
+    <!-- <div class="page">
       <el-pagination
         @current-change="handleCurrentChange"
         layout="prev, pager, next"
@@ -72,7 +72,7 @@
         :total="400"
       >
       </el-pagination>
-    </div>
+    </div> -->
 
     <!-- 尾部 -->
     <my-footer></my-footer>
@@ -149,8 +149,8 @@ export default {
     formatStatus (status) {
       const statusObj = {
         0: '未上传',
-        1: '转换中',
-        2: '转换完成'
+        1: '渲染中',
+        2: '渲染完成'
       }
       return statusObj[status]
     },
@@ -177,6 +177,7 @@ export default {
 .box {
   .container {
     background-color: #fff;
+    margin-bottom: 34px;
     /deep/ .el-button--primary {
       background-color: #00aaf0;
     }
@@ -200,6 +201,7 @@ export default {
       }
       .table {
         margin-top: 20px;
+        margin-bottom: 40px;
         /deep/ .el-table thead {
           color: #fff;
         }
@@ -217,13 +219,13 @@ export default {
           color: #fff;
         }
         //表格去横线
-        /deep/ .el-table__row > td {
-          border: none;
-        }
+        // /deep/ .el-table__row > td {
+        //   border: none;
+        // }
         //表格去横线之去掉最下面的那一条线
-        /deep/ .el-table::before {
-          height: 0px;
-        }
+        // /deep/ .el-table::before {
+        //   height: 0px;
+        // }
         // 第一列字体颜色
         /deep/ .el-table_1_column_1 {
           color: #00aaf0;

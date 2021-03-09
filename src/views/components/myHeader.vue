@@ -114,6 +114,7 @@
               {{ note }}
             </div>
           </div>
+          <div class="line"></div>
           <div class="middle">
             <h3>{{ $t('occupancy') }}</h3>
             <div class="tiao">
@@ -153,6 +154,7 @@
               {{ $t('Node') }}&nbsp;&nbsp;{{ currentCountBF }}/{{ countBF }}
             </div>
           </div>
+          <div class="line"></div>
           <div class="right">
             <div class="content">
               <div>{{ $t('service') }}</div>
@@ -162,13 +164,29 @@
                 round
                 size="mini"
                 style="color: #00AAF0;border-color:#00aaf0;font-size: 16px;"
-                >{{ $t('Extension') }}</el-button
+                @click="toOrder"
               >
+                {{ $t('Extension') }}
+              </el-button>
             </div>
           </div>
         </div>
         <!-- tab栏 -->
-        <div class="tab" >
+        <el-menu
+          :default-active="this.$route.path"
+          :router="true"
+          mode="horizontal"
+          background-color="#545c64"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+        >
+          <el-menu-item index="/userCenter">我的应用</el-menu-item>
+          <el-menu-item index="/manage">应用管理</el-menu-item>
+          <el-menu-item index="/found">创建应用</el-menu-item>
+          <el-menu-item index="/bill">账户管理</el-menu-item>
+        </el-menu>
+
+        <!-- <div class="tab">
           <span>
             <el-button type="text" @click="goUserCenter">{{
               $t('app')
@@ -189,7 +207,7 @@
               $t('Account')
             }}</el-button>
           </span>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -213,7 +231,7 @@ export default {
       countSpace: '', //当前用户的存储量最大值
       currentCountSpace: '', //当前用户已使用的存储率
       countBF: '', //当前用户的并发总数最大值
-      currentCountBF: '', //当前用户的并发数
+      currentCountBF: '' //当前用户的并发数
     }
   },
   created () {
@@ -229,6 +247,10 @@ export default {
       this.$i18n.locale = 'zh'
       this.classify = '全部'
       // this.isCut = 1
+    },
+    // 延长有效期按钮
+    toOrder () {
+      this.$router.push('../order')
     },
     toUserCenter () {
       if (this.route !== '/userCenter') {
@@ -266,10 +288,10 @@ export default {
         })
     },
     //定时器，每隔10秒更新一次数据
-    get () {
-      this.showData()
-      console.log('定时器运行中')
-    },
+    // get () {
+    //   this.showData()
+    //   console.log('定时器运行中')
+    // },
     goUserCenter () {
       this.$router.push('../userCenter')
     },
@@ -331,7 +353,9 @@ export default {
         font-size: 14px;
         color: #999999;
       }
-
+      .el-dropdown {
+        height: 48px;
+      }
       .el-dropdown-link {
         cursor: pointer;
         color: #000;
@@ -373,8 +397,7 @@ export default {
         background-color: #fff;
         .left {
           height: 152px;
-          width: 287px;
-          margin-right: 20px;
+          width: 267px;
           margin-left: 42px;
           float: left;
           background-color: #fff;
@@ -395,10 +418,18 @@ export default {
             float: left;
             margin-top: 35px;
             // background-color: red;
-            width: 207px;
+            width: 187px;
             height: 115px;
             text-align: center;
           }
+        }
+        .line {
+          width: 1px;
+          height: 100px;
+          float: left;
+          background-color: #ccc;
+          margin: 0 20px;
+          margin-top: 26px;
         }
         .middle {
           height: 152px;
@@ -423,6 +454,7 @@ export default {
                 height: 20px;
                 float: left;
                 margin-right: 10px;
+                margin-top: 3px;
                 img {
                   width: 100%;
                   height: 100%;
@@ -448,6 +480,7 @@ export default {
               height: 20px;
               float: left;
               margin-right: 10px;
+              margin-top: 4px;
               img {
                 width: 100%;
                 height: 100%;
@@ -474,8 +507,8 @@ export default {
       // 中文tab栏
       .tab {
         height: 69px;
-        background-color: #f1f1f1;
-        // background-color: red;
+        // background-color: #f1f1f1;
+        background-color: red;
         line-height: 69px;
         padding-left: 220px;
         .el-button {

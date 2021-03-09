@@ -6,9 +6,7 @@
     <div class="login-form-wrap">
       <!-- .logo区域 -->
       <div class="login-head">
-        <div class="icon">
-          <img src="./sicon.png" alt="" />
-        </div>
+        <i class="el-icon-arrow-left" @click="toReturn"></i>
         <div class="logo">
           <img src="./logo.png" alt="" />
         </div>
@@ -77,7 +75,7 @@
             type="primary"
             class="login-btn"
             :loading="isLoading"
-            >登陆</el-button
+            >登录</el-button
           >
         </el-form-item>
       </el-form>
@@ -107,7 +105,7 @@
             class="input"
           >
             <el-button
-              style="padding-right:25px;padding-top:35px"
+              style="padding-right:25px;padding-top:47px;"
               slot="suffix"
               type="text"
               :disabled="isSend"
@@ -156,7 +154,7 @@
 
 <script>
 import { sendMsgCode, login, loginMobile } from '@/api/my.js'
-import {setuserid} from '@/store/index.js'
+import { setuserid } from '@/store/index.js'
 // const Base64 = require('js-base64').Base64
 export default {
   data () {
@@ -171,7 +169,7 @@ export default {
         checkbox: false // 复选框的状态
       },
       isshow: 0, // 切换登录类别
-      isLoading: false, // 是否正在登陆
+      isLoading: false, // 是否正在登录
       form: {
         isAgree: false, // 复选框的状态
         password: '123456',
@@ -223,6 +221,11 @@ export default {
     }
   },
   methods: {
+    // 返回首页
+    toReturn () {
+      this.$router.push('../../home')
+    },
+
     // 注册新用户
     register () {
       this.$router.push('../../register')
@@ -249,7 +252,7 @@ export default {
           console.log(res)
           console.log(res.data.data.userid)
           if (res.data.code === 0) {
-            this.$message.success('恭喜登陆成功')
+            this.$message.success('恭喜登录成功')
             this.setCookie('email', this.form.email)
             this.setCookie('password', this.form.password)
             this.setCookie('userInfo', JSON.stringify(res.data.data))
@@ -266,7 +269,7 @@ export default {
         })
         .catch(err => {
           console.log(err)
-          this.$message.error('登陆失败，用户名密码错误')
+          this.$message.error('登录失败，用户名密码错误')
         })
     },
     // cookie邮箱
@@ -434,15 +437,21 @@ html {
   background-size: cover;
   .picture {
     float: left;
-    width: 625px;
+    width: 652px;
     height: 802px;
-    margin-right: 623px;
+    margin-left: 206px;
+    margin-right: 300px;
     img {
       width: 100%;
       height: 100%;
     }
   }
   .login-form-wrap {
+    // background-color: red;
+    margin-right: 220px;
+    height: 550px;
+    float: right;
+    width: 520px;
     // 错误提示
     /deep/ .el-form-item__error {
       position: absolute;
@@ -476,22 +485,34 @@ html {
       width: 9px;
       height: 13px;
     }
-    float: right;
-    width: 520px;
-    height: 636px;
     .login-head {
-      position: relative;
-      display: flex;
-      .logo {
-        width: 250px;
-        height: 65px;
-        margin-left: 130px;
-        margin-bottom: 60px;
-        margin-top: -10px;
+      width: 520px;
+      height: 46px;
+      // background-color: green;
+      // margin-bottom: 60px;
+      .icon {
+        width: 16px;
+        height: 32px;
+        // background-color: pink;
         img {
           width: 100%;
           height: 100%;
         }
+      }
+      .logo {
+        width: 232px;
+        height: 46px;
+        margin: 0 auto;
+        // background-color: blue;
+        margin-top: -55px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .el-icon-arrow-left {
+        color: #0097fe;
+        font-size: 60px;
       }
     }
     .state {
@@ -499,7 +520,9 @@ html {
       display: flex;
       justify-content: center;
       align-items: center;
-      padding-bottom: 30px;
+      margin-bottom: 18px;
+      // background-color: red;
+      margin-top: 60px;
       cursor: pointer;
       span {
         color: #999999;
@@ -507,29 +530,27 @@ html {
       .color {
         color: #0097fe;
         border-bottom: 1px solid #0097fe;
-        border-width: 2px;
+        border-width: 4px;
       }
       span {
         padding-right: 20px;
         border-bottom: 1px solid #e9e9e9;
-        border-width: 2px;
-        padding: 30px 70px 15px 70px;
+        border-width: 4px;
+        padding: 0px 80px 15px 80px;
       }
     }
     .login-form {
+      // background-color: yellowgreen;
+      /deep/ .el-input__inner {
+        height: 60px;
+      }
+      /deep/ .el-form-item__content {
+        line-height: 30px;
+      }
       .login-btn {
         width: 100%;
         height: 60px;
-        margin-top: 40px;
         font-size: 25px;
-      }
-      .btnMes {
-        height: 50px;
-        margin-top: 15px;
-      }
-      .input {
-        width: 100%;
-        margin-right: 10px;
       }
       span {
         padding-left: 20px;
@@ -539,6 +560,9 @@ html {
         cursor: pointer;
       }
       .checkbox {
+        /deep/ .el-checkbox__inner {
+          margin-bottom: 3px;
+        }
         color: #999999;
         span {
           cursor: pointer;
@@ -555,7 +579,7 @@ html {
     position: fixed;
     bottom: 21px;
     text-align: center;
-    font-size: 12px;
+    font-size: 16px;
   }
 }
 </style>

@@ -104,7 +104,7 @@
                 {{ $t('UploadAvatar') }}
               </el-button>
               <div slot="tip" class="el-upload__tip">
-                {{ $t('extensions') }}：.png.jpg.jpeg
+                {{ $t('extensions') }}：.png .jpg .jpeg
               </div>
             </el-upload>
           </div>
@@ -139,7 +139,7 @@ export default {
       mobile: '', //手机号
       company: '', //公司
       position: '', //职位
-      imgUrl: '',//用户头像
+      imgUrl: '', //用户头像
       baseURL: axios.defaults.baseURL
     }
   },
@@ -180,6 +180,7 @@ export default {
           if (res.data.code === 0) {
             console.log(res)
             this.$message.success('修改成功')
+            this.$router.go(0)
           } else if (res.data.code === 1) {
             console.log(res)
             this.$message.error('修改失败')
@@ -194,7 +195,7 @@ export default {
     // 上传头像成功
     upLoadImg (response, file, fileList) {
       console.log(response)
-      console.log(response.data);
+      console.log(response.data)
       this.imgUrl = response.data
     },
 

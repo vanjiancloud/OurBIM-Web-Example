@@ -22,11 +22,11 @@ const routes = [
       title: 'OurBIM请登录'
     }
   },
-  // 忘记密码ppp
+  // 忘记密码
   {
-    path: '/changepassword',
-    name: 'changepassword',
-    component: () => import('../views/changepassword/index.vue'),
+    path: '/changePassword',
+    name: 'changePassword',
+    component: () => import('../views/changePassword/index.vue'),
     meta: {
       title: 'OurBIM忘记密码'
     }
@@ -164,11 +164,19 @@ const router = new VueRouter({
 })
 
 // 路由前置守卫
-router.beforeEach(function(to,from,next){
+router.beforeEach(function (to, from, next) {
   // 如果本地没有userid，并且去的不是登录页面，
   // 直接返回登录页，否则放行
-  if(!localStorage.getItem('userid')){
-    if (to.path !== '/login') {
+  if (!localStorage.getItem('userid')) {
+    if (
+      to.path !== '/login' &&
+      to.path !== '/changePassword' &&
+      to.path !== '/register' &&
+      to.path !== '/newPassword' &&
+      to.path !== '/resetSucceed'&&
+      to.path !== '/protocol' &&
+      to.path !== '/registerSucceed'
+    ) {
       next('/login')
     }
   }

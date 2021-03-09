@@ -276,13 +276,13 @@ export default {
             text-align: center;
           }
           //表格去横线
-          /deep/ .el-table__row > td {
-            border: none;
-          }
+          // /deep/ .el-table__row > td {
+          //   border: none;
+          // }
           //表格去横线之去掉最下面的那一条线
-          /deep/ .el-table::before {
-            height: 0px;
-          }
+          // /deep/ .el-table::before {
+          //   height: 0px;
+          // }
           // 第二列字体颜色
           /deep/ .el-table_1_column_2 {
             color: #00aaf0;

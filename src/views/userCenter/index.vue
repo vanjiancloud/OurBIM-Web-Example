@@ -22,11 +22,7 @@
           <div class="list">
             <div class="lis">
               <ul style="padding: 0; margin: 0">
-                <li
-                  v-for="(item, index) in appList"
-                  :key="index"
-                  @click="GoApp(item)"
-                >
+                <li v-for="(item, index) in appList" :key="index">
                   <div class="img">
                     <img :src="item.screenImg" class="tupian" />
                   </div>
@@ -39,7 +35,8 @@
                     }}
                     <!-- 进入应用 -->
                     <div class="button">
-                      <el-button plain round>{{ $t('into') }}</el-button>
+                      <el-button plain round @click="GoApp(item)">
+                        {{$t('into')}}</el-button>
                     </div>
                   </div>
                 </li>
@@ -132,15 +129,15 @@ export default {
        * @description: 获取应用信息
        */
       const { href } = this.$router.resolve({
-              name: "web_client",
-              query: {
-                appid: e.appid,
-              },
-            });
-            window.open(href, "_blank");
-    },
-  },
-};
+        name: 'web_client',
+        query: {
+          appid: e.appid
+        }
+      })
+      window.open(href, '_blank')
+    }
+  }
+}
 </script>
 
 <style lang="less" scoped>
@@ -167,7 +164,7 @@ a:hover {
     background-color: #fff;
     // background-color: green;
     height: 961px;
-    margin-bottom: 100px;
+    margin-bottom: 34px;
     .content {
       margin-left: 41px;
       overflow: hidden;
@@ -219,6 +216,7 @@ a:hover {
                 margin-top: 10px;
                 .el-button {
                   background-color: #f1f1f1;
+                  font-size: 14px;
                 }
               }
             }
