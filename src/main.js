@@ -150,7 +150,34 @@ const i18n = new VueI18n({
       Confirmpassword: '确认密码',
       VerificationCode: '验证码',
       Sendverificationcode: '发送验证码',
-      servicehotline: '24小时客服热线'
+      servicehotline: '24小时客服热线',
+      // 应用详情
+      webClient: {
+        setting: [{
+            label: "单位",
+            tips: "请选择单位"
+          },
+          {
+            label: "精度",
+            tips: "请选择精度"
+          }
+        ],
+        weather: [{
+            label: "天气",
+            value: "请选择天气"
+          },
+          {
+            label: "时间"
+          }
+        ],
+        browser: {
+          title: "模型浏览器",
+          tips: "暂无数据"
+        },
+        attribute: {
+          title: "属性"
+        }
+      }
     },
     en: {
       register: 'register',
@@ -233,8 +260,7 @@ const i18n = new VueI18n({
       accountManage: 'accountManage',
       information: 'personal information',
       Authorization: 'Authorization code',
-      nouse:
-        'If the authorization code is not available, please contact the customer service.',
+      nouse: 'If the authorization code is not available, please contact the customer service.',
       submit: 'submit',
       Authorizations: 'Authorization code:',
       Serviceorder: 'Service order',
@@ -275,7 +301,34 @@ const i18n = new VueI18n({
       Confirmpassword: 'Confirm password',
       VerificationCode: 'Verification Code',
       Sendverificationcode: 'Send verification code',
-      servicehotline: '24-hour customer service hotline'
+      servicehotline: '24-hour customer service hotline',
+      // 应用详情
+      webClient: {
+        setting: [{
+            label: "unit",
+            tips: "Please select a unit"
+          },
+          {
+            label: "accuracy",
+            tips: "Please select a accuracy"
+          }
+        ],
+        weather: [{
+            label: "weather",
+            value: "Please select a weather"
+          },
+          {
+            label: "time"
+          }
+        ],
+        browser: {
+          title: "Model browser",
+          tips: "No data available"
+        },
+        attribute: {
+          title: "attribute"
+        }
+      }
     }
   }
 })

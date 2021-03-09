@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-04 14:53:23
+ * @LastEditTime: 2021-03-09 10:10:02
  * @description: 
 -->
 <template>
@@ -34,14 +34,14 @@
 						 manual>
 							<div slot="content">
 								<el-form class="set-form" ref="form" :model="setForm" label-width="80px">
-									<el-form-item label="单位">
-										<el-select size="mini" v-model="setForm.unit" placeholder="请选择单位">
+									<el-form-item :label="$t('webClient.setting[0].label')">
+										<el-select size="mini" v-model="setForm.unit" :placeholder="$t('webClient.setting[0].tips')">
 											<el-option label="区域一" value="shanghai"></el-option>
 											<el-option label="区域二" value="beijing"></el-option>
 										</el-select>
 									</el-form-item>
-									<el-form-item label="精度">
-										<el-select size="mini" v-model="setForm.unit" placeholder="请选择精度">
+									<el-form-item :label="$t('webClient.setting[1].label')">
+										<el-select size="mini" v-model="setForm.unit" :placeholder="$t('webClient.setting[1].tips')">
 											<el-option label="区域一" value="shanghai"></el-option>
 											<el-option label="区域二" value="beijing"></el-option>
 										</el-select>
@@ -95,13 +95,13 @@
 				<el-collapse-transition>
 					<div class="show-weather" v-if="imgList[9].state === 1">
 						<el-form class="set-form" :model="setForm" label-width="80px">
-							<el-form-item label="天气">
-								<el-select size="mini" v-model="setForm.weather" placeholder="请选择天气">
+							<el-form-item :label="$t('webClient.weather[0].label')">
+								<el-select size="mini" v-model="setForm.weather" :placeholder="$t('webClient.weather[0].tips')">
 									<el-option label="区域一" value="shanghai"></el-option>
 									<el-option label="区域二" value="beijing"></el-option>
 								</el-select>
 							</el-form-item>
-							<el-form-item label="时间">
+							<el-form-item :label="$t('webClient.weather[1].label')">
 								<div class="show-speed weahter-speed" v-if="imgList[9].state === 1">
 									<el-slider v-model="imgList[9].data.speed"></el-slider>
 								</div>
@@ -118,10 +118,10 @@
 				<img @click="handleOrder(11)" class="footer-image" :src="imgList[11].url" mode="" />
 			</div>
 			<div class="image-main">
-				<img @click="handleOrder(12)" class="footer-image" :src="imgList[12].url" mode="" />
+				<img class="footer-image" :src="imgList[12].url" mode="" />
 			</div>
 			<div class="image-main">
-				<img @click="handleOrder(13)" class="footer-image" :src="imgList[13].url" mode="" />
+				<img class="footer-image" :src="imgList[13].url" mode="" />
 			</div>
 		</div>
 	</div>
@@ -341,7 +341,7 @@
 				width: 50%;
 				left: 25%;
 				border-radius: 10px 10px 0 0;
-				top: -151px;
+				top: -147px;
 				padding-bottom: 5px;
 				background-color: rgba(0, 0, 0, 0.6);
 
@@ -358,7 +358,7 @@
 				left: -60%;
 				padding: 10%;
 				border-radius: 10px 10px 0 0;
-				top: -140px;
+				top: -139px;
 				background-color: rgba(0, 0, 0, 0.6);
 			}
 
@@ -445,11 +445,11 @@
 			margin-bottom: 0;
 		}
 
-		/deep/ .el-form-item__content {
+		.el-form-item__content {
 			margin-left: 0 !important;
 		}
 
-		/deep/ .el-form-item__label {
+		.el-form-item__label {
 			text-align: left;
 			color: #FFFFFF;
 			line-height: 26px;
@@ -457,7 +457,7 @@
 
 		.el-input,
 		.el-select {
-			/deep/ .el-input__inner {
+			.el-input__inner {
 				background: rgba(255, 255 ,255, 0.2);
 				border: 1px solid rgba(255, 255, 255, 0.25);
 				color: #FFFFFF;
