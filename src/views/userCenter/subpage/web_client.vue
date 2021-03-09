@@ -8,7 +8,7 @@
       frameborder="0"
       id="show-bim"
     ></iframe>
-    <!-- <div class="time-log" v-if="moreCount < 10">
+    <div class="time-log" v-if="moreCount < 10">
       <div class="log-main" :class="runTimeCode === 0 ? '' : 'phone-log-main'">
         <div>
           <img class="show-logo" src="@/assets/img/ourbim-logo.png" alt="" />
@@ -34,7 +34,7 @@
       <div class="hidden-text learn-text" v-if="hiddenState === 2">
         模型长时间未响应，请刷新重试。
       </div>
-    </div> -->
+    </div>
     <div v-if="runTimeCode === 0">
       <div class="mutual-bim">
         <div
