@@ -42,7 +42,7 @@
             <!-- 授权码 -->
           </div>
           <div class="input">
-            {{ $t('Authorization') }}
+            {{ $t('Authorizations') }}
             <!-- 授权码 -->
             <el-input v-model="SQM"></el-input>
             <el-button type="primary" class="btn" @click="verification">
@@ -171,7 +171,6 @@ export default {
           margin-top: 20px;
           .el-input {
             width: 462px;
-            margin-left: 20px;
             margin-right: 20px;
           }
           /deep/ .el-input__inner {

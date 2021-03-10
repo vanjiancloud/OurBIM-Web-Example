@@ -139,7 +139,7 @@ export default {
       mobile: '', //手机号
       company: '', //公司
       position: '', //职位
-      imgUrl: '', //用户头像
+      imgUrl: './touxiang.png', //用户头像
       baseURL: axios.defaults.baseURL
     }
   },

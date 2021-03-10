@@ -11,12 +11,10 @@
         <div class="content" v-show="isShow == 1">
           <!-- 消息提示 -->
           <div class="record">
-            <div class="left">
-              {{ $t('Youhave') }}&nbsp;
-              <span style="color:#00aaf0;">{{ appList.length }}</span
-              >&nbsp;
-              {{ $t('Application') }}
-            </div>
+            {{ $t('Youhave') }}&nbsp;
+            <span style="color:#00aaf0;">{{ appList.length }}</span
+            >&nbsp;
+            {{ $t('Application') }}
           </div>
           <!-- 列表展示 -->
           <div class="list">
@@ -28,15 +26,19 @@
                   </div>
                   <div class="write">
                     <!-- 应用名称 -->
-                    <h3>{{ item.appName }}</h3>
+                    <div class="name">{{ item.appName }}</div>
                     <!-- 节点 -->
-                    {{ $t('node') }}&nbsp; {{ item.currentInstance }}/{{
-                      item.maxInstance
-                    }}
+                    <div class="jiedian">
+                      {{ $t('node') }}&nbsp; {{ item.currentInstance }}/{{
+                        item.maxInstance
+                      }}
+                    </div>
+                    <div class="line"></div>
                     <!-- 进入应用 -->
                     <div class="button">
-                      <el-button plain round @click="GoApp(item)">
-                        {{$t('into')}}</el-button>
+                      <el-button  round @click="GoApp(item)">
+                        {{ $t('into') }}</el-button
+                      >
                     </div>
                   </div>
                 </li>
@@ -166,37 +168,30 @@ a:hover {
     height: 961px;
     margin-bottom: 34px;
     .content {
-      margin-left: 41px;
       overflow: hidden;
       .record {
-        width: 100%;
-        height: 40px;
-        margin-top: 38px;
-        position: relative;
-        .left {
-          height: 40px;
-        }
-        .right {
-          position: absolute;
-          right: 20px;
-          top: 0px;
-        }
+        margin-top: 30px;
+        margin-bottom: 20px;
+        margin-left: 20px;
       }
       .list {
         .lis {
-          width: 1379px;
+          width: 1395px;
           overflow: hidden;
+          margin-left: 25px;
+          // background-color: red;
           li {
-            width: 310px;
-            height: 345px;
+            width: 300px;
+            height: 340px;
             margin-right: 30px;
-            margin-bottom: 34px;
+            margin-bottom: 30px;
+            box-shadow: 0px 2px 13px 1px #ccc;
             float: left;
             list-style: none;
             box-sizing: border-box;
             overflow: hidden;
             .img {
-              width: 310px;
+              width: 300px;
               height: 200px;
               .tupian {
                 width: 100%;
@@ -204,19 +199,32 @@ a:hover {
               }
             }
             .write {
-              height: 145px;
-              background-color: #f1f1f1;
-              padding-top: 20px;
-              padding-left: 20px;
-              h3 {
+              height: 140px;
+              background-color: #fff;
+              .name {
                 margin-bottom: 10px;
+                margin-left: 20px;
+                margin-top: 10px;
+                font-size: 18px;
+                font-weight: bold;
+              }
+              .jiedian {
+                margin-bottom: 15px;
+                margin-left: 20px;
+                font-size: 15px;
+              }
+              .line {
+                height: 1px;
+                background-color: #e9e9e9;
               }
               .button {
-                margin-left: 80px;
+                text-align: center;
                 margin-top: 10px;
                 .el-button {
-                  background-color: #f1f1f1;
-                  font-size: 14px;
+                  vertical-align: middle;
+                  background-color: #fff;
+                  color: #00aafa;
+                  border-color: #00aafa;
                 }
               }
             }

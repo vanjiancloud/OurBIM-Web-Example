@@ -63,6 +63,7 @@
                 :limit="1"
                 :on-exceed="handleExceed"
                 :before-upload="beforeUpload"
+                accept=".png,.jpg,.jpeg"
               >
                 <i slot="default" class="el-icon-plus"></i>
                 <div slot="file" slot-scope="{ file }">
@@ -130,6 +131,7 @@
               :limit="1"
               :on-exceed="exceed"
               :before-upload="beforeModelUpload"
+              accept=".rvt"
             >
               <img src="./file.png" style="margin-top:60px" />
               <div class="el-upload__text">

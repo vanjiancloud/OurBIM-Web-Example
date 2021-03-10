@@ -105,23 +105,15 @@
             class="input"
           >
             <el-button
-              style="padding-right:25px;padding-top:47px;"
               slot="suffix"
-              type="text"
+              style="padding-right:25px;padding-top:47px;"
               :disabled="isSend"
               @click="getVerification"
+              type="text"
+              >{{ btnMes }}</el-button
             >
-              发送验证码
-            </el-button>
             <i slot="prefix" class="el-input__icon el-icon-s-comment"></i>
           </el-input>
-          <!-- <el-button
-            class="btnMes"
-            :disabled="isSend"
-            @click="getVerification"
-            type="primary"
-            >{{ btnMes }}</el-button
-          > -->
         </el-form-item>
         <el-form-item prop="isAgree">
           <el-checkbox
@@ -162,6 +154,13 @@ export default {
       isSend: false, // 是否显示
       delay: 0, // 倒计时
       btnMes: '获取验证码', // 按钮的文本
+      // 邮箱登录表单
+      form: {
+        isAgree: false, // 复选框的状态
+        password: '123456',
+        email: 'test@163.com'
+      },
+      // 手机登录表单
       mobForm: {
         mobile: '',
         code: '',
@@ -170,11 +169,6 @@ export default {
       },
       isshow: 0, // 切换登录类别
       isLoading: false, // 是否正在登录
-      form: {
-        isAgree: false, // 复选框的状态
-        password: '123456',
-        email: 'test@163.com'
-      },
       // 定义验证规则rules
       rules: {
         email: [

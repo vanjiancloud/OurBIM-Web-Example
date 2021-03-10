@@ -24,10 +24,11 @@
           <li>
             <a href="">{{ $t('consultation') }}</a>
           </li>
+          <!-- 开发者下拉菜单 -->
           <li>
             <el-dropdown>
               <span class="el-dropdown-link">
-                {{ $t('consultation')
+                {{ $t('developer')
                 }}<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
@@ -39,7 +40,8 @@
               </el-dropdown-menu>
             </el-dropdown>
           </li>
-          <li class="first">
+          <!-- 搜索框 -->
+          <li class="search">
             <!-- <transition>
               <div class="serach" v-if="islive">
                 <div class="menu">
@@ -77,10 +79,14 @@
             <span class="span"><i class="el-icon-search"></i></span>
           </div> -->
           </li>
-          <li class="second">
+          <!-- 顶部头像栏 -->
+          <li class="touxiang">
             <el-dropdown>
               <span class="el-dropdown-link">
-                <img :src="imgUrl" alt="未上传" />
+                <img
+                  :src="imgUrl ? imgUrl : require('./touxiang.png')"
+                  alt="未上传头像"
+                />
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item @click.native="toUserCenter">{{
@@ -92,7 +98,8 @@
               </el-dropdown-menu>
             </el-dropdown>
           </li>
-          <li class="forth">
+          <!-- 中英文切换 -->
+          <li class="language">
             <a @click="English" href="javascript:;">English</a>
             <span style="margin: 0 5px;font-size: 10px;">|</span>
             <a @click="Chinese" href="javascript:;">中文</a>
@@ -107,7 +114,10 @@
         <div class="top">
           <div class="left">
             <div class="im">
-              <img :src="imgUrl" alt="未上传头像" />
+              <img
+                :src="imgUrl ? imgUrl : require('./touxiang.png')"
+                alt="未上传头像"
+              />
             </div>
             <div class="Info">
               <h3>{{ name }}</h3>
@@ -252,6 +262,7 @@ export default {
     toOrder () {
       this.$router.push('../order')
     },
+    // 去往用户中心
     toUserCenter () {
       if (this.route !== '/userCenter') {
         this.$router.push('../userCenter/')
@@ -259,6 +270,7 @@ export default {
         this.$router.go(0)
       }
     },
+    // 去往登录
     toLogin () {
       this.$router.push('../login/')
 
@@ -285,22 +297,32 @@ export default {
         })
         .catch(err => {
           this.$message.error('信息展示失败')
+          this.imgUrl = this.imgUrl
         })
     },
+
     //定时器，每隔10秒更新一次数据
     // get () {
     //   this.showData()
     //   console.log('定时器运行中')
     // },
+
+    // 去往用户中心
     goUserCenter () {
       this.$router.push('../userCenter')
     },
+
+    // 去往应用管理
     toManage () {
       this.$router.push('../manage')
     },
+
+    // 去往创建应用
     toFound () {
       this.$router.push('../found')
     },
+
+    // 去往账户管理
     toBill () {
       this.$router.push('../bill')
     }
@@ -361,11 +383,14 @@ export default {
         color: #000;
         font-size: 16px;
       }
+      .el-dropdown-link:hover {
+        color: #ff6600;
+      }
       .el-icon-arrow-down {
         font-size: 16px;
       }
     }
-    .second {
+    .touxiang {
       margin-left: -20px;
       margin-right: 20px;
       img {
@@ -377,7 +402,7 @@ export default {
     .third {
       margin-right: 40px;
     }
-    .forth {
+    .language {
       // background-color: green;
       float: right;
       margin: 0;

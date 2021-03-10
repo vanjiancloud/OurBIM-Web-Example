@@ -111,7 +111,7 @@ const i18n = new VueI18n({
       Authorization: '授权码',
       nouse: '如授权码不可，用请联系售后。',
       submit: '提交',
-      Authorizations: '授权码:',
+      Authorizations: '授权码：',
       Serviceorder: '服务订单',
       team: '团队',
       ChangePassword: '修改密码',
