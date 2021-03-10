@@ -26,7 +26,7 @@ const routes = [
   {
     path: '/changePassword',
     name: 'changePassword',
-    component: () => import('../views/changePassword/index.vue'),
+    component: () => import('../views/changepassword/index.vue'),
     meta: {
       title: 'OurBIM忘记密码'
     }
