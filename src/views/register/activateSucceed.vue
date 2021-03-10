@@ -14,7 +14,7 @@
         <h3 :title="title">你的账户：{{ title }}</h3>
       </div>
       <div class="btn">
-        <el-button class="button" @click="toHome">进入首页</el-button>
+        <el-button class="button" @click="toHome" type="primary">进入首页</el-button>
       </div>
     </div>
     <div class="wenzi">
@@ -87,7 +87,7 @@ export default {
     width: 580px;
     height: 580px;
     border-radius: 10px;
-    background-color: #fff;
+    // background-color: #fff;
     .logo {
       width: 290px;
       height: 110px;
@@ -99,9 +99,9 @@ export default {
     }
     .write {
       text-align: center;
+      color: #929292;
     }
     .btn {
-      color: yellow;
       text-align: center;
       margin-top: 50px;
       .button {

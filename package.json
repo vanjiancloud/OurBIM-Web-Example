@@ -17,6 +17,8 @@
     "less-loader": "^7.3.0",
     "lib-flexible": "^0.3.2",
     "postcss-px2rem": "^0.3.0",
+    "qs": "^6.9.6",
+    "qs-stringify": "^1.2.1",
     "vue": "^2.6.11",
     "vue-cli": "^2.9.6",
     "vue-i18n": "^8.22.4",
@@ -44,7 +46,7 @@
     "plugins": {
       "autoprefixer": {},
       "postcss-pxtorem": {
-        "rootValue": 75,
+        "rootValue": 54.61,
         "propList": [
           "*"
         ]

@@ -12,5 +12,5 @@ body
 .container {
   width: 1420px;
   margin: 0 auto;
-  /* background-color: red; */
+  font-size: 17px;
 }

@@ -1,168 +1,118 @@
 <template>
-  <!-- 账单管理 -->
+  <!-- 账户管理，个人信息 -->
   <div class="box">
     <!-- 头部 -->
     <my-header></my-header>
-    <!-- 中间 -->
-    <my-main></my-main>
-    <!-- 自己写 -->
+    <!-- 中间主体内容-->
     <div class="container">
       <div class="content">
-        <!-- 下拉菜单 -->
-        <div class="dropdown">
-          <div>
-            <button><i icon="el-icon-postcard"></i> 账户管理</button>
-          </div>
-          <div>
-            <button @click="isHand = 6">个人信息</button>
-          </div>
-          <div>
-            <button @click="isHand = 7">授权码</button>
-          </div>
-          <div>
-            <button @click="isHand = 8">服务订单</button>
-          </div>
-          <div>
-            <button @click="isHand = 9">团队</button>
-          </div>
-          <div>
-            <button @click="isHand = 10">修改密码</button>
-          </div>
-        </div>
-        <!-- 个人信息 -->
-        <div class="neirong" >
-          <div class="geren">
-            个人信息：
-          </div>
-          <table>
-            <tr>
-              <td>ID</td>
-              <td>Mark</td>
-            </tr>
-            <tr>
-              <td>签名</td>
-              <td>Mark@OurBIM</td>
-            </tr>
-            <tr>
-              <td>邮箱</td>
-              <td>vanjian@ourbim.com</td>
-            </tr>
-            <tr>
-              <td>手机号</td>
-              <td>13333333333</td>
-            </tr>
-            <tr>
-              <td>公司</td>
-              <td>万间科技</td>
-            </tr>
-            <tr>
-              <td>职位</td>
-              <td>产品</td>
-            </tr>
-          </table>
-          <div class="xia">
-            <el-button type="primary">主要按钮</el-button>
-          </div>
-        </div>
-        <!-- 授权码 -->
-        <div class="neirong" v-show="isHand == 7">
-          授权码：
-
-          <el-input v-model="input" placeholder="请输入内容"></el-input>
-          <el-button type="primary">主要按钮</el-button>
-        </div>
-        <!-- 服务订单 -->
-        <div class="neirong" v-show="isHand == 8">
-          <table class="dingdan">
-            <tr>
-              <th>编号</th>
-              <th>时间</th>
-              <th>服务</th>
-              <th>授权码</th>
-              <th>状态</th>
-              <th>金额</th>
-            </tr>
-            <tr>
-              <td>20210101123456123</td>
-              <td>2021-01-01 12:34:56</td>
-              <td>高级开发版</td>
-              <td>高级开发版</td>
-              <td>失效</td>
-              <td>50,000.00</td>
-            </tr>
-            <tr>
-              <td>20210101123456123</td>
-              <td>2021-01-01 12:34:56</td>
-              <td>高级开发版</td>
-              <td>高级开发版</td>
-              <td>失效</td>
-              <td>50,000.00</td>
-            </tr>
-            <tr>
-              <td>20210101123456123</td>
-              <td>2021-01-01 12:34:56</td>
-              <td>高级开发版</td>
-              <td>高级开发版</td>
-              <td>失效</td>
-              <td>50,000.00</td>
-            </tr>
-            <tr>
-              <td>20210101123456123</td>
-              <td>2021-01-01 12:34:56</td>
-              <td>高级开发版</td>
-              <td>高级开发版</td>
-              <td>失效</td>
-              <td>50,000.00</td>
-            </tr>
-          </table>
-        </div>
-        <!-- 团队 -->
-        <div class="neirong" v-show="isHand == 9">
-          <el-table
-            :data="tableData"
-            style="width: 100%"
-            row-key="id"
-            border
-            :tree-props="{
-              children: 'children',
-              hasChildren: 'hasChildren'
-            }"
+        <!-- 导航菜单 -->
+        <el-col :span="4">
+          <el-menu
+            :default-active="this.$route.path"
+            router
+            background-color="#007BAE"
+            text-color="#fff"
+            active-text-color="#ffd04b"
           >
-            <el-table-column prop="use" label="应用" width="180">
-            </el-table-column>
-            <el-table-column prop="time" label="成立时间" width="180">
-            </el-table-column>
-            <el-table-column prop="role" label="角色"> </el-table-column>
-            <el-table-column prop="handle" label="操作"> </el-table-column>
-          </el-table>
-        </div>
-        <!-- 修改密码 -->
-        <div class="neirong" v-show="isHand == 10">
-          <div class="geren">
-            修改密码：
+            <el-submenu index="1">
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span>{{ $t('accountManage') }}</span>
+              </template>
+              <el-menu-item index="/bill">
+                <span slot="title">{{ $t('information') }}</span>
+              </el-menu-item>
+              <el-menu-item index="/code">
+                <span slot="title">{{
+                  $t('Authorization')
+                }}</span> </el-menu-item
+              ><el-menu-item index="/order">
+                <span slot="title">{{ $t('Serviceorder') }}</span>
+              </el-menu-item>
+            </el-submenu>
+          </el-menu>
+        </el-col>
+        <div class="color"></div>
+        <!-- 个人信息 -->
+        <div class="neirong">
+          <div class="title">
+            {{ $t('information') }}
           </div>
-          <table>
-            <tr>
-              <td>原密码</td>
-              <td>请输入</td>
-            </tr>
-            <tr>
-              <td>新密码</td>
-              <td>请输入</td>
-            </tr>
-            <tr>
-              <td>确认密码</td>
-              <td>请输入</td>
-            </tr>
-            <tr>
-              <td>手机号</td>
-              <td>请输入</td>
-            </tr>
-            <tr>
-              <td>验证码</td>
-              <td>请输入</td>
-            </tr>
-          </table>
+          <!-- 用户名 -->
+          <div class="message" style="margin-top: 30px;">
+            <div class="one">{{ $t('username') }}</div>
+            <div class="input">
+              <el-input v-model="name" placeholder="请输入用户名"></el-input>
+            </div>
+          </div>
+          <!-- 签名 -->
+          <div class="message">
+            <div class="one">{{ $t('autograph') }}</div>
+            <div class="input">
+              <el-input v-model="note" placeholder="请输入签名"></el-input>
+            </div>
+          </div>
+          <!-- 邮箱 -->
+          <div class="message">
+            <div class="one">{{ $t('email') }}</div>
+            <div class="input">
+              <el-input
+                v-model="email"
+                placeholder="请输入邮箱"
+                :disabled="true"
+              ></el-input>
+            </div>
+          </div>
+          <!-- 手机号 -->
+          <div class="message">
+            <div class="one">{{ $t('Mobilephone') }}</div>
+            <div class="input">
+              <el-input
+                v-model="mobile"
+                placeholder="请输入手机号"
+                :disabled="true"
+              ></el-input>
+            </div>
+          </div>
+          <!-- 公司 -->
+          <div class="message">
+            <div class="one">{{ $t('company') }}</div>
+            <div class="input">
+              <el-input v-model="company" placeholder="请输入公司"></el-input>
+            </div>
+          </div>
+          <!-- 职位 -->
+          <div class="message">
+            <div class="one">{{ $t('position') }}</div>
+            <div class="input">
+              <el-input v-model="position" placeholder="请输入职位"></el-input>
+            </div>
+          </div>
+          <!-- 上传头像 -->
+          <div class="photo">
+            <el-upload
+              :action="baseURL + '/CountManager/postUserImg'"
+              :limit="1"
+              name="fileUpload"
+              :on-success="upLoadImg"
+              :on-error="errorImg"
+              :on-exceed="handleExceed"
+              :before-upload="beforeUpload"
+            >
+              <el-button type="primary" icon="el-icon-upload2">
+                {{ $t('UploadAvatar') }}
+              </el-button>
+              <div slot="tip" class="el-upload__tip">
+                {{ $t('extensions') }}：.png .jpg .jpeg
+              </div>
+            </el-upload>
+          </div>
+          <div class="btn">
+            <el-button type="primary" @click="changeUserInfo">
+              {{ $t('modify') }}
+            </el-button>
+          </div>
         </div>
       </div>
     </div>
@@ -174,186 +124,183 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import MyMain from '../components/myMain.vue'
+import { getUserInfo, modifyUserInfo, uploadImg } from '@/api/my.js'
+import { getuserid } from '@/store/index.js'
+import axios from '@/utils/request'
+
 export default {
-  components: { myHeader, MyMain, MyFooter }
+  components: { myHeader, MyFooter },
+  name: 'bill',
+  data () {
+    return {
+      name: '', //用户名
+      note: '', //签名
+      email: '', //邮箱
+      mobile: '', //手机号
+      company: '', //公司
+      position: '', //职位
+      imgUrl: './touxiang.png', //用户头像
+      baseURL: axios.defaults.baseURL
+    }
+  },
+  created () {
+    this.getData()
+  },
+  methods: {
+    // 获取用户信息
+    getData () {
+      getUserInfo({
+        userid: getuserid()
+      })
+        .then(res => {
+          console.log(res)
+          this.note = res.data.data.note
+          this.imgUrl = res.data.data.imgUrl
+          this.name = res.data.data.name
+          this.email = res.data.data.email
+          this.mobile = res.data.data.mobile
+          this.company = res.data.data.company
+          this.position = res.data.data.position
+        })
+        .catch(err => {
+          this.$message.error('请求失败')
+        })
+    },
+    //修改用户信息
+    changeUserInfo () {
+      modifyUserInfo({
+        userid: getuserid(),
+        note: this.note,
+        name: this.name,
+        imgUrl: this.imgUrl,
+        company: this.company,
+        position: this.position
+      })
+        .then(res => {
+          if (res.data.code === 0) {
+            console.log(res)
+            this.$message.success('修改成功')
+            this.$router.go(0)
+          } else if (res.data.code === 1) {
+            console.log(res)
+            this.$message.error('修改失败')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('修改信息失败,请重新修改')
+        })
+    },
+
+    // 上传头像成功
+    upLoadImg (response, file, fileList) {
+      console.log(response)
+      console.log(response.data)
+      this.imgUrl = response.data
+    },
+
+    // 上传头像失败
+    errorImg (err, file, fileList) {
+      console.log(err)
+    },
+    // 限制上传头像格式
+    beforeUpload (file) {
+      var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+      const one = testmsg === 'jpg'
+      const two = testmsg === 'jpeg'
+      const three = testmsg === 'png'
+      if (!one && !two && !three) {
+        this.$message.error('头像格式只能是.jpg .jpeg .png格式!')
+      }
+      return one || two || three
+    },
+    // 限制上传图片张数
+    handleExceed () {
+      this.$message.error(`您只能上传一张图片`)
+    }
+  }
 }
 </script>
 
 <style lang="less" scoped>
 .box {
   .container {
+    background-color: #fff;
+    margin-bottom: 34px;
+    height: 1037px;
     .content {
-      margin-left: 41px;
       overflow: hidden;
-      .record {
-        width: 100%;
-        height: 40px;
-        margin-top: 38px;
-        position: relative;
-        .left {
-          height: 40px;
-        }
-        .right {
-          position: absolute;
-          right: 20px;
-          top: 0px;
-        }
+      ul.el-menu {
+        height: 1037px;
       }
-      .list {
-        .lis {
-          width: 1379px;
-          height: 668px;
-          li {
-            width: 310px;
-            height: 300px;
-            margin-right: 30px;
-            margin-bottom: 34px;
-            float: left;
-            list-style: none;
-            box-sizing: border-box;
-            overflow: hidden;
-            .img {
-              width: 315px;
-              height: 200px;
-              .tupian {
-                width: 100%;
-                height: 100%;
-              }
-            }
-            .write {
-              height: 100px;
-              background-color: #fff;
-              padding-top: 5px;
-              padding-left: 20px;
-            }
-            .line {
-              width: 300px;
-              height: 1px;
-              background-color: #e4e4e4;
-            }
-            .btn {
-              width: 300px;
-              height: 100px;
-              background-color: #fff;
-              padding-left: 15px;
-              line-height: 100px;
-            }
-            .photo {
-              width: 300px;
-              height: 100px;
-              background-color: #fff;
-              padding-left: 15px;
-              line-height: 100px;
-              .big {
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-                float: left;
-                margin-top: 20px;
-                .min {
-                  width: 100%;
-                  height: 100%;
-                }
-              }
-            }
-          }
-        }
+      /deep/ .el-submenu__title {
+        font-size: 17px;
       }
-      table {
-        width: 100%;
-        margin-top: 5px;
-        margin-bottom: 50px;
-        border-collapse: collapse;
-        font-size: 16px;
-        tr {
-          height: 50px;
-        }
-        th {
-          background-color: #fafafa;
-        }
-        td {
-          background-color: #fff;
-        }
+      /deep/ .el-menu-item {
+        font-size: 17px;
       }
-      table,
-      th,
-      td {
-        border: 1px solid black;
-        text-align: center;
-      }
-      .dropdown {
-        width: 200px;
-        height: 300px;
+      .color {
+        width: 25px;
+        height: 1037px;
         float: left;
-        margin-right: 100px;
-        div {
-          width: 100%;
-          height: 50px;
-          border-bottom: 1px solid #f2f2f2;
-          line-height: 50px;
-
-          margin-right: 50px;
-          button:focus {
-            background-color: #fff;
-          }
-          button {
-            padding-left: 50px;
-            height: 100%;
-            width: 100%;
-            border: none;
-            outline: none;
-            font-size: 16px;
-            text-align: left;
-            background-color: #f9f9f9;
-          }
-          button:hover {
-            color: #41b19c;
-            cursor: pointer;
-          }
-        }
+        background-color: #f1f1f1;
       }
       .neirong {
-        float: left;
-        width: 1000px;
-        // background-color: orange;
-        .geren {
-          float: left;
-        }
-        .xinxi {
-          float: left;
-        }
-        table,
-        th,
-        td {
-          border: 1px solid black;
+        padding-left: 300px;
+        height: 1037px;
+        .title {
+          height: 54px;
           text-align: center;
+          line-height: 54px;
+          margin-left: -40px;
+          font-size: 22px;
+          font-weight: bold;
+          border-bottom: 1px solid #f1f1f1;
         }
-        table {
-          width: 400px;
+        .message {
+          width: 660px;
+          height: 46px;
+          margin-bottom: 30px;
+          .one {
+            float: left;
+            height: 46px;
+            width: 60px;
+            line-height: 46px;
+            margin-right: 35px;
+            margin-left: 56px;
+          }
+          .input {
+            float: left;
+          }
+          /deep/ .el-input__inner {
+            width: 460px;
+            height: 46px;
+            font-size: 17px;
+          }
         }
-        .el-input {
-          width: 400px;
+        .photo {
+          margin-top: 35px;
+          margin-left: 70px;
+          /deep/ .el-button--primary {
+            // width: 130px;
+            height: 45px;
+            background-color: #00aaf0;
+            font-size: 16px;
+          }
+          .el-upload__tip {
+            font-size: 14px;
+          }
         }
-        .dingdan {
-          width: 100%;
+        .btn {
+          margin-top: 70px;
+          margin-left: 300px;
+          /deep/ .el-button--primary {
+            width: 140px;
+            height: 45px;
+            background-color: #00aaf0;
+            font-size: 16px;
+          }
         }
-        .demo-table-expand {
-          font-size: 0;
-        }
-        .demo-table-expand label {
-          width: 90px;
-          color: #99a9bf;
-        }
-        .demo-table-expand .el-form-item {
-          margin-right: 0;
-          margin-bottom: 0;
-          width: 50%;
-        }
-      }
-      .xia {
-        text-align: center;
-        margin-bottom: 100px;
       }
     }
   }

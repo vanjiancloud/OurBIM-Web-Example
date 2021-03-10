@@ -1,6 +1,5 @@
 <template>
   <div class="content">
-    <my-header></my-header>
     <div class="container">
       <div class="box">
         <h1 style="text-align: center">用户隐私和服务条款</h1>
@@ -14,7 +13,7 @@
         <br />
         1.3
         用户可以使用OurBIM中各个频道单项服务，当用户使用产品名称各单项服务时，用户的使用行为视为其对该单项服务的服务条款以及产品名称在该单项服务中发出的各类公告的同意。
-        <br /><br>
+        <br /><br />
         <h2>二、注册信息和隐私保护</h2>
         2.1
         OurBIM帐号（即OurBIM用户ID）的所有权归OurBIM所有，用户完成注册申请后，获得OurBIM帐号的使用权。所有原始键入的资料将引用为注册资料。如果因注册信息不真实而引起的问题，并对问题发生所带来的后果，OurBIM不负任何责任。
@@ -111,28 +110,26 @@
 
 <script>
 import MyFooter from '../components/myFooter.vue'
-import myHeader from '../components/myHeader.vue'
 export default {
-  components: { myHeader, MyFooter }
+  components: { MyFooter }
 }
 </script>
 
 <style lang="less" scoped>
 .content {
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 50px;
-  .box {
-    background-color: #fff;
-    margin-top: 50px;
-    padding: 50px 100px;
-    font-size: 22px;
-    color: #999999;
-    line-height: 50px;
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 50px;
+    .box {
+      background-color: #fff;
+      margin-top: 50px;
+      padding: 50px 100px;
+      font-size: 22px;
+      color: #999999;
+      line-height: 50px;
+    }
   }
 }
-}
-
 </style>

@@ -7,9 +7,7 @@
     <div class="zhuce">
       <!-- 头部区域 -->
       <div class="header">
-        <div class="icon">
-          <img src="./sicon.png" alt="" />
-        </div>
+        <i class="el-icon-arrow-left" @click="toReturn"></i>
         <div class="logo">
           <img src="./logo.png" alt="" />
         </div>
@@ -51,7 +49,7 @@
               label-width="80px"
             >
               <el-button
-                style="padding-right:27px;padding-top:18px"
+              class="code"
                 slot="suffix"
                 type="text"
                 :disabled="isSend"
@@ -96,7 +94,7 @@
               <a
                 class="link"
                 @click="toxieyi"
-                style="text-decoration:none; font-size: 14px;"
+                style="text-decoration:none; font-size: 18px;"
               >
                 《OurBIM用户服务协议》</a
               >
@@ -180,7 +178,12 @@ export default {
           }
         ],
         email: [
-          { required: true, message: '请输入正确邮箱,字符为英文&数字，结尾必须有“@xx.com/cn”字符', trigger: 'blur' },
+          {
+            required: true,
+            message:
+              '请输入正确邮箱,字符为英文&数字，结尾必须有“@xx.com/cn”字符',
+            trigger: 'blur'
+          },
           {
             pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
             message: '请输入正确的邮箱',
@@ -256,6 +259,10 @@ export default {
           this.doRegister()
         }
       })
+    },
+    // 返回登录页
+    toReturn () {
+      this.$router.push('../../login')
     },
     // 注册信息
     doRegister () {
@@ -398,18 +405,20 @@ export default {
   background-image: url(../login/bg.png);
   .picture {
     float: left;
-    width: 625px;
+    width: 652px;
     height: 802px;
-    margin-right: 623px;
+    margin-left: 206px;
+    margin-right: 300px;
     img {
       width: 100%;
       height: 100%;
     }
   }
   .zhuce {
-    float: left;
+    float: right;
     width: 521px;
     height: 802px;
+    margin-right: 220px;
     border-radius: 10px;
     .header {
       width: 521px;
@@ -420,31 +429,25 @@ export default {
       .logo {
         width: 232px;
         height: 46px;
-        margin-left: 128px;
+        margin: 0 auto;
         img {
           width: 100%;
           height: 100%;
         }
       }
-      .icon {
-        width: 16px;
-        height: 32px;
-        img {
-          width: 100%;
-          height: 100%;
-        }
+      .el-icon-arrow-left {
+        color: #0097fe;
+        font-size: 60px;
       }
     }
     .body {
       /deep/ .el-form-item__error {
-        position: absolute;
-        left: 0;
-        top: 60px;
+        margin-top: -15px;
       }
       // 输入框
       /deep/ .el-input__inner {
-        height: 65px;
-        margin-bottom: 20px;
+        height: 60px;
+        margin-bottom: 15px;
         font-size: 20px;
         padding-left: 90px;
         background-color: transparent;
@@ -456,12 +459,18 @@ export default {
       /deep/ .el-checkbox__inner {
         width: 20px;
         height: 20px;
+        margin-bottom: 2px;
         background-color: transparent;
       }
       /deep/ .el-input__prefix {
         font-size: 20px;
-        margin-top: 13px;
+        margin-top: 10px;
         margin-left: 36px;
+      }
+      /deep/ .el-input .el-input__clear {
+        margin-right: 27px;
+        margin-top: -5px;
+        font-size: 20px;
       }
       /deep/ .el-checkbox__inner::after {
         width: 9px;
@@ -475,8 +484,8 @@ export default {
         color: #409eff;
       }
       .hint {
-        margin-top: -5px;
-        margin-bottom: -25px;
+        margin-top: -13px;
+        margin-bottom: -30px;
         font-size: 4px;
         color: #999999;
       }
@@ -484,6 +493,11 @@ export default {
         width: 100%;
         height: 60px;
         margin-bottom: 12px;
+        font-size: 25px;
+      }
+      .code {
+        padding-right: 27px;
+        padding-top: 23px;
       }
       .check {
         margin-top: -30px;
@@ -496,7 +510,7 @@ export default {
     position: fixed;
     bottom: 21px;
     text-align: center;
-    font-size: 12px;
+    font-size: 16px;
   }
 }
 </style>

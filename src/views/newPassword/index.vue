@@ -7,7 +7,9 @@
       <!-- .logo区域 -->
       <div class="login-head">
         <i class="el-icon-arrow-left" @click="toReturn"></i>
-        <span class="logo"> </span>
+        <span class="logo">
+          <img src="./logo.png" alt="" />
+        </span>
       </div>
       <div class="state">
         <span>
@@ -16,17 +18,14 @@
       </div>
       <el-form :rules="rules" :model="form" ref="form" class="login-form">
         <el-form-item prop="password">
-          <el-input
-            v-model="form.password"
-            placeholder="设置设置6至20位登录密码"
-          >
+          <el-input v-model="form.password" placeholder="请输入6至20位密码">
             <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
           </el-input>
         </el-form-item>
         <el-form-item prop="toPassword">
           <el-input
             v-model="form.toPassword"
-            placeholder="请再次输入登录密码"
+            placeholder="请再次输入密码"
             class="input"
           >
             <i slot="prefix" class="el-input__icon el-icon-message"></i>
@@ -147,15 +146,20 @@ export default {
   background-size: cover;
   .picture {
     float: left;
-    width: 625px;
+    width: 652px;
     height: 802px;
-    margin-right: 623px;
+    margin-right: 300px;
+    margin-left: 206px;
     img {
       width: 100%;
       height: 100%;
     }
   }
   .login-form-wrap {
+    margin-right: 220px;
+    float: left;
+    width: 520px;
+    height: 636px;
     /deep/ .el-form-item__error {
       position: absolute;
       left: 0;
@@ -166,6 +170,14 @@ export default {
       margin-top: 25px;
       font-size: 20px;
       background-color: transparent;
+      padding-left: 90px;
+      color: #fff;
+    }
+    // 输入框内图标
+    /deep/ .el-input__icon {
+      font-size: 25px;
+      margin-top: 15px;
+      margin-left: 36px;
     }
     /deep/ .el-checkbox__label {
       font-size: 20px;
@@ -183,30 +195,27 @@ export default {
       width: 9px;
       height: 13px;
     }
-    float: left;
-    width: 520px;
-    height: 636px;
     .login-head {
-      position: relative;
       display: flex;
-      // justify-content: center;
+      justify-content: center;
       .logo {
-        width: 250px;
-        height: 65px;
-        padding-bottom: 30px;
-        position: absolute;
-        left: 80px;
-        background: url('../../assets/logo_index.png') no-repeat;
-        background-size: contain;
+        width: 223px;
+        height: 46px;
+        margin: 0 auto;
+        margin-left: 100px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
       }
       .el-icon-arrow-left {
-        color: #ff6600;
-        padding: 40px 150px 0 0;
-        font-size: 40px;
+        color: #0097fe;
+        font-size: 60px;
+        margin-top: -5px;
       }
     }
     .state {
-      font-size: 25px;
+      font-size: 30px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -223,6 +232,7 @@ export default {
         width: 100%;
         height: 60px;
         font-size: 22px;
+        margin-top: 30px;
       }
       span {
         padding-left: 20px;
@@ -232,13 +242,13 @@ export default {
       }
     }
   }
-   .wenzi {
+  .wenzi {
     width: 100%;
     color: #999999;
     position: fixed;
     bottom: 21px;
     text-align: center;
-    font-size: 12px;
+    font-size: 16px;
   }
 }
 </style>

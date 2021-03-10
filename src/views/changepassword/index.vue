@@ -73,6 +73,9 @@
         </el-form-item>
       </el-form>
     </div>
+    <div class="wenzi">
+      Copyright © 2021 www.OurBIM.com, All Rights Reserved.
+    </div>
   </div>
 </template>
 
@@ -134,13 +137,11 @@ export default {
 
   methods: {
     // 返回登录页
-
     toReturn () {
       this.$router.push('../../login')
     },
 
     // 跳转到重制密码
-
     toNext () {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -150,7 +151,6 @@ export default {
     },
 
     // 重制密码
-
     remakePas () {
       updateJudgeMsg({
         mobile: this.form.mobile,
@@ -255,9 +255,10 @@ export default {
   background-size: cover;
   .picture {
     float: left;
-    width: 625px;
+    width: 652px;
     height: 802px;
-    margin-right: 623px;
+    margin-right: 300px;
+    margin-left: 206px;
     img {
       width: 100%;
       height: 100%;
@@ -266,6 +267,7 @@ export default {
   .login-form-wrap {
     width: 520px;
     height: 636px;
+    margin-right: 220px;
     // background-color: #fff;
     // 输入框
     /deep/ .el-input__inner {
@@ -291,7 +293,8 @@ export default {
       display: flex;
       .logo {
         width: 232px;
-        height: 56px;
+        height: 46px;
+        margin-top: 5px;
         img {
           width: 100%;
           height: 100%;
@@ -330,6 +333,7 @@ export default {
       .btnMes {
         width: 104px;
         height: 41px;
+        margin-top: 15px;
       }
       span {
         padding-left: 20px;
@@ -338,6 +342,14 @@ export default {
         display: inline;
       }
     }
+  }
+  .wenzi {
+    width: 100%;
+    color: #999999;
+    position: fixed;
+    bottom: 21px;
+    text-align: center;
+    font-size: 16px;
   }
 }
 </style>

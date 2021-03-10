@@ -1,5 +1,7 @@
 // 导入抽取的axios对象
 import request from '../utils/request'
+// 导入字符串转换工具
+import qsStringify from "qs-stringify"
 
 // 激活账号
 export function activation (data) {
@@ -12,6 +14,7 @@ export function activation (data) {
     }
   })
 }
+
 // 获取邮箱密码登录
 export function login (data) {
   const { email, password } = data
@@ -124,5 +127,95 @@ export function updatePhone (data) {
     url: '/UserCenter/updatePhone',
     method: 'POST',
     data
+  })
+}
+
+// 新建项目
+export function addProject (data) {
+  return request({
+    url: '/appli/addProject',
+    method: 'POST',
+    data: qsStringify(data)
+  })
+}
+
+// 获取项目
+export function getProjectList (data) {
+  return request({
+    url: '/appli/getApplicationList',
+    method: 'GET',
+    params:data
+  })
+}
+
+// 获取用户已有信息
+export function getUserInfo (data) {
+  return request({
+    url: '/CountManager/getUserCount',
+    method: 'GET',
+    params:data
+  })
+}
+
+// 修改用户信息
+export function modifyUserInfo (data) {
+  return request({
+    url: '/CountManager/ModifyUserCount',
+    method: 'POST',
+    data: qsStringify(data)
+  })
+}
+
+// 上传头像
+export function uploadImg (data) {
+  return request({
+    url: '/CountManager/postUserImg',
+    method: 'POST',
+    params:data
+  })
+}
+
+// 当前用户信息展示
+export function showDetail (data) {
+  return request({
+    url: '/CountManager/getCountDetail',
+    method: 'GET',
+    params:data
+  })
+}
+
+// 获取服务订单数据列表
+export function getOrder (data) {
+  return request({
+    url: '/dingdanManager/searchDingdan',
+    method: 'POST',
+    data
+  })
+}
+
+// 提交授权码
+export function updateSQM (data) {
+  return request({
+    url: '/dingdanManager/updateSQM',
+    method: 'POST',
+    data: qsStringify(data)
+  })
+}
+
+// 验证授权码
+export function verification (data) {
+  return request({
+    url: '/dingdanManager/verification',
+    method: 'POST',
+    data: qsStringify(data)
+  })
+}
+
+// 模型浏览
+export function getModelInfo (data) {
+  return request({
+    url: '/OurBim/requestOurBim',
+    method: 'POST',
+    data: qsStringify(data)
   })
 }

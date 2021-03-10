@@ -4,24 +4,24 @@
       <img src="./img.png" alt="" />
     </div>
     <div class="box">
-      <div class="logo">
-        <img src="../register/logo.png" alt="" class="img" />
+      <div class="head">
+        <i class="el-icon-arrow-left" @click="toReturn"></i>
+        <span class="logo">
+          <img src="./logo.png" alt="" />
+        </span>
       </div>
       <div class="icon">
         <img src="../register/icon.png" alt="" class="icon-img" />
       </div>
       <div class="write">
-        <h3>你的账户：example@vanjian.com注册成功</h3>
+        <span>恭喜您注册成功</span>
       </div>
       <div class="section">
         激活邮件已发送到你的邮箱中，邮件有效期为24小时。
         请及时登录邮箱，点击邮件中的链接激活帐户。
       </div>
       <div class="btn">
-        <el-button type="primary" class="button" @click="toLookEmail"
-          >查看邮件</el-button
-        >
-        <el-button class="button" @click="toHome">进入首页</el-button>
+        <el-button class="button" @click="toLogin" type="primary">去登录</el-button>
       </div>
     </div>
     <div class="wenzi">
@@ -33,14 +33,17 @@
 <script>
 export default {
   data () {
-    return {}
+    return {
+      email: ''
+    }
   },
   methods: {
-    toHome () {
-      this.$router.replace('/home')
+    // 返回上一页
+    toReturn(){
+      this.$router.push('../register')
     },
-    toLookEmail () {
-      this.$router.replace('/lookEmail')
+    toLogin () {
+      this.$router.push('../login')
     }
   }
 }
@@ -62,30 +65,54 @@ export default {
   background-size: cover;
   .picture {
     float: left;
-    width: 625px;
+    width: 652px;
     height: 802px;
-    margin-right: 623px;
+    margin-right: 300px;
+    margin-left: 206px;
     img {
       width: 100%;
       height: 100%;
     }
   }
   .box {
-    width: 580px;
-    height: 580px;
-    border-radius: 10px;
-    background-color: #fff;
-    .logo {
-      width: 290px;
-      height: 110px;
+    width: 520px;
+    height: 630px;
+    margin-right: 220px;
+    .head {
+      display: flex;
+      justify-content: center;
+      .logo {
+        width: 223px;
+        height: 46px;
+        margin: 0 auto;
+        margin-left: 100px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .el-icon-arrow-left {
+        color: #0097fe;
+        font-size: 60px;
+        margin-top: -5px;
+      }
+    }
+    .icon {
+      text-align: center;
+      width: 140px;
+      height: 135px;
       margin: 0 auto;
-      .img {
+      margin-bottom: 30px;
+      margin-top: 40px;
+      .icon-img {
         width: 100%;
         height: 100%;
       }
     }
     .write {
       text-align: center;
+      color: #929292;
+      font-size: 30px;
     }
     .section {
       text-align: center;
@@ -93,29 +120,15 @@ export default {
       margin-top: 30px;
       margin-bottom: -20px;
       color: #929292;
-      font-size: 14px;
+      font-size: 16px;
     }
     .btn {
-      color: yellow;
       text-align: center;
       margin-top: 50px;
       .button {
-        width: 150px;
-        height: 45px;
-        margin: 0 25px;
-      }
-    }
-    .icon {
-      color: blue;
-      text-align: center;
-      width: 140px;
-      height: 135px;
-      margin: 0 auto;
-      margin-bottom: 20px;
-      margin-top: 30px;
-      .icon-img {
-        width: 100%;
-        height: 100%;
+        width: 200px;
+        height: 50px;
+        font-size: 18px;
       }
     }
   }
@@ -125,7 +138,7 @@ export default {
     position: fixed;
     bottom: 21px;
     text-align: center;
-    font-size: 12px;
+    font-size: 16px;
   }
 }
 </style>
