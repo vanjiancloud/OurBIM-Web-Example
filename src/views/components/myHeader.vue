@@ -9,6 +9,7 @@
         </div>
         <!-- 导航 -->
         <ul>
+          <!-- 功能介绍 -->
           <li>
             <a href="">{{ $t('introduction') }}</a>
           </li>
