@@ -3,21 +3,20 @@
     <div class="picture">
       <img src="./img.png" alt="" />
     </div>
+    <div class="right">
     <div class="login-form-wrap">
       <!-- .logo区域 -->
       <div class="login-head">
         <i class="el-icon-arrow-left" @click="toReturn"></i>
         <div class="logo">
-          <img src="./logo.png" alt="">
+          <img src="./logo.png" alt="" />
         </div>
       </div>
-
       <div class="state">
         <span>
           重置密码
         </span>
       </div>
-
       <!-- 短信登录的表单 -->
 
       <el-form :rules="rules" :model="form" ref="form" class="login-form">
@@ -72,6 +71,7 @@
           >
         </el-form-item>
       </el-form>
+    </div>
     </div>
     <div class="wenzi">
       Copyright © 2021 www.OurBIM.com, All Rights Reserved.
@@ -162,17 +162,15 @@ export default {
         if (res.data.code === 0) {
           this.$router.push({
             name: 'newPassword',
-
             query: {
               mobile: this.form.mobile,
-
               code: this.form.code
             }
           })
         } else if (res.data.code === 2) {
-          this.$message.error('该手机号没有注册')
+          this.$message.error('该手机号未注册')
         } else if (res.data.code === 3) {
-          this.$message.error('登录失败,请去完成注册功能')
+          this.$message.error('该账号未激活，请先去邮箱激活')
         } else {
           this.$message.error('您输入的验证码不正确')
         }
@@ -255,28 +253,36 @@ export default {
   background-size: cover;
   .picture {
     float: left;
-    width: 652px;
-    height: 802px;
-    margin-right: 300px;
-    margin-left: 206px;
+    width: 795px;
+    height: 945px;
+    margin-left: -200px;
+    margin-right: 350px;
     img {
       width: 100%;
       height: 100%;
     }
   }
+  .right {
+    width: 560px;
+    height: 520px;
+    background-color: #fff;
+    float: right;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 25px;
+    box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
+  }
   .login-form-wrap {
-    width: 520px;
-    height: 636px;
-    margin-right: 220px;
-    // background-color: #fff;
+    width: 490px;
     // 输入框
     /deep/ .el-input__inner {
       height: 65px;
       margin-top: 25px;
       font-size: 20px;
-      background-color: transparent;
+      background-color: #f4f4f4;
       padding-left: 90px;
-      color: #fff;
+      color: #000;
     }
     // 输入框内图标
     /deep/ .el-input__icon {
@@ -301,7 +307,7 @@ export default {
         }
       }
       .el-icon-arrow-left {
-        color: #0097fe;
+        color: #00aaf0;
         // padding-top: 10px;
         margin-right: 100px;
         font-size: 60px;
@@ -312,8 +318,6 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      padding-bottom: 30px;
-      padding-top: 20px;
       span {
         padding-right: 20px;
         padding: 15px 70px 15px 70px;
@@ -325,7 +329,9 @@ export default {
       .login-btn {
         width: 100%;
         height: 60px;
-        margin-top: 50px;
+        margin-top: 20px;
+        border-radius: 30px;
+        background-color: #00aaf0;
       }
       .input {
         margin-right: 10px;
@@ -344,12 +350,13 @@ export default {
     }
   }
   .wenzi {
-    width: 100%;
-    color: #999999;
+    width: 340px;
     position: fixed;
     bottom: 21px;
     text-align: center;
+    color: #ccc;
     font-size: 16px;
   }
 }
+
 </style>

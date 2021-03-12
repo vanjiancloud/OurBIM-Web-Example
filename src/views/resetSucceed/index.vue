@@ -65,10 +65,9 @@ export default {
   background-size: cover;
   .picture {
     float: left;
-    width: 652px;
-    height: 802px;
-    margin-right: 300px;
-    margin-left: 206px;
+    width: 795px;
+    height: 945px;
+    margin-right: 350px;
     img {
       width: 100%;
       height: 100%;
@@ -76,17 +75,14 @@ export default {
   }
   .box {
     width: 520px;
-    height: 630px;
-    border-radius: 10px;
-    background-color: transparent;
-    // background-color: #fff;
+    height: 520px;
     margin-right: 220px;
+    border-radius: 25px;
+    box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
     .head {
-      width: 100%;
-      height: 60px;
       display: flex;
       justify-content: center;
-      // background-color: red;
+      margin-top: 50px;
       .logo {
         width: 223px;
         height: 46px;
@@ -98,7 +94,7 @@ export default {
         }
       }
       .el-icon-arrow-left {
-        color: #0097fe;
+        color: #00aaf0;
         font-size: 60px;
         margin-top: -5px;
       }
@@ -130,15 +126,17 @@ export default {
         width: 200px;
         height: 50px;
         font-size: 18px;
+        background-color: #00aaf0;
+        border-radius: 25px;
       }
     }
   }
   .wenzi {
-    width: 100%;
-    color: #999999;
+    width: 340px;
     position: fixed;
     bottom: 21px;
     text-align: center;
+    color: #ccc;
     font-size: 16px;
   }
 }

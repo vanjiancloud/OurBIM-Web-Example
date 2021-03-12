@@ -85,6 +85,15 @@ const routes = [
       title: '应用管理'
     }
   },
+  // 编辑应用
+  {
+    path: '/edit',
+    name: 'edit',
+    component: () => import('../views/manage/edit.vue'),
+    meta: {
+      title: '编辑应用'
+    }
+  },
   // 创建应用
   {
     path: '/found',
@@ -175,7 +184,8 @@ router.beforeEach(function (to, from, next) {
       to.path !== '/newPassword' &&
       to.path !== '/resetSucceed'&&
       to.path !== '/protocol' &&
-      to.path !== '/registerSucceed'
+      to.path !== '/registerSucceed'&&
+      to.path !== '/activateSucceed'
     ) {
       next('/login')
     }

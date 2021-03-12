@@ -39,25 +39,28 @@
             </el-table-column>
             <el-table-column prop="createTime" :label="$t('uploaddate')">
             </el-table-column>
-            <el-table-column prop="" :label="$t('operation')">
-              <!-- 分享 -->
-              <!-- <button @click="share">
-                <span>
-                  <img src="../components/share.png" />
-                </span>
-              </button> -->
-              <!-- 编辑 -->
-              <button @click="edit">
-                <span>
-                  <img src="../components/edit.png" />
-                </span>
-              </button>
-              <!-- 删除 -->
-              <button @click="remove">
-                <span>
-                  <img src="../components/del.png" />
-                </span>
-              </button>
+            <el-table-column :label="$t('operation')">
+              <template slot-scope="scope">
+                <!-- 编辑 -->
+
+                <el-button
+                  @click="edit"
+                  :disabled="scope.row.applidStatus === '4' ? true : false"
+                  type="text"
+                  class="btn-one"
+                >
+                  {{ $t('edit') }}
+                </el-button>
+                <!-- 删除 -->
+                <el-button
+                  @click="remove"
+                  :disabled="scope.row.applidStatus === '4' ? true : false"
+                  type="text"
+                  class="btn-two"
+                >
+                  {{ $t('del') }}
+                </el-button>
+              </template>
             </el-table-column>
           </el-table>
         </div>
@@ -83,6 +86,7 @@
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import { getProjectList } from '@/api/my.js'
+import { getuserid } from '@/store/index.js'
 
 export default {
   components: { myHeader, MyFooter },
@@ -101,20 +105,13 @@ export default {
     this.GetList()
   },
   methods: {
-    // 读取cookie中userid
-    getCookie: function (userid) {
-      if (document.cookie.length > 0) {
-        var start = document.cookie.indexOf(userid + '=')
-        if (start !== -1) {
-          start = start + userid.length + 1
-          var end = document.cookie.indexOf(';', start)
-          if (end === -1) end = document.cookie.length
-          return unescape(document.cookie.substring(start, end))
-        }
-      }
-      console.log()
-      return ''
+    // 定时器，每隔3秒更新一次数据
+    GET () {
+      this.GetList()
+      console.log('每隔3秒更新应用管理')
     },
+
+    // 分页
     handleCurrentChange () {
       /**
        * @Author: zk
@@ -122,14 +119,11 @@ export default {
        * @description: 分页
        */
     },
+
+    // 获取应用数据列表
     GetList () {
-      /**
-       * @Author: zk
-       * @Date: 2021-02-22 17:43:22
-       * @description: 获取应用列表
-       */
       getProjectList({
-        userid: this.getCookie('userid')
+        userid: getuserid()
       })
         .then(res => {
           console.log(res)
@@ -139,9 +133,13 @@ export default {
           this.maxInstance = res.data.data.maxInstance
           this.applidStatus = res.data.data.applidStatus
           this.createTime = res.data.data.createTime
+          if (applidStatus === 0) {
+            this.disabled = true
+          }
         })
         .catch(err => {
-          this.$message.error('请求失败')
+          console.log(err)
+          // this.$message.error('请求失败')
         })
     },
 
@@ -150,14 +148,11 @@ export default {
       const statusObj = {
         0: '未上传',
         1: '渲染中',
-        2: '渲染完成'
+        2: '渲染完成',
+        3: '转换失败',
+        4: '项目损坏'
       }
       return statusObj[status]
-    },
-
-    // 分享
-    share () {
-      console.log('点击了分享')
     },
 
     // 编辑
@@ -168,7 +163,16 @@ export default {
     // 删除按钮
     remove () {
       console.log('点击了删除')
+      this.$confirm('此操作将删除当前应用, 是否继续?', '提示')
+      if (this.$confirm == '确定') {
+      }
     }
+  },
+  mounted () {
+    this.timer = setInterval(this.GET, 3000)
+  },
+  beforeDestroy () {
+    clearInterval(this.timer)
   }
 }
 </script>
@@ -178,6 +182,7 @@ export default {
   .container {
     background-color: #fff;
     margin-bottom: 34px;
+    height: 961px;
     /deep/ .el-button--primary {
       background-color: #00aaf0;
     }
@@ -230,15 +235,14 @@ export default {
         /deep/ .el-table_1_column_1 {
           color: #00aaf0;
         }
-        button {
-          border: none;
-          outline: none;
-          height: 20px;
-          margin-left: 20px;
-          background-color: #fff;
+        .btn-one {
+          font-size: 16px;
+          color: #00aaf0;
+          margin-right: 20px;
         }
-        button:hover {
-          cursor: pointer;
+        .btn-two {
+          font-size: 16px;
+          color: red;
         }
       }
     }
