@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-03-08 10:41:21
+ * @LastEditTime: 2021-03-10 16:34:00
  * @description: 
 -->
 <template>
@@ -16,150 +16,166 @@
 			<div @click="handleBody(5)" class="right">右</div>
 		</div>
 		<img class="go-front" @click="goFront" src="../../assets/images/todo/home.png" mode=""></img>
+		<img class="drop-down" @click="changeView" src="../../assets/images/todo/drop_down.png" alt="">
     </div>
 </template>
 
 <script>
-    export default {
-        data() {
-            return {
-                downInfo: {
-					x: -25,
-					y: -25,
-					z: 0,
-				},
-				disX: 90,
-				disY: 0,
-				isMonitor: false,
-            }
-        },
-        methods: {
-            goFront() {
-				this.$emit("handleOrder", 6)
-			},
-			handleBody(e) {
-				/**
-				 * @Author: zk
-				 * @Date: 2020-09-21 09:44:35
-				 * @description: 旋转确认 前 0 后 1 上 2 下 3 左 4 右 5
-				 */
-				switch (e) {
-					case 0:
-						this.downInfo = {
-							x: -25,
-							y: -25,
-							z: 0,
-						};
-						break;
-					case 1:
-						this.downInfo = {
-							x: -25,
-							y: 155,
-							z: 180,
-						};
-						break;
-					case 2:
-						this.downInfo = {
-							x: -115,
-							y: 0,
-							z: -25,
-						};
-						break;
-					case 3:
-						this.downInfo = {
-							x: 65,
-							y: 180,
-							z: -25,
-						};
-						break;
-					case 4:
-						this.downInfo = {
-							x: -25,
-							y: 65,
-							z: 0,
-						};
-						break;
-					case 5:
-						this.downInfo = {
-							x: -25,
-							y: -115,
-							z: 0,
-						};
-						break;
-					default:
-						break;
-				}
-				this.$emit("handleOrder", e)
-			},
-        },
-    }
+export default {
+  data() {
+    return {
+      downInfo: {
+        x: -25,
+        y: -25,
+        z: 0,
+      },
+      disX: 90,
+      disY: 0,
+      isMonitor: false,
+    };
+  },
+  methods: {
+    goFront() {
+      this.$emit("handleOrder", 6);
+    },
+    handleBody(e) {
+      /**
+       * @Author: zk
+       * @Date: 2020-09-21 09:44:35
+       * @description: 旋转确认 前 0 后 1 上 2 下 3 左 4 右 5
+       */
+      switch (e) {
+        case 0:
+          this.downInfo = {
+            x: -25,
+            y: -25,
+            z: 0,
+          };
+          break;
+        case 1:
+          this.downInfo = {
+            x: -25,
+            y: 155,
+            z: 180,
+          };
+          break;
+        case 2:
+          this.downInfo = {
+            x: -115,
+            y: 0,
+            z: -25,
+          };
+          break;
+        case 3:
+          this.downInfo = {
+            x: 65,
+            y: 180,
+            z: -25,
+          };
+          break;
+        case 4:
+          this.downInfo = {
+            x: -25,
+            y: 65,
+            z: 0,
+          };
+          break;
+        case 5:
+          this.downInfo = {
+            x: -25,
+            y: -115,
+            z: 0,
+          };
+          break;
+        default:
+          break;
+      }
+      this.$emit("handleOrder", e);
+    },
+    changeView() {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-10 16:19:34
+       * @description: 视图切换
+       */
+      console.log(1);
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
 .box-main {
-		position: fixed;
-        top: 26px;
-        right: 36px;
-		.go-front {
-			width: 16px;
-			height: 16px;
-			position: absolute;
-			top: -10px;
-			left: -20px;
-		}
-	}
+  position: fixed;
+  top: 26px;
+  right: 60px;
+  .go-front {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    top: -10px;
+    left: -20px;
+  }
+  .drop-down {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    right: -30px;
+    bottom: -20px;
+  }
+}
 
-	#box {
-		width: 34px;
-		height: 34px;
-		position: relative;
-		top: 0px;
-		left: 30%;
-		transform-style: preserve-3d;
-		transition: all 2s;
-	}
+#box {
+  width: 34px;
+  height: 34px;
+  position: relative;
+  top: 0px;
+  left: 30%;
+  transform-style: preserve-3d;
+  transition: all 2s;
+}
 
-	#box div {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		text-align: center;
-		height: 100%;
-		width: 100%;
-		position: absolute;
-        cursor: pointer;
-		top: 0;
-		left: 0;
-		background-size: cover;
-		color: #a5a5a4;
-	}
-    .front {
-		transform: translateZ(17px);
-		background: url("../../assets/images/todo/front.png");
-	}
+#box div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  background-size: cover;
+  color: #a5a5a4;
+}
+.front {
+  transform: translateZ(17px);
+  background: url("../../assets/images/todo/front.png");
+}
 
-	.back {
-		transform: translateZ(-17px) rotateX(180deg);
-		background: url("../../assets/images/todo/front.png");
-	}
+.back {
+  transform: translateZ(-17px) rotateX(180deg);
+  background: url("../../assets/images/todo/front.png");
+}
 
-	.left {
-		transform: translateX(-17px) rotateY(270deg);
-		background: url("../../assets/images/todo/front.png");
-	}
+.left {
+  transform: translateX(-17px) rotateY(270deg);
+  background: url("../../assets/images/todo/front.png");
+}
 
-	.right {
-		transform: translateX(17px) rotateY(90deg);
-		background: url("../../assets/images/todo/front.png");
-	}
+.right {
+  transform: translateX(17px) rotateY(90deg);
+  background: url("../../assets/images/todo/front.png");
+}
 
-	.top {
-		transform: translateY(-17px) rotateX(90deg);
-		background: url("../../assets/images/todo/front.png");
-	}
+.top {
+  transform: translateY(-17px) rotateX(90deg);
+  background: url("../../assets/images/todo/front.png");
+}
 
-	.bottom {
-		transform: translateY(17px) rotateX(90deg) rotateY(180deg);
-		background: url("../../assets/images/todo/front.png");
-	}
+.bottom {
+  transform: translateY(17px) rotateX(90deg) rotateY(180deg);
+  background: url("../../assets/images/todo/front.png");
+}
 </style>
