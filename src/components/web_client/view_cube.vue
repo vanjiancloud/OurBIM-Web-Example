@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-03-12 10:43:53
+ * @LastEditTime: 2021-03-12 11:00:59
  * @description: 
 -->
 <template>
@@ -16,15 +16,16 @@
         <div @click="handleBody(5)" class="right">右</div>
       </div>
       <img class="go-front" @click="goFront" src="../../assets/images/todo/home.png" mode=""></img>
-      <!-- <div class="drop-down">
+      <div class="drop-down">
         <img class="handle-down" @click="changeView" src="../../assets/images/todo/drop_down.png" alt="">
-        <transition name="el-zoom-in-top">
+        <!-- <transition name="el-zoom-in-top">
           <div class="cube-type" v-if="isCubeType">
-            <div></div>
+            <div v-for="(item, index) in handleList" :key="index">
+              <div v-text="item"></div>
+            </div>
           </div>
-        </transition>
-        
-      </div> -->
+        </transition>         -->
+      </div>
       
     </div>
 </template>
@@ -41,7 +42,8 @@ export default {
       disX: 90,
       disY: 0,
       isMonitor: false,
-      isCubeType: false
+      isCubeType: false,
+      handleList:["正交投影", "透视投影", "还原模型"]
     };
   },
   methods: {
@@ -108,7 +110,6 @@ export default {
        * @Date: 2021-03-10 16:19:34
        * @description: 视图切换
        */
-      console.log(1);
       this.isCubeType = !this.isCubeType
     },
   },
@@ -142,7 +143,7 @@ export default {
     .cube-type{
       position: absolute;
       top: 20px;
-      background: rgb(141, 238, 30);
+      background: #F3F3F3;
     }
   }
 }
