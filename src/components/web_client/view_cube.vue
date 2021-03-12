@@ -2,21 +2,30 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-03-10 16:34:00
+ * @LastEditTime: 2021-03-12 10:43:53
  * @description: 
 -->
 <template>
     <div class="box-main">
-        <div id="box" :style="{transform:`perspective(800px) rotateX(${downInfo.x}deg) rotateY(${downInfo.y}deg) rotateZ(${downInfo.z}deg)`}">
-			<div @click="handleBody(0)" class="front">前</div>
-			<div @click="handleBody(1)" class="back">后</div>
-			<div @click="handleBody(2)" class="top">上</div>
-			<div @click="handleBody(3)" class="bottom">下</div>
-			<div @click="handleBody(4)" class="left">左</div>
-			<div @click="handleBody(5)" class="right">右</div>
-		</div>
-		<img class="go-front" @click="goFront" src="../../assets/images/todo/home.png" mode=""></img>
-		<img class="drop-down" @click="changeView" src="../../assets/images/todo/drop_down.png" alt="">
+      <div id="box" :style="{transform:`perspective(800px) rotateX(${downInfo.x}deg) rotateY(${downInfo.y}deg) rotateZ(${downInfo.z}deg)`}">
+        <div @click="handleBody(0)" class="front">前</div>
+        <div @click="handleBody(1)" class="back">后</div>
+        <div @click="handleBody(2)" class="top">上</div>
+        <div @click="handleBody(3)" class="bottom">下</div>
+        <div @click="handleBody(4)" class="left">左</div>
+        <div @click="handleBody(5)" class="right">右</div>
+      </div>
+      <img class="go-front" @click="goFront" src="../../assets/images/todo/home.png" mode=""></img>
+      <!-- <div class="drop-down">
+        <img class="handle-down" @click="changeView" src="../../assets/images/todo/drop_down.png" alt="">
+        <transition name="el-zoom-in-top">
+          <div class="cube-type" v-if="isCubeType">
+            <div></div>
+          </div>
+        </transition>
+        
+      </div> -->
+      
     </div>
 </template>
 
@@ -32,6 +41,7 @@ export default {
       disX: 90,
       disY: 0,
       isMonitor: false,
+      isCubeType: false
     };
   },
   methods: {
@@ -99,6 +109,7 @@ export default {
        * @description: 视图切换
        */
       console.log(1);
+      this.isCubeType = !this.isCubeType
     },
   },
 };
@@ -117,11 +128,22 @@ export default {
     left: -20px;
   }
   .drop-down {
-    width: 16px;
-    height: 16px;
     position: absolute;
+    background: rgb(131, 236, 187);
+    width: 100%;
     right: -30px;
-    bottom: -20px;
+    top: 50px;
+    .handle-down{
+      width: 16px;
+      height: 16px;
+      position: absolute;
+      right: 0;
+    }
+    .cube-type{
+      position: absolute;
+      top: 20px;
+      background: rgb(141, 238, 30);
+    }
   }
 }
 
