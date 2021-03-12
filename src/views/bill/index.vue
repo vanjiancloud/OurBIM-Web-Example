@@ -124,7 +124,7 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import { getUserInfo, modifyUserInfo, uploadImg } from '@/api/my.js'
+import { getUserInfo, modifyUserInfo } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
@@ -163,7 +163,8 @@ export default {
           this.position = res.data.data.position
         })
         .catch(err => {
-          this.$message.error('请求失败')
+          console.log(err)
+          // this.$message.error('请求失败')
         })
     },
     //修改用户信息
@@ -227,27 +228,27 @@ export default {
   .container {
     background-color: #fff;
     margin-bottom: 34px;
-    height: 1037px;
+    height: 961px;
     .content {
       overflow: hidden;
       ul.el-menu {
-        height: 1037px;
-      }
-      /deep/ .el-submenu__title {
-        font-size: 17px;
-      }
-      /deep/ .el-menu-item {
-        font-size: 17px;
+        height: 961px;
+        /deep/ .el-submenu__title {
+          font-size: 17px;
+        }
+        /deep/ .el-menu-item {
+          font-size: 17px;
+        }
       }
       .color {
         width: 25px;
-        height: 1037px;
+        height: 961px;
         float: left;
         background-color: #f1f1f1;
       }
       .neirong {
         padding-left: 300px;
-        height: 1037px;
+        height: 961px;
         .title {
           height: 54px;
           text-align: center;

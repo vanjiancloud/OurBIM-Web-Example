@@ -58,7 +58,6 @@
                 :on-success="upLoadImg"
                 name="fileUpload"
                 :on-error="errorImg"
-                :on-remove="handleRemove"
                 list-type="picture-card"
                 :limit="1"
                 :on-exceed="handleExceed"
@@ -182,7 +181,8 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import { addProject } from '@/api/my.js'
+import { addProject, ProjectModel } from '@/api/my.js'
+import { getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
 export default {
@@ -204,7 +204,7 @@ export default {
       appImgSrc: '',
       appInfo: '',
       appModel: '',
-      userId: ''
+      appliId: ''
     }
   },
   methods: {
@@ -241,56 +241,59 @@ export default {
     },
     // 下一步
     next () {
-      if (!this.appName == '') {
+      if (!this.appName == '' && !this.appImgSrc == '') {
         if (this.active++ > 2) this.active = 0
-        this.isShow = 2
+        addProject({
+          userId: getuserid(),
+          appName: this.appName,
+          screenImg: this.appImgSrc
+        })
+          .then(res => {
+            if (res.data.code === 0) {
+              this.appInfo = res.data.data
+              this.appliId= res.data.data.appliId
+              console.log(this.appInfo)
+              this.$message.success('创建应用成功')
+              this.isShow = 2
+            } else if (res.data.code === 1) {
+              this.$message.error('项目新建失败')
+              // alert("项目新建失败")
+            }
+          })
+          .catch(err => {
+            console.log(err)
+            this.$message.error('创建失败，请创建应用')
+          })
       } else {
-        this.$message.warning('请先创建应用名称')
+        this.$message.warning('请先创建应用名称并上传封面')
       }
     },
     // 开始渲染
     update () {
       if (this.active++ > 2) this.active = 0
-      addProject({
-        userId: this.getCookie('userid'),
-        appName: this.appName,
-        screenImg: this.appImgSrc
-      })
-        .then(res => {
-          if (res.data.code === 0) {
-            this.appInfo = res.data.data
-            console.log(this.appInfo)
-            this.$message.success('上传模型成功')
-            this.isShow = 3
-          } else if (res.data.code === 1) {
-            this.$message.error('上传模型失败')
-            this.isShow = 4
-          }
+      ProjectModel({
+          appliId:this.appliId,
+          appModel:this.appModel
         })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('上传失败，请上传模型')
-          this.isShow = 4
-        })
+          .then(res => {
+            if (res.data.code === 0) {
+              console.log(res)
+              this.$message.success('上传模型成功')
+              this.isShow = 3
+            } else if (res.data.code === 1) {
+              this.$message.error('上传模型失败')
+              this.isShow = 4
+            }
+          })
+          .catch(err => {
+            console.log(err)
+            this.$message.error('上传失败，请重新上传')
+          })
     },
     //去往应用管理
     toManage () {
       this.$router.push('../manage')
       this.$router.go(0)
-    },
-    // 读取cookie中的数据：userid
-    getCookie: function (userid) {
-      if (document.cookie.length > 0) {
-        var start = document.cookie.indexOf(userid + '=')
-        if (start !== -1) {
-          start = start + userid.length + 1
-          var end = document.cookie.indexOf(';', start)
-          if (end === -1) end = document.cookie.length
-          return unescape(document.cookie.substring(start, end))
-        }
-      }
-      console.log()
-      return ''
     },
     // 限制上传图片张数
     handleExceed () {
@@ -343,7 +346,7 @@ export default {
   .container {
     background-color: #fff;
     margin-bottom: 34px;
-    height: 1037px;
+    height: 961px;
     padding-top: 38px;
     .content {
       .buzhou {

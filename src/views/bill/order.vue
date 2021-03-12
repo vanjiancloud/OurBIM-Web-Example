@@ -41,56 +41,55 @@
             <!-- 服务订单 -->
             {{ $t('servicesorder') }}
           </div>
-          <template>
-            <div class="table">
-              <el-table :data="tableData" style="width: 100% font-size: 17px;">
-                <el-table-column
-                  prop="dingdancode"
-                  :label="$t('number')"
-                  width="130"
-                ></el-table-column>
-                <el-table-column
-                  prop="createTime"
-                  :label="$t('time')"
-                  width="160"
-                ></el-table-column>
-                <el-table-column :label="$t('services')">
-                  <template slot-scope="scope">
-                    {{ formatDingdanStatus(scope.row.dingdanStatus) }}
+          <!-- 表格 -->
+          <div class="table">
+            <el-table :data="tableData" style="width: 100% font-size: 17px;">
+              <el-table-column
+                prop="dingdancode"
+                :label="$t('number')"
+                width="130"
+              ></el-table-column>
+              <el-table-column
+                prop="createTime"
+                :label="$t('time')"
+                width="160"
+              ></el-table-column>
+              <el-table-column :label="$t('services')">
+                <template slot-scope="scope">
+                  {{ formatDingdanStatus(scope.row.dingdanStatus) }}
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="sqm"
+                :label="$t('authorizationcode')"
+                width="310"
+              >
+                <template slot-scope="scope">
+                  <template v-if="scope.row.eyseShow">
+                    ****************************************
                   </template>
-                </el-table-column>
-                <el-table-column
-                  prop="sqm"
-                  :label="$t('authorizationcode')"
-                  width="310"
-                >
-                  <template slot-scope="scope">
-                    <template v-if="scope.row.eyseShow">
-                      ****************************************
-                    </template>
-                    <template v-if="!scope.row.eyseShow">
-                      {{ scope.row.sqm }}
-                    </template>
-                    <div class="imageEye" @click="lookEyes(scope.row)">
-                      <div :class="scope.row.imgeeyes"></div>
-                    </div>
+                  <template v-if="!scope.row.eyseShow">
+                    {{ scope.row.sqm }}
                   </template>
-                </el-table-column>
-                <el-table-column prop="sqMISUsed" :label="$t('state')">
-                  <template slot-scope="scope">
-                    {{ formatSqMISUsed(scope.row.sqMISUsed) }}
-                  </template>
-                </el-table-column>
+                  <div class="imageEye" @click="lookEyes(scope.row)">
+                    <div :class="scope.row.imgeeyes"></div>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="sqMISUsed" :label="$t('state')">
+                <template slot-scope="scope">
+                  {{ formatSqMISUsed(scope.row.sqMISUsed) }}
+                </template>
+              </el-table-column>
 
-                <el-table-column
-                  prop="dcount"
-                  :label="$t('amountofmoney')"
-                  width="165"
-                >
-                </el-table-column>
-              </el-table>
-            </div>
-          </template>
+              <el-table-column
+                prop="dcount"
+                :label="$t('amountofmoney')"
+                width="165"
+              >
+              </el-table-column>
+            </el-table>
+          </div>
           <!-- 分页 -->
           <div class="page">
             <el-pagination
@@ -164,6 +163,7 @@ export default {
           this.total = res.data.count //总条数
         })
         .catch(err => {
+          console.log(err);
           this.$message.error('获取数据失败')
         })
     },
@@ -229,40 +229,41 @@ export default {
   .container {
     background-color: #fff;
     margin-bottom: 34px;
-    height: 1037px;
+    height: 961px;
     .content {
       overflow: hidden;
       ul.el-menu {
-        height: 1037px;
-      }
-      /deep/ .el-submenu__title * {
-        font-size: 17px;
-      }
-      /deep/ .el-menu-item {
-        font-size: 17px;
+        height: 961px;
+        /deep/ .el-submenu__title * {
+          font-size: 17px;
+        }
+        /deep/ .el-menu-item {
+          font-size: 17px;
+        }
       }
       .color {
         width: 25px;
-        height: 1037px;
+        height: 961px;
         float: left;
         background-color: #f1f1f1;
       }
       .neirong {
         padding-left: 300px;
-        height: 1037px;
-        text-align: center;
+        height: 961px;
+        // background-color: red;
         .title {
           height: 54px;
+          text-align: center;
           line-height: 54px;
-          // margin-left: -40px;
+          margin-left: -40px;
           font-size: 22px;
           font-weight: bold;
           border-bottom: 1px solid #f1f1f1;
         }
         .table {
-          margin-right: 40px;
+          margin-right: 35px;
           margin-top: 20px;
-          font-size: 17px;
+          margin-bottom: 40px;
           /deep/ .el-table thead {
             color: #fff;
           }

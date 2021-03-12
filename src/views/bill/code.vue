@@ -73,7 +73,6 @@
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
 import { updateSQM, verification } from '@/api/my.js'
-// import { verification } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 
 export default {
@@ -136,11 +135,11 @@ export default {
   .container {
     background-color: #fff;
     margin-bottom: 34px;
-    height: 1037px;
+    height: 961px;
     .content {
       overflow: hidden;
       ul.el-menu {
-        height: 1037px;
+        height: 961px;
       }
       /deep/ .el-submenu__title * {
         font-size: 17px;
@@ -150,13 +149,12 @@ export default {
       }
       .color {
         width: 25px;
-        height: 1037px;
+        height: 961px;
         float: left;
         background-color: #f1f1f1;
       }
       .neirong {
-        // padding-left: 300px;
-        height: 1037px;
+        height: 961px;
         .title {
           height: 54px;
           text-align: center;

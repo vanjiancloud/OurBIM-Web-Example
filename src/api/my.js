@@ -139,6 +139,15 @@ export function addProject (data) {
   })
 }
 
+// 上传项目模型
+export function ProjectModel (data) {
+  return request({
+    url: '/appli/postProjectModel',
+    method: 'POST',
+    data: qsStringify(data)
+  })
+}
+
 // 获取项目
 export function getProjectList (data) {
   return request({

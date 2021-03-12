@@ -3,140 +3,147 @@
     <div class="picture">
       <img src="./img.png" alt="" />
     </div>
-    <div class="login-form-wrap">
-      <!-- .logo区域 -->
-      <div class="login-head">
-        <i class="el-icon-arrow-left" @click="toReturn"></i>
-        <div class="logo">
-          <img src="./logo.png" alt="" />
+    <div class="right">
+      <div class="login-form-wrap">
+        <!-- .logo区域 -->
+        <div class="login-head">
+          <i class="el-icon-arrow-left" @click="toReturn"></i>
+          <div class="logo">
+            <img src="./logo.png" alt="" />
+          </div>
         </div>
-      </div>
-      <!-- 登录的不同状态 -->
-      <div class="state">
-        <span
-          @click="isshow = 0"
-          :class="{ color: isshow == 0 }"
-          style="font-size: 20px;"
+        <!-- 登录的不同状态 -->
+        <div class="state">
+          <span
+            @click="isshow = 0"
+            :class="{ color: isshow == 0 }"
+            style="font-size: 20px;"
+          >
+            邮箱登录
+          </span>
+          <span
+            @click="isshow = 1"
+            :class="{ color: isshow == 1 }"
+            style="font-size: 20px;"
+          >
+            短信登录
+          </span>
+        </div>
+        <!-- 邮箱登录的表单 -->
+        <el-form
+          :rules="rules"
+          :model="form"
+          ref="form"
+          class="login-form"
+          v-show="isshow == 0"
         >
-          邮箱登录
-        </span>
-        <span
-          @click="isshow = 1"
-          :class="{ color: isshow == 1 }"
-          style="font-size: 20px;"
-        >
-          短信登录
-        </span>
-      </div>
-      <!-- 邮箱登录的表单 -->
-      <el-form
-        :rules="rules"
-        :model="form"
-        ref="form"
-        class="login-form"
-        v-show="isshow == 0"
-      >
-        <!--  邮箱密码通过双向绑定获取 -->
-        <el-form-item prop="email">
-          <div style="color:#999999;font-size: 18px;">
-            邮箱
-          </div>
-          <el-input v-model="form.email" placeholder="请输入邮箱">
-            <i slot="prefix" class="el-input__icon el-icon-message"></i>
-          </el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-          <div style="color:#999999;font-size: 18px;">
-            密码
-          </div>
-          <el-input
-            v-model="form.password"
-            placeholder="请输入登录密码"
-            type="password"
-          >
-            <i slot="prefix" class="el-input__icon el-icon-unlock"></i>
-          </el-input>
-        </el-form-item>
-        <el-form-item prop="isAgree">
-          <el-checkbox
-            class="checkbox"
-            label="记住登录邮箱"
-            name="type"
-            v-model="form.isAgree"
-          ></el-checkbox>
-          <span @click="changePassword" style="font-size: 16px;"
-            >忘记密码?</span
-          >
-          <span @click="register" style="font-size: 16px;">注册新用户</span>
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            @click="emailLogin"
-            type="primary"
-            class="login-btn"
-            :loading="isLoading"
-            >登录</el-button
-          >
-        </el-form-item>
-      </el-form>
-
-      <!-- 短信登录的表单 -->
-      <el-form
-        :rules="rules"
-        :model="mobForm"
-        ref="mobForm"
-        class="login-form"
-        v-show="isshow == 1"
-      >
-        <!--  手机号验证码通过双向绑定获取里面的值 -->
-        <el-form-item prop="mobile">
-          <div style="color:#999999;font-size: 18px;">手机号</div>
-          <el-input v-model="mobForm.mobile" placeholder="请输入手机号">
-            <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
-          </el-input>
-        </el-form-item>
-        <el-form-item prop="code">
-          <div style="color:#999999;font-size: 18px;">
-            验证码
-          </div>
-          <el-input
-            v-model="mobForm.code"
-            placeholder="请输入短信验证码"
-            class="input"
-          >
-            <el-button
-              slot="suffix"
-              style="padding-right:25px;padding-top:47px;"
-              :disabled="isSend"
-              @click="getVerification"
-              type="text"
-              >{{ btnMes }}</el-button
+          <!--  邮箱密码通过双向绑定获取 -->
+          <el-form-item prop="email">
+            <div style="color:#000;font-size: 20px;">
+              邮箱
+            </div>
+            <el-input v-model="form.email" placeholder="请输入邮箱">
+              <i slot="prefix" class="el-input__icon el-icon-message"></i>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <div style="color:#000;font-size: 20px;">
+              密码
+            </div>
+            <el-input
+              v-model="form.password"
+              placeholder="请输入登录密码"
+              type="password"
             >
-            <i slot="prefix" class="el-input__icon el-icon-s-comment"></i>
-          </el-input>
-        </el-form-item>
-        <el-form-item prop="isAgree">
-          <el-checkbox
-            class="checkbox"
-            label="记住登录手机号"
-            name="type"
-            v-model="mobForm.checkbox"
-          ></el-checkbox>
-          <span @click="changePassword" style="font-size: 16px;"
-            >忘记密码?</span
-          >
-          <span @click="register" style="font-size: 16px;">注册新用户</span>
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            @click="Mobilelogin"
-            type="primary"
-            class="login-btn"
-            :loading="isLoading"
-            >登录</el-button
-          >
-        </el-form-item>
-      </el-form>
+              <i slot="prefix" class="el-input__icon el-icon-unlock"></i>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="isAgree">
+            <el-checkbox
+              class="checkbox"
+              label="记住登录邮箱"
+              name="type"
+              v-model="form.isAgree"
+            ></el-checkbox>
+            <span @click="changePassword" style="font-size: 16px;color:#00aaf0;"
+              >忘记密码?</span
+            >
+            <span @click="register" style="font-size: 16px;color:#00aaf0;"
+              >注册新用户</span
+            >
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              @click="emailLogin"
+              type="primary"
+              class="login-btn"
+              :loading="isLoading"
+              >登录</el-button
+            >
+          </el-form-item>
+        </el-form>
+
+        <!-- 短信登录的表单 -->
+        <el-form
+          :rules="rules"
+          :model="mobForm"
+          ref="mobForm"
+          class="login-form"
+          v-show="isshow == 1"
+        >
+          <!--  手机号验证码通过双向绑定获取里面的值 -->
+          <el-form-item prop="mobile">
+            <div style="color:#000;font-size: 20px;">手机号</div>
+            <el-input v-model="mobForm.mobile" placeholder="请输入手机号">
+              <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="code">
+            <div style="color:#000;font-size: 20px;">
+              验证码
+            </div>
+            <el-input
+              v-model="mobForm.code"
+              placeholder="请输入短信验证码"
+              class="input"
+            >
+              <!-- 验证码按钮 -->
+              <el-button
+                slot="suffix"
+                style="padding-right:25px;padding-top:47px;color:#00aaf0;"
+                :disabled="isSend"
+                @click="getVerification"
+                type="text"
+                >{{ btnMes }}</el-button
+              >
+              <i slot="prefix" class="el-input__icon el-icon-s-comment"></i>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="isAgree">
+            <el-checkbox
+              class="checkbox"
+              label="记住登录手机号"
+              name="type"
+              v-model="mobForm.checkbox"
+            ></el-checkbox>
+            <span @click="changePassword" style="font-size: 16px;color:#00aaf0;"
+              >忘记密码?</span
+            >
+            <span @click="register" style="font-size: 16px;color:#00aaf0;"
+              >注册新用户</span
+            >
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              @click="Mobilelogin"
+              type="primary"
+              class="login-btn"
+              :loading="isLoading"
+              >登录</el-button
+            >
+          </el-form-item>
+        </el-form>
+      </div>
     </div>
     <div class="wenzi">
       Copyright © 2021 www.OurBIM.com, All Rights Reserved.
@@ -149,6 +156,7 @@ import { sendMsgCode, login, loginMobile } from '@/api/my.js'
 import { setuserid } from '@/store/index.js'
 // const Base64 = require('js-base64').Base64
 export default {
+  name: 'Logoin',
   data () {
     return {
       isSend: false, // 是否显示
@@ -157,8 +165,8 @@ export default {
       // 邮箱登录表单
       form: {
         isAgree: false, // 复选框的状态
-        password: '123456',
-        email: 'test@163.com'
+        password: '',
+        email: ''
       },
       // 手机登录表单
       mobForm: {
@@ -214,6 +222,21 @@ export default {
       }
     }
   },
+  // 在页面加载时从cookie获取登录信息
+  created () {
+    const email = this.getCookie('email')
+    const password = this.getCookie('password')
+    const mobile = this.getCookie('mobile')
+    console.log(mobile)
+    // 如果存在赋值给表单，并且将记住密码勾选
+    if ((email, mobile)) {
+      this.form.email = email
+      this.form.password = password
+      this.form.isAgree = true
+      this.mobForm.mobile = mobile
+      this.mobForm.checkbox = true
+    }
+  },
   methods: {
     // 返回首页
     toReturn () {
@@ -236,7 +259,15 @@ export default {
         }
       })
     },
-    // 邮箱登录
+    // 点击手机登录
+    Mobilelogin () {
+      this.$refs.mobForm.validate(valid => {
+        if (valid) {
+          this.mobLogin()
+        }
+      })
+    },
+    // 邮箱登录接口
     doLogin () {
       login({
         email: this.form.email,
@@ -252,7 +283,6 @@ export default {
             this.setCookie('userInfo', JSON.stringify(res.data.data))
             // 存储用户信息userid
             setuserid(res.data.data.userid)
-            this.setCookie('userid', res.data.data.userid)
             this.$router.push('../userCenter')
             this.setUserInfo()
           } else if (res.data.code === 2) {
@@ -263,7 +293,35 @@ export default {
         })
         .catch(err => {
           console.log(err)
-          this.$message.error('登录失败，用户名密码错误')
+          this.$message.error('登录失败，该账号未注册')
+        })
+    },
+    // 手机登录接口
+    mobLogin () {
+      loginMobile({
+        mobile: this.mobForm.mobile,
+        code: this.mobForm.code
+      })
+        .then(res => {
+          console.log(res)
+          if (res.data.code === 0) {
+            this.$message.success('恭喜登录成功')
+            this.setCookie('mobile', this.mobForm.mobile)
+            // 存储用户信息userid
+            setuserid(res.data.data.userid)
+            this.$router.push('../userCenter')
+            this.getUserInfo()
+          } else if (res.data.code === 2) {
+            this.$message.error('登录失败,请去激活')
+          } else if (res.data.code === 1) {
+            this.$message.error('验证码验证失败')
+          } else {
+            this.$message.error('验证码验证失败，您的操作过于频繁，请稍后再试')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('验证码验证失败')
         })
     },
     // cookie邮箱
@@ -272,13 +330,8 @@ export default {
       // 如果没有勾选，储存的信息为空
       if (this.form.isAgree) {
         this.setCookie('email', this.form.email)
-        // base64加密密码
-        this.setCookie('password', this.form.password)
-        // const passWord = Base64.encode(this.form.password)
-        // this.setCookie('isAgree', passWord)
       } else {
         this.setCookie('email', '')
-        this.setCookie('password', '')
       }
     },
     // cookie手机
@@ -312,40 +365,7 @@ export default {
         decodeURIComponent(value) +
         (expiredays == null ? '' : ';expires=' + exdate.toGMTString())
     },
-    // 点击手机登录
-    Mobilelogin () {
-      this.$refs.mobForm.validate(valid => {
-        if (valid) {
-          this.mobLogin()
-        }
-      })
-    },
-    // 手机登录接口
-    mobLogin () {
-      loginMobile({
-        mobile: this.mobForm.mobile,
-        code: this.mobForm.code
-      })
-        .then(res => {
-          console.log(res)
-          if (res.data.code === 0) {
-            this.$message.success('恭喜登录成功')
-            this.setCookie('mobile', this.mobForm.mobile)
-            this.$router.push('../userCenter')
-            this.getUserInfo()
-          } else if (res.data.code === 2) {
-            this.$message.error('登录失败,请去激活')
-          } else if (res.data.code === 1) {
-            this.$message.error('验证码验证失败')
-          } else {
-            this.$message.error('验证码验证失败，您的操作过于频繁，请稍后再试')
-          }
-        })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('验证码验证失败')
-        })
-    },
+
     // 点击获取验证码
     getVerification () {
       this.$refs.mobForm.validateField('mobile', codeError => {
@@ -390,31 +410,12 @@ export default {
           this.$message.error('获取失败')
         })
     }
-  },
-  // 在页面加载时从cookie获取登录信息
-  created () {
-    const email = this.getCookie('email')
-    const password = this.getCookie('password')
-    const mobile = this.getCookie('mobile')
-    console.log(mobile)
-    // 如果存在赋值给表单，并且将记住密码勾选
-    if ((email, mobile)) {
-      this.form.email = email
-      this.form.password = password
-      // this.form.isAgree = true
-      this.mobForm.mobile = mobile
-      // this.mobForm.checkbox = true
-    }
   }
 }
 </script>
 
 <style scoped lang="less">
 // 书写样式铺满整
-body,
-html {
-  font-size: 0;
-}
 .login-container {
   width: 100%;
   height: 100%;
@@ -426,153 +427,159 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
-  vertical-align: middle;
   background-image: url(./bg.png);
   background-size: cover;
   .picture {
     float: left;
-    width: 652px;
-    height: 802px;
-    margin-left: 206px;
-    margin-right: 300px;
+    width: 795px;
+    height: 945px;
+    margin-left: -200px;
+    margin-right: 350px;
     img {
       width: 100%;
       height: 100%;
     }
   }
-  .login-form-wrap {
-    // background-color: red;
-    margin-right: 220px;
-    height: 550px;
+  .right {
+    width: 560px;
+    height: 650px;
+    background-color: #fff;
     float: right;
-    width: 520px;
-    // 错误提示
-    /deep/ .el-form-item__error {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-    }
-    // 输入框
-    /deep/ .el-input__inner {
-      height: 65px;
-      margin-top: 25px;
-      font-size: 20px;
-      background-color: transparent;
-      padding-left: 90px;
-      color: #fff;
-    }
-    /deep/ .el-checkbox__label {
-      font-size: 20px;
-    }
-    /deep/ .el-checkbox__inner {
-      width: 20px;
-      height: 20px;
-      background-color: transparent;
-    }
-    // 输入框内图标
-    /deep/ .el-input__icon {
-      font-size: 25px;
-      margin-top: 15px;
-      margin-left: 36px;
-    }
-    /deep/ .el-checkbox__inner::after {
-      width: 9px;
-      height: 13px;
-    }
-    .login-head {
-      width: 520px;
-      height: 46px;
-      // background-color: green;
-      // margin-bottom: 60px;
-      .icon {
-        width: 16px;
-        height: 32px;
-        // background-color: pink;
-        img {
-          width: 100%;
-          height: 100%;
-        }
-      }
-      .logo {
-        width: 232px;
-        height: 46px;
-        margin: 0 auto;
-        // background-color: blue;
-        margin-top: -55px;
-        img {
-          width: 100%;
-          height: 100%;
-        }
-      }
-      .el-icon-arrow-left {
-        color: #0097fe;
-        font-size: 60px;
-      }
-    }
-    .state {
-      font-size: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin-bottom: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 25px;
+    box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
+    .login-form-wrap {
+      width: 490px;
       // background-color: red;
-      margin-top: 60px;
-      cursor: pointer;
-      span {
-        color: #999999;
+      // 错误提示
+      /deep/ .el-form-item__error {
+        position: absolute;
+        left: 0;
+        bottom: 0;
       }
-      .color {
-        color: #0097fe;
-        border-bottom: 1px solid #0097fe;
-        border-width: 4px;
-      }
-      span {
-        padding-right: 20px;
-        border-bottom: 1px solid #e9e9e9;
-        border-width: 4px;
-        padding: 0px 80px 15px 80px;
-      }
-    }
-    .login-form {
-      // background-color: yellowgreen;
+      // 输入框
       /deep/ .el-input__inner {
-        height: 60px;
+        height: 65px;
+        margin-top: 25px;
+        font-size: 20px;
+        background-color: #f4f4f4;
+        padding-left: 90px;
+        color: #000;
       }
-      /deep/ .el-form-item__content {
-        line-height: 30px;
+      /deep/ .el-checkbox__label {
+        font-size: 20px;
+        // color: #00aaf0;
       }
-      .login-btn {
-        width: 100%;
-        height: 60px;
+      /deep/ .el-checkbox__input.is-checked + .el-checkbox__label {
+        color: #00aaf0;
+      }
+      /deep/ .el-checkbox__inner {
+        width: 20px;
+        height: 20px;
+        border-color: #00aaf0;
+      }
+      // 输入框内图标
+      /deep/ .el-input__icon {
         font-size: 25px;
+        margin-top: 15px;
+        margin-left: 36px;
       }
-      span {
-        padding-left: 20px;
-        float: right;
-        color: #0097fe;
-        display: inline;
-        cursor: pointer;
+      /deep/ .el-checkbox__inner::after {
+        width: 9px;
+        height: 13px;
+        color: #00aaf0;
       }
-      .checkbox {
-        /deep/ .el-checkbox__inner {
-          margin-bottom: 3px;
+      .login-head {
+        width: 520px;
+        height: 46px;
+        .icon {
+          width: 16px;
+          height: 32px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
         }
-        color: #999999;
+        .logo {
+          width: 232px;
+          height: 46px;
+          margin: 0 auto;
+          margin-top: -55px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .el-icon-arrow-left {
+          color: #00aaf0;
+          font-size: 60px;
+        }
+      }
+      .state {
+        font-size: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 18px;
+        // background-color: red;
+        margin-top: 50px;
+        cursor: pointer;
         span {
+          color: #999999;
+        }
+        .color {
+          color: #00aaf0;
+          border-bottom: 1px solid #00aaf0;
+          border-width: 4px;
+        }
+        span {
+          padding-right: 20px;
+          border-bottom: 1px solid #e9e9e9;
+          border-width: 4px;
+          padding: 0px 80px 15px 80px;
+        }
+      }
+      .login-form {
+        /deep/ .el-input__inner {
+          height: 60px;
+        }
+        /deep/ .el-form-item__content {
+          line-height: 30px;
+        }
+        .login-btn {
+          width: 100%;
+          height: 60px;
+          font-size: 25px;
+          border-radius: 30px;
+          background-color: #00aaf0;
+        }
+        span {
+          padding-left: 20px;
+          float: right;
+          color: #00aaf0;
+          display: inline;
           cursor: pointer;
         }
-      }
-      .tips {
-        color: #0097de;
+        .checkbox {
+          /deep/ .el-checkbox__inner {
+            margin-bottom: 3px;
+          }
+          color: #000;
+          span {
+            cursor: pointer;
+          }
+        }
       }
     }
   }
   .wenzi {
-    width: 100%;
-    color: #999999;
+    width: 340px;
     position: fixed;
     bottom: 21px;
     text-align: center;
+    color: #ccc;
     font-size: 16px;
   }
 }

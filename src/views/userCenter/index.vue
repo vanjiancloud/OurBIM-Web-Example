@@ -36,7 +36,7 @@
                     <div class="line"></div>
                     <!-- 进入应用 -->
                     <div class="button">
-                      <el-button  round @click="GoApp(item)">
+                      <el-button round @click="GoApp(item)">
                         {{ $t('into') }}</el-button
                       >
                     </div>
@@ -57,8 +57,8 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import { getProjectList, getModelInfo } from '@/api/my.js'
-
+import { getProjectList } from '@/api/my.js'
+import { getuserid } from '@/store/index.js'
 export default {
   components: { myHeader, MyFooter },
   name: 'userCenter',
@@ -88,30 +88,16 @@ export default {
       this.classify = '全部'
     },
 
-    // 读取cookie中userid数据
-    getCookie: function (userid) {
-      if (document.cookie.length > 0) {
-        var start = document.cookie.indexOf(userid + '=')
-        if (start !== -1) {
-          start = start + userid.length + 1
-          var end = document.cookie.indexOf(';', start)
-          if (end === -1) end = document.cookie.length
-          return unescape(document.cookie.substring(start, end))
-        }
-      }
-      console.log()
-      return ''
+    // 定时器，每隔3秒更新一次数据
+    Get () {
+      this.GetList()
+      console.log('3秒更新一次我的应用')
     },
 
     // 获取应用列表
     GetList () {
-      /**
-       * @Author: zk
-       * @Date: 2021-02-22 17:43:22
-       * @description: 获取应用列表
-       */
       getProjectList({
-        userid: this.getCookie('userid'),
+        userid: getuserid(),
         isHandle: 1
       })
         .then(res => {
@@ -119,7 +105,8 @@ export default {
           this.appList = res.data.data
         })
         .catch(err => {
-          this.$message.error('请求失败')
+          console.log(err)
+          // this.$message.error('请求失败')
         })
     },
 
@@ -138,6 +125,12 @@ export default {
       })
       window.open(href, '_blank')
     }
+  },
+  mounted () {
+    this.timer = setInterval(this.Get, 3000)
+  },
+  beforeDestroy () {
+    clearInterval(this.timer)
   }
 }
 </script>

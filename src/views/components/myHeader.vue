@@ -11,19 +11,33 @@
         <ul>
           <!-- 功能介绍 -->
           <li>
-            <a href="">{{ $t('introduction') }}</a>
+            <a href="http://47.94.229.108:7011/introduce">
+              {{ $t('introduction') }}</a
+            >
           </li>
+          <!-- 解决方案 -->
           <li>
-            <a href="">{{ $t('Solution') }}</a>
+            <a href="http://47.94.229.108:7011/solution">
+              {{ $t('Solution') }}</a
+            >
           </li>
+          <!-- 成功案例 -->
           <li>
-            <a href="">{{ $t('cases') }}</a>
+            <a href="http://47.94.229.108:7011/successful_cases">
+              {{ $t('cases') }}</a
+            >
           </li>
+          <!-- 产品定价 -->
           <li>
-            <a href="">{{ $t('Pricing') }}</a>
+            <a href="http://47.94.229.108:7011/product_pricing">
+              {{ $t('Pricing') }}</a
+            >
           </li>
+          <!-- 最新资讯 -->
           <li>
-            <a href="">{{ $t('consultation') }}</a>
+            <a href="http://47.94.229.108:7011/latest_news">
+              {{ $t('consultation') }}</a
+            >
           </li>
           <!-- 开发者下拉菜单 -->
           <li>
@@ -33,17 +47,45 @@
                 }}<i class="el-icon-arrow-down el-icon--right"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>{{ $t('APIdov') }}</el-dropdown-item>
-                <el-dropdown-item>{{ $t('project') }}</el-dropdown-item>
-                <el-dropdown-item>{{ $t('Mcenter') }}</el-dropdown-item>
-                <el-dropdown-item>{{ $t('Service') }}</el-dropdown-item>
-                <el-dropdown-item>{{ $t('log') }}</el-dropdown-item>
+                <!-- API文档 -->
+                <el-dropdown-item>
+                  <span class="item">
+                    <a href="http://47.94.229.108:7011/developer/api_file">
+                      {{ $t('APIdov') }}
+                    </a>
+                  </span>
+                </el-dropdown-item>
+                <!-- 示例项目 -->
+                <el-dropdown-item>
+                  <a
+                    href="http://47.94.229.108:7011/developer/sample_project"
+                    >{{ $t('projects') }}</a
+                  >
+                </el-dropdown-item>
+                <!-- 模型中心 -->
+                <el-dropdown-item>
+                  <a href="http://47.94.229.108:7011/developer/model_center">{{
+                    $t('Mcenter')
+                  }}</a>
+                </el-dropdown-item>
+                <!-- 服务中心 -->
+                <el-dropdown-item>
+                  <a href="http://47.94.229.108:7011/developer/service_entre">{{
+                    $t('Service')
+                  }}</a>
+                </el-dropdown-item>
+                <!-- 更新日志 -->
+                <el-dropdown-item>
+                  <a href="http://47.94.229.108:7011/developer/update_log">{{
+                    $t('log')
+                  }}</a>
+                </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </li>
           <!-- 搜索框 -->
-          <li class="search">
-            <!-- <transition>
+          <!-- <li class="search">
+            <transition>
               <div class="serach" v-if="islive">
                 <div class="menu">
                   <el-dropdown @command="checkitem">
@@ -75,11 +117,12 @@
                   </el-input>
                 </div>
               </div>
-            </transition> -->
-            <!-- <div @click="toshow">
-            <span class="span"><i class="el-icon-search"></i></span>
-          </div> -->
-          </li>
+            </transition>
+            <div @click="toshow">
+              <span class="span"><i class="el-icon-search"></i></span>
+            </div>
+          </li> -->
+
           <!-- 顶部头像栏 -->
           <li class="touxiang">
             <el-dropdown>
@@ -121,8 +164,8 @@
               />
             </div>
             <div class="Info">
-              <h3>{{ name }}</h3>
-              {{ note }}
+              <h3>{{ name ? name : $t('Noupload') }}</h3>
+              {{ note ? note : $t('noupload')}}
             </div>
           </div>
           <div class="line"></div>
@@ -183,7 +226,7 @@
           </div>
         </div>
         <!-- tab栏 -->
-        <el-menu
+        <!-- <el-menu
           :default-active="this.$route.path"
           :router="true"
           mode="horizontal"
@@ -195,9 +238,9 @@
           <el-menu-item index="/manage">应用管理</el-menu-item>
           <el-menu-item index="/found">创建应用</el-menu-item>
           <el-menu-item index="/bill">账户管理</el-menu-item>
-        </el-menu>
+        </el-menu> -->
 
-        <!-- <div class="tab">
+        <div class="tab">
           <span>
             <el-button type="text" @click="goUserCenter">{{
               $t('app')
@@ -218,7 +261,7 @@
               $t('Account')
             }}</el-button>
           </span>
-        </div> -->
+        </div>
       </div>
     </div>
   </div>
@@ -297,16 +340,16 @@ export default {
           this.currentCountBF = res.data.data.currentCountBF
         })
         .catch(err => {
-          this.$message.error('信息展示失败')
+          // this.$message.error('信息展示失败')
           this.imgUrl = this.imgUrl
         })
     },
 
-    //定时器，每隔10秒更新一次数据
-    // get () {
-    //   this.showData()
-    //   console.log('定时器运行中')
-    // },
+    // 定时器，每隔3秒更新一次数据
+    get () {
+      this.showData()
+      console.log('定时器运行中')
+    },
 
     // 去往用户中心
     goUserCenter () {
@@ -329,7 +372,7 @@ export default {
     }
   },
   mounted () {
-    this.timer = setInterval(this.get, 30000)
+    this.timer = setInterval(this.get, 3000)
   },
   beforeDestroy () {
     clearInterval(this.timer)
@@ -340,6 +383,9 @@ export default {
 <style lang="less" scoped>
 .rongqi {
   .header {
+    height: 64px;
+    background-color: #fff;
+    line-height: 64px;
     a {
       text-decoration: none;
       font-size: 17px;
@@ -349,9 +395,6 @@ export default {
     a:hover {
       color: #ff6600;
     }
-    height: 64px;
-    background-color: #fff;
-    line-height: 64px;
     .logo {
       width: 151px;
       height: 30px;
@@ -369,26 +412,19 @@ export default {
       margin: 0;
       padding: 0;
       margin-right: 47px;
-      a {
-        font-size: 16px;
-      }
-      .li {
-        font-size: 14px;
-        color: #999999;
-      }
       .el-dropdown {
         height: 48px;
       }
       .el-dropdown-link {
         cursor: pointer;
         color: #000;
-        font-size: 16px;
+        font-size: 17px;
       }
       .el-dropdown-link:hover {
         color: #ff6600;
       }
       .el-icon-arrow-down {
-        font-size: 16px;
+        font-size: 17px;
       }
     }
     .touxiang {
@@ -533,8 +569,8 @@ export default {
       // 中文tab栏
       .tab {
         height: 69px;
-        // background-color: #f1f1f1;
-        background-color: red;
+        background-color: #f1f1f1;
+        // background-color: red;
         line-height: 69px;
         padding-left: 220px;
         .el-button {
