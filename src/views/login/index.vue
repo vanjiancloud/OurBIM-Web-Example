@@ -7,7 +7,10 @@
       <div class="login-form-wrap">
         <!-- .logo区域 -->
         <div class="login-head">
-          <i class="el-icon-arrow-left" @click="toReturn"></i>
+          <a href="http://47.94.229.108:7011/introduce">
+              <i class="el-icon-arrow-left" ></i>
+              </a>
+          
           <div class="logo">
             <img src="./logo.png" alt="" />
           </div>
@@ -238,11 +241,6 @@ export default {
     }
   },
   methods: {
-    // 返回首页
-    toReturn () {
-      this.$router.push('../../home')
-    },
-
     // 注册新用户
     register () {
       this.$router.push('../../register')

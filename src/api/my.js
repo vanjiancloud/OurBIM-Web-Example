@@ -144,7 +144,7 @@ export function ProjectModel (data) {
   return request({
     url: '/appli/postProjectModel',
     method: 'POST',
-    data: qsStringify(data)
+    data
   })
 }
 
