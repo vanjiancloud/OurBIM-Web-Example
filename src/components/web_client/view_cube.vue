@@ -2,29 +2,24 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-03-12 11:00:59
+ * @LastEditTime: 2021-03-12 14:57:33
  * @description: 
 -->
 <template>
     <div class="box-main">
       <div id="box" :style="{transform:`perspective(800px) rotateX(${downInfo.x}deg) rotateY(${downInfo.y}deg) rotateZ(${downInfo.z}deg)`}">
-        <div @click="handleBody(0)" class="front">前</div>
-        <div @click="handleBody(1)" class="back">后</div>
-        <div @click="handleBody(2)" class="top">上</div>
-        <div @click="handleBody(3)" class="bottom">下</div>
-        <div @click="handleBody(4)" class="left">左</div>
-        <div @click="handleBody(5)" class="right">右</div>
+        <div v-for="(item, index) in faceList" :key="index" @click="handleBody(item.value)" :class="[item.className, activeFace === item.value ? 'active-face' : '']" v-text="item.label"></div>
       </div>
       <img class="go-front" @click="goFront" src="../../assets/images/todo/home.png" mode=""></img>
       <div class="drop-down">
         <img class="handle-down" @click="changeView" src="../../assets/images/todo/drop_down.png" alt="">
-        <!-- <transition name="el-zoom-in-top">
+        <transition name="el-zoom-in-top">
           <div class="cube-type" v-if="isCubeType">
             <div v-for="(item, index) in handleList" :key="index">
-              <div v-text="item"></div>
+              <div v-text="item.label" class="select-type" @click="changeType(item)"></div>
             </div>
           </div>
-        </transition>         -->
+        </transition>        
       </div>
       
     </div>
@@ -34,6 +29,39 @@
 export default {
   data() {
     return {
+      faceList: [
+        {
+          label: '前',
+          value: 0,
+          className: 'front'
+        },
+        {
+          label: '后',
+          value: 1,
+          className: 'back'
+        },
+        {
+          label: '上',
+          value: 2,
+          className: 'top'
+        },
+        {
+          label: '下',
+          value: 3,
+          className: 'bottom'
+        },
+        {
+          label: '左',
+          value: 4,
+          className: 'left'
+        },
+        {
+          label: '右',
+          value: 5,
+          className: 'right'
+        },
+      ],
+      activeFace: 0,
       downInfo: {
         x: -25,
         y: -25,
@@ -43,10 +71,33 @@ export default {
       disY: 0,
       isMonitor: false,
       isCubeType: false,
-      handleList:["正交投影", "透视投影", "还原模型"]
+      handleList:[
+        {
+          label: "正交投影",
+          value: 2
+        },
+        {
+          label: "透视投影",
+          value: 1
+        },
+        {
+          label: "还原模型",
+          value: 0
+        }
+      ]
     };
   },
   methods: {
+    changeType(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-12 11:16:33
+     * @description: 切换状态
+     */
+      this.activeType = e.value
+      this.$emit("handleType", e.value)
+      this.isCubeType = false
+    },
     goFront() {
       this.$emit("handleOrder", 6);
     },
@@ -56,6 +107,7 @@ export default {
        * @Date: 2020-09-21 09:44:35
        * @description: 旋转确认 前 0 后 1 上 2 下 3 左 4 右 5
        */
+      this.activeFace = e
       switch (e) {
         case 0:
           this.downInfo = {
@@ -143,7 +195,18 @@ export default {
     .cube-type{
       position: absolute;
       top: 20px;
+      right: 0;
+      width: 100px;
+      line-height: 200%;
       background: #F3F3F3;
+      color: #a5a5a4;
+      text-align: center;
+      .select-type{
+        cursor: pointer;
+      }
+      .active-type{
+        color: #EA640D;
+      }
     }
   }
 }
@@ -171,6 +234,9 @@ export default {
   left: 0;
   background-size: cover;
   color: #a5a5a4;
+}
+.active-face{
+  color: #EA640D !important;
 }
 .front {
   transform: translateZ(17px);

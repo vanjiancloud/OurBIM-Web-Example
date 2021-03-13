@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-09 10:10:02
+ * @LastEditTime: 2021-03-12 13:50:18
  * @description: 
 -->
 <template>
@@ -132,8 +132,8 @@
 		data() {
 			return {
 				imgList: [{
-						state: 0,
-						url: require("@/assets/images/todo/unchecked/third_person.png"),
+						state: 1,
+						url: require("@/assets/images/todo/check/third_person.png"),
 						name: 'third_person.png'
 					},
 					{
@@ -235,6 +235,16 @@
 				let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`)
 				this.imgList[e].url = oldUrl
 				this.imgList[e].state = 0
+			},
+			resetpPrson(){
+					/**
+			* @Author: zk
+			* @Date: 2021-03-12 11:39:50
+			* @description: 重置为第三人称
+			*/
+			this.imgList[0].state = 1
+			let oldUrl = require(`@/assets/images/todo/check/${this.imgList[0].name}`)
+			this.imgList[0].url = oldUrl
 			},
 			showAngle() {
 				this.angleTool = true
