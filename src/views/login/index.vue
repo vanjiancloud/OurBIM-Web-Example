@@ -7,10 +7,10 @@
       <div class="login-form-wrap">
         <!-- .logo区域 -->
         <div class="login-head">
-          <a href="http://47.94.229.108:7011/introduce">
-              <i class="el-icon-arrow-left" ></i>
-              </a>
-          
+          <a href="http://47.94.229.108:7011/">
+            <i class="el-icon-arrow-left"></i>
+          </a>
+
           <div class="logo">
             <img src="./logo.png" alt="" />
           </div>
@@ -273,18 +273,17 @@ export default {
       })
         .then(res => {
           console.log(res)
-          console.log(res.data.data.userid)
           if (res.data.code === 0) {
             this.$message.success('恭喜登录成功')
             this.setCookie('email', this.form.email)
             this.setCookie('password', this.form.password)
             this.setCookie('userInfo', JSON.stringify(res.data.data))
-            // 存储用户信息userid
+            // 存储用户userid
             setuserid(res.data.data.userid)
             this.$router.push('../userCenter')
             this.setUserInfo()
           } else if (res.data.code === 2) {
-            this.$message.error('登录失败,请去激活')
+            this.$message.warning(res.data.message)
           } else {
             this.$message.error('用户名或密码不正确，请重新输入')
           }

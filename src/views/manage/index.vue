@@ -98,19 +98,14 @@ export default {
       appName: '', //应用名称
       maxInstance: '', //最大并发数量
       applidStatus: null, //状态
-      createTime: '' //上传日期
+      createTime: '', //上传日期
+      timer: null
     }
   },
   created () {
     this.GetList()
   },
   methods: {
-    // 定时器，每隔3秒更新一次数据
-    GET () {
-      this.GetList()
-      console.log('每隔3秒更新应用管理')
-    },
-
     // 分页
     handleCurrentChange () {
       /**
@@ -142,7 +137,9 @@ export default {
           // this.$message.error('请求失败')
         })
     },
-
+    reverse () {
+      this.itemList.reverse()
+    },
     // 根据传入的status做适配
     formatStatus (status) {
       const statusObj = {
@@ -157,7 +154,7 @@ export default {
 
     // 编辑
     edit () {
-      console.log('点击了编辑')
+      this.$router.push('./edit')
     },
 
     // 删除按钮
@@ -168,11 +165,22 @@ export default {
       }
     }
   },
-  mounted () {
-    this.timer = setInterval(this.GET, 3000)
+
+  //  把定时器放在activated事件里，当清除定时后，
+  // 下次再次进入当前路由的话，可以再次唤起定时器
+  activated () {
+    this.timer = setInterval(() => {
+      this.GetList()
+      console.log('每隔5秒更新应用管理')
+    }, 5000)
   },
-  beforeDestroy () {
-    clearInterval(this.timer)
+  // 路由跳转清除定时
+  beforeRouteLeave (to, from, next) {
+    next()
+    if (this.timer) {
+      clearInterval(this.timer)
+      this.timer = null
+    }
   }
 }
 </script>
@@ -182,7 +190,8 @@ export default {
   .container {
     background-color: #fff;
     margin-bottom: 34px;
-    height: 961px;
+    // height: 961px;
+    min-height: 961px;
     /deep/ .el-button--primary {
       background-color: #00aaf0;
     }

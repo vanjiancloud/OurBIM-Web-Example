@@ -24,3 +24,4 @@ pnpm-debug.log*
 /*.lock
 /*.rar
 /*.lock
+node_modules

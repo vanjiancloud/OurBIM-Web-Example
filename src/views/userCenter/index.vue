@@ -69,7 +69,8 @@ export default {
       isShow: 1,
       classify: '全部',
       isHand: 6,
-      appList: []
+      appList: [],
+      timer: null
     }
   },
   created () {
@@ -89,10 +90,10 @@ export default {
     },
 
     // 定时器，每隔3秒更新一次数据
-    Get () {
-      this.GetList()
-      console.log('3秒更新一次我的应用')
-    },
+    // Get () {
+    //   this.GetList()
+    //   console.log('3秒更新一次我的应用')
+    // },
 
     // 获取应用列表
     GetList () {
@@ -126,12 +127,22 @@ export default {
       window.open(href, '_blank')
     }
   },
-  mounted () {
-    this.timer = setInterval(this.Get, 3000)
+  //  把定时器放在activated事件里，当清除定时后，
+  // 下次再次进入当前路由的话，可以再次唤起定时器
+  activated () {
+    this.timer = setInterval(() => {
+      this.GetList()
+      console.log('3秒更新一次我的应用')
+    }, 3000)
   },
-  beforeDestroy () {
-    clearInterval(this.timer)
-  }
+  // 路由跳转清除定时
+  beforeRouteLeave (to, from, next) {
+    next()
+    if (this.timer) {
+      clearInterval(this.timer)
+      this.timer = null
+    }
+  },
 }
 </script>
 
@@ -158,7 +169,7 @@ a:hover {
   .container {
     background-color: #fff;
     // background-color: green;
-    height: 961px;
+    min-height: 961px;
     margin-bottom: 34px;
     .content {
       overflow: hidden;

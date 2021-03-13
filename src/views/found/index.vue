@@ -210,7 +210,6 @@ export default {
       appliId: '',
       fileUpload: ''
     }
-    this.$router.go(0)
   },
   methods: {
     // 上传封面图
@@ -276,8 +275,8 @@ export default {
     },
     //去往应用管理
     toManage () {
-      // this.$message.success('')
       this.$router.push('../manage')
+      this.isShow = 1
     },
     // 限制上传图片张数
     handleExceed () {

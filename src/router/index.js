@@ -64,7 +64,7 @@ const routes = [
     name: 'activateSucceed',
     component: () => import('../views/register/activateSucceed.vue'),
     meta: {
-      title: 'OurBIM激活成功'
+      title: 'OurBIM激活账户'
     }
   },
   // 用户中心
