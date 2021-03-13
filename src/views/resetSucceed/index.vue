@@ -38,7 +38,7 @@ export default {
   methods: {
     // 返回上一步
     toReturn () {
-      this.$router.push('../newPassword')
+      this.$router.push('../login')
     },
 
     // 去登录

@@ -55,7 +55,7 @@
               :disabled="isSend"
               @click="getCode"
             >
-              发送验证码
+              {{btnMes}}
             </el-button>
             <i slot="prefix" class="el-input__icon el-icon-s-comment"></i>
           </el-input>

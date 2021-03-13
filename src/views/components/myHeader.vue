@@ -274,6 +274,7 @@ export default {
   name: 'myHeader',
   data () {
     return {
+      time: null,
       customColor: '#00AAF0',
       note: '未上传签名', //签名
       name: '未上传用户名', //用户名
@@ -306,7 +307,7 @@ export default {
     toOrder () {
       this.$router.push('../order')
     },
-    // 去往用户中心
+    // 跳转用户中心
     toUserCenter () {
       if (this.route !== '/userCenter') {
         this.$router.push('../userCenter/')
@@ -314,11 +315,11 @@ export default {
         this.$router.go(0)
       }
     },
-    // 去往登录
+    // 退出按钮
     toLogin () {
       this.$router.push('../login/')
-
       window.localStorage.userid = ''
+      clearInterval(this.time)
     },
     //展示当前用户信息
     showData () {
@@ -346,10 +347,10 @@ export default {
     },
 
     // 定时器，每隔3秒更新一次数据
-    get () {
-      this.showData()
-      console.log('定时器运行中')
-    },
+    // get () {
+    //   this.showData()
+    //   console.log('定时器运行中')
+    // },
 
     // 去往用户中心
     goUserCenter () {
@@ -371,11 +372,22 @@ export default {
       this.$router.push('../bill')
     }
   },
-  mounted () {
-    this.timer = setInterval(this.get, 3000)
+  //  把定时器放在activated事件里，当清除定时后，
+  // 下次再次进入当前路由的话，可以再次唤起定时器
+  activated () {
+    this.time = setInterval(() => {
+      this.showData()
+      console.log('个人信息5秒更新一次')
+    }, 5000)
   },
-  beforeDestroy () {
-    clearInterval(this.timer)
+  // 路由跳转清除定时
+  beforeRouteLeave (to, from, next) {
+    next()
+    if (this.time) {
+      clearInterval(this.time)
+
+      this.time = null
+    }
   }
 }
 </script>
@@ -396,7 +408,7 @@ export default {
       color: #ff6600;
     }
     .logo {
-      width: 151px;
+      width: 150px;
       height: 30px;
       float: left;
       margin: 10px 169px 24px 0;
@@ -428,7 +440,7 @@ export default {
       }
     }
     .touxiang {
-      margin-left: -20px;
+      margin-left: 40px;
       margin-right: 20px;
       img {
         width: 64px;

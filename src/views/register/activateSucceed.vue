@@ -7,15 +7,25 @@
       <div class="logo">
         <img src="../register/logo.png" alt="" class="img" />
       </div>
-      <div class="icon">
-        <img src="../register/icon.png" alt="" class="icon-img" />
-      </div>
+      <div class="success" v-show="isShow == 1"></div>
+      <div class="error" v-show="isShow == 2"></div>
       <div class="write">
-        <h3 :title="title">你的账户：{{ title }}</h3>
+        <h3 :title="title">{{ title }}</h3>
       </div>
       <div class="btn">
-        <el-button class="button" @click="toLogin" type="primary"
+        <el-button
+          class="button"
+          @click="toLogin"
+          type="primary"
+          v-show="display == 1"
           >去登录</el-button
+        >
+        <el-button
+          class="button"
+          @click="toRegister"
+          type="primary"
+          v-show="display == 2"
+          >去注册</el-button
         >
       </div>
     </div>
@@ -32,7 +42,9 @@ export default {
   data () {
     return {
       code: 'this.$route.query.code',
-      title: '激活成功'
+      title: '',
+      isShow: 2,
+      display: 2
     }
   },
   created () {
@@ -44,7 +56,10 @@ export default {
         console.log(res)
         if (res.data.code === 0) {
           this.$message.success('激活成功')
-        } else {
+          this.title = '激活成功'
+          this.isShow = 1
+          this.display = 1
+        } else if (res.data.code === 1) {
           this.$message.error('激活码无效')
           this.title = '激活码无效'
         }
@@ -52,11 +67,16 @@ export default {
       .catch(err => {
         console.log(err)
         this.$message.error('激活码无效')
+        this.title = '激活码无效'
+        icon = 'error'
       })
   },
   methods: {
     toLogin () {
       this.$router.replace('../login')
+    },
+    toRegister () {
+      this.$router.replace('../register')
     }
   }
 }
@@ -117,16 +137,21 @@ export default {
         border-radius: 25px;
       }
     }
-    .icon {
-      color: blue;
+    .success {
       text-align: center;
-      width: 140px;
-      height: 135px;
+      width: 114px;
+      height: 114px;
       margin: 50px auto;
-      .icon-img {
-        width: 100%;
-        height: 100%;
-      }
+      background-image: url('./icon.png');
+      background-repeat: no-repeat;
+    }
+    .error {
+      text-align: center;
+      width: 114px;
+      height: 114px;
+      margin: 50px auto;
+      background-image: url('./err.png');
+      background-repeat: no-repeat;
     }
   }
   .wenzi {
