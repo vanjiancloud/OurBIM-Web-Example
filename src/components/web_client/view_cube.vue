@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-03-12 14:57:33
+ * @LastEditTime: 2021-03-13 17:58:04
  * @description: 
 -->
 <template>
@@ -31,32 +31,32 @@ export default {
     return {
       faceList: [
         {
-          label: '前',
+          label: this.$t('webClient.cubeBox.direction[0]'),
           value: 0,
           className: 'front'
         },
         {
-          label: '后',
+          label: this.$t('webClient.cubeBox.direction[1]'),
           value: 1,
           className: 'back'
         },
         {
-          label: '上',
+          label: this.$t('webClient.cubeBox.direction[2]'),
           value: 2,
           className: 'top'
         },
         {
-          label: '下',
+          label: this.$t('webClient.cubeBox.direction[3]'),
           value: 3,
           className: 'bottom'
         },
         {
-          label: '左',
+          label: this.$t('webClient.cubeBox.direction[4]'),
           value: 4,
           className: 'left'
         },
         {
-          label: '右',
+          label: this.$t('webClient.cubeBox.direction[5]'),
           value: 5,
           className: 'right'
         },
@@ -73,19 +73,33 @@ export default {
       isCubeType: false,
       handleList:[
         {
-          label: "正交投影",
+          label: this.$t('webClient.cubeBox.handle[0]'),
           value: 2
         },
         {
-          label: "透视投影",
+          label: this.$t('webClient.cubeBox.handle[1]'),
           value: 1
         },
         {
-          label: "还原模型",
+          label: this.$t('webClient.cubeBox.handle[2]'),
           value: 0
         }
       ]
     };
+  },
+  created() {
+    this.$i18n.locale = this.$route.query.locale
+    if (this.$i18n.locale) {
+      this.faceList[0].label = this.$t('webClient.cubeBox.direction[0]')
+      this.faceList[1].label = this.$t('webClient.cubeBox.direction[1]')
+      this.faceList[2].label = this.$t('webClient.cubeBox.direction[2]')
+      this.faceList[3].label = this.$t('webClient.cubeBox.direction[3]')
+      this.faceList[4].label = this.$t('webClient.cubeBox.direction[4]')
+      this.faceList[5].label = this.$t('webClient.cubeBox.direction[5]')
+      this.handleList[0].label = this.$t('webClient.cubeBox.handle[0]')
+      this.handleList[1].label = this.$t('webClient.cubeBox.handle[1]')
+      this.handleList[2].label = this.$t('webClient.cubeBox.handle[2]')
+    }  
   },
   methods: {
     changeType(e){
@@ -196,7 +210,7 @@ export default {
       position: absolute;
       top: 20px;
       right: 0;
-      width: 100px;
+      width: 160px;
       line-height: 200%;
       background: #F3F3F3;
       color: #a5a5a4;
