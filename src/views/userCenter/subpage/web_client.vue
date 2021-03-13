@@ -8,7 +8,7 @@
       frameborder="0"
       id="show-bim"
     ></iframe>
-    <!-- <div class="time-log" v-if="moreCount < 10">
+    <div class="time-log" v-if="moreCount < 10">
       <div class="log-main" :class="runTimeCode === 0 ? '' : 'phone-log-main'">
         <div>
           <img class="show-logo" src="@/assets/img/ourbim-logo.png" alt="" />
@@ -34,7 +34,7 @@
       <div class="hidden-text learn-text" v-if="hiddenState === 2">
         模型长时间未响应，请刷新重试。
       </div>
-    </div> -->
+    </div>
     <div v-if="runTimeCode === 0">
       <div class="mutual-bim">
         <div
@@ -119,7 +119,7 @@
         </div>
       </div>
       <todo-footer ref="getFooter" @listenTodo="listenTodo"></todo-footer>
-      <view-cube @handleOrder="handleOrder"></view-cube>
+      <view-cube @handleOrder="handleOrder" @handleType="handleType"></view-cube>
     </div>
   </div>
 </template>
@@ -156,6 +156,7 @@ export default {
       isFade: true,
       handleState: 0,
       leafInfo: null,
+      listenInfo: null,
       cubeState: 6,
       viewHeight: 0,
       runTimeCode: 0,
@@ -170,6 +171,7 @@ export default {
       browserInfo: null,
       detailedInfo: null,
       natureInfo: null,
+      shadowType: null
     };
   },
   watch: {
@@ -213,6 +215,19 @@ export default {
     }
   },
   methods: {
+    handleType(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-12 11:34:19
+     * @description: 选择类型 e 0: 还原模型 1: 透视投影 2: 正交投影
+     */
+      if (e === 2) {
+        this.$refs.getFooter.resetpPrson();
+      }
+      this.shadowType = e
+      this.handleState = 1
+      this.updateOrder();
+    },
     handleTree(e, index) {
       /**
        * @Author: zk
@@ -230,7 +245,7 @@ export default {
         e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
         this.handleState = 9
         if (e.data.haveChild === "0") {
-          this.updateOrder();          
+          this.updateOrder();
         }
       } else if (index === 1) {
         this.handleState = 8
@@ -293,6 +308,31 @@ export default {
         taskid: this.taskId,
       };
       switch (this.handleState) {
+        case 0:
+          // 一三人称
+          params.id = 8
+          params.viewMode = this.listenInfo.state === 0 ? 1 : 2
+          params.projectionMode = this.shadowType === 1 || this.shadowType === 2 ? this.shadowType : 2
+          break;
+        case 1:
+          // 模式切换
+          params.id = 8
+          // 投影类型切换
+          if (this.shadowType === 2) {
+            // 正交 必须为第三人称
+            params.projectionMode = 2
+            params.viewMode = 2
+          }
+          if (this.shadowType === 1) {
+            // 透视投影
+            params.projectionMode = 1
+            if (this.listenInfo) {
+               params.viewMode =  this.listenInfo.state === 1 ? 2 : 1
+            } else{
+              params.viewMode = 2
+            }
+          }
+          break;
         case 3:
           // 缩放
           params.id = this.mouseState.roller;
@@ -337,6 +377,9 @@ export default {
           id: 20,
         };
       }
+      // console.error(this.listenInfo);
+      // console.log(params);
+      
       await MODELAPI.UPDATEORDER(params)
         .then((res) => {
           this.$message({
@@ -407,6 +450,12 @@ export default {
       if (e.type === 11) {
         this.natureInfo = e;
       }
+      if (e.type === 0) {
+        this.handleState = 0
+        this.listenInfo = e
+        this.updateOrder()
+      }
+      
     },
     initWebSocket() {
       //初始化weosocket
