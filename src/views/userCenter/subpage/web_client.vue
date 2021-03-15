@@ -134,6 +134,7 @@
       <view-cube
         @handleOrder="handleOrder"
         @handleType="handleType"
+        ref="getCube"
       ></view-cube>
     </div>
   </div>
@@ -239,9 +240,7 @@ export default {
        * @Date: 2021-03-12 11:34:19
        * @description: 选择类型 e 0: 还原模型 1: 透视投影 2: 正交投影
        */
-      if (e === 2) {
-        this.$refs.getFooter.resetpPrson();
-      }
+      this.$refs.getFooter.resetpPrson();
       this.shadowType = e;
       this.handleState = 1;
       this.updateOrder();
@@ -328,15 +327,17 @@ export default {
       switch (this.handleState) {
         case 0:
           // 一三人称
+          console.log(this.listenInfo.state);
           params.id = 8;
           params.viewMode = this.listenInfo.state === 0 ? 1 : 2;
-          params.projectionMode =
+          if (this.listenInfo.state === 0) {
+            this.shadowType = 1
+            this.$refs.getCube.resetActive()
+          }
+           params.projectionMode =
             this.shadowType === 1 || this.shadowType === 2
               ? this.shadowType
               : 1;
-          if (params.viewMode) {
-            params.projectionMode = 2;
-          }
           break;
         case 1:
           // 模式切换
@@ -404,7 +405,6 @@ export default {
         };
       }
       // console.error(this.listenInfo);
-      // console.log(params);
 
       await MODELAPI.UPDATEORDER(params)
         .then((res) => {
