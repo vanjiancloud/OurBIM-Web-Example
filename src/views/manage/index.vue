@@ -53,7 +53,7 @@
                 </el-button>
                 <!-- 删除 -->
                 <el-button
-                  @click="remove"
+                  @click="remove(scope.row)"
                   :disabled="scope.row.applidStatus === '4' ? true : false"
                   type="text"
                   class="btn-two"
@@ -85,7 +85,7 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import { getProjectList } from '@/api/my.js'
+import { getProjectList, deleteProject } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 
 export default {
@@ -98,19 +98,14 @@ export default {
       appName: '', //应用名称
       maxInstance: '', //最大并发数量
       applidStatus: null, //状态
-      createTime: '' //上传日期
+      createTime: '', //上传日期
+      timer: null
     }
   },
   created () {
     this.GetList()
   },
   methods: {
-    // 定时器，每隔3秒更新一次数据
-    GET () {
-      this.GetList()
-      console.log('每隔3秒更新应用管理')
-    },
-
     // 分页
     handleCurrentChange () {
       /**
@@ -128,6 +123,7 @@ export default {
         .then(res => {
           console.log(res)
           this.itemList = res.data.data
+          this.reverse()
           this.appid = res.data.data.appid
           this.appName = res.data.data.appName
           this.maxInstance = res.data.data.maxInstance
@@ -142,7 +138,9 @@ export default {
           // this.$message.error('请求失败')
         })
     },
-
+    reverse () {
+      this.itemList.reverse()
+    },
     // 根据传入的status做适配
     formatStatus (status) {
       const statusObj = {
@@ -157,22 +155,65 @@ export default {
 
     // 编辑
     edit () {
-      console.log('点击了编辑')
+      this.$router.push('./edit')
     },
 
     // 删除按钮
-    remove () {
-      console.log('点击了删除')
-      this.$confirm('此操作将删除当前应用, 是否继续?', '提示')
-      if (this.$confirm == '确定') {
-      }
+    remove (e) {
+      console.log(e)
+      this.$confirm('此操作将删除该应用, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.del(e)
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    //删除应用
+    del (e) {
+      deleteProject({
+        appliId: e.appid,
+        userid: getuserid()
+      })
+        .then(res => {
+          if (res.data.code === 0) {
+            console.log(res)
+            this.$message.success(res.data.message)
+            this.GetList()
+          } else if (res.data.code === 1) {
+            console.log(res)
+            this.$message.warning(res.data.message)
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('删除失败')
+        })
     }
   },
-  mounted () {
-    this.timer = setInterval(this.GET, 3000)
+
+  //  把定时器放在activated事件里，当清除定时后，
+  // 下次再次进入当前路由的话，可以再次唤起定时器
+  activated () {
+    this.timer = setInterval(() => {
+      this.GetList()
+      console.log('每隔5秒更新应用管理')
+    }, 5000)
   },
-  beforeDestroy () {
-    clearInterval(this.timer)
+  // 路由跳转清除定时
+  beforeRouteLeave (to, from, next) {
+    next()
+    if (this.timer) {
+      clearInterval(this.timer)
+      this.timer = null
+    }
   }
 }
 </script>
@@ -182,7 +223,8 @@ export default {
   .container {
     background-color: #fff;
     margin-bottom: 34px;
-    height: 961px;
+    // height: 961px;
+    min-height: 961px;
     /deep/ .el-button--primary {
       background-color: #00aaf0;
     }

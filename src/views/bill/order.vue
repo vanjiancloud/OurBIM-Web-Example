@@ -229,11 +229,11 @@ export default {
   .container {
     background-color: #fff;
     margin-bottom: 34px;
-    height: 961px;
+    min-height: 961px;
     .content {
       overflow: hidden;
       ul.el-menu {
-        height: 961px;
+        min-height: 961px;
         /deep/ .el-submenu__title * {
           font-size: 17px;
         }
@@ -249,7 +249,7 @@ export default {
       }
       .neirong {
         padding-left: 300px;
-        height: 961px;
+        min-height: 961px;
         // background-color: red;
         .title {
           height: 54px;

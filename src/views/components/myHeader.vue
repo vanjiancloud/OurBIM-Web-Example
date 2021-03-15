@@ -5,7 +5,9 @@
       <div class="container">
         <!-- logo -->
         <div class="logo">
-          <img src="./logo.png" alt="" class="img" />
+          <a href="http://47.94.229.108:7011/">
+            <img src="./logo.png" alt="" class="img"
+          /></a>
         </div>
         <!-- 导航 -->
         <ul>
@@ -48,9 +50,12 @@
               </span>
               <el-dropdown-menu slot="dropdown">
                 <!-- API文档 -->
-                <el-dropdown-item>
+                <el-dropdown-item style="background-color: #fff;">
                   <span class="item">
-                    <a href="http://47.94.229.108:7011/developer/api_file">
+                    <a
+                      href="http://47.94.229.108:7011/developer/api_file"
+                      style="color: #000;text-decoration: none; font-size: 16px;"
+                    >
                       {{ $t('APIdov') }}
                     </a>
                   </span>
@@ -59,72 +64,41 @@
                 <el-dropdown-item>
                   <a
                     href="http://47.94.229.108:7011/developer/sample_project"
+                    style="color: #000;text-decoration: none; font-size: 16px;"
                     >{{ $t('projects') }}</a
                   >
                 </el-dropdown-item>
                 <!-- 模型中心 -->
                 <el-dropdown-item>
-                  <a href="http://47.94.229.108:7011/developer/model_center">{{
-                    $t('Mcenter')
-                  }}</a>
+                  <a
+                    href="http://47.94.229.108:7011/developer/model_center"
+                    style="color: #000;text-decoration: none; font-size: 16px;"
+                    >{{ $t('Mcenter') }}</a
+                  >
                 </el-dropdown-item>
                 <!-- 服务中心 -->
                 <el-dropdown-item>
-                  <a href="http://47.94.229.108:7011/developer/service_entre">{{
-                    $t('Service')
-                  }}</a>
+                  <a
+                    href="http://47.94.229.108:7011/developer/service_entre"
+                    style="color: #000;text-decoration: none; font-size: 16px;"
+                    >{{ $t('Service') }}</a
+                  >
                 </el-dropdown-item>
                 <!-- 更新日志 -->
                 <el-dropdown-item>
-                  <a href="http://47.94.229.108:7011/developer/update_log">{{
-                    $t('log')
-                  }}</a>
+                  <a
+                    href="http://47.94.229.108:7011/developer/update_log"
+                    style="color: #000;text-decoration: none; font-size: 16px;"
+                    >{{ $t('log') }}</a
+                  >
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </li>
-          <!-- 搜索框 -->
-          <!-- <li class="search">
-            <transition>
-              <div class="serach" v-if="islive">
-                <div class="menu">
-                  <el-dropdown @command="checkitem">
-                    <span class="el-dropdown-link">
-                      {{ classify
-                      }}<i class="el-icon-arrow-down el-icon--right"></i>
-                    </span>
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item :command="$t('whole')">{{
-                        $t('whole')
-                      }}</el-dropdown-item>
-                      <el-dropdown-item :command="$t('info')">{{
-                        $t('info')
-                      }}</el-dropdown-item>
-                      <el-dropdown-item :command="$t('case')">{{
-                        $t('case')
-                      }}</el-dropdown-item>
-                      <el-dropdown-item :command="$t('activity')">{{
-                        $t('activity')
-                      }}</el-dropdown-item>
-                      <el-dropdown-item :command="$t('Model')">{{
-                        $t('Model')
-                      }}</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </div>
-                <div class="in">
-                  <el-input v-model="input" placeholder="请输入搜索内容">
-                  </el-input>
-                </div>
-              </div>
-            </transition>
-            <div @click="toshow">
-              <span class="span"><i class="el-icon-search"></i></span>
-            </div>
-          </li> -->
-
-          <!-- 顶部头像栏 -->
-          <li class="touxiang">
+        </ul>
+        <!-- 头像和中英文切换 -->
+        <div class="all">
+          <div class="touxiang">
             <el-dropdown>
               <span class="el-dropdown-link">
                 <img
@@ -141,14 +115,13 @@
                 }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-          </li>
-          <!-- 中英文切换 -->
-          <li class="language">
-            <a @click="English" href="javascript:;">English</a>
+          </div>
+          <div class="language">
+            <span> <a @click="Chinese" href="javascript:;">中文</a></span>
             <span style="margin: 0 5px;font-size: 10px;">|</span>
-            <a @click="Chinese" href="javascript:;">中文</a>
-          </li>
-        </ul>
+            <span><a @click="English" href="javascript:;">English</a></span>
+          </div>
+        </div>
       </div>
     </div>
     <!-- 个人信息展示 -->
@@ -165,7 +138,7 @@
             </div>
             <div class="Info">
               <h3>{{ name ? name : $t('Noupload') }}</h3>
-              {{ note ? note : $t('noupload')}}
+              {{ note ? note : $t('noupload') }}
             </div>
           </div>
           <div class="line"></div>
@@ -226,11 +199,11 @@
           </div>
         </div>
         <!-- tab栏 -->
-        <!-- <el-menu
+        <el-menu
           :default-active="this.$route.path"
           :router="true"
           mode="horizontal"
-          background-color="#545c64"
+          background-color="#f1f1f1"
           text-color="#fff"
           active-text-color="#ffd04b"
         >
@@ -238,9 +211,9 @@
           <el-menu-item index="/manage">应用管理</el-menu-item>
           <el-menu-item index="/found">创建应用</el-menu-item>
           <el-menu-item index="/bill">账户管理</el-menu-item>
-        </el-menu> -->
+        </el-menu>
 
-        <div class="tab">
+        <!-- <div class="tab">
           <span>
             <el-button type="text" @click="goUserCenter">{{
               $t('app')
@@ -261,7 +234,7 @@
               $t('Account')
             }}</el-button>
           </span>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -274,6 +247,7 @@ export default {
   name: 'myHeader',
   data () {
     return {
+      time: null,
       customColor: '#00AAF0',
       note: '未上传签名', //签名
       name: '未上传用户名', //用户名
@@ -306,7 +280,7 @@ export default {
     toOrder () {
       this.$router.push('../order')
     },
-    // 去往用户中心
+    // 跳转用户中心
     toUserCenter () {
       if (this.route !== '/userCenter') {
         this.$router.push('../userCenter/')
@@ -314,11 +288,11 @@ export default {
         this.$router.go(0)
       }
     },
-    // 去往登录
+    // 退出按钮
     toLogin () {
       this.$router.push('../login/')
-
       window.localStorage.userid = ''
+      clearInterval(this.time)
     },
     //展示当前用户信息
     showData () {
@@ -346,10 +320,10 @@ export default {
     },
 
     // 定时器，每隔3秒更新一次数据
-    get () {
-      this.showData()
-      console.log('定时器运行中')
-    },
+    // get () {
+    //   this.showData()
+    //   console.log('定时器运行中')
+    // },
 
     // 去往用户中心
     goUserCenter () {
@@ -371,11 +345,21 @@ export default {
       this.$router.push('../bill')
     }
   },
-  mounted () {
-    this.timer = setInterval(this.get, 3000)
+  //  把定时器放在activated事件里，当清除定时后，
+  // 下次再次进入当前路由的话，可以再次唤起定时器
+  activated () {
+    this.time = setInterval(() => {
+      this.showData()
+      console.log('个人信息5秒更新一次')
+    }, 5000)
   },
-  beforeDestroy () {
-    clearInterval(this.timer)
+  // 路由跳转清除定时
+  beforeRouteLeave (to, from, next) {
+    next()
+    if (this.time) {
+      clearInterval(this.time)
+      this.time = null
+    }
   }
 }
 </script>
@@ -396,7 +380,7 @@ export default {
       color: #ff6600;
     }
     .logo {
-      width: 151px;
+      width: 150px;
       height: 30px;
       float: left;
       margin: 10px 169px 24px 0;
@@ -413,7 +397,7 @@ export default {
       padding: 0;
       margin-right: 47px;
       .el-dropdown {
-        height: 48px;
+        height: 40px;
       }
       .el-dropdown-link {
         cursor: pointer;
@@ -427,27 +411,34 @@ export default {
         font-size: 17px;
       }
     }
-    .touxiang {
-      margin-left: -20px;
-      margin-right: 20px;
-      img {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-      }
-    }
-    .third {
-      margin-right: 40px;
-    }
-    .language {
-      // background-color: green;
+    .all {
       float: right;
-      margin: 0;
-      height: 16px;
-      font-size: 14px;
-      font-family: PingFang SC;
-      font-weight: 500;
-      color: #333333;
+      .touxiang {
+        margin-right: 40px;
+        float: left;
+        .el-dropdown {
+          height: 38px;
+        }
+        img {
+          margin-top: 12px;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+        }
+        img:hover {
+          cursor: pointer;
+        }
+      }
+      .language {
+        // background-color: green;
+        float: left;
+        margin: 0;
+        height: 16px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: 500;
+        color: #333333;
+      }
     }
   }
   .main {
@@ -593,6 +584,9 @@ export default {
         span:hover {
           border-bottom-color: #ff6600;
         }
+      }
+      .el-menu {
+        height: 69px;
       }
       // 英文tab栏
       .tabTwo {

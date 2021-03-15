@@ -126,6 +126,9 @@
               drag
               :action="baseURL + '/appli/postProjectModel'"
               name="fileUpload"
+              :data="{
+                appliId: appInfo.appid
+              }"
               multiple
               :limit="1"
               :on-exceed="exceed"
@@ -204,7 +207,8 @@ export default {
       appImgSrc: '',
       appInfo: '',
       appModel: '',
-      appliId: ''
+      appliId: '',
+      fileUpload: ''
     }
   },
   methods: {
@@ -220,12 +224,8 @@ export default {
     },
     // 上传模型
     upLoadModel (response, file, fileList) {
-      /**
-       * @Author: zk
-       * @Date: 2021-02-22 17:03:13
-       * @description: 上传模型
-       */
-
+      console.log('模型上传成功')
+      this.$message.success('模型上传成功')
       this.appModel = response.data
       this.disabl = false
     },
@@ -251,7 +251,7 @@ export default {
           .then(res => {
             if (res.data.code === 0) {
               this.appInfo = res.data.data
-              this.appliId= res.data.data.appliId
+              this.appliId = res.data.data.appid
               console.log(this.appInfo)
               this.$message.success('创建应用成功')
               this.isShow = 2
@@ -271,29 +271,12 @@ export default {
     // 开始渲染
     update () {
       if (this.active++ > 2) this.active = 0
-      ProjectModel({
-          appliId:this.appliId,
-          appModel:this.appModel
-        })
-          .then(res => {
-            if (res.data.code === 0) {
-              console.log(res)
-              this.$message.success('上传模型成功')
-              this.isShow = 3
-            } else if (res.data.code === 1) {
-              this.$message.error('上传模型失败')
-              this.isShow = 4
-            }
-          })
-          .catch(err => {
-            console.log(err)
-            this.$message.error('上传失败，请重新上传')
-          })
+      this.isShow = 3
     },
     //去往应用管理
     toManage () {
       this.$router.push('../manage')
-      this.$router.go(0)
+      this.isShow = 1
     },
     // 限制上传图片张数
     handleExceed () {
@@ -337,7 +320,6 @@ export default {
       this.$message.warning(`您只能上传一个模型`)
     }
   },
-  mounted () {}
 }
 </script>
 

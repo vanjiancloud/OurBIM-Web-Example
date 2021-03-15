@@ -257,6 +257,7 @@ export default {
         activeUrl: window.location.href
       })
         .then(res => {
+        console.log(res)
           if (res.data.code === 0) {
             this.$message.success('注册成功')
             this.$router.push('/registerSucceed')
@@ -360,14 +361,17 @@ export default {
         .then(res => {
           console.log(res)
           if (res.data.code === 0) {
-            this.$message.success('可以使用此邮箱')
-          } else {
-            this.$message.error('该邮箱已被注册，请更换邮箱')
+            this.$message.success(res.data.message)
+          } 
+          else if (res.data.code === 1){
+            // this.$message.error('该邮箱已被注册，请更换邮箱')
+            this.$message.warning(res.data.message)
           }
         })
         .catch(err => {
-          console.log(err)
-          this.$message.error('此邮箱已经注册过了')
+          // console.log(err)
+          this.$message.error('邮箱不可用')
+
         })
     }
   }
