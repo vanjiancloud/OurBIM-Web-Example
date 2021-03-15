@@ -5,39 +5,37 @@
       <div class="container">
         <!-- logo -->
         <div class="logo">
-          <a href="http://47.94.229.108:7011/">
-            <img src="./logo.png" alt="" class="img"
-          /></a>
+          <img src="./logo.png" alt="" class="img" />
         </div>
         <!-- 导航 -->
         <ul>
           <!-- 功能介绍 -->
           <li>
-            <a href="http://47.94.229.108:7011/introduce">
+            <a href="http://www.ourbim.com:7011/introduce">
               {{ $t('introduction') }}</a
             >
           </li>
           <!-- 解决方案 -->
           <li>
-            <a href="http://47.94.229.108:7011/solution">
+            <a href="http://www.ourbim.com:7011/solution">
               {{ $t('Solution') }}</a
             >
           </li>
           <!-- 成功案例 -->
           <li>
-            <a href="http://47.94.229.108:7011/successful_cases">
+            <a href="http://www.ourbim.com:7011/successful_cases">
               {{ $t('cases') }}</a
             >
           </li>
           <!-- 产品定价 -->
           <li>
-            <a href="http://47.94.229.108:7011/product_pricing">
+            <a href="http://www.ourbim.com:7011/product_pricing">
               {{ $t('Pricing') }}</a
             >
           </li>
           <!-- 最新资讯 -->
           <li>
-            <a href="http://47.94.229.108:7011/latest_news">
+            <a href="http://www.ourbim.com:7011/latest_news">
               {{ $t('consultation') }}</a
             >
           </li>
@@ -50,12 +48,9 @@
               </span>
               <el-dropdown-menu slot="dropdown">
                 <!-- API文档 -->
-                <el-dropdown-item style="background-color: #fff;">
+                <el-dropdown-item>
                   <span class="item">
-                    <a
-                      href="http://47.94.229.108:7011/developer/api_file"
-                      style="color: #000;text-decoration: none; font-size: 16px;"
-                    >
+                    <a href="http://www.ourbim.com:7011/developer/api_file">
                       {{ $t('APIdov') }}
                     </a>
                   </span>
@@ -63,42 +58,73 @@
                 <!-- 示例项目 -->
                 <el-dropdown-item>
                   <a
-                    href="http://47.94.229.108:7011/developer/sample_project"
-                    style="color: #000;text-decoration: none; font-size: 16px;"
+                    href="http://www.ourbim.com:7011/developer/sample_project"
                     >{{ $t('projects') }}</a
                   >
                 </el-dropdown-item>
                 <!-- 模型中心 -->
                 <el-dropdown-item>
-                  <a
-                    href="http://47.94.229.108:7011/developer/model_center"
-                    style="color: #000;text-decoration: none; font-size: 16px;"
-                    >{{ $t('Mcenter') }}</a
-                  >
+                  <a href="http://www.ourbim.com:7011/developer/model_center">{{
+                    $t('Mcenter')
+                  }}</a>
                 </el-dropdown-item>
                 <!-- 服务中心 -->
                 <el-dropdown-item>
-                  <a
-                    href="http://47.94.229.108:7011/developer/service_entre"
-                    style="color: #000;text-decoration: none; font-size: 16px;"
-                    >{{ $t('Service') }}</a
-                  >
+                  <a href="http://www.ourbim.com:7011/developer/service_entre">{{
+                    $t('Service')
+                  }}</a>
                 </el-dropdown-item>
                 <!-- 更新日志 -->
                 <el-dropdown-item>
-                  <a
-                    href="http://47.94.229.108:7011/developer/update_log"
-                    style="color: #000;text-decoration: none; font-size: 16px;"
-                    >{{ $t('log') }}</a
-                  >
+                  <a href="http://www.ourbim.com:7011/developer/update_log">{{
+                    $t('log')
+                  }}</a>
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </li>
-        </ul>
-        <!-- 头像和中英文切换 -->
-        <div class="all">
-          <div class="touxiang">
+          <!-- 搜索框 -->
+          <!-- <li class="search">
+            <transition>
+              <div class="serach" v-if="islive">
+                <div class="menu">
+                  <el-dropdown @command="checkitem">
+                    <span class="el-dropdown-link">
+                      {{ classify
+                      }}<i class="el-icon-arrow-down el-icon--right"></i>
+                    </span>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item :command="$t('whole')">{{
+                        $t('whole')
+                      }}</el-dropdown-item>
+                      <el-dropdown-item :command="$t('info')">{{
+                        $t('info')
+                      }}</el-dropdown-item>
+                      <el-dropdown-item :command="$t('case')">{{
+                        $t('case')
+                      }}</el-dropdown-item>
+                      <el-dropdown-item :command="$t('activity')">{{
+                        $t('activity')
+                      }}</el-dropdown-item>
+                      <el-dropdown-item :command="$t('Model')">{{
+                        $t('Model')
+                      }}</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </div>
+                <div class="in">
+                  <el-input v-model="input" placeholder="请输入搜索内容">
+                  </el-input>
+                </div>
+              </div>
+            </transition>
+            <div @click="toshow">
+              <span class="span"><i class="el-icon-search"></i></span>
+            </div>
+          </li> -->
+
+          <!-- 顶部头像栏 -->
+          <li class="touxiang">
             <el-dropdown>
               <span class="el-dropdown-link">
                 <img
@@ -115,13 +141,14 @@
                 }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-          </div>
-          <div class="language">
-            <span> <a @click="Chinese" href="javascript:;">中文</a></span>
+          </li>
+          <!-- 中英文切换 -->
+          <li class="language">
+            <a @click="English" href="javascript:;">English</a>
             <span style="margin: 0 5px;font-size: 10px;">|</span>
-            <span><a @click="English" href="javascript:;">English</a></span>
-          </div>
-        </div>
+            <a @click="Chinese" href="javascript:;">中文</a>
+          </li>
+        </ul>
       </div>
     </div>
     <!-- 个人信息展示 -->
@@ -203,14 +230,16 @@
           :default-active="this.$route.path"
           :router="true"
           mode="horizontal"
-          background-color="#f1f1f1"
+          background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b"
         >
-          <el-menu-item index="/userCenter">我的应用</el-menu-item>
-          <el-menu-item index="/manage">应用管理</el-menu-item>
-          <el-menu-item index="/found">创建应用</el-menu-item>
-          <el-menu-item index="/bill">账户管理</el-menu-item>
+          <el-menu-item index="/userCenter">{{ $t('app') }}</el-menu-item>
+          <el-menu-item index="/manage">{{ $t('management') }}</el-menu-item>
+          <el-menu-item index="/found">{{ $t('Create') }}</el-menu-item>
+          <el-menu-item index="/bill" class="last">{{
+            $t('Account')
+          }}</el-menu-item>
         </el-menu>
 
         <!-- <div class="tab">
@@ -249,9 +278,11 @@ export default {
     return {
       time: null,
       customColor: '#00AAF0',
-      note: '未上传签名', //签名
-      name: '未上传用户名', //用户名
+      note: '', //签名
+      name: '', //用户名
       imgUrl: '', //用户头像
+      email: '', //邮箱
+      mobile: '', //手机号
       countStartTime: '', //账户生效开始时间
       countendTime: '', //账户生效结束时间
       spacePer: 0, //空间使用率，第一个进度条
@@ -318,7 +349,26 @@ export default {
           this.imgUrl = this.imgUrl
         })
     },
-
+    // 获取用户信息
+    getData () {
+      getUserInfo({
+        userid: getuserid()
+      })
+        .then(res => {
+          console.log(res)
+          this.note = res.data.data.note
+          this.imgUrl = res.data.data.imgUrl
+          this.name = res.data.data.name
+          this.email = res.data.data.email
+          this.mobile = res.data.data.mobile
+          this.company = res.data.data.company
+          this.position = res.data.data.position
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('请求失败')
+        })
+    },
     // 定时器，每隔3秒更新一次数据
     // get () {
     //   this.showData()
@@ -358,6 +408,7 @@ export default {
     next()
     if (this.time) {
       clearInterval(this.time)
+
       this.time = null
     }
   }
@@ -381,7 +432,7 @@ export default {
     }
     .logo {
       width: 150px;
-      height: 30px;
+      height: 37px;
       float: left;
       margin: 10px 169px 24px 0;
       img {
@@ -397,7 +448,7 @@ export default {
       padding: 0;
       margin-right: 47px;
       .el-dropdown {
-        height: 40px;
+        height: 48px;
       }
       .el-dropdown-link {
         cursor: pointer;
@@ -411,34 +462,27 @@ export default {
         font-size: 17px;
       }
     }
-    .all {
+    .touxiang {
+      margin-left: 40px;
+      margin-right: 20px;
+      img {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+      }
+    }
+    .third {
+      margin-right: 40px;
+    }
+    .language {
+      // background-color: green;
       float: right;
-      .touxiang {
-        margin-right: 40px;
-        float: left;
-        .el-dropdown {
-          height: 38px;
-        }
-        img {
-          margin-top: 12px;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-        }
-        img:hover {
-          cursor: pointer;
-        }
-      }
-      .language {
-        // background-color: green;
-        float: left;
-        margin: 0;
-        height: 16px;
-        font-size: 14px;
-        font-family: PingFang SC;
-        font-weight: 500;
-        color: #333333;
-      }
+      margin: 0;
+      height: 16px;
+      font-size: 14px;
+      font-family: PingFang SC;
+      font-weight: 500;
+      color: #333333;
     }
   }
   .main {
@@ -587,6 +631,16 @@ export default {
       }
       .el-menu {
         height: 69px;
+        padding-left: 180px;
+        .el-menu-item {
+          font-size: 20px;
+          margin-right: 180px;
+          // width: 120px;
+          margin-top: 5px;
+        }
+        .last {
+          margin-right: 0px;
+        }
       }
       // 英文tab栏
       .tabTwo {
