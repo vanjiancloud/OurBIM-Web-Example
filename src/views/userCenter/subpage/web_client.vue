@@ -8,13 +8,13 @@
       frameborder="0"
       id="show-bim"
     ></iframe>
-    <!-- <div class="time-log" v-if="moreCount < 10">
+    <div class="time-log" v-if="moreCount < 10">
       <div class="log-main" :class="runTimeCode === 0 ? '' : 'phone-log-main'">
         <div>
           <img class="show-logo" src="@/assets/img/ourbim-logo.png" alt="" />
         </div>
         <span v-text="moreCount"></span>
-        秒后将超过免费体验时长，可刷新重新进入。
+        <span v-text="$t('webClient.loadBox.title[0]')"></span>
       </div>
     </div>
     <div
@@ -24,17 +24,18 @@
     >
       <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
       <div class="hidden-text load-text" v-if="hiddenState === 0">
-        <div class="model-loading">Model loading</div>
+        <!-- 加载中 -->
+        <div class="model-loading" v-text="$t('webClient.loadBox.title[1]')"></div>
         <div class="dot">...</div>
         <div class="wait-main"></div>
       </div>
-      <div class="hidden-text learn-text" v-if="hiddenState === 1">
-        超过免费体验时长，可刷新重新进入。
+      <div class="hidden-text learn-text" v-if="hiddenState === 1"
+      v-text="$t('webClient.loadBox.title[2]')">
       </div>
-      <div class="hidden-text learn-text" v-if="hiddenState === 2">
-        模型长时间未响应，请刷新重试。
+      <div class="hidden-text learn-text" v-if="hiddenState === 2"
+      v-text="$t('webClient.loadBox.title[3]')">
       </div>
-    </div> -->
+    </div>
     <div v-if="runTimeCode === 0">
       <div class="mutual-bim">
         <div
@@ -119,7 +120,7 @@
         </div>
       </div>
       <todo-footer ref="getFooter" @listenTodo="listenTodo"></todo-footer>
-      <view-cube @handleOrder="handleOrder"></view-cube>
+      <view-cube @handleOrder="handleOrder" @handleType="handleType"></view-cube>
     </div>
   </div>
 </template>
@@ -152,10 +153,12 @@ export default {
       },
       webUrl: null,
       appId: null,
+      locale: 'zh',
       taskId: null,
       isFade: true,
       handleState: 0,
       leafInfo: null,
+      listenInfo: null,
       cubeState: 6,
       viewHeight: 0,
       runTimeCode: 0,
@@ -170,6 +173,7 @@ export default {
       browserInfo: null,
       detailedInfo: null,
       natureInfo: null,
+      shadowType: null
     };
   },
   watch: {
@@ -178,7 +182,7 @@ export default {
       if (this.isFade) {
         this.$message({
           type: "success",
-          message: "免费体验3分钟",
+          message: this.$t('webClient.loadBox.message[0]')
         });
       }
       this.isFade = false;
@@ -187,6 +191,8 @@ export default {
   },
   mounted() {
     this.appId = this.$route.query.appid;
+    this.locale = this.$route.query.locale
+    this.$i18n.locale = this.locale
     this.setTimeLoad();
     if (this.isMobile()) {
       this.runTimeCode = 1;
@@ -213,6 +219,19 @@ export default {
     }
   },
   methods: {
+    handleType(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-12 11:34:19
+     * @description: 选择类型 e 0: 还原模型 1: 透视投影 2: 正交投影
+     */
+      if (e === 2) {
+        this.$refs.getFooter.resetpPrson();
+      }
+      this.shadowType = e
+      this.handleState = 1
+      this.updateOrder();
+    },
     handleTree(e, index) {
       /**
        * @Author: zk
@@ -230,7 +249,7 @@ export default {
         e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
         this.handleState = 9
         if (e.data.haveChild === "0") {
-          this.updateOrder();          
+          this.updateOrder();
         }
       } else if (index === 1) {
         this.handleState = 8
@@ -284,7 +303,7 @@ export default {
        */
       if (!this.taskId) {
         this.$message({
-          message: "场景未加载，请刷新",
+          message: this.$t('webClient.loadBox.message[1]'),
           type: "error",
         });
         return;
@@ -293,6 +312,31 @@ export default {
         taskid: this.taskId,
       };
       switch (this.handleState) {
+        case 0:
+          // 一三人称
+          params.id = 8
+          params.viewMode = this.listenInfo.state === 0 ? 1 : 2
+          params.projectionMode = this.shadowType === 1 || this.shadowType === 2 ? this.shadowType : 2
+          break;
+        case 1:
+          // 模式切换
+          params.id = 8
+          // 投影类型切换
+          if (this.shadowType === 2) {
+            // 正交 必须为第三人称
+            params.projectionMode = 2
+            params.viewMode = 2
+          }
+          if (this.shadowType === 1) {
+            // 透视投影
+            params.projectionMode = 1
+            if (this.listenInfo) {
+               params.viewMode =  this.listenInfo.state === 1 ? 2 : 1
+            } else{
+              params.viewMode = 2
+            }
+          }
+          break;
         case 3:
           // 缩放
           params.id = this.mouseState.roller;
@@ -337,16 +381,19 @@ export default {
           id: 20,
         };
       }
+      // console.error(this.listenInfo);
+      // console.log(params);
+      
       await MODELAPI.UPDATEORDER(params)
         .then((res) => {
           this.$message({
-            message: "指令下发成功",
+            message: this.$t('webClient.loadBox.message[2]'),
             type: "success",
           });
         })
         .catch(() => {
           this.$message({
-            message: "指令下发失败",
+            message: this.$t('webClient.loadBox.message[3]'),
             type: "error",
           });
         });
@@ -407,6 +454,12 @@ export default {
       if (e.type === 11) {
         this.natureInfo = e;
       }
+      if (e.type === 0) {
+        this.handleState = 0
+        this.listenInfo = e
+        this.updateOrder()
+      }
+      
     },
     initWebSocket() {
       //初始化weosocket
@@ -449,7 +502,7 @@ export default {
           }
         })
         .catch((err) => {
-          this.$message.error("请求失败");
+          this.$message.error(this.$t('webClient.loadBox.message[4]'));
         });
     },
     isMobile() {
@@ -666,11 +719,11 @@ export default {
     }
 
     .load-text {
-      letter-spacing: 5px;
-      font-size: 22px;
+      letter-spacing: 5px;      
       display: flex;
 
       .model-loading {
+        margin-left: 20px;
         margin-right: 10px;
       }
     }
@@ -708,6 +761,7 @@ export default {
     .hidden-text {
       margin-top: 130px;
       position: absolute;
+      font-size: 20px;
       background-image: linear-gradient(
         to right,
         #b9fffc,

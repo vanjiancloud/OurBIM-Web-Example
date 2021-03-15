@@ -160,7 +160,6 @@ export default {
   name: 'manage',
   data () {
     return {
-      disabl: true, //按钮禁用
       // 上传图片
       dialogImageUrl: '',
       dialogVisible: false,

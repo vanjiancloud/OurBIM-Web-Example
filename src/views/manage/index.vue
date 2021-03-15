@@ -53,7 +53,7 @@
                 </el-button>
                 <!-- 删除 -->
                 <el-button
-                  @click="remove"
+                  @click="remove(scope.row)"
                   :disabled="scope.row.applidStatus === '4' ? true : false"
                   type="text"
                   class="btn-two"
@@ -85,7 +85,7 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import { getProjectList } from '@/api/my.js'
+import { getProjectList, deleteProject } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 
 export default {
@@ -123,6 +123,7 @@ export default {
         .then(res => {
           console.log(res)
           this.itemList = res.data.data
+          this.reverse()
           this.appid = res.data.data.appid
           this.appName = res.data.data.appName
           this.maxInstance = res.data.data.maxInstance
@@ -158,11 +159,43 @@ export default {
     },
 
     // 删除按钮
-    remove () {
-      console.log('点击了删除')
-      this.$confirm('此操作将删除当前应用, 是否继续?', '提示')
-      if (this.$confirm == '确定') {
-      }
+    remove (e) {
+      console.log(e)
+      this.$confirm('此操作将删除该应用, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.del(e)
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
+    //删除应用
+    del (e) {
+      deleteProject({
+        appliId: e.appid,
+        userid: getuserid()
+      })
+        .then(res => {
+          if (res.data.code === 0) {
+            console.log(res)
+            this.$message.success(res.data.message)
+            this.GetList()
+          } else if (res.data.code === 1) {
+            console.log(res)
+            this.$message.warning(res.data.message)
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('删除失败')
+        })
     }
   },
 

@@ -180,6 +180,25 @@ const i18n = new VueI18n({
         },
         attribute: {
           title: "属性"
+        },
+        loadBox: {
+          title: [
+            "秒后将超过免费体验时长，可刷新重新进入。",
+            "加载中",
+            "超过免费体验时长，可刷新重新进入。",
+            "模型长时间未响应，请刷新重试。"
+          ],
+          message: [
+            "免费体验3分钟",
+            "场景未加载，请刷新",
+            "指令下发成功",
+            "指令下发失败",
+            "请求失败"            
+          ]
+        },
+        cubeBox: {
+          direction: ["前", "后", "上", "下", "左", "右"],
+          handle: ["正交投影", "透视投影", "还原模型"]
         }
       }
     },
@@ -334,6 +353,25 @@ const i18n = new VueI18n({
         },
         attribute: {
           title: "attribute"
+        },
+        loadBox: {
+          title: [
+            "After 3 seconds, it will exceed the free experience time. You can refresh and re-enter.",
+            "Model Loading",
+            "After the free experience time, you can refresh and re-enter.",
+            "The model has not responded for a long time, please refresh and try again."
+          ],
+          message: [
+            "Free experience for 3 minutes",
+            "Scene not loaded, please refresh",
+            "Command issued successfully",
+            "Command issue failed",
+            "request was aborted"            
+          ]
+        },
+        cubeBox: {
+          direction: ["front", "back", "up", "down", "left", "right"],
+          handle: ["Orthogonal projection", "perspective projection", "Reduction model"]
         }
       }
     }
