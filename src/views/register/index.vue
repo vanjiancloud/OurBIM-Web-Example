@@ -497,7 +497,7 @@ export default {
         .code {
           padding-right: 27px;
           padding-top: 23px;
-          color: #00aaf0;
+          // color: #00aaf0;
         }
         .check {
           margin-top: -30px;

@@ -113,7 +113,7 @@
               <!-- 验证码按钮 -->
               <el-button
                 slot="suffix"
-                style="padding-right:25px;padding-top:47px;color:#00aaf0;"
+                style="padding-right:25px;padding-top:47px;"
                 :disabled="isSend"
                 @click="getVerification"
                 type="text"

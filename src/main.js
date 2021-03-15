@@ -34,7 +34,7 @@ const i18n = new VueI18n({
       introduction: '功能介绍',
       Solution: '解决方案',
       cases: '成功案例',
-      Pricing: '产品订价',
+      Pricing: '产品定价',
       consultation: '最新资讯',
       userCenter: '用户中心',
       quit: '退出',
