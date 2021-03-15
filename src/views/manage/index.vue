@@ -42,9 +42,8 @@
             <el-table-column :label="$t('operation')">
               <template slot-scope="scope">
                 <!-- 编辑 -->
-
                 <el-button
-                  @click="edit"
+                  @click="edit(scope.row), (dialogFormVisible = true)"
                   :disabled="scope.row.applidStatus === '4' ? true : false"
                   type="text"
                   class="btn-one"
@@ -64,6 +63,110 @@
             </el-table-column>
           </el-table>
         </div>
+        <!-- dialog框 -->
+        <el-dialog title="编辑应用" :visible.sync="dialogFormVisible">
+          <el-form :model="form">
+            <el-form-item label="应用名称" :label-width="formLabelWidth">
+              <el-input v-model="form.name" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="最大并发数" :label-width="formLabelWidth">
+              <el-input
+                v-model="form.maxInstance"
+                autocomplete="off"
+                :disabled="true"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="上传封面" :label-width="formLabelWidth">
+              <el-upload
+                :action="baseURL + '/appli/postScreenImg'"
+                :on-success="upLoadImg"
+                name="fileUpload"
+                :on-error="errorImg"
+                list-type="picture-card"
+                :limit="1"
+                :on-exceed="handleExceed"
+                :before-upload="beforeUpload"
+                accept=".png,.jpg,.jpeg"
+              >
+                <i slot="default" class="el-icon-plus"></i>
+                <div slot="file" slot-scope="{ file }">
+                  <img
+                    class="el-upload-list__item-thumbnail"
+                    :src="file.url"
+                    alt=""
+                  />
+                  <span class="el-upload-list__item-actions">
+                    <span
+                      class="el-upload-list__item-preview"
+                      @click="handlePictureCardPreview(file)"
+                    >
+                      <i class="el-icon-zoom-in"></i>
+                    </span>
+                    <span
+                      v-if="!disabled"
+                      class="el-upload-list__item-delete"
+                      @click="handleRemove(file)"
+                    >
+                      <i class="el-icon-delete"></i>
+                    </span>
+                  </span>
+                </div>
+              </el-upload>
+              <div class="xiaoxi">
+                <!-- <span style="color:red;margin-right:5px">*</span> -->
+                {{ $t('extensions') }}：.png .jpg .jpeg
+              </div>
+            </el-form-item>
+            <el-form-item label="上传模型" :label-width="formLabelWidth">
+              <el-upload
+                :on-success="upLoadModel"
+                drag
+                :action="baseURL + '/appli/postProjectModel'"
+                name="fileUpload"
+                :data="{
+                  appliId: appInfo.appid
+                }"
+                multiple
+                :limit="1"
+                :on-exceed="exceed"
+                :before-upload="beforeModelUpload"
+                accept=".rvt"
+                :disabled="this.form.applidStatus === 0 ? false : true"
+              >
+                <img src="./file.png" style="margin-top:60px" />
+                <div class="el-upload__text">
+                  {{ $t('methods') }}<br />
+                  {{ $t('xianzhi') }}<br />
+                  {{ $t('limit') }}
+                </div>
+              </el-upload>
+            </el-form-item>
+            <el-form-item label="鼠标操作模式" :label-width="formLabelWidth">
+              <el-select v-model="form.doMouse" placeholder="请选择操作模式">
+                <el-option label="非锁定模式" value="0"></el-option>
+                <el-option label="锁定模式" value="1"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="窗口显示模式" :label-width="formLabelWidth">
+              <el-select
+                v-model="form.displayWindow"
+                placeholder="请选择显示模式"
+              >
+                <el-option label="完全填充" value="0"></el-option>
+                <el-option label="尽量填充" value="1"></el-option>
+                <el-option label="原始大小" value="2"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisible = false">取 消</el-button>
+            <el-button
+              type="primary"
+              @click="xiugai(), (dialogFormVisible = false)"
+              >确 定</el-button
+            >
+          </div>
+        </el-dialog>
       </div>
     </div>
     <!-- 分页 -->
@@ -85,8 +188,9 @@
 <script>
 import MyFooter from '../components/myFooter.vue'
 import myHeader from '../components/myHeader.vue'
-import { getProjectList, deleteProject } from '@/api/my.js'
+import { getProjectList, deleteProject, updateProject } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
+import axios from '@/utils/request'
 
 export default {
   components: { myHeader, MyFooter },
@@ -99,22 +203,56 @@ export default {
       maxInstance: '', //最大并发数量
       applidStatus: null, //状态
       createTime: '', //上传日期
-      timer: null
+      timer: null,
+
+      dialogTableVisible: false,
+      dialogFormVisible: false,
+      formLabelWidth: '120px',
+      // disable: false,
+      form: {
+        name: '',
+        maxInstance: '',
+        appid: '',
+        appImgSrc: '',
+        appModel: '',
+        delivery: false,
+        dialogImageUrl: '',
+        applidStatus: null,
+        displayWindow: [
+          {
+            value: '0',
+            label: '完全填充'
+          },
+          {
+            value: '1',
+            label: '尽量填充'
+          },
+          {
+            value: '2',
+            label: '原始大小'
+          }
+        ],
+        doMouse: [
+          {
+            value: '0',
+            label: '非锁定模式'
+          },
+          {
+            value: '1',
+            label: '锁定模式'
+          }
+        ]
+      },
+      baseURL: axios.defaults.baseURL,
+      appInfo: '',
+      appliId: '',
+      fileUpload: ''
     }
   },
   created () {
     this.GetList()
   },
   methods: {
-    // 分页
-    handleCurrentChange () {
-      /**
-       * @Author: zk
-       * @Date: 2021-02-22 17:46:30
-       * @description: 分页
-       */
-    },
-
     // 获取应用数据列表
     GetList () {
       getProjectList({
@@ -153,11 +291,45 @@ export default {
       return statusObj[status]
     },
 
-    // 编辑
-    edit () {
-      this.$router.push('./edit')
+    // 编辑按钮
+    edit (e) {
+      console.log(e)
+      this.form.name = e.appName
+      this.form.appid = e.appid
+      this.form.displayWindow = e.displayWindow
+      this.form.doMouse = e.doMouse
+      this.form.maxInstance = e.maxInstance
+      this.form.applidStatus = e.applidStatus
+      console.log(this.form.applidStatus)
+      // if (!this.form.applidStatus === 0) {
+      //   this.disable = 'true'
+      // }
     },
-
+    //确定修改
+    xiugai () {
+      console.log('点击了确定')
+      updateProject({
+        appid: this.form.appid,
+        appName: this.form.name,
+        doMouse: this.form.doMouse,
+        displayWindow: this.form.displayWindow,
+        screenImg: this.form.appImgSrc,
+        appModel: this.form.appModel
+      })
+        .then(res => {
+          if (res.data.code === 0) {
+            console.log(res)
+            this.$message.success('编辑成功')
+          } else if (res.data.code === 1) {
+            console.log(res)
+            this.$message.error('编辑失败')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('修改信息失败,请重新修改')
+        })
+    },
     // 删除按钮
     remove (e) {
       console.log(e)
@@ -196,6 +368,62 @@ export default {
           console.log(err)
           this.$message.error('删除失败')
         })
+    },
+    // 上传封面图
+    upLoadImg (response, file, fileList) {
+      this.form.appImgSrc = response.data
+    },
+    // 上传模型
+    upLoadModel (response, file, fileList) {
+      console.log('模型上传成功')
+      this.$message.success('模型上传成功')
+      this.form.appModel = response.data
+      this.disabl = false
+    },
+    // 上传封面图失败
+    errorImg (err, file, fileList) {
+      console.log(err)
+    },
+    // 限制上传图片张数
+    handleExceed () {
+      this.$message.warning(`您只能上传一张图片`)
+    },
+    // 删除图片
+    // handleRemove (file) {
+    //   this.$confirm('此操作将删除当前图片, 是否继续?', '提示')
+    //   if (this.$confirm == '确定') {
+    //     file.url == ''
+    //   }
+    // },
+
+    // 放大图片
+    handlePictureCardPreview (file) {
+      this.dialogImageUrl = file.url
+      this.dialogVisible = true
+    },
+    // 限制上传封面格式
+    beforeUpload (file) {
+      var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+      const one = testmsg === 'jpg'
+      const two = testmsg === 'jpeg'
+      const three = testmsg === 'png'
+      if (!one && !two && !three) {
+        this.$message.error('上传封面只能是.jpg .jpeg .png格式!')
+      }
+      return one || two || three
+    },
+    // 限制上传模型格式
+    beforeModelUpload (file) {
+      var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+      const extension = testmsg === 'rvt'
+      if (!extension) {
+        this.$message.error('上传模型只能是.rvt格式!')
+      }
+      return extension
+    },
+    // 限制上传模型次数
+    exceed () {
+      this.$message.warning(`您只能上传一个模型`)
     }
   },
 
@@ -285,6 +513,11 @@ export default {
         .btn-two {
           font-size: 16px;
           color: red;
+        }
+      }
+      .el-dialog {
+        .el-input {
+          width: 200px;
         }
       }
     }
