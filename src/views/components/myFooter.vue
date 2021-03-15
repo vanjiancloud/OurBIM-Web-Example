@@ -6,7 +6,11 @@
           Copyright © 2021 www.OurBIM.com, All Rights Reserved.
         </div>
         <div>022-8633-0370</div>
-        <div class="last">津ICP备15006036号-2</div>
+        <div class="last">
+          <a href="https://beian.miit.gov.cn/#/Integrated/index" target="_blank"
+            >津ICP备15006036号-2</a
+          >
+        </div>
       </div>
     </div>
   </div>
@@ -33,6 +37,10 @@ export default {}
     }
     .last {
       margin: 0;
+      a {
+        color: #999;
+        text-decoration: none;
+      }
     }
   }
 }

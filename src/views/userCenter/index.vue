@@ -121,7 +121,8 @@ export default {
       const { href } = this.$router.resolve({
         name: 'web_client',
         query: {
-          appid: e.appid
+          appid: e.appid,
+          locale: this.$i18n.locale
         }
       })
       window.open(href, '_blank')

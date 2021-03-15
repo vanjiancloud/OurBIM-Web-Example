@@ -164,7 +164,7 @@ export default {
         })
         .catch(err => {
           console.log(err)
-          // this.$message.error('请求失败')
+          this.$message.error('请求失败')
         })
     },
     //修改用户信息

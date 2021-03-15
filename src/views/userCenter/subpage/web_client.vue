@@ -14,7 +14,7 @@
           <img class="show-logo" src="@/assets/img/ourbim-logo.png" alt="" />
         </div>
         <span v-text="moreCount"></span>
-        秒后将超过免费体验时长，可刷新重新进入。
+        <span v-text="$t('webClient.loadBox.title[0]')"></span>
       </div>
     </div>
     <div
@@ -24,15 +24,16 @@
     >
       <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
       <div class="hidden-text load-text" v-if="hiddenState === 0">
-        <div class="model-loading">Model loading</div>
+        <!-- 加载中 -->
+        <div class="model-loading" v-text="$t('webClient.loadBox.title[1]')"></div>
         <div class="dot">...</div>
         <div class="wait-main"></div>
       </div>
-      <div class="hidden-text learn-text" v-if="hiddenState === 1">
-        超过免费体验时长，可刷新重新进入。
+      <div class="hidden-text learn-text" v-if="hiddenState === 1"
+      v-text="$t('webClient.loadBox.title[2]')">
       </div>
-      <div class="hidden-text learn-text" v-if="hiddenState === 2">
-        模型长时间未响应，请刷新重试。
+      <div class="hidden-text learn-text" v-if="hiddenState === 2"
+      v-text="$t('webClient.loadBox.title[3]')">
       </div>
     </div>
     <div v-if="runTimeCode === 0">
@@ -152,6 +153,7 @@ export default {
       },
       webUrl: null,
       appId: null,
+      locale: 'zh',
       taskId: null,
       isFade: true,
       handleState: 0,
@@ -180,7 +182,7 @@ export default {
       if (this.isFade) {
         this.$message({
           type: "success",
-          message: "免费体验3分钟",
+          message: this.$t('webClient.loadBox.message[0]')
         });
       }
       this.isFade = false;
@@ -189,6 +191,8 @@ export default {
   },
   mounted() {
     this.appId = this.$route.query.appid;
+    this.locale = this.$route.query.locale
+    this.$i18n.locale = this.locale
     this.setTimeLoad();
     if (this.isMobile()) {
       this.runTimeCode = 1;
@@ -299,7 +303,7 @@ export default {
        */
       if (!this.taskId) {
         this.$message({
-          message: "场景未加载，请刷新",
+          message: this.$t('webClient.loadBox.message[1]'),
           type: "error",
         });
         return;
@@ -383,13 +387,13 @@ export default {
       await MODELAPI.UPDATEORDER(params)
         .then((res) => {
           this.$message({
-            message: "指令下发成功",
+            message: this.$t('webClient.loadBox.message[2]'),
             type: "success",
           });
         })
         .catch(() => {
           this.$message({
-            message: "指令下发失败",
+            message: this.$t('webClient.loadBox.message[3]'),
             type: "error",
           });
         });
@@ -498,7 +502,7 @@ export default {
           }
         })
         .catch((err) => {
-          this.$message.error("请求失败");
+          this.$message.error(this.$t('webClient.loadBox.message[4]'));
         });
     },
     isMobile() {
@@ -715,11 +719,11 @@ export default {
     }
 
     .load-text {
-      letter-spacing: 5px;
-      font-size: 22px;
+      letter-spacing: 5px;      
       display: flex;
 
       .model-loading {
+        margin-left: 20px;
         margin-right: 10px;
       }
     }
@@ -757,6 +761,7 @@ export default {
     .hidden-text {
       margin-top: 130px;
       position: absolute;
+      font-size: 20px;
       background-image: linear-gradient(
         to right,
         #b9fffc,

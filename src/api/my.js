@@ -1,7 +1,7 @@
 // 导入抽取的axios对象
 import request from '../utils/request'
 // 导入字符串转换工具
-import qsStringify from "qs-stringify"
+import qsStringify from 'qs-stringify'
 
 // 激活账号
 export function activation (data) {
@@ -148,12 +148,23 @@ export function ProjectModel (data) {
   })
 }
 
-// 获取项目
+// 获取项目列表
 export function getProjectList (data) {
   return request({
     url: '/appli/getApplicationList',
     method: 'GET',
-    params:data
+    params: data
+  })
+}
+
+// 删除项目
+export function deleteProject (data) {
+  return request({
+    url: '/appli/deleteProject',
+    method: 'POST',
+    // params: data
+    data: qsStringify(data)
+
   })
 }
 
@@ -162,7 +173,7 @@ export function getUserInfo (data) {
   return request({
     url: '/CountManager/getUserCount',
     method: 'GET',
-    params:data
+    params: data
   })
 }
 
@@ -180,7 +191,7 @@ export function uploadImg (data) {
   return request({
     url: '/CountManager/postUserImg',
     method: 'POST',
-    params:data
+    params: data
   })
 }
 
@@ -189,7 +200,7 @@ export function showDetail (data) {
   return request({
     url: '/CountManager/getCountDetail',
     method: 'GET',
-    params:data
+    params: data
   })
 }
 
