@@ -1,6 +1,6 @@
 <template>
   <div class="bim-main">
-    <iframe
+    <!-- <iframe
       class="bim-web"
       :class="runTimeCode === 0 ? '' : 'phone-bim'"
       v-if="webUrl && hiddenState === 0"
@@ -24,7 +24,6 @@
     >
       <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
       <div class="hidden-text load-text" v-if="hiddenState === 0">
-        <!-- 加载中 -->
         <div
           class="model-loading"
           v-text="$t('webClient.loadBox.title[1]')"
@@ -42,7 +41,7 @@
         v-if="hiddenState === 2"
         v-text="$t('webClient.loadBox.title[3]')"
       ></div>
-    </div>
+    </div> -->
     <div v-if="runTimeCode === 0">
       <div class="mutual-bim">
         <div
@@ -214,7 +213,7 @@ export default {
     } else {
       this.runTimeCode = 0;
     }
-    this.getSceneUrl();
+    // this.getSceneUrl();
     window.addEventListener(
       "message",
       (e) => {
