@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-03-13 17:59:10
+ * @LastEditTime: 2021-03-15 14:21:44
  * @description: 
 -->
 <template>
@@ -16,7 +16,7 @@
         <transition name="el-zoom-in-top">
           <div class="cube-type" v-if="isCubeType">
             <div v-for="(item, index) in handleList" :key="index">
-              <div v-text="item.label" class="select-type" @click="changeType(item)"></div>
+              <div :class="activeType === item.value ? 'active-type' : ''" v-text="item.label" class="select-type" @click="changeType(item)"></div>
             </div>
           </div>
         </transition>        
@@ -62,6 +62,7 @@ export default {
         },
       ],
       activeFace: 0,
+      activeType: 1,
       downInfo: {
         x: -25,
         y: -25,
@@ -111,6 +112,9 @@ export default {
       this.activeType = e.value
       this.$emit("handleType", e.value)
       this.isCubeType = false
+    },
+    resetActive(){
+      this.activeType = 1
     },
     goFront() {
       this.$emit("handleOrder", 6);
