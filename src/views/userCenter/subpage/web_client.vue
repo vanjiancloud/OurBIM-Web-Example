@@ -25,16 +25,23 @@
       <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
       <div class="hidden-text load-text" v-if="hiddenState === 0">
         <!-- 加载中 -->
-        <div class="model-loading" v-text="$t('webClient.loadBox.title[1]')"></div>
+        <div
+          class="model-loading"
+          v-text="$t('webClient.loadBox.title[1]')"
+        ></div>
         <div class="dot">...</div>
         <div class="wait-main"></div>
       </div>
-      <div class="hidden-text learn-text" v-if="hiddenState === 1"
-      v-text="$t('webClient.loadBox.title[2]')">
-      </div>
-      <div class="hidden-text learn-text" v-if="hiddenState === 2"
-      v-text="$t('webClient.loadBox.title[3]')">
-      </div>
+      <div
+        class="hidden-text learn-text"
+        v-if="hiddenState === 1"
+        v-text="$t('webClient.loadBox.title[2]')"
+      ></div>
+      <div
+        class="hidden-text learn-text"
+        v-if="hiddenState === 2"
+        v-text="$t('webClient.loadBox.title[3]')"
+      ></div>
     </div>
     <div v-if="runTimeCode === 0">
       <div class="mutual-bim">
@@ -44,7 +51,7 @@
             browserInfo && browserInfo.type === 10 && browserInfo.state === 1
           "
         >
-        <!-- 模型浏览器 -->
+          <!-- 模型浏览器 -->
           <div class="tree-title">
             <div class="" v-text="$t('webClient.browser.title')"></div>
             <div class="close-part">
@@ -63,7 +70,11 @@
             >
               <span
                 class="custom-tree-node"
-                :class="node.checked && node.data.haveChild === '0' ? 'tree-select' : ''"
+                :class="
+                  node.checked && node.data.haveChild === '0'
+                    ? 'tree-select'
+                    : ''
+                "
                 slot-scope="{ node }"
                 @click.stop="handleTree(node, 0)"
               >
@@ -88,7 +99,7 @@
           class="bim-info"
           v-if="natureInfo && natureInfo.type === 11 && natureInfo.state === 1"
         >
-        <!-- 属性 -->
+          <!-- 属性 -->
           <div class="bim-title">
             <div class="" v-text="$t('webClient.attribute.title')"></div>
             <div class="close-part">
@@ -120,7 +131,10 @@
         </div>
       </div>
       <todo-footer ref="getFooter" @listenTodo="listenTodo"></todo-footer>
-      <view-cube @handleOrder="handleOrder" @handleType="handleType"></view-cube>
+      <view-cube
+        @handleOrder="handleOrder"
+        @handleType="handleType"
+      ></view-cube>
     </div>
   </div>
 </template>
@@ -153,7 +167,7 @@ export default {
       },
       webUrl: null,
       appId: null,
-      locale: 'zh',
+      locale: "zh",
       taskId: null,
       isFade: true,
       handleState: 0,
@@ -173,7 +187,7 @@ export default {
       browserInfo: null,
       detailedInfo: null,
       natureInfo: null,
-      shadowType: null
+      shadowType: null,
     };
   },
   watch: {
@@ -182,7 +196,7 @@ export default {
       if (this.isFade) {
         this.$message({
           type: "success",
-          message: this.$t('webClient.loadBox.message[0]')
+          message: this.$t("webClient.loadBox.message[0]"),
         });
       }
       this.isFade = false;
@@ -191,8 +205,8 @@ export default {
   },
   mounted() {
     this.appId = this.$route.query.appid;
-    this.locale = this.$route.query.locale
-    this.$i18n.locale = this.locale
+    this.locale = this.$route.query.locale;
+    this.$i18n.locale = this.locale;
     this.setTimeLoad();
     if (this.isMobile()) {
       this.runTimeCode = 1;
@@ -219,17 +233,17 @@ export default {
     }
   },
   methods: {
-    handleType(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-03-12 11:34:19
-     * @description: 选择类型 e 0: 还原模型 1: 透视投影 2: 正交投影
-     */
+    handleType(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-12 11:34:19
+       * @description: 选择类型 e 0: 还原模型 1: 透视投影 2: 正交投影
+       */
       if (e === 2) {
         this.$refs.getFooter.resetpPrson();
       }
-      this.shadowType = e
-      this.handleState = 1
+      this.shadowType = e;
+      this.handleState = 1;
       this.updateOrder();
     },
     handleTree(e, index) {
@@ -238,27 +252,27 @@ export default {
        * @Date: 2021-03-08 14:39:51
        * @description: 构件树的指令
        */
-      this.leafInfo = e
+      this.leafInfo = e;
       if (index === 0) {
         // 选中
         if (e.checked) {
-          e.checked = false
+          e.checked = false;
         } else {
-          this.$refs.setTree.setCheckedKeys([e.key])
+          this.$refs.setTree.setCheckedKeys([e.key]);
         }
         e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
-        this.handleState = 9
+        this.handleState = 9;
         if (e.data.haveChild === "0") {
           this.updateOrder();
         }
       } else if (index === 1) {
-        this.handleState = 8
+        this.handleState = 8;
         e.data.activeState = 1;
-      this.updateOrder();
+        this.updateOrder();
       } else if (index === 2) {
-        this.handleState = 8
+        this.handleState = 8;
         e.data.activeState = 0;
-      this.updateOrder();
+        this.updateOrder();
       }
     },
     handleOrder(e) {
@@ -303,7 +317,7 @@ export default {
        */
       if (!this.taskId) {
         this.$message({
-          message: this.$t('webClient.loadBox.message[1]'),
+          message: this.$t("webClient.loadBox.message[1]"),
           type: "error",
         });
         return;
@@ -314,26 +328,32 @@ export default {
       switch (this.handleState) {
         case 0:
           // 一三人称
-          params.id = 8
-          params.viewMode = this.listenInfo.state === 0 ? 1 : 2
-          params.projectionMode = this.shadowType === 1 || this.shadowType === 2 ? this.shadowType : 2
+          params.id = 8;
+          params.viewMode = this.listenInfo.state === 0 ? 1 : 2;
+          params.projectionMode =
+            this.shadowType === 1 || this.shadowType === 2
+              ? this.shadowType
+              : 1;
+          if (params.viewMode) {
+            params.projectionMode = 2;
+          }
           break;
         case 1:
           // 模式切换
-          params.id = 8
+          params.id = 8;
           // 投影类型切换
           if (this.shadowType === 2) {
             // 正交 必须为第三人称
-            params.projectionMode = 2
-            params.viewMode = 2
+            params.projectionMode = 2;
+            params.viewMode = 2;
           }
           if (this.shadowType === 1) {
             // 透视投影
-            params.projectionMode = 1
+            params.projectionMode = 1;
             if (this.listenInfo) {
-               params.viewMode =  this.listenInfo.state === 1 ? 2 : 1
-            } else{
-              params.viewMode = 2
+              params.viewMode = this.listenInfo.state === 1 ? 2 : 1;
+            } else {
+              params.viewMode = 2;
             }
           }
           break;
@@ -370,7 +390,9 @@ export default {
         case 9:
           // 当前 focus + 高亮 /取消
           params.mn = this.leafInfo.key;
-          this.leafInfo.data.activeSelect === 0 ? (params.id = 29) : (params.id = 28);
+          this.leafInfo.data.activeSelect === 0
+            ? (params.id = 29)
+            : (params.id = 28);
           break;
         default:
           break;
@@ -383,17 +405,17 @@ export default {
       }
       // console.error(this.listenInfo);
       // console.log(params);
-      
+
       await MODELAPI.UPDATEORDER(params)
         .then((res) => {
           this.$message({
-            message: this.$t('webClient.loadBox.message[2]'),
+            message: this.$t("webClient.loadBox.message[2]"),
             type: "success",
           });
         })
         .catch(() => {
           this.$message({
-            message: this.$t('webClient.loadBox.message[3]'),
+            message: this.$t("webClient.loadBox.message[3]"),
             type: "error",
           });
         });
@@ -455,11 +477,10 @@ export default {
         this.natureInfo = e;
       }
       if (e.type === 0) {
-        this.handleState = 0
-        this.listenInfo = e
-        this.updateOrder()
+        this.handleState = 0;
+        this.listenInfo = e;
+        this.updateOrder();
       }
-      
     },
     initWebSocket() {
       //初始化weosocket
@@ -502,7 +523,7 @@ export default {
           }
         })
         .catch((err) => {
-          this.$message.error(this.$t('webClient.loadBox.message[4]'));
+          this.$message.error(this.$t("webClient.loadBox.message[4]"));
         });
     },
     isMobile() {
@@ -719,7 +740,7 @@ export default {
     }
 
     .load-text {
-      letter-spacing: 5px;      
+      letter-spacing: 5px;
       display: flex;
 
       .model-loading {
@@ -909,7 +930,7 @@ export default {
           align-items: center;
           justify-content: space-between;
           padding-right: 8px;
-          .label-span{
+          .label-span {
             padding-left: 5px;
           }
         }
@@ -1010,7 +1031,7 @@ export default {
     width: 900px !important;
   }
 }
-.tree-select{
+.tree-select {
   background: rgba(255, 255, 255, 0.2);
 }
 </style>
