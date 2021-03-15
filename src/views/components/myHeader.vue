@@ -11,31 +11,31 @@
         <ul>
           <!-- 功能介绍 -->
           <li>
-            <a href="http://47.94.229.108:7011/introduce">
+            <a href="http://www.ourbim.com:7011/introduce">
               {{ $t('introduction') }}</a
             >
           </li>
           <!-- 解决方案 -->
           <li>
-            <a href="http://47.94.229.108:7011/solution">
+            <a href="http://www.ourbim.com:7011/solution">
               {{ $t('Solution') }}</a
             >
           </li>
           <!-- 成功案例 -->
           <li>
-            <a href="http://47.94.229.108:7011/successful_cases">
+            <a href="http://www.ourbim.com:7011/successful_cases">
               {{ $t('cases') }}</a
             >
           </li>
           <!-- 产品定价 -->
           <li>
-            <a href="http://47.94.229.108:7011/product_pricing">
+            <a href="http://www.ourbim.com:7011/product_pricing">
               {{ $t('Pricing') }}</a
             >
           </li>
           <!-- 最新资讯 -->
           <li>
-            <a href="http://47.94.229.108:7011/latest_news">
+            <a href="http://www.ourbim.com:7011/latest_news">
               {{ $t('consultation') }}</a
             >
           </li>
@@ -50,7 +50,7 @@
                 <!-- API文档 -->
                 <el-dropdown-item>
                   <span class="item">
-                    <a href="http://47.94.229.108:7011/developer/api_file">
+                    <a href="http://www.ourbim.com:7011/developer/api_file">
                       {{ $t('APIdov') }}
                     </a>
                   </span>
@@ -58,25 +58,25 @@
                 <!-- 示例项目 -->
                 <el-dropdown-item>
                   <a
-                    href="http://47.94.229.108:7011/developer/sample_project"
+                    href="http://www.ourbim.com:7011/developer/sample_project"
                     >{{ $t('projects') }}</a
                   >
                 </el-dropdown-item>
                 <!-- 模型中心 -->
                 <el-dropdown-item>
-                  <a href="http://47.94.229.108:7011/developer/model_center">{{
+                  <a href="http://www.ourbim.com:7011/developer/model_center">{{
                     $t('Mcenter')
                   }}</a>
                 </el-dropdown-item>
                 <!-- 服务中心 -->
                 <el-dropdown-item>
-                  <a href="http://47.94.229.108:7011/developer/service_entre">{{
+                  <a href="http://www.ourbim.com:7011/developer/service_entre">{{
                     $t('Service')
                   }}</a>
                 </el-dropdown-item>
                 <!-- 更新日志 -->
                 <el-dropdown-item>
-                  <a href="http://47.94.229.108:7011/developer/update_log">{{
+                  <a href="http://www.ourbim.com:7011/developer/update_log">{{
                     $t('log')
                   }}</a>
                 </el-dropdown-item>
@@ -165,7 +165,7 @@
             </div>
             <div class="Info">
               <h3>{{ name ? name : $t('Noupload') }}</h3>
-              {{ note ? note : $t('noupload')}}
+              {{ note ? note : $t('noupload') }}
             </div>
           </div>
           <div class="line"></div>
@@ -234,10 +234,12 @@
           text-color="#fff"
           active-text-color="#ffd04b"
         >
-          <el-menu-item index="/userCenter">我的应用</el-menu-item>
-          <el-menu-item index="/manage">应用管理</el-menu-item>
-          <el-menu-item index="/found">创建应用</el-menu-item>
-          <el-menu-item index="/bill">账户管理</el-menu-item>
+          <el-menu-item index="/userCenter">{{ $t('app') }}</el-menu-item>
+          <el-menu-item index="/manage">{{ $t('management') }}</el-menu-item>
+          <el-menu-item index="/found">{{ $t('Create') }}</el-menu-item>
+          <el-menu-item index="/bill" class="last">{{
+            $t('Account')
+          }}</el-menu-item>
         </el-menu>
 
         <!-- <div class="tab">
@@ -276,9 +278,11 @@ export default {
     return {
       time: null,
       customColor: '#00AAF0',
-      note: '未上传签名', //签名
-      name: '未上传用户名', //用户名
+      note: '', //签名
+      name: '', //用户名
       imgUrl: '', //用户头像
+      email: '', //邮箱
+      mobile: '', //手机号
       countStartTime: '', //账户生效开始时间
       countendTime: '', //账户生效结束时间
       spacePer: 0, //空间使用率，第一个进度条
@@ -345,7 +349,26 @@ export default {
           this.imgUrl = this.imgUrl
         })
     },
-
+    // 获取用户信息
+    getData () {
+      getUserInfo({
+        userid: getuserid()
+      })
+        .then(res => {
+          console.log(res)
+          this.note = res.data.data.note
+          this.imgUrl = res.data.data.imgUrl
+          this.name = res.data.data.name
+          this.email = res.data.data.email
+          this.mobile = res.data.data.mobile
+          this.company = res.data.data.company
+          this.position = res.data.data.position
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('请求失败')
+        })
+    },
     // 定时器，每隔3秒更新一次数据
     // get () {
     //   this.showData()
@@ -608,14 +631,16 @@ export default {
       }
       .el-menu {
         height: 69px;
-        padding-left: 188px;
+        padding-left: 180px;
         .el-menu-item {
           font-size: 20px;
-          margin-right: 188px;
-          width: 120px;
+          margin-right: 180px;
+          // width: 120px;
           margin-top: 5px;
         }
-        
+        .last {
+          margin-right: 0px;
+        }
       }
       // 英文tab栏
       .tabTwo {
