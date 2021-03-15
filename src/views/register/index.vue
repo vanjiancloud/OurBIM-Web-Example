@@ -107,13 +107,14 @@
               >
             </div>
             <div class="footer-size">
-              <span
+              <el-button type="text" @click="toLogoin">已有账号，立即登录</el-button>
+              <!-- <span
                 ><a
-                  href="../login/index.vue"
+                  href="http://www.ourbim.com:7012/#/login"
                   style="text-decoration:none;font-size: 16px;color:#00aaf0 "
                   >已有账号，立即登录</a
                 ></span
-              >
+              > -->
             </div>
           </div>
         </div>
@@ -247,6 +248,10 @@ export default {
     toReturn () {
       this.$router.push('../../login')
     },
+    toLogoin () {
+      console.log('666666666');
+      this.$router.push('../login')
+    },
     // 点击注册
     doRegister () {
       getRegister({
@@ -257,7 +262,7 @@ export default {
         activeUrl: window.location.href
       })
         .then(res => {
-        console.log(res)
+          console.log(res)
           if (res.data.code === 0) {
             this.$message.success('注册成功')
             this.$router.push('/registerSucceed')
@@ -362,8 +367,7 @@ export default {
           console.log(res)
           if (res.data.code === 0) {
             this.$message.success(res.data.message)
-          } 
-          else if (res.data.code === 1){
+          } else if (res.data.code === 1) {
             // this.$message.error('该邮箱已被注册，请更换邮箱')
             this.$message.warning(res.data.message)
           }
@@ -371,7 +375,6 @@ export default {
         .catch(err => {
           // console.log(err)
           this.$message.error('邮箱不可用')
-
         })
     }
   }
@@ -476,6 +479,7 @@ export default {
         .footer-size {
           color: #00aaf0;
           text-align: center;
+          font-size: 16px;
         }
         .link:hover {
           color: #00aaf0;

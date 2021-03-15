@@ -43,14 +43,25 @@
           <div class="message" style="margin-top: 30px;">
             <div class="one">{{ $t('username') }}</div>
             <div class="input">
-              <el-input v-model="name" placeholder="请输入用户名"></el-input>
+              <el-input
+                v-model="name"
+                placeholder="请输入用户名"
+                maxlength="10"
+                show-word-limit
+              ></el-input>
             </div>
           </div>
           <!-- 签名 -->
           <div class="message">
             <div class="one">{{ $t('autograph') }}</div>
             <div class="input">
-              <el-input v-model="note" placeholder="请输入签名"></el-input>
+              <el-input
+                v-model="note"
+                placeholder="请输入签名"
+                maxlength="20"
+                type="text"
+                show-word-limit
+              ></el-input>
             </div>
           </div>
           <!-- 邮箱 -->
