@@ -118,7 +118,7 @@
           </div>
           <div class="language">
             <a @click="Chinese" href="javascript:;">中文</a>
-            <span style="margin: 0 5px;font-size: 10px;">|</span>
+            <span style="margin: 0 5px;">|</span>
             <a @click="English" href="javascript:;">English</a>
           </div>
         </div>
@@ -389,7 +389,7 @@ export default {
     }
     .logo {
       width: 150px;
-      height: 38px;
+      height: 37px;
       float: left;
       margin-top: 11px;
       margin-right: 215px;
@@ -426,7 +426,7 @@ export default {
       // background-color: red;
       float: right;
       height: 64px;
-      width: 180px;
+      width: 185px;
       .el-dropdown {
         height: 40px;
       }
@@ -434,7 +434,7 @@ export default {
         float: left;
         cursor: pointer;
         img {
-          margin-top: 12px;
+          margin-top: 10px;
           width: 40px;
           height: 40px;
           border-radius: 50%;
@@ -443,12 +443,10 @@ export default {
       .language {
         // background-color: green;
         float: right;
-        margin: 0;
-        height: 16px;
-        font-size: 14px;
-        font-family: PingFang SC;
-        font-weight: 500;
-        color: #333333;
+        // width: 180px;
+        .el-dropdown {
+          height: 40px;
+        }
       }
     }
   }
