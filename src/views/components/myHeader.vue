@@ -427,7 +427,6 @@ export default {
       .end {
         // background-color: red;
         float: right;
-        height: 64px;
         width: 180px;
         .el-dropdown {
           height: 40px;
@@ -436,7 +435,7 @@ export default {
           float: left;
           cursor: pointer;
           img {
-            margin-top: 12px;
+            margin-top: 10px;
             width: 40px;
             height: 40px;
             border-radius: 50%;
