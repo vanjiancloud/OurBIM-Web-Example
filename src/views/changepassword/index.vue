@@ -298,7 +298,7 @@ export default {
       position: relative;
       display: flex;
       .logo {
-        width: 232px;
+        width: 185px;
         height: 46px;
         margin-top: 5px;
         img {

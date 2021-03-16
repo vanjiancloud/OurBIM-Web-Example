@@ -426,7 +426,7 @@ export default {
         display: flex;
         align-items: center;
         .logo {
-          width: 232px;
+          width: 185px;
           height: 46px;
           margin: 0 auto;
           img {

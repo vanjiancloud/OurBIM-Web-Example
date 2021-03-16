@@ -207,7 +207,7 @@ export default {
         height: 60px;
         // background-color: red;
         img {
-          width: 232px;
+          width: 185px;
           height: 46px;
           margin-left: 90px;
         }

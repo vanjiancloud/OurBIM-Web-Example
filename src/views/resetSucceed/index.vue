@@ -84,7 +84,7 @@ export default {
       justify-content: center;
       margin-top: 50px;
       .logo {
-        width: 223px;
+        width: 185px;
         height: 46px;
         margin: 0 auto;
         margin-left: 100px;
