@@ -24,7 +24,6 @@
     >
       <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
       <div class="hidden-text load-text" v-if="hiddenState === 0">
-        <!-- 加载中 -->
         <div
           class="model-loading"
           v-text="$t('webClient.loadBox.title[1]')"
