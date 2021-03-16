@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-16 14:34:14
+ * @LastEditTime: 2021-03-16 18:20:01
  * @description: 
 -->
 <template>
@@ -10,18 +10,37 @@
     <div class="todo-main">
       <div class="image-main">
         <el-tooltip
-          class="item"
-          effect="dark"
-          :content="imgList[0].title"
           placement="top"
+          v-model="personTool"
+          transition="el-fade-in-linear"
+          manual
         >
-          <img
-            @click="handleOrder(0)"
-            class="footer-image"
-            :src="imgList[0].url"
-            mode=""
-          />
+          <div slot="content">
+            <div class="person-list">
+              <div @click="changePerson(0)" :class="activePerson === 0 ? 'active-person' : ''">第一人称</div>
+            </div>
+            <div class="person-list">
+              <div @click="changePerson(1)" :class="activePerson === 1 ? 'active-person' : ''">第三人称</div>
+            </div>
+            <div class="person-list">
+              <div @click="changePerson(2)" :class="activePerson === 2 ? 'active-person' : ''">跟随人物</div>
+            </div>
+          </div>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="imgList[0].title"
+            placement="top"
+          >
+            <img
+              class="footer-image"
+              :src="imgList[0].url"
+              @click="handleOrder(0)"
+              mode=""
+            />
+          </el-tooltip>
         </el-tooltip>
+        
       </div>
       <div class="image-main">
         <el-tooltip
@@ -204,12 +223,12 @@
         >
           <div slot="content" class="follow-main">
             <div class="follow-list">
-              <div class="follow-table">
+              <!-- <div class="follow-table">
                 <div class="follow-text">asdfasdf阿斯蒂芬啊士大夫方法</div>
                 <div class="close-follow">
                   <i class="el-icon-close"></i>
                 </div>
-              </div>
+              </div> -->
             </div>
             <div class="add-follow">
               <i class="el-icon-plus"></i>
@@ -346,8 +365,8 @@ export default {
       cuttingTips: [],
       imgList: [
         {
-          state: 1,
-          url: require("@/assets/images/todo/check/visual_angle.png"),
+          state: 0,
+          url: require("@/assets/images/todo/unchecked/visual_angle.png"),
           name: "visual_angle.png",
           title: "视角",
         },
@@ -427,9 +446,11 @@ export default {
           title: "属性",
         },
       ],
+      activePerson: 1,
       oldState: 0,
       angleTool: false,
       followTool: false,
+      personTool: false,
       setForm: {
         unit: null,
         weather: null,
@@ -453,6 +474,20 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    changePerson(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-16 18:03:10
+     * @description: 切换人称
+     */  
+      if (e !== 2) {
+        this.activePerson = e
+        this.$emit("listenPerson", e)
+      }
+      this.imgList[0].state = 0;
+      this.imgList[0].url = require(`@/assets/images/todo/unchecked/${this.imgList[0].name}`)
+      this.personTool = false
+    },
     clickOther() {
       this.angleTool = false;
       this.followTool = false;
@@ -468,23 +503,18 @@ export default {
        * @Date: 2021-03-12 11:39:50
        * @description: 重置为第三人称
        */
-      this.imgList[0].state = 1;
-      let oldUrl = require(`@/assets/images/todo/check/${this.imgList[0].name}`);
-      this.imgList[0].url = oldUrl;
-      this.$emit("listenTodo", {
-        state: this.imgList[0].state,
-        type: 0,
-        isRun: 0
-      });
+      this.activePerson = 1
     },
     showAngle() {
       this.angleTool = true;
     },
-    handleOrder(e) {
-      // if(e === 0 || e === 1 || e === 2){
+    handleOrder(e) {      
+      if (e === 1 || e === 2 || e === 3 || e === 4 || e === 5 || e === 6 || e === 7 || e === 8 || e === 9) {
+        return
+      }
       if (e === 0) {
-		//   let realPerson = this.imgList[0].state === 0 ? 1 : 0
-		//   this.imgList[0].title = this.$t('webClient.tooltipList.person['+ realPerson +']')
+        event.stopPropagation();
+        this.personTool = this.imgList[e].state === 0 ? true : false;
       }
       // 重置状态
       if (e !== this.oldState && e !== 10 && e !== 11) {
@@ -508,11 +538,12 @@ export default {
       }
       this.imgList[e].url = realImg;
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
-      // }
-      this.$emit("listenTodo", {
+      if (e !== 0) {
+        this.$emit("listenTodo", {
         state: this.imgList[e].state,
         type: e,
       });
+      }
     },
   },
 };
@@ -620,7 +651,13 @@ export default {
 .set-bgi {
   background-color: rgba(0, 0, 0, 0.6);
 }
-
+.person-list{
+  line-height: 200%;
+  cursor: pointer;
+}
+.active-person{
+  color: #EA640D;
+}
 .follow-bgi {
   .follow-main {
     .follow-list {

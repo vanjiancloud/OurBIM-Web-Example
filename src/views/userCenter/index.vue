@@ -143,7 +143,7 @@ export default {
       clearInterval(this.timer)
       this.timer = null
     }
-  }
+  },
 }
 </script>
 
@@ -175,9 +175,9 @@ a:hover {
     .content {
       overflow: hidden;
       .record {
-        margin-top: 38px;
+        margin-top: 30px;
         margin-bottom: 20px;
-        margin-left: 40px;
+        margin-left: 20px;
       }
       .list {
         .lis {
@@ -236,6 +236,106 @@ a:hover {
           }
         }
       }
+      table {
+        width: 100%;
+        margin-top: 5px;
+        margin-bottom: 50px;
+        border-collapse: collapse;
+        font-size: 17px;
+        tr {
+          height: 50px;
+        }
+        th {
+          background-color: #fafafa;
+        }
+        td {
+          background-color: #fff;
+        }
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+        text-align: center;
+      }
+      .dropdown {
+        width: 200px;
+        height: 300px;
+        float: left;
+        margin-right: 100px;
+        div {
+          width: 100%;
+          height: 50px;
+          border-bottom: 1px solid #f2f2f2;
+          line-height: 50px;
+
+          margin-right: 50px;
+          button:focus {
+            background-color: #fff;
+          }
+          button {
+            padding-left: 50px;
+            height: 100%;
+            width: 100%;
+            border: none;
+            outline: none;
+            font-size: 17px;
+            text-align: left;
+            background-color: #f9f9f9;
+          }
+          button:hover {
+            color: #41b19c;
+            cursor: pointer;
+          }
+        }
+      }
+      .neirong {
+        float: left;
+        width: 1000px;
+        // background-color: orange;
+        .geren {
+          float: left;
+        }
+        .xinxi {
+          float: left;
+        }
+        table,
+        th,
+        td {
+          border: 1px solid black;
+          text-align: center;
+        }
+        table {
+          width: 400px;
+        }
+        .el-input {
+          width: 400px;
+        }
+        .dingdan {
+          width: 100%;
+        }
+        .demo-table-expand {
+          font-size: 0;
+        }
+        .demo-table-expand label {
+          width: 90px;
+          color: #99a9bf;
+        }
+        .demo-table-expand .el-form-item {
+          margin-right: 0;
+          margin-bottom: 0;
+          width: 50%;
+        }
+      }
+      .xia {
+        text-align: center;
+        margin-bottom: 100px;
+      }
+    }
+    .page {
+      width: 550px;
+      margin: 0 auto;
+      margin-bottom: 40px;
     }
   }
 }

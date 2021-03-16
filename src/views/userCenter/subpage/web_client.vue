@@ -115,7 +115,7 @@
           </div>          
         </div>
       </div>
-      <todo-footer ref="getFooter" @listenTodo="listenTodo"></todo-footer>
+      <todo-footer ref="getFooter" @listenTodo="listenTodo" @listenPerson="listenPerson"></todo-footer>
       <view-cube
         @handleOrder="handleOrder"
         @handleType="handleType"
@@ -342,8 +342,8 @@ export default {
         case 0:
           // 一三人称
           params.id = 8;
-          params.viewMode = this.listenInfo.state === 0 ? 1 : 2;
-          if (this.listenInfo.state === 0) {
+          params.viewMode = this.listenInfo === 0 ? 1 : 2;
+          if (this.listenInfo === 0) {
             this.shadowType = 1
             this.$refs.getCube.resetActive()
           }
@@ -476,6 +476,16 @@ export default {
       }
       this.$refs.getFooter.editTool(e);
     },
+    listenPerson(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-16 18:06:24
+     * @description: 人称切换
+     */
+      this.handleState = 0;
+        this.listenInfo = e;
+        this.updateOrder();
+    },
     listenTodo(e) {
       /**
        * @Author: zk
@@ -488,14 +498,7 @@ export default {
       if (e.type === 11) {
         this.natureInfo = e;
         e.state === 0 ? this.memberInfo = null : ''
-      }
-      if (e.type === 0) {
-        this.handleState = 0;
-        this.listenInfo = e;
-        if (e.isRun !== 0) {
-          this.updateOrder();          
-        }
-      }
+      }      
     },
     initWebSocket() {
       //初始化weosocket
@@ -699,6 +702,7 @@ export default {
   .time-log {
     pointer-events: none;
     position: absolute;
+    z-index: 9999;
     top: 0;
     left: 0;
     width: 100%;
@@ -737,7 +741,7 @@ export default {
 
   .hidden-bim {
     position: absolute;
-    z-index: 99;
+    z-index: 9999;
     top: 0;
     left: 0;
     height: 100vh;
