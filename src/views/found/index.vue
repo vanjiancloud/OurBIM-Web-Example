@@ -63,6 +63,7 @@
                 :on-exceed="handleExceed"
                 :before-upload="beforeUpload"
                 accept=".png,.jpg,.jpeg"
+                ref="upload"
               >
                 <i slot="default" class="el-icon-plus"></i>
                 <div slot="file" slot-scope="{ file }">
@@ -250,8 +251,7 @@ export default {
               this.$message.success('创建应用成功')
               this.isShow = 2
             } else if (res.data.code === 1) {
-              this.$message.error('项目新建失败')
-              // alert("项目新建失败")
+              this.$message.error('创建应用失败')
             }
           })
           .catch(err => {
@@ -284,8 +284,8 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          this.fileUpload = ''
-           this.$message({
+          this.$refs.upload.clearFiles()
+          this.$message({
             type: 'success',
             message: '删除成功'
           })
@@ -326,6 +326,12 @@ export default {
     // 限制上传模型次数
     exceed () {
       this.$message.warning(`您只能上传一个模型`)
+    }
+  },
+  watch: {
+    // 监听路由变化，当路由发生变化的时候，重新加载组件
+    $route (to, from) {
+      window.location.reload()
     }
   }
 }

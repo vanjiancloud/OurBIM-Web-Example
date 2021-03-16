@@ -28,7 +28,7 @@ const routes = [
     name: 'changePassword',
     component: () => import('../views/changepassword/index.vue'),
     meta: {
-      title: 'OurBIM忘记密码'
+      title: 'OurBIM重置密码'
     }
   },
   // 注册页

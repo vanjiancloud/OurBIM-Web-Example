@@ -150,7 +150,7 @@ export default {
       mobile: '', //手机号
       company: '', //公司
       position: '', //职位
-      imgUrl: './touxiang.png', //用户头像
+      imgUrl: '', //用户头像
       baseURL: axios.defaults.baseURL
     }
   },
@@ -192,7 +192,6 @@ export default {
           if (res.data.code === 0) {
             console.log(res)
             this.$message.success('修改成功')
-            this.$router.go(0)
           } else if (res.data.code === 1) {
             console.log(res)
             this.$message.error('修改失败')
@@ -228,7 +227,7 @@ export default {
     },
     // 限制上传图片张数
     handleExceed () {
-      this.$message.error(`您只能上传一张图片`)
+      this.$message.warning(`亲，只能上传一张图片哦！`)
     }
   }
 }

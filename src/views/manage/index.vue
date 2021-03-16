@@ -35,6 +35,15 @@
               <template slot-scope="scope">
                 <!-- 做自定义操作 需要改成template的形式,scope.row代表的是表格数据itemList中的每一项 -->
                 {{ formatStatus(scope.row.applidStatus) }}
+                <el-progress
+                  :text-inside="true"
+                  :percentage="scope.row.progress"
+                  :show-text="true"
+                  :stroke-width="15" 
+                  :color="customColor"
+                  v-if="scope.row.applidStatus === '1' ? true : false"
+                >
+                </el-progress>
               </template>
             </el-table-column>
             <el-table-column prop="createTime" :label="$t('uploaddate')">
@@ -44,7 +53,6 @@
                 <!-- 编辑 -->
                 <el-button
                   @click="edit(scope.row), (dialogFormVisible = true)"
-                  :disabled="scope.row.applidStatus === '4' ? true : false"
                   type="text"
                   class="btn-one"
                 >
@@ -53,7 +61,7 @@
                 <!-- 删除 -->
                 <el-button
                   @click="remove(scope.row)"
-                  :disabled="scope.row.applidStatus === '4' ? true : false"
+                  :disabled="scope.row.applidStatus === '1' ? true : false"
                   type="text"
                   class="btn-two"
                 >
@@ -64,60 +72,61 @@
           </el-table>
         </div>
         <!-- dialog框 -->
-        <el-dialog title="编辑应用" :visible.sync="dialogFormVisible">
-          <el-form :model="form">
-            <el-form-item label="应用名称" :label-width="formLabelWidth">
-              <el-input v-model="form.name" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="最大并发数" :label-width="formLabelWidth">
-              <el-input
-                v-model="form.maxInstance"
-                autocomplete="off"
-                :disabled="true"
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="上传封面" :label-width="formLabelWidth">
-              <el-upload
-                :action="baseURL + '/appli/postScreenImg'"
-                :on-success="upLoadImg"
-                name="fileUpload"
-                :on-error="errorImg"
-                list-type="picture-card"
-                :limit="1"
-                :on-exceed="handleExceed"
-                :before-upload="beforeUpload"
-                accept=".png,.jpg,.jpeg"
-              >
-                <i slot="default" class="el-icon-plus"></i>
-                <div slot="file" slot-scope="{ file }">
-                  <img
-                    class="el-upload-list__item-thumbnail"
-                    :src="file.url"
-                    alt=""
-                  />
-                  <span class="el-upload-list__item-actions">
-                    <span
-                      class="el-upload-list__item-preview"
-                      @click="handlePictureCardPreview(file)"
-                    >
-                      <i class="el-icon-zoom-in"></i>
+        <el-dialog title="编辑应用" :visible.sync="dialogFormVisible" center>
+          <div class="content">
+            <el-form :model="form">
+              <el-form-item label="应用名称：" label-width="110px">
+                <el-input v-model="form.name" autocomplete="off"></el-input>
+              </el-form-item>
+              <el-form-item label="最大并发数：" label-width="110px">
+                <el-input
+                  v-model="form.maxInstance"
+                  autocomplete="off"
+                  :disabled="true"
+                ></el-input>
+              </el-form-item>
+              <el-form-item label="上传封面：" label-width="110px">
+                <el-upload
+                  :action="baseURL + '/appli/postScreenImg'"
+                  :on-success="upLoadImg"
+                  name="fileUpload"
+                  :on-error="errorImg"
+                  list-type="picture-card"
+                  :limit="1"
+                  :on-exceed="handleExceed"
+                  :before-upload="beforeUpload"
+                  accept=".png,.jpg,.jpeg"
+                >
+                  <i slot="default" class="el-icon-plus"></i>
+                  <div slot="file" slot-scope="{ file }">
+                    <img
+                      class="el-upload-list__item-thumbnail"
+                      :src="file.url"
+                      alt=""
+                    />
+                    <span class="el-upload-list__item-actions">
+                      <span
+                        class="el-upload-list__item-preview"
+                        @click="handlePictureCardPreview(file)"
+                      >
+                        <i class="el-icon-zoom-in"></i>
+                      </span>
+                      <span
+                        v-if="!disabled"
+                        class="el-upload-list__item-delete"
+                        @click="handleRemove(file)"
+                      >
+                        <i class="el-icon-delete"></i>
+                      </span>
                     </span>
-                    <span
-                      v-if="!disabled"
-                      class="el-upload-list__item-delete"
-                      @click="handleRemove(file)"
-                    >
-                      <i class="el-icon-delete"></i>
-                    </span>
-                  </span>
+                  </div>
+                </el-upload>
+                <div class="xiaoxi">
+                  <!-- <span style="color:red;margin-right:5px">*</span> -->
+                  {{ $t('extensions') }}：.png .jpg .jpeg
                 </div>
-              </el-upload>
-              <div class="xiaoxi">
-                <!-- <span style="color:red;margin-right:5px">*</span> -->
-                {{ $t('extensions') }}：.png .jpg .jpeg
-              </div>
-            </el-form-item>
-            <el-form-item label="上传模型" :label-width="formLabelWidth">
+              </el-form-item>
+              <!-- <el-form-item label="上传模型" :label-width="formLabelWidth">
               <el-upload
                 :on-success="upLoadModel"
                 drag
@@ -140,24 +149,25 @@
                   {{ $t('limit') }}
                 </div>
               </el-upload>
-            </el-form-item>
-            <el-form-item label="鼠标操作模式" :label-width="formLabelWidth">
-              <el-select v-model="form.doMouse" placeholder="请选择操作模式">
-                <el-option label="非锁定模式" value="0"></el-option>
-                <el-option label="锁定模式" value="1"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="窗口显示模式" :label-width="formLabelWidth">
-              <el-select
-                v-model="form.displayWindow"
-                placeholder="请选择显示模式"
-              >
-                <el-option label="完全填充" value="0"></el-option>
-                <el-option label="尽量填充" value="1"></el-option>
-                <el-option label="原始大小" value="2"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-form>
+            </el-form-item> -->
+              <el-form-item label="鼠标操作模式：">
+                <el-select v-model="form.doMouse" placeholder="请选择操作模式">
+                  <el-option label="非锁定模式" value="0"></el-option>
+                  <el-option label="锁定模式" value="1"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="窗口显示模式：">
+                <el-select
+                  v-model="form.displayWindow"
+                  placeholder="请选择显示模式"
+                >
+                  <el-option label="完全填充" value="0"></el-option>
+                  <el-option label="尽量填充" value="1"></el-option>
+                  <el-option label="原始大小" value="2"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-form>
+          </div>
           <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
             <el-button
@@ -204,10 +214,11 @@ export default {
       applidStatus: null, //状态
       createTime: '', //上传日期
       timer: null,
+      display: false, //转换进度条默认隐藏
+      customColor: '#00AAF0', //进度条颜色
 
       dialogTableVisible: false,
       dialogFormVisible: false,
-      formLabelWidth: '120px',
       // disable: false,
       form: {
         name: '',
@@ -267,9 +278,6 @@ export default {
           this.maxInstance = res.data.data.maxInstance
           this.applidStatus = res.data.data.applidStatus
           this.createTime = res.data.data.createTime
-          if (applidStatus === 0) {
-            this.disabled = true
-          }
         })
         .catch(err => {
           console.log(err)
@@ -314,7 +322,7 @@ export default {
         doMouse: this.form.doMouse,
         displayWindow: this.form.displayWindow,
         screenImg: this.form.appImgSrc,
-        appModel: this.form.appModel
+        // appModel: this.form.appModel
       })
         .then(res => {
           if (res.data.code === 0) {
@@ -333,6 +341,7 @@ export default {
     // 删除按钮
     remove (e) {
       console.log(e)
+      console.log(e.progress)
       this.$confirm('此操作将删除该应用, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -426,7 +435,6 @@ export default {
       this.$message.warning(`您只能上传一个模型`)
     }
   },
-
   //  把定时器放在activated事件里，当清除定时后，
   // 下次再次进入当前路由的话，可以再次唤起定时器
   activated () {
@@ -451,7 +459,6 @@ export default {
   .container {
     background-color: #fff;
     margin-bottom: 34px;
-    // height: 961px;
     min-height: 961px;
     /deep/ .el-button--primary {
       background-color: #00aaf0;
@@ -477,6 +484,11 @@ export default {
       .table {
         margin-top: 20px;
         margin-bottom: 40px;
+        // 进度条里的文字
+        /deep/ .el-progress-bar__innerText {
+          color: #000;
+          margin-top: -6px;
+        }
         /deep/ .el-table thead {
           color: #fff;
         }
@@ -516,8 +528,17 @@ export default {
         }
       }
       .el-dialog {
-        .el-input {
-          width: 200px;
+        .content {
+          display: flex;
+          justify-content: center;
+          .el-form {
+            .el-input {
+              width: 150px;
+            }
+            .el-select {
+              width: 150px;
+            }
+          }
         }
       }
     }
