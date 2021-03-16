@@ -2,7 +2,7 @@
   <div class="rongqi">
     <!-- 头部 -->
     <div class="header">
-      <div class="container">
+      <div class="center">
         <!-- logo -->
         <div class="logo">
           <a href="http://www.ourbim.com:7011">
@@ -185,7 +185,7 @@
           <div class="right">
             <div class="content">
               <div>{{ $t('service') }}</div>
-              <div>{{ countStartTime }}&nbsp;--&nbsp;{{ countendTime }}</div>
+              <div>{{ countStartTime }}--{{ countendTime }}</div>
               <el-button
                 plain
                 round
@@ -199,23 +199,23 @@
           </div>
         </div>
         <!-- tab栏 -->
-        
-          <el-menu
-            :default-active="this.$route.path"
-            :router="true"
-            mode="horizontal"
-            background-color="#000"
-            text-color="#fff"
-            active-text-color="#ffd04b"
-          >
-            <el-menu-item index="/userCenter">{{ $t('app') }}</el-menu-item>
-            <el-menu-item index="/manage">{{ $t('management') }}</el-menu-item>
-            <el-menu-item index="/found">{{ $t('Create') }}</el-menu-item>
-            <el-menu-item index="/bill" class="last">{{
-              $t('Account')
-            }}</el-menu-item>
-          </el-menu>
-        
+
+        <el-menu
+          :default-active="this.$route.path"
+          :router="true"
+          mode="horizontal"
+          background-color="#007BAE"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+        >
+          <el-menu-item index="/userCenter">{{ $t('app') }}</el-menu-item>
+          <el-menu-item index="/manage">{{ $t('management') }}</el-menu-item>
+          <el-menu-item index="/found">{{ $t('Create') }}</el-menu-item>
+          <el-menu-item index="/bill" class="last">{{
+            $t('Account')
+          }}</el-menu-item>
+        </el-menu>
+
         <!-- <div class="tab">
           <span>
             <el-button type="text" @click="goUserCenter">{{
@@ -292,7 +292,7 @@ export default {
       // } else {
       //   this.$router.go(0)
       // }
-        // this.$router.push('../userCenter/')
+      // this.$router.push('../userCenter/')
     },
 
     // 退出按钮
@@ -377,7 +377,6 @@ export default {
   .header {
     height: 60px;
     background-color: #fff;
-    line-height: 64px;
     a {
       text-decoration: none;
       font-size: 17px;
@@ -387,68 +386,72 @@ export default {
     a:hover {
       color: #ff6600;
     }
-    .logo {
-      width: 150px;
-      height: 38px;
-      float: left;
-      margin-top: 11px;
-      margin-right: 215px;
-      margin-left: 10px;
-
-      img {
-        width: 100%;
-        height: 100%;
-      }
-    }
-    li {
-      height: 16px;
-      float: left;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      margin-right: 47px;
-      .el-dropdown {
-        height: 48px;
-      }
-      .el-dropdown-link {
-        cursor: pointer;
-        color: #000;
-        font-size: 17px;
-      }
-      .el-dropdown-link:hover {
-        color: #ff6600;
-      }
-      .el-icon-arrow-down {
-        font-size: 17px;
-      }
-    }
-    .end {
-      // background-color: red;
-      float: right;
-      height: 64px;
-      width: 180px;
-      .el-dropdown {
-        height: 40px;
-      }
-      .touxiang {
+    .center {
+      height: 60px;
+      width: 1400px;
+      margin: 0 auto;
+      line-height: 60px;
+      .logo {
+        width: 150px;
+        height: 38px;
         float: left;
-        cursor: pointer;
+        margin-top: 11px;
+        margin-right: 245px;
         img {
-          margin-top: 12px;
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
+          width: 100%;
+          height: 100%;
         }
       }
-      .language {
-        // background-color: green;
-        float: right;
-        margin: 0;
+      li {
         height: 16px;
-        font-size: 14px;
-        font-family: PingFang SC;
-        font-weight: 500;
-        color: #333333;
+        float: left;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        margin-right: 40px;
+        .el-dropdown {
+          height: 48px;
+        }
+        .el-dropdown-link {
+          cursor: pointer;
+          color: #000;
+          font-size: 17px;
+        }
+        .el-dropdown-link:hover {
+          color: #ff6600;
+        }
+        .el-icon-arrow-down {
+          font-size: 17px;
+        }
+      }
+      .end {
+        // background-color: red;
+        float: right;
+        height: 64px;
+        width: 180px;
+        .el-dropdown {
+          height: 40px;
+        }
+        .touxiang {
+          float: left;
+          cursor: pointer;
+          img {
+            margin-top: 12px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+          }
+        }
+        .language {
+          // background-color: green;
+          float: right;
+          margin: 0;
+          height: 16px;
+          font-size: 14px;
+          font-family: PingFang SC;
+          font-weight: 500;
+          color: #333333;
+        }
       }
     }
   }

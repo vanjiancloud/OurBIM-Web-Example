@@ -48,7 +48,7 @@
           <!-- 上传图片 -->
           <div class="picture">
             <div class="news">
-              <!-- <span style="color:red;margin-right:5px">*</span> -->
+              <span style="color:red;margin-right:5px">*</span>
               <span style="margin-right:5px">{{ $t('Uploadc') }}</span>
             </div>
             <!-- 上传封面 -->
@@ -395,7 +395,7 @@ export default {
           overflow: hidden;
           .news {
             float: left;
-            margin-left: 14px;
+            // margin-left: 14px;
           }
           .cover {
             // background-color: red;
