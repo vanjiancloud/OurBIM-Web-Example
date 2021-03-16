@@ -183,7 +183,7 @@ export default {
       // 定义验证规则rules
       rules: {
         email: [
-          { required: true, message: '请输入合法邮箱', trigger: 'blur' },
+          { required: true, message: '请输入正确邮箱', trigger: 'blur' },
           {
             pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
             message: '请输入正确邮箱',
@@ -201,12 +201,12 @@ export default {
         password: [
           {
             required: true,
-            message: '请输入密码,已字符为英文&数字&英文符号，位数6-20',
+            message: '请输入密码,字符为英文&数字&英文符号，位数6-20',
             trigger: 'blur'
           },
           {
             pattern: /^[\w.]{6,20}$/,
-            message: '您输入的账号或不正确',
+            message: '您输入的密码不正确',
             trigger: 'blur'
           }
         ],

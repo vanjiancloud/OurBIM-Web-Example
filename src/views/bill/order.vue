@@ -163,7 +163,7 @@ export default {
           this.total = res.data.count //总条数
         })
         .catch(err => {
-          console.log(err);
+          console.log(err)
           this.$message.error('获取数据失败')
         })
     },
@@ -201,6 +201,12 @@ export default {
         1: '已使用'
       }
       return statusObj[sqMISUsed]
+    }
+  },
+  watch: {
+    // 监听路由变化，当路由发生变化的时候，重新加载列表信息
+    $route (to, from) {
+      this.getList()
     }
   }
 }
