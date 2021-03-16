@@ -5,7 +5,9 @@
       <div class="container">
         <!-- logo -->
         <div class="logo">
-          <img src="./logo.png" alt="" class="img" />
+          <a href="http://www.ourbim.com:7011">
+            <img src="./logo.png" alt="" class="img"
+          /></a>
         </div>
         <!-- 导航 -->
         <ul>
@@ -50,7 +52,10 @@
                 <!-- API文档 -->
                 <el-dropdown-item>
                   <span class="item">
-                    <a href="http://www.ourbim.com:7011/developer/api_file">
+                    <a
+                      href="http://www.ourbim.com:7011/developer/api_file"
+                      style="text-decoration:none;color:#000"
+                    >
                       {{ $t('APIdov') }}
                     </a>
                   </span>
@@ -59,77 +64,46 @@
                 <el-dropdown-item>
                   <a
                     href="http://www.ourbim.com:7011/developer/sample_project"
+                    style="text-decoration:none; color:#000"
                     >{{ $t('projects') }}</a
                   >
                 </el-dropdown-item>
                 <!-- 模型中心 -->
                 <el-dropdown-item>
-                  <a href="http://www.ourbim.com:7011/developer/model_center">{{
-                    $t('Mcenter')
-                  }}</a>
+                  <a
+                    href="http://www.ourbim.com:7011/developer/model_center"
+                    style="text-decoration:none; color:#000"
+                    >{{ $t('Mcenter') }}</a
+                  >
                 </el-dropdown-item>
                 <!-- 服务中心 -->
                 <el-dropdown-item>
-                  <a href="http://www.ourbim.com:7011/developer/service_entre">{{
-                    $t('Service')
-                  }}</a>
+                  <a
+                    href="http://www.ourbim.com:7011/developer/service_entre"
+                    style="text-decoration:none; color:#000"
+                    >{{ $t('Service') }}</a
+                  >
                 </el-dropdown-item>
                 <!-- 更新日志 -->
                 <el-dropdown-item>
-                  <a href="http://www.ourbim.com:7011/developer/update_log">{{
-                    $t('log')
-                  }}</a>
+                  <a
+                    href="http://www.ourbim.com:7011/developer/update_log"
+                    style="text-decoration:none; color:#000"
+                    >{{ $t('log') }}</a
+                  >
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </li>
-          <!-- 搜索框 -->
-          <!-- <li class="search">
-            <transition>
-              <div class="serach" v-if="islive">
-                <div class="menu">
-                  <el-dropdown @command="checkitem">
-                    <span class="el-dropdown-link">
-                      {{ classify
-                      }}<i class="el-icon-arrow-down el-icon--right"></i>
-                    </span>
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item :command="$t('whole')">{{
-                        $t('whole')
-                      }}</el-dropdown-item>
-                      <el-dropdown-item :command="$t('info')">{{
-                        $t('info')
-                      }}</el-dropdown-item>
-                      <el-dropdown-item :command="$t('case')">{{
-                        $t('case')
-                      }}</el-dropdown-item>
-                      <el-dropdown-item :command="$t('activity')">{{
-                        $t('activity')
-                      }}</el-dropdown-item>
-                      <el-dropdown-item :command="$t('Model')">{{
-                        $t('Model')
-                      }}</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </div>
-                <div class="in">
-                  <el-input v-model="input" placeholder="请输入搜索内容">
-                  </el-input>
-                </div>
-              </div>
-            </transition>
-            <div @click="toshow">
-              <span class="span"><i class="el-icon-search"></i></span>
-            </div>
-          </li> -->
-
-          <!-- 顶部头像栏 -->
-          <li class="touxiang">
+        </ul>
+        <!-- 头像和中英文切换栏 -->
+        <div class="end">
+          <div class="touxiang">
             <el-dropdown>
               <span class="el-dropdown-link">
                 <img
                   :src="imgUrl ? imgUrl : require('./touxiang.png')"
-                  alt="未上传头像"
+                  alt=""
                 />
               </span>
               <el-dropdown-menu slot="dropdown">
@@ -141,14 +115,13 @@
                 }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-          </li>
-          <!-- 中英文切换 -->
-          <li class="language">
-            <a @click="English" href="javascript:;">English</a>
-            <span style="margin: 0 5px;font-size: 10px;">|</span>
+          </div>
+          <div class="language">
             <a @click="Chinese" href="javascript:;">中文</a>
-          </li>
-        </ul>
+            <span style="margin: 0 5px;font-size: 10px;">|</span>
+            <a @click="English" href="javascript:;">English</a>
+          </div>
+        </div>
       </div>
     </div>
     <!-- 个人信息展示 -->
@@ -185,9 +158,9 @@
                 <div class="icon">
                   <img src="./cunchu.png" alt="" />
                 </div>
-                {{ $t('storage') }}&nbsp;&nbsp;{{ currentCountSpace }}/{{
+                {{ $t('storage') }}&nbsp;&nbsp;{{ currentCountSpace }}GB/{{
                   countSpace
-                }}
+                }}GB
               </div>
             </div>
           </div>
@@ -212,7 +185,7 @@
           <div class="right">
             <div class="content">
               <div>{{ $t('service') }}</div>
-              <div>{{ countStartTime }}{{ $t('to') }}{{ countendTime }}</div>
+              <div>{{ countStartTime }}&nbsp;--&nbsp;{{ countendTime }}</div>
               <el-button
                 plain
                 round
@@ -226,22 +199,23 @@
           </div>
         </div>
         <!-- tab栏 -->
-        <el-menu
-          :default-active="this.$route.path"
-          :router="true"
-          mode="horizontal"
-          background-color="#545c64"
-          text-color="#fff"
-          active-text-color="#ffd04b"
-        >
-          <el-menu-item index="/userCenter">{{ $t('app') }}</el-menu-item>
-          <el-menu-item index="/manage">{{ $t('management') }}</el-menu-item>
-          <el-menu-item index="/found">{{ $t('Create') }}</el-menu-item>
-          <el-menu-item index="/bill" class="last">{{
-            $t('Account')
-          }}</el-menu-item>
-        </el-menu>
-
+        
+          <el-menu
+            :default-active="this.$route.path"
+            :router="true"
+            mode="horizontal"
+            background-color="#000"
+            text-color="#fff"
+            active-text-color="#ffd04b"
+          >
+            <el-menu-item index="/userCenter">{{ $t('app') }}</el-menu-item>
+            <el-menu-item index="/manage">{{ $t('management') }}</el-menu-item>
+            <el-menu-item index="/found">{{ $t('Create') }}</el-menu-item>
+            <el-menu-item index="/bill" class="last">{{
+              $t('Account')
+            }}</el-menu-item>
+          </el-menu>
+        
         <!-- <div class="tab">
           <span>
             <el-button type="text" @click="goUserCenter">{{
@@ -313,12 +287,14 @@ export default {
     },
     // 跳转用户中心
     toUserCenter () {
-      if (this.route !== '/userCenter') {
-        this.$router.push('../userCenter/')
-      } else {
-        this.$router.go(0)
-      }
+      // if (this.route !== '/userCenter') {
+      //   this.$router.push('../userCenter/')
+      // } else {
+      //   this.$router.go(0)
+      // }
+        // this.$router.push('../userCenter/')
     },
+
     // 退出按钮
     toLogin () {
       this.$router.push('../login/')
@@ -345,35 +321,10 @@ export default {
           this.currentCountBF = res.data.data.currentCountBF
         })
         .catch(err => {
-          // this.$message.error('信息展示失败')
-          this.imgUrl = this.imgUrl
+          this.$message.error('信息展示失败')
+          // this.imgUrl = this.imgUrl
         })
     },
-    // 获取用户信息
-    getData () {
-      getUserInfo({
-        userid: getuserid()
-      })
-        .then(res => {
-          console.log(res)
-          this.note = res.data.data.note
-          this.imgUrl = res.data.data.imgUrl
-          this.name = res.data.data.name
-          this.email = res.data.data.email
-          this.mobile = res.data.data.mobile
-          this.company = res.data.data.company
-          this.position = res.data.data.position
-        })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('请求失败')
-        })
-    },
-    // 定时器，每隔3秒更新一次数据
-    // get () {
-    //   this.showData()
-    //   console.log('定时器运行中')
-    // },
 
     // 去往用户中心
     goUserCenter () {
@@ -408,9 +359,15 @@ export default {
     next()
     if (this.time) {
       clearInterval(this.time)
-
       this.time = null
     }
+  },
+  mounted () {
+    //在接值组声明好接值事件
+    // this.$EventBus.$on('setUserPhoto',(newPhoto) => {
+    //   console.log(newPhoto);
+    //   this.imgUrl = newPhoto
+    // })
   }
 }
 </script>
@@ -418,7 +375,7 @@ export default {
 <style lang="less" scoped>
 .rongqi {
   .header {
-    height: 64px;
+    height: 60px;
     background-color: #fff;
     line-height: 64px;
     a {
@@ -432,9 +389,12 @@ export default {
     }
     .logo {
       width: 150px;
-      height: 37px;
+      height: 38px;
       float: left;
-      margin: 10px 169px 24px 0;
+      margin-top: 11px;
+      margin-right: 215px;
+      margin-left: 10px;
+
       img {
         width: 100%;
         height: 100%;
@@ -462,32 +422,40 @@ export default {
         font-size: 17px;
       }
     }
-    .touxiang {
-      margin-left: 40px;
-      margin-right: 20px;
-      img {
-        width: 64px;
-        height: 64px;
-        border-radius: 50%;
-      }
-    }
-    .third {
-      margin-right: 40px;
-    }
-    .language {
-      // background-color: green;
+    .end {
+      // background-color: red;
       float: right;
-      margin: 0;
-      height: 16px;
-      font-size: 14px;
-      font-family: PingFang SC;
-      font-weight: 500;
-      color: #333333;
+      height: 64px;
+      width: 180px;
+      .el-dropdown {
+        height: 40px;
+      }
+      .touxiang {
+        float: left;
+        cursor: pointer;
+        img {
+          margin-top: 12px;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+        }
+      }
+      .language {
+        // background-color: green;
+        float: right;
+        margin: 0;
+        height: 16px;
+        font-size: 14px;
+        font-family: PingFang SC;
+        font-weight: 500;
+        color: #333333;
+      }
     }
   }
   .main {
     height: 221px;
     margin-top: 20px;
+    margin-bottom: 10px;
     .container {
       .top {
         height: 152px;
@@ -642,6 +610,7 @@ export default {
           margin-right: 0px;
         }
       }
+
       // 英文tab栏
       .tabTwo {
         height: 69px;

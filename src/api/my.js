@@ -162,7 +162,16 @@ export function deleteProject (data) {
   return request({
     url: '/appli/deleteProject',
     method: 'POST',
-    // params: data
+    data: qsStringify(data)
+
+  })
+}
+
+// 编辑项目
+export function updateProject (data) {
+  return request({
+    url: '/appli/updateProject',
+    method: 'POST',
     data: qsStringify(data)
 
   })

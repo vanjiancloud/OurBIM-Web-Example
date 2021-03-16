@@ -24,7 +24,6 @@
     >
       <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
       <div class="hidden-text load-text" v-if="hiddenState === 0">
-        <!-- 加载中 -->
         <div
           class="model-loading"
           v-text="$t('webClient.loadBox.title[1]')"
@@ -106,28 +105,14 @@
               <i class="el-icon-close" @click="closePart(natureInfo.type)"></i>
             </div>
           </div>
-          <table class="detail-table">
-            <tr>
-              <td>所属模型</td>
-              <td v-text="detailedInfo ? detailedInfo.deviceProducer : ''"></td>
-            </tr>
-            <tr>
-              <td>属性名</td>
-              <td v-text="detailedInfo ? detailedInfo.name : ''"></td>
-            </tr>
-            <tr>
-              <td>设备编号</td>
-              <td>
-                <view class="">
-                  <text v-text="detailedInfo ? detailedInfo.mn : ''"></text>
-                </view>
-              </td>
-            </tr>
-            <tr>
-              <td>类型</td>
-              <td v-text="detailedInfo ? detailedInfo.type : ''"></td>
-            </tr>
-          </table>
+          <div class="detail-main">
+            <table class="detail-table" v-if="memberInfo && memberInfo.dynamicData">
+              <tr v-for="(item, index) in memberInfo.dynamicData" :key="index">
+                <td v-text="item.name"></td>
+                <td v-text="item.value"></td>
+              </tr>
+            </table>
+          </div>          
         </div>
       </div>
       <todo-footer ref="getFooter" @listenTodo="listenTodo"></todo-footer>
@@ -178,6 +163,7 @@ export default {
       viewHeight: 0,
       runTimeCode: 0,
       timerInfo: null,
+      memberInfo: null,
       loadTimer: null,
       timerCount: 0,
       moreCount: 10,
@@ -186,7 +172,6 @@ export default {
       isSocket: false,
       socketTimer: null,
       browserInfo: null,
-      detailedInfo: null,
       natureInfo: null,
       shadowType: null,
     };
@@ -218,6 +203,7 @@ export default {
     window.addEventListener(
       "message",
       (e) => {
+        this.getError(e.data)
         if (e.data.data && e.data.data.frameHeight > 0 && e.data.type !== 500) {
           this.viewHeight = e.data.data.frameHeight;
         }
@@ -234,13 +220,39 @@ export default {
     }
   },
   methods: {
+    getError(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-16 13:55:19
+     * @description: 处理异常
+     */  
+    let errorList = [
+      101, 102, 103,
+      201, 202, 203,
+      301,
+      401, 402, 403, 404,
+      501, 502, 503, 504,
+      601, 602, 603,
+      1001, 1002, 1003, 1004
+    ]
+    if (errorList.indexOf(e.type) !== -1) {
+      this.$message({
+          message: e.message,
+          duration: 0,
+          showClose: true,
+          type: 'warning'
+        });
+    }
+    },
     handleType(e) {
       /**
        * @Author: zk
        * @Date: 2021-03-12 11:34:19
        * @description: 选择类型 e 0: 还原模型 1: 透视投影 2: 正交投影
        */
-      this.$refs.getFooter.resetpPrson();
+      if (e === 2) {
+        this.$refs.getFooter.resetpPrson();        
+      }
       this.shadowType = e;
       this.handleState = 1;
       this.updateOrder();
@@ -255,8 +267,10 @@ export default {
       if (index === 0) {
         // 选中
         if (e.checked) {
+          this.memberInfo = null
           e.checked = false;
         } else {
+          this.memberInfo = e.data
           this.$refs.setTree.setCheckedKeys([e.key]);
         }
         e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
@@ -327,7 +341,6 @@ export default {
       switch (this.handleState) {
         case 0:
           // 一三人称
-          console.log(this.listenInfo.state);
           params.id = 8;
           params.viewMode = this.listenInfo.state === 0 ? 1 : 2;
           if (this.listenInfo.state === 0) {
@@ -352,7 +365,7 @@ export default {
             // 透视投影
             params.projectionMode = 1;
             if (this.listenInfo) {
-              params.viewMode = this.listenInfo.state === 1 ? 2 : 1;
+              params.viewMode = this.listenInfo.state === 0 ? 1 : 2;
             } else {
               params.viewMode = 2;
             }
@@ -404,7 +417,6 @@ export default {
           id: 20,
         };
       }
-      // console.error(this.listenInfo);
 
       await MODELAPI.UPDATEORDER(params)
         .then((res) => {
@@ -475,11 +487,14 @@ export default {
       }
       if (e.type === 11) {
         this.natureInfo = e;
+        e.state === 0 ? this.memberInfo = null : ''
       }
       if (e.type === 0) {
         this.handleState = 0;
         this.listenInfo = e;
-        this.updateOrder();
+        if (e.isRun !== 0) {
+          this.updateOrder();          
+        }
       }
     },
     initWebSocket() {
@@ -492,7 +507,10 @@ export default {
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
-        // console.log(e);
+        if (e.data.length > 20) {
+          let realData = JSON.parse(e.data).data
+          this.memberInfo = realData
+        }
       };
       this.websock.onopen = (e) => {
         this.isSocket = true;
@@ -959,7 +977,32 @@ export default {
           cursor: pointer;
         }
       }
+      .detail-main{
+        overflow-x: hidden;
+        overflow-y: auto;
+        margin-top: 1vh;
+        height: 40vh;
+        &::-webkit-scrollbar {
+          /*滚动条整体样式*/
+          width: 6px;
+          /*高宽分别对应横竖滚动条的尺寸*/
+          height: 1px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          /*滚动条里面小方块*/
+          border-radius: 10px;
+          background: rgba(0, 0, 0, 0.3);
+        }
+
+        &::-webkit-scrollbar-track {
+          /*滚动条里面轨道*/
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.295);
+        }
+      }
       .detail-table {
+        
         width: 100%;
         line-height: 35px;
         text-align: center;

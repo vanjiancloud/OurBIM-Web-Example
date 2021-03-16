@@ -34,7 +34,7 @@ const i18n = new VueI18n({
       introduction: '功能介绍',
       Solution: '解决方案',
       cases: '成功案例',
-      Pricing: '产品订价',
+      Pricing: '产品定价',
       consultation: '最新资讯',
       userCenter: '用户中心',
       quit: '退出',
@@ -199,6 +199,10 @@ const i18n = new VueI18n({
         cubeBox: {
           direction: ["前", "后", "上", "下", "左", "右"],
           handle: ["正交投影", "透视投影", "还原模型"]
+        },
+        tooltipList: {
+          tool: ["视角", "移动速度", "模型刨切", "测量", "标签", "小地图", "关注视点", "模型动画", "分解模型", "渲染环境", "浏览器", "属性"],
+          subtool: ["坐标", "距离", "角度", "设置"]
         }
       }
     },
@@ -372,6 +376,10 @@ const i18n = new VueI18n({
         cubeBox: {
           direction: ["front", "back", "up", "down", "left", "right"],
           handle: ["Orthogonal projection", "perspective projection", "Reduction model"]
+        },
+        tooltipList: {
+          tool: ["visual angle", "Moving speed", "Model slicing", "measure", "label", "Mini Map", "Focus on Perspective", "Model animation", "Decomposition model", "Rendering environment", "browser", "attribute"],          
+          subtool: ["coordinate", "distance", "angle", "set"]
         }
       }
     }
