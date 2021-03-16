@@ -201,6 +201,7 @@ const i18n = new VueI18n({
           handle: ["正交投影", "透视投影", "还原模型"]
         },
         tooltipList: {
+          toolPerson: ["第一人称", "第三人称", "跟随人物"],
           tool: ["视角", "移动速度", "模型剖切", "测量", "标签", "小地图", "关注视点", "模型动画", "分解模型", "渲染环境", "浏览器", "属性"],
           subtool: ["坐标", "距离", "角度", "设置"]
         }
@@ -378,6 +379,7 @@ const i18n = new VueI18n({
           handle: ["Orthogonal projection", "perspective projection", "Reduction model"]
         },
         tooltipList: {
+          toolPerson: ["first person", "third person", "Follow the characters"],
           tool: ["visual angle", "Moving speed", "Model slicing", "measure", "label", "Mini Map", "Focus on Perspective", "Model animation", "Decomposition model", "Rendering environment", "browser", "attribute"],          
           subtool: ["coordinate", "distance", "angle", "set"]
         }

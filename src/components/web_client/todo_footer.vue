@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-16 18:20:01
+ * @LastEditTime: 2021-03-16 18:51:27
  * @description: 
 -->
 <template>
@@ -16,14 +16,8 @@
           manual
         >
           <div slot="content">
-            <div class="person-list">
-              <div @click="changePerson(0)" :class="activePerson === 0 ? 'active-person' : ''">第一人称</div>
-            </div>
-            <div class="person-list">
-              <div @click="changePerson(1)" :class="activePerson === 1 ? 'active-person' : ''">第三人称</div>
-            </div>
-            <div class="person-list">
-              <div @click="changePerson(2)" :class="activePerson === 2 ? 'active-person' : ''">跟随人物</div>
+            <div class="person-list" v-for="(item, index) in personList" :key="index">
+              <div @click="changePerson(item.value)" :class="activePerson === item.value ? 'active-person' : ''" v-text="item.name"></div>
             </div>
           </div>
           <el-tooltip
@@ -363,6 +357,20 @@ export default {
   data() {
     return {
       cuttingTips: [],
+      personList: [
+        {
+          name: "第一人称",
+          value: 0
+        },
+        {
+          name: "第三人称",
+          value: 1
+        },
+        {
+          name: "跟随人物",
+          value: 2
+        },
+      ],
       imgList: [
         {
           state: 0,
@@ -461,6 +469,9 @@ export default {
 	  this.$i18n.locale = this.$route.query.locale
 	  if (this.$i18n.locale) {
 		  this.cuttingTips = this.$t('webClient.tooltipList.subtool')
+      this.$t('webClient.tooltipList.toolPerson').forEach((item, index) => {			  
+			  this.personList[index].name = item
+		  });
 		  this.$t('webClient.tooltipList.tool').forEach((item, index) => {			  
 			  this.imgList[index].title = item
 		  });
@@ -653,6 +664,7 @@ export default {
 }
 .person-list{
   line-height: 200%;
+  text-align: center;
   cursor: pointer;
 }
 .active-person{
