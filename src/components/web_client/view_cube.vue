@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-03-15 14:21:44
+ * @LastEditTime: 2021-03-16 18:22:35
  * @description: 
 -->
 <template>
@@ -109,6 +109,9 @@ export default {
      * @Date: 2021-03-12 11:16:33
      * @description: 切换状态
      */
+    if (e.value === 0) {
+      return
+    }
       this.activeType = e.value
       this.$emit("handleType", e.value)
       this.isCubeType = false
