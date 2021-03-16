@@ -118,7 +118,7 @@
           </div>
           <div class="language">
             <a @click="Chinese" href="javascript:;">中文</a>
-            <span style="margin: 0 5px;font-size: 10px;">|</span>
+            <span style="margin: 0 5px;">|</span>
             <a @click="English" href="javascript:;">English</a>
           </div>
         </div>
