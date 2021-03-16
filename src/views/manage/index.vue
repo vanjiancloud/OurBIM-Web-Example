@@ -39,7 +39,7 @@
                   :text-inside="true"
                   :percentage="scope.row.progress"
                   :show-text="true"
-                  :stroke-width="15" 
+                  :stroke-width="15"
                   :color="customColor"
                   v-if="scope.row.applidStatus === '1' ? true : false"
                 >
@@ -55,15 +55,20 @@
                   @click="edit(scope.row), (dialogFormVisible = true)"
                   type="text"
                   class="btn-one"
+                  :disabled="
+                    scope.row.applidStatus === '4' && '5' ? true : false
+                  "
                 >
                   {{ $t('edit') }}
                 </el-button>
                 <!-- 删除 -->
                 <el-button
                   @click="remove(scope.row)"
-                  :disabled="scope.row.applidStatus === '1' ? true : false"
                   type="text"
                   class="btn-two"
+                  :disabled="
+                    scope.row.applidStatus === '1' && '5' ? true : false
+                  "
                 >
                   {{ $t('del') }}
                 </el-button>
@@ -96,6 +101,8 @@
                   :on-exceed="handleExceed"
                   :before-upload="beforeUpload"
                   accept=".png,.jpg,.jpeg"
+                  ref="upload"
+                  file-list="fileList"
                 >
                   <i slot="default" class="el-icon-plus"></i>
                   <div slot="file" slot-scope="{ file }">
@@ -105,12 +112,6 @@
                       alt=""
                     />
                     <span class="el-upload-list__item-actions">
-                      <span
-                        class="el-upload-list__item-preview"
-                        @click="handlePictureCardPreview(file)"
-                      >
-                        <i class="el-icon-zoom-in"></i>
-                      </span>
                       <span
                         v-if="!disabled"
                         class="el-upload-list__item-delete"
@@ -216,19 +217,22 @@ export default {
       timer: null,
       display: false, //转换进度条默认隐藏
       customColor: '#00AAF0', //进度条颜色
-
+      baseURL: axios.defaults.baseURL,
+      appInfo: '',
+      appliId: '',
+      fileUpload: '',
       dialogTableVisible: false,
       dialogFormVisible: false,
-      // disable: false,
       form: {
         name: '',
         maxInstance: '',
         appid: '',
-        appImgSrc: '',
+        screenImg: '',
         appModel: '',
         delivery: false,
         dialogImageUrl: '',
         applidStatus: null,
+        fileList: [],
         displayWindow: [
           {
             value: '0',
@@ -253,11 +257,7 @@ export default {
             label: '锁定模式'
           }
         ]
-      },
-      baseURL: axios.defaults.baseURL,
-      appInfo: '',
-      appliId: '',
-      fileUpload: ''
+      }
     }
   },
   created () {
@@ -284,6 +284,7 @@ export default {
           // this.$message.error('请求失败')
         })
     },
+    //翻转数组
     reverse () {
       this.itemList.reverse()
     },
@@ -293,8 +294,9 @@ export default {
         0: '未上传',
         1: '渲染中',
         2: '渲染完成',
-        3: '转换失败',
-        4: '项目损坏'
+        3: '渲染失败',
+        4: '文件损坏',
+        5: '删除中'
       }
       return statusObj[status]
     },
@@ -308,10 +310,7 @@ export default {
       this.form.doMouse = e.doMouse
       this.form.maxInstance = e.maxInstance
       this.form.applidStatus = e.applidStatus
-      console.log(this.form.applidStatus)
-      // if (!this.form.applidStatus === 0) {
-      //   this.disable = 'true'
-      // }
+      this.form.screenImg = e.screenImg
     },
     //确定修改
     xiugai () {
@@ -321,7 +320,7 @@ export default {
         appName: this.form.name,
         doMouse: this.form.doMouse,
         displayWindow: this.form.displayWindow,
-        screenImg: this.form.appImgSrc,
+        screenImg: this.form.appImgSrc
         // appModel: this.form.appModel
       })
         .then(res => {
@@ -380,7 +379,7 @@ export default {
     },
     // 上传封面图
     upLoadImg (response, file, fileList) {
-      this.form.appImgSrc = response.data
+      this.form.screenImg = response.data
     },
     // 上传模型
     upLoadModel (response, file, fileList) {
@@ -393,22 +392,31 @@ export default {
     errorImg (err, file, fileList) {
       console.log(err)
     },
-    // 限制上传图片张数
-    handleExceed () {
-      this.$message.warning(`您只能上传一张图片`)
-    },
     // 删除图片
-    // handleRemove (file) {
-    //   this.$confirm('此操作将删除当前图片, 是否继续?', '提示')
-    //   if (this.$confirm == '确定') {
-    //     file.url == ''
-    //   }
-    // },
+    handleRemove (file) {
+      this.$confirm('此操作将删除该图片, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$refs.upload.clearFiles()
+          this.$message({
+            type: 'success',
+            message: '删除成功'
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+    },
 
-    // 放大图片
-    handlePictureCardPreview (file) {
-      this.dialogImageUrl = file.url
-      this.dialogVisible = true
+    // 限制上传封面次数
+    handleExceed () {
+      this.$message.warning(`亲，只能上传一张图片哦！`)
     },
     // 限制上传封面格式
     beforeUpload (file) {
@@ -421,6 +429,10 @@ export default {
       }
       return one || two || three
     },
+    // 限制上传模型次数
+    exceed () {
+      this.$message.warning(`您只能上传一个模型`)
+    },
     // 限制上传模型格式
     beforeModelUpload (file) {
       var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
@@ -429,10 +441,6 @@ export default {
         this.$message.error('上传模型只能是.rvt格式!')
       }
       return extension
-    },
-    // 限制上传模型次数
-    exceed () {
-      this.$message.warning(`您只能上传一个模型`)
     }
   },
   //  把定时器放在activated事件里，当清除定时后，
@@ -537,6 +545,9 @@ export default {
             }
             .el-select {
               width: 150px;
+            }
+            .el-upload--picture-card {
+              background-image: url('./bianji.png');
             }
           }
         }

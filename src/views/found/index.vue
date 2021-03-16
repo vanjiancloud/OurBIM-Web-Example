@@ -195,7 +195,7 @@ export default {
   data () {
     return {
       radio: '1', //单选框
-      active: 0,
+      active: 1,
       isShow: 1,
       isHandle: 1,
       disabl: true, //按钮禁用
@@ -237,7 +237,7 @@ export default {
     // 下一步
     next () {
       if (!this.appName == '' && !this.appImgSrc == '') {
-        if (this.active++ > 2) this.active = 0
+        if (this.active++ > 3) this.active = 0
         addProject({
           userId: getuserid(),
           appName: this.appName,
@@ -264,7 +264,7 @@ export default {
     },
     // 开始渲染
     update () {
-      if (this.active++ > 2) this.active = 0
+      if (this.active++ > 3) this.active = 0
       this.isShow = 3
     },
     //去往应用管理
@@ -272,10 +272,13 @@ export default {
       this.$router.push('../manage')
       this.isShow = 1
     },
-    // 限制上传图片张数
-    handleExceed () {
-      this.$message.warning(`您只能上传一张图片`)
+
+    // 预览图片
+    handlePictureCardPreview (file) {
+      this.dialogImageUrl = file.url
+      this.dialogVisible = true
     },
+
     // 删除图片
     handleRemove (file) {
       this.$confirm('此操作将删除该图片, 是否继续?', '提示', {
@@ -298,10 +301,9 @@ export default {
         })
     },
 
-    // 放大图片
-    handlePictureCardPreview (file) {
-      this.dialogImageUrl = file.url
-      this.dialogVisible = true
+    // 限制上传封面次数
+    handleExceed () {
+      this.$message.warning(`亲，只能上传一张图片哦！`)
     },
     // 限制上传封面格式
     beforeUpload (file) {
@@ -314,6 +316,10 @@ export default {
       }
       return one || two || three
     },
+    // 限制上传模型次数
+    exceed () {
+      this.$message.warning(`亲，只能上传一个模型哦！`)
+    },
     // 限制上传模型格式
     beforeModelUpload (file) {
       var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
@@ -322,10 +328,6 @@ export default {
         this.$message.error('上传模型只能是.rvt格式!')
       }
       return extension
-    },
-    // 限制上传模型次数
-    exceed () {
-      this.$message.warning(`您只能上传一个模型`)
     }
   },
   watch: {
