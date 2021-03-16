@@ -443,12 +443,30 @@ export default {
       .language {
         // background-color: green;
         float: right;
-        margin: 0;
-        height: 16px;
-        font-size: 14px;
-        font-family: PingFang SC;
-        font-weight: 500;
-        color: #333333;
+        width: 180px;
+        .el-dropdown {
+          height: 40px;
+        }
+        .touxiang {
+          float: left;
+          cursor: pointer;
+          img {
+            margin-top: 10px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+          }
+        }
+        .language {
+          // background-color: green;
+          float: right;
+          margin: 0;
+          height: 16px;
+          font-size: 14px;
+          font-family: PingFang SC;
+          font-weight: 500;
+          color: #333333;
+        }
       }
     }
   }
