@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-15 17:26:56
+ * @LastEditTime: 2021-03-16 14:34:14
  * @description: 
 -->
 <template>
@@ -471,7 +471,11 @@ export default {
       this.imgList[0].state = 1;
       let oldUrl = require(`@/assets/images/todo/check/${this.imgList[0].name}`);
       this.imgList[0].url = oldUrl;
-		//   this.imgList[0].title = this.$t('webClient.tooltipList.person[1]')      
+      this.$emit("listenTodo", {
+        state: this.imgList[0].state,
+        type: 0,
+        isRun: 0
+      });
     },
     showAngle() {
       this.angleTool = true;
