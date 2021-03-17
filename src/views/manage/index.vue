@@ -1,10 +1,5 @@
 <template>
   <!-- 应用管理 -->
-  <div class="box">
-    <!-- 头部 -->
-    <my-header></my-header>
-
-    <!-- 中间主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 消息提示 -->
@@ -184,31 +179,14 @@
         </el-dialog>
       </div>
     </div>
-    <!-- 分页 -->
-    <!-- <div class="page">
-      <el-pagination
-        @current-change="handleCurrentChange"
-        layout="prev, pager, next"
-        background
-        :total="400"
-      >
-      </el-pagination>
-    </div> -->
-
-    <!-- 尾部 -->
-    <my-footer></my-footer>
-  </div>
 </template>
 
 <script>
-import MyFooter from '../components/myFooter.vue'
-import myHeader from '../components/myHeader.vue'
 import { getProjectList, deleteProject, updateProject } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
 export default {
-  components: { myHeader, MyFooter },
   name: 'manage',
   data () {
     return {
@@ -469,7 +447,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.box {
   .container {
     background-color: #fff;
     margin-bottom: 34px;
@@ -552,19 +529,9 @@ export default {
             .el-select {
               width: 150px;
             }
-            .el-upload--picture-card {
-              background-image: url('./bianji.png');
-            }
           }
         }
       }
     }
   }
-  .page {
-    width: 550px;
-    margin: 0 auto;
-    margin-bottom: 40px;
-    margin-top: 40px;
-  }
-}
 </style>

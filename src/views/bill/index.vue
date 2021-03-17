@@ -1,9 +1,5 @@
 <template>
   <!-- 账户管理，个人信息 -->
-  <div class="box">
-    <!-- 头部 -->
-    <my-header></my-header>
-    <!-- 中间主体内容-->
     <div class="container">
       <div class="content">
         <!-- 导航菜单 -->
@@ -127,20 +123,14 @@
         </div>
       </div>
     </div>
-    <!-- 尾部 -->
-    <my-footer></my-footer>
-  </div>
 </template>
 
 <script>
-import MyFooter from '../components/myFooter.vue'
-import myHeader from '../components/myHeader.vue'
 import { getUserInfo, modifyUserInfo } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
 export default {
-  components: { myHeader, MyFooter },
   name: 'bill',
   data () {
     return {
@@ -234,7 +224,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.box {
   .container {
     background-color: #fff;
     margin-bottom: 34px;
@@ -315,5 +304,4 @@ export default {
       }
     }
   }
-}
 </style>
