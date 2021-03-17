@@ -115,7 +115,11 @@
           </div>          
         </div>
       </div>
-      <todo-footer ref="getFooter" @listenTodo="listenTodo" @listenPerson="listenPerson"></todo-footer>
+      <todo-footer ref="getFooter" 
+      @listenTodo="listenTodo"
+      @listenPerson="listenPerson"
+      @listenMode="listenMode"
+      :setProps="propsFooter"></todo-footer>
       <view-cube
         @handleOrder="handleOrder"
         @handleType="handleType"
@@ -126,7 +130,6 @@
 </template>
 
 <script>
-import { getModelInfo } from "@/api/my.js";
 import MODELAPI from "@/api/model_api";
 import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
@@ -140,6 +143,9 @@ export default {
   },
   data() {
     return {
+      propsFooter: {
+        taskId: null
+      },
       propsMember: {
         label: "name",
         isLeaf: (e) => {
@@ -213,13 +219,21 @@ export default {
   },
   destroyed() {
     this.clearTimePass();
-    this.websock.close(); //离开路由之后断开websocket连接
-    this.isSocket = false;
+    this.closeWebSocket()
     if (this.socketTimer) {
       clearInterval(this.socketTimer);
     }
   },
   methods: {
+    listenMode(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-17 16:01:54
+     * @description: 切换投影模式
+     */ 
+      this.handleState = e;
+      this.$refs.getCube.resetActive(e)
+    },
     getError(e){
     /**
      * @Author: zk
@@ -345,7 +359,7 @@ export default {
           params.viewMode = this.listenInfo === 0 ? 1 : 2;
           if (this.listenInfo === 0) {
             this.shadowType = 1
-            this.$refs.getCube.resetActive()
+            this.$refs.getCube.resetActive(1)
           }
            params.projectionMode =
             this.shadowType === 1 || this.shadowType === 2
@@ -527,13 +541,14 @@ export default {
     },
     getSceneUrl() {
       let appId = this.$route.query.appid;
-      getModelInfo({
+      MODELAPI.GETMODELINFO({
         appliId: appId,
       })
         .then((res) => {
           if (res.data.code === 0 && res.data.data) {
             this.webUrl = res.data.data.url;
             this.taskId = res.data.data.taskId;
+            this.propsFooter.taskId = res.data.data.taskId;
             this.initWebSocket();
             this.getMonitor();
             let timer = setTimeout(() => {
@@ -558,6 +573,7 @@ export default {
       this.loadTimer = setTimeout(() => {
         if (this.isFade === true) {
           this.hiddenState = 2;
+          this.closeWebSocket()
         }
         clearTimeout(this.loadTimer);
       }, 1000 * 60);
@@ -580,11 +596,16 @@ export default {
           this.moreCount = 180 - this.timerCount;
         }
         if (this.moreCount === 0) {
+          this.closeWebSocket()
           this.isFade = true;
           this.hiddenState = 1;
           this.clearTimePass();
         }
       }, 1000);
+    },
+    closeWebSocket(){
+      this.isSocket = false;
+      this.websock.close(); //离开路由之后断开websocket连接
     },
     getMonitor() {
       /**

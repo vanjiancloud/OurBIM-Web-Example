@@ -204,7 +204,27 @@ const i18n = new VueI18n({
           toolPerson: ["第一人称", "第三人称", "跟随人物"],
           tool: ["视角", "移动速度", "模型剖切", "测量", "标签", "小地图", "关注视点", "模型动画", "分解模型", "渲染环境", "浏览器", "属性"],
           subtool: ["坐标", "距离", "角度", "设置"]
-        }
+        },
+        deleteList: [
+          {
+            title: "提示",
+            content: "此操作将永久删除该记录, 是否继续?",
+            confirm: "确定",
+            cancel: "取消",
+            successMessage: "删除成功！",
+            cancelMessage: "已取消删除"
+          }
+        ],
+        dialogList: [
+          {
+            title: "提示",
+            label: "名称",
+            confirm: "确认",
+            cancel: "取消",
+            successMessage: "修改成功！",
+            saveMessage: "添加成功！"
+          }
+        ]
       }
     },
     en: {
@@ -382,7 +402,27 @@ const i18n = new VueI18n({
           toolPerson: ["first person", "third person", "Follow the characters"],
           tool: ["visual angle", "Moving speed", "Model slicing", "measure", "label", "Mini Map", "Focus on Perspective", "Model animation", "Decomposition model", "Rendering environment", "browser", "attribute"],          
           subtool: ["coordinate", "distance", "angle", "set"]
-        }
+        },
+        deleteList: [
+          {
+            title: "Tips",
+            content: "This operation will permanently delete the record. Do you want to continue?",
+            confirm: "confirm",
+            cancel: "cancel",
+            successMessage: "Delete successfully!",
+            cancelMessage: "Deletion canceled"
+          }
+        ],
+        dialogList: [
+          {
+            title: "Tips",
+            label: "name",
+            confirm: "confirm",
+            cancel: "cancel",
+            successMessage: "Modified successfully!",
+            saveMessage: "Successfully added!"
+          }
+        ]
       }
     }
   }

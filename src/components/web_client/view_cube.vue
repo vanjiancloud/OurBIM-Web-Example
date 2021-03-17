@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-03-16 18:22:35
+ * @LastEditTime: 2021-03-17 16:07:25
  * @description: 
 -->
 <template>
@@ -116,8 +116,8 @@ export default {
       this.$emit("handleType", e.value)
       this.isCubeType = false
     },
-    resetActive(){
-      this.activeType = 1
+    resetActive(e){
+      this.activeType = e
     },
     goFront() {
       this.$emit("handleOrder", 6);

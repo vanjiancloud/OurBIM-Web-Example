@@ -240,11 +240,3 @@ export function verification (data) {
   })
 }
 
-// 模型浏览
-export function getModelInfo (data) {
-  return request({
-    url: '/OurBim/requestOurBim',
-    method: 'POST',
-    data: qsStringify(data)
-  })
-}
