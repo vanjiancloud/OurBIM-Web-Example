@@ -294,21 +294,6 @@ export default {
     },
     //确定修改
     amend () {
-      let param = this.form
-      // 1 验证必填项
-      const verify = {
-        name: '应用名称',
-        screenImg: '封面'
-      }
-      console.log(param)
-      for (const k in verify) {
-        const val = Array.isArray(param[k]) ? param[k][0] : param[k]
-        if (!this.$common.noNull(val)) {
-          this.$common.message(verify[k] + ' 不能为空', 'warning') // 提示信息
-          return
-        }
-      }
-      this.$common.openLoading('正在加载中....')
       updateProject({
         appid: this.form.appid,
         appName: this.form.name,
@@ -321,7 +306,6 @@ export default {
           if (res.data.code === 0) {
             console.log(res)
             this.$message.success('编辑成功')
-            this.$common.closeLoading()
             this.GetList()
             this.dialogFormVisible = false
           } else if (res.data.code === 1) {
@@ -398,8 +382,6 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          this.form.screenImg = ''
-          // 删除文件
           this.$refs.upload.clearFiles()
           this.$message({
             type: 'success',

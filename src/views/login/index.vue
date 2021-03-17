@@ -67,7 +67,7 @@
               label="记住登录邮箱"
               name="type"
               v-model="form.isAgree"
-              @click="remember"
+              @click.native="remember"
             ></el-checkbox>
             <span @click="changePassword" style="font-size: 16px;color:#00aaf0;"
               >忘记密码?</span
@@ -129,6 +129,7 @@
               label="记住登录手机号"
               name="type"
               v-model="mobForm.checkbox"
+              @click.native="Remember"
             ></el-checkbox>
             <span @click="changePassword" style="font-size: 16px;color:#00aaf0;"
               >忘记密码?</span
@@ -226,25 +227,33 @@ export default {
       }
     }
   },
-  // 在页面加载时从cookie获取登录信息
   created () {
-    const email = this.getCookie('email')
-    const password = this.getCookie('password')
-    const mobile = this.getCookie('mobile')
-    console.log(mobile)
-    // 如果存在赋值给表单，并且将记住密码勾选
-    if ((email, mobile)) {
-      this.form.email = email
-      this.form.password = password
-      this.form.isAgree = true
-      this.mobForm.mobile = mobile
-      this.mobForm.checkbox = true
-    }
+    // if (this.form.isAgree === true) {
+    //   this.form.email = this.getCookie('email')
+    //   this.form.isAgree === true
+    // }
+    // if (this.mobForm.checkbox === true) {
+    //   this.mobForm.mobile = this.getCookie('mobile')
+    //   this.mobForm.checkbox === true
+    // }
   },
+
   methods: {
     //记住邮箱
-    remember(){
-      console.log('记住邮箱');
+    remember () {
+      console.log('记住邮箱')
+      console.log(this.form.isAgree)
+      if (this.form.isAgree === true) {
+        this.form.email = this.getCookie('email')
+      }
+    },
+    //记住手机号
+    Remember () {
+      console.log('记住手机号')
+      console.log(this.mobForm.checkbox)
+      if (this.mobForm.checkbox === true) {
+        this.mobForm.mobile = this.getCookie('mobile')
+      }
     },
     // 注册新用户
     register () {
@@ -272,6 +281,7 @@ export default {
     },
     // 邮箱登录接口
     doLogin () {
+      this.setCookie('email', this.form.email)
       login({
         email: this.form.email,
         password: this.form.password
@@ -279,14 +289,14 @@ export default {
         .then(res => {
           console.log(res)
           if (res.data.code === 0) {
-            this.$message.success('恭喜登录成功')
-            this.setCookie('email', this.form.email)
-            this.setCookie('password', this.form.password)
-            // this.setCookie('userInfo', JSON.stringify(res.data.data))
+            this.$message.success(res.data.message)
+            // this.setCookie('email', this.form.email)
+            // this.setCookie('password', this.form.password)
+            this.setCookie('userInfo', JSON.stringify(res.data.data))
             // 存储用户userid
             setuserid(res.data.data.userid)
             this.$router.push('../userCenter')
-            // this.setUserInfo()
+            this.setUserInfo()
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
           } else {
@@ -300,6 +310,7 @@ export default {
     },
     // 手机登录接口
     mobLogin () {
+      this.setCookie('mobile', this.mobForm.mobile)
       loginMobile({
         mobile: this.mobForm.mobile,
         code: this.mobForm.code
@@ -307,8 +318,8 @@ export default {
         .then(res => {
           console.log(res)
           if (res.data.code === 0) {
-            this.$message.success('恭喜登录成功')
-            this.setCookie('mobile', this.mobForm.mobile)
+            this.$message.success(res.data.message)
+            // this.setCookie('mobile', this.mobForm.mobile)
             // 存储用户信息userid
             setuserid(res.data.data.userid)
             this.$router.push('../userCenter')
@@ -327,24 +338,24 @@ export default {
         })
     },
     // cookie邮箱
-    setUserInfo: function () {
-      // 判断用户是否勾选记住密码，如果勾选，向cookie中储存登录信息，
-      // 如果没有勾选，储存的信息为空
-      if (this.form.isAgree) {
-        this.setCookie('email', this.form.email)
-      } else {
-        this.setCookie('email', '')
-      }
-    },
+    // setUserInfo: function () {
+    //   // 判断用户是否勾选记住密码，如果勾选，向cookie中储存登录信息，
+    //   // 如果没有勾选，储存的信息为空
+    //   if (this.form.isAgree) {
+    //     this.setCookie('email', this.form.email)
+    //   } else {
+    //     this.setCookie('email', '')
+    //   }
+    // },
     // cookie手机
-    getUserInfo: function () {
-      if (this.mobForm.checkbox) {
-        this.setCookie('mobile', this.mobForm.mobile)
-      } else {
-        this.setCookie('mobile', '')
-      }
-    },
-    // 获取cookie
+    // getUserInfo: function () {
+    //   if (this.mobForm.checkbox) {
+    //     this.setCookie('mobile', this.mobForm.mobile)
+    //   } else {
+    //     this.setCookie('mobile', '')
+    //   }
+    // },
+    // 取cookie
     getCookie: function (key) {
       if (document.cookie.length > 0) {
         var start = document.cookie.indexOf(key + '=')
@@ -357,7 +368,7 @@ export default {
       }
       return ''
     },
-    // 保存cookie
+    // 存cookie
     setCookie: function (cName, value, expiredays) {
       var exdate = new Date()
       exdate.setDate(exdate.getDate() + expiredays)
@@ -411,6 +422,19 @@ export default {
           console.log(err)
           this.$message.error('获取失败')
         })
+    }
+  },
+  watch: {
+    // 监听路由变化，当路由发生变化的时候，清空form表单
+    $route (to, from) {
+      if (!this.form.isAgree === true) {
+        this.form.email = ''
+      }
+      if (!this.mobForm.checkbox === true) {
+        this.mobForm.mobile = ''
+      }
+      this.form.password = ''
+      this.mobForm.code = ''
     }
   }
 }

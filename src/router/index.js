@@ -18,7 +18,7 @@ const routes = [
     name: 'login',
     component: () => import('../views/login/index.vue'),
     meta: {
-      title: 'OurBIM请登录'
+      title: 'OurBIM-实时云计算BIM引擎平台'
     }
   },
   // Layout
