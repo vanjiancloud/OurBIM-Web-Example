@@ -1,10 +1,5 @@
 <template>
   <!-- 创建应用-->
-  <div class="box">
-    <!-- 头部 -->
-    <!-- <my-header></my-header> -->
-
-    <!-- 中间主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 3步步骤条 -->
@@ -131,14 +126,10 @@
                 appliId: appInfo.appid
               }"
               multiple
-              :limit="limt"
-              :on-change="onchange"
+              :limit="1"
               :on-exceed="exceed"
-              :on-remove="onremove"
               :before-upload="beforeModelUpload"
               accept=".rvt"
-              ref="bimupload"
-              :auto-upload="false"
             >
               <img src="./file.png" style="margin-top:60px" />
               <div class="el-upload__text">
@@ -180,21 +171,15 @@
         </div>
       </div>
     </div>
-
-    <!-- 尾部 -->
-    <!-- <my-footer></my-footer> -->
-  </div>
 </template>
 
 <script>
-// import MyFooter from '../components/myFooter.vue'
-// import myHeader from '../components/myHeader.vue'
-import { addProject, ProjectModel } from '@/api/my.js'
+
+import { addProject} from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
 export default {
-
   name: 'found',
   data () {
     return {
@@ -202,18 +187,16 @@ export default {
       active: 1,
       isShow: 1,
       isHandle: 1,
-      disabl: false, //按钮禁用
+      disabl: true, //按钮禁用
       // 上传图片
       dialogImageUrl: '',
       dialogVisible: false,
       disabled: false,
       appName: '',
       baseURL: axios.defaults.baseURL,
-      appImgSrc: [], // 封面图
+      appImgSrc: '',
       appInfo: '',
-      appModel: [], // 上传模型
-      limt: 2, // 限制数量
-      bimupNumber: 0, // 监听
+      appModel: '',
       appliId: '',
       fileUpload: ''
     }
@@ -221,7 +204,14 @@ export default {
   methods: {
     // 上传封面图
     upLoadImg (response, file, fileList) {
-      this.appImgSrc.push(response.data)
+      this.appImgSrc = response.data
+    },
+    // 上传模型
+    upLoadModel (response, file, fileList) {
+      console.log('模型上传成功')
+      this.$message.success('模型上传成功')
+      this.appModel = response.data
+      this.disabl = false
     },
     // 上传封面图失败
     errorImg (err, file, fileList) {
@@ -235,12 +225,12 @@ export default {
     },
     // 下一步
     next () {
-      if (this.appName !== '' && this.appImgSrc.length !== 0) {
+      if (!this.appName == '' && !this.appImgSrc == '') {
         if (this.active++ > 3) this.active = 0
         addProject({
           userId: getuserid(),
           appName: this.appName,
-          screenImg: this.appImgSrc.toString()
+          screenImg: this.appImgSrc
         })
           .then(res => {
             if (res.data.code === 0) {
@@ -263,8 +253,8 @@ export default {
     },
     // 开始渲染
     update () {
-      // 上传bim模型
-      this.$refs.bimupload.submit()
+      if (this.active++ > 3) this.active = 0
+      this.isShow = 3
     },
     //去往应用管理
     toManage () {
@@ -277,6 +267,7 @@ export default {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
+
     // 删除图片
     handleRemove (file) {
       this.$confirm('此操作将删除该图片, 是否继续?', '提示', {
@@ -285,9 +276,7 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          let newarr = this.$common.deOneArr(this.appImgSrc,file.response.data)
-          this.appImgSrc = newarr
-          this.$refs.upload.handleRemove(file)
+          this.$refs.upload.clearFiles()
           this.$message({
             type: 'success',
             message: '删除成功'
@@ -300,24 +289,7 @@ export default {
           })
         })
     },
-    // 删除模型事件
-    onremove (file, fileList) {
-      this.bimupNumber--
-    },
-    // 添加文件
-    onchange (file, fileList) {
-      this.bimupNumber++
-    },
-    // 上传模型成功
-    upLoadModel (response, file, fileList) {
-      this.appModel.push(response.data)
-      this.$message.success('模型上传成功')
-      if (this.bimupNumber === this.appModel.length) {
-        this.$common.closeLoading()
-        if (this.active++ > 3) this.active = 0
-        this.isShow = 3
-      }
-    },
+
     // 限制上传封面次数
     handleExceed () {
       this.$message.warning(`亲，只能上传一张图片哦！`)
@@ -337,14 +309,13 @@ export default {
     exceed () {
       this.$message.warning(`亲，只能上传一个模型哦！`)
     },
-    // 上传bim模型前
+    // 限制上传模型格式
     beforeModelUpload (file) {
       var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
       const extension = testmsg === 'rvt'
       if (!extension) {
         this.$message.error('上传模型只能是.rvt格式!')
       }
-      this.$common.openLoading('上传模型中')
       return extension
     }
   },
@@ -358,7 +329,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.box {
   .container {
     background-color: #fff;
     margin-bottom: 34px;
@@ -517,5 +487,5 @@ export default {
       }
     }
   }
-}
+
 </style>

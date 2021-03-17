@@ -199,12 +199,11 @@
           </div>
         </div>
         <!-- tab栏 -->
-        
           <el-menu
             :default-active="this.$route.path"
             :router="true"
             mode="horizontal"
-            background-color="#000"
+            background-color="#007BAE"
             text-color="#fff"
             active-text-color="#ffd04b"
           >
@@ -377,7 +376,7 @@ export default {
   .header {
     height: 60px;
     background-color: #fff;
-    line-height: 64px;
+    line-height: 60px;
     a {
       text-decoration: none;
       font-size: 17px;

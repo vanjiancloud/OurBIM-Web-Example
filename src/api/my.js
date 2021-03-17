@@ -173,7 +173,6 @@ export function updateProject (data) {
     url: '/appli/updateProject',
     method: 'POST',
     data: qsStringify(data)
-
   })
 }
 

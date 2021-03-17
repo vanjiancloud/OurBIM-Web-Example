@@ -1,133 +1,132 @@
 <template>
   <!-- 应用管理 -->
-  <div class="box">
-    <!-- 头部 -->
-    <my-header></my-header>
-
-    <!-- 中间主体内容 -->
-    <div class="container">
-      <div class="content">
+  <div class="container">
+    <div class="content">
+      <!-- 消息提示 -->
+      <div class="record">
         <!-- 消息提示 -->
-        <div class="record">
-          <!-- 消息提示 -->
-          <div class="left">
-            {{ $t('Youhave') }}&nbsp;
-            <span style="color:#00aaf0;">{{ itemList.length }} </span>&nbsp;
-            {{ $t('project') }}
-          </div>
-          <!-- 按钮 -->
-          <!-- <div class="right">
+        <div class="left">
+          {{ $t('Youhave') }}&nbsp;
+          <span style="color:#00aaf0;">{{ itemList.length }} </span>&nbsp;
+          {{ $t('project') }}
+        </div>
+        <!-- 按钮 -->
+        <!-- <div class="right">
             <el-button type="primary">{{ $t('link') }}</el-button>
           </div> -->
-        </div>
-        <!-- 表格 -->
-        <div class="table">
-          <el-table :data="itemList" style="width: 100%;font-size: 17px;">
-            <el-table-column
-              prop="appid"
-              :label="$t('applicationid')"
-            ></el-table-column>
-            <el-table-column prop="appName" :label="$t('applyname')">
-            </el-table-column>
-            <el-table-column prop="maxInstance" :label="$t('maximum')">
-            </el-table-column>
-            <el-table-column :label="$t('state')">
-              <template slot-scope="scope">
-                <!-- 做自定义操作 需要改成template的形式,scope.row代表的是表格数据itemList中的每一项 -->
-                {{ formatStatus(scope.row.applidStatus) }}
-                <el-progress
-                  :text-inside="true"
-                  :percentage="scope.row.progress"
-                  :show-text="true"
-                  :stroke-width="15"
-                  :color="customColor"
-                  v-if="scope.row.applidStatus === '1' ? true : false"
-                >
-                </el-progress>
-              </template>
-            </el-table-column>
-            <el-table-column prop="createTime" :label="$t('uploaddate')">
-            </el-table-column>
-            <el-table-column :label="$t('operation')">
-              <template slot-scope="scope">
-                <!-- 编辑 -->
-                <el-button
-                  @click="edit(scope.row), (dialogFormVisible = true)"
-                  type="text"
-                  class="btn-one"
-                  :disabled="
-                    scope.row.applidStatus === '4' && '5' ? true : false
-                  "
-                >
-                  {{ $t('edit') }}
-                </el-button>
-                <!-- 删除 -->
-                <el-button
-                  @click="remove(scope.row)"
-                  type="text"
-                  class="btn-two"
-                  :disabled="
-                    scope.row.applidStatus === '1' && '5' ? true : false
-                  "
-                >
-                  {{ $t('del') }}
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </div>
-        <!-- dialog框 -->
-        <el-dialog title="编辑应用" :visible.sync="dialogFormVisible" center>
-          <div class="content">
-            <el-form :model="form">
-              <el-form-item label="应用名称：" label-width="110px">
-                <el-input v-model="form.name" autocomplete="off"></el-input>
-              </el-form-item>
-              <el-form-item label="最大并发数：" label-width="110px">
-                <el-input
-                  v-model="form.maxInstance"
-                  autocomplete="off"
-                  :disabled="true"
-                ></el-input>
-              </el-form-item>
-              <el-form-item label="上传封面：" label-width="110px">
-                <el-upload
-                  :action="baseURL + '/appli/postScreenImg'"
-                  :on-success="upLoadImg"
-                  name="fileUpload"
-                  :on-error="errorImg"
-                  list-type="picture-card"
-                  :limit="1"
-                  :on-exceed="handleExceed"
-                  :before-upload="beforeUpload"
-                  accept=".png,.jpg,.jpeg"
-                  ref="upload"
-                  file-list="fileList"
-                >
-                  <i slot="default" class="el-icon-plus"></i>
-                  <div slot="file" slot-scope="{ file }">
-                    <img
-                      class="el-upload-list__item-thumbnail"
-                      :src="file.url"
-                      alt=""
-                    />
-                    <span class="el-upload-list__item-actions">
-                      <span
-                        v-if="!disabled"
-                        class="el-upload-list__item-delete"
-                        @click="handleRemove(file)"
-                      >
-                        <i class="el-icon-delete"></i>
-                      </span>
+      </div>
+      <!-- 表格 -->
+      <div class="table">
+        <el-table :data="itemList" style="width: 100%;font-size: 17px;">
+          <el-table-column
+            prop="appid"
+            :label="$t('applicationid')"
+          ></el-table-column>
+          <el-table-column prop="appName" :label="$t('applyname')">
+          </el-table-column>
+          <el-table-column prop="maxInstance" :label="$t('maximum')">
+          </el-table-column>
+          <el-table-column :label="$t('state')">
+            <template slot-scope="scope">
+              <!-- 做自定义操作 需要改成template的形式,scope.row代表的是表格数据itemList中的每一项 -->
+              {{ formatStatus(scope.row.applidStatus) }}
+              <el-progress
+                :text-inside="true"
+                :percentage="scope.row.progress"
+                :show-text="true"
+                :stroke-width="15"
+                :color="customColor"
+                v-if="scope.row.applidStatus === '1' ? true : false"
+              >
+              </el-progress>
+            </template>
+          </el-table-column>
+          <el-table-column prop="createTime" :label="$t('uploaddate')">
+          </el-table-column>
+          <el-table-column :label="$t('operation')">
+            <template slot-scope="scope">
+              <!-- 编辑 -->
+              <el-button
+                @click="edit(scope.row), (dialogFormVisible = true)"
+                type="text"
+                class="btn-one"
+                :disabled="scope.row.applidStatus === '4' ? true : false"
+                v-if="scope.row.applidStatus === '5' ? false : true"
+              >
+                {{ $t('edit') }}
+              </el-button>
+              <!-- 删除 -->
+              <el-button
+                @click="remove(scope.row)"
+                type="text"
+                :class="scope.row.applidStatus === '1' ? 'gray' : 'red'"
+                :disabled="scope.row.applidStatus === '1' ? true : false"
+                v-if="scope.row.applidStatus === '5' ? false : true"
+              >
+                {{ $t('del') }}
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <!-- dialog框 -->
+      <el-dialog
+        title="编辑应用"
+        :visible.sync="dialogFormVisible"
+        center
+        :destroy-on-close="true"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+      >
+        <div class="content">
+          <el-form :model="form">
+            <el-form-item label="应用名称：" label-width="110px">
+              <el-input v-model="form.name" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="最大并发数：" label-width="110px">
+              <el-input
+                v-model="form.maxInstance"
+                autocomplete="off"
+                :disabled="true"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="修改封面：" label-width="110px">
+              <el-upload
+                :action="baseURL + '/appli/postScreenImg'"
+                :on-success="upLoadImg"
+                name="fileUpload"
+                :on-error="errorImg"
+                list-type="picture-card"
+                :limit="1"
+                :on-exceed="handleExceed"
+                :before-upload="beforeUpload"
+                accept=".png,.jpg,.jpeg"
+                ref="upload"
+                :file-list="fileList"
+              >
+                <i slot="default" class="el-icon-plus"></i>
+                <div slot="file" slot-scope="{ file }">
+                  <img
+                    class="el-upload-list__item-thumbnail"
+                    :src="file.url"
+                    alt=""
+                  />
+                  <span class="el-upload-list__item-actions">
+                    <span
+                      class="el-upload-list__item-delete"
+                      @click="handleRemove(file)"
+                    >
+                      <i class="el-icon-delete"></i>
                     </span>
-                  </div>
-                </el-upload>
-                <div class="xiaoxi">
-                  <!-- <span style="color:red;margin-right:5px">*</span> -->
-                  {{ $t('extensions') }}：.png .jpg .jpeg
+                  </span>
                 </div>
-              </el-form-item>
-              <!-- <el-form-item label="上传模型" :label-width="formLabelWidth">
+              </el-upload>
+              <div class="xiaoxi">
+                <!-- <span style="color:red;margin-right:5px">*</span> -->
+                {{ $t('extensions') }}：.png .jpg .jpeg
+              </div>
+            </el-form-item>
+            <!-- <el-form-item label="上传模型" :label-width="formLabelWidth">
               <el-upload
                 :on-success="upLoadModel"
                 drag
@@ -151,60 +150,39 @@
                 </div>
               </el-upload>
             </el-form-item> -->
-              <el-form-item label="鼠标操作模式：">
-                <el-select v-model="form.doMouse" placeholder="请选择操作模式">
-                  <el-option label="非锁定模式" value="0"></el-option>
-                  <el-option label="锁定模式" value="1"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="窗口显示模式：">
-                <el-select
-                  v-model="form.displayWindow"
-                  placeholder="请选择显示模式"
-                >
-                  <el-option label="完全填充" value="0"></el-option>
-                  <el-option label="尽量填充" value="1"></el-option>
-                  <el-option label="原始大小" value="2"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-form>
-          </div>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogFormVisible = false">取 消</el-button>
-            <el-button
-              type="primary"
-              @click="xiugai(), (dialogFormVisible = false)"
-              >确 定</el-button
-            >
-          </div>
-        </el-dialog>
-      </div>
+            <el-form-item label="鼠标操作模式：">
+              <el-select v-model="form.doMouse" placeholder="请选择操作模式">
+                <el-option label="非锁定模式" value="0"></el-option>
+                <el-option label="锁定模式" value="1"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="窗口显示模式：">
+              <el-select
+                v-model="form.displayWindow"
+                placeholder="请选择显示模式"
+              >
+                <el-option label="完全填充" value="0"></el-option>
+                <el-option label="尽量填充" value="1"></el-option>
+                <el-option label="原始大小" value="2"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="amend()">确 定</el-button>
+        </div>
+      </el-dialog>
     </div>
-    <!-- 分页 -->
-    <!-- <div class="page">
-      <el-pagination
-        @current-change="handleCurrentChange"
-        layout="prev, pager, next"
-        background
-        :total="400"
-      >
-      </el-pagination>
-    </div> -->
-
-    <!-- 尾部 -->
-    <my-footer></my-footer>
   </div>
 </template>
 
 <script>
-import MyFooter from '../components/myFooter.vue'
-import myHeader from '../components/myHeader.vue'
 import { getProjectList, deleteProject, updateProject } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
 export default {
-  components: { myHeader, MyFooter },
   name: 'manage',
   data () {
     return {
@@ -214,25 +192,24 @@ export default {
       maxInstance: '', //最大并发数量
       applidStatus: null, //状态
       createTime: '', //上传日期
-      timer: null,
+      timer: null, //定时器
       display: false, //转换进度条默认隐藏
       customColor: '#00AAF0', //进度条颜色
       baseURL: axios.defaults.baseURL,
       appInfo: '',
       appliId: '',
       fileUpload: '',
-      dialogTableVisible: false,
+      fileList: [{ url: '' }], //上传图片列表显示
       dialogFormVisible: false,
+      //编辑应用表单
       form: {
         name: '',
         maxInstance: '',
         appid: '',
         screenImg: '',
         appModel: '',
-        delivery: false,
         dialogImageUrl: '',
         applidStatus: null,
-        fileList: [],
         displayWindow: [
           {
             value: '0',
@@ -292,9 +269,9 @@ export default {
     formatStatus (status) {
       const statusObj = {
         0: '未上传',
-        1: '渲染中',
-        2: '渲染完成',
-        3: '渲染失败',
+        1: '转换中',
+        2: '转换完成',
+        3: '转换失败',
         4: '文件损坏',
         5: '删除中'
       }
@@ -311,25 +288,30 @@ export default {
       this.form.maxInstance = e.maxInstance
       this.form.applidStatus = e.applidStatus
       this.form.screenImg = e.screenImg
+      for (let index = 0; index < this.fileList.length; index++) {
+        this.fileList[index].url = e.screenImg
+      }
     },
     //确定修改
-    xiugai () {
-      console.log('点击了确定')
+    amend () {
       updateProject({
         appid: this.form.appid,
         appName: this.form.name,
         doMouse: this.form.doMouse,
         displayWindow: this.form.displayWindow,
-        screenImg: this.form.appImgSrc
+        screenImg: this.form.screenImg
         // appModel: this.form.appModel
       })
         .then(res => {
           if (res.data.code === 0) {
             console.log(res)
             this.$message.success('编辑成功')
+            this.GetList()
+            this.dialogFormVisible = false
           } else if (res.data.code === 1) {
             console.log(res)
             this.$message.error('编辑失败')
+            this.dialogFormVisible = false
           }
         })
         .catch(err => {
@@ -463,102 +445,95 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.box {
-  .container {
-    background-color: #fff;
-    margin-bottom: 34px;
-    min-height: 961px;
-    /deep/ .el-button--primary {
-      background-color: #00aaf0;
-    }
-    .content {
-      margin-left: 41px;
-      margin-right: 41px;
-      overflow: hidden;
-      .record {
-        width: 100%;
+.container {
+  background-color: #fff;
+  margin-bottom: 34px;
+  min-height: 961px;
+  /deep/ .el-button--primary {
+    background-color: #00aaf0;
+  }
+  .content {
+    margin-left: 41px;
+    margin-right: 41px;
+    overflow: hidden;
+    .record {
+      width: 100%;
+      height: 40px;
+      margin-top: 38px;
+      position: relative;
+      .left {
         height: 40px;
-        margin-top: 38px;
-        position: relative;
-        .left {
-          height: 40px;
-        }
-        .right {
-          position: absolute;
-          right: 0px;
-          top: 0px;
-        }
       }
-      .table {
-        margin-top: 20px;
-        margin-bottom: 40px;
-        // 进度条里的文字
-        /deep/ .el-progress-bar__innerText {
-          color: #000;
-          margin-top: -6px;
-        }
-        /deep/ .el-table thead {
-          color: #fff;
-        }
-        /deep/ .el-table th {
-          background-color: #00aaf0;
-          text-align: center;
-          font-size: 17px;
-          font-weight: normal;
-        }
-        /deep/ .el-table td {
-          text-align: center;
-        }
-        // 表头字体颜色
-        /deep/ .el-table th > .cell {
-          color: #fff;
-        }
-        //表格去横线
-        // /deep/ .el-table__row > td {
-        //   border: none;
-        // }
-        //表格去横线之去掉最下面的那一条线
-        // /deep/ .el-table::before {
-        //   height: 0px;
-        // }
-        // 第一列字体颜色
-        /deep/ .el-table_1_column_1 {
-          color: #00aaf0;
-        }
-        .btn-one {
-          font-size: 16px;
-          color: #00aaf0;
-          margin-right: 20px;
-        }
-        .btn-two {
-          font-size: 16px;
-          color: red;
-        }
+      .right {
+        position: absolute;
+        right: 0px;
+        top: 0px;
       }
-      .el-dialog {
-        .content {
-          display: flex;
-          justify-content: center;
-          .el-form {
-            .el-input {
-              width: 150px;
-            }
-            .el-select {
-              width: 150px;
-            }
-            .el-upload--picture-card {
-              background-image: url('./bianji.png');
-            }
+    }
+    .table {
+      margin-top: 20px;
+      margin-bottom: 40px;
+      // 进度条里的文字
+      /deep/ .el-progress-bar__innerText {
+        color: #000;
+        margin-top: -6px;
+      }
+      /deep/ .el-table thead {
+        color: #fff;
+      }
+      /deep/ .el-table th {
+        background-color: #00aaf0;
+        text-align: center;
+        font-size: 17px;
+        font-weight: normal;
+      }
+      /deep/ .el-table td {
+        text-align: center;
+      }
+      // 表头字体颜色
+      /deep/ .el-table th > .cell {
+        color: #fff;
+      }
+      //表格去横线
+      // /deep/ .el-table__row > td {
+      //   border: none;
+      // }
+      //表格去横线之去掉最下面的那一条线
+      // /deep/ .el-table::before {
+      //   height: 0px;
+      // }
+      // 第一列字体颜色
+      /deep/ .el-table_1_column_1 {
+        color: #00aaf0;
+      }
+      .btn-one {
+        font-size: 16px;
+        color: #00aaf0;
+        margin-right: 20px;
+      }
+      .red {
+        font-size: 16px;
+        color: red;
+      }
+      .gray {
+        font-size: 16px;
+        color: gray;
+      }
+    }
+    .el-dialog {
+      .content {
+        display: flex;
+        justify-content: center;
+        .el-form {
+          .el-input {
+            width: 150px;
+          }
+          .el-select {
+            width: 150px;
           }
         }
       }
     }
-  }
-  .page {
-    width: 550px;
-    margin: 0 auto;
-    margin-bottom: 40px;
-    margin-top: 40px;
   }
 }
 </style>

@@ -8,8 +8,10 @@ import 'element-ui/lib/theme-chalk/index.css'
 import './assets/css/global.css'
 // // 引入less
 import less from 'less'
-// 加载axios组件
+// 加载axios组件 
 import axios from '@/utils/request.js'
+import common from '@/utils/common.js'
+Vue.prototype.$common = common
 // 自动计算rem大小
 import 'lib-flexible'
 // 引入国际化语言包
@@ -105,7 +107,7 @@ const i18n = new VueI18n({
       methods: '点击或将文件拖拽到这里上传',
       xianzhi: '每次只能上传一个模型',
       limit: '仅支持上传扩展名：.rvt',
-      Render: '开始渲染',
+      Render: '开始转换',
       application: '应用名称:',
       Required: '必填项',
       Uploadc: '上传封面:',
@@ -284,7 +286,7 @@ const i18n = new VueI18n({
       methods: 'Click or drag the file here to upload',
       xianzhi: 'Only one model can be uploaded at a time',
       limit: 'Only the upload extension:.rvt is supported',
-      Render: 'Render',
+      Render: 'Transform',
       application: 'Application:',
       Required: 'Required',
       Uploadc: 'Upload cover:',

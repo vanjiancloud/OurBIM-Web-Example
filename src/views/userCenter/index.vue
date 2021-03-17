@@ -1,10 +1,5 @@
 <template>
   <!-- 我的应用 -->
-  <div class="box">
-    <!-- 头部 -->
-    <my-header></my-header>
-
-    <!-- 主体内容 -->
     <div class="detail">
       <div class="container">
         <!-- 我的应用 -->
@@ -48,19 +43,13 @@
         </div>
       </div>
     </div>
-
-    <!-- 尾部 -->
-    <my-footer></my-footer>
-  </div>
 </template>
 
 <script>
-import MyFooter from '../components/myFooter.vue'
-import myHeader from '../components/myHeader.vue'
 import { getProjectList } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 export default {
-  components: { myHeader, MyFooter },
+  
   name: 'userCenter',
   data () {
     return {

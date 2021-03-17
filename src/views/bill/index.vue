@@ -1,146 +1,134 @@
 <template>
   <!-- 账户管理，个人信息 -->
-  <div class="box">
-    <!-- 头部 -->
-    <my-header></my-header>
-    <!-- 中间主体内容-->
-    <div class="container">
-      <div class="content">
-        <!-- 导航菜单 -->
-        <el-col :span="4">
-          <el-menu
-            :default-active="this.$route.path"
-            router
-            background-color="#007BAE"
-            text-color="#fff"
-            active-text-color="#ffd04b"
+  <div class="container">
+    <div class="content">
+      <!-- 导航菜单 -->
+      <el-col :span="4">
+        <el-menu
+          :default-active="this.$route.path"
+          router
+          background-color="#007BAE"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+        >
+          <el-submenu index="1">
+            <template slot="title">
+              <i class="el-icon-menu"></i>
+              <span>{{ $t('accountManage') }}</span>
+            </template>
+            <el-menu-item index="/bill">
+              <span slot="title">{{ $t('information') }}</span>
+            </el-menu-item>
+            <el-menu-item index="/code">
+              <span slot="title">{{ $t('Authorization') }}</span> </el-menu-item
+            ><el-menu-item index="/order">
+              <span slot="title">{{ $t('Serviceorder') }}</span>
+            </el-menu-item>
+          </el-submenu>
+        </el-menu>
+      </el-col>
+      <div class="color"></div>
+      <!-- 个人信息 -->
+      <div class="neirong">
+        <div class="title">
+          {{ $t('information') }}
+        </div>
+        <!-- 用户名 -->
+        <div class="message" style="margin-top: 30px;">
+          <div class="one">{{ $t('username') }}</div>
+          <div class="input">
+            <el-input
+              v-model="name"
+              placeholder="请输入用户名"
+              maxlength="10"
+              show-word-limit
+            ></el-input>
+          </div>
+        </div>
+        <!-- 签名 -->
+        <div class="message">
+          <div class="one">{{ $t('autograph') }}</div>
+          <div class="input">
+            <el-input
+              v-model="note"
+              placeholder="请输入签名"
+              maxlength="20"
+              type="text"
+              show-word-limit
+            ></el-input>
+          </div>
+        </div>
+        <!-- 邮箱 -->
+        <div class="message">
+          <div class="one">{{ $t('email') }}</div>
+          <div class="input">
+            <el-input
+              v-model="email"
+              placeholder="请输入邮箱"
+              :disabled="true"
+            ></el-input>
+          </div>
+        </div>
+        <!-- 手机号 -->
+        <div class="message">
+          <div class="one">{{ $t('Mobilephone') }}</div>
+          <div class="input">
+            <el-input
+              v-model="mobile"
+              placeholder="请输入手机号"
+              :disabled="true"
+            ></el-input>
+          </div>
+        </div>
+        <!-- 公司 -->
+        <div class="message">
+          <div class="one">{{ $t('company') }}</div>
+          <div class="input">
+            <el-input v-model="company" placeholder="请输入公司"></el-input>
+          </div>
+        </div>
+        <!-- 职位 -->
+        <div class="message">
+          <div class="one">{{ $t('position') }}</div>
+          <div class="input">
+            <el-input v-model="position" placeholder="请输入职位"></el-input>
+          </div>
+        </div>
+        <!-- 上传头像 -->
+        <div class="photo">
+          <el-upload
+            :action="baseURL + '/CountManager/postUserImg'"
+            :limit="1"
+            name="fileUpload"
+            :on-success="upLoadImg"
+            :on-error="errorImg"
+            :on-exceed="handleExceed"
+            :before-upload="beforeUpload"
           >
-            <el-submenu index="1">
-              <template slot="title">
-                <i class="el-icon-menu"></i>
-                <span>{{ $t('accountManage') }}</span>
-              </template>
-              <el-menu-item index="/bill">
-                <span slot="title">{{ $t('information') }}</span>
-              </el-menu-item>
-              <el-menu-item index="/code">
-                <span slot="title">{{
-                  $t('Authorization')
-                }}</span> </el-menu-item
-              ><el-menu-item index="/order">
-                <span slot="title">{{ $t('Serviceorder') }}</span>
-              </el-menu-item>
-            </el-submenu>
-          </el-menu>
-        </el-col>
-        <div class="color"></div>
-        <!-- 个人信息 -->
-        <div class="neirong">
-          <div class="title">
-            {{ $t('information') }}
-          </div>
-          <!-- 用户名 -->
-          <div class="message" style="margin-top: 30px;">
-            <div class="one">{{ $t('username') }}</div>
-            <div class="input">
-              <el-input
-                v-model="name"
-                placeholder="请输入用户名"
-                maxlength="10"
-                show-word-limit
-              ></el-input>
-            </div>
-          </div>
-          <!-- 签名 -->
-          <div class="message">
-            <div class="one">{{ $t('autograph') }}</div>
-            <div class="input">
-              <el-input
-                v-model="note"
-                placeholder="请输入签名"
-                maxlength="20"
-                type="text"
-                show-word-limit
-              ></el-input>
-            </div>
-          </div>
-          <!-- 邮箱 -->
-          <div class="message">
-            <div class="one">{{ $t('email') }}</div>
-            <div class="input">
-              <el-input
-                v-model="email"
-                placeholder="请输入邮箱"
-                :disabled="true"
-              ></el-input>
-            </div>
-          </div>
-          <!-- 手机号 -->
-          <div class="message">
-            <div class="one">{{ $t('Mobilephone') }}</div>
-            <div class="input">
-              <el-input
-                v-model="mobile"
-                placeholder="请输入手机号"
-                :disabled="true"
-              ></el-input>
-            </div>
-          </div>
-          <!-- 公司 -->
-          <div class="message">
-            <div class="one">{{ $t('company') }}</div>
-            <div class="input">
-              <el-input v-model="company" placeholder="请输入公司"></el-input>
-            </div>
-          </div>
-          <!-- 职位 -->
-          <div class="message">
-            <div class="one">{{ $t('position') }}</div>
-            <div class="input">
-              <el-input v-model="position" placeholder="请输入职位"></el-input>
-            </div>
-          </div>
-          <!-- 上传头像 -->
-          <div class="photo">
-            <el-upload
-              :action="baseURL + '/CountManager/postUserImg'"
-              :limit="1"
-              name="fileUpload"
-              :on-success="upLoadImg"
-              :on-error="errorImg"
-              :on-exceed="handleExceed"
-              :before-upload="beforeUpload"
-            >
-              <el-button type="primary" icon="el-icon-upload2">
-                {{ $t('UploadAvatar') }}
-              </el-button>
-              <div slot="tip" class="el-upload__tip">
-                {{ $t('extensions') }}：.png .jpg .jpeg
-              </div>
-            </el-upload>
-          </div>
-          <div class="btn">
-            <el-button type="primary" @click="changeUserInfo">
-              {{ $t('modify') }}
+            <el-button type="primary" icon="el-icon-upload2">
+              {{ $t('UploadAvatar') }}
             </el-button>
-          </div>
+            <div slot="tip" class="el-upload__tip">
+              {{ $t('extensions') }}：.png .jpg .jpeg
+            </div>
+          </el-upload>
+        </div>
+        <div class="btn">
+          <el-button type="primary" @click="changeUserInfo">
+            {{ $t('modify') }}
+          </el-button>
         </div>
       </div>
     </div>
-    <!-- 尾部 -->
-    <my-footer></my-footer>
   </div>
 </template>
 
 <script>
-import MyFooter from '../components/myFooter.vue'
-import myHeader from '../components/myHeader.vue'
 import { getUserInfo, modifyUserInfo } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
 export default {
-  components: { myHeader, MyFooter },
   name: 'bill',
   data () {
     return {
@@ -190,11 +178,12 @@ export default {
       })
         .then(res => {
           if (res.data.code === 0) {
+            this.getData()
             console.log(res)
-            this.$message.success('修改成功')
+            this.$message.success(res.data.message)
           } else if (res.data.code === 1) {
             console.log(res)
-            this.$message.error('修改失败')
+            this.$message.error(res.data.message)
           }
         })
         .catch(err => {
@@ -234,83 +223,81 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.box {
-  .container {
-    background-color: #fff;
-    margin-bottom: 34px;
-    height: 961px;
-    .content {
-      overflow: hidden;
-      ul.el-menu {
-        height: 961px;
-        /deep/ .el-submenu__title {
-          font-size: 17px;
-        }
-        /deep/ .el-menu-item {
-          font-size: 17px;
-        }
+.container {
+  background-color: #fff;
+  margin-bottom: 34px;
+  height: 961px;
+  .content {
+    overflow: hidden;
+    ul.el-menu {
+      height: 961px;
+      /deep/ .el-submenu__title {
+        font-size: 17px;
       }
-      .color {
-        width: 25px;
-        height: 961px;
-        float: left;
-        background-color: #f1f1f1;
+      /deep/ .el-menu-item {
+        font-size: 17px;
       }
-      .neirong {
-        padding-left: 300px;
-        height: 961px;
-        .title {
-          height: 54px;
-          text-align: center;
-          line-height: 54px;
-          margin-left: -40px;
-          font-size: 22px;
-          font-weight: bold;
-          border-bottom: 1px solid #f1f1f1;
-        }
-        .message {
-          width: 660px;
+    }
+    .color {
+      width: 25px;
+      height: 961px;
+      float: left;
+      background-color: #f1f1f1;
+    }
+    .neirong {
+      padding-left: 300px;
+      height: 961px;
+      .title {
+        height: 54px;
+        text-align: center;
+        line-height: 54px;
+        margin-left: -40px;
+        font-size: 22px;
+        font-weight: bold;
+        border-bottom: 1px solid #f1f1f1;
+      }
+      .message {
+        width: 660px;
+        height: 46px;
+        margin-bottom: 30px;
+        .one {
+          float: left;
           height: 46px;
-          margin-bottom: 30px;
-          .one {
-            float: left;
-            height: 46px;
-            width: 60px;
-            line-height: 46px;
-            margin-right: 35px;
-            margin-left: 56px;
-          }
-          .input {
-            float: left;
-          }
-          /deep/ .el-input__inner {
-            width: 460px;
-            height: 46px;
-            font-size: 17px;
-          }
+          width: 60px;
+          line-height: 46px;
+          margin-right: 35px;
+          margin-left: 56px;
         }
-        .photo {
-          margin-top: 35px;
-          margin-left: 70px;
-          /deep/ .el-button--primary {
-            // width: 130px;
-            height: 45px;
-            background-color: #00aaf0;
-            font-size: 16px;
-          }
-          .el-upload__tip {
-            font-size: 14px;
-          }
+        .input {
+          float: left;
         }
-        .btn {
-          margin-top: 70px;
-          margin-left: 300px;
-          /deep/ .el-button--primary {
-            width: 140px;
-            height: 45px;
-            background-color: #00aaf0;
-            font-size: 16px;
-          }
+        /deep/ .el-input__inner {
+          width: 460px;
+          height: 46px;
+          font-size: 17px;
+        }
+      }
+      .photo {
+        margin-top: 35px;
+        margin-left: 70px;
+        /deep/ .el-button--primary {
+          // width: 130px;
+          height: 45px;
+          background-color: #00aaf0;
+          font-size: 16px;
+        }
+        .el-upload__tip {
+          font-size: 14px;
+        }
+      }
+      .btn {
+        margin-top: 70px;
+        margin-left: 300px;
+        /deep/ .el-button--primary {
+          width: 140px;
+          height: 45px;
+          background-color: #00aaf0;
+          font-size: 16px;
         }
       }
     }
