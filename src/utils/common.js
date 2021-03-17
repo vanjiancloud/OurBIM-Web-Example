@@ -8,10 +8,10 @@ export default new Vue({
   },
   methods: {
     // ==================== 开启加载 ====================
-    openLoading () {
+    openLoading (str) {
       this.loading = this.$loading({
         lock: true,
-        text: '拼命加载中……',
+        text: str,
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       })
