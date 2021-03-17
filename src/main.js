@@ -8,12 +8,14 @@ import 'element-ui/lib/theme-chalk/index.css'
 import './assets/css/global.css'
 // // 引入less
 import less from 'less'
-// 加载axios组件
+// 加载axios组件 
 import axios from '@/utils/request.js'
 // 自动计算rem大小
 import 'lib-flexible'
 // 引入国际化语言包
 import VueI18n from 'vue-i18n'
+import common from './utils/common.js' // 公共方法
+Vue.prototype.$common = common
 
 Vue.use(VueI18n)
 Vue.use(less)

@@ -1,10 +1,5 @@
 <template>
   <!-- 授权码 -->
-  <div class="box">
-    <!-- 头部 -->
-    <my-header></my-header>
-    <!-- 中间 -->
-    <!-- 主体内容 -->
     <div class="container">
       <div class="content">
         <!-- 导航菜单 -->
@@ -64,19 +59,13 @@
         </div>
       </div>
     </div>
-    <!-- 尾部 -->
-    <my-footer></my-footer>
-  </div>
 </template>
 
 <script>
-import MyFooter from '../components/myFooter.vue'
-import myHeader from '../components/myHeader.vue'
 import { updateSQM, verification } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 
 export default {
-  components: { myHeader, MyFooter },
   name: 'authorizationCode',
   data () {
     return {
@@ -131,7 +120,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.box {
   .container {
     background-color: #fff;
     margin-bottom: 34px;
@@ -207,5 +195,4 @@ export default {
       }
     }
   }
-}
 </style>

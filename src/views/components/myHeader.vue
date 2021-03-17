@@ -376,7 +376,7 @@ export default {
   .header {
     height: 60px;
     background-color: #fff;
-    line-height: 64px;
+    line-height: 60px;
     a {
       text-decoration: none;
       font-size: 17px;
