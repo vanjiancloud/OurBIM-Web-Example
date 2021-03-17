@@ -296,7 +296,7 @@ export default {
             // 存储用户userid
             setuserid(res.data.data.userid)
             this.$router.push('../userCenter')
-            this.setUserInfo()
+            // this.setUserInfo()
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
           } else {
