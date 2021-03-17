@@ -9,20 +9,9 @@ import bill from '@/views/bill/index.vue'
 import code from '@/views/code/index.vue'
 import order from '@/views/order/index.vue'
 
-import { getuserid } from '@/store'
-
 Vue.use(VueRouter)
 
 const routes = [
-  // 路由重定项
-  // {
-  //   path: '/',
-  //   name: 'login',
-  //   component: () => import('../views/login/index.vue'),
-  //   meta: {
-  //     title: 'OurBIM请登录'
-  //   }
-  // },
   // 登录页面
   {
     path: '/login',
@@ -40,27 +29,45 @@ const routes = [
     children: [
       {
         path: 'userCenter',
-        component: userCenter
+        component: userCenter,
+        meta: {
+          title: '用户中心'
+        }
       },
       {
         path: 'manage',
-        component: manage
+        component: manage,
+        meta: {
+          title: '应用管理'
+        }
       },
       {
         path: 'found',
-        component: found
+        component: found,
+        meta: {
+          title: '创建应用'
+        }
       },
       {
         path: 'bill',
-        component: bill
+        component: bill,
+        meta: {
+          title: '个人信息'
+        }
       },
       {
         path: 'code',
-        component: code
+        component: code,
+        meta: {
+          title: '授权码'
+        }
       },
       {
         path: 'order',
-        component: order
+        component: order,
+        meta: {
+          title: '服务订单'
+        }
       }
     ]
   },

@@ -109,6 +109,8 @@ export default {
     return {
       show: true,
       tableData: [], //数据列表数组
+      total: 0, //总条数
+      value: true, //只有一页时隐藏分页
       editForm: {
         dingdancode: '', //编号
         createTime: '', //时间
@@ -119,9 +121,7 @@ export default {
         pageSize: 10, //每页条数
         currentPage: 1, //当前页
         userid: getuserid()
-      },
-      total: 0, //总条数
-      value: true //只有一页时隐藏分页
+      }
     }
   },
   created () {

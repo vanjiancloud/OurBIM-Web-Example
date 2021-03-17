@@ -206,7 +206,7 @@ export default {
           },
           {
             pattern: /^[\w.]{6,20}$/,
-            message: '您输入的密码不正确',
+            message: '请输入密码,字符为英文&数字&英文符号，位数6-20',
             trigger: 'blur'
           }
         ],
@@ -309,7 +309,7 @@ export default {
             this.$router.push('../userCenter')
             this.getUserInfo()
           } else if (res.data.code === 2) {
-            this.$message.error('登录失败,请去激活')
+            this.$message.warning(res.data.message)
           } else if (res.data.code === 1) {
             this.$message.error('验证码验证失败')
           } else {

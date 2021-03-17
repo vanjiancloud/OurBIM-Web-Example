@@ -357,8 +357,8 @@ export default {
   activated () {
     this.time = setInterval(() => {
       this.showData()
-      console.log('个人信息5秒更新一次')
-    }, 5000)
+      console.log('个人信息1秒更新一次')
+    }, 1000)
   },
   // 路由跳转清除定时
   beforeRouteLeave (to, from, next) {
@@ -422,7 +422,7 @@ export default {
         padding: 0;
         margin-right: 47px;
         .el-dropdown {
-          height: 48px;
+          height: 35px;
         }
         .el-dropdown-link {
           cursor: pointer;

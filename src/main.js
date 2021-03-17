@@ -8,8 +8,10 @@ import 'element-ui/lib/theme-chalk/index.css'
 import './assets/css/global.css'
 // // 引入less
 import less from 'less'
-// 加载axios组件
+// 加载axios组件 
 import axios from '@/utils/request.js'
+import common from '@/utils/common.js'
+Vue.prototype.$common = common
 // 自动计算rem大小
 import 'lib-flexible'
 // 引入国际化语言包
