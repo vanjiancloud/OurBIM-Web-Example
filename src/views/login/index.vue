@@ -296,11 +296,11 @@ export default {
             this.$message.success(res.data.message)
             // this.setCookie('email', this.form.email)
             // this.setCookie('password', this.form.password)
-            // this.setCookie('userInfo', JSON.stringify(res.data.data))
+            this.setCookie('userInfo', JSON.stringify(res.data.data))
             // 存储用户userid
             setuserid(res.data.data.userid)
             this.$router.push('../userCenter')
-            // this.setUserInfo()
+            this.setUserInfo()
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
           } else {
@@ -328,7 +328,7 @@ export default {
             // 存储用户信息userid
             setuserid(res.data.data.userid)
             this.$router.push('../userCenter')
-            // this.getUserInfo()
+            this.getUserInfo()
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
           } else if (res.data.code === 1) {
@@ -432,9 +432,14 @@ export default {
   watch: {
     // 监听路由变化，当路由发生变化的时候，清空form表单
     $route (to, from) {
+      if (!this.form.isAgree === true) {
+        this.form.email = ''
+      }
       this.form.password = ''
-      this.form.email = ''
-      this.mobForm.mobile = ''
+      this.mobForm.code = ''
+      if (!this.mobForm.checkbox === true) {
+        this.mobForm.mobile = ''
+      }
     }
   }
 }
