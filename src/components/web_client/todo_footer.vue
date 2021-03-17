@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-16 18:51:27
+ * @LastEditTime: 2021-03-17 15:59:58
  * @description: 
 -->
 <template>
@@ -16,8 +16,16 @@
           manual
         >
           <div slot="content">
-            <div class="person-list" v-for="(item, index) in personList" :key="index">
-              <div @click="changePerson(item.value)" :class="activePerson === item.value ? 'active-person' : ''" v-text="item.name"></div>
+            <div
+              class="person-list"
+              v-for="(item, index) in personList"
+              :key="index"
+            >
+              <div
+                @click="changePerson(item.value)"
+                :class="activePerson === item.value ? 'active-person' : ''"
+                v-text="item.name"
+              ></div>
             </div>
           </div>
           <el-tooltip
@@ -34,7 +42,6 @@
             />
           </el-tooltip>
         </el-tooltip>
-        
       </div>
       <div class="image-main">
         <el-tooltip
@@ -216,15 +223,31 @@
           manual
         >
           <div slot="content" class="follow-main">
-            <div class="follow-list">
-              <!-- <div class="follow-table">
-                <div class="follow-text">asdfasdf阿斯蒂芬啊士大夫方法</div>
+            <div class="follow-list" v-if="pointList">
+              <div
+                class="follow-table"
+                v-for="(item, index) in pointList"
+                :key="index"
+              >
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="item.name"
+                  placement="top"
+                >
+                  <div
+                    class="follow-text"
+                    v-text="item.name"
+                    @click="JumpFollow(item)"
+                  ></div>
+                </el-tooltip>
                 <div class="close-follow">
-                  <i class="el-icon-close"></i>
+                  <i class="el-icon-edit" @click="EditFollow(item)"></i>
+                  <i class="el-icon-close" @click="DeleteFollow(item)"></i>
                 </div>
-              </div> -->
+              </div>
             </div>
-            <div class="add-follow">
+            <div class="add-follow" @click="InsertFollow">
               <i class="el-icon-plus"></i>
             </div>
           </div>
@@ -349,26 +372,60 @@
         </el-tooltip>
       </div>
     </div>
+    <!-- 编辑关注视点 -->
+    <el-dialog
+      :title="dialogPointData.title"
+      :visible.sync="dialogEdit"
+      width="20%"
+    >
+      <el-form v-if="followInfo">
+        <el-form-item :label="dialogPointData.label" label-width="50px">
+          <el-input v-model="followInfo.name"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          @click="dialogEdit = false"
+          v-text="dialogPointData.cancel"
+        ></el-button>
+        <el-button
+          type="primary"
+          @click="UpdateFollow"
+          v-text="dialogPointData.confirm"
+        ></el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import MODELAPI from "@/api/model_api";
+
 export default {
+  props: {
+    setProps: {
+      type: Object,
+      default: () => {},
+    },
+  },
   data() {
     return {
+      getProps: null,
+      followInfo: null,
+      pointList: [],
       cuttingTips: [],
       personList: [
         {
           name: "第一人称",
-          value: 0
+          value: 0,
         },
         {
           name: "第三人称",
-          value: 1
+          value: 1,
         },
         {
           name: "跟随人物",
-          value: 2
+          value: 2,
         },
       ],
       imgList: [
@@ -456,6 +513,7 @@ export default {
       ],
       activePerson: 1,
       oldState: 0,
+      dialogEdit: false,
       angleTool: false,
       followTool: false,
       personTool: false,
@@ -463,19 +521,59 @@ export default {
         unit: null,
         weather: null,
       },
+      deleteData: {
+        title: "提示",
+        content: "此操作将永久删除该记录, 是否继续?",
+        confirm: "确定",
+        cancel: "取消",
+        successMessage: "删除成功",
+        errorMessage: "删除失败",
+      },
+      dialogPointData: {
+        title: "提示",
+        label: "名称",
+        confirm: "确认",
+        cancel: "取消",
+        successMessage: "修改成功！",
+        saveMessage: "添加成功！",
+      },
+      actionData: {
+        successMessage: "指令下发成功",
+        cancelMessage: "指令下发失败"
+      }
     };
   },
-  created () {
-	  this.$i18n.locale = this.$route.query.locale
-	  if (this.$i18n.locale) {
-		  this.cuttingTips = this.$t('webClient.tooltipList.subtool')
-      this.$t('webClient.tooltipList.toolPerson').forEach((item, index) => {			  
-			  this.personList[index].name = item
-		  });
-		  this.$t('webClient.tooltipList.tool').forEach((item, index) => {			  
-			  this.imgList[index].title = item
-		  });
-	  }
+  watch: {
+    setProps: {      
+      handler() {
+        if (this.setProps.taskId) {
+          this.getProps = this.setProps;
+          this.ListPoint();
+        }        
+      },
+      // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
+      deep: true
+    },
+  },
+  created() {
+    if (this.setProps.taskId) {
+      this.getProps = this.setProps;
+      this.ListPoint();
+    }
+    this.$i18n.locale = this.$route.query.locale;
+    if (this.$i18n.locale) {
+      this.actionData.successMessage = this.$t("webClient.loadBox.message[2]")
+      this.actionData.cancelMessage = this.$t("webClient.loadBox.message[3]")
+      this.deleteData = this.$t("webClient.deleteList[0]");
+      this.dialogPointData = this.$t("webClient.dialogList[0]");
+      this.cuttingTips = this.$t("webClient.tooltipList.subtool");
+      this.$t("webClient.tooltipList.toolPerson").forEach((item, index) => {
+        this.personList[index].name = item;
+      });
+      this.$t("webClient.tooltipList.tool").forEach((item, index) => {
+        this.imgList[index].title = item;
+      });
+    }
   },
   mounted() {
     window.addEventListener("click", this.clickOther);
@@ -485,23 +583,34 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
-    changePerson(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-03-16 18:03:10
-     * @description: 切换人称
-     */  
+    changePerson(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-16 18:03:10
+       * @description: 切换人称
+       */
       if (e !== 2) {
-        this.activePerson = e
-        this.$emit("listenPerson", e)
+        this.activePerson = e;
+        this.$emit("listenPerson", e);
       }
       this.imgList[0].state = 0;
-      this.imgList[0].url = require(`@/assets/images/todo/unchecked/${this.imgList[0].name}`)
-      this.personTool = false
+      this.imgList[0].url = require(`@/assets/images/todo/unchecked/${this.imgList[0].name}`);
+      this.personTool = false;
     },
     clickOther() {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-17 09:51:33
+       * @description: 关闭tool
+       */
       this.angleTool = false;
       this.followTool = false;
+      this.personTool = false;
+      let oldUrl = require(`@/assets/images/todo/unchecked/${
+          this.imgList[this.oldState].name
+        }`);
+        this.imgList[this.oldState].url = oldUrl;
+        this.imgList[this.oldState].state = 0;
     },
     editTool(e) {
       let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
@@ -514,14 +623,155 @@ export default {
        * @Date: 2021-03-12 11:39:50
        * @description: 重置为第三人称
        */
-      this.activePerson = 1
+      this.activePerson = 1;
     },
     showAngle() {
       this.angleTool = true;
     },
-    handleOrder(e) {      
-      if (e === 1 || e === 2 || e === 3 || e === 4 || e === 5 || e === 6 || e === 7 || e === 8 || e === 9) {
-        return
+    InsertFollow() {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-17 10:46:58
+       * @description: 添加视点
+       */
+      let params = {
+        taskid: this.getProps.taskId,
+        id: 9,
+      };
+      this.UpdateOrder(params)
+      .then(() => {
+          let realTimer = setTimeout(() => {
+            clearTimeout(realTimer)
+            this.ListPoint();
+          }, 1000 * 3);
+          this.dialogEdit = false;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+          this.imgList[6].url = oldUrl;
+          this.imgList[6].state = 0;
+      })
+    },
+    EditFollow(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-17 10:43:44
+       * @description: 编辑视点
+       */
+      this.followInfo = e;
+      this.dialogEdit = true;
+    },
+    UpdateFollow() {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-17 11:36:27
+       * @description: 更新视点
+       */
+      MODELAPI.UPDATEFOLLOWPOINT(this.followInfo)
+        .then((res) => {
+          if (res.data.code === 0) {
+            this.ListPoint();
+            this.$message({
+              type: "success",
+              message: this.dialogPointData.successMessage,
+            });
+          }
+        })
+        .catch((err) => {});
+      this.dialogEdit = false;
+      let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+      this.imgList[6].url = oldUrl;
+      this.imgList[6].state = 0;
+    },
+    DeleteFollow(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-17 10:35:16
+       * @description: 删除视点
+       */
+      this.followInfo = e;
+      this.$confirm(this.deleteData.content, this.deleteData.title, {
+        confirmButtonText: this.deleteData.confirm,
+        cancelButtonText: this.deleteData.cancel,
+        type: "warning",
+      })
+        .then(() => {
+          let params = {
+            tid: this.followInfo.tid
+          }
+          MODELAPI.DElETEFOLLOWPOINT(params)
+        .then((res) => {
+          if (res.data.code === 0) {
+            this.ListPoint();
+            this.$message({
+            type: "success",
+            message: this.deleteData.successMessage,
+          });
+          }
+        })
+        .catch((err) => {});
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: this.deleteData.cancelMessage,
+          });
+        });
+      this.dialogEdit = false;
+      let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+      this.imgList[6].url = oldUrl;
+      this.imgList[6].state = 0;
+    },
+    JumpFollow(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-17 10:50:04
+       * @description: 跳转视点
+       */
+      this.followInfo = e;
+      console.log(e);
+      let params = {
+        taskid: this.getProps.taskId,
+        id: 10,
+        camerashotId: e.tid
+      }
+      this.UpdateOrder(params)
+      if (e.viewMode) {
+        this.activePerson = e.viewMode === "1" ? 0 : 1
+      }
+      if (e.projectionMode) {
+        // this.activePerson = e.viewMode === "1" ? 0 : 1
+        this.$emit("listenMode", Number(e.projectionMode))
+      }
+    },
+    ListPoint() {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-17 10:30:51
+       * @description: 获取视点列表
+       */
+      let params = {
+        taskid: this.getProps.taskId,
+      };
+      this.pointList = [];
+      MODELAPI.LISTFOLLOWPOINT(params)
+        .then((res) => {
+          if (res.data.code === 0) {
+            this.pointList = res.data.data;
+          }
+        })
+        .catch((err) => {});
+    },
+    handleOrder(e) {
+      if (
+        e === 1 ||
+        e === 2 ||
+        e === 3 ||
+        e === 4 ||
+        e === 5 ||
+        e === 7 ||
+        e === 8 ||
+        e === 9
+      ) {
+        return;
       }
       if (e === 0) {
         event.stopPropagation();
@@ -551,11 +801,28 @@ export default {
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
       if (e !== 0) {
         this.$emit("listenTodo", {
-        state: this.imgList[e].state,
-        type: e,
-      });
+          state: this.imgList[e].state,
+          type: e,
+        });
       }
     },
+    async UpdateOrder(e){
+      await MODELAPI.UPDATEORDER(e)
+        .then((res) => {
+          if (res.data.code === 0) {
+            this.$message({
+              message: this.actionData.successMessage,
+              type: "success",
+            });
+          } else {
+            this.$message({
+              message: this.actionData.cancelMessage,
+              type: "error",
+            });
+          }          
+        })
+        .catch(() => {});
+    }
   },
 };
 </script>
@@ -662,13 +929,13 @@ export default {
 .set-bgi {
   background-color: rgba(0, 0, 0, 0.6);
 }
-.person-list{
+.person-list {
   line-height: 200%;
   text-align: center;
   cursor: pointer;
 }
-.active-person{
-  color: #EA640D;
+.active-person {
+  color: #ea640d;
 }
 .follow-bgi {
   .follow-main {
@@ -686,7 +953,7 @@ export default {
       &::-webkit-scrollbar-thumb {
         /*滚动条里面小方块*/
         border-radius: 10px;
-        background: #09abf7;
+        background: rgba(0, 0, 0, 0.3);
       }
 
       &::-webkit-scrollbar-track {
@@ -696,7 +963,7 @@ export default {
       }
 
       .follow-table {
-        width: 80px;
+        width: 150px;
         height: 26px;
         background: rgba(0, 0, 0, 0.3);
         cursor: pointer;
@@ -715,7 +982,14 @@ export default {
         }
 
         .close-follow {
+          flex-shrink: 0;
+          width: 30px;
+          display: flex;
+          align-items: center;
           margin-left: auto;
+          i {
+            width: 50%;
+          }
         }
 
         margin-bottom: 10px;
@@ -723,7 +997,7 @@ export default {
     }
 
     .add-follow {
-      width: 100px;
+      width: 170px;
       height: 26px;
       display: flex;
       justify-content: center;
