@@ -15,6 +15,9 @@ import 'lib-flexible'
 // 引入国际化语言包
 import VueI18n from 'vue-i18n'
 
+import common from './utils/common.js' // 公共方法
+Vue.prototype.$common = common
+
 Vue.use(VueI18n)
 Vue.use(less)
 Vue.use(ElementUI)

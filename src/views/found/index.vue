@@ -205,7 +205,7 @@ export default {
       disabled: false,
       appName: '',
       baseURL: axios.defaults.baseURL,
-      appImgSrc: '',
+      appImgSrc: [], // 封面图
       appInfo: '',
       appModel: '',
       appliId: '',
@@ -215,7 +215,7 @@ export default {
   methods: {
     // 上传封面图
     upLoadImg (response, file, fileList) {
-      this.appImgSrc = response.data
+      this.appImgSrc.push(response.data)
     },
     // 上传模型
     upLoadModel (response, file, fileList) {
@@ -236,12 +236,12 @@ export default {
     },
     // 下一步
     next () {
-      if (!this.appName == '' && !this.appImgSrc == '') {
+      if (this.appName !== '' && this.appImgSrc.length !== 0) {
         if (this.active++ > 3) this.active = 0
         addProject({
           userId: getuserid(),
           appName: this.appName,
-          screenImg: this.appImgSrc
+          screenImg: this.appImgSrc.toString()
         })
           .then(res => {
             if (res.data.code === 0) {
@@ -278,7 +278,6 @@ export default {
       this.dialogImageUrl = file.url
       this.dialogVisible = true
     },
-
     // 删除图片
     handleRemove (file) {
       this.$confirm('此操作将删除该图片, 是否继续?', '提示', {
@@ -287,7 +286,9 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          this.$refs.upload.clearFiles()
+          let newarr = this.$common.deOneArr(this.appImgSrc,file.response.data)
+          this.appImgSrc = newarr
+          this.$refs.upload.handleRemove(file)
           this.$message({
             type: 'success',
             message: '删除成功'
@@ -300,7 +301,6 @@ export default {
           })
         })
     },
-
     // 限制上传封面次数
     handleExceed () {
       this.$message.warning(`亲，只能上传一张图片哦！`)
