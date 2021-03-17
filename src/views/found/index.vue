@@ -306,7 +306,9 @@ export default {
     },
     // 添加文件
     onchange (file, fileList) {
-      this.bimupNumber++
+      if (!file.response){
+        this.bimupNumber++
+      }
     },
     // 上传模型成功
     upLoadModel (response, file, fileList) {

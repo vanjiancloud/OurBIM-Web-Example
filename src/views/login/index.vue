@@ -67,6 +67,7 @@
               label="记住登录邮箱"
               name="type"
               v-model="form.isAgree"
+              @click="remember"
             ></el-checkbox>
             <span @click="changePassword" style="font-size: 16px;color:#00aaf0;"
               >忘记密码?</span
@@ -241,6 +242,10 @@ export default {
     }
   },
   methods: {
+    //记住邮箱
+    remember(){
+      console.log('记住邮箱');
+    },
     // 注册新用户
     register () {
       this.$router.push('../../register')
@@ -277,11 +282,11 @@ export default {
             this.$message.success('恭喜登录成功')
             this.setCookie('email', this.form.email)
             this.setCookie('password', this.form.password)
-            this.setCookie('userInfo', JSON.stringify(res.data.data))
+            // this.setCookie('userInfo', JSON.stringify(res.data.data))
             // 存储用户userid
             setuserid(res.data.data.userid)
             this.$router.push('../userCenter')
-            this.setUserInfo()
+            // this.setUserInfo()
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
           } else {
