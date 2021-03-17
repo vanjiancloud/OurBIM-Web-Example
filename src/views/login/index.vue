@@ -227,21 +227,17 @@ export default {
       }
     }
   },
-  // 在页面加载时从cookie获取登录信息
-  // created () {
-  //   const email = this.getCookie('email')
-  //   const password = this.getCookie('password')
-  //   const mobile = this.getCookie('mobile')
-  //   console.log(mobile)
-  //   // 如果存在赋值给表单，并且将记住密码勾选
-  //   if ((email, mobile)) {
-  //     this.form.email = email
-  //     this.form.password = password
-  //     this.form.isAgree = true
-  //     this.mobForm.mobile = mobile
-  //     this.mobForm.checkbox = true
-  //   }
-  // },
+  created () {
+    // if (this.form.isAgree === true) {
+    //   this.form.email = this.getCookie('email')
+    //   this.form.isAgree === true
+    // }
+    // if (this.mobForm.checkbox === true) {
+    //   this.mobForm.mobile = this.getCookie('mobile')
+    //   this.mobForm.checkbox === true
+    // }
+  },
+
   methods: {
     //记住邮箱
     remember () {
@@ -315,7 +311,6 @@ export default {
     // 手机登录接口
     mobLogin () {
       this.setCookie('mobile', this.mobForm.mobile)
-
       loginMobile({
         mobile: this.mobForm.mobile,
         code: this.mobForm.code
@@ -435,11 +430,11 @@ export default {
       if (!this.form.isAgree === true) {
         this.form.email = ''
       }
-      this.form.password = ''
-      this.mobForm.code = ''
       if (!this.mobForm.checkbox === true) {
         this.mobForm.mobile = ''
       }
+      this.form.password = ''
+      this.mobForm.code = ''
     }
   }
 }
