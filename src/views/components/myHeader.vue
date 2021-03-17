@@ -199,12 +199,11 @@
           </div>
         </div>
         <!-- tab栏 -->
-        
           <el-menu
             :default-active="this.$route.path"
             :router="true"
             mode="horizontal"
-            background-color="#000"
+            background-color="#007BAE"
             text-color="#fff"
             active-text-color="#ffd04b"
           >

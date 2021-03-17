@@ -77,7 +77,12 @@
           </el-table>
         </div>
         <!-- dialog框 -->
-        <el-dialog title="编辑应用" :visible.sync="dialogFormVisible" center>
+        <el-dialog
+          title="编辑应用"
+          :visible.sync="dialogFormVisible"
+          center
+          :destroy-on-close="true"
+        >
           <div class="content">
             <el-form :model="form">
               <el-form-item label="应用名称：" label-width="110px">
@@ -90,7 +95,7 @@
                   :disabled="true"
                 ></el-input>
               </el-form-item>
-              <el-form-item label="上传封面：" label-width="110px">
+              <el-form-item label="修改封面：" label-width="110px">
                 <el-upload
                   :action="baseURL + '/appli/postScreenImg'"
                   :on-success="upLoadImg"
@@ -102,7 +107,7 @@
                   :before-upload="beforeUpload"
                   accept=".png,.jpg,.jpeg"
                   ref="upload"
-                  file-list="fileList"
+                  :file-list="fileList"
                 >
                   <i slot="default" class="el-icon-plus"></i>
                   <div slot="file" slot-scope="{ file }">
@@ -113,7 +118,6 @@
                     />
                     <span class="el-upload-list__item-actions">
                       <span
-                        v-if="!disabled"
                         class="el-upload-list__item-delete"
                         @click="handleRemove(file)"
                       >
@@ -214,25 +218,24 @@ export default {
       maxInstance: '', //最大并发数量
       applidStatus: null, //状态
       createTime: '', //上传日期
-      timer: null,
+      timer: null, //定时器
       display: false, //转换进度条默认隐藏
       customColor: '#00AAF0', //进度条颜色
       baseURL: axios.defaults.baseURL,
       appInfo: '',
       appliId: '',
       fileUpload: '',
-      dialogTableVisible: false,
+      fileList: [{ url: '' }], //上传图片列表显示
       dialogFormVisible: false,
+      //编辑应用表单
       form: {
         name: '',
         maxInstance: '',
         appid: '',
         screenImg: '',
         appModel: '',
-        delivery: false,
         dialogImageUrl: '',
         applidStatus: null,
-        fileList: [],
         displayWindow: [
           {
             value: '0',
@@ -311,6 +314,9 @@ export default {
       this.form.maxInstance = e.maxInstance
       this.form.applidStatus = e.applidStatus
       this.form.screenImg = e.screenImg
+      for (let index = 0; index < this.fileList.length; index++) {
+        this.fileList[index].url = e.screenImg
+      }
     },
     //确定修改
     xiugai () {

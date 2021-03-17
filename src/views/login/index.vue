@@ -500,7 +500,7 @@ export default {
           }
         }
         .logo {
-          width: 232px;
+          width: 185px;
           height: 46px;
           margin: 0 auto;
           margin-top: -55px;
