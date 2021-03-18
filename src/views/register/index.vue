@@ -110,7 +110,7 @@
               <el-button type="text" @click="toLogoin">已有账号，立即登录</el-button>
               <!-- <span
                 ><a
-                  href="http://www.ourbim.com:7012/#/login"
+                  href="http://www.ourbim.com:7011:7012/#/login"
                   style="text-decoration:none;font-size: 16px;color:#00aaf0 "
                   >已有账号，立即登录</a
                 ></span

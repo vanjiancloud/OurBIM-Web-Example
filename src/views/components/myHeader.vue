@@ -5,7 +5,7 @@
       <div class="container">
         <!-- logo -->
         <div class="logo">
-          <a href="http://www.ourbim.com">
+          <a href="http://www.ourbim.com:7011">
             <img src="./logo.png" alt="" class="img"
           /></a>
         </div>
@@ -13,31 +13,31 @@
         <ul>
           <!-- 功能介绍 -->
           <li>
-            <a href="http://www.ourbim.com/introduce">
+            <a href="http://www.ourbim.com:7011/introduce">
               {{ $t('introduction') }}</a
             >
           </li>
           <!-- 解决方案 -->
           <li>
-            <a href="http://www.ourbim.com/solution">
+            <a href="http://www.ourbim.com:7011/solution">
               {{ $t('Solution') }}</a
             >
           </li>
           <!-- 成功案例 -->
           <li>
-            <a href="http://www.ourbim.com/successful_cases">
+            <a href="http://www.ourbim.com:7011/successful_cases">
               {{ $t('cases') }}</a
             >
           </li>
           <!-- 产品定价 -->
           <li>
-            <a href="http://www.ourbim.com/product_pricing">
+            <a href="http://www.ourbim.com:7011/product_pricing">
               {{ $t('Pricing') }}</a
             >
           </li>
           <!-- 最新资讯 -->
           <li>
-            <a href="http://www.ourbim.com/latest_news">
+            <a href="http://www.ourbim.com:7011/latest_news">
               {{ $t('consultation') }}</a
             >
           </li>
@@ -53,7 +53,7 @@
                 <el-dropdown-item>
                   <span class="item">
                     <a
-                      href="http://www.ourbim.com/developer/api_file"
+                      href="http://www.ourbim.com:7011/developer/api_file"
                       style="text-decoration:none;color:#000"
                     >
                       {{ $t('APIdov') }}
@@ -63,7 +63,7 @@
                 <!-- 示例项目 -->
                 <el-dropdown-item>
                   <a
-                    href="http://www.ourbim.com/developer/sample_project"
+                    href="http://www.ourbim.com:7011/developer/sample_project"
                     style="text-decoration:none; color:#000"
                     >{{ $t('projects') }}</a
                   >
@@ -71,7 +71,7 @@
                 <!-- 模型中心 -->
                 <el-dropdown-item>
                   <a
-                    href="http://www.ourbim.com/developer/model_center"
+                    href="http://www.ourbim.com:7011/developer/model_center"
                     style="text-decoration:none; color:#000"
                     >{{ $t('Mcenter') }}</a
                   >
@@ -79,7 +79,7 @@
                 <!-- 服务中心 -->
                 <el-dropdown-item>
                   <a
-                    href="http://www.ourbim.com/developer/service_entre"
+                    href="http://www.ourbim.com:7011/developer/service_entre"
                     style="text-decoration:none; color:#000"
                     >{{ $t('Service') }}</a
                   >
@@ -87,7 +87,7 @@
                 <!-- 更新日志 -->
                 <el-dropdown-item>
                   <a
-                    href="http://www.ourbim.com/developer/update_log"
+                    href="http://www.ourbim.com:7011/developer/update_log"
                     style="text-decoration:none; color:#000"
                     >{{ $t('log') }}</a
                   >
