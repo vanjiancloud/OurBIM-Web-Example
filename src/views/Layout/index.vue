@@ -227,7 +227,7 @@
           default-active="this.$route.path"
           class="tac"
           text-color="#fff"
-          active-text-color="#ff6600"
+          active-text-color="#ffd04b"
           router
           background-color="#00aaf0"
         >
@@ -258,6 +258,8 @@
             <el-menu-item index="code">{{ $t('Authorization') }}</el-menu-item>
             <!-- 服务订单 -->
             <el-menu-item index="order">{{ $t('Serviceorder') }}</el-menu-item>
+            <!-- 修改密码 -->
+            <el-menu-item index="changeCode">修改密码</el-menu-item>
           </el-submenu>
         </el-menu>
       </div>
