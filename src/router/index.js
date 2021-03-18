@@ -5,9 +5,10 @@ import Layout from '@/views/Layout/index.vue'
 import userCenter from '@/views/userCenter/index.vue'
 import manage from '@/views/manage/index.vue'
 import found from '@/views/found/index.vue'
-import bill from '@/views/bill/index.vue'
+import info from '@/views/info/index.vue'
 import code from '@/views/code/index.vue'
 import order from '@/views/order/index.vue'
+import account from '@/views/order/index.vue'
 
 Vue.use(VueRouter)
 
@@ -49,11 +50,18 @@ const routes = [
         }
       },
       {
-        path: 'bill',
-        component: bill,
+        path: 'account',
+        component: account,
+        children:[
+          
+        ]
+      },
+      {
+        path: 'info',
+        component: info,
         meta: {
           title: '个人信息'
-        }
+        },
       },
       {
         path: 'code',

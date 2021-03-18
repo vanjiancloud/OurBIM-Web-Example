@@ -61,14 +61,14 @@ const i18n = new VueI18n({
       to: '至',
       Extension: '延长有效期',
       // 我的应用
-      app: '我的应用',
+      app: '我的项目',
       Youhave: '您共有',
       Application: '个应用',
       node: '节点:',
       into: '进入应用',
       release: '我的发布',
-      management: '应用管理',
-      Create: '创建应用',
+      management: '项目管理',
+      Create: '创建项目',
       Account: '账户管理',
       // 我的发布
       wholes: '全部',
