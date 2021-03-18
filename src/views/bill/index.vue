@@ -216,10 +216,12 @@ export default {
     border-bottom: 1px solid #f1f1f1;
   }
   .message {
+    margin: 0 auto;
     width: 660px;
     height: 46px;
     margin-bottom: 30px;
     font-size: 16px;
+    
     .one {
       float: left;
       height: 46px;
@@ -238,8 +240,8 @@ export default {
     }
   }
   .photo {
-    margin-top: 35px;
-    margin-left: 70px;
+    margin-top: 50px;
+    text-align: center;
     /deep/ .el-button--primary {
       // width: 130px;
       height: 45px;
@@ -251,8 +253,9 @@ export default {
     }
   }
   .btn {
-    margin-top: 70px;
-    margin-left: 300px;
+    text-align: center;
+    margin-top: 50px;
+    
     /deep/ .el-button--primary {
       width: 140px;
       height: 45px;
