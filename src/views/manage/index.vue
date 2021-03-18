@@ -235,8 +235,16 @@ export default {
   },
   created () {
     this.GetList()
+    this.setGetdataIn()
   },
   methods: {
+      // 定时器每隔五秒获取数据
+    setGetdataIn() {
+      this.timer = setInterval(() => {
+        this.GetList()
+        console.log('每隔5秒更新应用管理')
+      }, 5000)
+    },
     // 获取应用数据列表
     GetList () {
       getProjectList({
@@ -439,22 +447,11 @@ export default {
       return extension
     }
   },
-  //  把定时器放在activated事件里，当清除定时后，
-  // 下次再次进入当前路由的话，可以再次唤起定时器
-  activated () {
-    this.timer = setInterval(() => {
-      this.GetList()
-      console.log('每隔5秒更新应用管理')
-    }, 5000)
+  // ===== 页面实例销毁 =====
+  destroyed () {
+    // 清除定时器
+    clearInterval(this.timer)
   },
-  // 路由跳转清除定时
-  beforeRouteLeave (to, from, next) {
-    next()
-    if (this.timer) {
-      clearInterval(this.timer)
-      this.timer = null
-    }
-  }
 }
 </script>
 
