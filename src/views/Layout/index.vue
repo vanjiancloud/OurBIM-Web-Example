@@ -403,8 +403,8 @@ export default {
   activated () {
     this.time = setInterval(() => {
       this.showData()
-      console.log('个人信息1秒更新一次')
-    }, 1000)
+      console.log('个人信息')
+    }, 3000)
   },
   // 路由跳转清除定时
   beforeRouteLeave (to, from, next) {
