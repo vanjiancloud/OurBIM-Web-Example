@@ -20,6 +20,10 @@ export default new Vue({
     closeLoading () {
       this.loading && this.loading.close()
     },
+    // ==================== cookie解串 ====================
+    // getCookie (name) {
+    //   return JSON.parse(name);
+    // },
     // ==================== 删除数组指定元素 返回新数组 deOneArr(数组，元素) ====================
     deOneArr (arr, str) {
       let newArr = arr

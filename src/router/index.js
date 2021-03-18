@@ -8,6 +8,7 @@ import found from '@/views/found/index.vue'
 import bill from '@/views/bill/index.vue'
 import code from '@/views/code/index.vue'
 import order from '@/views/order/index.vue'
+import changeCode from '@/views/changeCode/index.vue'
 
 Vue.use(VueRouter)
 
@@ -71,7 +72,7 @@ const routes = [
       },
       {
         path: 'changeCode',
-        component: () => import('../views/bill/changeCode.vue'),
+        component: changeCode,
         meta: {
           title: '修改密码'
         }

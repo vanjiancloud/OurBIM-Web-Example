@@ -293,6 +293,7 @@ export default {
             // this.setCookie('email', this.form.email)
             // this.setCookie('password', this.form.password)
             this.setCookie('userInfo', JSON.stringify(res.data.data))
+            console.log(res.data.data)
             // 存储用户userid
             setuserid(res.data.data.userid)
             this.$router.push('../userCenter')

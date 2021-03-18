@@ -26,6 +26,9 @@
               ><el-menu-item index="/order">
                 <span slot="title">{{ $t('Serviceorder') }}</span>
               </el-menu-item>
+              <el-menu-item index="/changeCode">
+                <span slot="title">{{ $t('ChangePassword') }}</span>
+              </el-menu-item>
             </el-submenu>
           </el-menu>
         </el-col>

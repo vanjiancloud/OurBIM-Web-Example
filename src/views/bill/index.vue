@@ -20,9 +20,13 @@
               <span slot="title">{{ $t('information') }}</span>
             </el-menu-item>
             <el-menu-item index="/code">
-              <span slot="title">{{ $t('Authorization') }}</span> </el-menu-item
-            ><el-menu-item index="/order">
+              <span slot="title">{{ $t('Authorization') }}</span>
+            </el-menu-item>
+            <el-menu-item index="/order">
               <span slot="title">{{ $t('Serviceorder') }}</span>
+            </el-menu-item>
+            <el-menu-item index="/changeCode">
+              <span slot="title">{{ $t('ChangePassword') }}</span>
             </el-menu-item>
           </el-submenu>
         </el-menu>
