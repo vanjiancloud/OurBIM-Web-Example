@@ -253,7 +253,7 @@
               <span class="write">{{ $t('Account') }}</span>
             </template>
             <!-- 个人信息 -->
-            <el-menu-item index="info">{{ $t('information') }}</el-menu-item>
+            <el-menu-item index="bill">{{ $t('information') }}</el-menu-item>
             <!-- 授权码 -->
             <el-menu-item index="code">{{ $t('Authorization') }}</el-menu-item>
             <!-- 服务订单 -->

@@ -5,7 +5,7 @@ import Layout from '@/views/Layout/index.vue'
 import userCenter from '@/views/userCenter/index.vue'
 import manage from '@/views/manage/index.vue'
 import found from '@/views/found/index.vue'
-import info from '@/views/info/index.vue'
+import bill from '@/views/bill/index.vue'
 import code from '@/views/code/index.vue'
 import order from '@/views/order/index.vue'
 import account from '@/views/order/index.vue'
@@ -53,13 +53,10 @@ const routes = [
       {
         path: 'account',
         component: account,
-        children:[
-          
-        ]
       },
       {
-        path: 'info',
-        component: info,
+        path: 'bill',
+        component: bill,
         meta: {
           title: '个人信息'
         },
@@ -79,13 +76,6 @@ const routes = [
         }
       },
      
-      {
-        path: 'changeCode',
-        component: changeCode,
-        meta: {
-          title: '修改密码'
-        }
-      }
     ]
   },
   // 忘记密码
