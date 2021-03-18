@@ -8,6 +8,8 @@ import found from '@/views/found/index.vue'
 import bill from '@/views/bill/index.vue'
 import code from '@/views/code/index.vue'
 import order from '@/views/order/index.vue'
+import account from '@/views/order/index.vue'
+import changeCode from '@/views/changeCode/index.vue'
 
 Vue.use(VueRouter)
 
@@ -49,11 +51,15 @@ const routes = [
         }
       },
       {
+        path: 'account',
+        component: account,
+      },
+      {
         path: 'bill',
         component: bill,
         meta: {
           title: '个人信息'
-        }
+        },
       },
       {
         path: 'code',
@@ -68,7 +74,8 @@ const routes = [
         meta: {
           title: '服务订单'
         }
-      }
+      },
+     
     ]
   },
   // 忘记密码

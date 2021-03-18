@@ -1,100 +1,54 @@
 <template>
   <!-- 服务订单 -->
-  <div class="container">
-    <div class="content">
-      <!-- 导航菜单 -->
-      <el-col :span="4">
-        <el-menu
-          :default-active="this.$route.path"
-          router
-          background-color="#007BAE"
-          text-color="#fff"
-          active-text-color="#ffd04b"
-        >
-          <el-submenu index="1">
-            <template slot="title">
-              <i class="el-icon-menu"></i>
-              <span>{{ $t('accountManage') }}</span>
-            </template>
-            <el-menu-item index="/bill">
-              <span slot="title">{{ $t('information') }}</span>
-            </el-menu-item>
-            <el-menu-item index="/code">
-              <span slot="title">{{ $t('Authorization') }}</span> </el-menu-item
-            ><el-menu-item index="/order">
-              <span slot="title">{{ $t('Serviceorder') }}</span>
-            </el-menu-item>
-          </el-submenu>
-        </el-menu>
-      </el-col>
-      <div class="color"></div>
+  <div class="box">
+    <div class="title">
       <!-- 服务订单 -->
-      <div class="neirong">
-        <div class="title">
-          <!-- 服务订单 -->
-          {{ $t('servicesorder') }}
-        </div>
-        <!-- 表格 -->
-        <div class="table">
-          <el-table :data="tableData" style="width: 100% font-size: 17px;">
-            <el-table-column
-              prop="dingdancode"
-              :label="$t('number')"
-              width="130"
-            ></el-table-column>
-            <el-table-column
-              prop="createTime"
-              :label="$t('time')"
-              width="160"
-            ></el-table-column>
-            <el-table-column :label="$t('services')">
-              <template slot-scope="scope">
-                {{ formatDingdanStatus(scope.row.dingdanStatus) }}
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="sqm"
-              :label="$t('authorizationcode')"
-              width="310"
-            >
-              <template slot-scope="scope">
-                <template v-if="scope.row.eyseShow">
-                  ****************************************
-                </template>
-                <template v-if="!scope.row.eyseShow">
-                  {{ scope.row.sqm }}
-                </template>
-                <div class="imageEye" @click="lookEyes(scope.row)">
-                  <div :class="scope.row.imgeeyes"></div>
-                </div>
-              </template>
-            </el-table-column>
-            <el-table-column prop="sqMISUsed" :label="$t('state')">
-              <template slot-scope="scope">
-                {{ formatSqMISUsed(scope.row.sqMISUsed) }}
-              </template>
-            </el-table-column>
+      {{ $t('servicesorder') }}
+    </div>
+    <!-- 表格 -->
+    <div class="table">
+      <el-table :data="tableData" style="width: 100% font-size: 17px;">
+        <el-table-column
+          prop="dingdancode"
+          :label="$t('number')"
+          width="130"
+        ></el-table-column>
+        <el-table-column
+          prop="createTime"
+          :label="$t('time')"
+          width="160"
+        ></el-table-column>
+        <el-table-column :label="$t('services')">
+          <template slot-scope="scope">
+            {{ formatDingdanStatus(scope.row.dingdanStatus) }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="sqm"
+          :label="$t('authorizationcode')"
+          width="310"
+        >
+          <template slot-scope="scope">
+            <template v-if="scope.row.eyseShow">
+              ****************************************
+            </template>
+            <template v-if="!scope.row.eyseShow">
+              {{ scope.row.sqm }}
+            </template>
+            <div class="imageEye" @click="lookEyes(scope.row)">
+              <div :class="scope.row.imgeeyes"></div>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="sqMISUsed" :label="$t('state')">
+          <template slot-scope="scope">
+            {{ formatSqMISUsed(scope.row.sqMISUsed) }}
+          </template>
+        </el-table-column>
 
-            <el-table-column
-              prop="dcount"
-              :label="$t('amountofmoney')"
-              width="165"
-            >
-            </el-table-column>
-          </el-table>
-        </div>
-        <!-- 分页 -->
-        <div class="page">
-          <el-pagination
-            background
-            layout="prev, pager, next"
-            :total="total"
-            @current-change="pageChange"
-            :hide-on-single-page="value"
-          >
-          </el-pagination>
-        </div>
-      </div>
+        <el-table-column prop="dcount" :label="$t('amountofmoney')" width="165">
+        </el-table-column>
+      </el-table>
     </div>
   </div>
 </template>
@@ -218,80 +172,51 @@ export default {
 .openEye {
   background-image: url('./img/open.png');
 }
-.container {
-  background-color: #fff;
-  margin-bottom: 34px;
-  min-height: 961px;
-  .content {
-    overflow: hidden;
-    ul.el-menu {
-      min-height: 961px;
-      /deep/ .el-submenu__title * {
-        font-size: 17px;
-      }
-      /deep/ .el-menu-item {
-        font-size: 17px;
-      }
+.box {
+  .title {
+    height: 54px;
+    text-align: center;
+    line-height: 54px;
+    font-size: 22px;
+    font-weight: bold;
+    border-bottom: 1px solid #f1f1f1;
+  }
+  .table {
+    margin: 20px;
+    /deep/ .el-table thead {
+      color: #fff;
     }
-    .color {
-      width: 25px;
-      height: 961px;
-      float: left;
-      background-color: #f1f1f1;
+    /deep/ .el-table th {
+      background-color: #00aaf0;
+      text-align: center;
+      font-size: 17px;
+      font-weight: normal;
     }
-    .neirong {
-      padding-left: 300px;
-      min-height: 961px;
-      // background-color: red;
-      .title {
-        height: 54px;
-        text-align: center;
-        line-height: 54px;
-        margin-left: -40px;
-        font-size: 22px;
-        font-weight: bold;
-        border-bottom: 1px solid #f1f1f1;
-      }
-      .table {
-        margin-right: 35px;
-        margin-top: 20px;
-        margin-bottom: 40px;
-        /deep/ .el-table thead {
-          color: #fff;
-        }
-        /deep/ .el-table th {
-          background-color: #00aaf0;
-          text-align: center;
-          font-size: 17px;
-          font-weight: normal;
-        }
-        /deep/ .el-table td {
-          text-align: center;
-        }
-        //表格去横线
-        // /deep/ .el-table__row > td {
-        //   border: none;
-        // }
-        //表格去横线之去掉最下面的那一条线
-        // /deep/ .el-table::before {
-        //   height: 0px;
-        // }
-        // 第二列字体颜色
-        /deep/ .el-table_1_column_2 {
-          color: #00aaf0;
-        }
-        // 表头字体颜色
-        /deep/ .el-table th > .cell {
-          color: #fff;
-        }
-        .icon {
-          width: 10px;
-          height: 10px;
-          img {
-            width: 30px;
-            height: 30px;
-          }
-        }
+    /deep/ .el-table td {
+      text-align: center;
+    }
+    //表格去横线
+    // /deep/ .el-table__row > td {
+    //   border: none;
+    // }
+    //表格去横线之去掉最下面的那一条线
+    // /deep/ .el-table::before {
+    //   height: 0px;
+    // }
+    // 第二列字体颜色
+    /deep/ .el-table_1_column_2 {
+      color: #00aaf0;
+    }
+    // 表头字体颜色
+    /deep/ .el-table th > .cell {
+      color: #fff;
+    }
+    .icon {
+      width: 10px;
+      height: 10px;
+      img {
+        width: 30px;
+        height: 30px;
       }
     }
   }

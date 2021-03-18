@@ -20,12 +20,23 @@ export default new Vue({
     closeLoading () {
       this.loading && this.loading.close()
     },
+    // ==================== cookie解串 ====================
+    // getCookie (name) {
+    //   return JSON.parse(name);
+    // },
     // ==================== 删除数组指定元素 返回新数组 deOneArr(数组，元素) ====================
     deOneArr (arr, str) {
       let newArr = arr
       let index = newArr.indexOf(str)
       newArr.splice(index, 1)
       return newArr
+    },
+    // ==================== 判断字符串文件类型 ====================
+    isAssetTypeAnImage(str) {
+     var index = str.lastIndexOf('.')
+     var ext = str.substr(index+1)
+     return [
+     'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff'].indexOf(ext.toLowerCase()) !== -1
     },
     // ==================== 提示信息 ====================
     // type = success / error / warning / info, 输入'<br>'换行

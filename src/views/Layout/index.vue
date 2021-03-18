@@ -96,8 +96,26 @@
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
+           
             </li>
           </ul>
+          <!-- 用户中心 -->
+          <!-- <el-dropdown>
+                <span class="el-dropdown-link">
+                  <img
+                    :src="imgUrl ? imgUrl : require('./img/touxiang.png')"
+                    alt=""
+                  />
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item @click.native="toUserCenter">{{
+                    $t('userCenter')
+                  }}</el-dropdown-item>
+                  <el-dropdown-item @click.native="toLogin">{{
+                    $t('quit')
+                  }}</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown> -->
           <!-- 头像和中英文切换栏 -->
           <div class="end">
             <div class="touxiang">
@@ -121,7 +139,7 @@
             <div class="language">
               <a @click="Chinese" href="javascript:;">中文</a>
               <span style="margin: 0 5px;">|</span>
-              <a @click="English" href="javascript:;">English</a>
+              <a href="javascript:;">English</a>
             </div>
           </div>
         </div>
@@ -129,7 +147,6 @@
       <!-- 个人信息展示 -->
       <div class="main">
         <div class="container">
-          <!-- 上半部分 -->
           <div class="top">
             <div class="left">
               <div class="im">
@@ -139,8 +156,8 @@
                 />
               </div>
               <div class="Info">
-                <h3>{{ name ? name : $t('Noupload') }}</h3>
-                {{ note ? note : $t('noupload') }}
+                {{ name ? name : mobile }} <br>
+                {{ note ? note : email }}
               </div>
             </div>
             <div class="line"></div>
@@ -200,30 +217,57 @@
               </div>
             </div>
           </div>
-          <!-- tab栏 -->
-          <el-menu
-            :default-active="this.$route.path"
-            :router="true"
-            mode="horizontal"
-            background-color="#007BAE"
-            text-color="#fff"
-            active-text-color="#ffd04b"
-          >
-            <el-menu-item index="/userCenter">{{ $t('app') }}</el-menu-item>
-            <el-menu-item index="/manage">{{ $t('management') }}</el-menu-item>
-            <el-menu-item index="/found">{{ $t('Create') }}</el-menu-item>
-            <el-menu-item index="/bill" class="last">{{
-              $t('Account')
-            }}</el-menu-item>
-          </el-menu>
         </div>
       </div>
     </el-header>
 
     <!-- 主体内容区 -->
     <el-main>
+      <!-- 导航菜单 -->
+      <div class="nav">
+        <el-menu
+          default-active="this.$route.path"
+          class="tac"
+          text-color="#fff"
+          active-text-color="#ffd04b"
+          router
+          background-color="#00aaf0"
+        >
+          <!-- 我的应用 -->
+          <el-menu-item index="userCenter">
+            <i class="el-icon-folder-opened"></i>
+            <span slot="title" class="write">{{ $t('app') }}</span>
+          </el-menu-item>
+          <!-- 应用管理 -->
+          <el-menu-item index="manage">
+            <i class="el-icon-setting"></i>
+            <span slot="title" class="write">{{ $t('management') }}</span>
+          </el-menu-item>
+          <!-- 创建应用 -->
+          <el-menu-item index="found">
+            <i class="el-icon-folder-add"></i>
+            <span slot="title" class="write">{{ $t('Create') }}</span>
+          </el-menu-item>
+          <!-- 账户管理 -->
+          <el-submenu index="account">
+            <template slot="title">
+              <i class="el-icon-menu"></i>
+              <span class="write">{{ $t('Account') }}</span>
+            </template>
+            <!-- 个人信息 -->
+            <el-menu-item index="bill">{{ $t('information') }}</el-menu-item>
+            <!-- 授权码 -->
+            <el-menu-item index="code">{{ $t('Authorization') }}</el-menu-item>
+            <!-- 服务订单 -->
+            <el-menu-item index="order">{{ $t('Serviceorder') }}</el-menu-item>
+           
+          </el-submenu>
+        </el-menu>
+      </div>
       <!--主体区域二级路由组件渲染的地方-->
-      <router-view></router-view>
+      <div class="content">
+        <router-view></router-view>
+      </div>
     </el-main>
 
     <!-- 尾部 -->
@@ -252,6 +296,8 @@
 <script>
 import { showDetail } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
+import { deluserid } from '@/store/index.js'
+
 export default {
   name: 'myHeader',
   data () {
@@ -304,7 +350,7 @@ export default {
     // 退出按钮
     toLogin () {
       this.$router.push('../login/')
-      window.localStorage.userid = ''
+      deluserid()
       clearInterval(this.time)
     },
     //展示当前用户信息
@@ -316,6 +362,8 @@ export default {
           console.log(res)
           this.name = res.data.data.name
           this.note = res.data.data.note
+          this.email = res.data.data.email
+          this.mobile = res.data.data.mobile
           this.imgUrl = res.data.data.imgUrl
           this.countStartTime = res.data.data.countStartTime
           this.countendTime = res.data.data.countendTime
@@ -327,7 +375,7 @@ export default {
           this.currentCountBF = res.data.data.currentCountBF
         })
         .catch(err => {
-          this.$message.error('信息展示失败')
+          // this.$message.error('信息展示失败')
           // this.imgUrl = this.imgUrl
         })
     },
@@ -465,26 +513,29 @@ export default {
       }
     }
     .main {
-      height: 220px;
+      height: 152px;
       margin-top: 20px;
-      margin-bottom: 10px;
+      // background-color: red;
       .container {
         .top {
           height: 152px;
           background-color: #fff;
           .left {
             height: 152px;
-            width: 267px;
-            margin-left: 42px;
+            width: 288px;
+            margin-left: 20px;
             float: left;
-            background-color: #fff;
             // background-color: green;
+            display: flex;
+
             .im {
               margin-top: 36px;
               width: 80px;
               height: 80px;
-              float: left;
+              // float: left;
               border-radius: 50%;
+              // background-color: blue;
+              margin-right: 20px;
               img {
                 width: 100%;
                 height: 100%;
@@ -492,11 +543,12 @@ export default {
               }
             }
             .Info {
-              float: left;
-              margin-top: 35px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
               // background-color: red;
               width: 187px;
-              height: 115px;
+              // height: 152px;
               text-align: center;
             }
           }
@@ -581,83 +633,49 @@ export default {
             }
           }
         }
-        // 中文tab栏
-        .tab {
-          height: 69px;
-          background-color: #f1f1f1;
-          // background-color: red;
-          line-height: 69px;
-          padding-left: 220px;
-          .el-button {
-            color: #000;
-            font-size: 19px;
-          }
-          .el-button:hover {
-            color: #ff6600;
-          }
-          span {
-            margin-right: 210px;
-            height: 50px;
-            // background-color: pink;
-            border-bottom: 6px solid #f1f1f1;
-            border-radius: 3px;
-          }
-          .last {
-            margin: 0;
-          }
-          span:hover {
-            border-bottom-color: #ff6600;
-          }
-        }
-        .el-menu {
-          height: 69px;
-          padding-left: 180px;
-          .el-menu-item {
-            font-size: 20px;
-            margin-right: 180px;
-            // width: 120px;
-            margin-top: 5px;
-          }
-          .last {
-            margin-right: 0px;
-          }
-        }
-
-        // 英文tab栏
-        .tabTwo {
-          height: 69px;
-          // background-color: #f1f1f1;
-          background-color: red;
-          line-height: 69px;
-          padding: 0 200px;
-          .el-button {
-            color: #000;
-            font-size: 19px;
-          }
-          .el-button:hover {
-            color: #ff6600;
-          }
-          span {
-            margin-right: 140px;
-            height: 50px;
-            // background-color: pink;
-            border-bottom: 6px solid #f1f1f1;
-            border-radius: 3px;
-          }
-          .last {
-            margin: 0;
-          }
-          span:hover {
-            border-bottom-color: #ff6600;
-          }
-        }
       }
     }
   }
   .el-main {
     margin: 0;
     padding: 0;
-    margin-top: 250px;
+    margin: 0 auto;
+    margin-top: 192px;
+    margin-bottom: 35px;
+    width: 1420px;
+    min-height: 961px;
+    background-color: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    .nav {
+      width: 230px;
+      min-height: 961px;
+      background-color: skyblue;
+      margin-right: 20px;
+      .tac {
+        width: 100%;
+        height: 100%;
+        .el-menu-item {
+          font-size: 16px;
+          height: 60px;
+          line-height: 60px;
+        }
+        .write {
+          font-size: 20px;
+        }
+        i {
+          margin-right: 20px;
+          margin-left: 10px;
+          font-size: 25px;
+          // color: #fff;
+        }
+      }
+    }
+    .content {
+      width: 1170px;
+      min-height: 961px;
+      background-color: #fff;
+    }
   }
   .el-footer {
     margin: 0;

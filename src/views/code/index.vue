@@ -1,64 +1,32 @@
 <template>
   <!-- 授权码 -->
-    <div class="container">
-      <div class="content">
-        <!-- 导航菜单 -->
-        <el-col :span="4">
-          <el-menu
-            :default-active="this.$route.path"
-            router
-            background-color="#007BAE"
-            text-color="#fff"
-            active-text-color="#ffd04b"
-          >
-            <el-submenu index="1">
-              <template slot="title">
-                <i class="el-icon-menu"></i>
-                <span>{{ $t('accountManage') }}</span>
-              </template>
-              <el-menu-item index="/bill">
-                <span slot="title">{{ $t('information') }}</span>
-              </el-menu-item>
-              <el-menu-item index="/code">
-                <span slot="title">{{
-                  $t('Authorization')
-                }}</span> </el-menu-item
-              ><el-menu-item index="/order">
-                <span slot="title">{{ $t('Serviceorder') }}</span>
-              </el-menu-item>
-            </el-submenu>
-          </el-menu>
-        </el-col>
-        <div class="color"></div>
-        <!-- 授权码 -->
-        <div class="neirong">
-          <div class="title">
-            {{ $t('Authorization') }}
-            <!-- 授权码 -->
-          </div>
-          <div class="input">
-            {{ $t('Authorizations') }}
-            <!-- 授权码 -->
-            <el-input v-model="SQM"></el-input>
-            <el-button type="primary" class="btn" @click="verification">
-              <!-- 验证 -->
-              {{ $t('verification') }}
-            </el-button>
-            <div class="news">
-              <span>*</span>
-              <!-- 联系售后 -->
-              {{ $t('nouse') }}
-            </div>
-          </div>
-          <!-- 提交按钮 -->
-          <div class="submit">
-            <el-button type="primary" :disabled="dis" @click="update">
-              {{ $t('submit') }}
-            </el-button>
-          </div>
-        </div>
+  <div class="box">
+    <!-- title -->
+    <div class="title">
+      {{ $t('Authorization') }}
+      <!-- 授权码 -->
+    </div>
+    <div class="input">
+      {{ $t('Authorizations') }}
+      <!-- 授权码 -->
+      <el-input v-model="SQM"></el-input>
+      <el-button type="primary" class="btn" @click="verification">
+        <!-- 验证 -->
+        {{ $t('verification') }}
+      </el-button>
+      <div class="news">
+        <span>*</span>
+        <!-- 联系售后 -->
+        {{ $t('nouse') }}
       </div>
     </div>
+    <!-- 提交按钮 -->
+    <div class="submit">
+      <el-button type="primary" :disabled="dis" @click="update">
+        {{ $t('submit') }}
+      </el-button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -120,79 +88,54 @@ export default {
 </script>
 
 <style lang="less" scoped>
-  .container {
-    background-color: #fff;
-    margin-bottom: 34px;
-    height: 961px;
-    .content {
-      overflow: hidden;
-      ul.el-menu {
-        height: 961px;
-      }
-      /deep/ .el-submenu__title * {
-        font-size: 17px;
-      }
-      /deep/ .el-menu-item {
-        font-size: 17px;
-      }
-      .color {
-        width: 25px;
-        height: 961px;
-        float: left;
-        background-color: #f1f1f1;
-      }
-      .neirong {
-        height: 961px;
-        .title {
-          height: 54px;
-          text-align: center;
-          line-height: 54px;
-          margin-left: -40px;
-          font-size: 22px;
-          font-weight: bold;
-          border-bottom: 1px solid #f1f1f1;
-        }
-        .input {
-          margin-left: 360px;
-          margin-top: 20px;
-          .el-input {
-            width: 462px;
-            margin-right: 20px;
-          }
-          /deep/ .el-input__inner {
-            width: 462px;
-            height: 46px;
-            font-size: 16px;
-          }
-          .news {
-            margin-top: 10px;
-            // background-color: #eeeeee;
-            color: #ccc;
-            line-height: 36px;
-            span {
-              color: red;
-              float: left;
-              font-size: 20px;
-              margin-right: 5px;
-              margin-top: 3px;
-            }
-          }
-          .btn {
-            height: 46px;
-            background-color: #00aaf0;
-            font-size: 16px;
-          }
-        }
-        .submit {
-          margin-top: 190px;
-          text-align: center;
-          /deep/ .el-button--primary {
-            height: 40px;
-            width: 140px;
-            font-size: 17px;
-          }
-        }
+.box {
+  .title {
+    height: 54px;
+    text-align: center;
+    line-height: 54px;
+    font-size: 22px;
+    font-weight: bold;
+    border-bottom: 1px solid #f1f1f1;
+  }
+  .input {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 16px;
+    .el-input {
+      width: 462px;
+      margin-right: 20px;
+    }
+    /deep/ .el-input__inner {
+      width: 462px;
+      height: 46px;
+      font-size: 16px;
+    }
+    .news {
+      margin-top: 10px;
+      color: #ccc;
+      line-height: 36px;
+      font-size: 16px;
+      span {
+        color: red;
+        font-size: 16px;
+        margin-right: 5px;
+        margin-top: 3px;
       }
     }
+    .btn {
+      height: 46px;
+      background-color: #00aaf0;
+      font-size: 16px;
+    }
   }
+  .submit {
+    margin-top: 190px;
+    text-align: center;
+    /deep/ .el-button--primary {
+      height: 40px;
+      width: 140px;
+      font-size: 17px;
+    }
+  }
+}
 </style>
