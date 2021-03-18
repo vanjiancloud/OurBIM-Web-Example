@@ -291,6 +291,7 @@ export default {
           if (res.data.code === 0) {
             this.$message.success(res.data.message)
             this.setCookie('userInfo', JSON.stringify(res.data.data))
+            console.log(res.data.data)
             // 存储用户userid
             setuserid(res.data.data.userid)
               this.setCookie('email', this.form.email)

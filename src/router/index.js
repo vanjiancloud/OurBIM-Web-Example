@@ -9,6 +9,7 @@ import info from '@/views/info/index.vue'
 import code from '@/views/code/index.vue'
 import order from '@/views/order/index.vue'
 import account from '@/views/order/index.vue'
+import changeCode from '@/views/changeCode/index.vue'
 
 Vue.use(VueRouter)
 
@@ -78,6 +79,13 @@ const routes = [
         }
       },
      
+      {
+        path: 'changeCode',
+        component: changeCode,
+        meta: {
+          title: '修改密码'
+        }
+      }
     ]
   },
   // 忘记密码
