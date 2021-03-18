@@ -68,6 +68,13 @@ const routes = [
         meta: {
           title: '服务订单'
         }
+      },
+      {
+        path: 'changeCode',
+        component: () => import('../views/bill/changeCode.vue'),
+        meta: {
+          title: '修改密码'
+        }
       }
     ]
   },

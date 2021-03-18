@@ -54,12 +54,13 @@
             <!-- 上传封面 -->
             <div class="cover">
               <el-upload
+                :class="{hide:hideUpload}"
                 :action="baseURL + '/appli/postScreenImg'"
                 :on-success="upLoadImg"
                 name="fileUpload"
                 :on-error="errorImg"
                 list-type="picture-card"
-                :limit="1"
+                :limit="imglimit"
                 :on-exceed="handleExceed"
                 :before-upload="beforeUpload"
                 accept=".png,.jpg,.jpeg"
@@ -210,9 +211,11 @@ export default {
       appName: '',
       baseURL: axios.defaults.baseURL,
       appImgSrc: [], // 封面图
+      hideUpload: false, // 封面图添加按钮隐藏
       appInfo: '',
       appModel: [], // 上传模型
-      limt: 2, // 限制数量
+      imglimit: 1, // 上传封面图限制数量
+      limt: 1, // 限制模型数量
       bimupNumber: 0, // 监听
       appliId: '',
       fileUpload: ''
@@ -288,6 +291,8 @@ export default {
           let newarr = this.$common.deOneArr(this.appImgSrc,file.response.data)
           this.appImgSrc = newarr
           this.$refs.upload.handleRemove(file)
+          this.hideUpload = false
+          console.log(this.hideUpload)
           this.$message({
             type: 'success',
             message: '删除成功'
@@ -304,7 +309,7 @@ export default {
     onremove (file, fileList) {
       this.bimupNumber--
     },
-    // 添加文件
+    // 添加模型文件
     onchange (file, fileList) {
       if (!file.response){
         this.bimupNumber++
@@ -333,11 +338,12 @@ export default {
       if (!one && !two && !three) {
         this.$message.error('上传封面只能是.jpg .jpeg .png格式!')
       }
+      this.hideUpload = true
       return one || two || three
     },
     // 限制上传模型次数
     exceed () {
-      this.$message.warning(`亲，只能上传一个模型哦！`)
+      this.$message.warning(`上传模型超过上线`)
     },
     // 上传bim模型前
     beforeModelUpload (file) {
@@ -366,6 +372,10 @@ export default {
     margin-bottom: 34px;
     height: 961px;
     padding-top: 38px;
+    // 隐藏上传
+    /deep/.hide .el-upload--picture-card {
+      display: none;
+    }
     .content {
       .buzhou {
         width: 800px;
@@ -373,6 +383,14 @@ export default {
         margin-top: 50px;
         /deep/ .el-step__description {
           font-size: 17px;
+        }
+        /deep/.is-process {
+          color: #C0C4CC !important;
+          font-weight: 10 !important;
+          border-color: #C0C4CC !important;
+        }
+        .el-step__line{
+          background: transparent;
         }
       }
       .first {
