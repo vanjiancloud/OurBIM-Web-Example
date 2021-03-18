@@ -27,6 +27,13 @@ export default new Vue({
       newArr.splice(index, 1)
       return newArr
     },
+    // ==================== 判断字符串文件类型 ====================
+    isAssetTypeAnImage(str) {
+     var index = str.lastIndexOf('.')
+     var ext = str.substr(index+1)
+     return [
+     'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff'].indexOf(ext.toLowerCase()) !== -1
+    },
     // ==================== 提示信息 ====================
     // type = success / error / warning / info, 输入'<br>'换行
     message (text, type = 'info') {

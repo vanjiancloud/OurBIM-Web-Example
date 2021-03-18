@@ -100,10 +100,14 @@
             :action="baseURL + '/CountManager/postUserImg'"
             :limit="1"
             name="fileUpload"
+            :on-remove="onremove"
             :on-success="upLoadImg"
             :on-error="errorImg"
             :on-exceed="handleExceed"
+            :file-list="fileList"
             :before-upload="beforeUpload"
+            ref="photoUpload"
+            accept=".png,.jpg,.jpeg"
           >
             <el-button type="primary" icon="el-icon-upload2">
               {{ $t('UploadAvatar') }}
@@ -139,6 +143,7 @@ export default {
       company: '', //公司
       position: '', //职位
       imgUrl: '', //用户头像
+      fileList: [], //上传图片列表显示
       baseURL: axios.defaults.baseURL
     }
   },
@@ -152,14 +157,19 @@ export default {
         userid: getuserid()
       })
         .then(res => {
-          console.log(res)
+          console.log('axios-获取用户信息', res.data.data)
           this.note = res.data.data.note
-          this.imgUrl = res.data.data.imgUrl
           this.name = res.data.data.name
           this.email = res.data.data.email
           this.mobile = res.data.data.mobile
           this.company = res.data.data.company
           this.position = res.data.data.position
+          if (this.$common.isAssetTypeAnImage(res.data.data.imgUrl)) {
+            this.imgUrl = res.data.data.imgUrl
+            this.imgUrlDefault = res.data.data.imgUrl
+          } else {
+            this.imgUrl = ''
+          }
         })
         .catch(err => {
           console.log(err)
@@ -168,11 +178,12 @@ export default {
     },
     //修改用户信息
     changeUserInfo () {
+      // 赋值头像
       modifyUserInfo({
         userid: getuserid(),
         note: this.note,
         name: this.name,
-        imgUrl: this.imgUrl,
+        imgUrl: this.imgUrl ==='' ? this.imgUrlDefault : this.imgUrl,
         company: this.company,
         position: this.position
       })
@@ -180,6 +191,7 @@ export default {
           if (res.data.code === 0) {
             this.getData()
             console.log(res)
+            this.$refs.photoUpload.clearFiles()
             this.$message.success(res.data.message)
           } else if (res.data.code === 1) {
             console.log(res)
@@ -191,11 +203,12 @@ export default {
           this.$message.error('修改信息失败,请重新修改')
         })
     },
-
+    // 删除文件
+    onremove (file) {
+      this.imgUrl = ''
+    },
     // 上传头像成功
     upLoadImg (response, file, fileList) {
-      console.log(response)
-      console.log(response.data)
       this.imgUrl = response.data
     },
 
