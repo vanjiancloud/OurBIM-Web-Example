@@ -77,13 +77,7 @@ const routes = [
           title: '服务订单'
         }
       },
-      {
-        path: 'changeCode',
-        component: () => import('../views/changeCode/index.vue'),
-        meta: {
-          title: '修改密码'
-        }
-      }
+     
     ]
   },
   // 忘记密码

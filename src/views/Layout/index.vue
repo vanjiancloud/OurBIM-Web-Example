@@ -258,8 +258,7 @@
             <el-menu-item index="code">{{ $t('Authorization') }}</el-menu-item>
             <!-- 服务订单 -->
             <el-menu-item index="order">{{ $t('Serviceorder') }}</el-menu-item>
-            <!-- 修改密码 -->
-            <el-menu-item index="changeCode">修改密码</el-menu-item>
+           
           </el-submenu>
         </el-menu>
       </div>
