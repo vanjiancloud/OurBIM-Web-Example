@@ -96,7 +96,6 @@
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
-           
             </li>
           </ul>
           <!-- 用户中心 -->
@@ -156,7 +155,7 @@
                 />
               </div>
               <div class="Info">
-                {{ name ? name : mobile }} <br>
+                {{ name ? name : mobile }} <br />
                 {{ note ? note : email }}
               </div>
             </div>
@@ -226,25 +225,25 @@
       <!-- 导航菜单 -->
       <div class="nav">
         <el-menu
-          default-active="this.$route.path"
+          :default-active="activeMenu"
           class="tac"
           text-color="#fff"
           active-text-color="#ffd04b"
           router
-          background-color="#00aaf0"
+          background-color="#000"
         >
           <!-- 我的应用 -->
-          <el-menu-item index="userCenter">
+          <el-menu-item index="/userCenter">
             <i class="el-icon-folder-opened"></i>
             <span slot="title" class="write">{{ $t('app') }}</span>
           </el-menu-item>
           <!-- 应用管理 -->
-          <el-menu-item index="manage">
+          <el-menu-item index="/manage">
             <i class="el-icon-setting"></i>
             <span slot="title" class="write">{{ $t('management') }}</span>
           </el-menu-item>
           <!-- 创建应用 -->
-          <el-menu-item index="found">
+          <el-menu-item index="/found">
             <i class="el-icon-folder-add"></i>
             <span slot="title" class="write">{{ $t('Create') }}</span>
           </el-menu-item>
@@ -255,12 +254,11 @@
               <span class="write">{{ $t('Account') }}</span>
             </template>
             <!-- 个人信息 -->
-            <el-menu-item index="bill">{{ $t('information') }}</el-menu-item>
+            <el-menu-item index="/bill">{{ $t('information') }}</el-menu-item>
             <!-- 授权码 -->
-            <el-menu-item index="code">{{ $t('Authorization') }}</el-menu-item>
+            <el-menu-item index="/code">{{ $t('Authorization') }}</el-menu-item>
             <!-- 服务订单 -->
-            <el-menu-item index="order">{{ $t('Serviceorder') }}</el-menu-item>
-           
+            <el-menu-item index="/order">{{ $t('Serviceorder') }}</el-menu-item>
           </el-submenu>
         </el-menu>
       </div>
@@ -296,7 +294,7 @@
 <script>
 import { showDetail } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
-import { deluserid } from '@/store/index.js'
+import { deluserid, Deluserid } from '@/store/index.js'
 
 export default {
   name: 'myHeader',
@@ -320,6 +318,7 @@ export default {
     }
   },
   created () {
+    console.log(this.$route.path)
     this.showData()
   },
   methods: {
@@ -351,8 +350,10 @@ export default {
     toLogin () {
       this.$router.push('../login/')
       deluserid()
+      Deluserid()
       clearInterval(this.time)
     },
+
     //展示当前用户信息
     showData () {
       showDetail({
@@ -400,8 +401,26 @@ export default {
       this.$router.push('../bill')
     }
   },
-  //  把定时器放在activated事件里，当清除定时后，
-  // 下次再次进入当前路由的话，可以再次唤起定时器
+  computed: {
+    /*使用计算属性来获取到当前点击的菜单的路由路径
+      然后设置default-active中的值
+      使得菜单在载入时就能对应高亮
+    */
+    activeMenu () {
+      const route = this.$route
+      const { meta, path } = route
+      /*
+       可以在路由配置文件中设置自定义的路由路径到
+       meta.activeMenu属性中，来控制菜单自定义高亮显示
+      */
+      if (meta.activeMenu) {
+        return meta.activeMenu
+      }
+      return path
+    }
+  },
+  /* 把定时器放在activated事件里，当清除定时后，
+  下次再次进入当前路由的话，可以再次唤起定时器 */
   activated () {
     this.time = setInterval(() => {
       this.showData()
@@ -415,13 +434,6 @@ export default {
       clearInterval(this.time)
       this.time = null
     }
-  },
-  mounted () {
-    //在接值组声明好接值事件
-    // this.$EventBus.$on('setUserPhoto',(newPhoto) => {
-    //   console.log(newPhoto);
-    //   this.imgUrl = newPhoto
-    // })
   }
 }
 </script>
@@ -437,6 +449,7 @@ export default {
     margin: 0;
     padding: 0;
     .header {
+      min-width: 1420px;
       height: 60px;
       background-color: #fff;
       line-height: 60px;
@@ -681,7 +694,7 @@ export default {
     margin: 0;
     padding: 0;
     .footer {
-      width: 100%;
+      min-width: 1420px;
       height: 115px;
       // padding: 20px 0px;
       background-color: #000;

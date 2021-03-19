@@ -67,7 +67,6 @@
               label="记住登录邮箱"
               name="type"
               v-model="form.isAgree"
-              @click.native="remember"
             ></el-checkbox>
             <span @click="changePassword" style="font-size: 16px;color:#00aaf0;"
               >忘记密码?</span
@@ -129,7 +128,6 @@
               label="记住登录手机号"
               name="type"
               v-model="mobForm.checkbox"
-              @click.native="Remember"
             ></el-checkbox>
             <span @click="changePassword" style="font-size: 16px;color:#00aaf0;"
               >忘记密码?</span
@@ -159,6 +157,10 @@
 <script>
 import { sendMsgCode, login, loginMobile } from '@/api/my.js'
 import { setuserid } from '@/store/index.js'
+import { Setuserid } from '@/store/index.js'
+
+import { setemail, getemail, delemail } from '@/store/index.js'
+import { setmobile, getmobile, delmobile } from '@/store/index.js'
 
 // const Base64 = require('js-base64').Base64
 export default {
@@ -229,33 +231,37 @@ export default {
     }
   },
   created () {
-    if (!(window.cookie.email = '')) {
-      this.form.email = this.getCookie('email')
-      this.form.isAgree === true
+    // 记住登录邮箱
+    if (localStorage.getItem('email')) {
+      this.form.email = getemail()
+      console.log(this.form.isAgree)
+      this.form.isAgree = true
+    } else if (localStorage.getItem('email') === null) {
+      this.form.email = ''
     }
-    if (!(window.cookie.mobile = '')) {
-      this.mobForm.mobile = this.getCookie('mobile')
-      this.mobForm.checkbox === true
+
+    // 记住登录手机号
+    if (localStorage.getItem('mobile')) {
+      this.mobForm.mobile = getmobile()
+      console.log(this.mobForm.checkbox)
+      this.mobForm.checkbox = true
+    } else if (localStorage.getItem('mobile') === null) {
+      this.mobForm.mobile = ''
+    }
+
+    //回车登录
+    var that = this
+    document.onkeydown = function (e) {
+      var key = window.event.keyCode
+      if (key == 13) {
+        //自己写的登录方法，点击事件
+        that.emailLogin()
+        that.Mobilelogin()
+      }
     }
   },
 
   methods: {
-    //记住邮箱
-    // remember () {
-    //   console.log('记住邮箱')
-    //   console.log(this.form.isAgree)
-    //   if (this.form.isAgree === true) {
-    //     this.form.email = this.getCookie('email')
-    //   }
-    // },
-    //记住手机号
-    // Remember () {
-    //   console.log('记住手机号')
-    //   console.log(this.mobForm.checkbox)
-    //   if (this.mobForm.checkbox === true) {
-    //     this.mobForm.mobile = this.getCookie('mobile')
-    //   }
-    // },
     // 注册新用户
     register () {
       this.$router.push('../../register')
@@ -292,9 +298,15 @@ export default {
             this.$message.success(res.data.message)
             this.setCookie('userInfo', JSON.stringify(res.data.data))
             console.log(res.data.data)
-            // 存储用户userid
+            // 存储用户信息userid，到localStorage
             setuserid(res.data.data.userid)
-              this.setCookie('email', this.form.email)
+            setemail(this.form.email)
+            // 存储用户信息userid，到sessionStorage
+            Setuserid(res.data.data.userid)
+            console.log(this.form.isAgree)
+            if (this.form.isAgree === false) {
+              delemail()
+            }
             this.$router.push('../userCenter')
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
@@ -317,10 +329,14 @@ export default {
           console.log(res)
           if (res.data.code === 0) {
             this.$message.success(res.data.message)
-            // 存储用户信息userid
+            // 存储用户信息userid，到localStorage
             setuserid(res.data.data.userid)
-              this.setCookie('mobile', this.mobForm.mobile)
-              
+            // 存储用户信息userid，到sessionStorage
+            Setuserid(res.data.data.userid)
+            setmobile(this.mobForm.mobile)
+            if (this.mobForm.checkbox === false) {
+              delmobile()
+            }
             this.$router.push('../userCenter')
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
@@ -404,6 +420,23 @@ export default {
         })
     }
   },
+  watch: {
+    $route (to, from) {
+      if (this.form.isAgree === false) {
+        this.form.email = ''
+        this.form.password = ''
+      } else if (this.form.isAgree === true) {
+        this.form.password = ''
+      }
+
+      if (this.mobForm.checkbox === false) {
+        this.mobForm.mobile = ''
+        this.mobForm.code = ''
+      } else if (this.mobForm.checkbox === true) {
+        this.mobForm.code = ''
+      }
+    }
+  }
 }
 </script>
 
