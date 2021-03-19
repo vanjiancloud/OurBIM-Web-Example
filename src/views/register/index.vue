@@ -88,7 +88,7 @@
                 <a
                   class="link"
                   @click="toxieyi"
-                  style="text-decoration:none; font-size: 18px;"
+                  style="text-decoration:none; font-size: 16px;"
                 >
                   《OurBIM用户服务协议》</a
                 >
@@ -454,7 +454,7 @@ export default {
           color: #000;
         }
         /deep/ .el-checkbox__label {
-          font-size: 20px;
+          font-size: 16px;
         }
         /deep/ .el-checkbox__inner {
           width: 20px;

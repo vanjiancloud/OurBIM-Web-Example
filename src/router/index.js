@@ -158,9 +158,9 @@ const router = new VueRouter({
 
 // 路由前置守卫
 router.beforeEach(function (to, from, next) {
-  // 如果本地没有userid，并且去的不是登录页面，
+  // 如果sessionStorage本地没有userid，并且去的不是登录页面，
   // 直接返回登录页，否则放行
-  if (!localStorage.getItem('userid')) {
+  if (!sessionStorage.getItem('userid')) {
     if (
       to.path !== '/login' &&
       to.path !== '/changePassword' &&
