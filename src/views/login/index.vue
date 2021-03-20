@@ -168,7 +168,8 @@ export default {
   data () {
     return {
       isSend: false, // 是否显示
-      delay: 0, // 倒计时
+      delay: 60, // 倒计时
+      interId: null, // 定时器
       btnMes: '获取验证码', // 按钮的文本
       // 邮箱登录表单
       form: {
@@ -260,7 +261,31 @@ export default {
       }
     }
   },
+  watch: {
+    $route (to, from) {
+      if (this.form.isAgree === false) {
+        this.form.email = ''
+        this.form.password = ''
+      } else if (this.form.isAgree === true) {
+        this.form.password = ''
+      }
 
+      if (this.mobForm.checkbox === false) {
+        this.mobForm.mobile = ''
+        this.mobForm.code = ''
+      } else if (this.mobForm.checkbox === true) {
+        this.mobForm.code = ''
+      }
+    },
+    delay: function(newVal, oldVal) {
+      if (oldVal === 0) {
+        clearInterval(this.interId)
+        this.btnMes = '获取验证码'
+        this.delay = 60, // 倒计时
+        this.isSend = false
+      }
+    }
+  },
   methods: {
     // 注册新用户
     register () {
@@ -386,6 +411,8 @@ export default {
     },
     // 获取验证码
     toGetCode () {
+      this.isSend = true
+      this.btnMes = `正在发送验证码...`
       sendMsgCode({
         mobile: this.mobForm.mobile,
         msgType: this.mobForm.msgType
@@ -394,18 +421,9 @@ export default {
           console.log(res)
           if (res.data.code === 0) {
             this.$message.success('获取成功')
-            this.delay = 60
-            this.btnMes = `${this.delay}S后继续`
-            this.isSend = true
             // 开启定时器
-            const interId = setInterval(() => {
+            this.interId = setInterval(() => {
               this.delay--
-              if (this.delay === 0) {
-                clearInterval(interId)
-                this.btnMes = '获取验证码'
-                this.isSend = false
-                return
-              }
               this.btnMes = `${this.delay}S后继续`
             }, 1000)
           } else if (res.data.code === 1) {
@@ -418,23 +436,6 @@ export default {
           console.log(err)
           this.$message.error('获取失败')
         })
-    }
-  },
-  watch: {
-    $route (to, from) {
-      if (this.form.isAgree === false) {
-        this.form.email = ''
-        this.form.password = ''
-      } else if (this.form.isAgree === true) {
-        this.form.password = ''
-      }
-
-      if (this.mobForm.checkbox === false) {
-        this.mobForm.mobile = ''
-        this.mobForm.code = ''
-      } else if (this.mobForm.checkbox === true) {
-        this.mobForm.code = ''
-      }
     }
   }
 }

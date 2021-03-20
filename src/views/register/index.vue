@@ -85,14 +85,10 @@
             <el-form-item label="" prop="checked" class="check">
               <el-checkbox v-model="ruleForm.checked"
                 >我同意
-                <a
-                  class="link"
-                  @click="toxieyi"
-                  style="text-decoration:none; font-size: 16px;"
-                >
-                  《OurBIM用户服务协议》</a
-                >
               </el-checkbox>
+              <a class="link" @click="toxieyi"
+                style="text-decoration:none; font-size: 16px;">
+              《OurBIM用户服务协议》</a>
             </el-form-item>
           </el-form>
           <!-- 底部区域 -->
@@ -138,7 +134,8 @@ export default {
     return {
       isSend: false, // 是否显示
       isLoading: false, // 是否正在登陆
-      delay: 0, // 倒计时
+      delay: 60, // 倒计时
+      interId: null, // 定时器
       btnMes: '获取验证码', // 按钮的文本
       // 验证表单数据
       ruleForm: {
@@ -235,6 +232,16 @@ export default {
       }
     }
   },
+  watch: {
+    delay: function(newVal, oldVal) {
+      if (oldVal === 0) {
+        clearInterval(this.interId)
+        this.btnMes = '获取验证码'
+        this.isSend = false
+        this.delay = 60 // 倒计时
+      }
+    }
+  },
   methods: {
     // 点击注册校验
     register () {
@@ -294,6 +301,9 @@ export default {
     },
     // 获取验证码
     toGetCode () {
+      // 禁用发送验证码按钮
+      this.isSend = true
+      this.btnMes = `发送验证码中...`
       sendMsgCode({
         mobile: this.ruleForm.mobile,
         msgType: this.ruleForm.msgType
@@ -302,18 +312,10 @@ export default {
           console.log(res)
           if (res.data.code === 0) {
             this.$message.success('获取成功')
-            this.delay = 60
-            this.btnMes = `${this.delay}S后继续`
-            this.isSend = true
-            const interId = setInterval(() => {
-              this.delay--
-              if (this.delay === 0) {
-                clearInterval(interId)
-                this.btnMes = '获取验证码'
-                this.isSend = false
-                return
-              }
+            // 监听定时器
+            this.interId = setInterval(() => {
               this.btnMes = `${this.delay}S后继续`
+              this.delay--
             }, 1000)
           } else if (res.data.code === 1) {
             this.$message.error('短信请求失败')
@@ -483,6 +485,7 @@ export default {
         }
         .link:hover {
           color: #00aaf0;
+          cursor:pointer;
         }
         .hint {
           margin-top: -13px;

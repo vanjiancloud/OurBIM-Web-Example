@@ -88,53 +88,47 @@ export default {
   data () {
     return {
       isSend: false, // 是否显示
-
-      delay: 0, // 倒计时
-
+      delay: 60, // 倒计时
+      interId: null, // 定时器
       // 按钮的文本
-
       btnMes: '获取验证码',
-
       isLoading: false, // 是否正在登陆
-
       form: {
         mobile: '',
-
         code: '',
-
         msgType: '3'
       },
-
       // 定义验证规则rules
-
       rules: {
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
-
           {
             pattern: /^1[3|4|5|7|8][0-9]{9}$/,
-
             message: '请输入合法的手机号',
-
             trigger: 'blur'
           }
         ],
-
         code: [
           { required: true, message: '请输入验证码', trigger: 'blur' },
-
           {
             pattern: /^\d{4}|\d{6}$/,
-
             message: '请输入合法的验证码',
-
             trigger: 'blur'
           }
         ]
       }
     }
   },
-
+  watch: {
+    delay: function(newVal, oldVal) {
+      if (oldVal === 0) {
+        clearInterval(this.interId)
+        this.btnMes = '获取验证码'
+        this.isSend = false
+        this.delay = 60 // 倒计时
+      }
+    }
+  },
   methods: {
     // 返回登录页
     toReturn () {
@@ -190,43 +184,25 @@ export default {
     // 获取验证码
 
     toGetCode () {
+      this.isSend = true
+      this.btnMes = `发送验证码中...`
       sendMsgCode({
         mobile: this.form.mobile,
-
         msgType: this.form.msgType
       })
         .then(res => {
           console.log(res)
-
           if (res.data.code === 0) {
             this.$message.success('获取成功')
-
-            this.delay = 60
-
-            this.btnMes = `${this.delay}S后继续`
-
-            this.isSend = true
-
-            const interId = setInterval(() => {
-              this.delay--
-
-              if (this.delay === 0) {
-                clearInterval(interId)
-
-                this.btnMes = '获取验证码'
-
-                this.isSend = false
-
-                return
-              }
-
+            // 监听定时器
+            this.interId = setInterval(() => {
               this.btnMes = `${this.delay}S后继续`
+              this.delay--
             }, 1000)
           } else {
             this.$message.error('短信请求失败，您的操作过于频繁，请稍后在试')
           }
         })
-
         .catch(err => {
           console.log(err)
 
