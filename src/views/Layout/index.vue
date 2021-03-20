@@ -154,8 +154,9 @@
                   alt="未上传头像"
                 />
               </div>
+              <!-- 昵称和签名 -->
               <div class="Info">
-                {{ name ? name : mobile }} <br />
+                {{ name ? name : mobile }}<br />
                 {{ note ? note : email }}
               </div>
             </div>
@@ -559,9 +560,7 @@ export default {
               display: flex;
               justify-content: center;
               align-items: center;
-              // background-color: red;
               width: 187px;
-              // height: 152px;
               text-align: center;
             }
           }

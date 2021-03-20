@@ -191,7 +191,7 @@ export default {
       active: 1,
       isShow: 1,
       isHandle: 1,
-      disabl: false, //按钮禁用
+      disabl: true, //按钮禁用
       // 上传图片
       dialogImageUrl: '',
       dialogVisible: false,
@@ -296,11 +296,13 @@ export default {
     // 删除模型事件
     onremove (file, fileList) {
       this.bimupNumber--
+      this.disabl = !this.disabl
     },
     // 添加模型文件
     onchange (file, fileList) {
       if (!file.response) {
         this.bimupNumber++
+        this.disabl = !this.disabl
       }
     },
     // 上传模型成功
@@ -311,6 +313,7 @@ export default {
         this.$common.closeLoading()
         if (this.active++ > 3) this.active = 0
         this.isShow = 3
+        this.disabl = !this.disabl
       }
     },
     // 限制上传封面次数
@@ -356,6 +359,10 @@ export default {
 <style lang="less" scoped>
 .box {
   padding-top: 38px;
+  // 隐藏上传
+  /deep/.hide .el-upload--picture-card {
+    display: none;
+  }
   .buzhou {
     width: 800px;
     margin: 0 auto;
@@ -365,6 +372,11 @@ export default {
     }
     /deep/ .el-step {
       color: red;
+    }
+    /deep/.is-process {
+      color: #C0C4CC !important;
+      font-weight: 10 !important;
+      border-color: #C0C4CC !important;
     }
   }
   .first {
