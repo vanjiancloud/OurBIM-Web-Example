@@ -296,6 +296,7 @@ export default {
           console.log(res)
           if (res.data.code === 0) {
             this.$message.success(res.data.message)
+            this.setCookie('userInfo', JSON.stringify(res.data.data))
             sessionStorage.setItem("userInfo", JSON.stringify(res.data.data))
             console.log(res.data.data)
             // 存储用户信息userid，到localStorage
@@ -331,6 +332,7 @@ export default {
             this.$message.success(res.data.message)
             // 存储用户信息userid，到localStorage
             sessionStorage.setItem("userInfo", JSON.stringify(res.data.data))
+            this.setCookie('userInfo', JSON.stringify(res.data.data))
             setuserid(res.data.data.userid)
             // 存储用户信息userid，到sessionStorage
             Setuserid(res.data.data.userid)
