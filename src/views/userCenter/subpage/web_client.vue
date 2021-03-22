@@ -216,6 +216,11 @@ export default {
       },
       false
     );
+    //判断是否使用的是ipad
+			let isiPad = (navigator.userAgent.match(/(iPad)/) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1))
+			if(isiPad !== false){
+				this.viewHeight = 1
+			}
   },
   destroyed() {
     this.clearTimePass();
@@ -628,7 +633,17 @@ export default {
         };
         // 关闭tool
         this.sendToIframe(10200, "false", "");
-
+document.addEventListener("keydown", (e) => {
+          this.sendToIframe(10010, {
+            key: e.code,
+            isRepeat: e.repeat,
+          }, "");
+        })
+        document.addEventListener("keyup", (e) => {
+          this.sendToIframe(10011, {
+            key: e.code
+          }, "");
+        });
         window.clearTimeout(realTimer);
       }, 1000 * 2);
     },

@@ -7,7 +7,7 @@
       <div class="login-form-wrap">
         <!-- .logo区域 -->
         <div class="login-head">
-          <a href="http://47.94.229.108:7011/">
+          <a href="http://www.ourbim.com:7011/">
             <i class="el-icon-arrow-left"></i>
           </a>
 
@@ -331,6 +331,7 @@ export default {
             this.logIn = '登录'
             this.isLoading = false
             this.setCookie('userInfo', JSON.stringify(res.data.data))
+            sessionStorage.setItem("userInfo", JSON.stringify(res.data.data))
             console.log(res.data.data)
             // 存储用户信息userid，到localStorage
             setuserid(res.data.data.userid)
@@ -371,6 +372,8 @@ export default {
             this.isLoading = false
             this.setCookie('userInfo', JSON.stringify(res.data.data))
             // 存储用户信息userid，到localStorage
+            sessionStorage.setItem("userInfo", JSON.stringify(res.data.data))
+            this.setCookie('userInfo', JSON.stringify(res.data.data))
             setuserid(res.data.data.userid)
             // 存储用户信息userid，到sessionStorage
             Setuserid(res.data.data.userid)
