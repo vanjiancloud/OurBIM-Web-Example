@@ -154,7 +154,7 @@
                   alt="未上传头像"
                 />
               </div>
-              <!-- 昵称和签名 -->
+              <!-- 昵称和签名栏 -->
               <div class="Info">
                 {{ name ? name : mobile }}<br />
                 {{ note ? note : email }}
