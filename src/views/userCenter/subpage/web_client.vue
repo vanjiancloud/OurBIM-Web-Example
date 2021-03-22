@@ -216,6 +216,11 @@ export default {
       },
       false
     );
+    //判断是否使用的是ipad
+			let isiPad = (navigator.userAgent.match(/(iPad)/) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1))
+			if(isiPad !== false){
+				this.viewHeight = 1
+			}
   },
   destroyed() {
     this.clearTimePass();
