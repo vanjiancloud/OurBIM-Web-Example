@@ -64,6 +64,17 @@
             </el-button>
           </template>
         </el-table-column>
+        <el-table-column label="进入应用">
+          <template slot-scope="scope">
+            <el-button
+              @click="GoApp(scope.row)"
+              :disabled="scope.row.applidStatus === '2' ? false : true"
+              :class="scope.row.applidStatus === '2' ? 'ff' : 'bbb'"
+            >
+              {{ $t('into') }}
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
     <!-- dialog框 -->
@@ -238,8 +249,8 @@ export default {
     this.setGetdataIn()
   },
   methods: {
-      // 定时器每隔五秒获取数据
-    setGetdataIn() {
+    // 定时器每隔五秒获取数据
+    setGetdataIn () {
       this.timer = setInterval(() => {
         this.GetList()
         console.log('每隔5秒更新应用管理')
@@ -379,6 +390,17 @@ export default {
           this.$message.error('删除失败')
         })
     },
+    //进入应用
+    GoApp (e) {
+      const { href } = this.$router.resolve({
+        name: 'web_client',
+        query: {
+          appid: e.appid,
+          locale: this.$i18n.locale
+        }
+      })
+      window.open(href, '_blank')
+    },
     // 上传封面图
     upLoadImg (response, file, fileList) {
       this.form.screenImg = response.data
@@ -451,7 +473,7 @@ export default {
   destroyed () {
     // 清除定时器
     clearInterval(this.timer)
-  },
+  }
 }
 </script>
 
@@ -510,7 +532,14 @@ export default {
     .btn-one {
       font-size: 16px;
       color: #00aaf0;
-      margin-right: 20px;
+    }
+    .bbb {
+      background-color: #bbb;
+      color: #fff;
+    }
+    .ff{
+      background-color: #00aaf0;
+      color: #fff;
     }
     .red {
       font-size: 16px;

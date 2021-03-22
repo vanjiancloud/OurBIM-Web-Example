@@ -1,17 +1,17 @@
 <template>
   <div class="container">
     <div class="picture">
-      <img src="./img.png" alt="" />
+      <img src="./img/img.png" alt="" />
     </div>
     <div class="box">
       <div class="head">
         <i class="el-icon-arrow-left" @click="toReturn"></i>
         <span class="logo">
-          <img src="./logo.png" alt="" />
+          <img src="./img/logo.png" alt="" />
         </span>
       </div>
       <div class="icon">
-        <img src="../register/icon.png" alt="" class="icon-img" />
+        <img src="./img/right.png" alt="" class="icon-img" />
       </div>
       <div class="write">
         <span>恭喜您注册成功</span>
@@ -63,7 +63,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url(./bg.png);
+  background-image: url(./img/bg.png);
   background-size: cover;
   .picture {
     float: left;

@@ -1,11 +1,11 @@
 <template>
   <div class="container">
     <div class="picture">
-      <img src="./img.png" alt="" />
+      <img src="./img/img.png" alt="" />
     </div>
     <div class="box">
       <div class="logo">
-        <img src="../register/logo.png" alt="" class="img" />
+        <img src="./img/logo.png" alt="" class="img" />
       </div>
       <div class="success" v-show="isShow == 1"></div>
       <div class="error" v-show="isShow == 2"></div>
@@ -94,7 +94,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url(./bg.png);
+  background-image: url(./img/bg.png);
   background-size: cover;
   .picture {
     float: left;
@@ -142,7 +142,7 @@ export default {
       width: 114px;
       height: 114px;
       margin: 50px auto;
-      background-image: url('./icon.png');
+      background-image: url('./img/right.png');
       background-repeat: no-repeat;
     }
     .error {
@@ -150,7 +150,7 @@ export default {
       width: 114px;
       height: 114px;
       margin: 50px auto;
-      background-image: url('./err.png');
+      background-image: url('./img/err.png');
       background-repeat: no-repeat;
     }
   }

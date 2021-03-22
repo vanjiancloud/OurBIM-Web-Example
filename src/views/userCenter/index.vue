@@ -74,12 +74,6 @@ export default {
       this.classify = '全部'
     },
 
-    // 定时器，每隔3秒更新一次数据
-    // Get () {
-    //   this.GetList()
-    //   console.log('3秒更新一次我的应用')
-    // },
-
     // 获取应用列表
     GetList () {
       getProjectList({

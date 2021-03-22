@@ -4,30 +4,30 @@
       <img src="./img.png" alt="" />
     </div>
     <div class="right">
-    <div class="login-form-wrap">
-      <!-- .logo区域 -->
-      <div class="login-head">
-        <i class="el-icon-arrow-left" @click="toReturn"></i>
-        <div class="logo">
-          <img src="./logo.png" alt="" />
+      <div class="login-form-wrap">
+        <!-- .logo区域 -->
+        <div class="login-head">
+          <i class="el-icon-arrow-left" @click="toReturn"></i>
+          <div class="logo">
+            <img src="./logo.png" alt="" />
+          </div>
         </div>
-      </div>
-      <div class="state">
-        <span>
-          重置密码
-        </span>
-      </div>
-      <!-- 短信登录的表单 -->
+        <div class="state">
+          <span>
+            重置密码
+          </span>
+        </div>
+        <!-- 短信登录的表单 -->
 
-      <el-form :rules="rules" :model="form" ref="form" class="login-form">
-        <el-form-item prop="mobile">
-          <el-input v-model="form.mobile" placeholder="请输入账号手机号码">
-            <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
-          </el-input>
-        </el-form-item>
+        <el-form :rules="rules" :model="form" ref="form" class="login-form">
+          <el-form-item prop="mobile">
+            <el-input v-model="form.mobile" placeholder="请输入账号手机号码">
+              <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
+            </el-input>
+          </el-form-item>
 
-        <el-form-item prop="code">
-          <!-- <el-input
+          <el-form-item prop="code">
+            <!-- <el-input
             v-model="form.code"
             placeholder="请输入短信验证码"
             class="input"
@@ -42,36 +42,36 @@
             type="primary"
             >{{ btnMes }}</el-button
           > -->
-          <el-input
-            v-model="form.code"
-            placeholder="请输入短信验证码"
-            class="input"
-          >
-            <el-button
-              style="padding-right:25px;padding-top:35px"
-              slot="suffix"
-              type="text"
-              class="btnMes"
-              :disabled="isSend"
-              @click="getCode"
+            <el-input
+              v-model="form.code"
+              placeholder="请输入短信验证码"
+              class="input"
             >
-              {{btnMes}}
-            </el-button>
-            <i slot="prefix" class="el-input__icon el-icon-s-comment"></i>
-          </el-input>
-        </el-form-item>
+              <el-button
+                style="padding-right:25px;padding-top:35px"
+                slot="suffix"
+                type="text"
+                class="btnMes"
+                :disabled="isSend"
+                @click="getCode"
+              >
+                {{ btnMes }}
+              </el-button>
+              <i slot="prefix" class="el-input__icon el-icon-s-comment"></i>
+            </el-input>
+          </el-form-item>
 
-        <el-form-item>
-          <el-button
-            @click="toNext"
-            type="primary"
-            class="login-btn"
-            :loading="isLoading"
-            >下一步</el-button
-          >
-        </el-form-item>
-      </el-form>
-    </div>
+          <el-form-item>
+            <el-button
+              @click="toNext"
+              type="primary"
+              class="login-btn"
+              :loading="isLoading"
+              >下一步</el-button
+            >
+          </el-form-item>
+        </el-form>
+      </div>
     </div>
     <div class="wenzi">
       Copyright © 2021 www.OurBIM.com, All Rights Reserved.
@@ -120,7 +120,7 @@ export default {
     }
   },
   watch: {
-    delay: function(newVal, oldVal) {
+    delay: function (newVal, oldVal) {
       if (oldVal === 0) {
         clearInterval(this.interId)
         this.btnMes = '获取验证码'
@@ -148,27 +148,30 @@ export default {
     remakePas () {
       updateJudgeMsg({
         mobile: this.form.mobile,
-
         code: this.form.code
-      }).then(res => {
-        console.log(res)
-
-        if (res.data.code === 0) {
-          this.$router.push({
-            name: 'newPassword',
-            query: {
-              mobile: this.form.mobile,
-              code: this.form.code
-            }
-          })
-        } else if (res.data.code === 2) {
-          this.$message.error('该手机号未注册')
-        } else if (res.data.code === 3) {
-          this.$message.error('该账号未激活，请先去邮箱激活')
-        } else {
-          this.$message.error('您输入的验证码不正确')
-        }
       })
+        .then(res => {
+          console.log(res)
+          if (res.data.code === 0) {
+            this.$router.push({
+              name: 'newPassword',
+              query: {
+                mobile: this.form.mobile,
+                code: this.form.code
+              }
+            })
+          } else if (res.data.code === 2) {
+            this.$message.error('该手机号未注册')
+          } else if (res.data.code === 3) {
+            this.$message.error('该账号未激活，请先去邮箱激活')
+          } else {
+            this.$message.error('您输入的验证码不正确')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('请检查网络或稍后重试')
+        })
     },
 
     // 点击获取验证码
@@ -334,5 +337,4 @@ export default {
     font-size: 16px;
   }
 }
-
 </style>

@@ -96,42 +96,29 @@
               </el-dropdown>
             </li>
           </ul>
-          <!-- 用户中心 -->
-          <!-- <el-dropdown>
-                <span class="el-dropdown-link">
-                  <img
-                    :src="imgUrl ? imgUrl : require('./img/touxiang.png')"
-                    alt=""
-                  />
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item @click.native="toUserCenter">{{
-                    $t('userCenter')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item @click.native="toLogin">{{
-                    $t('quit')
-                  }}</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown> -->
+          <!-- 退出设置 -->
+          <div class="set">
+            <el-dropdown>
+              <span>
+                <i class="el-icon-s-tools"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="toUserCenter">{{
+                  $t('userCenter')
+                }}</el-dropdown-item>
+                <el-dropdown-item @click.native="toLogin">{{
+                  $t('quit')
+                }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
           <!-- 头像和中英文切换栏 -->
           <div class="end">
             <div class="touxiang">
-              <el-dropdown>
-                <span class="el-dropdown-link">
-                  <img
-                    :src="imgUrl ? imgUrl : require('./img/touxiang.png')"
-                    alt=""
-                  />
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item @click.native="toUserCenter">{{
-                    $t('userCenter')
-                  }}</el-dropdown-item>
-                  <el-dropdown-item @click.native="toLogin">{{
-                    $t('quit')
-                  }}</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+              <img
+                :src="imgUrl ? imgUrl : require('./img/touxiang.png')"
+                alt=""
+              />
             </div>
             <div class="language">
               <a @click="Chinese" href="javascript:;">中文</a>
@@ -226,22 +213,17 @@
         <el-menu
           :default-active="activeMenu"
           class="tac"
-          text-color="#fff"
-          active-text-color="#ffd04b"
+          text-color="#00aaf0"
+          active-text-color="#fff"
           router
-          background-color="#000"
+          background-color="#f0fbff"
         >
-          <!-- 我的应用 -->
-          <el-menu-item index="/userCenter">
-            <i class="el-icon-folder-opened"></i>
-            <span slot="title" class="write">{{ $t('app') }}</span>
-          </el-menu-item>
-          <!-- 应用管理 -->
+          <!-- 项目管理 -->
           <el-menu-item index="/manage">
             <i class="el-icon-setting"></i>
             <span slot="title" class="write">{{ $t('management') }}</span>
           </el-menu-item>
-          <!-- 创建应用 -->
+          <!-- 创建项目 -->
           <el-menu-item index="/found">
             <i class="el-icon-folder-add"></i>
             <span slot="title" class="write">{{ $t('Create') }}</span>
@@ -496,17 +478,23 @@ export default {
           font-size: 17px;
         }
       }
+      .set {
+        float: left;
+        margin-left: 100px;
+        span {
+          font-size: 25px;
+          cursor: pointer;
+        }
+        .el-dropdown {
+          height: 35px;
+        }
+      }
       .end {
-        // background-color: red;
         float: right;
         height: 64px;
         width: 185px;
-        .el-dropdown {
-          height: 40px;
-        }
         .touxiang {
           float: left;
-          cursor: pointer;
           img {
             margin-top: 10px;
             width: 40px;
@@ -515,9 +503,7 @@ export default {
           }
         }
         .language {
-          // background-color: green;
           float: right;
-          // width: 180px;
           .el-dropdown {
             height: 40px;
           }
@@ -660,7 +646,6 @@ export default {
     .nav {
       width: 230px;
       min-height: 961px;
-      background-color: skyblue;
       margin-right: 20px;
       .tac {
         width: 100%;
@@ -669,7 +654,54 @@ export default {
           font-size: 16px;
           height: 60px;
           line-height: 60px;
+          i {
+            color: #00aaf0;
+          }
         }
+        .el-submenu {
+          i {
+            color: #00aaf0;
+          }
+        }
+        // 每一项选中状态
+        /deep/ .el-menu-item.is-active {
+          background-color: #00aaf0 !important;
+          i {
+            color: #fff;
+          }
+        }
+        // 每一项鼠标悬停状态
+        /deep/ .el-menu-item:hover {
+          background-color: #00aaf0 !important;
+          color: #fff !important;
+          i {
+            color: #fff;
+          }
+        }
+        // el-submenu 每一项选中状态
+        // /deep/ .el-submenu.is-active {
+        //   background-color: #00aaf0 !important;
+        //   // color: #fff !important;
+        //   i {
+        //     color: #fff;
+        //   }
+        // }
+        // el-submenu 每一项鼠标悬停状态
+        /deep/ .el-submenu__title:hover {
+          background-color: #00aaf0 !important;
+          color: #fff !important;
+          i {
+            color: #fff;
+          }
+          i.el-submenu__icon-arrow.el-icon-arrow-down {
+            color: #fff;
+          }
+        }
+        /deep/ i.el-submenu__icon-arrow.el-icon-arrow-down {
+          font-size: 20px;
+          color: #00aaf0;
+        }
+
         .write {
           font-size: 20px;
         }

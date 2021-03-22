@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     <div class="picture">
-      <img src="../login/img.png" alt="" />
+      <img src="./img/img.png" alt="" />
     </div>
     <!-- 注册页面 -->
     <div class="right">
@@ -10,12 +10,22 @@
         <div class="header">
           <i class="el-icon-arrow-left" @click="toReturn"></i>
           <div class="logo">
-            <img src="./logo.png" alt="" />
+            <img src="./img/logo.png" alt="" />
           </div>
         </div>
         <!-- 主体区域 -->
         <div class="body">
+          <div class="news">
+            请选择您的用户头像：
+          </div>
           <el-form ref="ruleForm" :model="ruleForm" :rules="rules">
+            <!-- 性别 -->
+            <el-radio v-model="ruleForm.radio" label="1">
+              <img src="./img/man.png" alt="" />
+            </el-radio>
+            <el-radio v-model="ruleForm.radio" label="2">
+              <img src="./img/woman.png" alt="" />
+            </el-radio>
             <!-- 邮箱 -->
             <el-form-item label="" prop="email">
               <el-input
@@ -25,12 +35,12 @@
               >
                 <i slot="prefix" class="el-icon-message"></i>
               </el-input>
-              <div class="hint">
+              <!-- <div class="hint">
                 <span style="font-size: 14px;">
                   <i style="color:#e4551b;">*</i>
                   您将同意我们不定期给您发送OurBIM产品相关资讯邮件
                 </span>
-              </div>
+              </div> -->
             </el-form-item>
             <!-- 手机号 -->
             <el-form-item label="" prop="mobile">
@@ -44,11 +54,7 @@
             </el-form-item>
             <!-- 验证码 -->
             <el-form-item label="" prop="code">
-              <el-input
-                v-model="ruleForm.code"
-                placeholder="请输入短信验证码"
-                label-width="80px"
-              >
+              <el-input v-model="ruleForm.code" placeholder="请输入短信验证码">
                 <el-button
                   class="code"
                   slot="suffix"
@@ -59,6 +65,18 @@
                   {{ btnMes }}
                 </el-button>
                 <i slot="prefix" class="el-icon-s-comment"></i>
+              </el-input>
+            </el-form-item>
+            <!-- 姓名 -->
+            <el-form-item label="" prop="name">
+              <el-input v-model="ruleForm.name" placeholder="请输入真实姓名">
+                <i slot="prefix" class="el-icon-s-custom"></i>
+              </el-input>
+            </el-form-item>
+            <!-- 公司 -->
+            <el-form-item label="" prop="company">
+              <el-input v-model="ruleForm.company" placeholder="请输入公司名称">
+                <i slot="prefix" class="el-icon-office-building"></i>
               </el-input>
             </el-form-item>
             <!-- 密码 -->
@@ -83,12 +101,14 @@
             </el-form-item>
             <!-- 勾选状态 -->
             <el-form-item label="" prop="checked" class="check">
-              <el-checkbox v-model="ruleForm.checked"
-                >我同意
-              </el-checkbox>
-              <a class="link" @click="toxieyi"
-                style="text-decoration:none; font-size: 16px;">
-              《OurBIM用户服务协议》</a>
+              <el-checkbox v-model="ruleForm.checked">我同意 </el-checkbox>
+              <a
+                class="link"
+                @click="toxieyi"
+                style="text-decoration:none; font-size: 16px;"
+              >
+                《OurBIM用户服务协议》
+              </a>
             </el-form-item>
           </el-form>
           <!-- 底部区域 -->
@@ -103,14 +123,9 @@
               >
             </div>
             <div class="footer-size">
-              <el-button type="text" @click="toLogoin">已有账号，立即登录</el-button>
-              <!-- <span
-                ><a
-                  href="http://www.ourbim.com:7012/#/login"
-                  style="text-decoration:none;font-size: 16px;color:#00aaf0 "
-                  >已有账号，立即登录</a
-                ></span
-              > -->
+              <el-button type="text" @click="toLogoin"
+                >已有账号，立即登录</el-button
+              >
             </div>
           </div>
         </div>
@@ -139,8 +154,11 @@ export default {
       btnMes: '获取验证码', // 按钮的文本
       // 验证表单数据
       ruleForm: {
+        radio: '1',
         email: '',
         mobile: '',
+        name: '',
+        company: '',
         code: '',
         password: '',
         newPassword: '',
@@ -214,6 +232,20 @@ export default {
             trigger: 'blur'
           }
         ],
+        name: [
+          {
+            required: true,
+            message: '请输入真实姓名',
+            trigger: 'blur'
+          }
+        ],
+        company: [
+          {
+            required: true,
+            message: '请输入公司名称',
+            trigger: 'blur'
+          }
+        ],
         checked: [
           {
             // 自定义规则
@@ -223,22 +255,12 @@ export default {
                 callback()
               } else {
                 // 用户不同意
-                callback(new Error('请勾选！'))
+                callback(new Error('请先同意服务协议'))
               }
             },
             trigger: 'blur'
           }
         ]
-      }
-    }
-  },
-  watch: {
-    delay: function(newVal, oldVal) {
-      if (oldVal === 0) {
-        clearInterval(this.interId)
-        this.btnMes = '获取验证码'
-        this.isSend = false
-        this.delay = 60 // 倒计时
       }
     }
   },
@@ -256,7 +278,7 @@ export default {
       this.$router.push('../../login')
     },
     toLogoin () {
-      console.log('666666666');
+      console.log('666666666')
       this.$router.push('../login')
     },
     // 点击注册
@@ -276,14 +298,14 @@ export default {
           } else if (res.data.code === 1) {
             this.$message.error('验证码验证失败')
           } else if (res.data.code === 2) {
-            this.$message.error('该邮箱已经注册过了')
+            this.$message.error('该邮箱已注册')
           } else if (res.data.code === 3) {
-            this.$message.error('该手机号已经被注册')
+            this.$message.error('该手机号已注册')
           }
         })
         .catch(err => {
           console.log(err)
-          this.$message.error('注册失败')
+          this.$message.error('注册失败，请检查网络或稍后重试')
         })
     },
     // 点击跳转用户协议
@@ -343,14 +365,14 @@ export default {
         .then(res => {
           console.log(res)
           if (res.data.code === 0) {
-            this.$message.success('可以使用此手机号')
-          } else {
-            this.$message.error('该手机号已被注册，请更换手机号')
+            this.$message.success(res.data.message)
+          } else if (res.data.code === 1) {
+            this.$message.error(res.data.message)
           }
         })
         .catch(err => {
           console.log(err)
-          this.$message.error('此手机号已经注册过了')
+          this.$message.error('校验失败，请检查网络')
         })
     },
     // 失去焦点获取
@@ -370,14 +392,23 @@ export default {
           if (res.data.code === 0) {
             this.$message.success(res.data.message)
           } else if (res.data.code === 1) {
-            // this.$message.error('该邮箱已被注册，请更换邮箱')
             this.$message.warning(res.data.message)
           }
         })
         .catch(err => {
-          // console.log(err)
-          this.$message.error('邮箱不可用')
+          console.log(err)
+          this.$message.error('校验失败，请检查网络')
         })
+    }
+  },
+  watch: {
+    delay: function (newVal, oldVal) {
+      if (oldVal === 0) {
+        clearInterval(this.interId)
+        this.btnMes = '获取验证码'
+        this.isSend = false
+        this.delay = 60 // 倒计时
+      }
     }
   }
 }
@@ -394,7 +425,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url(./bg.png);
+  background-image: url(./img/bg.png);
   background-size: cover;
   .picture {
     float: left;
@@ -409,28 +440,27 @@ export default {
   }
   .right {
     width: 560px;
-    height: 750px;
+    height: 770px;
     background-color: #fff;
     float: right;
     display: flex;
     justify-content: center;
-    align-items: center;
     border-radius: 25px;
     box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
     .zhuce {
       width: 490px;
-      height: 702px;
       .header {
         width: 521px;
         height: 46px;
-        margin-bottom: 40px;
-        margin-top: 10px;
+        margin-bottom: 10px;
+        margin-top: 20px;
         display: flex;
         align-items: center;
         .logo {
           width: 185px;
           height: 46px;
-          margin: 0 auto;
+          // margin: 0 auto;
+          margin-left: 110px;
           img {
             width: 100%;
             height: 100%;
@@ -443,13 +473,32 @@ export default {
         }
       }
       .body {
-        /deep/ .el-form-item__error {
-          margin-top: -15px;
+        .news {
+          margin-bottom: 10px;
+          font-size: 16px;
+        }
+        // 单选框
+        .el-radio {
+          position: relative;
+          margin-left: 105px;
+          margin-bottom: 10px;
+          img {
+            width: 50px;
+            height: 50px;
+          }
+          /deep/ .el-radio__input {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+          }
+        }
+        // 整体校验站位和框内图标位置
+        /deep/ .el-form-item__content {
+          line-height: 0px;
         }
         // 输入框
         /deep/ .el-input__inner {
-          height: 60px;
-          margin-bottom: 15px;
+          height: 45px;
           font-size: 20px;
           padding-left: 90px;
           background-color: #f4f4f4;
@@ -457,35 +506,26 @@ export default {
         }
         /deep/ .el-checkbox__label {
           font-size: 16px;
+          margin-top: 10px;
         }
+        // 我同意选中框
         /deep/ .el-checkbox__inner {
-          width: 20px;
-          height: 20px;
-          margin-bottom: 2px;
-          // background-color: transparent;
+          width: 16px;
+          height: 16px;
         }
+        // 输入框内图标
         /deep/ .el-input__prefix {
           font-size: 20px;
-          margin-top: 10px;
+          line-height: 45px;
           margin-left: 36px;
         }
-        /deep/ .el-input .el-input__clear {
-          margin-right: 27px;
-          margin-top: -5px;
-          font-size: 20px;
-        }
+        // 对钩
         /deep/ .el-checkbox__inner::after {
-          width: 9px;
-          height: 13px;
+          width: 6px;
+          height: 9px;
         }
-        .footer-size {
-          color: #00aaf0;
-          text-align: center;
-          font-size: 16px;
-        }
-        .link:hover {
-          color: #00aaf0;
-          cursor:pointer;
+        .link {
+          cursor: pointer;
         }
         .hint {
           margin-top: -13px;
@@ -502,13 +542,26 @@ export default {
           background-color: #00aaf0;
         }
         .code {
-          padding-right: 27px;
-          padding-top: 23px;
-          // color: #00aaf0;
+          margin-right: 27px;
+          margin-top: 2px;
+          color: #00aaf0;
         }
         .check {
-          margin-top: -30px;
+          margin-top: -15px;
+          margin-bottom: 1px;
           color: #00aaf0;
+        }
+      }
+      .footer {
+        margin-top: 20px;
+        .btn {
+          height: 50px;
+        }
+        .footer-size {
+          color: #00aaf0;
+          text-align: center;
+          font-size: 16px;
+          margin-top: -10px;
         }
       }
     }
