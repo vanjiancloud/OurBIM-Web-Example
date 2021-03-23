@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-17 15:59:58
+ * @LastEditTime: 2021-03-23 13:33:59
  * @description: 
 -->
 <template>
@@ -539,20 +539,22 @@ export default {
       },
       actionData: {
         successMessage: "指令下发成功",
-        cancelMessage: "指令下发失败"
-      }
+        cancelMessage: "指令下发失败",
+        addLoadMessage: "正在执行添加视角，请稍候……"
+      },
+      FollowTimer: null
     };
   },
   watch: {
-    setProps: {      
+    setProps: {
       handler() {
         if (this.setProps.taskId) {
           this.getProps = this.setProps;
           this.ListPoint();
-        }        
+        }
       },
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
-      deep: true
+      deep: true,
     },
   },
   created() {
@@ -562,8 +564,9 @@ export default {
     }
     this.$i18n.locale = this.$route.query.locale;
     if (this.$i18n.locale) {
-      this.actionData.successMessage = this.$t("webClient.loadBox.message[2]")
-      this.actionData.cancelMessage = this.$t("webClient.loadBox.message[3]")
+      this.actionData.successMessage = this.$t("webClient.loadBox.message[2]");
+      this.actionData.cancelMessage = this.$t("webClient.loadBox.message[3]");
+      this.actionData.addLoadMessage = this.$t("webClient.loadBox.message[2]");
       this.deleteData = this.$t("webClient.deleteList[0]");
       this.dialogPointData = this.$t("webClient.dialogList[0]");
       this.cuttingTips = this.$t("webClient.tooltipList.subtool");
@@ -607,10 +610,10 @@ export default {
       this.followTool = false;
       this.personTool = false;
       let oldUrl = require(`@/assets/images/todo/unchecked/${
-          this.imgList[this.oldState].name
-        }`);
-        this.imgList[this.oldState].url = oldUrl;
-        this.imgList[this.oldState].state = 0;
+        this.imgList[this.oldState].name
+      }`);
+      this.imgList[this.oldState].url = oldUrl;
+      this.imgList[this.oldState].state = 0;
     },
     editTool(e) {
       let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
@@ -638,17 +641,18 @@ export default {
         taskid: this.getProps.taskId,
         id: 9,
       };
-      this.UpdateOrder(params)
-      .then(() => {
-          let realTimer = setTimeout(() => {
-            clearTimeout(realTimer)
-            this.ListPoint();
-          }, 1000 * 3);
-          this.dialogEdit = false;
-          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
-          this.imgList[6].url = oldUrl;
-          this.imgList[6].state = 0;
-      })
+      this.UpdateOrder(params).then(() => {
+        this.followTool = false
+        this.FollowTimer = setTimeout(() => {
+          clearTimeout(this.realTimer);
+          this.FollowTimer = null
+          this.ListPoint();
+        }, 1000 * 3);
+        this.dialogEdit = false;
+        let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+        this.imgList[6].url = oldUrl;
+        this.imgList[6].state = 0;
+      });
     },
     EditFollow(e) {
       /**
@@ -695,19 +699,19 @@ export default {
       })
         .then(() => {
           let params = {
-            tid: this.followInfo.tid
-          }
+            tid: this.followInfo.tid,
+          };
           MODELAPI.DElETEFOLLOWPOINT(params)
-        .then((res) => {
-          if (res.data.code === 0) {
-            this.ListPoint();
-            this.$message({
-            type: "success",
-            message: this.deleteData.successMessage,
-          });
-          }
-        })
-        .catch((err) => {});
+            .then((res) => {
+              if (res.data.code === 0) {
+                this.ListPoint();
+                this.$message({
+                  type: "success",
+                  message: this.deleteData.successMessage,
+                });
+              }
+            })
+            .catch((err) => {});
         })
         .catch(() => {
           this.$message({
@@ -727,19 +731,18 @@ export default {
        * @description: 跳转视点
        */
       this.followInfo = e;
-      console.log(e);
       let params = {
         taskid: this.getProps.taskId,
         id: 10,
-        camerashotId: e.tid
-      }
-      this.UpdateOrder(params)
+        camerashotId: e.tid,
+      };
+      this.UpdateOrder(params);
       if (e.viewMode) {
-        this.activePerson = e.viewMode === "1" ? 0 : 1
+        this.activePerson = e.viewMode === "1" ? 0 : 1;
       }
       if (e.projectionMode) {
         // this.activePerson = e.viewMode === "1" ? 0 : 1
-        this.$emit("listenMode", Number(e.projectionMode))
+        this.$emit("listenMode", Number(e.projectionMode));
       }
     },
     ListPoint() {
@@ -777,6 +780,18 @@ export default {
         event.stopPropagation();
         this.personTool = this.imgList[e].state === 0 ? true : false;
       }
+      if (e === 6) {
+        event.stopPropagation();
+        if (this.FollowTimer) {
+          this.$message({
+            type: "warning",
+            message: this.actionData.addLoadMessage
+          })
+          return
+        } else {
+        this.followTool = this.imgList[e].state === 0 ? true : false;          
+        }
+      }
       // 重置状态
       if (e !== this.oldState && e !== 10 && e !== 11) {
         let oldUrl = require(`@/assets/images/todo/unchecked/${
@@ -792,11 +807,7 @@ export default {
         realImg = require(`@/assets/images/todo/check/${this.imgList[e].name}`);
       } else {
         realImg = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
-      }
-      if (e === 6) {
-        event.stopPropagation();
-        this.followTool = this.imgList[e].state === 0 ? true : false;
-      }
+      }      
       this.imgList[e].url = realImg;
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
       if (e !== 0) {
@@ -806,7 +817,7 @@ export default {
         });
       }
     },
-    async UpdateOrder(e){
+    async UpdateOrder(e) {
       await MODELAPI.UPDATEORDER(e)
         .then((res) => {
           if (res.data.code === 0) {
@@ -819,10 +830,10 @@ export default {
               message: this.actionData.cancelMessage,
               type: "error",
             });
-          }          
+          }
         })
         .catch(() => {});
-    }
+    },
   },
 };
 </script>

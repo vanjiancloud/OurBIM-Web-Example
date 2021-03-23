@@ -4,10 +4,10 @@
     <div class="box">
       <!-- 消息提示 -->
       <div class="record">
-        {{ $t('Youhave') }}&nbsp;
-        <span style="color:#00aaf0;">{{ appList.length }}</span
+        {{ $t("Youhave") }}&nbsp;
+        <span style="color: #00aaf0">{{ appList.length }}</span
         >&nbsp;
-        {{ $t('Application') }}
+        {{ $t("Application") }}
       </div>
       <!-- 列表展示 -->
       <div class="list">
@@ -22,7 +22,7 @@
                 <div class="name">{{ item.appName }}</div>
                 <!-- 节点 -->
                 <div class="jiedian">
-                  {{ $t('node') }}&nbsp; {{ item.currentInstance }}/{{
+                  {{ $t("node") }}&nbsp; {{ item.currentInstance }}/{{
                     item.maxInstance
                   }}
                 </div>
@@ -30,7 +30,7 @@
                 <!-- 进入应用 -->
                 <div class="button">
                   <el-button round @click="GoApp(item)">
-                    {{ $t('into') }}</el-button
+                    {{ $t("into") }}</el-button
                   >
                 </div>
               </div>
@@ -43,87 +43,87 @@
 </template>
 
 <script>
-import { getProjectList } from '@/api/my.js'
-import { getuserid } from '@/store/index.js'
+import { getProjectList } from "@/api/my.js";
+import { getuserid } from "@/store/index.js";
 export default {
-  name: 'userCenter',
-  data () {
+  name: "userCenter",
+  data() {
     return {
       islive: false,
-      input: '',
+      input: "",
       isShow: 1,
-      classify: '全部',
+      classify: "全部",
       isHand: 6,
       appList: [],
-      timer: null
-    }
+      timer: null,
+    };
   },
-  created () {
-    this.GetList()
+  created() {
+    this.GetList();
   },
   methods: {
     // 切换英文
-    English () {
-      this.$i18n.locale = 'en'
-      this.classify = 'whole'
+    English() {
+      this.$i18n.locale = "en";
+      this.classify = "whole";
     },
 
     // 切换中文
-    Chinese () {
-      this.$i18n.locale = 'zh'
-      this.classify = '全部'
+    Chinese() {
+      this.$i18n.locale = "zh";
+      this.classify = "全部";
     },
 
     // 获取应用列表
-    GetList () {
+    GetList() {
       getProjectList({
         userid: getuserid(),
-        isHandle: 1
+        isHandle: 1,
       })
-        .then(res => {
-          console.log(res)
-          this.appList = res.data.data
+        .then((res) => {
+          console.log(res);
+          this.appList = res.data.data;
         })
-        .catch(err => {
-          console.log(err)
+        .catch((err) => {
+          console.log(err);
           // this.$message.error('请求失败')
-        })
+        });
     },
 
     // 进入应用
-    GoApp (e) {
+    GoApp(e) {
       /**
        * @Author: zk
        * @Date: 2021-02-22 17:52:23
        * @description: 获取应用信息
        */
       const { href } = this.$router.resolve({
-        name: 'web_client',
+        name: "web_client",
         query: {
           appid: e.appid,
-          locale: this.$i18n.locale
-        }
-      })
-      window.open(href, '_blank')
-    }
+          locale: this.$i18n.locale,
+        },
+      });
+      window.open(href, "_blank");
+    },
   },
   //  把定时器放在activated事件里，当清除定时后，
   // 下次再次进入当前路由的话，可以再次唤起定时器
-  activated () {
+  activated() {
     this.timer = setInterval(() => {
-      this.GetList()
-      console.log('3秒更新一次我的应用')
-    }, 3000)
+      this.GetList();
+      console.log("3秒更新一次我的应用");
+    }, 3000);
   },
   // 路由跳转清除定时
-  beforeRouteLeave (to, from, next) {
-    next()
+  beforeRouteLeave(to, from, next) {
+    next();
     if (this.timer) {
-      clearInterval(this.timer)
-      this.timer = null
+      clearInterval(this.timer);
+      this.timer = null;
     }
-  }
-}
+  },
+};
 </script>
 
 <style lang="less" scoped>
