@@ -28,7 +28,7 @@
         <img src="./icon.png" alt="" />
       </div>
       <div class="text">
-        <h3>{{ $t('toCreate') }}</h3>
+        {{ $t('toCreate') }}
       </div>
       <!-- input框 -->
       <div class="input">
@@ -112,7 +112,7 @@
       </div>
       <!-- 提示 -->
       <div class="text">
-        <h3>{{ $t('Upload') }}</h3>
+        {{ $t('Upload') }}
       </div>
       <!-- 单选框 -->
       <el-radio v-model="radio" label="1">{{ $t('UploadBIM') }}</el-radio>
@@ -348,6 +348,7 @@ export default {
         this.$message.error('上传模型只能是.rvt格式!')
       }
       this.$common.openLoading('上传模型中')
+      // this.$message.warning('上传模型中')
       return extension
     }
   },
@@ -372,10 +373,8 @@ export default {
     margin: 0 auto;
     margin-top: 50px;
     /deep/ .el-step__description {
-      font-size: 17px;
-    }
-    /deep/ .el-step {
-      color: red;
+      font-size: 16px;
+      // color: red;
     }
     /deep/.is-process {
       color: #c0c4cc !important;
@@ -411,6 +410,8 @@ export default {
     .text {
       text-align: center;
       margin-bottom: 20px;
+      font-size: 20px;
+      font-weight: bold;
     }
     .input {
       margin-left: 100px;
@@ -465,6 +466,8 @@ export default {
     .text {
       margin: 0 auto;
       margin: 20px 0;
+      font-size: 20px;
+      font-weight: bold;
     }
     .radio {
       margin-right: 10px;

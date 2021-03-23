@@ -67,7 +67,7 @@
           <el-form-item prop="isAgree">
             <el-checkbox
               class="checkbox"
-              label="记住登录邮箱"
+              label="记住密码"
               name="type"
               v-model="form.isAgree"
             ></el-checkbox>
@@ -129,7 +129,7 @@
           <el-form-item prop="isAgree">
             <el-checkbox
               class="checkbox"
-              label="记住登录手机号"
+              label="记住手机号"
               name="type"
               v-model="mobForm.checkbox"
             ></el-checkbox>
@@ -161,6 +161,7 @@ import { sendMsgCode, login, loginMobile } from '@/api/my.js'
 import { setuserid } from '@/store/index.js'
 import { Setuserid } from '@/store/index.js'
 import { setemail, getemail, delemail } from '@/store/index.js'
+import { setpassword, getpassword, delpassword } from '@/store/index.js'
 import { setmobile, getmobile, delmobile } from '@/store/index.js'
 // const Base64 = require('js-base64').Base64
 
@@ -234,7 +235,7 @@ export default {
     }
   },
   created () {
-    // 记住登录邮箱
+    // 记住邮箱
     if (localStorage.getItem('email')) {
       this.form.email = getemail()
       console.log(this.form.isAgree)
@@ -243,7 +244,16 @@ export default {
       this.form.email = ''
     }
 
-    // 记住登录手机号
+    // 记住密码
+    if (localStorage.getItem('password')) {
+      this.form.password = getpassword()
+      console.log(this.form.isAgree)
+      this.form.isAgree = true
+    } else if (localStorage.getItem('password') === null) {
+      this.form.password = ''
+    }
+
+    // 记住手机号
     if (localStorage.getItem('mobile')) {
       this.mobForm.mobile = getmobile()
       console.log(this.mobForm.checkbox)
@@ -260,32 +270,6 @@ export default {
         //自己写的登录方法，点击事件
         that.emailLogin()
         that.Mobilelogin()
-      }
-    }
-  },
-  watch: {
-    //路由跳转时邮箱表单清空判断
-    $route (to, from) {
-      if (this.form.isAgree === false) {
-        this.form.email = ''
-        this.form.password = ''
-      } else if (this.form.isAgree === true) {
-        this.form.password = ''
-      }
-      //路由跳转时手机表单清空判断
-      if (this.mobForm.checkbox === false) {
-        this.mobForm.mobile = ''
-        this.mobForm.code = ''
-      } else if (this.mobForm.checkbox === true) {
-        this.mobForm.code = ''
-      }
-    },
-    delay: function (newVal, oldVal) {
-      if (oldVal === 0) {
-        clearInterval(this.interId)
-        this.btnMes = '获取验证码'
-        ;(this.delay = 60), // 倒计时
-          (this.isSend = false)
       }
     }
   },
@@ -336,11 +320,14 @@ export default {
             // 存储用户信息userid，到localStorage
             setuserid(res.data.data.userid)
             setemail(this.form.email)
+            setpassword(this.form.password)
+
             // 存储用户信息userid，到sessionStorage
             Setuserid(res.data.data.userid)
             console.log(this.form.isAgree)
             if (this.form.isAgree === false) {
               delemail()
+              delpassword()
             }
             this.$router.push('../manage')
           } else if (res.data.code === 2) {
@@ -465,6 +452,30 @@ export default {
           console.log(err)
           this.$message.error('获取失败')
         })
+    }
+  },
+  watch: {
+    //路由跳转时邮箱表单清空判断
+    $route (to, from) {
+      if (this.form.isAgree === false) {
+        this.form.email = ''
+        this.form.password = ''
+      }
+      //路由跳转时手机表单清空判断
+      if (this.mobForm.checkbox === false) {
+        this.mobForm.mobile = ''
+        this.mobForm.code = ''
+      } else if (this.mobForm.checkbox === true) {
+        this.mobForm.code = ''
+      }
+    },
+    delay: function (newVal, oldVal) {
+      if (oldVal === 0) {
+        clearInterval(this.interId)
+        this.btnMes = '获取验证码'
+        ;(this.delay = 60), // 倒计时
+          (this.isSend = false)
+      }
     }
   }
 }

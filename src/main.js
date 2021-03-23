@@ -19,6 +19,8 @@ Vue.prototype.$common = common
 
 Vue.use(VueI18n)
 Vue.use(less)
+// vue 使用element-ui的el-dialog时 由于滚动条隐藏和出现导致页面抖动问题的解决
+ElementUI.Dialog.props.lockScroll.default = false;
 Vue.use(ElementUI)
 
 // 把axiox放到原型上
