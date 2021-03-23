@@ -41,6 +41,7 @@
           v-show="isshow == 0"
         >
           <!--  邮箱密码通过双向绑定获取 -->
+          <!-- 邮箱 -->
           <el-form-item prop="email">
             <div style="color:#000;font-size: 20px;">
               邮箱
@@ -49,6 +50,7 @@
               <i slot="prefix" class="el-input__icon el-icon-message"></i>
             </el-input>
           </el-form-item>
+          <!-- 密码 -->
           <el-form-item prop="password">
             <div style="color:#000;font-size: 20px;">
               密码
@@ -61,6 +63,7 @@
               <i slot="prefix" class="el-input__icon el-icon-unlock"></i>
             </el-input>
           </el-form-item>
+          <!-- 勾选框 -->
           <el-form-item prop="isAgree">
             <el-checkbox
               class="checkbox"
@@ -75,18 +78,16 @@
               >注册新用户</span
             >
           </el-form-item>
+          <!-- 登录按钮 -->
           <el-form-item>
-            <el-button
-              @click="emailLogin"
-              type="primary"
-              class="login-btn"
-              :loading="isLoading"
-              >登录</el-button
-            >
+            <el-button @click="emailLogin" type="primary" class="login-btn">
+              {{ logIn }}
+              <i class="el-icon-loading" v-if="isLoading"></i>
+            </el-button>
           </el-form-item>
         </el-form>
 
-        <!-- 短信登录的表单 -->
+        <!-- 手机登录的表单 -->
         <el-form
           :rules="rules"
           :model="mobForm"
@@ -95,12 +96,14 @@
           v-show="isshow == 1"
         >
           <!--  手机号验证码通过双向绑定获取里面的值 -->
+          <!-- 手机号 -->
           <el-form-item prop="mobile">
             <div style="color:#000;font-size: 20px;">手机号</div>
             <el-input v-model="mobForm.mobile" placeholder="请输入手机号">
               <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
             </el-input>
           </el-form-item>
+          <!-- 验证码 -->
           <el-form-item prop="code">
             <div style="color:#000;font-size: 20px;">
               验证码
@@ -122,6 +125,7 @@
               <i slot="prefix" class="el-input__icon el-icon-s-comment"></i>
             </el-input>
           </el-form-item>
+          <!-- 勾选框 -->
           <el-form-item prop="isAgree">
             <el-checkbox
               class="checkbox"
@@ -136,14 +140,12 @@
               >注册新用户</span
             >
           </el-form-item>
+          <!-- 登录按钮 -->
           <el-form-item>
-            <el-button
-              @click="Mobilelogin"
-              type="primary"
-              class="login-btn"
-              :loading="isLoading"
-              >登录</el-button
-            >
+            <el-button @click="Mobilelogin" type="primary" class="login-btn">
+              {{ logIn }}
+              <i class="el-icon-loading" v-if="isLoading"></i>
+            </el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -158,11 +160,10 @@
 import { sendMsgCode, login, loginMobile } from '@/api/my.js'
 import { setuserid } from '@/store/index.js'
 import { Setuserid } from '@/store/index.js'
-
 import { setemail, getemail, delemail } from '@/store/index.js'
 import { setmobile, getmobile, delmobile } from '@/store/index.js'
-
 // const Base64 = require('js-base64').Base64
+
 export default {
   name: 'Logoin',
   data () {
@@ -171,6 +172,9 @@ export default {
       delay: 60, // 倒计时
       interId: null, // 定时器
       btnMes: '获取验证码', // 按钮的文本
+      isshow: 0, // 切换登录类别
+      isLoading: false, // 是否正在登录,默认隐藏
+      logIn: '登录',
       // 邮箱登录表单
       form: {
         isAgree: false, // 复选框的状态
@@ -184,8 +188,6 @@ export default {
         msgType: '2', // 验证状态
         checkbox: false // 复选框的状态
       },
-      isshow: 0, // 切换登录类别
-      isLoading: false, // 是否正在登录
       // 定义验证规则rules
       rules: {
         email: [
@@ -262,6 +264,7 @@ export default {
     }
   },
   watch: {
+    //路由跳转时邮箱表单清空判断
     $route (to, from) {
       if (this.form.isAgree === false) {
         this.form.email = ''
@@ -269,7 +272,7 @@ export default {
       } else if (this.form.isAgree === true) {
         this.form.password = ''
       }
-
+      //路由跳转时手机表单清空判断
       if (this.mobForm.checkbox === false) {
         this.mobForm.mobile = ''
         this.mobForm.code = ''
@@ -277,12 +280,12 @@ export default {
         this.mobForm.code = ''
       }
     },
-    delay: function(newVal, oldVal) {
+    delay: function (newVal, oldVal) {
       if (oldVal === 0) {
         clearInterval(this.interId)
         this.btnMes = '获取验证码'
-        this.delay = 60, // 倒计时
-        this.isSend = false
+        ;(this.delay = 60), // 倒计时
+          (this.isSend = false)
       }
     }
   },
@@ -299,6 +302,8 @@ export default {
     emailLogin () {
       this.$refs.form.validate(valid => {
         if (valid) {
+          this.logIn = '登录中'
+          this.isLoading = true
           this.doLogin()
         }
       })
@@ -307,6 +312,8 @@ export default {
     Mobilelogin () {
       this.$refs.mobForm.validate(valid => {
         if (valid) {
+          this.logIn = '登录中'
+          this.isLoading = true
           this.mobLogin()
         }
       })
@@ -321,6 +328,8 @@ export default {
           console.log(res)
           if (res.data.code === 0) {
             this.$message.success(res.data.message)
+            this.logIn = '登录'
+            this.isLoading = false
             this.setCookie('userInfo', JSON.stringify(res.data.data))
             sessionStorage.setItem("userInfo", JSON.stringify(res.data.data))
             console.log(res.data.data)
@@ -333,16 +342,20 @@ export default {
             if (this.form.isAgree === false) {
               delemail()
             }
-            this.$router.push('../userCenter')
+            this.$router.push('../manage')
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
+            this.logIn = '登录'
+            this.isLoading = false
           } else {
-            this.$message.error('用户名或密码不正确，请重新输入')
+            this.$message.error('邮箱或密码不正确，请重新输入')
+            this.logIn = '登录'
+            this.isLoading = false
           }
         })
         .catch(err => {
           console.log(err)
-          this.$message.error('登录失败，该账号未注册')
+          this.$message.error('请检查网络或稍后重试')
         })
     },
     // 手机登录接口
@@ -355,6 +368,9 @@ export default {
           console.log(res)
           if (res.data.code === 0) {
             this.$message.success(res.data.message)
+            this.logIn = '登录'
+            this.isLoading = false
+            this.setCookie('userInfo', JSON.stringify(res.data.data))
             // 存储用户信息userid，到localStorage
             sessionStorage.setItem("userInfo", JSON.stringify(res.data.data))
             this.setCookie('userInfo', JSON.stringify(res.data.data))
@@ -365,18 +381,24 @@ export default {
             if (this.mobForm.checkbox === false) {
               delmobile()
             }
-            this.$router.push('../userCenter')
+            this.$router.push('../manage')
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
+            this.logIn = '登录'
+            this.isLoading = false
           } else if (res.data.code === 1) {
-            this.$message.error('验证码验证失败')
+            this.$message.error(res.data.message)
+            this.logIn = '登录'
+            this.isLoading = false
           } else {
             this.$message.error('验证码验证失败，您的操作过于频繁，请稍后再试')
+            this.logIn = '登录'
+            this.isLoading = false
           }
         })
         .catch(err => {
           console.log(err)
-          this.$message.error('验证码验证失败')
+          this.$message.error('请检查网络或稍后重试')
         })
     },
     // 取cookie

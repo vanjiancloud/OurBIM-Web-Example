@@ -2,14 +2,12 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 // 引入路由组件
 import Layout from '@/views/Layout/index.vue'
-import userCenter from '@/views/userCenter/index.vue'
 import manage from '@/views/manage/index.vue'
 import found from '@/views/found/index.vue'
 import bill from '@/views/bill/index.vue'
 import code from '@/views/code/index.vue'
 import order from '@/views/order/index.vue'
 import account from '@/views/order/index.vue'
-import changeCode from '@/views/changeCode/index.vue'
 
 Vue.use(VueRouter)
 
@@ -27,27 +25,20 @@ const routes = [
   {
     path: '/',
     component: Layout,
-    redirect: 'userCenter', //重定向到用户中心
+    redirect: 'login', //重定向到项目管理
     children: [
-      {
-        path: 'userCenter',
-        component: userCenter,
-        meta: {
-          title: '用户中心'
-        }
-      },
       {
         path: 'manage',
         component: manage,
         meta: {
-          title: '应用管理'
+          title: '项目管理'
         }
       },
       {
         path: 'found',
         component: found,
         meta: {
-          title: '创建应用'
+          title: '创建项目'
         }
       },
       {
