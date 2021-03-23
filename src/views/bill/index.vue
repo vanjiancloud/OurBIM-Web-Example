@@ -216,7 +216,7 @@ export default {
     border-bottom: 1px solid #f1f1f1;
   }
   .message {
-    margin: 0 auto;
+    // margin: 0 auto;
     width: 660px;
     height: 46px;
     margin-bottom: 30px;
@@ -225,7 +225,7 @@ export default {
     .one {
       float: left;
       height: 46px;
-      width: 60px;
+      width: 65px;
       line-height: 46px;
       margin-right: 35px;
       margin-left: 56px;
@@ -241,7 +241,8 @@ export default {
   }
   .photo {
     margin-top: 50px;
-    text-align: center;
+    // text-align: center;
+    margin-left: 150px;
     /deep/ .el-button--primary {
       // width: 130px;
       height: 45px;

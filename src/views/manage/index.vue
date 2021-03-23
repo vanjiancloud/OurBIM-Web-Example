@@ -551,6 +551,8 @@ export default {
     }
   }
   .el-dialog {
+    margin: 0;
+    padding: 0;
     .content {
       display: flex;
       justify-content: center;

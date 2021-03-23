@@ -331,7 +331,7 @@ export default {
             this.logIn = '登录'
             this.isLoading = false
             this.setCookie('userInfo', JSON.stringify(res.data.data))
-            sessionStorage.setItem("userInfo", JSON.stringify(res.data.data))
+            sessionStorage.setItem('userInfo', JSON.stringify(res.data.data))
             console.log(res.data.data)
             // 存储用户信息userid，到localStorage
             setuserid(res.data.data.userid)
@@ -356,6 +356,8 @@ export default {
         .catch(err => {
           console.log(err)
           this.$message.error('请检查网络或稍后重试')
+          this.logIn = '登录'
+          this.isLoading = false
         })
     },
     // 手机登录接口
@@ -372,7 +374,7 @@ export default {
             this.isLoading = false
             this.setCookie('userInfo', JSON.stringify(res.data.data))
             // 存储用户信息userid，到localStorage
-            sessionStorage.setItem("userInfo", JSON.stringify(res.data.data))
+            sessionStorage.setItem('userInfo', JSON.stringify(res.data.data))
             this.setCookie('userInfo', JSON.stringify(res.data.data))
             setuserid(res.data.data.userid)
             // 存储用户信息userid，到sessionStorage
@@ -399,6 +401,8 @@ export default {
         .catch(err => {
           console.log(err)
           this.$message.error('请检查网络或稍后重试')
+          this.logIn = '登录'
+          this.isLoading = false
         })
     },
     // 取cookie
