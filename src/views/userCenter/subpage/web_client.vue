@@ -106,20 +106,25 @@
             </div>
           </div>
           <div class="detail-main">
-            <table class="detail-table" v-if="memberInfo && memberInfo.dynamicData">
+            <table
+              class="detail-table"
+              v-if="memberInfo && memberInfo.dynamicData"
+            >
               <tr v-for="(item, index) in memberInfo.dynamicData" :key="index">
                 <td v-text="item.name"></td>
                 <td v-text="item.value"></td>
               </tr>
             </table>
-          </div>          
+          </div>
         </div>
       </div>
-      <todo-footer ref="getFooter" 
-      @listenTodo="listenTodo"
-      @listenPerson="listenPerson"
-      @listenMode="listenMode"
-      :setProps="propsFooter"></todo-footer>
+      <todo-footer
+        ref="getFooter"
+        @listenTodo="listenTodo"
+        @listenPerson="listenPerson"
+        @listenMode="listenMode"
+        :setProps="propsFooter"
+      ></todo-footer>
       <view-cube
         @handleOrder="handleOrder"
         @handleType="handleType"
@@ -144,7 +149,7 @@ export default {
   data() {
     return {
       propsFooter: {
-        taskId: null
+        taskId: null,
       },
       propsMember: {
         label: "name",
@@ -209,7 +214,7 @@ export default {
     window.addEventListener(
       "message",
       (e) => {
-        this.getError(e.data)
+        this.getError(e.data);
         if (e.data.data && e.data.data.frameHeight > 0 && e.data.type !== 500) {
           this.viewHeight = e.data.data.frameHeight;
         }
@@ -217,51 +222,68 @@ export default {
       false
     );
     //判断是否使用的是ipad
-			let isiPad = (navigator.userAgent.match(/(iPad)/) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1))
-			if(isiPad !== false){
-				this.viewHeight = 1
-			}
+    let isiPad =
+      navigator.userAgent.match(/(iPad)/) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (isiPad !== false) {
+      this.viewHeight = 1;
+    }
   },
   destroyed() {
     this.clearTimePass();
-    this.closeWebSocket()
+    this.closeWebSocket();
     if (this.socketTimer) {
       clearInterval(this.socketTimer);
     }
   },
   methods: {
-    listenMode(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-03-17 16:01:54
-     * @description: 切换投影模式
-     */ 
+    listenMode(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-17 16:01:54
+       * @description: 切换投影模式
+       */
       this.handleState = e;
-      this.$refs.getCube.resetActive(e)
+      this.$refs.getCube.resetActive(e);
     },
-    getError(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-03-16 13:55:19
-     * @description: 处理异常
-     */  
-    let errorList = [
-      101, 102, 103,
-      201, 202, 203,
-      301,
-      401, 402, 403, 404,
-      501, 502, 503, 504,
-      601, 602, 603,
-      1001, 1002, 1003, 1004
-    ]
-    if (errorList.indexOf(e.type) !== -1) {
-      this.$message({
+    getError(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-16 13:55:19
+       * @description: 处理异常
+       */
+      let errorList = [
+        101,
+        102,
+        103,
+        201,
+        202,
+        203,
+        301,
+        401,
+        402,
+        403,
+        404,
+        501,
+        502,
+        503,
+        504,
+        601,
+        602,
+        603,
+        1001,
+        1002,
+        1003,
+        1004,
+      ];
+      if (errorList.indexOf(e.type) !== -1) {
+        this.$message({
           message: e.message,
           duration: 0,
           showClose: true,
-          type: 'warning'
+          type: "warning",
         });
-    }
+      }
     },
     handleType(e) {
       /**
@@ -270,11 +292,31 @@ export default {
        * @description: 选择类型 e 0: 还原模型 1: 透视投影 2: 正交投影
        */
       if (e === 2) {
-        this.$refs.getFooter.resetpPrson();        
+        this.$refs.getFooter.resetpPrson();
       }
       this.shadowType = e;
-      this.handleState = 1;
-      this.updateOrder();
+      if (e === 0) {
+        // this.resetAngle()
+      } else {
+        this.handleState = 1;       
+        this.updateOrder();
+      }
+    },
+    resetAngle(){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-23 13:40:41
+     * @description: 还原模型
+     */  
+      console.log(this.shadowType);
+      let params = {
+        taskid: this.taskId
+      }
+      MODELAPI.UPDATERESETANGLE(params)
+      .then(res => {
+
+      })
+      .catch(err=>{})
     },
     handleTree(e, index) {
       /**
@@ -286,10 +328,10 @@ export default {
       if (index === 0) {
         // 选中
         if (e.checked) {
-          this.memberInfo = null
+          this.memberInfo = null;
           e.checked = false;
         } else {
-          this.memberInfo = e.data
+          this.memberInfo = e.data;
           this.$refs.setTree.setCheckedKeys([e.key]);
         }
         e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
@@ -363,10 +405,10 @@ export default {
           params.id = 8;
           params.viewMode = this.listenInfo === 0 ? 1 : 2;
           if (this.listenInfo === 0) {
-            this.shadowType = 1
-            this.$refs.getCube.resetActive(1)
+            this.shadowType = 1;
+            this.$refs.getCube.resetActive(1);
           }
-           params.projectionMode =
+          params.projectionMode =
             this.shadowType === 1 || this.shadowType === 2
               ? this.shadowType
               : 1;
@@ -495,15 +537,15 @@ export default {
       }
       this.$refs.getFooter.editTool(e);
     },
-    listenPerson(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-03-16 18:06:24
-     * @description: 人称切换
-     */
+    listenPerson(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-16 18:06:24
+       * @description: 人称切换
+       */
       this.handleState = 0;
-        this.listenInfo = e;
-        this.updateOrder();
+      this.listenInfo = e;
+      this.updateOrder();
     },
     listenTodo(e) {
       /**
@@ -516,8 +558,8 @@ export default {
       }
       if (e.type === 11) {
         this.natureInfo = e;
-        e.state === 0 ? this.memberInfo = null : ''
-      }      
+        e.state === 0 ? (this.memberInfo = null) : "";
+      }
     },
     initWebSocket() {
       //初始化weosocket
@@ -530,8 +572,8 @@ export default {
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
-          let realData = JSON.parse(e.data).data
-          this.memberInfo = realData
+          let realData = JSON.parse(e.data).data;
+          this.memberInfo = realData;
         }
       };
       this.websock.onopen = (e) => {
@@ -578,7 +620,7 @@ export default {
       this.loadTimer = setTimeout(() => {
         if (this.isFade === true) {
           this.hiddenState = 2;
-          this.closeWebSocket()
+          this.closeWebSocket();
         }
         clearTimeout(this.loadTimer);
       }, 1000 * 60);
@@ -601,14 +643,14 @@ export default {
           this.moreCount = 180 - this.timerCount;
         }
         if (this.moreCount === 0) {
-          this.closeWebSocket()
+          this.closeWebSocket();
           this.isFade = true;
           this.hiddenState = 1;
           this.clearTimePass();
         }
       }, 1000);
     },
-    closeWebSocket(){
+    closeWebSocket() {
       this.isSocket = false;
       this.websock.close(); //离开路由之后断开websocket连接
     },
@@ -633,16 +675,24 @@ export default {
         };
         // 关闭tool
         this.sendToIframe(10200, "false", "");
-document.addEventListener("keydown", (e) => {
-          this.sendToIframe(10010, {
-            key: e.code,
-            isRepeat: e.repeat,
-          }, "");
-        })
+        document.addEventListener("keydown", (e) => {
+          this.sendToIframe(
+            10010,
+            {
+              key: e.code,
+              isRepeat: e.repeat,
+            },
+            ""
+          );
+        });
         document.addEventListener("keyup", (e) => {
-          this.sendToIframe(10011, {
-            key: e.code
-          }, "");
+          this.sendToIframe(
+            10011,
+            {
+              key: e.code,
+            },
+            ""
+          );
         });
         window.clearTimeout(realTimer);
       }, 1000 * 2);
@@ -1017,7 +1067,7 @@ document.addEventListener("keydown", (e) => {
           cursor: pointer;
         }
       }
-      .detail-main{
+      .detail-main {
         overflow-x: hidden;
         overflow-y: auto;
         margin-top: 1vh;
@@ -1042,7 +1092,6 @@ document.addEventListener("keydown", (e) => {
         }
       }
       .detail-table {
-        
         width: 100%;
         line-height: 35px;
         text-align: center;

@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-02-24 13:47:18
  * @LastEditors: zk
- * @LastEditTime: 2021-03-17 12:01:48
+ * @LastEditTime: 2021-03-23 13:43:25
  * @description: 
  */
 import {
@@ -59,6 +59,14 @@ const MODELAPI = {
     DElETEFOLLOWPOINT: params => {
     return request({
         url: '/OurBim/deleteCamerashotGod',
+        method: 'post',
+        params
+      })
+  },
+  // 还原模型
+  UPDATERESETANGLE: params => {
+    return request({
+        url: '/OurBim/clearGodCamerashot',
         method: 'post',
         params
       })
