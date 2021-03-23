@@ -50,6 +50,17 @@
         </el-table-column>
       </el-table>
     </div>
+    <!-- 分页 -->
+    <div class="page">
+      <el-pagination
+        :hide-on-single-page="value"
+        background
+        layout="prev, pager, next"
+        :total="total"
+        @current-change="pageChange"
+      >
+      </el-pagination>
+    </div>
   </div>
 </template>
 
@@ -92,7 +103,7 @@ export default {
       getOrder(editParams)
         .then(res => {
           console.log(res)
-          console.log('获取数据成功')
+          console.log(res.data.$message)
           let arr = res.data.data
           arr.forEach(b => {
             b.eyseShow = true
@@ -173,6 +184,8 @@ export default {
   background-image: url('./img/open.png');
 }
 .box {
+  min-height: 961px;
+  position: relative;
   .title {
     height: 54px;
     text-align: center;
@@ -219,6 +232,11 @@ export default {
         height: 30px;
       }
     }
+  }
+  .page {
+    position: absolute;
+    bottom: 100px;
+    left: 40%;
   }
 }
 </style>

@@ -98,8 +98,9 @@ export default {
     border-bottom: 1px solid #f1f1f1;
   }
   .input {
-    text-align: center;
+    // text-align: center;
     margin-top: 20px;
+    margin-left: 55px;
     font-size: 16px;
     .el-input {
       width: 462px;

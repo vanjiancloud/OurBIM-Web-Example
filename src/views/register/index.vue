@@ -123,20 +123,9 @@
               >
             </div>
             <div class="footer-size">
-<<<<<<< HEAD
               <el-button type="text" @click="toLogoin"
                 >已有账号，立即登录</el-button
               >
-=======
-              <el-button type="text" @click="toLogoin">已有账号，立即登录</el-button>
-              <!-- <span
-                ><a
-                  href="http://www.ourbim.com:7011:7012/#/login"
-                  style="text-decoration:none;font-size: 16px;color:#00aaf0 "
-                  >已有账号，立即登录</a
-                ></span
-              > -->
->>>>>>> dd787c304895f4fcbdbc87c08d456ee687921812
             </div>
           </div>
         </div>
@@ -569,10 +558,12 @@ export default {
           height: 50px;
         }
         .footer-size {
-          color: #00aaf0;
           text-align: center;
           font-size: 16px;
           margin-top: -10px;
+          .el-button {
+            color: #00aaf0;
+          }
         }
       }
     }

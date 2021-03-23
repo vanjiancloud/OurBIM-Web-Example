@@ -32,15 +32,19 @@
       </div>
       <!-- input框 -->
       <div class="input">
-        <span style="color:red;margin-right:5px">*</span>
-        <span style="margin-right:5px">{{ $t('application') }}</span>
+        <span style="color:red;margin-right:5px;font-size: 16px;">*</span>
+        <span style="margin-right:5px; font-size: 16px; ">{{
+          $t('application')
+        }}</span>
         <el-input v-model="appName"></el-input>
       </div>
       <!-- 上传图片 -->
       <div class="picture">
         <div class="news">
-          <span style="color:red;margin-right:5px">*</span>
-          <span style="margin-right:5px">{{ $t('Uploadc') }}</span>
+          <span style="color:red;margin-right:5px;font-size: 16px;">*</span>
+          <span style="margin-right:5px; font-size: 16px;  ">{{
+            $t('Uploadc')
+          }}</span>
         </div>
         <!-- 上传封面 -->
         <div class="cover">
@@ -90,7 +94,7 @@
         </el-dialog>
       </div>
       <div class="xiaoxi">
-        <span style="color:red;margin-right:5px">*</span>
+        <span style="color:red;margin-right:5px;font-size: 16px;">*</span>
         {{ $t('extensions') }}：.png .jpg .jpeg
       </div>
       <!-- 按钮 -->
@@ -177,9 +181,7 @@
 </template>
 
 <script>
-// import MyFooter from '../components/myFooter.vue'
-// import myHeader from '../components/myHeader.vue'
-import { addProject, ProjectModel } from '@/api/my.js'
+import { addProject } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
@@ -328,8 +330,10 @@ export default {
       const three = testmsg === 'png'
       if (!one && !two && !three) {
         this.$message.error('上传封面只能是.jpg .jpeg .png格式!')
+        this.hideUpload = false
+      } else {
+        this.hideUpload = true
       }
-      this.hideUpload = true
       return one || two || three
     },
     // 限制上传模型次数
@@ -374,9 +378,9 @@ export default {
       color: red;
     }
     /deep/.is-process {
-      color: #C0C4CC !important;
+      color: #c0c4cc !important;
       font-weight: 10 !important;
-      border-color: #C0C4CC !important;
+      border-color: #c0c4cc !important;
     }
   }
   .first {
@@ -431,7 +435,8 @@ export default {
     .xiaoxi {
       font-size: 14px;
       text-align: center;
-      margin-top: 5px;
+      margin-left: 30px;
+      margin-top: 10px;
     }
     .anNiu {
       margin-top: 20px;
