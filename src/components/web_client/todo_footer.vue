@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-24 10:41:44
+ * @LastEditTime: 2021-03-24 11:27:41
  * @description: 
 -->
 <template>
@@ -380,7 +380,7 @@
     >
       <el-form v-if="followInfo">
         <el-form-item :label="dialogPointData.label" label-width="50px">
-          <el-input v-model="followInfo.name"></el-input>
+          <el-input @click.native.stop v-model="followInfo.name"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -667,7 +667,7 @@ export default {
        * @Date: 2021-03-17 10:43:44
        * @description: 编辑视点
        */
-      this.followInfo = e;
+      this.followInfo = JSON.parse(JSON.stringify(e));
       this.dialogEdit = true;
     },
     UpdateFollow() {
