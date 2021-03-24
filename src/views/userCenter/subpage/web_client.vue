@@ -232,10 +232,7 @@ export default {
   },
   destroyed() {
     this.clearTimePass();
-    this.closeWebSocket();
-    if (this.socketTimer) {
-      clearInterval(this.socketTimer);
-    }
+    this.closeWebSocket();    
   },
   methods: {
     listenMode(e) {
@@ -431,13 +428,29 @@ export default {
           params.speedLevel = this.listenTodoInfo.data
           break;
         case 4:
-          // 视角切换
-          params.id = 13;
+          // 测量
+          if (this.listenTodoInfo.data === 0) {
+            // 坐标
+            params.id = 37;
+          } else if (this.listenTodoInfo.data === 1) {
+            // 距离
+            params.id = 35;
+          } else if (this.listenTodoInfo.data === 2) {
+            // 角度
+            params.id = 36;
+          } else if (this.listenTodoInfo.data === 3) {
+            // 设置单位
+            params.id = 38;
+            params.unit = this.listenTodoInfo.set;
+          } else if (this.listenTodoInfo.data === 4) {
+            // 设置精度
+            params.id = 38;
+            params.precision = this.listenTodoInfo.set;
+          }
           break;
         case 5:
-          // // 视角切换
-          // params.id = 12;
-          // params.sjid = this.angleInfo.tid;
+          // 关闭测量
+          params.id = 39;
           break;
         case 6:
           // 六面体
@@ -569,6 +582,18 @@ export default {
         this.listenTodoInfo = e
         this.updateOrder()
       }
+      // 测量
+      if (e.type === 3) {
+        if (e.state === 1 && e.data !== undefined) {
+          this.handleState = 4
+          this.listenTodoInfo = e
+          this.updateOrder()
+        }
+        if (e.state === 0) {
+          this.handleState = 5
+          this.updateOrder()
+        }
+      }
     },
     initWebSocket() {
       //初始化weosocket
@@ -664,6 +689,11 @@ export default {
       }, 1000);
     },
     closeWebSocket() {
+      // 清除定时器
+      if (this.socketTimer) {
+        clearInterval(this.socketTimer);
+        this.socketTimer = null
+      }
       if (this.websock) {
         this.isSocket = false;
         this.websock.close(); //离开路由之后断开websocket连接
@@ -719,9 +749,9 @@ export default {
        * @Date: 2020-09-29 10:18:33
        * @description: postmessage通信
        */
-      let realIframe = document.getElementById("show-bim").contentWindow;
+      let realIframe = document.getElementById("show-bim");
       if (realIframe) {
-        realIframe.postMessage(
+        realIframe.contentWindow.postMessage(
           {
             prex: "pxymessage", // 约定的消息头部
             type: type, // 消息类型

@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-24 11:27:41
+ * @LastEditTime: 2021-03-24 18:04:23
  * @description: 
 -->
 <template>
@@ -57,11 +57,11 @@
             mode=""
           />
         </el-tooltip>
-        <el-collapse-transition>
+        <!-- <el-collapse-transition> -->
           <div class="show-speed" v-if="imgList[1].state === 1">
-            <el-slider v-model="imgList[1].data.speed" :min="1" :max="8" @click.native.stop="" @change="changeSpeed"></el-slider>
+            <el-slider v-model="imgList[1].data.speed" :min="1" :max="8" @change="changeSpeed"></el-slider>
           </div>
-        </el-collapse-transition>
+        <!-- </el-collapse-transition> -->
       </div>
       <div class="cut-apart"></div>
       <div class="image-main">
@@ -103,6 +103,7 @@
             >
               <img
                 class="cutting-img"
+                @click.stop="changeGauge(0)"
                 src="@/assets/images/todo/unchecked/position.png"
                 mode=""
               />
@@ -115,6 +116,7 @@
             >
               <img
                 class="cutting-img"
+                @click.stop="changeGauge(1)"
                 src="@/assets/images/todo/unchecked/gauge.png"
                 mode=""
               />
@@ -127,6 +129,7 @@
             >
               <img
                 class="cutting-img"
+                @click.stop="changeGauge(2)"
                 src="@/assets/images/todo/unchecked/angle.png"
                 mode=""
               />
@@ -148,21 +151,21 @@
                   <el-form-item :label="$t('webClient.setting[0].label')">
                     <el-select
                       size="mini"
+                      @change="changeGauge(3)"
                       v-model="setForm.unit"
                       :placeholder="$t('webClient.setting[0].tips')"
                     >
-                      <el-option label="区域一" value="shanghai"></el-option>
-                      <el-option label="区域二" value="beijing"></el-option>
+                      <el-option :label="item" :value="index" v-for="(item, index) in unitList" :key="index"></el-option>
                     </el-select>
                   </el-form-item>
                   <el-form-item :label="$t('webClient.setting[1].label')">
                     <el-select
                       size="mini"
-                      v-model="setForm.unit"
+                      @change="changeGauge(4)"
+                      v-model="setForm.accuracy"
                       :placeholder="$t('webClient.setting[1].tips')"
                     >
-                      <el-option label="区域一" value="shanghai"></el-option>
-                      <el-option label="区域二" value="beijing"></el-option>
+                      <el-option :label="item" :value="index" v-for="(item, index) in accuracyList" :key="index"></el-option>
                     </el-select>
                   </el-form-item>
                 </el-form>
@@ -410,6 +413,8 @@ export default {
   },
   data() {
     return {
+      unitList: ['m', 'cm', 'mm', 'ft', 'in'],
+      accuracyList: ['0', '0.1', '0.01'],
       getProps: null,
       followInfo: null,
       pointList: [],
@@ -518,7 +523,8 @@ export default {
       followTool: false,
       personTool: false,
       setForm: {
-        unit: null,
+        unit: 0,
+        accuracy: 2,
         weather: null,
       },
       deleteData: {
@@ -585,6 +591,26 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    changeGauge(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-24 15:43:44
+     * @description: 测量 0 坐标 1 距离 2 角度 3 单位 4 精度
+     */
+      let realSet = null
+      if (e === 3) {
+        realSet = this.unitList[this.setForm.unit] ? this.unitList[this.setForm.unit] : 'm'
+      }
+      if (e === 4) {
+        realSet = this.accuracyList[this.setForm.accuracy] ? this.accuracyList[this.setForm.accuracy] : '0.01'
+      }
+      this.$emit("listenTodo", {
+          state: this.imgList[3].state,
+          type: 3,
+          data: e,
+          set: realSet
+      });
+    },
     changeSpeed(e){
       /**
        * @Author: zk
@@ -594,7 +620,7 @@ export default {
       this.$emit("listenTodo", {
           state: this.imgList[1].state,
           type: 1,
-          data:e
+          data: e
       });
     },
     changePerson(e) {
@@ -617,6 +643,9 @@ export default {
        * @Date: 2021-03-17 09:51:33
        * @description: 关闭tool
        */
+      if (this.oldState === 3 || this.oldState === 1) {
+        return
+      }
       this.angleTool = false;
       this.followTool = false;
       this.personTool = false;
@@ -640,7 +669,12 @@ export default {
       this.activePerson = e;
     },
     showAngle() {
-      this.angleTool = true;
+      /**
+       * @Author: zk
+       * @Date: 2021-03-24 16:05:57
+       * @description: 设置单位
+       */
+      this.angleTool = this.angleTool ? false : true;
     },
     InsertFollow() {
       /**
@@ -797,7 +831,6 @@ export default {
     handleOrder(e) {
       if (
         e === 2 ||
-        e === 3 ||
         e === 4 ||
         e === 5 ||
         e === 7 ||
@@ -813,7 +846,7 @@ export default {
         this.followTool = this.imgList[e].state === 0 ? true : false; 
       }
       // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11) {
+      if (e !== this.oldState && e !== 10 && e !== 11 &&  this.oldState !== 3) {
         let oldUrl = require(`@/assets/images/todo/unchecked/${
           this.imgList[this.oldState].name
         }`);
