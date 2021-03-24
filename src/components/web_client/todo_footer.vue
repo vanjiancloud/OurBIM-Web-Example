@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-23 13:33:59
+ * @LastEditTime: 2021-03-23 16:57:56
  * @description: 
 -->
 <template>
@@ -37,7 +37,7 @@
             <img
               class="footer-image"
               :src="imgList[0].url"
-              @click="handleOrder(0)"
+              @click.stop="handleOrder(0)"
               mode=""
             />
           </el-tooltip>
@@ -51,7 +51,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(1)"
+            @click.stop="handleOrder(1)"
             class="footer-image"
             :src="imgList[1].url"
             mode=""
@@ -72,7 +72,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(2)"
+            @click.stop="handleOrder(2)"
             class="footer-image"
             :src="imgList[2].url"
             mode=""
@@ -87,7 +87,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(3)"
+            @click.stop="handleOrder(3)"
             class="footer-image"
             :src="imgList[3].url"
             mode=""
@@ -192,7 +192,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(4)"
+            @click.stop="handleOrder(4)"
             class="footer-image"
             :src="imgList[4].url"
             mode=""
@@ -207,7 +207,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(5)"
+            @click.stop="handleOrder(5)"
             class="footer-image"
             :src="imgList[5].url"
             mode=""
@@ -258,7 +258,7 @@
             placement="top"
           >
             <img
-              @click="handleOrder(6)"
+              @click.stop="handleOrder(6)"
               class="footer-image"
               :src="imgList[6].url"
               mode=""
@@ -274,7 +274,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(7)"
+            @click.stop="handleOrder(7)"
             class="footer-image"
             :src="imgList[7].url"
             mode=""
@@ -289,7 +289,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(8)"
+            @click.stop="handleOrder(8)"
             class="footer-image"
             :src="imgList[8].url"
             mode=""
@@ -309,7 +309,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(9)"
+            @click.stop="handleOrder(9)"
             class="footer-image"
             :src="imgList[9].url"
             mode=""
@@ -349,7 +349,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(10)"
+            @click.stop="handleOrder(10)"
             class="footer-image"
             :src="imgList[10].url"
             mode=""
@@ -364,7 +364,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(11)"
+            @click.stop="handleOrder(11)"
             class="footer-image"
             :src="imgList[11].url"
             mode=""
@@ -542,7 +542,6 @@ export default {
         cancelMessage: "指令下发失败",
         addLoadMessage: "正在执行添加视角，请稍候……"
       },
-      FollowTimer: null
     };
   },
   watch: {
@@ -566,7 +565,7 @@ export default {
     if (this.$i18n.locale) {
       this.actionData.successMessage = this.$t("webClient.loadBox.message[2]");
       this.actionData.cancelMessage = this.$t("webClient.loadBox.message[3]");
-      this.actionData.addLoadMessage = this.$t("webClient.loadBox.message[2]");
+      this.actionData.addLoadMessage = this.$t("webClient.loadBox.message[5]");
       this.deleteData = this.$t("webClient.deleteList[0]");
       this.dialogPointData = this.$t("webClient.dialogList[0]");
       this.cuttingTips = this.$t("webClient.tooltipList.subtool");
@@ -643,11 +642,7 @@ export default {
       };
       this.UpdateOrder(params).then(() => {
         this.followTool = false
-        this.FollowTimer = setTimeout(() => {
-          clearTimeout(this.realTimer);
-          this.FollowTimer = null
-          this.ListPoint();
-        }, 1000 * 3);
+        this.ListPoint();
         this.dialogEdit = false;
         let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
         this.imgList[6].url = oldUrl;
@@ -736,13 +731,37 @@ export default {
         id: 10,
         camerashotId: e.tid,
       };
-      this.UpdateOrder(params);
-      if (e.viewMode) {
-        this.activePerson = e.viewMode === "1" ? 0 : 1;
-      }
-      if (e.projectionMode) {
-        // this.activePerson = e.viewMode === "1" ? 0 : 1
-        this.$emit("listenMode", Number(e.projectionMode));
+      if (this.followInfo.available === "0") {
+          this.$message({
+            type: "warning",
+            message: this.actionData.addLoadMessage
+          })
+          return
+        } else {
+          this.UpdateOrder(params);
+        if (e.viewMode) {
+          this.activePerson = e.viewMode === "1" ? 0 : 1;
+        }
+        if (e.projectionMode) {
+          // this.activePerson = e.viewMode === "1" ? 0 : 1
+          this.$emit("listenMode", Number(e.projectionMode));
+        }
+        }      
+    },
+    resetPointList(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-23 15:49:31
+     * @description: 补充关注视角列表
+     */        
+      for (const key in this.pointList) {
+        if (Object.hasOwnProperty.call(this.pointList, key)) {
+          const item = this.pointList[key];
+          if (item.tid === e.tid) {
+            this.pointList[key] = e
+            return
+          }
+        }
       }
     },
     ListPoint() {
@@ -765,7 +784,6 @@ export default {
     },
     handleOrder(e) {
       if (
-        e === 1 ||
         e === 2 ||
         e === 3 ||
         e === 4 ||
@@ -777,20 +795,10 @@ export default {
         return;
       }
       if (e === 0) {
-        event.stopPropagation();
         this.personTool = this.imgList[e].state === 0 ? true : false;
       }
       if (e === 6) {
-        event.stopPropagation();
-        if (this.FollowTimer) {
-          this.$message({
-            type: "warning",
-            message: this.actionData.addLoadMessage
-          })
-          return
-        } else {
-        this.followTool = this.imgList[e].state === 0 ? true : false;          
-        }
+        this.followTool = this.imgList[e].state === 0 ? true : false; 
       }
       // 重置状态
       if (e !== this.oldState && e !== 10 && e !== 11) {
@@ -807,7 +815,7 @@ export default {
         realImg = require(`@/assets/images/todo/check/${this.imgList[e].name}`);
       } else {
         realImg = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
-      }      
+      }
       this.imgList[e].url = realImg;
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
       if (e !== 0) {

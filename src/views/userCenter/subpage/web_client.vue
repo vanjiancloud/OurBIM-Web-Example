@@ -188,7 +188,7 @@ export default {
     };
   },
   watch: {
-    viewHeight(val, oldVal) {
+    viewHeight() {
       //普通的watch监听
       if (this.isFade) {
         this.$message({
@@ -277,6 +277,7 @@ export default {
         1004,
       ];
       if (errorList.indexOf(e.type) !== -1) {
+        this.closeWebSocket()
         this.$message({
           message: e.message,
           duration: 0,
@@ -289,14 +290,17 @@ export default {
       /**
        * @Author: zk
        * @Date: 2021-03-12 11:34:19
-       * @description: 选择类型 e 0: 还原模型 1: 透视投影 2: 正交投影
+       * @description: 选择类型 e 0: 还原模型 1: 透视投影 2: 正交投影 3 自定义主视图
        */
       if (e === 2) {
         this.$refs.getFooter.resetpPrson();
       }
       this.shadowType = e;
       if (e === 0) {
-        // this.resetAngle()
+        this.resetAngle()
+      } else if (e === 3) {
+        this.handleState = 2;       
+        this.updateOrder();
       } else {
         this.handleState = 1;       
         this.updateOrder();
@@ -432,6 +436,9 @@ export default {
             }
           }
           break;
+        case 2:
+          params.id = 11
+          break;
         case 3:
           // 缩放
           params.id = this.mouseState.roller;
@@ -441,9 +448,9 @@ export default {
           params.id = this.mouseState.angle;
           break;
         case 5:
-          // 视角切换
-          params.id = 12;
-          params.sjid = this.angleInfo.tid;
+          // // 视角切换
+          // params.id = 12;
+          // params.sjid = this.angleInfo.tid;
           break;
         case 6:
           // 六面体
@@ -572,8 +579,12 @@ export default {
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
-          let realData = JSON.parse(e.data).data;
-          this.memberInfo = realData;
+          let realData = JSON.parse(e.data);
+          if (realData.id === "1") {
+            this.memberInfo = realData.data;
+          } else if (realData.id === "3") {
+            this.$refs.getFooter.resetPointList(realData.object)
+          }
         }
       };
       this.websock.onopen = (e) => {
@@ -651,8 +662,11 @@ export default {
       }, 1000);
     },
     closeWebSocket() {
-      this.isSocket = false;
-      this.websock.close(); //离开路由之后断开websocket连接
+      if (this.websock) {
+        this.isSocket = false;
+        this.websock.close(); //离开路由之后断开websocket连接
+        this.websock = null
+      }      
     },
     getMonitor() {
       /**
@@ -1153,7 +1167,7 @@ export default {
   }
 
   #show-bim {
-    height: 110vh;
+    height: 100vh;
     width: 100vw;
     overflow: hidden;
   }

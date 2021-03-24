@@ -201,7 +201,7 @@ const i18n = new VueI18n({
         },
         cubeBox: {
           direction: ["前", "后", "上", "下", "左", "右"],
-          handle: ["正交投影", "透视投影", "还原模型"]
+          handle: ["正交投影", "透视投影", "自定义主视图", "还原模型"]
         },
         tooltipList: {
           toolPerson: ["第一人称", "第三人称", "跟随人物"],
