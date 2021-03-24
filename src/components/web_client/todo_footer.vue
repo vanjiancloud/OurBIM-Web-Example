@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-23 13:33:59
+ * @LastEditTime: 2021-03-24 18:04:23
  * @description: 
 -->
 <template>
@@ -37,7 +37,7 @@
             <img
               class="footer-image"
               :src="imgList[0].url"
-              @click="handleOrder(0)"
+              @click.stop="handleOrder(0)"
               mode=""
             />
           </el-tooltip>
@@ -51,17 +51,17 @@
           placement="top"
         >
           <img
-            @click="handleOrder(1)"
+            @click.stop="handleOrder(1)"
             class="footer-image"
             :src="imgList[1].url"
             mode=""
           />
         </el-tooltip>
-        <el-collapse-transition>
+        <!-- <el-collapse-transition> -->
           <div class="show-speed" v-if="imgList[1].state === 1">
-            <el-slider v-model="imgList[1].data.speed"></el-slider>
+            <el-slider v-model="imgList[1].data.speed" :min="1" :max="8" @change="changeSpeed"></el-slider>
           </div>
-        </el-collapse-transition>
+        <!-- </el-collapse-transition> -->
       </div>
       <div class="cut-apart"></div>
       <div class="image-main">
@@ -72,7 +72,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(2)"
+            @click.stop="handleOrder(2)"
             class="footer-image"
             :src="imgList[2].url"
             mode=""
@@ -87,7 +87,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(3)"
+            @click.stop="handleOrder(3)"
             class="footer-image"
             :src="imgList[3].url"
             mode=""
@@ -103,6 +103,7 @@
             >
               <img
                 class="cutting-img"
+                @click.stop="changeGauge(0)"
                 src="@/assets/images/todo/unchecked/position.png"
                 mode=""
               />
@@ -115,6 +116,7 @@
             >
               <img
                 class="cutting-img"
+                @click.stop="changeGauge(1)"
                 src="@/assets/images/todo/unchecked/gauge.png"
                 mode=""
               />
@@ -127,6 +129,7 @@
             >
               <img
                 class="cutting-img"
+                @click.stop="changeGauge(2)"
                 src="@/assets/images/todo/unchecked/angle.png"
                 mode=""
               />
@@ -148,21 +151,21 @@
                   <el-form-item :label="$t('webClient.setting[0].label')">
                     <el-select
                       size="mini"
+                      @change="changeGauge(3)"
                       v-model="setForm.unit"
                       :placeholder="$t('webClient.setting[0].tips')"
                     >
-                      <el-option label="区域一" value="shanghai"></el-option>
-                      <el-option label="区域二" value="beijing"></el-option>
+                      <el-option :label="item" :value="index" v-for="(item, index) in unitList" :key="index"></el-option>
                     </el-select>
                   </el-form-item>
                   <el-form-item :label="$t('webClient.setting[1].label')">
                     <el-select
                       size="mini"
-                      v-model="setForm.unit"
+                      @change="changeGauge(4)"
+                      v-model="setForm.accuracy"
                       :placeholder="$t('webClient.setting[1].tips')"
                     >
-                      <el-option label="区域一" value="shanghai"></el-option>
-                      <el-option label="区域二" value="beijing"></el-option>
+                      <el-option :label="item" :value="index" v-for="(item, index) in accuracyList" :key="index"></el-option>
                     </el-select>
                   </el-form-item>
                 </el-form>
@@ -192,7 +195,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(4)"
+            @click.stop="handleOrder(4)"
             class="footer-image"
             :src="imgList[4].url"
             mode=""
@@ -207,7 +210,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(5)"
+            @click.stop="handleOrder(5)"
             class="footer-image"
             :src="imgList[5].url"
             mode=""
@@ -258,7 +261,7 @@
             placement="top"
           >
             <img
-              @click="handleOrder(6)"
+              @click.stop="handleOrder(6)"
               class="footer-image"
               :src="imgList[6].url"
               mode=""
@@ -274,7 +277,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(7)"
+            @click.stop="handleOrder(7)"
             class="footer-image"
             :src="imgList[7].url"
             mode=""
@@ -289,7 +292,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(8)"
+            @click.stop="handleOrder(8)"
             class="footer-image"
             :src="imgList[8].url"
             mode=""
@@ -309,7 +312,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(9)"
+            @click.stop="handleOrder(9)"
             class="footer-image"
             :src="imgList[9].url"
             mode=""
@@ -349,7 +352,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(10)"
+            @click.stop="handleOrder(10)"
             class="footer-image"
             :src="imgList[10].url"
             mode=""
@@ -364,7 +367,7 @@
           placement="top"
         >
           <img
-            @click="handleOrder(11)"
+            @click.stop="handleOrder(11)"
             class="footer-image"
             :src="imgList[11].url"
             mode=""
@@ -380,7 +383,7 @@
     >
       <el-form v-if="followInfo">
         <el-form-item :label="dialogPointData.label" label-width="50px">
-          <el-input v-model="followInfo.name"></el-input>
+          <el-input @click.native.stop v-model="followInfo.name"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -410,6 +413,8 @@ export default {
   },
   data() {
     return {
+      unitList: ['m', 'cm', 'mm', 'ft', 'in'],
+      accuracyList: ['0', '0.1', '0.01'],
       getProps: null,
       followInfo: null,
       pointList: [],
@@ -440,7 +445,7 @@ export default {
           url: require("@/assets/images/todo/unchecked/speed.png"),
           name: "speed.png",
           data: {
-            speed: 50,
+            speed: 4,
           },
           title: "移动速度",
         },
@@ -518,7 +523,8 @@ export default {
       followTool: false,
       personTool: false,
       setForm: {
-        unit: null,
+        unit: 0,
+        accuracy: 2,
         weather: null,
       },
       deleteData: {
@@ -542,7 +548,6 @@ export default {
         cancelMessage: "指令下发失败",
         addLoadMessage: "正在执行添加视角，请稍候……"
       },
-      FollowTimer: null
     };
   },
   watch: {
@@ -566,7 +571,7 @@ export default {
     if (this.$i18n.locale) {
       this.actionData.successMessage = this.$t("webClient.loadBox.message[2]");
       this.actionData.cancelMessage = this.$t("webClient.loadBox.message[3]");
-      this.actionData.addLoadMessage = this.$t("webClient.loadBox.message[2]");
+      this.actionData.addLoadMessage = this.$t("webClient.loadBox.message[5]");
       this.deleteData = this.$t("webClient.deleteList[0]");
       this.dialogPointData = this.$t("webClient.dialogList[0]");
       this.cuttingTips = this.$t("webClient.tooltipList.subtool");
@@ -586,6 +591,38 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    changeGauge(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-24 15:43:44
+     * @description: 测量 0 坐标 1 距离 2 角度 3 单位 4 精度
+     */
+      let realSet = null
+      if (e === 3) {
+        realSet = this.unitList[this.setForm.unit] ? this.unitList[this.setForm.unit] : 'm'
+      }
+      if (e === 4) {
+        realSet = this.accuracyList[this.setForm.accuracy] ? this.accuracyList[this.setForm.accuracy] : '0.01'
+      }
+      this.$emit("listenTodo", {
+          state: this.imgList[3].state,
+          type: 3,
+          data: e,
+          set: realSet
+      });
+    },
+    changeSpeed(e){
+      /**
+       * @Author: zk
+       * @Date: 2021-03-24 09:28:51
+       * @description: 设置移动速度
+       */
+      this.$emit("listenTodo", {
+          state: this.imgList[1].state,
+          type: 1,
+          data: e
+      });
+    },
     changePerson(e) {
       /**
        * @Author: zk
@@ -606,6 +643,9 @@ export default {
        * @Date: 2021-03-17 09:51:33
        * @description: 关闭tool
        */
+      if (this.oldState === 3 || this.oldState === 1) {
+        return
+      }
       this.angleTool = false;
       this.followTool = false;
       this.personTool = false;
@@ -620,16 +660,21 @@ export default {
       this.imgList[e].url = oldUrl;
       this.imgList[e].state = 0;
     },
-    resetpPrson() {
+    resetpPrson(e) {
       /**
        * @Author: zk
        * @Date: 2021-03-12 11:39:50
        * @description: 重置为第三人称
        */
-      this.activePerson = 1;
+      this.activePerson = e;
     },
     showAngle() {
-      this.angleTool = true;
+      /**
+       * @Author: zk
+       * @Date: 2021-03-24 16:05:57
+       * @description: 设置单位
+       */
+      this.angleTool = this.angleTool ? false : true;
     },
     InsertFollow() {
       /**
@@ -643,11 +688,7 @@ export default {
       };
       this.UpdateOrder(params).then(() => {
         this.followTool = false
-        this.FollowTimer = setTimeout(() => {
-          clearTimeout(this.realTimer);
-          this.FollowTimer = null
-          this.ListPoint();
-        }, 1000 * 3);
+        this.ListPoint();
         this.dialogEdit = false;
         let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
         this.imgList[6].url = oldUrl;
@@ -660,7 +701,7 @@ export default {
        * @Date: 2021-03-17 10:43:44
        * @description: 编辑视点
        */
-      this.followInfo = e;
+      this.followInfo = JSON.parse(JSON.stringify(e));
       this.dialogEdit = true;
     },
     UpdateFollow() {
@@ -736,13 +777,37 @@ export default {
         id: 10,
         camerashotId: e.tid,
       };
-      this.UpdateOrder(params);
-      if (e.viewMode) {
-        this.activePerson = e.viewMode === "1" ? 0 : 1;
-      }
-      if (e.projectionMode) {
-        // this.activePerson = e.viewMode === "1" ? 0 : 1
-        this.$emit("listenMode", Number(e.projectionMode));
+      if (this.followInfo.available === "0") {
+          this.$message({
+            type: "warning",
+            message: this.actionData.addLoadMessage
+          })
+          return
+        } else {
+          this.UpdateOrder(params);
+        if (e.viewMode) {
+          this.activePerson = e.viewMode === "1" ? 0 : 1;
+        }
+        if (e.projectionMode) {
+          // this.activePerson = e.viewMode === "1" ? 0 : 1
+          this.$emit("listenMode", Number(e.projectionMode));
+        }
+        }      
+    },
+    resetPointList(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-03-23 15:49:31
+     * @description: 补充关注视角列表
+     */        
+      for (const key in this.pointList) {
+        if (Object.hasOwnProperty.call(this.pointList, key)) {
+          const item = this.pointList[key];
+          if (item.tid === e.tid) {
+            this.pointList[key] = e
+            return
+          }
+        }
       }
     },
     ListPoint() {
@@ -765,9 +830,7 @@ export default {
     },
     handleOrder(e) {
       if (
-        e === 1 ||
         e === 2 ||
-        e === 3 ||
         e === 4 ||
         e === 5 ||
         e === 7 ||
@@ -777,23 +840,13 @@ export default {
         return;
       }
       if (e === 0) {
-        event.stopPropagation();
         this.personTool = this.imgList[e].state === 0 ? true : false;
       }
       if (e === 6) {
-        event.stopPropagation();
-        if (this.FollowTimer) {
-          this.$message({
-            type: "warning",
-            message: this.actionData.addLoadMessage
-          })
-          return
-        } else {
-        this.followTool = this.imgList[e].state === 0 ? true : false;          
-        }
+        this.followTool = this.imgList[e].state === 0 ? true : false; 
       }
       // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11) {
+      if (e !== this.oldState && e !== 10 && e !== 11 &&  this.oldState !== 3) {
         let oldUrl = require(`@/assets/images/todo/unchecked/${
           this.imgList[this.oldState].name
         }`);
@@ -807,7 +860,7 @@ export default {
         realImg = require(`@/assets/images/todo/check/${this.imgList[e].name}`);
       } else {
         realImg = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
-      }      
+      }
       this.imgList[e].url = realImg;
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
       if (e !== 0) {

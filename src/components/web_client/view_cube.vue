@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-03-23 13:42:05
+ * @LastEditTime: 2021-03-23 16:19:42
  * @description: 
 -->
 <template>
@@ -83,6 +83,10 @@ export default {
         },
         {
           label: this.$t('webClient.cubeBox.handle[2]'),
+          value: 3
+        },
+        {
+          label: this.$t('webClient.cubeBox.handle[3]'),
           value: 0
         }
       ]
@@ -100,6 +104,8 @@ export default {
       this.handleList[0].label = this.$t('webClient.cubeBox.handle[0]')
       this.handleList[1].label = this.$t('webClient.cubeBox.handle[1]')
       this.handleList[2].label = this.$t('webClient.cubeBox.handle[2]')
+      this.handleList[3].label = this.$t('webClient.cubeBox.handle[3]')
+
     }  
   },
   methods: {
@@ -110,7 +116,7 @@ export default {
      * @description: 切换状态
      */
     this.isCubeType = false
-    if (e.value === 0) {
+    if (e.value === 0 || e.value === 3) {
       this.$emit("handleType", e.value)
       return
     }
