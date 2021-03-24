@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-23 16:57:56
+ * @LastEditTime: 2021-03-24 10:41:44
  * @description: 
 -->
 <template>
@@ -59,7 +59,7 @@
         </el-tooltip>
         <el-collapse-transition>
           <div class="show-speed" v-if="imgList[1].state === 1">
-            <el-slider v-model="imgList[1].data.speed"></el-slider>
+            <el-slider v-model="imgList[1].data.speed" :min="1" :max="8" @click.native.stop="" @change="changeSpeed"></el-slider>
           </div>
         </el-collapse-transition>
       </div>
@@ -440,7 +440,7 @@ export default {
           url: require("@/assets/images/todo/unchecked/speed.png"),
           name: "speed.png",
           data: {
-            speed: 50,
+            speed: 4,
           },
           title: "移动速度",
         },
@@ -585,6 +585,18 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    changeSpeed(e){
+      /**
+       * @Author: zk
+       * @Date: 2021-03-24 09:28:51
+       * @description: 设置移动速度
+       */
+      this.$emit("listenTodo", {
+          state: this.imgList[1].state,
+          type: 1,
+          data:e
+      });
+    },
     changePerson(e) {
       /**
        * @Author: zk
@@ -619,13 +631,13 @@ export default {
       this.imgList[e].url = oldUrl;
       this.imgList[e].state = 0;
     },
-    resetpPrson() {
+    resetpPrson(e) {
       /**
        * @Author: zk
        * @Date: 2021-03-12 11:39:50
        * @description: 重置为第三人称
        */
-      this.activePerson = 1;
+      this.activePerson = e;
     },
     showAngle() {
       this.angleTool = true;
