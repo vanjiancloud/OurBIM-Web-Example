@@ -228,7 +228,7 @@ export default {
       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     if (isiPad !== false) {
       this.viewHeight = 1;
-    }
+    }    
   },
   destroyed() {
     this.clearTimePass();
@@ -719,8 +719,12 @@ export default {
             ""
           );
         };
+        document.getElementById("show-bim").onmouseup = () => {
+          console.log("抬起");
+        }
         // 关闭tool
         this.sendToIframe(10200, "false", "");
+        // 监听键盘按下
         document.addEventListener("keydown", (e) => {
           this.sendToIframe(
             10010,
@@ -731,6 +735,7 @@ export default {
             ""
           );
         });
+        // 监听键盘抬起
         document.addEventListener("keyup", (e) => {
           this.sendToIframe(
             10011,
