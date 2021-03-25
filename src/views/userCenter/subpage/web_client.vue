@@ -278,8 +278,6 @@ export default {
         this.closeWebSocket()
         this.$message({
           message: this.$t('webClient.loadBox.message[6]'),
-          duration: 0,
-          showClose: true,
           type: "warning",
         });
       }
@@ -681,8 +679,8 @@ export default {
       this.clearTimePass();
       this.timerInfo = setInterval(() => {
         this.timerCount++;
-        if (this.timerCount >= 170) {
-          this.moreCount = 180 - this.timerCount;
+        if (this.timerCount >= 590) {
+          this.moreCount = 600 - this.timerCount;
         }
         if (this.moreCount === 0) {
           this.closeWebSocket();
