@@ -296,7 +296,7 @@ export default {
       }
       this.shadowType = e;
       if (e === 0) {
-        this.handleState = 4
+        this.handleState = 7
       } else if (e === 3) {
         this.handleState = 2;       
       } else {
@@ -429,6 +429,7 @@ export default {
           break;
         case 4:
           // 测量
+          console.log();
           if (this.listenTodoInfo.data === 0) {
             // 坐标
             params.id = 37;
@@ -455,6 +456,9 @@ export default {
         case 6:
           // 六面体
           params.id = this.cubeState;
+          break;
+        case 7:
+          params.id = 13
           break;
         case 8:
           // 构件显示 隐藏 半透明
