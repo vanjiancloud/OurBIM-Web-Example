@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-25 11:45:12
+ * @LastEditTime: 2021-03-25 13:19:46
  * @description: 
 -->
 <template>
@@ -159,6 +159,7 @@
                     <el-form-item :label="$t('webClient.setting[0].label')">
                       <el-select
                         size="mini"
+                        popper-class="popper-bgi"
                         @change="changeGauge(3)"
                         v-model="setForm.unit"
                         :placeholder="$t('webClient.setting[0].tips')"
@@ -174,6 +175,7 @@
                     <el-form-item :label="$t('webClient.setting[1].label')">
                       <el-select
                         size="mini"
+                        popper-class="popper-bgi"
                         @change="changeGauge(4)"
                         v-model="setForm.accuracy"
                         :placeholder="$t('webClient.setting[1].tips')"
@@ -342,6 +344,7 @@
                 <el-form-item :label="$t('webClient.weather[0].label')">
                   <el-select
                     size="mini"
+                    popper-class="popper-bgi"
                     v-model="setForm.weather"
                     :placeholder="$t('webClient.weather[0].value')"
                   >
@@ -1127,6 +1130,28 @@ export default {
       background: rgba(255, 255, 255, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.25);
       color: #ffffff;
+    }
+    .is-focus{
+      border-color: rgba(0, 0, 0, 0.6) !important;
+    }    
+  }
+}
+.popper-bgi{
+  background: rgba(0, 0, 0, 0.6);
+  border: transparent;
+  .el-select-dropdown__item{
+    color: #ffffff !important;    
+  }
+  .el-select-dropdown__item.hover, .el-select-dropdown__item:hover{
+    background: rgba(0, 0, 0, 0.1) !important;
+  }
+  .selected{
+    color: #409EFF !important;
+  }
+  .popper__arrow{
+    border-top-color: rgba(0, 0, 0, 0.6) !important;
+    &::after{
+      border-top-color: rgba(0, 0, 0, 0.6) !important;       
     }
   }
 }
