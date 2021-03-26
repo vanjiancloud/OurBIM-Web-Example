@@ -11,7 +11,7 @@ import less from 'less'
 // 加载axios组件 
 import axios from '@/utils/request.js'
 // 自动计算rem大小
-import 'lib-flexible'
+// import 'lib-flexible'
 // 引入国际化语言包
 import VueI18n from 'vue-i18n'
 import common from './utils/common.js' // 公共方法
@@ -19,6 +19,8 @@ Vue.prototype.$common = common
 
 Vue.use(VueI18n)
 Vue.use(less)
+// vue 使用element-ui的el-dialog时 由于滚动条隐藏和出现导致页面抖动问题的解决
+ElementUI.Dialog.props.lockScroll.default = false;
 Vue.use(ElementUI)
 
 // 把axiox放到原型上
@@ -196,12 +198,13 @@ const i18n = new VueI18n({
             "指令下发成功",
             "指令下发失败",
             "请求失败",
-            "正在执行添加视角，请稍候……"
+            "正在执行添加视角，请稍候……",
+            "当前访问用户过多，请稍后再试。"
           ]
         },
         cubeBox: {
           direction: ["前", "后", "上", "下", "左", "右"],
-          handle: ["正交投影", "透视投影", "还原模型"]
+          handle: ["正交投影", "透视投影", "自定义主视图", "重置主视图"]
         },
         tooltipList: {
           toolPerson: ["第一人称", "第三人称", "跟随人物"],

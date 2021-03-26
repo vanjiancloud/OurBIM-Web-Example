@@ -323,7 +323,7 @@ export default {
       span {
         padding-left: 20px;
         float: right;
-        color: #0097fe;
+        color: #00aaf0;
         display: inline;
       }
     }

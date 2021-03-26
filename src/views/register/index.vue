@@ -20,10 +20,10 @@
           </div>
           <el-form ref="ruleForm" :model="ruleForm" :rules="rules">
             <!-- 性别 -->
-            <el-radio v-model="ruleForm.radio" label="1">
+            <el-radio v-model="ruleForm.sex" label="1">
               <img src="./img/man.png" alt="" />
             </el-radio>
-            <el-radio v-model="ruleForm.radio" label="2">
+            <el-radio v-model="ruleForm.sex" label="2">
               <img src="./img/woman.png" alt="" />
             </el-radio>
             <!-- 邮箱 -->
@@ -154,7 +154,7 @@ export default {
       btnMes: '获取验证码', // 按钮的文本
       // 验证表单数据
       ruleForm: {
-        radio: '1',
+        sex: '1',
         email: '',
         mobile: '',
         name: '',
@@ -278,13 +278,15 @@ export default {
       this.$router.push('../../login')
     },
     toLogoin () {
-      console.log('666666666')
       this.$router.push('../login')
     },
     // 点击注册
     doRegister () {
       getRegister({
         email: this.ruleForm.email,
+        name: this.ruleForm.name,
+        company: this.ruleForm.company,
+        sex: this.ruleForm.sex,
         mobile: this.ruleForm.mobile,
         code: this.ruleForm.code,
         password: this.ruleForm.password,
@@ -296,11 +298,11 @@ export default {
             this.$message.success('注册成功')
             this.$router.push('/registerSucceed')
           } else if (res.data.code === 1) {
-            this.$message.error('验证码验证失败')
+            this.$message.warning(res.data.message)
           } else if (res.data.code === 2) {
-            this.$message.error('该邮箱已注册')
+            this.$message.error(res.data.message)
           } else if (res.data.code === 3) {
-            this.$message.error('该手机号已注册')
+            this.$message.error(res.data.message)
           }
         })
         .catch(err => {
@@ -375,7 +377,7 @@ export default {
           this.$message.error('校验失败，请检查网络')
         })
     },
-    // 失去焦点获取
+    // 失去焦点获取邮箱
     emailBlur () {
       this.$refs.ruleForm.validateField('email', emailError => {
         if (!emailError) {

@@ -28,7 +28,7 @@
             <!-- 成功案例 -->
             <li>
               <a href="http://www.ourbim.com:7011/successful_cases">
-                {{ $t('cases') }}</a
+                示例项目</a
               >
             </li>
             <!-- 产品定价 -->
@@ -61,22 +61,6 @@
                         {{ $t('APIdov') }}
                       </a>
                     </span>
-                  </el-dropdown-item>
-                  <!-- 示例项目 -->
-                  <el-dropdown-item>
-                    <a
-                      href="http://www.ourbim.com:7011/developer/sample_project"
-                      style="text-decoration:none; color:#000"
-                      >{{ $t('projects') }}</a
-                    >
-                  </el-dropdown-item>
-                  <!-- 模型中心 -->
-                  <el-dropdown-item>
-                    <a
-                      href="http://www.ourbim.com:7011/developer/model_center"
-                      style="text-decoration:none; color:#000"
-                      >{{ $t('Mcenter') }}</a
-                    >
                   </el-dropdown-item>
                   <!-- 服务中心 -->
                   <el-dropdown-item>
@@ -118,7 +102,7 @@
           <div class="end">
             <div class="touxiang">
               <img
-                :src="imgUrl ? imgUrl : require('./img/touxiang.png')"
+                :src="imgUrl ? imgUrl : require(sex==1?'./img/man.png':'./img/woman.png')"
                 alt=""
               />
             </div>
@@ -136,10 +120,14 @@
           <div class="top">
             <div class="left">
               <div class="im">
-                <img
-                  :src="imgUrl ? imgUrl : require('./img/touxiang.png')"
-                  alt="未上传头像"
-                />
+                <img :src="imgUrl ? imgUrl : require(sex==1?'./img/man.png':'./img/woman.png')" />
+                <!-- <img
+                  :src="imgUrl"
+                  :class="{
+                  
+                }"
+                /> -->
+                <!-- <img src="../register/img/man.png" v-show="sex = 1" /> -->
               </div>
               <!-- 昵称和签名栏 -->
               <div class="Info">
@@ -210,44 +198,50 @@
 
     <!-- 主体内容区 -->
     <el-main>
-      <!-- 导航菜单 -->
-      <div class="nav">
-        <el-menu
-          :default-active="activeMenu"
-          class="tac"
-          text-color="#00aaf0"
-          active-text-color="#fff"
-          router
-          background-color="#f0fbff"
-        >
-          <!-- 项目管理 -->
-          <el-menu-item index="/manage">
-            <i class="el-icon-setting"></i>
-            <span slot="title" class="write">{{ $t('management') }}</span>
-          </el-menu-item>
-          <!-- 创建项目 -->
-          <el-menu-item index="/found">
-            <i class="el-icon-folder-add"></i>
-            <span slot="title" class="write">{{ $t('Create') }}</span>
-          </el-menu-item>
-          <!-- 账户管理 -->
-          <el-submenu index="account">
-            <template slot="title">
-              <i class="el-icon-menu"></i>
-              <span class="write">{{ $t('Account') }}</span>
-            </template>
-            <!-- 个人信息 -->
-            <el-menu-item index="/bill">{{ $t('information') }}</el-menu-item>
-            <!-- 授权码 -->
-            <el-menu-item index="/code">{{ $t('Authorization') }}</el-menu-item>
-            <!-- 服务订单 -->
-            <el-menu-item index="/order">{{ $t('Serviceorder') }}</el-menu-item>
-          </el-submenu>
-        </el-menu>
-      </div>
-      <!--主体区域二级路由组件渲染的地方-->
-      <div class="content">
-        <router-view></router-view>
+      <div class="container">
+        <!-- 导航菜单 -->
+        <div class="nav">
+          <el-menu
+            :default-active="activeMenu"
+            class="tac"
+            text-color="#00aaf0"
+            active-text-color="#fff"
+            router
+            background-color="#f0fbff"
+          >
+            <!-- 项目管理 -->
+            <el-menu-item index="/manage">
+              <i class="el-icon-setting"></i>
+              <span slot="title" class="write">{{ $t('management') }}</span>
+            </el-menu-item>
+            <!-- 创建项目 -->
+            <el-menu-item index="/found">
+              <i class="el-icon-folder-add"></i>
+              <span slot="title" class="write">{{ $t('Create') }}</span>
+            </el-menu-item>
+            <!-- 账户管理 -->
+            <el-submenu index="account">
+              <template slot="title">
+                <i class="el-icon-menu"></i>
+                <span class="write">{{ $t('Account') }}</span>
+              </template>
+              <!-- 个人信息 -->
+              <el-menu-item index="/bill">{{ $t('information') }}</el-menu-item>
+              <!-- 授权码 -->
+              <el-menu-item index="/code">{{
+                $t('Authorization')
+              }}</el-menu-item>
+              <!-- 服务订单 -->
+              <el-menu-item index="/order">{{
+                $t('Serviceorder')
+              }}</el-menu-item>
+            </el-submenu>
+          </el-menu>
+        </div>
+        <!--主体区域二级路由组件渲染的地方-->
+        <div class="content">
+          <router-view></router-view>
+        </div>
       </div>
     </el-main>
 
@@ -278,6 +272,7 @@
 import { showDetail } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 import { deluserid, Deluserid } from '@/store/index.js'
+import { delCookie } from "@/utils/cookie"
 
 export default {
   name: 'myHeader',
@@ -287,6 +282,7 @@ export default {
       customColor: '#00AAF0',
       note: '', //签名
       name: '', //用户名
+      sex: '', //性别
       imgUrl: '', //用户头像
       email: '', //邮箱
       mobile: '', //手机号
@@ -332,6 +328,7 @@ export default {
     // 退出按钮
     toLogin () {
       this.$router.push('../login/')
+      delCookie("userInfo")
       deluserid()
       Deluserid()
       clearInterval(this.time)
@@ -345,6 +342,7 @@ export default {
         .then(res => {
           console.log(res)
           this.name = res.data.data.name
+          this.sex = res.data.data.sex
           this.note = res.data.data.note
           this.email = res.data.data.email
           this.mobile = res.data.data.mobile
@@ -363,6 +361,15 @@ export default {
           // this.imgUrl = this.imgUrl
         })
     },
+
+    // 根据传入的sex做适配
+    // formatStatus (sex) {
+    //   const sexObj = {
+    //     1: '../register/img/man.png',
+    //     2: '../register/img/woman.png'
+    //   }
+    //   return sexObj[sex]
+    // },
 
     // 去往用户中心
     goUserCenter () {
@@ -407,7 +414,7 @@ export default {
   activated () {
     this.time = setInterval(() => {
       this.showData()
-      console.log('个人信息')
+      // console.log('个人信息')
     }, 3000)
   },
   // 路由跳转清除定时
@@ -425,15 +432,11 @@ export default {
 .el-container {
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
-  // background-color: red;
   .el-header {
     margin: 0;
     padding: 0;
     .header {
-      min-width: 1420px;
-      height: 60px;
+      min-height: 60px;
       background-color: #fff;
       line-height: 60px;
       a {
@@ -513,101 +516,74 @@ export default {
       }
     }
     .main {
-      height: 152px;
+      min-height: 152px;
       margin-top: 20px;
       // background-color: red;
-      .container {
-        .top {
+      .top {
+        height: 152px;
+        background-color: #fff;
+        .left {
           height: 152px;
-          background-color: #fff;
-          .left {
-            height: 152px;
-            width: 288px;
-            margin-left: 20px;
-            float: left;
-            // background-color: green;
-            display: flex;
+          width: 288px;
+          margin-left: 20px;
+          float: left;
+          // background-color: green;
+          display: flex;
 
-            .im {
-              margin-top: 36px;
-              width: 80px;
-              height: 80px;
-              // float: left;
+          .im {
+            margin-top: 36px;
+            width: 80px;
+            height: 80px;
+            // float: left;
+            border-radius: 50%;
+            // background-color: blue;
+            margin-right: 20px;
+            img {
+              width: 100%;
+              height: 100%;
               border-radius: 50%;
-              // background-color: blue;
-              margin-right: 20px;
-              img {
-                width: 100%;
-                height: 100%;
-                border-radius: 50%;
-              }
-            }
-            .Info {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              width: 187px;
-              text-align: center;
             }
           }
-          .line {
-            width: 1px;
-            height: 100px;
-            float: left;
-            background-color: #ccc;
-            margin: 0 20px;
-            margin-top: 26px;
+          .Info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 187px;
+            text-align: center;
           }
-          .middle {
-            height: 152px;
-            float: left;
-            margin-right: 30px;
-            // background-color: red;
-            h3 {
-              margin-top: 6px;
-            }
-            .tiao {
-              width: 318px;
-              float: left;
-              margin-left: 100px;
-              .tu {
-                float: left;
-                width: 318px;
-                margin-right: 29px;
-                margin-top: 10px;
-                // background-color: red;
-                .icon {
-                  width: 20px;
-                  height: 20px;
-                  float: left;
-                  margin-right: 10px;
-                  margin-top: 3px;
-                  img {
-                    width: 100%;
-                    height: 100%;
-                  }
-                }
-              }
-            }
+        }
+        .line {
+          width: 1px;
+          height: 100px;
+          float: left;
+          background-color: #ccc;
+          margin: 0 20px;
+          margin-top: 26px;
+        }
+        .middle {
+          height: 152px;
+          float: left;
+          margin-right: 30px;
+          // background-color: red;
+          h3 {
+            margin-top: 6px;
           }
-          .jindu {
+          .tiao {
             width: 318px;
-            // height: 152px;
-            // background-color: pink;
             float: left;
-            h3 {
-              margin-top: 37px;
-              color: #00aaf0;
-            }
-            .tutu {
+            margin-left: 100px;
+            .tu {
               float: left;
+              width: 318px;
+              margin-right: 29px;
               margin-top: 10px;
+              // background-color: red;
               .icon {
                 width: 20px;
                 height: 20px;
                 float: left;
                 margin-right: 10px;
-                margin-top: 4px;
+                margin-top: 3px;
                 img {
                   width: 100%;
                   height: 100%;
@@ -615,19 +591,44 @@ export default {
               }
             }
           }
-          .right {
-            height: 152px;
-            width: 207px;
-            margin-right: 42px;
-            float: right;
-            text-align: center;
-            // background-color: green;
-            .content {
-              margin-top: 36px;
-              width: 207px;
-              div {
-                margin-bottom: 10px;
+        }
+        .jindu {
+          width: 318px;
+          // height: 152px;
+          // background-color: pink;
+          float: left;
+          h3 {
+            margin-top: 37px;
+            color: #00aaf0;
+          }
+          .tutu {
+            float: left;
+            margin-top: 10px;
+            .icon {
+              width: 20px;
+              height: 20px;
+              float: left;
+              margin-right: 10px;
+              margin-top: 4px;
+              img {
+                width: 100%;
+                height: 100%;
               }
+            }
+          }
+        }
+        .right {
+          height: 152px;
+          width: 207px;
+          margin-right: 42px;
+          float: right;
+          text-align: center;
+          // background-color: green;
+          .content {
+            margin-top: 36px;
+            width: 207px;
+            div {
+              margin-bottom: 10px;
             }
           }
         }
@@ -635,98 +636,95 @@ export default {
     }
   }
   .el-main {
-    margin: 0;
-    padding: 0;
-    margin: 0 auto;
-    margin-top: 192px;
-    margin-bottom: 35px;
-    width: 1420px;
-    min-height: 961px;
-    background-color: #f0f2f5;
-    display: flex;
-    justify-content: center;
-    .nav {
-      width: 230px;
-      min-height: 961px;
-      margin-right: 20px;
-      .tac {
-        width: 100%;
-        height: 100%;
-        .el-menu-item {
-          font-size: 16px;
-          height: 60px;
-          line-height: 60px;
-          i {
+    .container {
+      margin-top: 172px;
+      margin-bottom: 35px;
+      display: flex;
+      justify-content: center;
+      .nav {
+        width: 230px;
+        min-height: 961px;
+        margin-right: 20px;
+        .tac {
+          width: 100%;
+          height: 100%;
+          .el-menu-item {
+            font-size: 16px;
+            height: 60px;
+            line-height: 60px;
+            i {
+              color: #00aaf0;
+            }
+          }
+          .el-submenu {
+            i {
+              color: #00aaf0;
+            }
+          }
+          // 每一项选中状态
+          /deep/ .el-menu-item.is-active {
+            background-color: #00aaf0 !important;
+            i {
+              color: #fff;
+            }
+          }
+          // 每一项鼠标悬停状态
+          /deep/ .el-menu-item:hover {
+            background-color: #00aaf0 !important;
+            color: #fff !important;
+            i {
+              color: #fff;
+            }
+          }
+          // el-submenu 每一项选中状态
+          // /deep/ .el-submenu.is-active {
+          //   background-color: #00aaf0 !important;
+          //   // color: #fff !important;
+          //   i {
+          //     color: #fff;
+          //   }
+          // }
+          // el-submenu 每一项鼠标悬停状态
+          /deep/ .el-submenu__title:hover {
+            background-color: #00aaf0 !important;
+            color: #fff !important;
+            i {
+              color: #fff;
+            }
+            i.el-submenu__icon-arrow.el-icon-arrow-down {
+              color: #fff;
+            }
+          }
+          /deep/ i.el-submenu__icon-arrow.el-icon-arrow-down {
+            font-size: 20px;
             color: #00aaf0;
           }
-        }
-        .el-submenu {
-          i {
-            color: #00aaf0;
-          }
-        }
-        // 每一项选中状态
-        /deep/ .el-menu-item.is-active {
-          background-color: #00aaf0 !important;
-          i {
-            color: #fff;
-          }
-        }
-        // 每一项鼠标悬停状态
-        /deep/ .el-menu-item:hover {
-          background-color: #00aaf0 !important;
-          color: #fff !important;
-          i {
-            color: #fff;
-          }
-        }
-        // el-submenu 每一项选中状态
-        // /deep/ .el-submenu.is-active {
-        //   background-color: #00aaf0 !important;
-        //   // color: #fff !important;
-        //   i {
-        //     color: #fff;
-        //   }
-        // }
-        // el-submenu 每一项鼠标悬停状态
-        /deep/ .el-submenu__title:hover {
-          background-color: #00aaf0 !important;
-          color: #fff !important;
-          i {
-            color: #fff;
-          }
-          i.el-submenu__icon-arrow.el-icon-arrow-down {
-            color: #fff;
-          }
-        }
-        /deep/ i.el-submenu__icon-arrow.el-icon-arrow-down {
-          font-size: 20px;
-          color: #00aaf0;
-        }
 
-        .write {
-          font-size: 20px;
-        }
-        i {
-          margin-right: 20px;
-          margin-left: 10px;
-          font-size: 25px;
-          // color: #fff;
+          .write {
+            font-size: 20px;
+          }
+          i {
+            margin-right: 20px;
+            margin-left: 10px;
+            font-size: 25px;
+            // color: #fff;
+          }
         }
       }
-    }
-    .content {
-      width: 1170px;
-      min-height: 961px;
-      background-color: #fff;
+      .content {
+        width: 1170px;
+        min-height: 961px;
+        background-color: #fff;
+      }
     }
   }
+
   .el-footer {
     margin: 0;
     padding: 0;
     .footer {
-      min-width: 1420px;
-      height: 115px;
+      // min-width: 1420px;
+      min-height: 115px;
       // padding: 20px 0px;
       background-color: #000;
       display: flex;

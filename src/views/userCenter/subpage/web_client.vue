@@ -185,10 +185,11 @@ export default {
       browserInfo: null,
       natureInfo: null,
       shadowType: null,
+      listenTodoInfo: null
     };
   },
   watch: {
-    viewHeight(val, oldVal) {
+    viewHeight() {
       //普通的watch监听
       if (this.isFade) {
         this.$message({
@@ -231,10 +232,7 @@ export default {
   },
   destroyed() {
     this.clearTimePass();
-    this.closeWebSocket();
-    if (this.socketTimer) {
-      clearInterval(this.socketTimer);
-    }
+    this.closeWebSocket();    
   },
   methods: {
     listenMode(e) {
@@ -277,10 +275,9 @@ export default {
         1004,
       ];
       if (errorList.indexOf(e.type) !== -1) {
+        this.closeWebSocket()
         this.$message({
-          message: e.message,
-          duration: 0,
-          showClose: true,
+          message: this.$t('webClient.loadBox.message[6]'),
           type: "warning",
         });
       }
@@ -289,34 +286,21 @@ export default {
       /**
        * @Author: zk
        * @Date: 2021-03-12 11:34:19
-       * @description: 选择类型 e 0: 还原模型 1: 透视投影 2: 正交投影
+       * @description: 选择类型 e 0: 重置主视图 1: 透视投影 2: 正交投影 3 自定义主视图
        */
       if (e === 2) {
-        this.$refs.getFooter.resetpPrson();
+        // 第三人称
+        this.$refs.getFooter.resetpPrson(1);
       }
       this.shadowType = e;
       if (e === 0) {
-        // this.resetAngle()
+        this.handleState = 7
+      } else if (e === 3) {
+        this.handleState = 2;       
       } else {
-        this.handleState = 1;       
-        this.updateOrder();
+        this.handleState = 1;
       }
-    },
-    resetAngle(){
-    /**
-     * @Author: zk
-     * @Date: 2021-03-23 13:40:41
-     * @description: 还原模型
-     */  
-      console.log(this.shadowType);
-      let params = {
-        taskid: this.taskId
-      }
-      MODELAPI.UPDATERESETANGLE(params)
-      .then(res => {
-
-      })
-      .catch(err=>{})
+      this.updateOrder();
     },
     handleTree(e, index) {
       /**
@@ -432,22 +416,47 @@ export default {
             }
           }
           break;
+        case 2:
+          // 自定义主视图
+          params.id = 11
+          break;
         case 3:
-          // 缩放
-          params.id = this.mouseState.roller;
+          // 移动速度
+          params.id = 12
+          params.speedLevel = this.listenTodoInfo.data
           break;
         case 4:
-          // 视角切换
-          params.id = this.mouseState.angle;
+          // 测量
+          console.log();
+          if (this.listenTodoInfo.data === 0) {
+            // 坐标
+            params.id = 37;
+          } else if (this.listenTodoInfo.data === 1) {
+            // 距离
+            params.id = 35;
+          } else if (this.listenTodoInfo.data === 2) {
+            // 角度
+            params.id = 36;
+          } else if (this.listenTodoInfo.data === 3) {
+            // 设置单位
+            params.id = 38;
+            params.unit = this.listenTodoInfo.set;
+          } else if (this.listenTodoInfo.data === 4) {
+            // 设置精度
+            params.id = 38;
+            params.precision = this.listenTodoInfo.set;
+          }
           break;
         case 5:
-          // 视角切换
-          params.id = 12;
-          params.sjid = this.angleInfo.tid;
+          // 关闭测量
+          params.id = 39;
           break;
         case 6:
           // 六面体
           params.id = this.cubeState;
+          break;
+        case 7:
+          params.id = 13
           break;
         case 8:
           // 构件显示 隐藏 半透明
@@ -481,6 +490,13 @@ export default {
 
       await MODELAPI.UPDATEORDER(params)
         .then((res) => {
+          if (params.id === 1 && res.data && res.data.data) {
+            // 切换到主视图 重置状态
+            let realView = res.data.data.viewMode === "1" ? 0 : 1
+            this.$refs.getFooter.resetpPrson(realView);
+            let realProject = res.data.data.projectionMode === "1" ? 1 : 2
+            this.$refs.getCube.resetActive(realProject);
+          }
           this.$message({
             message: this.$t("webClient.loadBox.message[2]"),
             type: "success",
@@ -553,12 +569,32 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
+      // 浏览器
       if (e.type === 10) {
         this.browserInfo = e;
       }
+      // 构件属性
       if (e.type === 11) {
         this.natureInfo = e;
         e.state === 0 ? (this.memberInfo = null) : "";
+      }
+      // 移动速度
+      if (e.type === 1 && e.data) {
+        this.handleState = 3
+        this.listenTodoInfo = e
+        this.updateOrder()
+      }
+      // 测量
+      if (e.type === 3) {
+        if (e.state === 1 && e.data !== undefined) {
+          this.handleState = 4
+          this.listenTodoInfo = e
+          this.updateOrder()
+        }
+        if (e.state === 0) {
+          this.handleState = 5
+          this.updateOrder()
+        }
       }
     },
     initWebSocket() {
@@ -572,8 +608,12 @@ export default {
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
-          let realData = JSON.parse(e.data).data;
-          this.memberInfo = realData;
+          let realData = JSON.parse(e.data);
+          if (realData.id === "1") {
+            this.memberInfo = realData.data;
+          } else if (realData.id === "3") {
+            this.$refs.getFooter.resetPointList(realData.object)
+          }
         }
       };
       this.websock.onopen = (e) => {
@@ -651,8 +691,16 @@ export default {
       }, 1000);
     },
     closeWebSocket() {
-      this.isSocket = false;
-      this.websock.close(); //离开路由之后断开websocket连接
+      // 清除定时器
+      if (this.socketTimer) {
+        clearInterval(this.socketTimer);
+        this.socketTimer = null
+      }
+      if (this.websock) {
+        this.isSocket = false;
+        this.websock.close(); //离开路由之后断开websocket连接
+        this.websock = null
+      }      
     },
     getMonitor() {
       /**
@@ -703,9 +751,9 @@ export default {
        * @Date: 2020-09-29 10:18:33
        * @description: postmessage通信
        */
-      let realIframe = document.getElementById("show-bim").contentWindow;
+      let realIframe = document.getElementById("show-bim");
       if (realIframe) {
-        realIframe.postMessage(
+        realIframe.contentWindow.postMessage(
           {
             prex: "pxymessage", // 约定的消息头部
             type: type, // 消息类型
@@ -1153,14 +1201,14 @@ export default {
   }
 
   #show-bim {
-    height: 110vh;
+    height: 100vh;
     width: 100vw;
     overflow: hidden;
   }
 
   .phone-bim {
-    height: 120vh !important;
-    width: 900px !important;
+    height: 100vh !important;
+    width: 120vw !important;
   }
 }
 .tree-select {

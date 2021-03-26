@@ -245,6 +245,7 @@
 <script>
 import { showDetail } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
+import { delCookie } from "@/utils/cookie"
 export default {
   name: 'myHeader',
   data () {
@@ -295,8 +296,9 @@ export default {
     },
 
     // 退出按钮
-    toLogin () {
+    toLogin () {      
       this.$router.push('../login/')
+      delCookie("userInfo")
       window.localStorage.userid = ''
       clearInterval(this.time)
     },

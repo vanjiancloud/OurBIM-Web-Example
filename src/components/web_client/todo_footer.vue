@@ -2,399 +2,424 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-23 13:33:59
+ * @LastEditTime: 2021-03-25 13:19:46
  * @description: 
 -->
 <template>
-  <div class="todo-footer">
-    <div class="todo-main">
-      <div class="image-main">
-        <el-tooltip
-          placement="top"
-          v-model="personTool"
-          transition="el-fade-in-linear"
-          manual
-        >
-          <div slot="content">
-            <div
-              class="person-list"
-              v-for="(item, index) in personList"
-              :key="index"
-            >
+  <div>
+    <div class="handle-mask" v-if="isMask"></div>
+    <div class="todo-footer">
+      <div class="todo-main">
+        <div class="image-main">
+          <el-tooltip
+            placement="top"
+            v-model="personTool"
+            transition="el-fade-in-linear"
+            manual
+          >
+            <div slot="content">
               <div
-                @click="changePerson(item.value)"
-                :class="activePerson === item.value ? 'active-person' : ''"
-                v-text="item.name"
-              ></div>
+                class="person-list"
+                v-for="(item, index) in personList"
+                :key="index"
+              >
+                <div
+                  @click="changePerson(item.value)"
+                  :class="activePerson === item.value ? 'active-person' : ''"
+                  v-text="item.name"
+                ></div>
+              </div>
             </div>
-          </div>
+            <el-tooltip
+              class="item"
+              effect="dark"
+              :content="imgList[0].title"
+              placement="top"
+            >
+              <img
+                class="footer-image"
+                :src="imgList[0].url"
+                @click.stop="handleOrder(0)"
+                mode=""
+              />
+            </el-tooltip>
+          </el-tooltip>
+        </div>
+        <div class="image-main">
           <el-tooltip
             class="item"
             effect="dark"
-            :content="imgList[0].title"
+            :content="imgList[1].title"
             placement="top"
           >
             <img
+              @click.stop="handleOrder(1)"
               class="footer-image"
-              :src="imgList[0].url"
-              @click="handleOrder(0)"
+              :src="imgList[1].url"
               mode=""
             />
           </el-tooltip>
-        </el-tooltip>
-      </div>
-      <div class="image-main">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="imgList[1].title"
-          placement="top"
-        >
-          <img
-            @click="handleOrder(1)"
-            class="footer-image"
-            :src="imgList[1].url"
-            mode=""
-          />
-        </el-tooltip>
-        <el-collapse-transition>
-          <div class="show-speed" v-if="imgList[1].state === 1">
-            <el-slider v-model="imgList[1].data.speed"></el-slider>
-          </div>
-        </el-collapse-transition>
-      </div>
-      <div class="cut-apart"></div>
-      <div class="image-main">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="imgList[2].title"
-          placement="top"
-        >
-          <img
-            @click="handleOrder(2)"
-            class="footer-image"
-            :src="imgList[2].url"
-            mode=""
-          />
-        </el-tooltip>
-      </div>
-      <div class="image-main">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="imgList[3].title"
-          placement="top"
-        >
-          <img
-            @click="handleOrder(3)"
-            class="footer-image"
-            :src="imgList[3].url"
-            mode=""
-          />
-        </el-tooltip>
-        <el-collapse-transition>
-          <div class="show-cutting" v-if="imgList[3].state === 1">
-            <el-tooltip
-              class="item"
-              effect="dark"
-              :content="cuttingTips[0]"
-              placement="left"
-            >
-              <img
-                class="cutting-img"
-                src="@/assets/images/todo/unchecked/position.png"
-                mode=""
-              />
-            </el-tooltip>
-            <el-tooltip
-              class="item"
-              effect="dark"
-              :content="cuttingTips[1]"
-              placement="left"
-            >
-              <img
-                class="cutting-img"
-                src="@/assets/images/todo/unchecked/gauge.png"
-                mode=""
-              />
-            </el-tooltip>
-            <el-tooltip
-              class="item"
-              effect="dark"
-              :content="cuttingTips[2]"
-              placement="left"
-            >
-              <img
-                class="cutting-img"
-                src="@/assets/images/todo/unchecked/angle.png"
-                mode=""
-              />
-            </el-tooltip>
-            <el-tooltip
-              popper-class="tooltip-bgi"
-              placement="right-end"
-              v-model="angleTool"
-              transition="el-fade-in-linear"
-              manual
-            >
-              <div slot="content">
-                <el-form
-                  class="set-form"
-                  ref="form"
-                  :model="setForm"
-                  label-width="80px"
-                >
-                  <el-form-item :label="$t('webClient.setting[0].label')">
-                    <el-select
-                      size="mini"
-                      v-model="setForm.unit"
-                      :placeholder="$t('webClient.setting[0].tips')"
-                    >
-                      <el-option label="区域一" value="shanghai"></el-option>
-                      <el-option label="区域二" value="beijing"></el-option>
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item :label="$t('webClient.setting[1].label')">
-                    <el-select
-                      size="mini"
-                      v-model="setForm.unit"
-                      :placeholder="$t('webClient.setting[1].tips')"
-                    >
-                      <el-option label="区域一" value="shanghai"></el-option>
-                      <el-option label="区域二" value="beijing"></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-form>
-              </div>
+          <el-collapse-transition>
+            <div class="show-speed" v-if="imgList[1].state === 1">
+              <el-slider
+                v-model="imgList[1].data.speed"
+                :min="1"
+                :max="8"
+                @mousedown.native="openMask"
+                @change="changeSpeed"
+              ></el-slider>
+            </div>
+          </el-collapse-transition>
+        </div>
+        <div class="cut-apart"></div>
+        <div class="image-main">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="imgList[2].title"
+            placement="top"
+          >
+            <img
+              @click.stop="handleOrder(2)"
+              class="footer-image"
+              :src="imgList[2].url"
+              mode=""
+            />
+          </el-tooltip>
+        </div>
+        <div class="image-main">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="imgList[3].title"
+            placement="top"
+          >
+            <img
+              @click.stop="handleOrder(3)"
+              class="footer-image"
+              :src="imgList[3].url"
+              mode=""
+            />
+          </el-tooltip>
+          <el-collapse-transition>
+            <div class="show-cutting" v-if="imgList[3].state === 1">
               <el-tooltip
                 class="item"
                 effect="dark"
-                :content="cuttingTips[3]"
+                :content="cuttingTips[0]"
                 placement="left"
               >
                 <img
                   class="cutting-img"
-                  src="@/assets/images/todo/unchecked/set.png"
-                  @click.stop="showAngle"
+                  @click.stop="changeGauge(0)"
+                  src="@/assets/images/todo/unchecked/position.png"
                   mode=""
                 />
               </el-tooltip>
-            </el-tooltip>
-          </div>
-        </el-collapse-transition>
-      </div>
-      <div class="image-main">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="imgList[4].title"
-          placement="top"
-        >
-          <img
-            @click="handleOrder(4)"
-            class="footer-image"
-            :src="imgList[4].url"
-            mode=""
-          />
-        </el-tooltip>
-      </div>
-      <div class="image-main">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="imgList[5].title"
-          placement="top"
-        >
-          <img
-            @click="handleOrder(5)"
-            class="footer-image"
-            :src="imgList[5].url"
-            mode=""
-          />
-        </el-tooltip>
-      </div>
-      <div class="image-main">
-        <el-tooltip
-          popper-class="follow-bgi"
-          placement="top"
-          v-model="followTool"
-          transition="el-fade-in-linear"
-          manual
-        >
-          <div slot="content" class="follow-main">
-            <div class="follow-list" v-if="pointList">
-              <div
-                class="follow-table"
-                v-for="(item, index) in pointList"
-                :key="index"
+              <el-tooltip
+                class="item"
+                effect="dark"
+                :content="cuttingTips[1]"
+                placement="left"
               >
+                <img
+                  class="cutting-img"
+                  @click.stop="changeGauge(1)"
+                  src="@/assets/images/todo/unchecked/gauge.png"
+                  mode=""
+                />
+              </el-tooltip>
+              <el-tooltip
+                class="item"
+                effect="dark"
+                :content="cuttingTips[2]"
+                placement="left"
+              >
+                <img
+                  class="cutting-img"
+                  @click.stop="changeGauge(2)"
+                  src="@/assets/images/todo/unchecked/angle.png"
+                  mode=""
+                />
+              </el-tooltip>
+              <el-tooltip
+                popper-class="tooltip-bgi"
+                placement="right-end"
+                v-model="angleTool"
+                transition="el-fade-in-linear"
+                manual
+              >
+                <div slot="content">
+                  <el-form
+                    class="set-form"
+                    ref="form"
+                    :model="setForm"
+                    label-width="80px"
+                  >
+                    <el-form-item :label="$t('webClient.setting[0].label')">
+                      <el-select
+                        size="mini"
+                        popper-class="popper-bgi"
+                        @change="changeGauge(3)"
+                        v-model="setForm.unit"
+                        :placeholder="$t('webClient.setting[0].tips')"
+                      >
+                        <el-option
+                          :label="item"
+                          :value="index"
+                          v-for="(item, index) in unitList"
+                          :key="index"
+                        ></el-option>
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item :label="$t('webClient.setting[1].label')">
+                      <el-select
+                        size="mini"
+                        popper-class="popper-bgi"
+                        @change="changeGauge(4)"
+                        v-model="setForm.accuracy"
+                        :placeholder="$t('webClient.setting[1].tips')"
+                      >
+                        <el-option
+                          :label="item"
+                          :value="index"
+                          v-for="(item, index) in accuracyList"
+                          :key="index"
+                        ></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-form>
+                </div>
                 <el-tooltip
                   class="item"
                   effect="dark"
-                  :content="item.name"
-                  placement="top"
+                  :content="cuttingTips[3]"
+                  placement="left"
                 >
-                  <div
-                    class="follow-text"
-                    v-text="item.name"
-                    @click="JumpFollow(item)"
-                  ></div>
+                  <img
+                    class="cutting-img"
+                    src="@/assets/images/todo/unchecked/set.png"
+                    @click.stop="showAngle"
+                    mode=""
+                  />
                 </el-tooltip>
-                <div class="close-follow">
-                  <i class="el-icon-edit" @click="EditFollow(item)"></i>
-                  <i class="el-icon-close" @click="DeleteFollow(item)"></i>
-                </div>
-              </div>
+              </el-tooltip>
             </div>
-            <div class="add-follow" @click="InsertFollow">
-              <i class="el-icon-plus"></i>
-            </div>
-          </div>
+          </el-collapse-transition>
+        </div>
+        <div class="image-main">
           <el-tooltip
             class="item"
             effect="dark"
-            :content="imgList[6].title"
+            :content="imgList[4].title"
             placement="top"
           >
             <img
-              @click="handleOrder(6)"
+              @click.stop="handleOrder(4)"
               class="footer-image"
-              :src="imgList[6].url"
+              :src="imgList[4].url"
               mode=""
             />
           </el-tooltip>
-        </el-tooltip>
-      </div>
-      <div class="image-main">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="imgList[7].title"
-          placement="top"
-        >
-          <img
-            @click="handleOrder(7)"
-            class="footer-image"
-            :src="imgList[7].url"
-            mode=""
-          />
-        </el-tooltip>
-      </div>
-      <div class="image-main">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="imgList[8].title"
-          placement="top"
-        >
-          <img
-            @click="handleOrder(8)"
-            class="footer-image"
-            :src="imgList[8].url"
-            mode=""
-          />
-        </el-tooltip>
-        <el-collapse-transition>
-          <div class="show-speed" v-if="imgList[8].state === 1">
-            <el-slider v-model="imgList[8].data.speed"></el-slider>
-          </div>
-        </el-collapse-transition>
-      </div>
-      <div class="image-main">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="imgList[9].title"
-          placement="top"
-        >
-          <img
-            @click="handleOrder(9)"
-            class="footer-image"
-            :src="imgList[9].url"
-            mode=""
-          />
-        </el-tooltip>
-        <el-collapse-transition>
-          <div class="show-weather" v-if="imgList[9].state === 1">
-            <el-form class="set-form" :model="setForm" label-width="80px">
-              <el-form-item :label="$t('webClient.weather[0].label')">
-                <el-select
-                  size="mini"
-                  v-model="setForm.weather"
-                  :placeholder="$t('webClient.weather[0].value')"
-                >
-                  <el-option label="区域一" value="shanghai"></el-option>
-                  <el-option label="区域二" value="beijing"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item :label="$t('webClient.weather[1].label')">
+        </div>
+        <div class="image-main">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="imgList[5].title"
+            placement="top"
+          >
+            <img
+              @click.stop="handleOrder(5)"
+              class="footer-image"
+              :src="imgList[5].url"
+              mode=""
+            />
+          </el-tooltip>
+        </div>
+        <div class="image-main">
+          <el-tooltip
+            popper-class="follow-bgi"
+            placement="top"
+            v-model="followTool"
+            transition="el-fade-in-linear"
+            manual
+          >
+            <div slot="content" class="follow-main">
+              <div class="follow-list" v-if="pointList">
                 <div
-                  class="show-speed weahter-speed"
-                  v-if="imgList[9].state === 1"
+                  class="follow-table"
+                  v-for="(item, index) in pointList"
+                  :key="index"
                 >
-                  <el-slider v-model="imgList[9].data.speed"></el-slider>
+                  <el-tooltip
+                    class="item"
+                    effect="dark"
+                    :content="item.name"
+                    placement="top"
+                  >
+                    <div
+                      class="follow-text"
+                      v-text="item.name"
+                      @click="JumpFollow(item)"
+                    ></div>
+                  </el-tooltip>
+                  <div class="close-follow">
+                    <i class="el-icon-edit" @click="EditFollow(item)"></i>
+                    <i class="el-icon-close" @click="DeleteFollow(item)"></i>
+                  </div>
                 </div>
-              </el-form-item>
-            </el-form>
-          </div>
-        </el-collapse-transition>
+              </div>
+              <div class="add-follow" @click="InsertFollow">
+                <i class="el-icon-plus"></i>
+              </div>
+            </div>
+            <el-tooltip
+              class="item"
+              effect="dark"
+              :content="imgList[6].title"
+              placement="top"
+            >
+              <img
+                @click.stop="handleOrder(6)"
+                class="footer-image"
+                :src="imgList[6].url"
+                mode=""
+              />
+            </el-tooltip>
+          </el-tooltip>
+        </div>
+        <div class="image-main">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="imgList[7].title"
+            placement="top"
+          >
+            <img
+              @click.stop="handleOrder(7)"
+              class="footer-image"
+              :src="imgList[7].url"
+              mode=""
+            />
+          </el-tooltip>
+        </div>
+        <div class="image-main">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="imgList[8].title"
+            placement="top"
+          >
+            <img
+              @click.stop="handleOrder(8)"
+              class="footer-image"
+              :src="imgList[8].url"
+              mode=""
+            />
+          </el-tooltip>
+          <el-collapse-transition>
+            <div class="show-speed" v-if="imgList[8].state === 1">
+              <el-slider v-model="imgList[8].data.speed"></el-slider>
+            </div>
+          </el-collapse-transition>
+        </div>
+        <div class="image-main">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="imgList[9].title"
+            placement="top"
+          >
+            <img
+              @click.stop="handleOrder(9)"
+              class="footer-image"
+              :src="imgList[9].url"
+              mode=""
+            />
+          </el-tooltip>
+          <el-collapse-transition>
+            <div class="show-weather" v-if="imgList[9].state === 1">
+              <el-form class="set-form" :model="setForm" label-width="80px">
+                <el-form-item :label="$t('webClient.weather[0].label')">
+                  <el-select
+                    size="mini"
+                    popper-class="popper-bgi"
+                    v-model="setForm.weather"
+                    :placeholder="$t('webClient.weather[0].value')"
+                  >
+                    <el-option label="区域一" value="shanghai"></el-option>
+                    <el-option label="区域二" value="beijing"></el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item :label="$t('webClient.weather[1].label')">
+                  <div
+                    class="show-speed weahter-speed"
+                    v-if="imgList[9].state === 1"
+                  >
+                    <el-slider v-model="imgList[9].data.speed"></el-slider>
+                  </div>
+                </el-form-item>
+              </el-form>
+            </div>
+          </el-collapse-transition>
+        </div>
+        <div class="cut-apart"></div>
+        <div class="image-main">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="imgList[10].title"
+            placement="top"
+          >
+            <img
+              @click.stop="handleOrder(10)"
+              class="footer-image"
+              :src="imgList[10].url"
+              mode=""
+            />
+          </el-tooltip>
+        </div>
+        <div class="image-main">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :content="imgList[11].title"
+            placement="top"
+          >
+            <img
+              @click.stop="handleOrder(11)"
+              class="footer-image"
+              :src="imgList[11].url"
+              mode=""
+            />
+          </el-tooltip>
+        </div>
       </div>
-      <div class="cut-apart"></div>
-      <div class="image-main">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="imgList[10].title"
-          placement="top"
-        >
-          <img
-            @click="handleOrder(10)"
-            class="footer-image"
-            :src="imgList[10].url"
-            mode=""
-          />
-        </el-tooltip>
-      </div>
-      <div class="image-main">
-        <el-tooltip
-          class="item"
-          effect="dark"
-          :content="imgList[11].title"
-          placement="top"
-        >
-          <img
-            @click="handleOrder(11)"
-            class="footer-image"
-            :src="imgList[11].url"
-            mode=""
-          />
-        </el-tooltip>
-      </div>
+      <!-- 编辑关注视点 -->
+      <el-dialog
+        :title="dialogPointData.title"
+        :visible.sync="dialogEdit"
+        width="20%"
+      >
+        <el-form v-if="followInfo">
+          <el-form-item :label="dialogPointData.label" label-width="50px">
+            <el-input @click.native.stop v-model="followInfo.name"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button
+            @click="dialogEdit = false"
+            v-text="dialogPointData.cancel"
+          ></el-button>
+          <el-button
+            type="primary"
+            @click="UpdateFollow"
+            v-text="dialogPointData.confirm"
+          ></el-button>
+        </div>
+      </el-dialog>
     </div>
-    <!-- 编辑关注视点 -->
-    <el-dialog
-      :title="dialogPointData.title"
-      :visible.sync="dialogEdit"
-      width="20%"
-    >
-      <el-form v-if="followInfo">
-        <el-form-item :label="dialogPointData.label" label-width="50px">
-          <el-input v-model="followInfo.name"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button
-          @click="dialogEdit = false"
-          v-text="dialogPointData.cancel"
-        ></el-button>
-        <el-button
-          type="primary"
-          @click="UpdateFollow"
-          v-text="dialogPointData.confirm"
-        ></el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -410,6 +435,9 @@ export default {
   },
   data() {
     return {
+      isMask: false,
+      unitList: ["m", "cm", "mm", "ft", "in"],
+      accuracyList: ["0", "0.1", "0.01"],
       getProps: null,
       followInfo: null,
       pointList: [],
@@ -440,7 +468,7 @@ export default {
           url: require("@/assets/images/todo/unchecked/speed.png"),
           name: "speed.png",
           data: {
-            speed: 50,
+            speed: 4,
           },
           title: "移动速度",
         },
@@ -518,7 +546,8 @@ export default {
       followTool: false,
       personTool: false,
       setForm: {
-        unit: null,
+        unit: 0,
+        accuracy: 2,
         weather: null,
       },
       deleteData: {
@@ -540,9 +569,8 @@ export default {
       actionData: {
         successMessage: "指令下发成功",
         cancelMessage: "指令下发失败",
-        addLoadMessage: "正在执行添加视角，请稍候……"
+        addLoadMessage: "正在执行添加视角，请稍候……",
       },
-      FollowTimer: null
     };
   },
   watch: {
@@ -566,7 +594,7 @@ export default {
     if (this.$i18n.locale) {
       this.actionData.successMessage = this.$t("webClient.loadBox.message[2]");
       this.actionData.cancelMessage = this.$t("webClient.loadBox.message[3]");
-      this.actionData.addLoadMessage = this.$t("webClient.loadBox.message[2]");
+      this.actionData.addLoadMessage = this.$t("webClient.loadBox.message[5]");
       this.deleteData = this.$t("webClient.deleteList[0]");
       this.dialogPointData = this.$t("webClient.dialogList[0]");
       this.cuttingTips = this.$t("webClient.tooltipList.subtool");
@@ -586,6 +614,51 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    openMask() {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-25 11:38:29
+       * @description: 打开遮罩
+       */
+      this.isMask = true;
+    },
+    changeGauge(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-24 15:43:44
+       * @description: 测量 0 坐标 1 距离 2 角度 3 单位 4 精度
+       */
+      let realSet = null;
+      if (e === 3) {
+        realSet = this.unitList[this.setForm.unit]
+          ? this.unitList[this.setForm.unit]
+          : "m";
+      }
+      if (e === 4) {
+        realSet = this.accuracyList[this.setForm.accuracy]
+          ? this.accuracyList[this.setForm.accuracy]
+          : "0.01";
+      }
+      this.$emit("listenTodo", {
+        state: this.imgList[3].state,
+        type: 3,
+        data: e,
+        set: realSet,
+      });
+    },
+    changeSpeed(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-24 09:28:51
+       * @description: 设置移动速度
+       */
+      this.isMask = false;
+      this.$emit("listenTodo", {
+        state: this.imgList[1].state,
+        type: 1,
+        data: e,
+      });
+    },
     changePerson(e) {
       /**
        * @Author: zk
@@ -606,6 +679,9 @@ export default {
        * @Date: 2021-03-17 09:51:33
        * @description: 关闭tool
        */
+      if (this.oldState === 3 || this.oldState === 1) {
+        return;
+      }
       this.angleTool = false;
       this.followTool = false;
       this.personTool = false;
@@ -620,16 +696,21 @@ export default {
       this.imgList[e].url = oldUrl;
       this.imgList[e].state = 0;
     },
-    resetpPrson() {
+    resetpPrson(e) {
       /**
        * @Author: zk
        * @Date: 2021-03-12 11:39:50
        * @description: 重置为第三人称
        */
-      this.activePerson = 1;
+      this.activePerson = e;
     },
     showAngle() {
-      this.angleTool = true;
+      /**
+       * @Author: zk
+       * @Date: 2021-03-24 16:05:57
+       * @description: 设置单位
+       */
+      this.angleTool = this.angleTool ? false : true;
     },
     InsertFollow() {
       /**
@@ -642,12 +723,8 @@ export default {
         id: 9,
       };
       this.UpdateOrder(params).then(() => {
-        this.followTool = false
-        this.FollowTimer = setTimeout(() => {
-          clearTimeout(this.realTimer);
-          this.FollowTimer = null
-          this.ListPoint();
-        }, 1000 * 3);
+        this.followTool = false;
+        this.ListPoint();
         this.dialogEdit = false;
         let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
         this.imgList[6].url = oldUrl;
@@ -660,7 +737,7 @@ export default {
        * @Date: 2021-03-17 10:43:44
        * @description: 编辑视点
        */
-      this.followInfo = e;
+      this.followInfo = JSON.parse(JSON.stringify(e));
       this.dialogEdit = true;
     },
     UpdateFollow() {
@@ -736,13 +813,37 @@ export default {
         id: 10,
         camerashotId: e.tid,
       };
-      this.UpdateOrder(params);
-      if (e.viewMode) {
-        this.activePerson = e.viewMode === "1" ? 0 : 1;
+      if (this.followInfo.available === "0") {
+        this.$message({
+          type: "warning",
+          message: this.actionData.addLoadMessage,
+        });
+        return;
+      } else {
+        this.UpdateOrder(params);
+        if (e.viewMode) {
+          this.activePerson = e.viewMode === "1" ? 0 : 1;
+        }
+        if (e.projectionMode) {
+          // this.activePerson = e.viewMode === "1" ? 0 : 1
+          this.$emit("listenMode", Number(e.projectionMode));
+        }
       }
-      if (e.projectionMode) {
-        // this.activePerson = e.viewMode === "1" ? 0 : 1
-        this.$emit("listenMode", Number(e.projectionMode));
+    },
+    resetPointList(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-23 15:49:31
+       * @description: 补充关注视角列表
+       */
+      for (const key in this.pointList) {
+        if (Object.hasOwnProperty.call(this.pointList, key)) {
+          const item = this.pointList[key];
+          if (item.tid === e.tid) {
+            this.pointList[key] = e;
+            return;
+          }
+        }
       }
     },
     ListPoint() {
@@ -764,36 +865,17 @@ export default {
         .catch((err) => {});
     },
     handleOrder(e) {
-      if (
-        e === 1 ||
-        e === 2 ||
-        e === 3 ||
-        e === 4 ||
-        e === 5 ||
-        e === 7 ||
-        e === 8 ||
-        e === 9
-      ) {
+      if (e === 2 || e === 4 || e === 5 || e === 7 || e === 8 || e === 9) {
         return;
       }
       if (e === 0) {
-        event.stopPropagation();
         this.personTool = this.imgList[e].state === 0 ? true : false;
       }
       if (e === 6) {
-        event.stopPropagation();
-        if (this.FollowTimer) {
-          this.$message({
-            type: "warning",
-            message: this.actionData.addLoadMessage
-          })
-          return
-        } else {
-        this.followTool = this.imgList[e].state === 0 ? true : false;          
-        }
+        this.followTool = this.imgList[e].state === 0 ? true : false;
       }
       // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11) {
+      if (e !== this.oldState && e !== 10 && e !== 11 && this.oldState !== 3) {
         let oldUrl = require(`@/assets/images/todo/unchecked/${
           this.imgList[this.oldState].name
         }`);
@@ -807,7 +889,7 @@ export default {
         realImg = require(`@/assets/images/todo/check/${this.imgList[e].name}`);
       } else {
         realImg = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
-      }      
+      }
       this.imgList[e].url = realImg;
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
       if (e !== 0) {
@@ -1019,6 +1101,12 @@ export default {
     }
   }
 }
+.handle-mask {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+}
 </style>
 <style lang="less">
 .set-form {
@@ -1042,6 +1130,28 @@ export default {
       background: rgba(255, 255, 255, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.25);
       color: #ffffff;
+    }
+    .is-focus{
+      border-color: rgba(0, 0, 0, 0.6) !important;
+    }    
+  }
+}
+.popper-bgi{
+  background: rgba(0, 0, 0, 0.6);
+  border: transparent;
+  .el-select-dropdown__item{
+    color: #ffffff !important;    
+  }
+  .el-select-dropdown__item.hover, .el-select-dropdown__item:hover{
+    background: rgba(0, 0, 0, 0.1) !important;
+  }
+  .selected{
+    color: #409EFF !important;
+  }
+  .popper__arrow{
+    border-top-color: rgba(0, 0, 0, 0.6) !important;
+    &::after{
+      border-top-color: rgba(0, 0, 0, 0.6) !important;       
     }
   }
 }

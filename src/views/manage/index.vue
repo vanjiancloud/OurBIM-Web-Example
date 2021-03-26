@@ -38,7 +38,7 @@
             </el-progress>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" :label="$t('uploaddate')">
+        <el-table-column prop="createTime" :label="$t('uploaddate')" width="200">
         </el-table-column>
         <el-table-column :label="$t('operation')">
           <template slot-scope="scope">
@@ -253,7 +253,7 @@ export default {
     setGetdataIn () {
       this.timer = setInterval(() => {
         this.GetList()
-        console.log('每隔5秒更新应用管理')
+        // console.log('每隔5秒更新应用管理')
       }, 5000)
     },
     // 获取应用数据列表
@@ -262,7 +262,7 @@ export default {
         userid: getuserid()
       })
         .then(res => {
-          console.log(res)
+          // console.log(res)
           this.itemList = res.data.data
           this.reverse()
           this.appid = res.data.data.appid
@@ -469,6 +469,23 @@ export default {
       return extension
     }
   },
+  // //限制回退登录页
+  // beforeRouteLeave (to, from, next) {
+  //   if (to.name === 'login') {
+  //     next(false) // 不跳转
+  //   } else {
+  //     next() // 跳转其它路由不受限
+  //   }
+  // },
+
+  // 路由跳转清除定时
+  beforeRouteLeave (to, from, next) {
+    next()
+    if (this.timer) {
+      clearInterval(this.timer)
+      this.timer = null
+    }
+  },
   // ===== 页面实例销毁 =====
   destroyed () {
     // 清除定时器
@@ -537,7 +554,7 @@ export default {
       background-color: #bbb;
       color: #fff;
     }
-    .ff{
+    .ff {
       background-color: #00aaf0;
       color: #fff;
     }
@@ -551,8 +568,6 @@ export default {
     }
   }
   .el-dialog {
-    margin: 0;
-    padding: 0;
     .content {
       display: flex;
       justify-content: center;
