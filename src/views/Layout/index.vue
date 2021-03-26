@@ -272,6 +272,7 @@
 import { showDetail } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 import { deluserid, Deluserid } from '@/store/index.js'
+import { delCookie } from "@/utils/cookie"
 
 export default {
   name: 'myHeader',
@@ -327,6 +328,7 @@ export default {
     // 退出按钮
     toLogin () {
       this.$router.push('../login/')
+      delCookie("userInfo")
       deluserid()
       Deluserid()
       clearInterval(this.time)
