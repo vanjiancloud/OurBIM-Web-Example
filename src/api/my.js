@@ -43,7 +43,7 @@ export function loginMobile (data) {
 
 // 获取注册
 export function getRegister (data) {
-  const { email, mobile, code, password, activeUrl } = data
+  const { email, mobile, code, password, activeUrl, name, company, sex } = data
   return request({
     url: '/UserCenter/addUser',
     method: 'POST',
@@ -52,7 +52,10 @@ export function getRegister (data) {
       mobile,
       code,
       password,
-      activeUrl
+      activeUrl,
+      name,
+      company,
+      sex
     }
   })
 }
@@ -163,7 +166,6 @@ export function deleteProject (data) {
     url: '/appli/deleteProject',
     method: 'POST',
     data: qsStringify(data)
-
   })
 }
 
@@ -238,4 +240,3 @@ export function verification (data) {
     data: qsStringify(data)
   })
 }
-

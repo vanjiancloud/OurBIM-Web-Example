@@ -20,10 +20,10 @@
           </div>
           <el-form ref="ruleForm" :model="ruleForm" :rules="rules">
             <!-- 性别 -->
-            <el-radio v-model="ruleForm.radio" label="1">
+            <el-radio v-model="ruleForm.sex" label="1">
               <img src="./img/man.png" alt="" />
             </el-radio>
-            <el-radio v-model="ruleForm.radio" label="2">
+            <el-radio v-model="ruleForm.sex" label="2">
               <img src="./img/woman.png" alt="" />
             </el-radio>
             <!-- 邮箱 -->
@@ -154,7 +154,7 @@ export default {
       btnMes: '获取验证码', // 按钮的文本
       // 验证表单数据
       ruleForm: {
-        radio: '1',
+        sex: '1',
         email: '',
         mobile: '',
         name: '',
@@ -278,13 +278,16 @@ export default {
       this.$router.push('../../login')
     },
     toLogoin () {
-      console.log('666666666')
       this.$router.push('../login')
     },
     // 点击注册
     doRegister () {
+      // console.log(this.ruleForm.name)
       getRegister({
         email: this.ruleForm.email,
+        name: this.ruleForm.name,
+        company: this.ruleForm.company,
+        sex: this.ruleForm.sex,
         mobile: this.ruleForm.mobile,
         code: this.ruleForm.code,
         password: this.ruleForm.password,
@@ -375,7 +378,7 @@ export default {
           this.$message.error('校验失败，请检查网络')
         })
     },
-    // 失去焦点获取
+    // 失去焦点获取邮箱
     emailBlur () {
       this.$refs.ruleForm.validateField('email', emailError => {
         if (!emailError) {

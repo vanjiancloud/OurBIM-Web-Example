@@ -10,7 +10,7 @@ export default new Vue({
     // ==================== 开启加载 ====================
     openLoading (str) {
       this.loading = this.$loading({
-        lock: true,
+        lock: false,
         text: str,
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'

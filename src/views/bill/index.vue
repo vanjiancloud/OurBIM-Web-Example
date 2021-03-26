@@ -4,13 +4,13 @@
     <div class="title">
       {{ $t('information') }}
     </div>
-    <!-- 用户名 -->
+    <!-- 姓名 -->
     <div class="message" style="margin-top: 30px;">
-      <div class="one">{{ $t('username') }}</div>
+      <div class="one">姓名：</div>
       <div class="input">
         <el-input
           v-model="name"
-          placeholder="请输入用户名"
+          placeholder="请输入姓名"
           maxlength="10"
           show-word-limit
         ></el-input>
@@ -105,7 +105,7 @@ export default {
   name: 'bill',
   data () {
     return {
-      name: '', //用户名
+      name: '', //姓名
       note: '', //签名
       email: '', //邮箱
       mobile: '', //手机号

@@ -28,7 +28,7 @@
             <!-- 成功案例 -->
             <li>
               <a href="http://www.ourbim.com:7011/successful_cases">
-                {{ $t('cases') }}</a
+                示例项目</a
               >
             </li>
             <!-- 产品定价 -->
@@ -61,22 +61,6 @@
                         {{ $t('APIdov') }}
                       </a>
                     </span>
-                  </el-dropdown-item>
-                  <!-- 示例项目 -->
-                  <el-dropdown-item>
-                    <a
-                      href="http://www.ourbim.com:7011/developer/sample_project"
-                      style="text-decoration:none; color:#000"
-                      >{{ $t('projects') }}</a
-                    >
-                  </el-dropdown-item>
-                  <!-- 模型中心 -->
-                  <el-dropdown-item>
-                    <a
-                      href="http://www.ourbim.com:7011/developer/model_center"
-                      style="text-decoration:none; color:#000"
-                      >{{ $t('Mcenter') }}</a
-                    >
                   </el-dropdown-item>
                   <!-- 服务中心 -->
                   <el-dropdown-item>
@@ -136,10 +120,14 @@
           <div class="top">
             <div class="left">
               <div class="im">
-                <img
-                  :src="imgUrl ? imgUrl : require('./img/touxiang.png')"
-                  alt="未上传头像"
-                />
+                <img :src="imgUrl ? imgUrl : require('./img/man.png')" />
+                <!-- <img
+                  :src="imgUrl"
+                  :class="{
+                  
+                }"
+                /> -->
+                <!-- <img src="../register/img/man.png" v-show="sex = 1" /> -->
               </div>
               <!-- 昵称和签名栏 -->
               <div class="Info">
@@ -293,6 +281,7 @@ export default {
       customColor: '#00AAF0',
       note: '', //签名
       name: '', //用户名
+      sex: '', //性别
       imgUrl: '', //用户头像
       email: '', //邮箱
       mobile: '', //手机号
@@ -351,6 +340,7 @@ export default {
         .then(res => {
           console.log(res)
           this.name = res.data.data.name
+          this.sex = res.data.data.sex
           this.note = res.data.data.note
           this.email = res.data.data.email
           this.mobile = res.data.data.mobile
@@ -369,6 +359,15 @@ export default {
           // this.imgUrl = this.imgUrl
         })
     },
+
+    // 根据传入的sex做适配
+    // formatStatus (sex) {
+    //   const sexObj = {
+    //     1: '../register/img/man.png',
+    //     2: '../register/img/woman.png'
+    //   }
+    //   return sexObj[sex]
+    // },
 
     // 去往用户中心
     goUserCenter () {
@@ -413,7 +412,7 @@ export default {
   activated () {
     this.time = setInterval(() => {
       this.showData()
-      console.log('个人信息')
+      // console.log('个人信息')
     }, 3000)
   },
   // 路由跳转清除定时

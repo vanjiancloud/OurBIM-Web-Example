@@ -166,7 +166,7 @@ import { setmobile, getmobile, delmobile } from '@/store/index.js'
 // const Base64 = require('js-base64').Base64
 
 export default {
-  name: 'Logoin',
+  name: 'login',
   data () {
     return {
       isSend: false, // 是否显示
@@ -238,7 +238,7 @@ export default {
     // 记住邮箱
     if (localStorage.getItem('email')) {
       this.form.email = getemail()
-      console.log(this.form.isAgree)
+      // console.log(this.form.isAgree)
       this.form.isAgree = true
     } else if (localStorage.getItem('email') === null) {
       this.form.email = ''
@@ -247,7 +247,7 @@ export default {
     // 记住密码
     if (localStorage.getItem('password')) {
       this.form.password = getpassword()
-      console.log(this.form.isAgree)
+      // console.log(this.form.isAgree)
       this.form.isAgree = true
     } else if (localStorage.getItem('password') === null) {
       this.form.password = ''
@@ -256,7 +256,7 @@ export default {
     // 记住手机号
     if (localStorage.getItem('mobile')) {
       this.mobForm.mobile = getmobile()
-      console.log(this.mobForm.checkbox)
+      // console.log(this.mobForm.checkbox)
       this.mobForm.checkbox = true
     } else if (localStorage.getItem('mobile') === null) {
       this.mobForm.mobile = ''
@@ -309,22 +309,20 @@ export default {
         password: this.form.password
       })
         .then(res => {
-          console.log(res)
           if (res.data.code === 0) {
             this.$message.success(res.data.message)
             this.logIn = '登录'
             this.isLoading = false
             this.setCookie('userInfo', JSON.stringify(res.data.data))
             sessionStorage.setItem('userInfo', JSON.stringify(res.data.data))
-            console.log(res.data.data)
+            // console.log(res.data.data)
             // 存储用户信息userid，到localStorage
             setuserid(res.data.data.userid)
             setemail(this.form.email)
             setpassword(this.form.password)
-
             // 存储用户信息userid，到sessionStorage
             Setuserid(res.data.data.userid)
-            console.log(this.form.isAgree)
+            // console.log(this.form.isAgree)
             if (this.form.isAgree === false) {
               delemail()
               delpassword()
@@ -370,7 +368,7 @@ export default {
             if (this.mobForm.checkbox === false) {
               delmobile()
             }
-            this.$router.push('../manage')
+            this.$router.push('../manage')			
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
             this.logIn = '登录'

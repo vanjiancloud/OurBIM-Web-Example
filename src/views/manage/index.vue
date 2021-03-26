@@ -38,7 +38,7 @@
             </el-progress>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" :label="$t('uploaddate')">
+        <el-table-column prop="createTime" :label="$t('uploaddate')" width="200">
         </el-table-column>
         <el-table-column :label="$t('operation')">
           <template slot-scope="scope">
@@ -78,64 +78,63 @@
       </el-table>
     </div>
     <!-- dialog框 -->
-      <el-dialog
-        title="编辑应用"
-        :visible.sync="dialogFormVisible"
-        center
-        
-        :destroy-on-close="true"
-        :close-on-click-modal="false"
-        :close-on-press-escape="false"
-      >
-        <div class="content">
-          <el-form :model="form">
-            <el-form-item label="应用名称：" label-width="110px">
-              <el-input v-model="form.name" autocomplete="off"></el-input>
-            </el-form-item>
-            <el-form-item label="最大并发数：" label-width="110px">
-              <el-input
-                v-model="form.maxInstance"
-                autocomplete="off"
-                :disabled="true"
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="修改封面：" label-width="110px">
-              <el-upload
-                :action="baseURL + '/appli/postScreenImg'"
-                :on-success="upLoadImg"
-                name="fileUpload"
-                :on-error="errorImg"
-                list-type="picture-card"
-                :limit="1"
-                :on-exceed="handleExceed"
-                :before-upload="beforeUpload"
-                accept=".png,.jpg,.jpeg"
-                ref="upload"
-                :file-list="fileList"
-              >
-                <i slot="default" class="el-icon-plus"></i>
-                <div slot="file" slot-scope="{ file }">
-                  <img
-                    class="el-upload-list__item-thumbnail"
-                    :src="file.url"
-                    alt=""
-                  />
-                  <span class="el-upload-list__item-actions">
-                    <span
-                      class="el-upload-list__item-delete"
-                      @click="handleRemove(file)"
-                    >
-                      <i class="el-icon-delete"></i>
-                    </span>
+    <el-dialog
+      title="编辑应用"
+      :visible.sync="dialogFormVisible"
+      center
+      :destroy-on-close="true"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+    >
+      <div class="content">
+        <el-form :model="form">
+          <el-form-item label="应用名称：" label-width="110px">
+            <el-input v-model="form.name" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="最大并发数：" label-width="110px">
+            <el-input
+              v-model="form.maxInstance"
+              autocomplete="off"
+              :disabled="true"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="修改封面：" label-width="110px">
+            <el-upload
+              :action="baseURL + '/appli/postScreenImg'"
+              :on-success="upLoadImg"
+              name="fileUpload"
+              :on-error="errorImg"
+              list-type="picture-card"
+              :limit="1"
+              :on-exceed="handleExceed"
+              :before-upload="beforeUpload"
+              accept=".png,.jpg,.jpeg"
+              ref="upload"
+              :file-list="fileList"
+            >
+              <i slot="default" class="el-icon-plus"></i>
+              <div slot="file" slot-scope="{ file }">
+                <img
+                  class="el-upload-list__item-thumbnail"
+                  :src="file.url"
+                  alt=""
+                />
+                <span class="el-upload-list__item-actions">
+                  <span
+                    class="el-upload-list__item-delete"
+                    @click="handleRemove(file)"
+                  >
+                    <i class="el-icon-delete"></i>
                   </span>
-                </div>
-              </el-upload>
-              <div class="xiaoxi">
-                <!-- <span style="color:red;margin-right:5px">*</span> -->
-                {{ $t('extensions') }}：.png .jpg .jpeg
+                </span>
               </div>
-            </el-form-item>
-            <!-- <el-form-item label="上传模型" :label-width="formLabelWidth">
+            </el-upload>
+            <div class="xiaoxi">
+              <!-- <span style="color:red;margin-right:5px">*</span> -->
+              {{ $t('extensions') }}：.png .jpg .jpeg
+            </div>
+          </el-form-item>
+          <!-- <el-form-item label="上传模型" :label-width="formLabelWidth">
               <el-upload
                 :on-success="upLoadModel"
                 drag
@@ -159,29 +158,29 @@
                 </div>
               </el-upload>
             </el-form-item> -->
-            <el-form-item label="鼠标操作模式：">
-              <el-select v-model="form.doMouse" placeholder="请选择操作模式">
-                <el-option label="非锁定模式" value="0"></el-option>
-                <el-option label="锁定模式" value="1"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="窗口显示模式：">
-              <el-select
-                v-model="form.displayWindow"
-                placeholder="请选择显示模式"
-              >
-                <el-option label="完全填充" value="0"></el-option>
-                <el-option label="尽量填充" value="1"></el-option>
-                <el-option label="原始大小" value="2"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-form>
-        </div>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="amend()">确 定</el-button>
-        </div>
-      </el-dialog>
+          <el-form-item label="鼠标操作模式：">
+            <el-select v-model="form.doMouse" placeholder="请选择操作模式">
+              <el-option label="非锁定模式" value="0"></el-option>
+              <el-option label="锁定模式" value="1"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="窗口显示模式：">
+            <el-select
+              v-model="form.displayWindow"
+              placeholder="请选择显示模式"
+            >
+              <el-option label="完全填充" value="0"></el-option>
+              <el-option label="尽量填充" value="1"></el-option>
+              <el-option label="原始大小" value="2"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="amend()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -254,7 +253,7 @@ export default {
     setGetdataIn () {
       this.timer = setInterval(() => {
         this.GetList()
-        console.log('每隔5秒更新应用管理')
+        // console.log('每隔5秒更新应用管理')
       }, 5000)
     },
     // 获取应用数据列表
@@ -263,7 +262,7 @@ export default {
         userid: getuserid()
       })
         .then(res => {
-          console.log(res)
+          // console.log(res)
           this.itemList = res.data.data
           this.reverse()
           this.appid = res.data.data.appid
@@ -468,6 +467,23 @@ export default {
         this.$message.error('上传模型只能是.rvt格式!')
       }
       return extension
+    }
+  },
+  // //限制回退登录页
+  // beforeRouteLeave (to, from, next) {
+  //   if (to.name === 'login') {
+  //     next(false) // 不跳转
+  //   } else {
+  //     next() // 跳转其它路由不受限
+  //   }
+  // },
+
+  // 路由跳转清除定时
+  beforeRouteLeave (to, from, next) {
+    next()
+    if (this.timer) {
+      clearInterval(this.timer)
+      this.timer = null
     }
   },
   // ===== 页面实例销毁 =====
