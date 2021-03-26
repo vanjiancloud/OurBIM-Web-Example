@@ -282,7 +282,6 @@ export default {
     },
     // 点击注册
     doRegister () {
-      // console.log(this.ruleForm.name)
       getRegister({
         email: this.ruleForm.email,
         name: this.ruleForm.name,
@@ -299,11 +298,11 @@ export default {
             this.$message.success('注册成功')
             this.$router.push('/registerSucceed')
           } else if (res.data.code === 1) {
-            this.$message.error('验证码验证失败')
+            this.$message.warning(res.data.message)
           } else if (res.data.code === 2) {
-            this.$message.error('该邮箱已注册')
+            this.$message.error(res.data.message)
           } else if (res.data.code === 3) {
-            this.$message.error('该手机号已注册')
+            this.$message.error(res.data.message)
           }
         })
         .catch(err => {

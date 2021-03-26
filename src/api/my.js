@@ -219,7 +219,7 @@ export function getOrder (data) {
   return request({
     url: '/dingdanManager/searchDingdan',
     method: 'POST',
-    data
+    data: qsStringify(data)
   })
 }
 
