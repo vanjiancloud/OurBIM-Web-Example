@@ -84,8 +84,7 @@ export default {
         sqMISUsed: '', //状态
         dcount: '', //金额
         pageSize: 10, //每页条数
-        currentPage: 1, //当前页
-        userid: getuserid()
+        currentPage: 1 //当前页
       }
     }
   },
@@ -95,24 +94,27 @@ export default {
   methods: {
     // 获取数据列表
     getList () {
-      const { pageSize, currentPage, userid } = this.editForm
-      const editParams = new FormData()
-      editParams.append('userid', userid)
-      editParams.append('pageNo', currentPage)
-      editParams.append('pageSize', pageSize)
-      getOrder(editParams)
+      getOrder({
+        pageNo: this.editForm.currentPage,
+        pageSize: this.editForm.pageSize,
+        userid: getuserid()
+      })
         .then(res => {
           console.log(res)
-          console.log(res.data.$message)
-          let arr = res.data.data
-          arr.forEach(b => {
-            b.eyseShow = true
-            b.imgeeyes = 'closeEye'
-          })
-          this.tableData = res.data.data
-          this.editForm.currentPage = res.data.page //当前页
-          this.editForm.pageSize = res.data.pageSize //每页条数
-          this.total = res.data.count //总条数
+          if (res.data.code === 0) {
+            this.$message.success(res.data.message)
+            let arr = res.data.data
+            arr.forEach(b => {
+              b.eyseShow = true
+              b.imgeeyes = 'closeEye'
+            })
+            this.tableData = res.data.data
+            this.editForm.currentPage = res.data.page //当前页
+            this.editForm.pageSize = res.data.pageSize //每页条数
+            this.total = res.data.count //总条数
+          } else if (res.data.code === 1) {
+            this.$message.error(res.data.message)
+          }
         })
         .catch(err => {
           console.log(err)

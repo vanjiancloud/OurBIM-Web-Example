@@ -102,7 +102,7 @@
           <div class="end">
             <div class="touxiang">
               <img
-                :src="imgUrl ? imgUrl : require('./img/touxiang.png')"
+                :src="imgUrl ? imgUrl : require(sex==1?'./img/man.png':'./img/woman.png')"
                 alt=""
               />
             </div>
@@ -120,7 +120,7 @@
           <div class="top">
             <div class="left">
               <div class="im">
-                <img :src="imgUrl ? imgUrl : require('./img/man.png')" />
+                <img :src="imgUrl ? imgUrl : require(sex==1?'./img/man.png':'./img/woman.png')" />
                 <!-- <img
                   :src="imgUrl"
                   :class="{
