@@ -25,7 +25,7 @@ const routes = [
   {
     path: '/',
     component: Layout,
-    redirect: 'login', //重定向到项目管理
+    redirect: 'manage', //重定向到项目管理
     children: [
       {
         path: 'manage',

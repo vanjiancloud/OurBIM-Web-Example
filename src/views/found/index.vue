@@ -1,8 +1,8 @@
 <template>
   <!-- 创建应用-->
   <div class="box">
-    <!-- 3步步骤条 -->
-    <div class="buzhou" v-show="isHandle == 1">
+    <!-- 步骤条 -->
+    <div class="buzhou">
       <el-steps :active="active">
         <el-step :title="$t('Step')" :description="$t('setUP')"> </el-step>
         <el-step
@@ -10,15 +10,6 @@
           :description="$t('shangchuan')"
         ></el-step>
         <el-step :title="$t('threeStep')" :description="$t('finsh')"></el-step>
-      </el-steps>
-    </div>
-    <!-- 4步步骤条 -->
-    <div class="buzhou" v-show="isHandle == 2">
-      <el-steps :active="active">
-        <el-step title="步骤一" description="创建应用项目信息"> </el-step>
-        <el-step title="步骤二" description="上传BIM模型"></el-step>
-        <el-step title="步骤三" description="同时上传倾斜摄影"></el-step>
-        <el-step title="步骤四" description="上传完成"></el-step>
       </el-steps>
     </div>
     <!-- 第一步 创建应用项目信息-->
@@ -33,21 +24,21 @@
       <!-- input框 -->
       <div class="input">
         <span style="color:red;margin-right:5px;font-size: 16px;">*</span>
-        <span style="margin-right:5px; font-size: 16px; ">{{
+        <span style="margin-right:5px;">{{
           $t('application')
         }}</span>
         <el-input v-model="appName"></el-input>
       </div>
       <!-- 上传图片 -->
       <div class="picture">
-        <div class="news">
+        <!-- <div class="news">
           <span style="color:red;margin-right:5px;font-size: 16px;">*</span>
           <span style="margin-right:5px; font-size: 16px;  ">{{
             $t('Uploadc')
           }}</span>
-        </div>
+        </div> -->
         <!-- 上传封面 -->
-        <div class="cover">
+        <!-- <div class="cover">
           <el-upload
             :class="{ hide: hideUpload }"
             :action="baseURL + '/appli/postScreenImg'"
@@ -88,15 +79,15 @@
           <el-dialog :visible.sync="dialogVisible">
             <img width="100%" :src="dialogImageUrl" alt="" />
           </el-dialog>
-        </div>
-        <el-dialog :visible.sync="dialogVisible">
+        </div> -->
+        <!-- <el-dialog :visible.sync="dialogVisible">
           <img width="100%" :src="dialogImageUrl" alt="" />
-        </el-dialog>
+        </el-dialog> -->
       </div>
-      <div class="xiaoxi">
+      <!-- <div class="xiaoxi">
         <span style="color:red;margin-right:5px;font-size: 16px;">*</span>
         {{ $t('extensions') }}：.png .jpg .jpeg
-      </div>
+      </div> -->
       <!-- 按钮 -->
       <div class="anNiu">
         <el-button @click="next" type="primary">
@@ -139,7 +130,7 @@
           ref="bimupload"
           :auto-upload="false"
         >
-          <img src="./file.png" style="margin-top:60px" />
+          <img src="./file.png" style="margin-top:30px" />
           <div class="el-upload__text">
             {{ $t('methods') }}<br />
             {{ $t('xianzhi') }}<br />
@@ -192,7 +183,6 @@ export default {
       radio: '1', //单选框
       active: 1,
       isShow: 1,
-      isHandle: 1,
       disabl: true, //按钮禁用
       // 上传图片
       dialogImageUrl: '',
@@ -228,7 +218,8 @@ export default {
     },
     // 下一步
     next () {
-      if (this.appName !== '' && this.appImgSrc.length !== 0) {
+      // if (this.appName !== '' && this.appImgSrc.length !== 0) {
+      if (this.appName !== '') {
         if (this.active++ > 3) this.active = 0
         addProject({
           userId: getuserid(),
@@ -240,18 +231,18 @@ export default {
               this.appInfo = res.data.data
               this.appliId = res.data.data.appid
               console.log(this.appInfo)
-              this.$message.success('创建应用成功')
+              this.$message.success('创建项目成功')
               this.isShow = 2
             } else if (res.data.code === 1) {
-              this.$message.error('创建应用失败')
+              this.$message.error('创建项目失败')
             }
           })
           .catch(err => {
             console.log(err)
-            this.$message.error('创建失败，请创建应用')
+            this.$message.error('创建失败，请创建项目')
           })
       } else {
-        this.$message.warning('请先创建应用名称并上传封面')
+        this.$message.warning('请先创建项目名称')
       }
     },
     // 开始渲染
@@ -338,7 +329,7 @@ export default {
     },
     // 限制上传模型次数
     exceed () {
-      this.$message.warning(`上传模型超过上线`)
+      this.$message.warning(`上传模型数量超过限制`)
     },
     // 上传bim模型前
     beforeModelUpload (file) {
@@ -440,7 +431,7 @@ export default {
       margin-top: 10px;
     }
     .anNiu {
-      margin-top: 20px;
+      margin-top: 180px;
       // background-color: green;
       text-align: center;
     }

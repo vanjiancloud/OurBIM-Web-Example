@@ -27,21 +27,6 @@
           </el-form-item>
 
           <el-form-item prop="code">
-            <!-- <el-input
-            v-model="form.code"
-            placeholder="请输入短信验证码"
-            class="input"
-          >
-            <i slot="prefix" class="el-input__icon el-icon-message"></i>
-          </el-input>
-
-          <el-button
-            class="btnMes"
-            :disabled="isSend"
-            @click="getCode"
-            type="primary"
-            >{{ btnMes }}</el-button
-          > -->
             <el-input
               v-model="form.code"
               placeholder="请输入短信验证码"
@@ -175,7 +160,6 @@ export default {
     },
 
     // 点击获取验证码
-
     getCode () {
       this.$refs.form.validateField('mobile', codeError => {
         if (!codeError) {
@@ -185,7 +169,6 @@ export default {
     },
 
     // 获取验证码
-
     toGetCode () {
       this.isSend = true
       this.btnMes = `发送验证码中...`

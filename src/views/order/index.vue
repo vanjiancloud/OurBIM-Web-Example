@@ -100,9 +100,9 @@ export default {
         userid: getuserid()
       })
         .then(res => {
-          console.log(res)
+          // console.log(res)
           if (res.data.code === 0) {
-            this.$message.success(res.data.message)
+            // this.$message.success(res.data.message)
             let arr = res.data.data
             arr.forEach(b => {
               b.eyseShow = true
@@ -113,7 +113,7 @@ export default {
             this.editForm.pageSize = res.data.pageSize //每页条数
             this.total = res.data.count //总条数
           } else if (res.data.code === 1) {
-            this.$message.error(res.data.message)
+            // this.$message.error(res.data.message)
           }
         })
         .catch(err => {
