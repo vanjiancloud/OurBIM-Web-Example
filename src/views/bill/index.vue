@@ -42,7 +42,7 @@
     </div>
     <!-- 手机号 -->
     <div class="message">
-      <div class="one">{{ $t('Mobilephone') }}</div>
+      <div class="one">手机：</div>
       <div class="input">
         <el-input
           v-model="mobile"
@@ -126,7 +126,7 @@ export default {
         userid: getuserid()
       })
         .then(res => {
-          console.log('axios-获取用户信息', res.data.data)
+          // console.log('axios-获取用户信息', res.data.data)
           this.note = res.data.data.note
           this.name = res.data.data.name
           this.email = res.data.data.email
@@ -225,7 +225,7 @@ export default {
     .one {
       float: left;
       height: 46px;
-      width: 65px;
+      // width: 65px;
       line-height: 46px;
       margin-right: 35px;
       margin-left: 56px;

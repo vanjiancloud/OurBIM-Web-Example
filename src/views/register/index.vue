@@ -137,12 +137,7 @@
   </div>
 </template>
 <script>
-import {
-  getRegister,
-  repeatMobile,
-  repeatEmail,
-  sendMsgCode
-} from '@/api/my.js'
+import {getRegister,repeatMobile,repeatEmail,sendMsgCode} from '@/api/my.js'
 export default {
   name: 'register',
   data () {
@@ -261,6 +256,16 @@ export default {
             trigger: 'blur'
           }
         ]
+      }
+    }
+  },
+  watch: {
+    delay: function (newVal, oldVal) {
+      if (oldVal === 0) {
+        clearInterval(this.interId)
+        this.btnMes = '获取验证码'
+        this.isSend = false
+        this.delay = 60 // 倒计时
       }
     }
   },
@@ -403,16 +408,7 @@ export default {
         })
     }
   },
-  watch: {
-    delay: function (newVal, oldVal) {
-      if (oldVal === 0) {
-        clearInterval(this.interId)
-        this.btnMes = '获取验证码'
-        this.isSend = false
-        this.delay = 60 // 倒计时
-      }
-    }
-  }
+  
 }
 </script>
 <style lang="less" scoped>
@@ -546,7 +542,6 @@ export default {
         .code {
           margin-right: 27px;
           margin-top: 2px;
-          color: #00aaf0;
         }
         .check {
           margin-top: -15px;

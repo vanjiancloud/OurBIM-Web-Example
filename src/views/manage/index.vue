@@ -64,7 +64,7 @@
             </el-button>
           </template>
         </el-table-column>
-        <el-table-column label="进入应用">
+        <el-table-column label="进入项目">
           <template slot-scope="scope">
             <el-button
               @click="GoApp(scope.row)"
@@ -79,7 +79,7 @@
     </div>
     <!-- dialog框 -->
     <el-dialog
-      title="编辑应用"
+      title="编辑项目"
       :visible.sync="dialogFormVisible"
       center
       :destroy-on-close="true"
@@ -88,7 +88,7 @@
     >
       <div class="content">
         <el-form :model="form">
-          <el-form-item label="应用名称：" label-width="110px">
+          <el-form-item label="项目名称：" label-width="110px">
             <el-input v-model="form.name" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="最大并发数：" label-width="110px">
@@ -98,8 +98,8 @@
               :disabled="true"
             ></el-input>
           </el-form-item>
-          <el-form-item label="修改封面：" label-width="110px">
-            <el-upload
+          <!-- <el-form-item label="修改封面：" label-width="110px"> -->
+            <!-- <el-upload
               :action="baseURL + '/appli/postScreenImg'"
               :on-success="upLoadImg"
               name="fileUpload"
@@ -128,12 +128,11 @@
                   </span>
                 </span>
               </div>
-            </el-upload>
-            <div class="xiaoxi">
-              <!-- <span style="color:red;margin-right:5px">*</span> -->
+            </el-upload> -->
+            <!-- <div class="xiaoxi">
               {{ $t('extensions') }}：.png .jpg .jpeg
-            </div>
-          </el-form-item>
+            </div> -->
+          <!-- </el-form-item> -->
           <!-- <el-form-item label="上传模型" :label-width="formLabelWidth">
               <el-upload
                 :on-success="upLoadModel"
@@ -253,7 +252,7 @@ export default {
     setGetdataIn () {
       this.timer = setInterval(() => {
         this.GetList()
-        // console.log('每隔5秒更新应用管理')
+        console.log('每隔5秒更新应用管理')
       }, 5000)
     },
     // 获取应用数据列表
@@ -469,23 +468,15 @@ export default {
       return extension
     }
   },
-  // //限制回退登录页
-  // beforeRouteLeave (to, from, next) {
-  //   if (to.name === 'login') {
-  //     next(false) // 不跳转
-  //   } else {
-  //     next() // 跳转其它路由不受限
-  //   }
-  // },
 
   // 路由跳转清除定时
-  beforeRouteLeave (to, from, next) {
-    next()
-    if (this.timer) {
-      clearInterval(this.timer)
-      this.timer = null
-    }
-  },
+  // beforeRouteLeave (to, from, next) {
+  //   next()
+  //   if (this.timer) {
+  //     clearInterval(this.timer)
+  //     this.timer = null
+  //   }
+  // },
   // ===== 页面实例销毁 =====
   destroyed () {
     // 清除定时器
@@ -560,7 +551,7 @@ export default {
     }
     .red {
       font-size: 16px;
-      color: red;
+      color: #ff6600;
     }
     .gray {
       font-size: 16px;

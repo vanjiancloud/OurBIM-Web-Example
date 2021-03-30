@@ -11,7 +11,7 @@ import less from 'less'
 // 加载axios组件 
 import axios from '@/utils/request.js'
 // 自动计算rem大小
-// import 'lib-flexible'
+import 'lib-flexible'
 // 引入国际化语言包
 import VueI18n from 'vue-i18n'
 import common from './utils/common.js' // 公共方法
@@ -67,7 +67,7 @@ const i18n = new VueI18n({
       Youhave: '您共有',
       Application: '个应用',
       node: '节点:',
-      into: '进入应用',
+      into: '进入项目',
       release: '我的发布',
       management: '项目管理',
       Create: '创建项目',
@@ -82,8 +82,8 @@ const i18n = new VueI18n({
       share: '分享',
       edit: '编辑',
       delete: '删除',
-      applicationid: '应用ID',
-      applyname: '应用名称',
+      applicationid: '项目ID',
+      applyname: '项目名称',
       maximum: '最大并发数量',
       state: '状态',
       uploaddate: '上传日期',
@@ -94,11 +94,11 @@ const i18n = new VueI18n({
       Step: '步骤一',
       twoStep: '步骤二',
       threeStep: '步骤三',
-      setUP: '创建应用项目信息',
+      setUP: '创建项目信息',
       shangchuan: '上传BIM模型',
       finsh: '上传完成',
       Youcanalsoupload: '您还可上传',
-      toCreate: '创建应用',
+      toCreate: '创建项目',
       Upload: '上传模型',
       format: '仅支持.jpg.jpeg.png格式!',
       UploadBIM: '仅上传BIM模型',
@@ -107,7 +107,7 @@ const i18n = new VueI18n({
       xianzhi: '每次只能上传一个模型',
       limit: '仅支持上传扩展名：.rvt',
       Render: '开始转换',
-      application: '应用名称：',
+      application: '项目名称：',
       Required: '必填项',
       Uploadc: '上传封面：',
       youlogin: '如果没有封面不能登录',
@@ -117,7 +117,7 @@ const i18n = new VueI18n({
       accountManage: '账户管理',
       information: '个人信息',
       Authorization: '授权码',
-      nouse: '如授权码不可，用请联系售后。',
+      nouse: '如授权码不可用，请联系售后。',
       submit: '提交',
       Authorizations: '授权码：',
       Serviceorder: '服务订单',

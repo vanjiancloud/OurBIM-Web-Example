@@ -1,8 +1,7 @@
 <template>
   <el-container>
-    <!-- 顶部导航栏和信息展示 -->
+    <!-- 顶部导航栏 -->
     <el-header>
-      <!-- 顶部导航栏 -->
       <div class="header">
         <div class="container">
           <!-- logo -->
@@ -13,6 +12,10 @@
           </div>
           <!-- 导航 -->
           <ul>
+            <!-- 首页 -->
+            <li>
+              <a href="http://www.ourbim.com:7011">首页</a>
+            </li>
             <!-- 功能介绍 -->
             <li>
               <a href="http://www.ourbim.com:7011/introduce">
@@ -27,9 +30,7 @@
             </li>
             <!-- 成功案例 -->
             <li>
-              <a href="http://www.ourbim.com:7011/successful_cases">
-                示例项目</a
-              >
+              <a href="http://www.ourbim.com:7011/sample_project"> 示例项目</a>
             </li>
             <!-- 产品定价 -->
             <li>
@@ -52,26 +53,24 @@
                 </span>
                 <el-dropdown-menu slot="dropdown">
                   <!-- API文档 -->
-                  <el-dropdown-item>
-                    <span class="item">
-                      <a
-                        href="http://www.ourbim.com:7011/developer/api_file"
-                        style="text-decoration:none;color:#000"
-                      >
-                        {{ $t('APIdov') }}
-                      </a>
-                    </span>
+                  <el-dropdown-item style=" background-color: #fff; ">
+                    <a
+                      href="http://www.ourbim.com:7011/developer/api_file"
+                      style="text-decoration:none;color:#000;"
+                    >
+                      {{ $t('APIdov') }}
+                    </a>
                   </el-dropdown-item>
                   <!-- 服务中心 -->
-                  <el-dropdown-item>
+                  <!-- <el-dropdown-item>
                     <a
                       href="http://www.ourbim.com:7011/developer/service_entre"
                       style="text-decoration:none; color:#000"
                       >{{ $t('Service') }}</a
                     >
-                  </el-dropdown-item>
+                  </el-dropdown-item> -->
                   <!-- 更新日志 -->
-                  <el-dropdown-item>
+                  <el-dropdown-item style=" background-color: #fff; ">
                     <a
                       href="http://www.ourbim.com:7011/developer/update_log"
                       style="text-decoration:none; color:#000"
@@ -82,165 +81,190 @@
               </el-dropdown>
             </li>
           </ul>
-          <!-- 退出设置 -->
-          <div class="set">
-            <el-dropdown>
-              <span>
-                <i class="el-icon-s-tools"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item @click.native="toUserCenter">{{
-                  $t('userCenter')
-                }}</el-dropdown-item>
-                <el-dropdown-item @click.native="toLogin">{{
-                  $t('quit')
-                }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+          <!-- 项目中心 -->
+          <div class="project">
+            <span>
+              <img src="" alt="">
+            </span>
+            项目中心
           </div>
           <!-- 头像和中英文切换栏 -->
           <div class="end">
             <div class="touxiang">
-              <img
-                :src="imgUrl ? imgUrl : require(sex==1?'./img/man.png':'./img/woman.png')"
-                alt=""
-              />
+              <el-dropdown>
+                <span>
+                  <img
+                    :src="
+                      imgUrl
+                        ? imgUrl
+                        : require(sex == 1
+                            ? './img/man.png'
+                            : './img/woman.png')
+                    "
+                    alt=""
+                  />
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <!-- <el-dropdown-item @click.native="toUserCenter">{{
+                    $t('userCenter')
+                  }}</el-dropdown-item> -->
+                  <el-dropdown-item
+                    @click.native="toLogin"
+                    style="background-color:#fff;"
+                    >{{ $t('quit') }}</el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </el-dropdown>
             </div>
-            <div class="language">
+            <!-- <div class="language">
               <a @click="Chinese" href="javascript:;">中文</a>
               <span style="margin: 0 5px;">|</span>
               <a href="javascript:;">English</a>
-            </div>
+            </div> -->
           </div>
-        </div>
-      </div>
-      <!-- 个人信息展示 -->
-      <div class="main">
-        <div class="container">
-          <div class="top">
-            <div class="left">
-              <div class="im">
-                <img :src="imgUrl ? imgUrl : require(sex==1?'./img/man.png':'./img/woman.png')" />
-                <!-- <img
-                  :src="imgUrl"
-                  :class="{
-                  
-                }"
-                /> -->
-                <!-- <img src="../register/img/man.png" v-show="sex = 1" /> -->
-              </div>
-              <!-- 昵称和签名栏 -->
-              <div class="Info">
-                {{ name ? name : mobile }}<br />
-                {{ note ? note : email }}
-              </div>
-            </div>
-            <div class="line"></div>
-            <div class="middle">
-              <h3>{{ $t('occupancy') }}</h3>
-              <div class="tiao">
-                <h3 style="color: #00AAF0;">{{ spacePer }}%</h3>
-                <el-progress
-                  :text-inside="true"
-                  :stroke-width="15"
-                  :percentage="Number(spacePer)"
-                  :show-text="false"
-                  :color="customColor"
-                >
-                </el-progress>
-                <div class="tu">
-                  <div class="icon">
-                    <img src="./img/cunchu.png" alt="" />
-                  </div>
-                  {{ $t('storage') }}&nbsp;&nbsp;{{ currentCountSpace }}GB/{{
-                    countSpace
-                  }}GB
-                </div>
-              </div>
-            </div>
-            <div class="jindu">
-              <h3>{{ bfPer }}%</h3>
-              <el-progress
-                :text-inside="true"
-                :stroke-width="15"
-                :percentage="Number(bfPer)"
-                :show-text="false"
-                :color="customColor"
-              >
-              </el-progress>
-              <div class="tutu">
-                <div class="icon">
-                  <img src="./img/jiedian.png" alt="" />
-                </div>
-                {{ $t('Node') }}&nbsp;&nbsp;{{ currentCountBF }}/{{ countBF }}
-              </div>
-            </div>
-            <div class="line"></div>
-            <div class="right">
-              <div class="content">
-                <div>{{ $t('service') }}</div>
-                <div>{{ countStartTime }}&nbsp;--&nbsp;{{ countendTime }}</div>
-                <el-button
-                  plain
-                  round
-                  size="mini"
-                  style="color: #00AAF0;border-color:#00aaf0;font-size: 16px;"
-                  @click="toOrder"
-                >
-                  {{ $t('Extension') }}
-                </el-button>
-              </div>
-            </div>
+          <!-- 预约演示 -->
+          <div class="contact">
+            <span>
+              <img src="" alt="">
+            </span>
+            预约演示
           </div>
         </div>
       </div>
     </el-header>
 
-    <!-- 主体内容区 -->
+    <!-- 内容区 -->
     <el-main>
       <div class="container">
-        <!-- 导航菜单 -->
-        <div class="nav">
-          <el-menu
-            :default-active="activeMenu"
-            class="tac"
-            text-color="#00aaf0"
-            active-text-color="#fff"
-            router
-            background-color="#f0fbff"
-          >
-            <!-- 项目管理 -->
-            <el-menu-item index="/manage">
-              <i class="el-icon-setting"></i>
-              <span slot="title" class="write">{{ $t('management') }}</span>
-            </el-menu-item>
-            <!-- 创建项目 -->
-            <el-menu-item index="/found">
-              <i class="el-icon-folder-add"></i>
-              <span slot="title" class="write">{{ $t('Create') }}</span>
-            </el-menu-item>
-            <!-- 账户管理 -->
-            <el-submenu index="account">
-              <template slot="title">
-                <i class="el-icon-menu"></i>
-                <span class="write">{{ $t('Account') }}</span>
-              </template>
-              <!-- 个人信息 -->
-              <el-menu-item index="/bill">{{ $t('information') }}</el-menu-item>
-              <!-- 授权码 -->
-              <el-menu-item index="/code">{{
-                $t('Authorization')
-              }}</el-menu-item>
-              <!-- 服务订单 -->
-              <el-menu-item index="/order">{{
-                $t('Serviceorder')
-              }}</el-menu-item>
-            </el-submenu>
-          </el-menu>
+        <!-- 个人信息展示 -->
+        <div class="top">
+          <div class="left">
+            <div class="im">
+              <img
+                :src="
+                  imgUrl
+                    ? imgUrl
+                    : require(sex == 1 ? './img/man.png' : './img/woman.png')
+                "
+              />
+              <!-- <img
+                  :src="imgUrl"
+                  :class="{
+                  
+                }"
+                /> -->
+              <!-- <img src="../register/img/man.png" v-show="sex = 1" /> -->
+            </div>
+            <!-- 昵称和签名栏 -->
+            <div class="Info">
+              <div class="name">{{ name ? name : mobile }}</div>
+              <div class="note">{{ note ? note : email }}</div>
+            </div>
+          </div>
+          <div class="line"></div>
+          <div class="middle">
+            <h3>{{ $t('occupancy') }}</h3>
+            <div class="tiao">
+              <h3 style="color: #00AAF0;">{{ spacePer }}%</h3>
+              <el-progress
+                :text-inside="true"
+                :stroke-width="15"
+                :percentage="Number(spacePer)"
+                :show-text="false"
+                :color="customColor"
+              >
+              </el-progress>
+              <div class="tu">
+                <div class="icon">
+                  <img src="./img/cunchu.png" alt="" />
+                </div>
+                {{ $t('storage') }}&nbsp;&nbsp;{{ currentCountSpace }}GB/{{
+                  countSpace
+                }}GB
+              </div>
+            </div>
+          </div>
+          <div class="jindu">
+            <h3>{{ bfPer }}%</h3>
+            <el-progress
+              :text-inside="true"
+              :stroke-width="15"
+              :percentage="Number(bfPer)"
+              :show-text="false"
+              :color="customColor"
+            >
+            </el-progress>
+            <div class="tutu">
+              <div class="icon">
+                <img src="./img/jiedian.png" alt="" />
+              </div>
+              {{ $t('Node') }}&nbsp;&nbsp;{{ currentCountBF }}/{{ countBF }}
+            </div>
+          </div>
+          <div class="line"></div>
+          <div class="right">
+            <div class="content">
+              <div>{{ $t('service') }}</div>
+              <div>{{ countStartTime }}&nbsp;--&nbsp;{{ countendTime }}</div>
+              <el-button
+                plain
+                round
+                size="small"
+                @click="toOrder"
+                :disabled="this.$route.path === '/order' ? true : false"
+              >
+                {{ $t('Extension') }}
+              </el-button>
+            </div>
+          </div>
         </div>
-        <!--主体区域二级路由组件渲染的地方-->
-        <div class="content">
-          <router-view></router-view>
+        <!-- 主体内容区 -->
+        <div class="bottom">
+          <!-- 导航菜单 -->
+          <div class="nav">
+            <el-menu
+              :default-active="activeMenu"
+              class="tac"
+              text-color="#fff"
+              active-text-color="#fff"
+              router
+              background-color="#00aaf0"
+            >
+              <!-- 项目管理 -->
+              <el-menu-item index="/manage">
+                <i class="el-icon-setting"></i>
+                <span slot="title" class="write">{{ $t('management') }}</span>
+              </el-menu-item>
+              <!-- 创建项目 -->
+              <el-menu-item index="/found">
+                <i class="el-icon-folder-add"></i>
+                <span slot="title" class="write">{{ $t('Create') }}</span>
+              </el-menu-item>
+              <!-- 账户管理 -->
+              <el-submenu index="account">
+                <template slot="title">
+                  <i class="el-icon-menu"></i>
+                  <span class="write">{{ $t('Account') }}</span>
+                </template>
+                <!-- 个人信息 -->
+                <el-menu-item index="/bill">{{
+                  $t('information')
+                }}</el-menu-item>
+                <!-- 授权码 -->
+                <el-menu-item index="/code">{{
+                  $t('Authorization')
+                }}</el-menu-item>
+                <!-- 服务订单 -->
+                <el-menu-item index="/order">{{
+                  $t('Serviceorder')
+                }}</el-menu-item>
+              </el-submenu>
+            </el-menu>
+          </div>
+          <!--主体区域二级路由组件渲染的地方-->
+          <div class="content">
+            <router-view></router-view>
+          </div>
         </div>
       </div>
     </el-main>
@@ -278,7 +302,7 @@ export default {
   name: 'myHeader',
   data () {
     return {
-      time: null,
+      time: null, //定时器
       customColor: '#00AAF0',
       note: '', //签名
       name: '', //用户名
@@ -313,16 +337,8 @@ export default {
     },
     // 延长有效期按钮
     toOrder () {
+      // console.log(66666666666)
       this.$router.push('../order')
-    },
-    // 跳转用户中心
-    toUserCenter () {
-      // if (this.route !== '/userCenter') {
-      //   this.$router.push('../userCenter/')
-      // } else {
-      //   this.$router.go(0)
-      // }
-      // this.$router.push('../userCenter/')
     },
 
     // 退出按钮
@@ -340,7 +356,7 @@ export default {
         userid: getuserid()
       })
         .then(res => {
-          console.log(res)
+          // console.log(res)
           this.name = res.data.data.name
           this.sex = res.data.data.sex
           this.note = res.data.data.note
@@ -361,15 +377,6 @@ export default {
           // this.imgUrl = this.imgUrl
         })
     },
-
-    // 根据传入的sex做适配
-    // formatStatus (sex) {
-    //   const sexObj = {
-    //     1: '../register/img/man.png',
-    //     2: '../register/img/woman.png'
-    //   }
-    //   return sexObj[sex]
-    // },
 
     // 去往用户中心
     goUserCenter () {
@@ -415,7 +422,7 @@ export default {
     this.time = setInterval(() => {
       this.showData()
       // console.log('个人信息')
-    }, 3000)
+    }, 1000)
   },
   // 路由跳转清除定时
   beforeRouteLeave (to, from, next) {
@@ -424,6 +431,11 @@ export default {
       clearInterval(this.time)
       this.time = null
     }
+  },
+  //页面实例销毁后清除定时
+  destroyed () {
+    // 清除定时器
+    clearInterval(this.time)
   }
 }
 </script>
@@ -453,9 +465,8 @@ export default {
         height: 37px;
         float: left;
         margin-top: 11px;
-        margin-right: 215px;
-        margin-left: 10px;
-
+        margin-left: 105px;
+        margin-right: 65px;
         img {
           width: 100%;
           height: 100%;
@@ -467,44 +478,57 @@ export default {
         list-style: none;
         margin: 0;
         padding: 0;
-        margin-right: 47px;
+        margin-right: 32px;
+        a {
+          font-size: 16px;
+          color: #999;
+        }
         .el-dropdown {
           height: 35px;
-        }
-        .el-dropdown-link {
-          cursor: pointer;
-          color: #000;
-          font-size: 17px;
-        }
-        .el-dropdown-link:hover {
-          color: #ff6600;
-        }
-        .el-icon-arrow-down {
-          font-size: 17px;
+          .el-dropdown-link {
+            cursor: pointer;
+            color: #999;
+            font-size: 16px;
+          }
+          .el-dropdown-link:hover {
+            color: #ff6600;
+          }
+          .el-icon-arrow-down {
+            font-size: 16px;
+          }
+          a:hover {
+            color: #ff6600 !important;
+          }
         }
       }
-      .set {
+      .project {
+        width: 94px;
+        height: 27px;
+        line-height: 27px;
+        background-color: #ff6600;
+        color: #fff;
         float: left;
-        margin-left: 100px;
-        span {
-          font-size: 25px;
-          cursor: pointer;
-        }
-        .el-dropdown {
-          height: 35px;
-        }
+        margin-top: 15px;
+        border-radius: 5px;
+        margin-left: 85px;
       }
       .end {
-        float: right;
+        float: left;
+        margin-left: 15px;
+        margin-right: 15px;
         height: 64px;
-        width: 185px;
+        // width: 185px;
         .touxiang {
           float: left;
+          .el-dropdown {
+            height: 35px;
+          }
           img {
             margin-top: 10px;
             width: 40px;
             height: 40px;
             border-radius: 50%;
+            cursor: pointer;
           }
         }
         .language {
@@ -514,13 +538,25 @@ export default {
           }
         }
       }
+      .contact {
+        width: 94px;
+        height: 27px;
+        line-height: 27px;
+        background-color: #ff6600;
+        color: #fff;
+        float: left;
+        margin-top: 15px;
+        border-radius: 5px;
+        
+      }
     }
-    .main {
-      min-height: 152px;
-      margin-top: 20px;
-      // background-color: red;
+  }
+  .el-main {
+    .container {
+      margin-bottom: 35px;
       .top {
         height: 152px;
+        margin-bottom: 20px;
         background-color: #fff;
         .left {
           height: 152px;
@@ -545,11 +581,19 @@ export default {
             }
           }
           .Info {
-            display: flex;
-            justify-content: center;
-            align-items: center;
             width: 187px;
-            text-align: center;
+            .name {
+              width: 100%;
+              font-weight: bold;
+              text-align: center;
+              // background-color: red;
+              margin-top: 45px;
+            }
+            .note {
+              width: 100%;
+              text-align: center;
+              margin-top: 10px;
+            }
           }
         }
         .line {
@@ -633,88 +677,92 @@ export default {
           }
         }
       }
-    }
-  }
-  .el-main {
-    .container {
-      margin-top: 172px;
-      margin-bottom: 35px;
-      display: flex;
-      justify-content: center;
-      .nav {
-        width: 230px;
+      .bottom {
+        display: flex;
+        justify-content: center;
         min-height: 961px;
-        margin-right: 20px;
-        .tac {
-          width: 100%;
-          height: 100%;
-          .el-menu-item {
-            font-size: 16px;
-            height: 60px;
-            line-height: 60px;
-            i {
-              color: #00aaf0;
+        .nav {
+          float: left;
+          width: 230px;
+          min-height: 961px;
+          margin-right: 20px;
+          .tac {
+            width: 100%;
+            height: 100%;
+            .el-menu-item {
+              font-size: 16px;
+              height: 60px;
+              line-height: 60px;
+              i {
+                color: #fff;
+              }
             }
-          }
-          .el-submenu {
-            i {
-              color: #00aaf0;
+            .el-submenu {
+              i {
+                color: #fff;
+              }
             }
-          }
-          // 每一项选中状态
-          /deep/ .el-menu-item.is-active {
-            background-color: #00aaf0 !important;
-            i {
-              color: #fff;
+            // 每一项选中状态
+            /deep/ .el-menu-item.is-active {
+              background-color: #ff6600 !important;
+              i {
+                color: #fff;
+              }
             }
-          }
-          // 每一项鼠标悬停状态
-          /deep/ .el-menu-item:hover {
-            background-color: #00aaf0 !important;
-            color: #fff !important;
-            i {
-              color: #fff;
+            // 每一项鼠标悬停状态
+            /deep/ .el-menu-item:hover {
+              background-color: #ff6600 !important;
+              color: #fff !important;
+              i {
+                color: #fff;
+              }
             }
-          }
-          // el-submenu 每一项选中状态
-          // /deep/ .el-submenu.is-active {
-          //   background-color: #00aaf0 !important;
-          //   // color: #fff !important;
-          //   i {
-          //     color: #fff;
-          //   }
-          // }
-          // el-submenu 每一项鼠标悬停状态
-          /deep/ .el-submenu__title:hover {
-            background-color: #00aaf0 !important;
-            color: #fff !important;
-            i {
-              color: #fff;
+            // el-submenu 每一项选中状态
+            // /deep/ .el-submenu.is-active {
+            //   background-color: #00aaf0 !important;
+            //   // color: #fff !important;
+            //   i {
+            //     color: #fff;
+            //   }
+            // }
+            /deep/ .el-submenu {
+              i.el-submenu__icon-arrow.el-icon-arrow-down {
+                color: #fff;
+              }
             }
-            i.el-submenu__icon-arrow.el-icon-arrow-down {
-              color: #fff;
+            // el-submenu 每一项鼠标悬停状态
+            /deep/ .el-submenu__title:hover {
+              background-color: #ff6600 !important;
+              color: #fff !important;
+              i {
+                color: #fff;
+              }
+              i.el-submenu__icon-arrow.el-icon-arrow-down {
+                color: #fff;
+              }
             }
-          }
-          /deep/ i.el-submenu__icon-arrow.el-icon-arrow-down {
-            font-size: 20px;
-            color: #00aaf0;
-          }
+            /deep/ i.el-submenu__icon-arrow.el-icon-arrow-down {
+              font-size: 20px;
+              color: #ff6600;
+            }
 
-          .write {
-            font-size: 20px;
-          }
-          i {
-            margin-right: 20px;
-            margin-left: 10px;
-            font-size: 25px;
-            // color: #fff;
+            .write {
+              font-size: 20px;
+            }
+            i {
+              margin-right: 20px;
+              margin-left: 10px;
+              font-size: 25px;
+              // color: #fff;
+            }
           }
         }
-      }
-      .content {
-        width: 1170px;
-        min-height: 961px;
-        background-color: #fff;
+        .content {
+          float: left;
+          width: 1170px;
+          min-height: 961px;
+          background-color: #fff;
+        }
       }
     }
   }

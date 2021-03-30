@@ -28,8 +28,9 @@ body
     } */
 
 .container {
-  width: 1420px;
+  max-width: 1420px;
   margin: 0 auto;
+  font-size: 16px;
 }
 body {
   /* 解决滚动条造成的页面抖动问题 */

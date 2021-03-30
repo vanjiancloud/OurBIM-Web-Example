@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="content">
     <div class="picture">
       <img src="./img/img.png" alt="" />
     </div>
@@ -10,7 +10,7 @@
       <div class="success" v-show="isShow == 1"></div>
       <div class="error" v-show="isShow == 2"></div>
       <div class="write">
-        <h3 :title="title">{{ title }}</h3>
+        <h2 :title="title">{{ title }}</h2>
       </div>
       <div class="btn">
         <el-button
@@ -43,7 +43,7 @@ export default {
     return {
       code: 'this.$route.query.code',
       title: '',
-      isShow: 2,
+      isShow: Number,
       display: 2
     }
   },
@@ -62,6 +62,7 @@ export default {
         } else if (res.data.code === 1) {
           this.$message.error('激活码无效')
           this.title = '激活码无效'
+          this.isShow = 2
         }
       })
       .catch(err => {
@@ -83,7 +84,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.container {
+.content {
   width: 100%;
   height: 100%;
   position: fixed;

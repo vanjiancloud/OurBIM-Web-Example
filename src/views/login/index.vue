@@ -111,12 +111,11 @@
             <el-input
               v-model="mobForm.code"
               placeholder="请输入短信验证码"
-              class="input"
             >
               <!-- 验证码按钮 -->
               <el-button
                 slot="suffix"
-                style="padding-right:25px;padding-top:47px;"
+                class="code"
                 :disabled="isSend"
                 @click="getVerification"
                 type="text"
@@ -328,6 +327,14 @@ export default {
               delpassword()
             }
             this.$router.push('../manage')
+            history.pushState(null, null, document.URL)
+            window.addEventListener(
+              'popstate',
+              function (e) {
+                history.pushState(null, null, document.URL)
+              },
+              false
+            )
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
             this.logIn = '登录'
@@ -368,7 +375,7 @@ export default {
             if (this.mobForm.checkbox === false) {
               delmobile()
             }
-            this.$router.push('../manage')			
+            this.$router.push('../manage')
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
             this.logIn = '登录'
@@ -507,7 +514,7 @@ export default {
   }
   .right {
     width: 560px;
-    height: 650px;
+    height: 600px;
     background-color: #fff;
     float: right;
     display: flex;
@@ -516,7 +523,7 @@ export default {
     border-radius: 25px;
     box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
     .login-form-wrap {
-      width: 490px;
+      // width: 500px;
       // background-color: red;
       // 错误提示
       /deep/ .el-form-item__error {
@@ -527,7 +534,6 @@ export default {
       // 输入框
       /deep/ .el-input__inner {
         height: 65px;
-        margin-top: 25px;
         font-size: 20px;
         background-color: #f4f4f4;
         padding-left: 90px;
@@ -546,9 +552,9 @@ export default {
         border-color: #00aaf0;
       }
       // 输入框内图标
-      /deep/ .el-input__icon {
+      /deep/ .el-input__prefix {
         font-size: 25px;
-        margin-top: 15px;
+        line-height: 65px;
         margin-left: 36px;
       }
       /deep/ .el-checkbox__inner::after {
@@ -589,6 +595,7 @@ export default {
         align-items: center;
         margin-bottom: 18px;
         // background-color: red;
+        width: 510px;
         margin-top: 50px;
         cursor: pointer;
         span {
@@ -608,7 +615,12 @@ export default {
       }
       .login-form {
         /deep/ .el-input__inner {
-          height: 60px;
+          height: 65px;
+          line-height: 65px;
+        }
+        .code {
+          margin-right: 25px;
+          margin-top: 15px;
         }
         /deep/ .el-form-item__content {
           line-height: 30px;
