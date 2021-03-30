@@ -22,6 +22,9 @@
       :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
       v-if="isFade"
     >
+      <div>
+        
+      </div>
       <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
       <div class="hidden-text load-text" v-if="hiddenState === 0">
         <div
@@ -40,6 +43,11 @@
         class="hidden-text learn-text"
         v-if="hiddenState === 2"
         v-text="$t('webClient.loadBox.title[3]')"
+      ></div>
+      <div
+        class="hidden-text learn-text"
+        v-if="hiddenState === 3"
+        v-text="$t('webClient.loadBox.title[1]')"
       ></div>
     </div>
     <div v-if="runTimeCode === 0">
@@ -212,6 +220,12 @@ export default {
       this.runTimeCode = 0;
     }
     this.getSceneUrl();
+    //判断是否使用的是ipad
+    let isiPad = (navigator.userAgent.match(/(iPad)/) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1))
+    let isMac = /macintosh|mac os x/i.test(navigator.userAgent);
+    if (isiPad !== false || isMac !== false){
+      this.hiddenState = 3
+    }
     window.addEventListener(
       "message",
       (e) => {
@@ -219,13 +233,18 @@ export default {
         if (e.data.data && e.data.data.frameHeight > 0 && e.data.type !== 500) {
           this.viewHeight = e.data.data.frameHeight;
         }
+        if (isiPad !== false || isMac !== false) {
+          if (e.data.data && e.data.data.height && e.data.data.height > 0 && e.data.type === 910) {
+            let dialogTimer = setTimeout(() => {
+              this.viewHeight = e.data.data.frameHeight            
+              clearTimeout(dialogTimer)
+            }, 1000)
+          }
+        }
       },
       false
     );
-    //判断是否使用的是ipad
-    let isiPad =
-      navigator.userAgent.match(/(iPad)/) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    
     if (isiPad !== false) {
       this.viewHeight = 1;
     }
@@ -904,6 +923,25 @@ export default {
         margin-right: 10px;
       }
     }
+    @keyframes dot {
+      0% {
+        left: -30px;
+      }
+
+      25% {
+        left: -30px;
+      }
+
+      50% {
+        left: -20px;
+      }
+      75% {
+        left: -10px;
+      }
+      100% {
+        left: 0px;
+      }
+    }
     @-webkit-keyframes dot {
       0% {
         left: -30px;
@@ -939,6 +977,7 @@ export default {
       margin-top: 130px;
       position: absolute;
       font-size: 20px;
+      // color: #fff;
       background-image: linear-gradient(
         to right,
         #b9fffc,
@@ -984,27 +1023,22 @@ export default {
   .phone-hidden-bim {
     .load-text {
       letter-spacing: 5rpx;
-      font-size: 20px;
+      font-size: 23px;
       display: flex;
       text-align: center;
       letter-spacing: 5rpx;
-      font-size: 40px;
     }
     @-webkit-keyframes dotPhone {
       0% {
         left: -25px;
       }
 
-      25% {
+      33% {
         left: -20px;
       }
 
-      50% {
+      66% {
         left: -15px;
-      }
-
-      75% {
-        left: -10px;
       }
 
       100% {
