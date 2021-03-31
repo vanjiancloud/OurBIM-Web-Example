@@ -130,6 +130,7 @@
               预约演示
           </div>
         </div>
+        <div class="people"></div>
       </div>
     </el-header>
 
@@ -564,13 +565,14 @@ export default {
           margin-right: 5px;
           margin-bottom: 7px;
         }
-        .people {
+        
+      }
+      .people {
         width: 300px;
         height: 100px;
         background-color: red;
+        display: none;
       }
-      }
-      
     }
   }
   .el-main {
