@@ -327,14 +327,6 @@ export default {
               delpassword()
             }
             this.$router.push('../manage')
-            history.pushState(null, null, document.URL)
-            window.addEventListener(
-              'popstate',
-              function (e) {
-                history.pushState(null, null, document.URL)
-              },
-              false
-            )
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
             this.logIn = '登录'
