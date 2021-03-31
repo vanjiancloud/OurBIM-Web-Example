@@ -38,7 +38,11 @@
             </el-progress>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" :label="$t('uploaddate')" width="200">
+        <el-table-column
+          prop="createTime"
+          :label="$t('uploaddate')"
+          width="200"
+        >
         </el-table-column>
         <el-table-column :label="$t('operation')">
           <template slot-scope="scope">
@@ -99,7 +103,7 @@
             ></el-input>
           </el-form-item>
           <!-- <el-form-item label="修改封面：" label-width="110px"> -->
-            <!-- <el-upload
+          <!-- <el-upload
               :action="baseURL + '/appli/postScreenImg'"
               :on-success="upLoadImg"
               name="fileUpload"
@@ -129,7 +133,7 @@
                 </span>
               </div>
             </el-upload> -->
-            <!-- <div class="xiaoxi">
+          <!-- <div class="xiaoxi">
               {{ $t('extensions') }}：.png .jpg .jpeg
             </div> -->
           <!-- </el-form-item> -->
@@ -311,8 +315,8 @@ export default {
       let param = this.form
       // 1 验证必填项
       const verify = {
-        name: '应用名称',
-        screenImg: '封面'
+        name: '项目名称'
+        // screenImg: '封面'
       }
       console.log(param)
       for (const k in verify) {
@@ -477,6 +481,20 @@ export default {
   //     this.timer = null
   //   }
   // },
+
+  //禁用物理返回键
+  activated () {
+    if (window.history && window.history.pushState) {
+      history.pushState(null, null, document.URL)
+      window.addEventListener(
+        'popstate',
+        function () {
+          history.pushState(null, null, document.URL)
+        },
+        false
+      )
+    }
+  },
   // ===== 页面实例销毁 =====
   destroyed () {
     // 清除定时器

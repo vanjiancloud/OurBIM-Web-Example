@@ -139,6 +139,18 @@ export const Setuserid = (info) => {
   }
   return window.sessionStorage.setItem(keys, userid)
 }
+
+// 2. 取用户id
+export const Getuserid = () => {
+  const infoStr = window.sessionStorage.getItem(keys)
+  let formartStr
+  try {
+    formartStr = JSON.parse(infoStr)
+  } catch (error) {
+    formartStr = {}
+  }
+  return formartStr
+}
 // 3. 删除用户id
 export const Deluserid = () => {
   // 1.删除操作  

@@ -123,14 +123,33 @@
             </div> -->
           </div>
           <!-- 预约演示 -->
-          <div class="contact">
-              <span>
-                <img src="./img/yuyue.png" alt="" />
-              </span>
-              预约演示
-          </div>
+          <el-popover placement="bottom" width="840" trigger="hover">
+            <img
+              src="./img/1.png"
+              alt=""
+              style=" margin-right: 80px;margin-left: 40px;margin-top: 10px;margin-bottom: 10px;"
+            />
+            <img
+              src="./img/2.png"
+              alt=""
+              style=" margin-right: 80px;margin-top: 10px;margin-bottom: 10px;"
+            />
+            <img
+              src="./img/3.png"
+              alt=""
+              style=" margin-right: 80px;margin-top: 10px;margin-bottom: 10px;"
+            />
+            <img
+              src="./img/4.png"
+              alt=""
+              style=" margin-right: 40px;margin-top: 10px;margin-bottom: 10px;"
+            />
+            <el-button slot="reference" class="btn">
+              <img src="./img/yuyue.png" alt="" />
+              预约演示</el-button
+            >
+          </el-popover>
         </div>
-        <div class="people"></div>
       </div>
     </el-header>
 
@@ -463,8 +482,8 @@ export default {
         height: 37px;
         float: left;
         margin-top: 11px;
-        margin-left: 105px;
-        margin-right: 65px;
+        margin-left: 112px;
+        margin-right: 68px;
         img {
           width: 100%;
           height: 100%;
@@ -500,13 +519,13 @@ export default {
         }
       }
       .project {
-        width: 94px;
-        height: 27px;
-        line-height: 27px;
+        width: 86px;
+        height: 25px;
+        line-height: 25px;
         background-color: #ff6600;
         color: #fff;
         float: left;
-        margin-top: 15px;
+        margin-top: 17px;
         border-radius: 5px;
         margin-left: 85px;
         display: flex;
@@ -514,10 +533,10 @@ export default {
         align-items: center;
         cursor: pointer;
         span {
-          width: 16px;
+          width: 15px;
           margin-right: 5px;
           margin-bottom: 7px;
-          height: 16px;
+          height: 15px;
         }
       }
       .end {
@@ -546,32 +565,24 @@ export default {
           }
         }
       }
-      .contact {
-        cursor: pointer;
-        width: 94px;
-        height: 27px;
-        line-height: 27px;
+      .el-popover {
+        img {
+          margin-right: 50px;
+        }
+      }
+      .btn {
+        width: 86px;
+        height: 25px;
+        line-height: 25px;
         background-color: #ff6600;
         color: #fff;
+        font-size: 15px;
         float: left;
-        margin-top: 15px;
+        margin-top: 17px;
         display: flex;
         justify-content: center;
         align-items: center;
         border-radius: 5px;
-        span {
-          width: 16px;
-          height: 16px;
-          margin-right: 5px;
-          margin-bottom: 7px;
-        }
-        
-      }
-      .people {
-        width: 300px;
-        height: 100px;
-        background-color: red;
-        display: none;
       }
     }
   }

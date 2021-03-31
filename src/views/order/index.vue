@@ -14,17 +14,14 @@
         ></el-table-column>
         <el-table-column
           prop="createTime"
-          :label="$t('time')"  
+          :label="$t('time')"
         ></el-table-column>
         <el-table-column :label="$t('services')">
           <template slot-scope="scope">
             {{ formatDingdanStatus(scope.row.dingdanStatus) }}
           </template>
         </el-table-column>
-        <el-table-column
-          prop="sqm"
-          :label="$t('authorizationcode')"
-        >
+        <el-table-column prop="sqm" :label="$t('authorizationcode')">
           <template slot-scope="scope">
             <template v-if="scope.row.eyseShow">
               ****************************************
@@ -193,8 +190,6 @@ export default {
     border-bottom: 1px solid #f1f1f1;
   }
   .table {
-          width: 1130px;
-
     margin: 20px;
     /deep/ .el-table thead {
       color: #fff;
@@ -235,7 +230,7 @@ export default {
   }
   .page {
     position: absolute;
-    bottom: 100px;
+    bottom: 25px;
     left: 40%;
   }
 }
