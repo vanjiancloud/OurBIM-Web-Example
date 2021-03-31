@@ -11,12 +11,10 @@
         <el-table-column
           prop="dingdancode"
           :label="$t('number')"
-          width="130"
         ></el-table-column>
         <el-table-column
           prop="createTime"
-          :label="$t('time')"
-          width="160"
+          :label="$t('time')"  
         ></el-table-column>
         <el-table-column :label="$t('services')">
           <template slot-scope="scope">
@@ -26,7 +24,6 @@
         <el-table-column
           prop="sqm"
           :label="$t('authorizationcode')"
-          width="310"
         >
           <template slot-scope="scope">
             <template v-if="scope.row.eyseShow">
@@ -45,8 +42,7 @@
             {{ formatSqMISUsed(scope.row.sqMISUsed) }}
           </template>
         </el-table-column>
-
-        <el-table-column prop="dcount" :label="$t('amountofmoney')" width="165">
+        <el-table-column prop="dcount" :label="$t('amountofmoney')">
         </el-table-column>
       </el-table>
     </div>
@@ -197,6 +193,8 @@ export default {
     border-bottom: 1px solid #f1f1f1;
   }
   .table {
+          width: 1130px;
+
     margin: 20px;
     /deep/ .el-table thead {
       color: #fff;

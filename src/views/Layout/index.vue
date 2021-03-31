@@ -82,9 +82,9 @@
             </li>
           </ul>
           <!-- 项目中心 -->
-          <div class="project">
+          <div class="project" @click="toManage">
             <span>
-              <img src="" alt="">
+              <img src="./img/project.png" alt="" />
             </span>
             项目中心
           </div>
@@ -124,12 +124,13 @@
           </div>
           <!-- 预约演示 -->
           <div class="contact">
-            <span>
-              <img src="" alt="">
-            </span>
-            预约演示
+              <span>
+                <img src="./img/yuyue.png" alt="" />
+              </span>
+              预约演示
           </div>
         </div>
+        <div class="people"></div>
       </div>
     </el-header>
 
@@ -225,10 +226,10 @@
             <el-menu
               :default-active="activeMenu"
               class="tac"
-              text-color="#fff"
+              text-color="#000"
               active-text-color="#fff"
               router
-              background-color="#00aaf0"
+              background-color="#fff"
             >
               <!-- 项目管理 -->
               <el-menu-item index="/manage">
@@ -274,10 +275,11 @@
       <div class="footer">
         <div class="container">
           <div class="wenzi">
-            <div>
-              Copyright © 2021 www.OurBIM.com, All Rights Reserved.
+            <div class="first">
+              <a href="https://www.vanjian.com/" target="_blank">
+                Copyright © 2017-2021 万间网络科技（天津）有限公司 版权所有</a
+              >
             </div>
-            <div>022-8633-0370</div>
             <div class="last">
               <a
                 href="https://beian.miit.gov.cn/#/Integrated/index"
@@ -296,7 +298,7 @@
 import { showDetail } from '@/api/my.js'
 import { getuserid } from '@/store/index.js'
 import { deluserid, Deluserid } from '@/store/index.js'
-import { delCookie } from "@/utils/cookie"
+import { delCookie } from '@/utils/cookie'
 
 export default {
   name: 'myHeader',
@@ -335,6 +337,12 @@ export default {
       this.classify = '全部'
       // this.isCut = 1
     },
+
+    // 项目中心
+    toManage () {
+      this.$router.push('../manage')
+    },
+
     // 延长有效期按钮
     toOrder () {
       // console.log(66666666666)
@@ -344,7 +352,7 @@ export default {
     // 退出按钮
     toLogin () {
       this.$router.push('../login/')
-      delCookie("userInfo")
+      delCookie('userInfo')
       deluserid()
       Deluserid()
       clearInterval(this.time)
@@ -376,16 +384,6 @@ export default {
           // this.$message.error('信息展示失败')
           // this.imgUrl = this.imgUrl
         })
-    },
-
-    // 去往用户中心
-    goUserCenter () {
-      this.$router.push('../userCenter')
-    },
-
-    // 去往应用管理
-    toManage () {
-      this.$router.push('../manage')
     },
 
     // 去往创建应用
@@ -511,6 +509,16 @@ export default {
         margin-top: 15px;
         border-radius: 5px;
         margin-left: 85px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        span {
+          width: 16px;
+          margin-right: 5px;
+          margin-bottom: 7px;
+          height: 16px;
+        }
       }
       .end {
         float: left;
@@ -539,6 +547,7 @@ export default {
         }
       }
       .contact {
+        cursor: pointer;
         width: 94px;
         height: 27px;
         line-height: 27px;
@@ -546,8 +555,23 @@ export default {
         color: #fff;
         float: left;
         margin-top: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         border-radius: 5px;
+        span {
+          width: 16px;
+          height: 16px;
+          margin-right: 5px;
+          margin-bottom: 7px;
+        }
         
+      }
+      .people {
+        width: 300px;
+        height: 100px;
+        background-color: red;
+        display: none;
       }
     }
   }
@@ -694,12 +718,12 @@ export default {
               height: 60px;
               line-height: 60px;
               i {
-                color: #fff;
+                color: #000;
               }
             }
             .el-submenu {
               i {
-                color: #fff;
+                color: #000;
               }
             }
             // 每一项选中状态
@@ -727,7 +751,7 @@ export default {
             // }
             /deep/ .el-submenu {
               i.el-submenu__icon-arrow.el-icon-arrow-down {
-                color: #fff;
+                color: #000;
               }
             }
             // el-submenu 每一项鼠标悬停状态
@@ -771,23 +795,28 @@ export default {
     margin: 0;
     padding: 0;
     .footer {
-      // min-width: 1420px;
-      min-height: 115px;
-      // padding: 20px 0px;
-      background-color: #000;
+      min-height: 80px;
+      background-color: #19283b;
       display: flex;
       align-items: center;
       .wenzi {
-        color: #999;
+        color: #fff;
         text-align: center;
+        font-family: 'microsoft yahei';
         font-size: 14px;
-        div {
-          margin-bottom: 8px;
+        .first {
+          height: 19px;
+
+          margin-bottom: 10px;
+          a {
+            color: #fff;
+            text-decoration: none;
+          }
         }
         .last {
           margin: 0;
           a {
-            color: #999;
+            color: #fff;
             text-decoration: none;
           }
         }
