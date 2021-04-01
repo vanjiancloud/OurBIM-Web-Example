@@ -17,12 +17,12 @@ export function activation (data) {
 
 // 获取邮箱密码登录
 export function login (data) {
-  const { email, password } = data
+  const { loginName, password } = data
   return request({
     url: '/UserCenter/login',
     method: 'POST',
     params: {
-      email,
+      loginName,
       password
     }
   })

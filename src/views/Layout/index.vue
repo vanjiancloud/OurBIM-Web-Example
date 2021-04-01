@@ -483,7 +483,7 @@ export default {
         float: left;
         margin-top: 11px;
         margin-left: 112px;
-        margin-right: 68px;
+        margin-right: 66px;
         img {
           width: 100%;
           height: 100%;
@@ -495,7 +495,7 @@ export default {
         list-style: none;
         margin: 0;
         padding: 0;
-        margin-right: 32px;
+        margin-right: 30px;
         a {
           font-size: 16px;
           color: #999;
@@ -519,7 +519,7 @@ export default {
         }
       }
       .project {
-        width: 86px;
+        width: 87px;
         height: 25px;
         line-height: 25px;
         background-color: #ff6600;
@@ -532,6 +532,7 @@ export default {
         justify-content: center;
         align-items: center;
         cursor: pointer;
+        font-size: 16px;
         span {
           width: 15px;
           margin-right: 5px;
@@ -571,7 +572,7 @@ export default {
         }
       }
       .btn {
-        width: 86px;
+        width: 87px;
         height: 25px;
         line-height: 25px;
         background-color: #ff6600;
@@ -583,6 +584,8 @@ export default {
         justify-content: center;
         align-items: center;
         border-radius: 5px;
+        font-size: 16px;
+
       }
     }
   }
