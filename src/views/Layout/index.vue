@@ -146,8 +146,8 @@
             />
             <el-button slot="reference" class="btn">
               <img src="./img/yuyue.png" alt="" />
-              预约演示</el-button
-            >
+              <span>预约演示</span>
+            </el-button>
           </el-popover>
         </div>
       </div>
@@ -167,13 +167,6 @@
                     : require(sex == 1 ? './img/man.png' : './img/woman.png')
                 "
               />
-              <!-- <img
-                  :src="imgUrl"
-                  :class="{
-                  
-                }"
-                /> -->
-              <!-- <img src="../register/img/man.png" v-show="sex = 1" /> -->
             </div>
             <!-- 昵称和签名栏 -->
             <div class="Info">
@@ -364,7 +357,6 @@ export default {
 
     // 延长有效期按钮
     toOrder () {
-      // console.log(66666666666)
       this.$router.push('../order')
     },
 
@@ -383,7 +375,8 @@ export default {
         userid: getuserid()
       })
         .then(res => {
-          // console.log(res)
+          console.log(res)
+          console.log(res.data.data.imgUrl)
           this.name = res.data.data.name
           this.sex = res.data.data.sex
           this.note = res.data.data.note
@@ -532,7 +525,7 @@ export default {
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 14px;
         span {
           width: 15px;
           margin-right: 5px;
@@ -574,18 +567,29 @@ export default {
       .btn {
         width: 87px;
         height: 25px;
-        line-height: 25px;
         background-color: #ff6600;
         color: #fff;
         font-size: 15px;
         float: left;
         margin-top: 17px;
         display: flex;
-        justify-content: center;
         align-items: center;
         border-radius: 5px;
-        font-size: 16px;
-
+        font-size: 14px;
+        position: relative;
+        span {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+        }
+        img {
+          width: 15px;
+          position: absolute;
+          margin-right: 5px !important;
+          top: 5px;
+          left: 5px;
+          height: 15px;
+        }
       }
     }
   }
