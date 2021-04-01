@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-01 17:18:25
+ * @LastEditTime: 2021-04-01 17:32:02
  * @description: 
 -->
 <template>
@@ -240,7 +240,7 @@ export default {
 }
 
 #box {
-  width: 35px;
+  width: 34px;
   height: 34px;
   position: relative;
   top: 0px;
