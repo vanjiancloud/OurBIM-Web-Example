@@ -195,7 +195,7 @@ export default {
           }
           // {
           //   // pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
-          //   pattern: /^([a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+)|(1[0-9]{1}[0-9]{9})$/,
+          //pattern: /^([a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+)|(1[0-9]{1}[0-9]{9})$/,
           //   message: '邮箱或手机号不正确',
           //   trigger: 'blur'
           // }
@@ -236,12 +236,12 @@ export default {
     }
   },
   created () {
-    // 记住邮箱
-    if (localStorage.getItem('loginName')) {
+    // 记住账号
+    if (localStorage.getItem('email')) {
       this.form.loginName = getemail()
       // console.log(this.form.isAgree)
       this.form.isAgree = true
-    } else if (localStorage.getItem('loginName') === null) {
+    } else if (localStorage.getItem('email') === null) {
       this.form.loginName = ''
     }
 
