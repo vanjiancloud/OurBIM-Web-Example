@@ -56,7 +56,7 @@
                   <el-dropdown-item style=" background-color: #fff; ">
                     <a
                       href="http://www.ourbim.com:7011/developer/api_file"
-                      style="text-decoration:none;color:#000;"
+                      style="text-decoration:none;color:#999;"
                     >
                       {{ $t('APIdov') }}
                     </a>
@@ -73,7 +73,7 @@
                   <el-dropdown-item style=" background-color: #fff; ">
                     <a
                       href="http://www.ourbim.com:7011/developer/update_log"
-                      style="text-decoration:none; color:#000"
+                      style="text-decoration:none; color:#999"
                       >{{ $t('log') }}</a
                     >
                   </el-dropdown-item>
@@ -362,7 +362,7 @@ export default {
 
     // 退出按钮
     toLogin () {
-      this.$router.push('../login/')
+      this.$router.push('../login')
       delCookie('userInfo')
       deluserid()
       Deluserid()

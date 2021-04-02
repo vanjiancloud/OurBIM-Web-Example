@@ -1,4 +1,3 @@
-
 import axios from 'axios'
 import JSONBig from 'json-bigint'
 import { Getuserid } from '@/store/index.js'
@@ -16,12 +15,17 @@ axios.defaults.transformResponse = [
   }
 ]
 //请求拦截
-axios.interceptors.request.use(
-  config => {
-    if (Getuserid()) {
-      config.headers.common['token'] = Getuserid()
-    }
-    return config
+axios.interceptors.request.use(config => {
+  if (Getuserid()) {
+    config.headers.common['token'] = Getuserid()
   }
-)
+  //阻止回车键发送请求
+  document.onkeydown = (e) => {
+    let keyCode = window.event.keyCode
+    if (keyCode == 13) {
+      return false
+    }
+  }
+  return config
+})
 export default axios
