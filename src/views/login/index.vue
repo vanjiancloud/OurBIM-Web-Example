@@ -22,7 +22,7 @@
             :class="{ color: isshow == 0 }"
             style="font-size: 20px;"
           >
-            邮箱登录
+            账号登录
           </span>
           <span
             @click="isshow = 1"
@@ -42,11 +42,11 @@
         >
           <!--  邮箱密码通过双向绑定获取 -->
           <!-- 邮箱 -->
-          <el-form-item prop="email">
+          <el-form-item prop="loginName">
             <div style="color:#000;font-size: 20px;">
-              邮箱
+              账号
             </div>
-            <el-input v-model="form.email" placeholder="请输入邮箱">
+            <el-input v-model="form.loginName" placeholder="请输入邮箱或手机号">
               <i slot="prefix" class="el-input__icon el-icon-message"></i>
             </el-input>
           </el-form-item>
@@ -108,10 +108,7 @@
             <div style="color:#000;font-size: 20px;">
               验证码
             </div>
-            <el-input
-              v-model="mobForm.code"
-              placeholder="请输入短信验证码"
-            >
+            <el-input v-model="mobForm.code" placeholder="请输入短信验证码">
               <!-- 验证码按钮 -->
               <el-button
                 slot="suffix"
@@ -175,11 +172,11 @@ export default {
       isshow: 0, // 切换登录类别
       isLoading: false, // 是否正在登录,默认隐藏
       logIn: '登录',
-      // 邮箱登录表单
+      // 账号登录表单
       form: {
         isAgree: false, // 复选框的状态
         password: '',
-        email: ''
+        loginName: ''
       },
       // 手机登录表单
       mobForm: {
@@ -190,13 +187,18 @@ export default {
       },
       // 定义验证规则rules
       rules: {
-        email: [
-          { required: true, message: '请输入正确邮箱', trigger: 'blur' },
+        loginName: [
           {
-            pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
-            message: '请输入正确邮箱',
+            required: true,
+            message: '请输入邮箱或手机号',
             trigger: 'blur'
           }
+          // {
+          //   // pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+          //pattern: /^([a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+)|(1[0-9]{1}[0-9]{9})$/,
+          //   message: '邮箱或手机号不正确',
+          //   trigger: 'blur'
+          // }
         ],
         mobile: [
           { required: true, message: '请输入手机号', trigger: 'blur' },
@@ -234,13 +236,38 @@ export default {
     }
   },
   created () {
-    // 记住邮箱
+    // 添加键盘事件
+    // document.onkeydown = e => {
+    //   if (e.keyCode == 13) {
+    //     // this.emailLogin()
+    //     // this.Mobilelogin()
+    //     // this.$route.path === '/login' ? this.emailLogin() : ''
+    //   }
+    // }
+    // var that = this
+    // document.onkeydown = function (e) {
+    //   var key = window.event.keyCode
+    //   if (e.key == 13) {
+    //     this.$route.name === 'login' ? that.emailLogin() : ''
+    //   }
+    // }
+    // let self = this
+    // this.$nextTick(function () {
+    //   document.addEventListener('keyup', function (e) {
+    //     //此处填写你的业务逻辑即可
+    //     if (e.key == 'Enter') {
+    //       self.emailLogin()
+    //     }
+    //   })
+    // })
+
+    // 记住账号
     if (localStorage.getItem('email')) {
-      this.form.email = getemail()
+      this.form.loginName = getemail()
       // console.log(this.form.isAgree)
       this.form.isAgree = true
     } else if (localStorage.getItem('email') === null) {
-      this.form.email = ''
+      this.form.loginName = ''
     }
 
     // 记住密码
@@ -260,17 +287,6 @@ export default {
     } else if (localStorage.getItem('mobile') === null) {
       this.mobForm.mobile = ''
     }
-
-    //回车登录
-    var that = this
-    document.onkeydown = function (e) {
-      var key = window.event.keyCode
-      if (key == 13) {
-        //自己写的登录方法，点击事件
-        that.emailLogin()
-        that.Mobilelogin()
-      }
-    }
   },
   methods: {
     // 注册新用户
@@ -281,7 +297,7 @@ export default {
     changePassword () {
       this.$router.push('../../changePassword')
     },
-    // 点击邮箱登录
+    // 点击账号登录
     emailLogin () {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -301,10 +317,10 @@ export default {
         }
       })
     },
-    // 邮箱登录接口
+    // 账号登录接口
     doLogin () {
       login({
-        email: this.form.email,
+        loginName: this.form.loginName,
         password: this.form.password
       })
         .then(res => {
@@ -317,7 +333,7 @@ export default {
             // console.log(res.data.data)
             // 存储用户信息userid，到localStorage
             setuserid(res.data.data.userid)
-            setemail(this.form.email)
+            setemail(this.form.loginName)
             setpassword(this.form.password)
             // 存储用户信息userid，到sessionStorage
             Setuserid(res.data.data.userid)
@@ -332,7 +348,7 @@ export default {
             this.logIn = '登录'
             this.isLoading = false
           } else {
-            this.$message.error('邮箱或密码不正确，请重新输入')
+            this.$message.error('账号或密码不正确，请重新输入')
             this.logIn = '登录'
             this.isLoading = false
           }
@@ -452,10 +468,10 @@ export default {
     }
   },
   watch: {
-    //路由跳转时邮箱表单清空判断
+    //路由跳转时账号表单清空判断
     $route (to, from) {
       if (this.form.isAgree === false) {
-        this.form.email = ''
+        this.form.loginName = ''
         this.form.password = ''
       }
       //路由跳转时手机表单清空判断
@@ -466,6 +482,7 @@ export default {
         this.mobForm.code = ''
       }
     },
+    // 倒计时重置
     delay: function (newVal, oldVal) {
       if (oldVal === 0) {
         clearInterval(this.interId)

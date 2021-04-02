@@ -112,6 +112,7 @@ export default {
       company: '', //公司
       position: '', //职位
       imgUrl: '', //用户头像
+      imgUrlDefault:'',//用户头像为空,时的变量
       fileList: [], //上传图片列表显示
       baseURL: axios.defaults.baseURL
     }
@@ -126,7 +127,7 @@ export default {
         userid: getuserid()
       })
         .then(res => {
-          // console.log('axios-获取用户信息', res.data.data)
+          console.log('axios-获取用户信息', res.data.data)
           this.note = res.data.data.note
           this.name = res.data.data.name
           this.email = res.data.data.email
@@ -162,6 +163,7 @@ export default {
             console.log(res)
             this.$refs.photoUpload.clearFiles()
             this.$message.success(res.data.message)
+            this.setCookie('userInfo', JSON.stringify(res.config.data))
           } else if (res.data.code === 1) {
             console.log(res)
             this.$message.error(res.data.message)
@@ -171,6 +173,16 @@ export default {
           console.log(err)
           this.$message.error('修改信息失败,请重新修改')
         })
+    },
+    // 存cookie
+    setCookie: function (cName, value, expiredays) {
+      var exdate = new Date()
+      exdate.setDate(exdate.getDate() + expiredays)
+      document.cookie =
+        cName +
+        '=' +
+        decodeURIComponent(value) +
+        (expiredays == null ? '' : ';expires=' + exdate.toGMTString())
     },
     // 删除文件
     onremove (file) {
@@ -221,7 +233,7 @@ export default {
     height: 46px;
     margin-bottom: 30px;
     font-size: 16px;
-    
+
     .one {
       float: left;
       height: 46px;
@@ -256,7 +268,7 @@ export default {
   .btn {
     text-align: center;
     margin-top: 50px;
-    
+
     /deep/ .el-button--primary {
       width: 140px;
       height: 45px;

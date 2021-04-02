@@ -298,6 +298,7 @@ export default {
         this.$message({
           message: this.$t('webClient.loadBox.message[6]'),
           type: "warning",
+          customClass: "set-index-message"
         });
       }
     },
@@ -361,25 +362,25 @@ export default {
       this.handleState = 6;
       switch (e) {
         case 0:
-          this.cubeState = 6;
-          break;
-        case 1:
-          this.cubeState = 7;
-          break;
-        case 2:
-          this.cubeState = 2;
-          break;
-        case 3:
-          this.cubeState = 3;
-          break;
-        case 4:
-          this.cubeState = 4;
-          break;
-        case 5:
           this.cubeState = 5;
           break;
-        case 6:
+        case 1:
+          this.cubeState = 6;
+          break;
+        case 2:
           this.cubeState = 1;
+          break;
+        case 3:
+          this.cubeState = 2;
+          break;
+        case 4:
+          this.cubeState = 3;
+          break;
+        case 5:
+          this.cubeState = 4;
+          break;
+        case 6:
+          this.cubeState = 5;
           break;
         default:
           break;
@@ -396,6 +397,7 @@ export default {
         this.$message({
           message: this.$t("webClient.loadBox.message[1]"),
           type: "error",
+          customClass: "set-index-message"
         });
         return;
       }
@@ -472,7 +474,12 @@ export default {
           break;
         case 6:
           // 六面体
-          params.id = this.cubeState;
+          if (this.cubeState !== 5) {
+            params.id = 2;
+            params.sjid = this.cubeState
+          } else {
+            params.id = 1
+          }
           break;
         case 7:
           params.id = 13
@@ -661,11 +668,19 @@ export default {
               window.clearTimeout(timer);
             }, 1000 * 10);
           } else {
-            this.$message.warning(res.data.message);
+            this.$message({
+              type: "warning",
+              message: res.data.message,
+              customClass: "set-index-message"
+            })
           }
         })
         .catch((err) => {
-          this.$message.error(this.$t("webClient.loadBox.message[4]"));
+          this.$message({
+              type: "error",
+              message: this.$t("webClient.loadBox.message[4]"),
+              customClass: "set-index-message"
+            })
         });
     },
     isMobile() {
@@ -1270,5 +1285,8 @@ export default {
       }
     }
   }
+}
+.set-index-message{
+  z-index: 5000 !important;
 }
 </style>

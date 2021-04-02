@@ -160,7 +160,8 @@ router.beforeEach(function (to, from, next) {
       to.path !== '/resetSucceed' &&
       to.path !== '/protocol' &&
       to.path !== '/registerSucceed' &&
-      to.path !== '/activateSucceed'
+      to.path !== '/activateSucceed' &&
+      to.path !== '/web_client'
     ) {
       next('/login')
     }
