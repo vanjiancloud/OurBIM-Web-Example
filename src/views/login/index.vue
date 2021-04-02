@@ -236,6 +236,31 @@ export default {
     }
   },
   created () {
+    // 添加键盘事件
+    // document.onkeydown = e => {
+    //   if (e.keyCode == 13) {
+    //     // this.emailLogin()
+    //     // this.Mobilelogin()
+    //     // this.$route.path === '/login' ? this.emailLogin() : ''
+    //   }
+    // }
+    // var that = this
+    // document.onkeydown = function (e) {
+    //   var key = window.event.keyCode
+    //   if (e.key == 13) {
+    //     this.$route.name === 'login' ? that.emailLogin() : ''
+    //   }
+    // }
+    // let self = this
+    // this.$nextTick(function () {
+    //   document.addEventListener('keyup', function (e) {
+    //     //此处填写你的业务逻辑即可
+    //     if (e.key == 'Enter') {
+    //       self.emailLogin()
+    //     }
+    //   })
+    // })
+
     // 记住账号
     if (localStorage.getItem('email')) {
       this.form.loginName = getemail()
@@ -262,17 +287,6 @@ export default {
     } else if (localStorage.getItem('mobile') === null) {
       this.mobForm.mobile = ''
     }
-
-    //回车登录
-    var that = this
-    document.onkeydown = function (e) {
-      var key = window.event.keyCode
-      if (key == 13) {
-        //自己写的登录方法，点击事件
-        that.emailLogin()
-        that.Mobilelogin()
-      }
-    }
   },
   methods: {
     // 注册新用户
@@ -283,7 +297,7 @@ export default {
     changePassword () {
       this.$router.push('../../changePassword')
     },
-    // 点击邮箱登录
+    // 点击账号登录
     emailLogin () {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -468,6 +482,7 @@ export default {
         this.mobForm.code = ''
       }
     },
+    // 倒计时重置
     delay: function (newVal, oldVal) {
       if (oldVal === 0) {
         clearInterval(this.interId)
