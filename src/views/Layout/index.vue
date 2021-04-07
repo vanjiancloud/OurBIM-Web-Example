@@ -430,12 +430,12 @@ export default {
   },
   /* 把定时器放在activated事件里，当清除定时后，
   下次再次进入当前路由的话，可以再次唤起定时器 */
-  activated () {
-    this.time = setInterval(() => {
-      this.showData()
-      // console.log('个人信息')
-    }, 1000)
-  },
+  // activated () {
+  //   this.time = setInterval(() => {
+  //     this.showData()
+  //     // console.log('个人信息')
+  //   }, 1000)
+  // },
   // 路由跳转清除定时
   beforeRouteLeave (to, from, next) {
     next()
