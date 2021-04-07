@@ -7,7 +7,7 @@
       <div class="login-form-wrap">
         <!-- .logo区域 -->
         <div class="login-head">
-          <a href="http://www.ourbim.com:7011/">
+          <a href="http://www.ourbim.com">
             <i class="el-icon-arrow-left"></i>
           </a>
 
