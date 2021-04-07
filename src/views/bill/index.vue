@@ -128,8 +128,14 @@ export default {
       })
         .then(res => {
           console.log('axios-获取用户信息', res.data.data)
+<<<<<<< HEAD
           //更新cookie里的信息
           this.setCookie('userInfo', JSON.stringify(res.data.data))
+=======
+          if (res.data && res.data.data) {
+            sessionStorage.setItem("userInfo", JSON.stringify(res.data.data))            
+          }
+>>>>>>> e628b9ffe3d2381657965c0954a03f4a98966692
           this.note = res.data.data.note
           this.name = res.data.data.name
           this.email = res.data.data.email
