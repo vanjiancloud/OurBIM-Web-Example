@@ -24,9 +24,7 @@
       <!-- input框 -->
       <div class="input">
         <span style="color:red;margin-right:5px;font-size: 16px;">*</span>
-        <span style="margin-right:5px;">{{
-          $t('application')
-        }}</span>
+        <span style="margin-right:5px;">{{ $t('application') }}</span>
         <el-input v-model="appName"></el-input>
       </div>
       <!-- 上传图片 -->
@@ -134,9 +132,14 @@
           <div class="el-upload__text">
             {{ $t('methods') }}<br />
             {{ $t('xianzhi') }}<br />
-            {{ $t('limit') }}
+            {{ $t('limit') }}<br />
           </div>
         </el-upload>
+      </div>
+      
+      <div style="margin:10px 40px;margin-top:-20px;text-align:left; font-size: 14px; ">
+        <span style="color:red">*</span>
+        文件默认打开初始Revit的三维视图，请将文件在对应视图打开状态下保存，再上传。
       </div>
       <div class="btn">
         <el-button @click="update" type="primary" :disabled="disabl">
@@ -339,7 +342,6 @@ export default {
         this.$message.error('上传模型只能是.rvt格式!')
       }
       this.$common.openLoading('上传模型中')
-      // this.$message.warning('上传模型中')
       return extension
     }
   },

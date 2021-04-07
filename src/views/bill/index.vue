@@ -112,7 +112,7 @@ export default {
       company: '', //公司
       position: '', //职位
       imgUrl: '', //用户头像
-      imgUrlDefault:'',//用户头像为空,时的变量
+      imgUrlDefault: '', //用户头像为空,时的变量
       fileList: [], //上传图片列表显示
       baseURL: axios.defaults.baseURL
     }
@@ -128,6 +128,8 @@ export default {
       })
         .then(res => {
           console.log('axios-获取用户信息', res.data.data)
+          //更新cookie里的信息
+          this.setCookie('userInfo', JSON.stringify(res.data.data))
           this.note = res.data.data.note
           this.name = res.data.data.name
           this.email = res.data.data.email
@@ -160,10 +162,9 @@ export default {
         .then(res => {
           if (res.data.code === 0) {
             this.getData()
-            console.log(res)
+            // console.log(res,'66666')
             this.$refs.photoUpload.clearFiles()
             this.$message.success(res.data.message)
-            this.setCookie('userInfo', JSON.stringify(res.config.data))
           } else if (res.data.code === 1) {
             console.log(res)
             this.$message.error(res.data.message)

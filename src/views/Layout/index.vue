@@ -375,8 +375,8 @@ export default {
         userid: getuserid()
       })
         .then(res => {
-          console.log(res)
-          console.log(res.data.data.imgUrl)
+          // console.log(res)
+          // console.log(res.data.data.imgUrl)
           this.name = res.data.data.name
           this.sex = res.data.data.sex
           this.note = res.data.data.note

@@ -236,31 +236,6 @@ export default {
     }
   },
   created () {
-    // 添加键盘事件
-    // document.onkeydown = e => {
-    //   if (e.keyCode == 13) {
-    //     // this.emailLogin()
-    //     // this.Mobilelogin()
-    //     // this.$route.path === '/login' ? this.emailLogin() : ''
-    //   }
-    // }
-    // var that = this
-    // document.onkeydown = function (e) {
-    //   var key = window.event.keyCode
-    //   if (e.key == 13) {
-    //     this.$route.name === 'login' ? that.emailLogin() : ''
-    //   }
-    // }
-    // let self = this
-    // this.$nextTick(function () {
-    //   document.addEventListener('keyup', function (e) {
-    //     //此处填写你的业务逻辑即可
-    //     if (e.key == 'Enter') {
-    //       self.emailLogin()
-    //     }
-    //   })
-    // })
-
     // 记住账号
     if (localStorage.getItem('email')) {
       this.form.loginName = getemail()
@@ -491,6 +466,16 @@ export default {
           (this.isSend = false)
       }
     }
+  },
+  /* 把键盘事件放在activated事件里，当清除键盘事件后，
+  下次再次进入当前路由的话，可以再次唤起键盘事件 */
+  activated () {
+    // 添加键盘事件
+    document.onkeydown = e => {
+      if (e.key == 'Enter') {
+        this.emailLogin()
+      }
+    }
   }
 }
 </script>
@@ -498,14 +483,17 @@ export default {
 <style scoped lang="less">
 // 书写样式铺满整
 .login-container {
-  width: 100%;
-  height: 100%;
+  // width: 100%;
+  // height: 100%;
+  // width: 100vw;
+  // height: 100vh;
   position: fixed;
   left: 0;
   top: 0;
   right: 0;
   bottom: 0;
   display: flex;
+   flex-direction: row;
   justify-content: center;
   align-items: center;
   background-image: url(./bg.png);
@@ -598,7 +586,6 @@ export default {
         }
       }
       .state {
-        font-size: 20px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -607,11 +594,10 @@ export default {
         width: 510px;
         margin-top: 50px;
         cursor: pointer;
-        span {
-          color: #999999;
-        }
         .color {
           color: #00aaf0;
+          // color: red;
+          // width: 80px;
           border-bottom: 1px solid #00aaf0;
           border-width: 4px;
         }
