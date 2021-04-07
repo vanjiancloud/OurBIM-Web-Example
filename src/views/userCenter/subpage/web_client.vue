@@ -3,7 +3,7 @@
     <iframe
       class="bim-web"
       :class="runTimeCode === 0 ? '' : 'phone-bim'"
-      v-if="webUrl && hiddenState === 0"
+      v-if="webUrl"
       :src="webUrl"
       frameborder="0"
       id="show-bim"
@@ -22,9 +22,6 @@
       :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
       v-if="isFade"
     >
-      <div>
-        
-      </div>
       <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
       <div class="hidden-text load-text" v-if="hiddenState === 0">
         <div
@@ -236,6 +233,7 @@ export default {
         if (isiPad !== false || isMac !== false) {
           if (e.data.data && e.data.data.height && e.data.data.height > 0 && e.data.type === 910) {
             let dialogTimer = setTimeout(() => {
+              this.hiddenState = 0
               this.viewHeight = e.data.data.frameHeight            
               clearTimeout(dialogTimer)
             }, 1000)
@@ -664,9 +662,6 @@ export default {
             this.propsFooter.taskId = res.data.data.taskId;
             this.initWebSocket();
             this.getMonitor();
-            let timer = setTimeout(() => {
-              window.clearTimeout(timer);
-            }, 1000 * 10);
           } else {
             this.$message({
               type: "warning",
@@ -870,7 +865,7 @@ export default {
   .time-log {
     pointer-events: none;
     position: absolute;
-    z-index: 9999;
+    z-index: 3000;
     top: 0;
     left: 0;
     width: 100%;
@@ -909,7 +904,7 @@ export default {
 
   .hidden-bim {
     position: absolute;
-    z-index: 9999;
+    z-index: 3000;
     top: 0;
     left: 0;
     height: 100vh;
