@@ -128,6 +128,9 @@ export default {
       })
         .then(res => {
           console.log('axios-获取用户信息', res.data.data)
+          if (res.data && res.data.data) {
+            sessionStorage.setItem("userInfo", JSON.stringify(res.data.data))            
+          }
           this.note = res.data.data.note
           this.name = res.data.data.name
           this.email = res.data.data.email
@@ -163,7 +166,6 @@ export default {
             console.log(res)
             this.$refs.photoUpload.clearFiles()
             this.$message.success(res.data.message)
-            this.setCookie('userInfo', JSON.stringify(res.config.data))
           } else if (res.data.code === 1) {
             console.log(res)
             this.$message.error(res.data.message)

@@ -298,7 +298,9 @@ export default {
     // 退出按钮
     toLogin () {      
       this.$router.push('../login/')
-      delCookie("userInfo")
+      if (sessionStorage.getItem("userInfo")) {
+        sessionStorage.removeItem("userInfo")
+      }
       window.localStorage.userid = ''
       clearInterval(this.time)
     },

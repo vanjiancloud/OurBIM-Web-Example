@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-02-20 13:30:47
  * @LastEditors: zk
- * @LastEditTime: 2021-03-26 17:59:00
+ * @LastEditTime: 2021-04-07 13:06:55
  * @description: 
 -->
 <template>
@@ -14,7 +14,6 @@
 </template>
 <script>
 
-import { delCookie } from "@/utils/cookie";
 export default {
   name: 'App',
   data() {
@@ -24,18 +23,7 @@ export default {
     }
   },
   mounted(){
-    window.addEventListener("unload", e => {
-      this.differTime = new Date().getTime() - this.beginTime;
-        if(this.differTime <= 5) {
-            // console.log("浏览器关闭")
-            delCookie("userInfo")             
-        }else{
-            // console.log("浏览器刷新")
-        }
-    })
-    window.addEventListener('beforeunload', e => {
-      this.beginTime = new Date().getTime();
-    })
+    
   },
 }
 </script>
