@@ -763,6 +763,14 @@ export default {
             ""
           );
         };
+        // 移动滚轮
+        document.getElementById("show-bim").onmousewheel = () => {
+          this.sendToIframe(10003, {
+                x: 500,
+                y: 500,
+                wheel: -100,
+            }, "");
+        };
         // 关闭tool
         this.sendToIframe(10200, "false", "");
         document.addEventListener("keydown", (e) => {
