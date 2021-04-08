@@ -2,6 +2,7 @@
   <div class="bim-main">
     <iframe
       class="bim-web"
+      allowfullscreen="true"
       :class="runTimeCode === 0 ? '' : 'phone-bim'"
       v-if="webUrl"
       :src="webUrl"
@@ -65,7 +66,7 @@
           <div class="tree-content">
             <el-tree
               ref="setTree"
-              :empty-text="$t('webClient.browser.tips')"
+              :empty-text="treeEmpty"
               :props="propsMember"
               :load="loadNode"
               node-key="uuid"
@@ -132,6 +133,7 @@
       ></todo-footer>
       <view-cube
         @handleOrder="handleOrder"
+        @goFront="goFront"
         @handleType="handleType"
         ref="getCube"
       ></view-cube>
@@ -190,7 +192,12 @@ export default {
       browserInfo: null,
       natureInfo: null,
       shadowType: null,
-      listenTodoInfo: null
+      listenTodoInfo: null,
+      gaugeInfo: {
+        unit: 'm',
+        accuracy: 0.01
+      },
+      treeEmpty: this.$t('webClient.browser.tips[0]')
     };
   },
   watch: {
@@ -320,6 +327,15 @@ export default {
       }
       this.updateOrder();
     },
+    goFront(){
+    /**
+     * @Author: zk
+     * @Date: 2021-04-08 11:47:29
+     * @description: 重置主视图
+     */  
+      this.handleState = 7;
+      this.updateOrder();
+    },
     handleTree(e, index) {
       /**
        * @Author: zk
@@ -358,31 +374,7 @@ export default {
        * @description: cube指令
        */
       this.handleState = 6;
-      switch (e) {
-        case 0:
-          this.cubeState = 5;
-          break;
-        case 1:
-          this.cubeState = 6;
-          break;
-        case 2:
-          this.cubeState = 1;
-          break;
-        case 3:
-          this.cubeState = 2;
-          break;
-        case 4:
-          this.cubeState = 3;
-          break;
-        case 5:
-          this.cubeState = 4;
-          break;
-        case 6:
-          this.cubeState = 5;
-          break;
-        default:
-          break;
-      }
+      this.cubeState = e;
       this.updateOrder();
     },
     async updateOrder() {
@@ -446,7 +438,6 @@ export default {
           break;
         case 4:
           // 测量
-          console.log();
           if (this.listenTodoInfo.data === 0) {
             // 坐标
             params.id = 37;
@@ -460,10 +451,12 @@ export default {
             // 设置单位
             params.id = 38;
             params.unit = this.listenTodoInfo.set;
+            params.precision = this.gaugeInfo.accuracy
           } else if (this.listenTodoInfo.data === 4) {
             // 设置精度
             params.id = 38;
             params.precision = this.listenTodoInfo.set;
+            params.unit = this.gaugeInfo.unit
           }
           break;
         case 5:
@@ -472,19 +465,16 @@ export default {
           break;
         case 6:
           // 六面体
-          if (this.cubeState !== 5) {
-            params.id = 2;
-            params.sjid = this.cubeState
-          } else {
-            params.id = 1
-          }
+          params.id = 2;
+          params.sjid = this.cubeState
           break;
         case 7:
-          params.id = 13
+          // 定位到主视图
+          params.id = 1
           break;
         case 8:
           // 构件显示 隐藏 半透明
-          console.log(this.leafInfo);
+          // console.log(this.leafInfo);
           params.mn = this.leafInfo.key;
           if (this.leafInfo.data.activeState === 0) {
             params.id = 26;
@@ -550,20 +540,28 @@ export default {
     loadNode(node, resolve) {
       if (node.level === 0) {
         this.getMemberList(node.key).then((res) => {
-          res.forEach((item) => {
-            item.activeState = 0;
-            item.activeSelect = 0;
-          });
-          return resolve(res);
+          if (res.length > 0) {
+            res.forEach((item) => {
+              item.activeState = 0;
+              item.activeSelect = 0;
+            });
+            return resolve(res);
+          }else{
+            this.treeEmpty = this.$t('webClient.browser.tips[1]')
+          }
         });
       }
       if (node.level >= 1) {
         this.getMemberList(node.key).then((res) => {
-          res.forEach((item) => {
-            item.activeState = 0;
-            item.activeSelect = 0;
-          });
-          return resolve(res);
+         if (res.length > 0) {
+            res.forEach((item) => {
+              item.activeState = 0;
+              item.activeSelect = 0;
+            });
+            return resolve(res);
+          }else{
+            this.treeEmpty = this.$t('webClient.browser.tips[1]')
+          }
         });
       }
     },
@@ -609,10 +607,15 @@ export default {
         this.updateOrder()
       }
       // 测量
-      if (e.type === 3) {
+        if (e.type === 3) {
         if (e.state === 1 && e.data !== undefined) {
           this.handleState = 4
           this.listenTodoInfo = e
+          if (e.data === 3) {
+            this.gaugeInfo.unit = e.set
+          } else if (e.data === 4) {
+            this.gaugeInfo.accuracy = e.set
+          }
           this.updateOrder()
         }
         if (e.state === 0) {
@@ -1085,7 +1088,7 @@ export default {
 
     .tree-main {
       pointer-events: auto;
-      height: 47vh;
+      height: 50vh;
       width: 400px;
       margin: 2vh 0 0 20px;
       border-radius: 10px;
@@ -1138,12 +1141,13 @@ export default {
     }
 
     .bim-info {
-      position: absolute;
-      bottom: 2vh;
       pointer-events: auto;
-      margin-top: 1vh;
-      height: 47vh;
-      margin: 1vh 0 0 20px;
+      height: 50vh;
+      width: 400px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 2vh 20px 0 0;
       border-radius: 10px;
       width: 400px;
       overflow-x: hidden;

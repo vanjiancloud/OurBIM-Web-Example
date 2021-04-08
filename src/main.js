@@ -180,7 +180,7 @@ const i18n = new VueI18n({
         ],
         browser: {
           title: "模型浏览器",
-          tips: "暂无数据"
+          tips: ["加载中", "暂无数据"]
         },
         attribute: {
           title: "属性"
