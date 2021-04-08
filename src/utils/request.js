@@ -28,9 +28,9 @@ axios.interceptors.request.use(config => {
     config.headers.common['token'] = Getuserid()
   }
   //阻止回车键发送请求
-  document.onkeydown = (e) => {
+  document.onkeydown = e => {
     let keyCode = window.event.keyCode
-    if (keyCode == 13) {
+    if (keyCode == 13 || keyCode == 32) {
       return false
     }
   }

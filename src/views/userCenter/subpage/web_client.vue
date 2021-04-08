@@ -65,7 +65,7 @@
           <div class="tree-content">
             <el-tree
               ref="setTree"
-              :empty-text="$t('webClient.browser.tips')"
+              :empty-text="treeEmpty"
               :props="propsMember"
               :load="loadNode"
               node-key="uuid"
@@ -190,7 +190,8 @@ export default {
       browserInfo: null,
       natureInfo: null,
       shadowType: null,
-      listenTodoInfo: null
+      listenTodoInfo: null,
+      treeEmpty: this.$t('webClient.browser.tips[0]')
     };
   },
   watch: {
@@ -550,20 +551,28 @@ export default {
     loadNode(node, resolve) {
       if (node.level === 0) {
         this.getMemberList(node.key).then((res) => {
-          res.forEach((item) => {
-            item.activeState = 0;
-            item.activeSelect = 0;
-          });
-          return resolve(res);
+          if (res.length > 0) {
+            res.forEach((item) => {
+              item.activeState = 0;
+              item.activeSelect = 0;
+            });
+            return resolve(res);
+          }else{
+            this.treeEmpty = this.$t('webClient.browser.tips[1]')
+          }
         });
       }
       if (node.level >= 1) {
         this.getMemberList(node.key).then((res) => {
-          res.forEach((item) => {
-            item.activeState = 0;
-            item.activeSelect = 0;
-          });
-          return resolve(res);
+         if (res.length > 0) {
+            res.forEach((item) => {
+              item.activeState = 0;
+              item.activeSelect = 0;
+            });
+            return resolve(res);
+          }else{
+            this.treeEmpty = this.$t('webClient.browser.tips[1]')
+          }
         });
       }
     },

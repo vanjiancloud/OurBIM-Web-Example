@@ -69,7 +69,12 @@
             </el-form-item>
             <!-- 姓名 -->
             <el-form-item label="" prop="name">
-              <el-input v-model="ruleForm.name" placeholder="请输入真实姓名">
+              <el-input
+                v-model="ruleForm.name"
+                placeholder="请输入真实姓名"
+                maxlength="10"
+                show-word-limit
+              >
                 <i slot="prefix" class="el-icon-s-custom"></i>
               </el-input>
             </el-form-item>
@@ -136,8 +141,14 @@
     </div>
   </div>
 </template>
+
 <script>
-import {getRegister,repeatMobile,repeatEmail,sendMsgCode} from '@/api/my.js'
+import {
+  getRegister,
+  repeatMobile,
+  repeatEmail,
+  sendMsgCode
+} from '@/api/my.js'
 export default {
   name: 'register',
   data () {
@@ -287,6 +298,7 @@ export default {
     },
     // 点击注册
     doRegister () {
+      console.log(window.location.href);
       getRegister({
         email: this.ruleForm.email,
         name: this.ruleForm.name,
@@ -407,10 +419,10 @@ export default {
           this.$message.error('校验失败，请检查网络')
         })
     }
-  },
-  
+  }
 }
 </script>
+
 <style lang="less" scoped>
 .box {
   width: 100%;
@@ -501,6 +513,10 @@ export default {
           padding-left: 90px;
           background-color: #f4f4f4;
           color: #000;
+        }
+        // 输入框名字字段字数限制的背景色
+        /deep/ .el-input .el-input__count .el-input__count-inner {
+          background-color: #f4f4f4;
         }
         /deep/ .el-checkbox__label {
           font-size: 16px;

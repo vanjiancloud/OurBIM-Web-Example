@@ -256,7 +256,7 @@ export default {
     setGetdataIn () {
       this.timer = setInterval(() => {
         this.GetList()
-        console.log('每隔5秒更新应用管理')
+        // console.log('每隔5秒更新应用管理')
       }, 5000)
     },
     // 获取应用数据列表
@@ -265,7 +265,7 @@ export default {
         userid: getuserid()
       })
         .then(res => {
-          // console.log(res)
+          // console.log(res,'应用数据列表')
           this.itemList = res.data.data
           this.reverse()
           this.appid = res.data.data.appid
@@ -484,6 +484,18 @@ export default {
 
   //禁用物理返回键
   activated () {
+    // if (window.history && window.history.pushState) {
+    //   history.pushState(null, null, document.URL)
+    //   window.addEventListener(
+    //     'popstate',
+    //     function () {
+    //       history.pushState(null, null, document.URL)
+    //     },
+    //     false
+    //   )
+    // }
+  },
+  mounted () {
     if (window.history && window.history.pushState) {
       history.pushState(null, null, document.URL)
       window.addEventListener(
