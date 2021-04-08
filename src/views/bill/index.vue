@@ -98,7 +98,7 @@
 
 <script>
 import { getUserInfo, modifyUserInfo } from '@/api/my.js'
-import { getuserid } from '@/store/index.js'
+import { Getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
 export default {
@@ -124,7 +124,7 @@ export default {
     // 获取用户信息
     getData () {
       getUserInfo({
-        userid: getuserid()
+        userid: Getuserid()
       })
         .then(res => {
           console.log('axios-获取用户信息', res.data.data)
@@ -154,7 +154,7 @@ export default {
     changeUserInfo () {
       // 赋值头像
       modifyUserInfo({
-        userid: getuserid(),
+        userid: Getuserid(),
         note: this.note,
         name: this.name,
         imgUrl: this.imgUrl === '' ? this.imgUrlDefault : this.imgUrl,

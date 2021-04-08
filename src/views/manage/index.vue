@@ -189,7 +189,7 @@
 
 <script>
 import { getProjectList, deleteProject, updateProject } from '@/api/my.js'
-import { getuserid } from '@/store/index.js'
+import { Getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
 export default {
@@ -249,30 +249,35 @@ export default {
   },
   created () {
     this.GetList()
-    this.setGetdataIn()
+    // this.setGetdataIn()
   },
   methods: {
     // 定时器每隔五秒获取数据
-    setGetdataIn () {
-      this.timer = setInterval(() => {
-        this.GetList()
-        // console.log('每隔5秒更新应用管理')
-      }, 5000)
-    },
+    // setGetdataIn () {
+    //   this.timer = setInterval(() => {
+    //     this.GetList()
+    //     // console.log('每隔5秒更新应用管理')
+    //   }, 5000)
+    // },
     // 获取应用数据列表
     GetList () {
       getProjectList({
-        userid: getuserid()
+        userid: Getuserid()
       })
         .then(res => {
-          // console.log(res,'应用数据列表')
-          this.itemList = res.data.data
-          this.reverse()
-          this.appid = res.data.data.appid
-          this.appName = res.data.data.appName
-          this.maxInstance = res.data.data.maxInstance
-          this.applidStatus = res.data.data.applidStatus
-          this.createTime = res.data.data.createTime
+          // console.log(res, '应用数据列表')
+          if (res.data.message == '查询成功') {
+            this.itemList = res.data.data
+            this.reverse()
+            this.appid = res.data.data.appid
+            this.appName = res.data.data.appName
+            this.maxInstance = res.data.data.maxInstance
+            this.applidStatus = res.data.data.applidStatus
+            this.createTime = res.data.data.createTime
+          } else if (res.data.message === '应用信息为空') {
+            // this.$message.warning('暂无数据')
+            this.itemList = ''
+          }
         })
         .catch(err => {
           console.log(err)
@@ -472,30 +477,8 @@ export default {
       return extension
     }
   },
-
-  // 路由跳转清除定时
-  // beforeRouteLeave (to, from, next) {
-  //   next()
-  //   if (this.timer) {
-  //     clearInterval(this.timer)
-  //     this.timer = null
-  //   }
-  // },
-
-  //禁用物理返回键
-  activated () {
-    // if (window.history && window.history.pushState) {
-    //   history.pushState(null, null, document.URL)
-    //   window.addEventListener(
-    //     'popstate',
-    //     function () {
-    //       history.pushState(null, null, document.URL)
-    //     },
-    //     false
-    //   )
-    // }
-  },
   mounted () {
+    //禁用返回键
     if (window.history && window.history.pushState) {
       history.pushState(null, null, document.URL)
       window.addEventListener(
@@ -506,6 +489,18 @@ export default {
         false
       )
     }
+  },
+  watch: {
+    $route () {
+      this.GetList()
+      clearInterval(this.timer)
+    }
+  },
+  activated () {
+    this.timer = setInterval(() => {
+      this.GetList()
+      // console.log('每隔5秒更新应用管理')
+    }, 5000)
   },
   // ===== 页面实例销毁 =====
   destroyed () {
