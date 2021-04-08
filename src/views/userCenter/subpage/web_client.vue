@@ -474,7 +474,7 @@ export default {
           break;
         case 8:
           // 构件显示 隐藏 半透明
-          console.log(this.leafInfo);
+          // console.log(this.leafInfo);
           params.mn = this.leafInfo.key;
           if (this.leafInfo.data.activeState === 0) {
             params.id = 26;
