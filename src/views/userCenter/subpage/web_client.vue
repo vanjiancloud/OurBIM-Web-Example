@@ -132,6 +132,7 @@
       ></todo-footer>
       <view-cube
         @handleOrder="handleOrder"
+        @goFront="goFront"
         @handleType="handleType"
         ref="getCube"
       ></view-cube>
@@ -321,6 +322,15 @@ export default {
       }
       this.updateOrder();
     },
+    goFront(){
+    /**
+     * @Author: zk
+     * @Date: 2021-04-08 11:47:29
+     * @description: 重置主视图
+     */  
+      this.handleState = 7;
+      this.updateOrder();
+    },
     handleTree(e, index) {
       /**
        * @Author: zk
@@ -359,31 +369,7 @@ export default {
        * @description: cube指令
        */
       this.handleState = 6;
-      switch (e) {
-        case 0:
-          this.cubeState = 5;
-          break;
-        case 1:
-          this.cubeState = 6;
-          break;
-        case 2:
-          this.cubeState = 1;
-          break;
-        case 3:
-          this.cubeState = 2;
-          break;
-        case 4:
-          this.cubeState = 3;
-          break;
-        case 5:
-          this.cubeState = 4;
-          break;
-        case 6:
-          this.cubeState = 5;
-          break;
-        default:
-          break;
-      }
+      this.cubeState = e;
       this.updateOrder();
     },
     async updateOrder() {
@@ -473,15 +459,12 @@ export default {
           break;
         case 6:
           // 六面体
-          if (this.cubeState !== 5) {
-            params.id = 2;
-            params.sjid = this.cubeState
-          } else {
-            params.id = 1
-          }
+          params.id = 2;
+          params.sjid = this.cubeState
           break;
         case 7:
-          params.id = 13
+          // 定位到主视图
+          params.id = 1
           break;
         case 8:
           // 构件显示 隐藏 半透明
@@ -1094,7 +1077,7 @@ export default {
 
     .tree-main {
       pointer-events: auto;
-      height: 47vh;
+      height: 50vh;
       width: 400px;
       margin: 2vh 0 0 20px;
       border-radius: 10px;
@@ -1147,12 +1130,13 @@ export default {
     }
 
     .bim-info {
-      position: absolute;
-      bottom: 2vh;
       pointer-events: auto;
-      margin-top: 1vh;
-      height: 47vh;
-      margin: 1vh 0 0 20px;
+      height: 50vh;
+      width: 400px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      margin: 2vh 20px 0 0;
       border-radius: 10px;
       width: 400px;
       overflow-x: hidden;

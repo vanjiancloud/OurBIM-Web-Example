@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-03-25 13:19:46
+ * @LastEditTime: 2021-04-08 13:22:25
  * @description: 
 -->
 <template>
@@ -678,10 +678,7 @@ export default {
        * @Author: zk
        * @Date: 2021-03-17 09:51:33
        * @description: 关闭tool
-       */
-      if (this.oldState === 3 || this.oldState === 1) {
-        return;
-      }
+       */      
       this.angleTool = false;
       this.followTool = false;
       this.personTool = false;
