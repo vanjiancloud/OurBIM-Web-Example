@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-08 13:22:25
+ * @LastEditTime: 2021-04-08 15:57:55
  * @description: 
 -->
 <template>
@@ -252,18 +252,11 @@
                   v-for="(item, index) in pointList"
                   :key="index"
                 >
-                  <el-tooltip
-                    class="item"
-                    effect="dark"
-                    :content="item.name"
-                    placement="top"
-                  >
                     <div
                       class="follow-text"
                       v-text="item.name"
                       @click="JumpFollow(item)"
                     ></div>
-                  </el-tooltip>
                   <div class="close-follow">
                     <i class="el-icon-edit" @click="EditFollow(item)"></i>
                     <i class="el-icon-close" @click="DeleteFollow(item)"></i>
@@ -400,6 +393,8 @@
       <el-dialog
         :title="dialogPointData.title"
         :visible.sync="dialogEdit"
+        @close="closeFollow"
+        :close-on-click-modal = "false"
         width="20%"
       >
         <el-form v-if="followInfo">
@@ -614,6 +609,14 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    closeFollow(){
+    /**
+     * @Author: zk
+     * @Date: 2021-04-08 15:40:38
+     * @description: 关闭连接
+     */  
+    this.$emit("listenFollow", false)
+    },
     openMask() {
       /**
        * @Author: zk
@@ -736,6 +739,7 @@ export default {
        */
       this.followInfo = JSON.parse(JSON.stringify(e));
       this.dialogEdit = true;
+      this.$emit("listenFollow", true)
     },
     UpdateFollow() {
       /**
@@ -1032,6 +1036,7 @@ export default {
     .follow-list {
       max-height: 100px;
       overflow-y: auto;
+      margin-bottom: 10px;
 
       &::-webkit-scrollbar {
         /*滚动条整体样式*/
@@ -1053,8 +1058,8 @@ export default {
       }
 
       .follow-table {
-        width: 150px;
-        height: 26px;
+        width: 260px;
+        height: 36px;
         background: rgba(0, 0, 0, 0.3);
         cursor: pointer;
         border-radius: 5px;
@@ -1064,7 +1069,7 @@ export default {
         align-items: center;
 
         .follow-text {
-          // width: ;
+          margin-right: 10px;
           width: auto;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -1087,8 +1092,8 @@ export default {
     }
 
     .add-follow {
-      width: 170px;
-      height: 26px;
+      width: 280px;
+      height: 36px;
       display: flex;
       justify-content: center;
       align-items: center;

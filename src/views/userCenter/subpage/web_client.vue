@@ -129,6 +129,7 @@
         @listenTodo="listenTodo"
         @listenPerson="listenPerson"
         @listenMode="listenMode"
+        @listenFollow="listenFollow"
         :setProps="propsFooter"
       ></todo-footer>
       <view-cube
@@ -174,6 +175,7 @@ export default {
       locale: "zh",
       taskId: null,
       isFade: true,
+      isFollow: false,
       handleState: 0,
       leafInfo: null,
       listenInfo: null,
@@ -259,6 +261,14 @@ export default {
     this.closeWebSocket();    
   },
   methods: {
+    listenFollow(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-04-08 15:30:38
+     * @description: 监听关注视角是否打开
+     */  
+    this.isFollow = e
+    },
     listenMode(e) {
       /**
        * @Author: zk
@@ -756,6 +766,9 @@ export default {
         // 关闭tool
         this.sendToIframe(10200, "false", "");
         document.addEventListener("keydown", (e) => {
+          if (this.isFollow) {
+            return
+          }
           this.sendToIframe(
             10010,
             {
@@ -766,6 +779,9 @@ export default {
           );
         });
         document.addEventListener("keyup", (e) => {
+          if (this.isFollow) {
+            return
+          }
           this.sendToIframe(
             10011,
             {
