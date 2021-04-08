@@ -2,6 +2,7 @@
   <div class="bim-main">
     <iframe
       class="bim-web"
+      allowfullscreen="true"
       :class="runTimeCode === 0 ? '' : 'phone-bim'"
       v-if="webUrl"
       :src="webUrl"
@@ -192,6 +193,10 @@ export default {
       natureInfo: null,
       shadowType: null,
       listenTodoInfo: null,
+      gaugeInfo: {
+        unit: 'm',
+        accuracy: 0.01
+      },
       treeEmpty: this.$t('webClient.browser.tips[0]')
     };
   },
@@ -433,7 +438,6 @@ export default {
           break;
         case 4:
           // 测量
-          console.log();
           if (this.listenTodoInfo.data === 0) {
             // 坐标
             params.id = 37;
@@ -447,10 +451,12 @@ export default {
             // 设置单位
             params.id = 38;
             params.unit = this.listenTodoInfo.set;
+            params.precision = this.gaugeInfo.accuracy
           } else if (this.listenTodoInfo.data === 4) {
             // 设置精度
             params.id = 38;
             params.precision = this.listenTodoInfo.set;
+            params.unit = this.gaugeInfo.unit
           }
           break;
         case 5:
@@ -601,10 +607,15 @@ export default {
         this.updateOrder()
       }
       // 测量
-      if (e.type === 3) {
+        if (e.type === 3) {
         if (e.state === 1 && e.data !== undefined) {
           this.handleState = 4
           this.listenTodoInfo = e
+          if (e.data === 3) {
+            this.gaugeInfo.unit = e.set
+          } else if (e.data === 4) {
+            this.gaugeInfo.accuracy = e.set
+          }
           this.updateOrder()
         }
         if (e.state === 0) {
