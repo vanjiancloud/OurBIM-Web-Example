@@ -304,9 +304,6 @@ export default {
             this.logIn = '登录'
             this.isLoading = false
             sessionStorage.setItem('userInfo', JSON.stringify(res.data.data))
-            // console.log(res.data.data)
-            // 存储用户信息userid，到localStorage
-            setuserid(res.data.data.userid)
             setemail(this.form.loginName)
             setpassword(this.form.password)
             // 存储用户信息userid，到sessionStorage
@@ -316,7 +313,7 @@ export default {
               delemail()
               delpassword()
             }
-            this.$router.push('../manage')
+            this.$router.push('/')
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
             this.logIn = '登录'
@@ -490,7 +487,7 @@ export default {
   right: 0;
   bottom: 0;
   display: flex;
-   flex-direction: row;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   background-image: url(./bg.png);

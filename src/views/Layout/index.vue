@@ -24,9 +24,7 @@
             </li>
             <!-- 解决方案 -->
             <li>
-              <a href="http://www.ourbim.com/solution">
-                {{ $t('Solution') }}</a
-              >
+              <a href="http://www.ourbim.com/solution"> {{ $t('Solution') }}</a>
             </li>
             <!-- 成功案例 -->
             <li>
@@ -308,9 +306,8 @@
 
 <script>
 import { showDetail } from '@/api/my.js'
-import { getuserid } from '@/store/index.js'
+import { Getuserid } from '@/store/index.js'
 import { deluserid, Deluserid } from '@/store/index.js'
-import { delCookie } from '@/utils/cookie'
 
 export default {
   name: 'myHeader',
@@ -335,8 +332,18 @@ export default {
     }
   },
   created () {
-    console.log(this.$route.path)
+    // console.log(this.$route.path)
     this.showData()
+    window.onload = function () {
+      // 获取浏览器页面最大宽度
+      var maxWidth = document.documentElement.offsetWidth
+      document.documentElement.style.fontSize =
+        document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
+      window.onresize = function () {
+        document.documentElement.style.fontSize =
+          document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
+      }
+    }
   },
   methods: {
     English () {
@@ -350,7 +357,7 @@ export default {
       // this.isCut = 1
     },
 
-    // 项目中心
+    // 项目中心按钮
     toManage () {
       this.$router.push('../manage')
     },
@@ -363,10 +370,10 @@ export default {
     // 退出按钮
     toLogin () {
       this.$router.push('../login')
-      if (sessionStorage.getItem("userInfo")) {
-        sessionStorage.removeItem("userInfo")
+      if (sessionStorage.getItem('userInfo')) {
+        sessionStorage.removeItem('userInfo')
       }
-      deluserid()
+      // deluserid()
       Deluserid()
       clearInterval(this.time)
     },
@@ -374,7 +381,7 @@ export default {
     //展示当前用户信息
     showData () {
       showDetail({
-        userid: getuserid()
+        userid: Getuserid()
       })
         .then(res => {
           // console.log(res)
@@ -428,21 +435,19 @@ export default {
       return path
     }
   },
+  watch: {
+    // 监听路由变化
+    $route (to, from) {
+      this.showData()
+    }
+  },
   /* 把定时器放在activated事件里，当清除定时后，
   下次再次进入当前路由的话，可以再次唤起定时器 */
-  // activated () {
-  //   this.time = setInterval(() => {
-  //     this.showData()
-  //     // console.log('个人信息')
-  //   }, 1000)
-  // },
-  // 路由跳转清除定时
-  beforeRouteLeave (to, from, next) {
-    next()
-    if (this.time) {
-      clearInterval(this.time)
-      this.time = null
-    }
+  activated () {
+    this.time = setInterval(() => {
+      this.showData()
+      // console.log('个人信息')
+    }, 5000)
   },
   //页面实例销毁后清除定时
   destroyed () {
@@ -460,6 +465,9 @@ export default {
     margin: 0;
     padding: 0;
     .header {
+      // width: 100%;
+      // display: flex;
+      // justify-content: center;
       min-height: 60px;
       background-color: #fff;
       line-height: 60px;

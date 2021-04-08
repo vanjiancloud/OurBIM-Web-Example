@@ -176,7 +176,7 @@
 
 <script>
 import { addProject } from '@/api/my.js'
-import { getuserid } from '@/store/index.js'
+import { Getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
 export default {
@@ -225,7 +225,7 @@ export default {
       if (this.appName !== '') {
         if (this.active++ > 3) this.active = 0
         addProject({
-          userId: getuserid(),
+          userId: Getuserid(),
           appName: this.appName,
           screenImg: this.appImgSrc.toString()
         })
