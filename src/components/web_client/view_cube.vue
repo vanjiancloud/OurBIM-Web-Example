@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-08 13:13:02
+ * @LastEditTime: 2021-04-09 14:49:45
  * @description: 
 -->
 <template>
@@ -118,7 +118,11 @@ export default {
     };
   },
   created() {
-    this.$i18n.locale = this.$route.query.locale;
+    if (this.$route.query.locale) {
+      this.$i18n.locale = this.$route.query.locale;
+    }else{
+      this.$i18n.locale = "zh";
+    }
     if (this.$i18n.locale) {
       this.faceList[0].label = this.$t("webClient.cubeBox.direction[0]");
       this.faceList[1].label = this.$t("webClient.cubeBox.direction[1]");
