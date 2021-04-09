@@ -47,6 +47,11 @@
         v-if="hiddenState === 3"
         v-text="$t('webClient.loadBox.title[1]')"
       ></div>
+      <div
+        class="hidden-text learn-text"
+        v-if="hiddenState === 4"
+        v-text="$t('webClient.loadBox.message[6]')"
+      ></div>
     </div>
     <div v-if="runTimeCode === 0">
       <div class="mutual-bim">
@@ -205,14 +210,14 @@ export default {
   watch: {
     viewHeight() {
       //普通的watch监听
-      if (this.isFade) {
-        this.$message({
-          type: "success",
-          message: this.$t("webClient.loadBox.message[0]"),
-        });
-      }
+      // if (this.isFade) {
+      //   this.$message({
+      //     type: "success",
+      //     message: this.$t("webClient.loadBox.message[0]"),
+      //   });
+      // }
       this.isFade = false;
-      this.setTimePass();
+      // this.setTimePass();
     },
   },
   mounted() {
@@ -309,6 +314,8 @@ export default {
         1004,
       ];
       if (errorList.indexOf(e.type) !== -1) {
+        this.hiddenState = 4
+        this.isFade = true
         this.closeWebSocket()
         this.$message({
           message: this.$t('webClient.loadBox.message[6]'),

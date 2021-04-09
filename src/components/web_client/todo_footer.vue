@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-08 15:57:55
+ * @LastEditTime: 2021-04-09 10:09:27
  * @description: 
 -->
 <template>
@@ -86,6 +86,25 @@
               mode=""
             />
           </el-tooltip>
+          <el-collapse-transition>
+            <div class="show-slice" v-if="imgList[2].state === 1">
+              <el-tooltip
+                v-for="(item, index) in sliceList"
+                :key="index"
+                class="item"
+                effect="dark"
+                :content="item.content"
+                placement="left"
+              >
+                <img
+                  class="slice-img"
+                  @click.stop="changeSlice(item, index)"
+                  :src="item.img"
+                  mode=""
+                />
+              </el-tooltip>
+            </div>
+          </el-collapse-transition>
         </div>
         <div class="image-main">
           <el-tooltip
@@ -430,6 +449,29 @@ export default {
   },
   data() {
     return {
+      sliceList: [
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/position.png"),
+          activeImg: require("@/assets/images/todo/unchecked/position.png")
+        },
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/position.png"),
+          activeImg: require("@/assets/images/todo/unchecked/position.png")
+        },
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/position.png"),
+          activeImg: require("@/assets/images/todo/unchecked/position.png")
+        },
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/position.png"),
+          activeImg: require("@/assets/images/todo/unchecked/position.png")
+        }
+      ],
+      activeSlice: null,
       isMask: false,
       unitList: ["m", "cm", "mm", "ft", "in"],
       accuracyList: ["0", "0.1", "0.01"],
@@ -593,6 +635,11 @@ export default {
       this.deleteData = this.$t("webClient.deleteList[0]");
       this.dialogPointData = this.$t("webClient.dialogList[0]");
       this.cuttingTips = this.$t("webClient.tooltipList.subtool");
+      if (this.$t("webClient.tooltipList.sliceTool")) {
+        this.$t("webClient.tooltipList.sliceTool").forEach((item, index) => {
+          this.sliceList[index].content = item
+        });
+      }
       this.$t("webClient.tooltipList.toolPerson").forEach((item, index) => {
         this.personList[index].name = item;
       });
@@ -624,6 +671,14 @@ export default {
        * @description: 打开遮罩
        */
       this.isMask = true;
+    },
+    changeSlice(e, indexes){
+    /**
+     * @Author: zk
+     * @Date: 2021-04-08 17:55:39
+     * @description: 剖切
+     */  
+      this.activeSlice = indexes
     },
     changeGauge(e) {
       /**
@@ -689,7 +744,7 @@ export default {
         this.imgList[this.oldState].name
       }`);
       this.imgList[this.oldState].url = oldUrl;
-      this.imgList[this.oldState].state = 0;
+      this.imgList[this.oldState].state = 0;  
     },
     editTool(e) {
       let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
@@ -866,7 +921,7 @@ export default {
         .catch((err) => {});
     },
     handleOrder(e) {
-      if (e === 2 || e === 4 || e === 5 || e === 7 || e === 8 || e === 9) {
+      if (e === 4 || e === 5 || e === 7 || e === 8 || e === 9) {
         return;
       }
       if (e === 0) {
@@ -933,7 +988,7 @@ export default {
   justify-content: center;
 
   .todo-main {
-    width: 960px;
+    width: 800px;
     padding: 10px;
     background: rgba(0, 0, 0, 0.6);
     display: flex;
@@ -991,7 +1046,7 @@ export default {
       width: 50%;
       left: 25%;
       border-radius: 10px 10px 0 0;
-      top: -147px;
+      top: -151px;
       padding-bottom: 5px;
       background-color: rgba(0, 0, 0, 0.6);
 
@@ -1001,7 +1056,22 @@ export default {
         height: 20px;
       }
     }
+    // 剖切
+    .show-slice{
+      position: absolute;
+      width: 50%;
+      left: 25%;
+      border-radius: 10px 10px 0 0;
+      top: -151px;
+      padding-bottom: 5px;
+      background-color: rgba(0, 0, 0, 0.6);
 
+      .slice-img {
+        margin-top: 10px;
+        width: 20px;
+        height: 20px;
+      }
+    }
     .show-weather {
       position: absolute;
       width: 200%;
@@ -1012,8 +1082,7 @@ export default {
       background-color: rgba(0, 0, 0, 0.6);
     }
 
-    .footer-image {
-      width: 30px;
+    .footer-image {      
       height: 30px;
       cursor: pointer;
     }
@@ -1034,7 +1103,7 @@ export default {
 .follow-bgi {
   .follow-main {
     .follow-list {
-      max-height: 100px;
+      max-height: 200px;
       overflow-y: auto;
       margin-bottom: 10px;
 
