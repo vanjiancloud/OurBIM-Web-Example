@@ -545,12 +545,15 @@ export default {
                 params.id = 43;                
                 break;
               case 1:
-                params.id = 44;                
+                params.id = 44;
                 break;
               case 2:
                 params.id = 45;                
                 break;
               case 3:
+                // params.id = 45;
+                break;
+              case 4:
                 params.id = 46;                
                 break;
               default:

@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-09 16:12:49
+ * @LastEditTime: 2021-04-09 18:14:36
  * @description: 
 -->
 <template>
@@ -99,12 +99,15 @@
                 :content="item.content"
                 placement="left"
               >
+              <div>
                 <img
                   class="slice-img"
                   @click.stop="changeSlice(item, index)"
                   :src="activeSlice === index ? item.activeImg : item.img "
                   mode=""
                 />
+              </div>
+                
               </el-tooltip>
             </div>
           </el-collapse-transition>
@@ -127,41 +130,17 @@
           <el-collapse-transition>
             <div class="show-cutting" v-if="imgList[3].state === 1">
               <el-tooltip
+              v-for="(item, index) in cuttingList"
+              :key="index"
                 class="item"
                 effect="dark"
-                :content="cuttingTips[0]"
+                :content="item.content"
                 placement="left"
               >
                 <img
                   class="cutting-img"
-                  @click.stop="changeGauge(0)"
-                  src="@/assets/images/todo/unchecked/position.png"
-                  mode=""
-                />
-              </el-tooltip>
-              <el-tooltip
-                class="item"
-                effect="dark"
-                :content="cuttingTips[1]"
-                placement="left"
-              >
-                <img
-                  class="cutting-img"
-                  @click.stop="changeGauge(1)"
-                  src="@/assets/images/todo/unchecked/gauge.png"
-                  mode=""
-                />
-              </el-tooltip>
-              <el-tooltip
-                class="item"
-                effect="dark"
-                :content="cuttingTips[2]"
-                placement="left"
-              >
-                <img
-                  class="cutting-img"
-                  @click.stop="changeGauge(2)"
-                  src="@/assets/images/todo/unchecked/angle.png"
+                  @click.stop="changeGauge(index)"
+                  :src="item.img"
                   mode=""
                 />
               </el-tooltip>
@@ -221,7 +200,7 @@
                 >
                   <img
                     class="cutting-img"
-                    src="@/assets/images/todo/unchecked/set.png"
+                    :src="angleTool ? require('@/assets/images/todo/check/set.png') : require('@/assets/images/todo/unchecked/set.png')"
                     @click.stop="showAngle"
                     mode=""
                   />
@@ -479,8 +458,33 @@ export default {
         },
         {
           content: null,
+          img: require("@/assets/images/todo/unchecked/slice/appoint.png"),
+          activeImg: require("@/assets/images/todo/check/slice/appoint.png")
+        },
+        {
+          content: null,
           img: require("@/assets/images/todo/unchecked/slice/reset.png"),
           activeImg: require("@/assets/images/todo/check/slice/reset.png")
+        }
+      ],
+      cuttingList: [
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/position.png"),
+          activeImg: require("@/assets/images/todo/check/position.png"),
+          name: "position"
+        },
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/gauge.png"),
+          activeImg: require("@/assets/images/todo/check/gauge.png"),
+          name: "gauge"
+        },
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/angle.png"),
+          activeImg: require("@/assets/images/todo/check/angle.png"),
+          name: "angle"
         }
       ],
       activeSlice: null,
@@ -656,6 +660,11 @@ export default {
           this.sliceList[index].content = item
         });
       }
+      if (this.$t("webClient.tooltipList.subtool")) {
+        for (let index = 0; index < 3; index++) {
+          this.cuttingList[index].content = this.$t("webClient.tooltipList.subtool")[index]
+        }
+      }
       this.$t("webClient.tooltipList.toolPerson").forEach((item, index) => {
         this.personList[index].name = item;
       });
@@ -692,7 +701,7 @@ export default {
     /**
      * @Author: zk
      * @Date: 2021-04-08 17:55:39
-     * @description: 剖切 0 移动 1 旋转 2 反选 3 重置
+     * @description: 剖切 0 移动 1 旋转 2 反选 3 指定 4 重置
      */  
       if (indexes === 2) {
         indexes === this.activeSlice ? this.activeSlice = null : this.activeSlice = indexes
@@ -712,6 +721,9 @@ export default {
        * @description: 测量 0 坐标 1 距离 2 角度 3 单位 4 精度
        */
       let realSet = null;
+      if (e === 0 || e === 1 || e === 2) {
+        this.cuttingList[e].img =  require("@/assets/images/todo/check/"+ this.cuttingList[e].name +".png")
+      }
       if (e === 3) {
         realSet = this.unitList[this.setForm.unit]
           ? this.unitList[this.setForm.unit]
@@ -781,6 +793,9 @@ export default {
       }
       // 测量
       if (this.oldState === 3) {
+        this.cuttingList.forEach((item, e) => {
+          this.cuttingList[e].img =  require("@/assets/images/todo/unchecked/"+ this.cuttingList[e].name +".png")
+        })
         this.$emit("listenTodo", {
           state: this.imgList[this.oldState].state,
           type: this.oldState,
@@ -976,11 +991,15 @@ export default {
       // 关闭刨切和测量
       if (this.oldState === 2 || this.oldState === 3) {
         this.activeSlice = null
+        this.cuttingList.forEach((item, e) => {
+            this.cuttingList[e].img =  require("@/assets/images/todo/unchecked/"+ this.cuttingList[e].name +".png")
+            this.angleTool = false
+        })    
         if (e === this.oldState) {
           this.$emit("listenTodo", {
             state: this.imgList[e].state,
             type: e,
-          });
+          });                
           return
         }else{
           if (this.imgList[this.oldState].state === 1) {
@@ -1123,17 +1142,17 @@ export default {
     // 剖切
     .show-slice{
       position: absolute;
-      width: 50%;
-      left: 25%;
+      width: 60%;
+      left: 20%;
       border-radius: 10px 10px 0 0;
-      top: -151px;
+      top: -197px;
       padding-bottom: 5px;
       background-color: rgba(0, 0, 0, 0.6);
 
       .slice-img {
         margin-top: 10px;
-        width: 20px;
-        height: 20px;
+        // width: 20px;
+        // height: 20px;
       }
     }
     .show-weather {
