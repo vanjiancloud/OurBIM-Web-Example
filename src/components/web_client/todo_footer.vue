@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-10 16:55:20
+ * @LastEditTime: 2021-04-10 17:28:20
  * @description: 
 -->
 <template>
@@ -793,12 +793,14 @@ export default {
       this.imgList[this.oldState].state = 0;
       // 剖切
       if (this.oldState === 2) {
-        this.activeSlice = null;
-        this.$emit("listenTodo", {
-          state: this.imgList[this.oldState].state,
-          type: this.oldState,
-        });
-        this.oldState = 0;
+        if (this.imgList[this.oldState].state === 1) {
+          this.activeSlice = null;
+          this.$emit("listenTodo", {
+            state: this.imgList[this.oldState].state,
+            type: this.oldState,
+          });
+          this.oldState = 0; 
+        }        
       }
       // 测量
       if (this.oldState === 3) {
@@ -1158,7 +1160,7 @@ export default {
       width: 60%;
       left: 20%;
       border-radius: 10px 10px 0 0;
-      top: -197px;
+      top: -195px;
       padding-bottom: 5px;
       background-color: rgba(0, 0, 0, 0.6);
 
