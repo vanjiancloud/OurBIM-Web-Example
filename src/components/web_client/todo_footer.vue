@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-09 18:14:36
+ * @LastEditTime: 2021-04-10 16:55:20
  * @description: 
 -->
 <template>
@@ -99,15 +99,14 @@
                 :content="item.content"
                 placement="left"
               >
-              <div>
-                <img
-                  class="slice-img"
-                  @click.stop="changeSlice(item, index)"
-                  :src="activeSlice === index ? item.activeImg : item.img "
-                  mode=""
-                />
-              </div>
-                
+                <div>
+                  <img
+                    class="slice-img"
+                    @click.stop="changeSlice(item, index)"
+                    :src="activeSlice === index ? item.activeImg : item.img"
+                    mode=""
+                  />
+                </div>
               </el-tooltip>
             </div>
           </el-collapse-transition>
@@ -130,8 +129,8 @@
           <el-collapse-transition>
             <div class="show-cutting" v-if="imgList[3].state === 1">
               <el-tooltip
-              v-for="(item, index) in cuttingList"
-              :key="index"
+                v-for="(item, index) in cuttingList"
+                :key="index"
                 class="item"
                 effect="dark"
                 :content="item.content"
@@ -200,7 +199,11 @@
                 >
                   <img
                     class="cutting-img"
-                    :src="angleTool ? require('@/assets/images/todo/check/set.png') : require('@/assets/images/todo/unchecked/set.png')"
+                    :src="
+                      angleTool
+                        ? require('@/assets/images/todo/check/set.png')
+                        : require('@/assets/images/todo/unchecked/set.png')
+                    "
                     @click.stop="showAngle"
                     mode=""
                   />
@@ -257,11 +260,11 @@
                   v-for="(item, index) in pointList"
                   :key="index"
                 >
-                    <div
-                      class="follow-text"
-                      v-text="item.name"
-                      @click="JumpFollow(item)"
-                    ></div>
+                  <div
+                    class="follow-text"
+                    v-text="item.name"
+                    @click="JumpFollow(item)"
+                  ></div>
                   <div class="close-follow">
                     <i class="el-icon-edit" @click="EditFollow(item)"></i>
                     <i class="el-icon-close" @click="DeleteFollow(item)"></i>
@@ -404,7 +407,7 @@
         :title="dialogPointData.title"
         :visible.sync="dialogEdit"
         @close="closeFollow"
-        :close-on-click-modal = "false"
+        :close-on-click-modal="false"
         width="20%"
       >
         <el-form v-if="followInfo">
@@ -444,48 +447,48 @@ export default {
         {
           content: null,
           img: require("@/assets/images/todo/unchecked/slice/move.png"),
-          activeImg: require("@/assets/images/todo/check/slice/move.png")
+          activeImg: require("@/assets/images/todo/check/slice/move.png"),
         },
         {
           content: null,
           img: require("@/assets/images/todo/unchecked/slice/rotate.png"),
-          activeImg: require("@/assets/images/todo/check/slice/rotate.png")
+          activeImg: require("@/assets/images/todo/check/slice/rotate.png"),
         },
         {
           content: null,
           img: require("@/assets/images/todo/unchecked/slice/reverse.png"),
-          activeImg: require("@/assets/images/todo/check/slice/reverse.png")
+          activeImg: require("@/assets/images/todo/check/slice/reverse.png"),
         },
         {
           content: null,
           img: require("@/assets/images/todo/unchecked/slice/appoint.png"),
-          activeImg: require("@/assets/images/todo/check/slice/appoint.png")
+          activeImg: require("@/assets/images/todo/check/slice/appoint.png"),
         },
         {
           content: null,
           img: require("@/assets/images/todo/unchecked/slice/reset.png"),
-          activeImg: require("@/assets/images/todo/check/slice/reset.png")
-        }
+          activeImg: require("@/assets/images/todo/check/slice/reset.png"),
+        },
       ],
       cuttingList: [
         {
           content: null,
           img: require("@/assets/images/todo/unchecked/position.png"),
           activeImg: require("@/assets/images/todo/check/position.png"),
-          name: "position"
+          name: "position",
         },
         {
           content: null,
           img: require("@/assets/images/todo/unchecked/gauge.png"),
           activeImg: require("@/assets/images/todo/check/gauge.png"),
-          name: "gauge"
+          name: "gauge",
         },
         {
           content: null,
           img: require("@/assets/images/todo/unchecked/angle.png"),
           activeImg: require("@/assets/images/todo/check/angle.png"),
-          name: "angle"
-        }
+          name: "angle",
+        },
       ],
       activeSlice: null,
       isMask: false,
@@ -645,7 +648,7 @@ export default {
     }
     if (this.$route.query.locale) {
       this.$i18n.locale = this.$route.query.locale;
-    }else{
+    } else {
       this.$i18n.locale = "zh";
     }
     if (this.$i18n.locale) {
@@ -657,12 +660,14 @@ export default {
       this.cuttingTips = this.$t("webClient.tooltipList.subtool");
       if (this.$t("webClient.tooltipList.sliceTool")) {
         this.$t("webClient.tooltipList.sliceTool").forEach((item, index) => {
-          this.sliceList[index].content = item
+          this.sliceList[index].content = item;
         });
       }
       if (this.$t("webClient.tooltipList.subtool")) {
         for (let index = 0; index < 3; index++) {
-          this.cuttingList[index].content = this.$t("webClient.tooltipList.subtool")[index]
+          this.cuttingList[index].content = this.$t(
+            "webClient.tooltipList.subtool"
+          )[index];
         }
       }
       this.$t("webClient.tooltipList.toolPerson").forEach((item, index) => {
@@ -681,13 +686,13 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
-    closeFollow(){
-    /**
-     * @Author: zk
-     * @Date: 2021-04-08 15:40:38
-     * @description: 关闭连接
-     */  
-    this.$emit("listenFollow", false)
+    closeFollow() {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-08 15:40:38
+       * @description: 关闭连接
+       */
+      this.$emit("listenFollow", false);
     },
     openMask() {
       /**
@@ -697,21 +702,23 @@ export default {
        */
       this.isMask = true;
     },
-    changeSlice(e, indexes){
-    /**
-     * @Author: zk
-     * @Date: 2021-04-08 17:55:39
-     * @description: 剖切 0 移动 1 旋转 2 反选 3 指定 4 重置
-     */  
+    changeSlice(e, indexes) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-08 17:55:39
+       * @description: 剖切 0 移动 1 旋转 2 反选 3 指定 4 重置
+       */
       if (indexes === 2) {
-        indexes === this.activeSlice ? this.activeSlice = null : this.activeSlice = indexes
-      }else{
-        this.activeSlice = indexes
+        indexes === this.activeSlice
+          ? (this.activeSlice = null)
+          : (this.activeSlice = indexes);
+      } else {
+        this.activeSlice = indexes;
       }
       this.$emit("listenTodo", {
         state: this.imgList[2].state,
         type: 2,
-        data: indexes
+        data: indexes,
       });
     },
     changeGauge(e) {
@@ -722,7 +729,9 @@ export default {
        */
       let realSet = null;
       if (e === 0 || e === 1 || e === 2) {
-        this.cuttingList[e].img =  require("@/assets/images/todo/check/"+ this.cuttingList[e].name +".png")
+        this.cuttingList[e].img = require("@/assets/images/todo/check/" +
+          this.cuttingList[e].name +
+          ".png");
       }
       if (e === 3) {
         realSet = this.unitList[this.setForm.unit]
@@ -784,23 +793,25 @@ export default {
       this.imgList[this.oldState].state = 0;
       // 剖切
       if (this.oldState === 2) {
-        this.activeSlice = null
+        this.activeSlice = null;
         this.$emit("listenTodo", {
           state: this.imgList[this.oldState].state,
           type: this.oldState,
         });
-        this.oldState = 0
+        this.oldState = 0;
       }
       // 测量
       if (this.oldState === 3) {
         this.cuttingList.forEach((item, e) => {
-          this.cuttingList[e].img =  require("@/assets/images/todo/unchecked/"+ this.cuttingList[e].name +".png")
-        })
+          this.cuttingList[e].img = require("@/assets/images/todo/unchecked/" +
+            this.cuttingList[e].name +
+            ".png");
+        });
         this.$emit("listenTodo", {
           state: this.imgList[this.oldState].state,
           type: this.oldState,
         });
-        this.oldState = 0
+        this.oldState = 0;
       }
     },
     editTool(e) {
@@ -851,7 +862,7 @@ export default {
        */
       this.followInfo = JSON.parse(JSON.stringify(e));
       this.dialogEdit = true;
-      this.$emit("listenFollow", true)
+      this.$emit("listenFollow", true);
     },
     UpdateFollow() {
       /**
@@ -990,23 +1001,25 @@ export default {
 
       // 关闭刨切和测量
       if (this.oldState === 2 || this.oldState === 3) {
-        this.activeSlice = null
+        this.activeSlice = null;
         this.cuttingList.forEach((item, e) => {
-            this.cuttingList[e].img =  require("@/assets/images/todo/unchecked/"+ this.cuttingList[e].name +".png")
-            this.angleTool = false
-        })    
+          this.cuttingList[e].img = require("@/assets/images/todo/unchecked/" +
+            this.cuttingList[e].name +
+            ".png");
+          this.angleTool = false;
+        });
         if (e === this.oldState) {
           this.$emit("listenTodo", {
             state: this.imgList[e].state,
             type: e,
-          });                
-          return
-        }else{
+          });
+          return;
+        } else {
           if (this.imgList[this.oldState].state === 1) {
             this.$emit("listenTodo", {
-            state: 0,
-            type: this.oldState,
-          });
+              state: 0,
+              type: this.oldState,
+            });
           }
         }
       }
@@ -1031,7 +1044,7 @@ export default {
       if (e === 6) {
         this.followTool = this.imgList[e].state === 0 ? true : false;
       }
-            
+
       if (e !== 0) {
         this.$emit("listenTodo", {
           state: this.imgList[e].state,
@@ -1140,7 +1153,7 @@ export default {
       }
     }
     // 剖切
-    .show-slice{
+    .show-slice {
       position: absolute;
       width: 60%;
       left: 20%;
@@ -1165,7 +1178,7 @@ export default {
       background-color: rgba(0, 0, 0, 0.6);
     }
 
-    .footer-image {      
+    .footer-image {
       height: 30px;
       cursor: pointer;
     }
@@ -1285,27 +1298,28 @@ export default {
       border: 1px solid rgba(255, 255, 255, 0.25);
       color: #ffffff;
     }
-    .is-focus{
+    .is-focus {
       border-color: rgba(0, 0, 0, 0.6) !important;
-    }    
+    }
   }
 }
-.popper-bgi{
+.popper-bgi {
   background: rgba(0, 0, 0, 0.6);
   border: transparent;
-  .el-select-dropdown__item{
-    color: #ffffff !important;    
+  .el-select-dropdown__item {
+    color: #ffffff !important;
   }
-  .el-select-dropdown__item.hover, .el-select-dropdown__item:hover{
+  .el-select-dropdown__item.hover,
+  .el-select-dropdown__item:hover {
     background: rgba(0, 0, 0, 0.1) !important;
   }
-  .selected{
-    color: #409EFF !important;
+  .selected {
+    color: #409eff !important;
   }
-  .popper__arrow{
+  .popper__arrow {
     border-top-color: rgba(0, 0, 0, 0.6) !important;
-    &::after{
-      border-top-color: rgba(0, 0, 0, 0.6) !important;       
+    &::after {
+      border-top-color: rgba(0, 0, 0, 0.6) !important;
     }
   }
 }
