@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-09 14:49:45
+ * @LastEditTime: 2021-04-10 10:01:45
  * @description: 
 -->
 <template>
@@ -84,11 +84,11 @@ export default {
           className: "right",
         },
       ],
-      activeFace: 0,
+      activeFace: null,
       activeType: 1,
       downInfo: {
-        x: 0,
-        y: 0,
+        x: -45,
+        y: -45,
         z: 0,
       },
       disX: 90,

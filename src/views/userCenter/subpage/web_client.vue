@@ -53,7 +53,7 @@
         v-text="$t('webClient.loadBox.message[6]')"
       ></div>
     </div>
-    <div v-if="runTimeCode === 0">
+    <div v-if="runTimeCode === 0 && controllerInfo.uiBar">
       <div class="mutual-bim">
         <div
           class="tree-main"
@@ -175,6 +175,9 @@ export default {
           }
         },
       },
+      controllerInfo: {
+        uiBar: true,
+      },
       webUrl: null,
       appId: null,
       locale: "zh",
@@ -225,7 +228,7 @@ export default {
     if (this.$route.query.locale) {
       this.locale = this.$route.query.locale;
       this.$i18n.locale = this.locale;
-    }else{
+    } else {
       this.$i18n.locale = this.locale;
     }
     this.setTimeLoad();
@@ -246,22 +249,35 @@ export default {
     window.addEventListener(
       "message",
       (e) => {
-        this.getError(e.data);
-        if (e.data.data && e.data.data.frameHeight > 0 && e.data.type !== 500) {
-          this.viewHeight = e.data.data.frameHeight;
-        }
-        if (isiPad !== false || isMac !== false) {
+        if (e.data.prex === "pxymessage") {
+          this.getError(e.data);
           if (
             e.data.data &&
-            e.data.data.height &&
-            e.data.data.height > 0 &&
-            e.data.type === 910
+            e.data.data.frameHeight > 0 &&
+            e.data.type !== 500
           ) {
-            let dialogTimer = setTimeout(() => {
-              this.hiddenState = 0;
-              this.viewHeight = e.data.data.frameHeight;
-              clearTimeout(dialogTimer);
-            }, 1000);
+            this.viewHeight = e.data.data.frameHeight;
+          }
+          if (isiPad !== false || isMac !== false) {
+            if (
+              e.data.data &&
+              e.data.data.height &&
+              e.data.data.height > 0 &&
+              e.data.type === 910
+            ) {
+              let dialogTimer = setTimeout(() => {
+                this.hiddenState = 0;
+                this.viewHeight = e.data.data.frameHeight;
+                clearTimeout(dialogTimer);
+              }, 1000);
+            }
+          }
+        }
+        if (e.data.prex === "ourbimMessage") {
+          // 控制栏显示隐藏
+          console.log(e.data);
+          if (e.data.type === 1010) {
+            this.controllerInfo.uiBar = e.data.data;
           }
         }
       },
@@ -380,12 +396,12 @@ export default {
           this.memberInfo = e.data;
           this.$refs.setTree.setCheckedKeys([e.key]);
           let messageInfo = {
-              prex: "ourbimMessage",
-              type: 20001,
-              data: e.data,
-              message: ''
-            }
-            this.sentParentIframe(messageInfo)
+            prex: "ourbimMessage",
+            type: 20001,
+            data: e.data,
+            message: "",
+          };
+          this.sentParentIframe(messageInfo);
         }
         e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
         this.handleState = 9;
@@ -534,27 +550,33 @@ export default {
         case 11:
           // 剖切
           if (this.listenTodoInfo.state === 0) {
-            params.id = 42;            
+            params.id = 42;
           }
-          if (this.listenTodoInfo.state === 1 && this.listenTodoInfo.data === undefined) {
+          if (
+            this.listenTodoInfo.state === 1 &&
+            this.listenTodoInfo.data === undefined
+          ) {
             params.id = 41;
           }
-          if (this.listenTodoInfo.state === 1 && this.listenTodoInfo.data !== undefined) {
+          if (
+            this.listenTodoInfo.state === 1 &&
+            this.listenTodoInfo.data !== undefined
+          ) {
             switch (this.listenTodoInfo.data) {
               case 0:
-                params.id = 43;                
+                params.id = 43;
                 break;
               case 1:
                 params.id = 44;
                 break;
               case 2:
-                params.id = 45;                
+                params.id = 45;
                 break;
               case 3:
                 // params.id = 45;
                 break;
               case 4:
-                params.id = 46;                
+                params.id = 46;
                 break;
               default:
                 break;
@@ -717,11 +739,11 @@ export default {
               prex: "ourbimMessage",
               type: 20001,
               data: realData.data,
-              message: ''
-            }
-            this.sentParentIframe(messageInfo)
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
-            this.$refs.getFooter.resetPointList(realData.object);            
+            this.$refs.getFooter.resetPointList(realData.object);
           }
         }
       };
@@ -748,9 +770,9 @@ export default {
               prex: "ourbimMessage",
               type: 10001,
               data: res.data.data.taskId,
-              message: ''
-            }
-            this.sentParentIframe(messageInfo)
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
             this.propsFooter.taskId = res.data.data.taskId;
             this.initWebSocket();
             this.getMonitor();
@@ -884,7 +906,7 @@ export default {
         window.clearTimeout(realTimer);
       }, 1000 * 2);
     },
-    sentParentIframe(e){
+    sentParentIframe(e) {
       window.parent.postMessage(e, "*");
     },
     sendToIframe(type, data, message) {
