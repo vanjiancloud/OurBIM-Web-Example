@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-10 10:57:28
+ * @LastEditTime: 2021-04-10 11:14:49
  * @description: 
 -->
 <template>
@@ -146,6 +146,9 @@ export default {
        */
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       // let oldDownInfo = JSON.parse(JSON.stringify(this.downInfo))
+      if (!this.isAnimation) {
+        return
+      }
       switch (node) {
         case 0:
           // 前
@@ -376,6 +379,9 @@ export default {
        * e 0 左上 1 左下 2 右上 3 右下
        */
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
+      if (!this.isAnimation) {
+        return
+      }
       switch (node) {
         case 0:
           // 前
@@ -604,6 +610,9 @@ export default {
        * @Date: 2020-09-21 09:44:35
        * @description: 旋转确认 前 0 后 1 上 2 下 3 左 4 右 5
        */
+      if (!this.isAnimation) {
+        return
+      }
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       const oldDownInfo = JSON.parse(JSON.stringify(this.downInfo));
       this.activeFace = e;
@@ -699,8 +708,17 @@ export default {
           let realAnimation = setTimeout(() => {
             this.isAnimation = true;
             clearTimeout(realAnimation);
-          }, 100);
+          }, 10);
         }, 1010);
+      }else{
+        let realTimer = setTimeout(() => {
+          this.isAnimation = false;
+          clearTimeout(realTimer);
+          let realAnimation = setTimeout(() => {
+            this.isAnimation = true;
+            clearTimeout(realAnimation);
+          }, 10);
+        }, 1001);
       }
     },
     changeType(e) {

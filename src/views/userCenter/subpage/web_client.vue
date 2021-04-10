@@ -275,7 +275,6 @@ export default {
         }
         if (e.data.prex === "ourbimMessage") {
           // 控制栏显示隐藏
-          console.log(e.data);
           if (e.data.type === 1010) {
             this.controllerInfo.uiBar = e.data.data;
           }
