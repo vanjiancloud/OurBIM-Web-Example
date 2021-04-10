@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-10 10:01:45
+ * @LastEditTime: 2021-04-10 10:57:28
  * @description: 
 -->
 <template>
@@ -336,7 +336,7 @@ export default {
               y: -90,
               z: 0,
             };
-            this.activeOrder = 47;
+            this.activeOrder = 17;
           } else if (e === 1) {
             // 右
             this.downInfo = {
