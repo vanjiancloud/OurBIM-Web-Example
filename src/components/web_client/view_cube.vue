@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-10 11:14:49
+ * @LastEditTime: 2021-04-12 16:37:58
  * @description: 
 -->
 <template>
@@ -762,15 +762,15 @@ export default {
     width: 24px;
     height: 24px;
     position: absolute;
-    top: -10px;
-    left: -20px;
+    top: -12px;
+    left: -30px;
   }
   .drop-down {
     position: absolute;
     background: rgb(131, 236, 187);
     width: 100%;
-    right: -60px;
-    top: 60px;
+    right: -65px;
+    top: 52px;
     .handle-down {
       width: 20px;
       height: 20px;
