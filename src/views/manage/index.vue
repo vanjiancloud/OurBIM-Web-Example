@@ -189,6 +189,7 @@
 
 <script>
 import { getProjectList, deleteProject, updateProject } from '@/api/my.js'
+import MODELAPI from "@/api/model_api";
 import { Getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
@@ -400,14 +401,33 @@ export default {
     },
     //进入应用
     GoApp (e) {
-      const { href } = this.$router.resolve({
-        name: 'web_client',
-        query: {
-          appid: e.appid,
-          locale: this.$i18n.locale
+      MODELAPI.GETBIMTOKEN({
+        appid: e.appid
+      })
+      .then(res => {
+        if (res.data.code === 0) {
+          const { href } = this.$router.resolve({
+            name: 'web_client',
+            query: {
+              appid: e.appid,
+              locale: this.$i18n.locale,
+              token: res.data.data
+            }
+          })
+          window.open(href, '_blank')
+        }else{
+          this.$message({
+            type: 'warning',
+            message: res.data.message
+          })
         }
       })
-      window.open(href, '_blank')
+      .catch(err => {
+        this.$message({
+            type: 'error',
+            message: err.data.message
+          })
+      })      
     },
     // 上传封面图
     upLoadImg (response, file, fileList) {

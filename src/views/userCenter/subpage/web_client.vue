@@ -180,8 +180,10 @@ export default {
       },
       webUrl: null,
       appId: null,
+      appToken: null,
       locale: "zh",
       taskId: null,
+      ourbimInfo: null,
       isFade: true,
       isFollow: false,
       handleState: 0,
@@ -212,19 +214,22 @@ export default {
   },
   watch: {
     viewHeight() {
-      //普通的watch监听
-      // if (this.isFade) {
-      //   this.$message({
-      //     type: "success",
-      //     message: this.$t("webClient.loadBox.message[0]"),
-      //   });
-      // }
+      //普通的watch监听          
+      if (this.ourbimInfo.expiredTime !== 0) {
+          if (this.isFade) {
+            this.$message({
+              type: "success",
+              message: "免费体验时长" + this.ourbimInfo.expiredTime + "分钟",
+            });
+          }
+          this.setTimePass();
+        }
       this.isFade = false;
-      // this.setTimePass();
     },
   },
   mounted() {
     this.appId = this.$route.query.appid;
+    this.appToken = this.$route.query.token;
     if (this.$route.query.locale) {
       this.locale = this.$route.query.locale;
       this.$i18n.locale = this.locale;
@@ -615,7 +620,7 @@ export default {
     },
     async getMemberList(e) {
       let params = {
-        appliId: this.appId,
+        appliId: this.appId        
       };
       e ? (params.uuid = e) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
@@ -760,11 +765,18 @@ export default {
       let appId = this.$route.query.appid;
       MODELAPI.GETMODELINFO({
         appliId: appId,
+        token: this.appToken
       })
         .then((res) => {
           if (res.data.code === 0 && res.data.data) {
             this.webUrl = res.data.data.url;
             this.taskId = res.data.data.taskId;
+            this.ourbimInfo = res.data.data
+            if (res.data.data.appliType === "0") {
+              this.controllerInfo.uiBar = true
+            }else{
+              this.controllerInfo.uiBar = false              
+            }
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10001,
@@ -821,8 +833,9 @@ export default {
       this.clearTimePass();
       this.timerInfo = setInterval(() => {
         this.timerCount++;
-        if (this.timerCount >= 170) {
-          this.moreCount = 180 - this.timerCount;
+        let realSecond = this.ourbimInfo.expiredTime * 60
+        if (this.timerCount >= realSecond - 10) {
+          this.moreCount = realSecond - this.timerCount;
         }
         if (this.moreCount === 0) {
           this.closeWebSocket();
