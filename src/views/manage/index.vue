@@ -411,7 +411,7 @@ export default {
             query: {
               appid: e.appid,
               locale: this.$i18n.locale,
-              token: res.data.data
+              token: res.data.data.token
             }
           })
           window.open(href, '_blank')

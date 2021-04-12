@@ -214,8 +214,8 @@ export default {
   },
   watch: {
     viewHeight() {
-      //普通的watch监听          
-      if (this.ourbimInfo.expiredTime !== 0) {
+      //普通的watch监听        
+      if (this.ourbimInfo.expiredTime > 0) {
           if (this.isFade) {
             this.$message({
               type: "success",
@@ -837,7 +837,7 @@ export default {
         if (this.timerCount >= realSecond - 10) {
           this.moreCount = realSecond - this.timerCount;
         }
-        if (this.moreCount === 0) {
+        if (this.moreCount <= 0) {
           this.closeWebSocket();
           this.isFade = true;
           this.hiddenState = 1;
