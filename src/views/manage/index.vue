@@ -52,9 +52,9 @@
               type="text"
               v-if="scope.row.applidStatus === '5' ? false : true"
               :class="scope.row.applidStatus === '2' ? 'blue' : 'gray'"
-              :disabled="scope.row.applidStatus === '2' ? false : true"
             >
               分享
+              <!-- :disabled="scope.row.applidStatus === '2' ? false : true" -->
             </el-button>
             <!-- 编辑 -->
             <el-button
@@ -269,7 +269,7 @@
 </template>
 
 <script>
-import { getProjectList, deleteProject, updateProject } from '@/api/my.js'
+import { getProjectList, deleteProject, updateProject,getWebUrl } from '@/api/my.js'
 import MODELAPI from "@/api/model_api";
 import { Getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
@@ -422,9 +422,6 @@ export default {
             this.$message.success(res.data.message)
             this.$common.closeLoading()
           }
-          // } else if (res.data.code === 1) {
-          //   this.$message.warning(res.data.message)
-          // }
         })
         .catch(err => {
           console.log(err)
