@@ -47,8 +47,13 @@
         v-if="hiddenState === 3"
         v-text="$t('webClient.loadBox.title[1]')"
       ></div>
+      <div
+        class="hidden-text learn-text"
+        v-if="hiddenState === 4"
+        v-text="$t('webClient.loadBox.message[6]')"
+      ></div>
     </div>
-    <div v-if="runTimeCode === 0">
+    <div v-if="runTimeCode === 0 && controllerInfo.uiBar">
       <div class="mutual-bim">
         <div
           class="tree-main"
@@ -129,6 +134,7 @@
         @listenTodo="listenTodo"
         @listenPerson="listenPerson"
         @listenMode="listenMode"
+        @listenFollow="listenFollow"
         :setProps="propsFooter"
       ></todo-footer>
       <view-cube
@@ -169,11 +175,17 @@ export default {
           }
         },
       },
+      controllerInfo: {
+        uiBar: true,
+      },
       webUrl: null,
       appId: null,
+      appToken: null,
       locale: "zh",
       taskId: null,
+      ourbimInfo: null,
       isFade: true,
+      isFollow: false,
       handleState: 0,
       leafInfo: null,
       listenInfo: null,
@@ -194,29 +206,36 @@ export default {
       shadowType: null,
       listenTodoInfo: null,
       gaugeInfo: {
-        unit: 'm',
-        accuracy: 0.01
+        unit: "m",
+        accuracy: 0.01,
       },
-      treeEmpty: this.$t('webClient.browser.tips[0]')
+      treeEmpty: this.$t("webClient.browser.tips[0]"),
     };
   },
   watch: {
     viewHeight() {
-      //普通的watch监听
-      if (this.isFade) {
-        this.$message({
-          type: "success",
-          message: this.$t("webClient.loadBox.message[0]"),
-        });
-      }
+      //普通的watch监听        
+      if (this.ourbimInfo.expiredTime > 0) {
+          if (this.isFade) {
+            this.$message({
+              type: "success",
+              message: "免费体验时长" + this.ourbimInfo.expiredTime + "分钟",
+            });
+          }
+          this.setTimePass();
+        }
       this.isFade = false;
-      this.setTimePass();
     },
   },
   mounted() {
     this.appId = this.$route.query.appid;
-    this.locale = this.$route.query.locale;
-    this.$i18n.locale = this.locale;
+    this.appToken = this.$route.query.token;
+    if (this.$route.query.locale) {
+      this.locale = this.$route.query.locale;
+      this.$i18n.locale = this.locale;
+    } else {
+      this.$i18n.locale = this.locale;
+    }
     this.setTimeLoad();
     if (this.isMobile()) {
       this.runTimeCode = 1;
@@ -225,40 +244,67 @@ export default {
     }
     this.getSceneUrl();
     //判断是否使用的是ipad
-    let isiPad = (navigator.userAgent.match(/(iPad)/) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1))
+    let isiPad =
+      navigator.userAgent.match(/(iPad)/) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     let isMac = /macintosh|mac os x/i.test(navigator.userAgent);
-    if (isiPad !== false || isMac !== false){
-      this.hiddenState = 3
+    if (isiPad !== false || isMac !== false) {
+      this.hiddenState = 3;
     }
     window.addEventListener(
       "message",
       (e) => {
-        this.getError(e.data);
-        if (e.data.data && e.data.data.frameHeight > 0 && e.data.type !== 500) {
-          this.viewHeight = e.data.data.frameHeight;
+        if (e.data.prex === "pxymessage") {
+          this.getError(e.data);
+          if (
+            e.data.data &&
+            e.data.data.frameHeight > 0 &&
+            e.data.type !== 500
+          ) {
+            this.viewHeight = e.data.data.frameHeight;
+          }
+          if (isiPad !== false || isMac !== false) {
+            if (
+              e.data.data &&
+              e.data.data.height &&
+              e.data.data.height > 0 &&
+              e.data.type === 910
+            ) {
+              let dialogTimer = setTimeout(() => {
+                this.hiddenState = 0;
+                this.viewHeight = e.data.data.frameHeight;
+                clearTimeout(dialogTimer);
+              }, 1000);
+            }
+          }
         }
-        if (isiPad !== false || isMac !== false) {
-          if (e.data.data && e.data.data.height && e.data.data.height > 0 && e.data.type === 910) {
-            let dialogTimer = setTimeout(() => {
-              this.hiddenState = 0
-              this.viewHeight = e.data.data.frameHeight            
-              clearTimeout(dialogTimer)
-            }, 1000)
+        if (e.data.prex === "ourbimMessage") {
+          // 控制栏显示隐藏
+          if (e.data.type === 1010) {
+            this.controllerInfo.uiBar = e.data.data;
           }
         }
       },
       false
     );
-    
+
     if (isiPad !== false) {
       this.viewHeight = 1;
     }
   },
   destroyed() {
     this.clearTimePass();
-    this.closeWebSocket();    
+    this.closeWebSocket();
   },
   methods: {
+    listenFollow(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-08 15:30:38
+       * @description: 监听关注视角是否打开
+       */
+      this.isFollow = e;
+    },
     listenMode(e) {
       /**
        * @Author: zk
@@ -299,11 +345,13 @@ export default {
         1004,
       ];
       if (errorList.indexOf(e.type) !== -1) {
-        this.closeWebSocket()
+        this.hiddenState = 4;
+        this.isFade = true;
+        this.closeWebSocket();
         this.$message({
-          message: this.$t('webClient.loadBox.message[6]'),
+          message: this.$t("webClient.loadBox.message[6]"),
           type: "warning",
-          customClass: "set-index-message"
+          customClass: "set-index-message",
         });
       }
     },
@@ -319,21 +367,21 @@ export default {
       }
       this.shadowType = e;
       if (e === 0) {
-        this.handleState = 7
+        this.handleState = 7;
       } else if (e === 3) {
-        this.handleState = 2;       
+        this.handleState = 2;
       } else {
         this.handleState = 1;
       }
       this.updateOrder();
     },
-    goFront(){
-    /**
-     * @Author: zk
-     * @Date: 2021-04-08 11:47:29
-     * @description: 重置主视图
-     */  
-      this.handleState = 7;
+    goFront() {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-08 11:47:29
+       * @description: 定位主视图
+       */
+      this.handleState = 10;
       this.updateOrder();
     },
     handleTree(e, index) {
@@ -351,6 +399,13 @@ export default {
         } else {
           this.memberInfo = e.data;
           this.$refs.setTree.setCheckedKeys([e.key]);
+          let messageInfo = {
+            prex: "ourbimMessage",
+            type: 20001,
+            data: e.data,
+            message: "",
+          };
+          this.sentParentIframe(messageInfo);
         }
         e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
         this.handleState = 9;
@@ -387,7 +442,7 @@ export default {
         this.$message({
           message: this.$t("webClient.loadBox.message[1]"),
           type: "error",
-          customClass: "set-index-message"
+          customClass: "set-index-message",
         });
         return;
       }
@@ -429,12 +484,12 @@ export default {
           break;
         case 2:
           // 自定义主视图
-          params.id = 11
+          params.id = 11;
           break;
         case 3:
           // 移动速度
-          params.id = 12
-          params.speedLevel = this.listenTodoInfo.data
+          params.id = 12;
+          params.speedLevel = this.listenTodoInfo.data;
           break;
         case 4:
           // 测量
@@ -451,12 +506,12 @@ export default {
             // 设置单位
             params.id = 38;
             params.unit = this.listenTodoInfo.set;
-            params.precision = this.gaugeInfo.accuracy
+            params.precision = this.gaugeInfo.accuracy;
           } else if (this.listenTodoInfo.data === 4) {
             // 设置精度
             params.id = 38;
             params.precision = this.listenTodoInfo.set;
-            params.unit = this.gaugeInfo.unit
+            params.unit = this.gaugeInfo.unit;
           }
           break;
         case 5:
@@ -466,11 +521,11 @@ export default {
         case 6:
           // 六面体
           params.id = 2;
-          params.sjid = this.cubeState
+          params.sjid = this.cubeState;
           break;
         case 7:
-          // 定位到主视图
-          params.id = 1
+          // 重置主视图
+          params.id = 13;
           break;
         case 8:
           // 构件显示 隐藏 半透明
@@ -492,6 +547,46 @@ export default {
             ? (params.id = 29)
             : (params.id = 28);
           break;
+        case 10:
+          // 定位主视图
+          params.id = 1;
+          break;
+        case 11:
+          // 剖切
+          if (this.listenTodoInfo.state === 0) {
+            params.id = 42;
+          }
+          if (
+            this.listenTodoInfo.state === 1 &&
+            this.listenTodoInfo.data === undefined
+          ) {
+            params.id = 41;
+          }
+          if (
+            this.listenTodoInfo.state === 1 &&
+            this.listenTodoInfo.data !== undefined
+          ) {
+            switch (this.listenTodoInfo.data) {
+              case 0:
+                params.id = 43;
+                break;
+              case 1:
+                params.id = 44;
+                break;
+              case 2:
+                params.id = 45;
+                break;
+              case 3:
+                // params.id = 45;
+                break;
+              case 4:
+                params.id = 46;
+                break;
+              default:
+                break;
+            }
+          }
+          break;
         default:
           break;
       }
@@ -506,9 +601,9 @@ export default {
         .then((res) => {
           if (params.id === 1 && res.data && res.data.data) {
             // 切换到主视图 重置状态
-            let realView = res.data.data.viewMode === "1" ? 0 : 1
+            let realView = res.data.data.viewMode === "1" ? 0 : 1;
             this.$refs.getFooter.resetpPrson(realView);
-            let realProject = res.data.data.projectionMode === "1" ? 1 : 2
+            let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
             this.$refs.getCube.resetActive(realProject);
           }
           this.$message({
@@ -525,7 +620,7 @@ export default {
     },
     async getMemberList(e) {
       let params = {
-        appliId: this.appId,
+        appliId: this.appId        
       };
       e ? (params.uuid = e) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
@@ -546,21 +641,21 @@ export default {
               item.activeSelect = 0;
             });
             return resolve(res);
-          }else{
-            this.treeEmpty = this.$t('webClient.browser.tips[1]')
+          } else {
+            this.treeEmpty = this.$t("webClient.browser.tips[1]");
           }
         });
       }
       if (node.level >= 1) {
         this.getMemberList(node.key).then((res) => {
-         if (res.length > 0) {
+          if (res.length > 0) {
             res.forEach((item) => {
               item.activeState = 0;
               item.activeSelect = 0;
             });
             return resolve(res);
-          }else{
-            this.treeEmpty = this.$t('webClient.browser.tips[1]')
+          } else {
+            this.treeEmpty = this.$t("webClient.browser.tips[1]");
           }
         });
       }
@@ -602,25 +697,31 @@ export default {
       }
       // 移动速度
       if (e.type === 1 && e.data) {
-        this.handleState = 3
-        this.listenTodoInfo = e
-        this.updateOrder()
+        this.handleState = 3;
+        this.listenTodoInfo = e;
+        this.updateOrder();
+      }
+      // 模型剖切
+      if (e.type === 2) {
+        this.handleState = 11;
+        this.listenTodoInfo = e;
+        this.updateOrder();
       }
       // 测量
-        if (e.type === 3) {
+      if (e.type === 3) {
         if (e.state === 1 && e.data !== undefined) {
-          this.handleState = 4
-          this.listenTodoInfo = e
+          this.handleState = 4;
+          this.listenTodoInfo = e;
           if (e.data === 3) {
-            this.gaugeInfo.unit = e.set
+            this.gaugeInfo.unit = e.set;
           } else if (e.data === 4) {
-            this.gaugeInfo.accuracy = e.set
+            this.gaugeInfo.accuracy = e.set;
           }
-          this.updateOrder()
+          this.updateOrder();
         }
         if (e.state === 0) {
-          this.handleState = 5
-          this.updateOrder()
+          this.handleState = 5;
+          this.updateOrder();
         }
       }
     },
@@ -638,8 +739,15 @@ export default {
           let realData = JSON.parse(e.data);
           if (realData.id === "1") {
             this.memberInfo = realData.data;
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 20001,
+              data: realData.data,
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
-            this.$refs.getFooter.resetPointList(realData.object)
+            this.$refs.getFooter.resetPointList(realData.object);
           }
         }
       };
@@ -657,11 +765,25 @@ export default {
       let appId = this.$route.query.appid;
       MODELAPI.GETMODELINFO({
         appliId: appId,
+        token: this.appToken
       })
         .then((res) => {
           if (res.data.code === 0 && res.data.data) {
             this.webUrl = res.data.data.url;
             this.taskId = res.data.data.taskId;
+            this.ourbimInfo = res.data.data
+            if (res.data.data.appliType === "0") {
+              this.controllerInfo.uiBar = true
+            }else{
+              this.controllerInfo.uiBar = false              
+            }
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 10001,
+              data: res.data.data.taskId,
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
             this.propsFooter.taskId = res.data.data.taskId;
             this.initWebSocket();
             this.getMonitor();
@@ -669,16 +791,16 @@ export default {
             this.$message({
               type: "warning",
               message: res.data.message,
-              customClass: "set-index-message"
-            })
+              customClass: "set-index-message",
+            });
           }
         })
         .catch((err) => {
           this.$message({
-              type: "error",
-              message: this.$t("webClient.loadBox.message[4]"),
-              customClass: "set-index-message"
-            })
+            type: "error",
+            message: this.$t("webClient.loadBox.message[4]"),
+            customClass: "set-index-message",
+          });
         });
     },
     isMobile() {
@@ -711,10 +833,11 @@ export default {
       this.clearTimePass();
       this.timerInfo = setInterval(() => {
         this.timerCount++;
-        if (this.timerCount >= 170) {
-          this.moreCount = 180 - this.timerCount;
+        let realSecond = this.ourbimInfo.expiredTime * 60
+        if (this.timerCount >= realSecond - 10) {
+          this.moreCount = realSecond - this.timerCount;
         }
-        if (this.moreCount === 0) {
+        if (this.moreCount <= 0) {
           this.closeWebSocket();
           this.isFade = true;
           this.hiddenState = 1;
@@ -726,13 +849,13 @@ export default {
       // 清除定时器
       if (this.socketTimer) {
         clearInterval(this.socketTimer);
-        this.socketTimer = null
+        this.socketTimer = null;
       }
       if (this.websock) {
         this.isSocket = false;
         this.websock.close(); //离开路由之后断开websocket连接
-        this.websock = null
-      }      
+        this.websock = null;
+      }
     },
     getMonitor() {
       /**
@@ -753,9 +876,24 @@ export default {
             ""
           );
         };
+        // 移动滚轮
+        document.getElementById("show-bim").onmousewheel = () => {
+          this.sendToIframe(
+            10003,
+            {
+              x: 500,
+              y: 500,
+              wheel: -100,
+            },
+            ""
+          );
+        };
         // 关闭tool
         this.sendToIframe(10200, "false", "");
         document.addEventListener("keydown", (e) => {
+          if (this.isFollow) {
+            return;
+          }
           this.sendToIframe(
             10010,
             {
@@ -766,6 +904,9 @@ export default {
           );
         });
         document.addEventListener("keyup", (e) => {
+          if (this.isFollow) {
+            return;
+          }
           this.sendToIframe(
             10011,
             {
@@ -776,6 +917,9 @@ export default {
         });
         window.clearTimeout(realTimer);
       }, 1000 * 2);
+    },
+    sentParentIframe(e) {
+      window.parent.postMessage(e, "*");
     },
     sendToIframe(type, data, message) {
       /**
@@ -1285,7 +1429,7 @@ export default {
     }
   }
 }
-.set-index-message{
+.set-index-message {
   z-index: 5000 !important;
 }
 </style>

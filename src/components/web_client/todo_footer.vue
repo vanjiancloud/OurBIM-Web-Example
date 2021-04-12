@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-08 13:22:25
+ * @LastEditTime: 2021-04-10 17:28:20
  * @description: 
 -->
 <template>
@@ -10,6 +10,7 @@
     <div class="handle-mask" v-if="isMask"></div>
     <div class="todo-footer">
       <div class="todo-main">
+        <!-- 视角 -->
         <div class="image-main">
           <el-tooltip
             placement="top"
@@ -45,6 +46,7 @@
             </el-tooltip>
           </el-tooltip>
         </div>
+        <!-- 移动速度 -->
         <div class="image-main">
           <el-tooltip
             class="item"
@@ -72,6 +74,7 @@
           </el-collapse-transition>
         </div>
         <div class="cut-apart"></div>
+        <!-- 剖切 -->
         <div class="image-main">
           <el-tooltip
             class="item"
@@ -86,7 +89,29 @@
               mode=""
             />
           </el-tooltip>
+          <el-collapse-transition>
+            <div class="show-slice" v-if="imgList[2].state === 1">
+              <el-tooltip
+                v-for="(item, index) in sliceList"
+                :key="index"
+                class="item"
+                effect="dark"
+                :content="item.content"
+                placement="left"
+              >
+                <div>
+                  <img
+                    class="slice-img"
+                    @click.stop="changeSlice(item, index)"
+                    :src="activeSlice === index ? item.activeImg : item.img"
+                    mode=""
+                  />
+                </div>
+              </el-tooltip>
+            </div>
+          </el-collapse-transition>
         </div>
+        <!-- 测量 -->
         <div class="image-main">
           <el-tooltip
             class="item"
@@ -104,41 +129,17 @@
           <el-collapse-transition>
             <div class="show-cutting" v-if="imgList[3].state === 1">
               <el-tooltip
+                v-for="(item, index) in cuttingList"
+                :key="index"
                 class="item"
                 effect="dark"
-                :content="cuttingTips[0]"
+                :content="item.content"
                 placement="left"
               >
                 <img
                   class="cutting-img"
-                  @click.stop="changeGauge(0)"
-                  src="@/assets/images/todo/unchecked/position.png"
-                  mode=""
-                />
-              </el-tooltip>
-              <el-tooltip
-                class="item"
-                effect="dark"
-                :content="cuttingTips[1]"
-                placement="left"
-              >
-                <img
-                  class="cutting-img"
-                  @click.stop="changeGauge(1)"
-                  src="@/assets/images/todo/unchecked/gauge.png"
-                  mode=""
-                />
-              </el-tooltip>
-              <el-tooltip
-                class="item"
-                effect="dark"
-                :content="cuttingTips[2]"
-                placement="left"
-              >
-                <img
-                  class="cutting-img"
-                  @click.stop="changeGauge(2)"
-                  src="@/assets/images/todo/unchecked/angle.png"
+                  @click.stop="changeGauge(index)"
+                  :src="item.img"
                   mode=""
                 />
               </el-tooltip>
@@ -198,7 +199,11 @@
                 >
                   <img
                     class="cutting-img"
-                    src="@/assets/images/todo/unchecked/set.png"
+                    :src="
+                      angleTool
+                        ? require('@/assets/images/todo/check/set.png')
+                        : require('@/assets/images/todo/unchecked/set.png')
+                    "
                     @click.stop="showAngle"
                     mode=""
                   />
@@ -207,6 +212,7 @@
             </div>
           </el-collapse-transition>
         </div>
+        <!-- 标签 -->
         <div class="image-main">
           <el-tooltip
             class="item"
@@ -222,6 +228,7 @@
             />
           </el-tooltip>
         </div>
+        <!-- 小地图 -->
         <div class="image-main">
           <el-tooltip
             class="item"
@@ -237,6 +244,7 @@
             />
           </el-tooltip>
         </div>
+        <!-- 关注视点 -->
         <div class="image-main">
           <el-tooltip
             popper-class="follow-bgi"
@@ -252,18 +260,11 @@
                   v-for="(item, index) in pointList"
                   :key="index"
                 >
-                  <el-tooltip
-                    class="item"
-                    effect="dark"
-                    :content="item.name"
-                    placement="top"
-                  >
-                    <div
-                      class="follow-text"
-                      v-text="item.name"
-                      @click="JumpFollow(item)"
-                    ></div>
-                  </el-tooltip>
+                  <div
+                    class="follow-text"
+                    v-text="item.name"
+                    @click="JumpFollow(item)"
+                  ></div>
                   <div class="close-follow">
                     <i class="el-icon-edit" @click="EditFollow(item)"></i>
                     <i class="el-icon-close" @click="DeleteFollow(item)"></i>
@@ -289,6 +290,7 @@
             </el-tooltip>
           </el-tooltip>
         </div>
+        <!-- 模型动画 -->
         <div class="image-main">
           <el-tooltip
             class="item"
@@ -304,6 +306,7 @@
             />
           </el-tooltip>
         </div>
+        <!-- 分解模型 -->
         <div class="image-main">
           <el-tooltip
             class="item"
@@ -324,6 +327,7 @@
             </div>
           </el-collapse-transition>
         </div>
+        <!-- 渲染环境 -->
         <div class="image-main">
           <el-tooltip
             class="item"
@@ -365,6 +369,7 @@
           </el-collapse-transition>
         </div>
         <div class="cut-apart"></div>
+        <!-- 浏览器 -->
         <div class="image-main">
           <el-tooltip
             class="item"
@@ -380,6 +385,7 @@
             />
           </el-tooltip>
         </div>
+        <!-- 属性 -->
         <div class="image-main">
           <el-tooltip
             class="item"
@@ -400,6 +406,8 @@
       <el-dialog
         :title="dialogPointData.title"
         :visible.sync="dialogEdit"
+        @close="closeFollow"
+        :close-on-click-modal="false"
         width="20%"
       >
         <el-form v-if="followInfo">
@@ -435,6 +443,54 @@ export default {
   },
   data() {
     return {
+      sliceList: [
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/slice/move.png"),
+          activeImg: require("@/assets/images/todo/check/slice/move.png"),
+        },
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/slice/rotate.png"),
+          activeImg: require("@/assets/images/todo/check/slice/rotate.png"),
+        },
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/slice/reverse.png"),
+          activeImg: require("@/assets/images/todo/check/slice/reverse.png"),
+        },
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/slice/appoint.png"),
+          activeImg: require("@/assets/images/todo/check/slice/appoint.png"),
+        },
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/slice/reset.png"),
+          activeImg: require("@/assets/images/todo/check/slice/reset.png"),
+        },
+      ],
+      cuttingList: [
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/position.png"),
+          activeImg: require("@/assets/images/todo/check/position.png"),
+          name: "position",
+        },
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/gauge.png"),
+          activeImg: require("@/assets/images/todo/check/gauge.png"),
+          name: "gauge",
+        },
+        {
+          content: null,
+          img: require("@/assets/images/todo/unchecked/angle.png"),
+          activeImg: require("@/assets/images/todo/check/angle.png"),
+          name: "angle",
+        },
+      ],
+      activeSlice: null,
       isMask: false,
       unitList: ["m", "cm", "mm", "ft", "in"],
       accuracyList: ["0", "0.1", "0.01"],
@@ -590,7 +646,11 @@ export default {
       this.getProps = this.setProps;
       this.ListPoint();
     }
-    this.$i18n.locale = this.$route.query.locale;
+    if (this.$route.query.locale) {
+      this.$i18n.locale = this.$route.query.locale;
+    } else {
+      this.$i18n.locale = "zh";
+    }
     if (this.$i18n.locale) {
       this.actionData.successMessage = this.$t("webClient.loadBox.message[2]");
       this.actionData.cancelMessage = this.$t("webClient.loadBox.message[3]");
@@ -598,6 +658,18 @@ export default {
       this.deleteData = this.$t("webClient.deleteList[0]");
       this.dialogPointData = this.$t("webClient.dialogList[0]");
       this.cuttingTips = this.$t("webClient.tooltipList.subtool");
+      if (this.$t("webClient.tooltipList.sliceTool")) {
+        this.$t("webClient.tooltipList.sliceTool").forEach((item, index) => {
+          this.sliceList[index].content = item;
+        });
+      }
+      if (this.$t("webClient.tooltipList.subtool")) {
+        for (let index = 0; index < 3; index++) {
+          this.cuttingList[index].content = this.$t(
+            "webClient.tooltipList.subtool"
+          )[index];
+        }
+      }
       this.$t("webClient.tooltipList.toolPerson").forEach((item, index) => {
         this.personList[index].name = item;
       });
@@ -614,6 +686,14 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    closeFollow() {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-08 15:40:38
+       * @description: 关闭连接
+       */
+      this.$emit("listenFollow", false);
+    },
     openMask() {
       /**
        * @Author: zk
@@ -622,6 +702,25 @@ export default {
        */
       this.isMask = true;
     },
+    changeSlice(e, indexes) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-08 17:55:39
+       * @description: 剖切 0 移动 1 旋转 2 反选 3 指定 4 重置
+       */
+      if (indexes === 2) {
+        indexes === this.activeSlice
+          ? (this.activeSlice = null)
+          : (this.activeSlice = indexes);
+      } else {
+        this.activeSlice = indexes;
+      }
+      this.$emit("listenTodo", {
+        state: this.imgList[2].state,
+        type: 2,
+        data: indexes,
+      });
+    },
     changeGauge(e) {
       /**
        * @Author: zk
@@ -629,6 +728,11 @@ export default {
        * @description: 测量 0 坐标 1 距离 2 角度 3 单位 4 精度
        */
       let realSet = null;
+      if (e === 0 || e === 1 || e === 2) {
+        this.cuttingList[e].img = require("@/assets/images/todo/check/" +
+          this.cuttingList[e].name +
+          ".png");
+      }
       if (e === 3) {
         realSet = this.unitList[this.setForm.unit]
           ? this.unitList[this.setForm.unit]
@@ -678,7 +782,7 @@ export default {
        * @Author: zk
        * @Date: 2021-03-17 09:51:33
        * @description: 关闭tool
-       */      
+       */
       this.angleTool = false;
       this.followTool = false;
       this.personTool = false;
@@ -687,6 +791,30 @@ export default {
       }`);
       this.imgList[this.oldState].url = oldUrl;
       this.imgList[this.oldState].state = 0;
+      // 剖切
+      if (this.oldState === 2) {
+        if (this.imgList[this.oldState].state === 1) {
+          this.activeSlice = null;
+          this.$emit("listenTodo", {
+            state: this.imgList[this.oldState].state,
+            type: this.oldState,
+          });
+          this.oldState = 0; 
+        }        
+      }
+      // 测量
+      if (this.oldState === 3) {
+        this.cuttingList.forEach((item, e) => {
+          this.cuttingList[e].img = require("@/assets/images/todo/unchecked/" +
+            this.cuttingList[e].name +
+            ".png");
+        });
+        this.$emit("listenTodo", {
+          state: this.imgList[this.oldState].state,
+          type: this.oldState,
+        });
+        this.oldState = 0;
+      }
     },
     editTool(e) {
       let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
@@ -736,6 +864,7 @@ export default {
        */
       this.followInfo = JSON.parse(JSON.stringify(e));
       this.dialogEdit = true;
+      this.$emit("listenFollow", true);
     },
     UpdateFollow() {
       /**
@@ -862,24 +991,6 @@ export default {
         .catch((err) => {});
     },
     handleOrder(e) {
-      if (e === 2 || e === 4 || e === 5 || e === 7 || e === 8 || e === 9) {
-        return;
-      }
-      if (e === 0) {
-        this.personTool = this.imgList[e].state === 0 ? true : false;
-      }
-      if (e === 6) {
-        this.followTool = this.imgList[e].state === 0 ? true : false;
-      }
-      // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11 && this.oldState !== 3) {
-        let oldUrl = require(`@/assets/images/todo/unchecked/${
-          this.imgList[this.oldState].name
-        }`);
-        this.imgList[this.oldState].url = oldUrl;
-        this.imgList[this.oldState].state = 0;
-        this.oldState = e;
-      }
       // 选中状态
       let realImg = null;
       if (this.imgList[e].state === 0) {
@@ -889,6 +1000,53 @@ export default {
       }
       this.imgList[e].url = realImg;
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
+
+      // 关闭刨切和测量
+      if (this.oldState === 2 || this.oldState === 3) {
+        this.activeSlice = null;
+        this.cuttingList.forEach((item, e) => {
+          this.cuttingList[e].img = require("@/assets/images/todo/unchecked/" +
+            this.cuttingList[e].name +
+            ".png");
+          this.angleTool = false;
+        });
+        if (e === this.oldState) {
+          this.$emit("listenTodo", {
+            state: this.imgList[e].state,
+            type: e,
+          });
+          return;
+        } else {
+          if (this.imgList[this.oldState].state === 1) {
+            this.$emit("listenTodo", {
+              state: 0,
+              type: this.oldState,
+            });
+          }
+        }
+      }
+      // 重置状态
+      if (e !== this.oldState && e !== 10 && e !== 11) {
+        this.angleTool = false;
+        this.followTool = false;
+        this.personTool = false;
+        let oldUrl = require(`@/assets/images/todo/unchecked/${
+          this.imgList[this.oldState].name
+        }`);
+        this.imgList[this.oldState].url = oldUrl;
+        this.imgList[this.oldState].state = 0;
+        this.oldState = e;
+      }
+      if (e === 4 || e === 5 || e === 7 || e === 8 || e === 9) {
+        return;
+      }
+      if (e === 0) {
+        this.personTool = this.imgList[e].state === 0 ? true : false;
+      }
+      if (e === 6) {
+        this.followTool = this.imgList[e].state === 0 ? true : false;
+      }
+
       if (e !== 0) {
         this.$emit("listenTodo", {
           state: this.imgList[e].state,
@@ -922,18 +1080,17 @@ export default {
   position: absolute;
   bottom: 26px;
   width: 100%;
-  min-width: 960px;
-  // overflow-x: auto;
   left: 0;
   display: flex;
   justify-content: center;
 
   .todo-main {
-    width: 960px;
+    width: 800px;
     padding: 10px;
     background: rgba(0, 0, 0, 0.6);
     display: flex;
-
+    flex-direction: row;
+    flex-wrap: wrap;
     // justify-content: space-around;
     .cut-apart {
       width: 2px;
@@ -987,7 +1144,7 @@ export default {
       width: 50%;
       left: 25%;
       border-radius: 10px 10px 0 0;
-      top: -147px;
+      top: -151px;
       padding-bottom: 5px;
       background-color: rgba(0, 0, 0, 0.6);
 
@@ -997,7 +1154,22 @@ export default {
         height: 20px;
       }
     }
+    // 剖切
+    .show-slice {
+      position: absolute;
+      width: 60%;
+      left: 20%;
+      border-radius: 10px 10px 0 0;
+      top: -195px;
+      padding-bottom: 5px;
+      background-color: rgba(0, 0, 0, 0.6);
 
+      .slice-img {
+        margin-top: 10px;
+        // width: 20px;
+        // height: 20px;
+      }
+    }
     .show-weather {
       position: absolute;
       width: 200%;
@@ -1009,7 +1181,6 @@ export default {
     }
 
     .footer-image {
-      width: 30px;
       height: 30px;
       cursor: pointer;
     }
@@ -1030,8 +1201,9 @@ export default {
 .follow-bgi {
   .follow-main {
     .follow-list {
-      max-height: 100px;
+      max-height: 200px;
       overflow-y: auto;
+      margin-bottom: 10px;
 
       &::-webkit-scrollbar {
         /*滚动条整体样式*/
@@ -1053,8 +1225,8 @@ export default {
       }
 
       .follow-table {
-        width: 150px;
-        height: 26px;
+        width: 260px;
+        height: 36px;
         background: rgba(0, 0, 0, 0.3);
         cursor: pointer;
         border-radius: 5px;
@@ -1064,7 +1236,7 @@ export default {
         align-items: center;
 
         .follow-text {
-          // width: ;
+          margin-right: 10px;
           width: auto;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -1087,8 +1259,8 @@ export default {
     }
 
     .add-follow {
-      width: 170px;
-      height: 26px;
+      width: 280px;
+      height: 36px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -1128,27 +1300,28 @@ export default {
       border: 1px solid rgba(255, 255, 255, 0.25);
       color: #ffffff;
     }
-    .is-focus{
+    .is-focus {
       border-color: rgba(0, 0, 0, 0.6) !important;
-    }    
+    }
   }
 }
-.popper-bgi{
+.popper-bgi {
   background: rgba(0, 0, 0, 0.6);
   border: transparent;
-  .el-select-dropdown__item{
-    color: #ffffff !important;    
+  .el-select-dropdown__item {
+    color: #ffffff !important;
   }
-  .el-select-dropdown__item.hover, .el-select-dropdown__item:hover{
+  .el-select-dropdown__item.hover,
+  .el-select-dropdown__item:hover {
     background: rgba(0, 0, 0, 0.1) !important;
   }
-  .selected{
-    color: #409EFF !important;
+  .selected {
+    color: #409eff !important;
   }
-  .popper__arrow{
+  .popper__arrow {
     border-top-color: rgba(0, 0, 0, 0.6) !important;
-    &::after{
-      border-top-color: rgba(0, 0, 0, 0.6) !important;       
+    &::after {
+      border-top-color: rgba(0, 0, 0, 0.6) !important;
     }
   }
 }

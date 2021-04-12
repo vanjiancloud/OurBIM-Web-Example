@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-02-24 13:47:18
  * @LastEditors: zk
- * @LastEditTime: 2021-03-23 13:43:25
+ * @LastEditTime: 2021-04-12 10:09:30
  * @description: 
  */
 import {
@@ -68,6 +68,14 @@ const MODELAPI = {
     return request({
         url: '/OurBim/clearGodCamerashot',
         method: 'post',
+        params
+      })
+  },
+  // 获取模型token
+  GETBIMTOKEN: params => {
+    return request({
+        url: '/OurBim/getEnterToken',
+        method: 'get',
         params
       })
   },

@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-08 13:13:02
+ * @LastEditTime: 2021-04-12 16:37:58
  * @description: 
 -->
 <template>
@@ -84,11 +84,11 @@ export default {
           className: "right",
         },
       ],
-      activeFace: 0,
+      activeFace: null,
       activeType: 1,
       downInfo: {
-        x: 0,
-        y: 0,
+        x: -45,
+        y: -45,
         z: 0,
       },
       disX: 90,
@@ -118,7 +118,11 @@ export default {
     };
   },
   created() {
-    this.$i18n.locale = this.$route.query.locale;
+    if (this.$route.query.locale) {
+      this.$i18n.locale = this.$route.query.locale;
+    }else{
+      this.$i18n.locale = "zh";
+    }
     if (this.$i18n.locale) {
       this.faceList[0].label = this.$t("webClient.cubeBox.direction[0]");
       this.faceList[1].label = this.$t("webClient.cubeBox.direction[1]");
@@ -142,6 +146,9 @@ export default {
        */
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       // let oldDownInfo = JSON.parse(JSON.stringify(this.downInfo))
+      if (!this.isAnimation) {
+        return
+      }
       switch (node) {
         case 0:
           // 前
@@ -332,7 +339,7 @@ export default {
               y: -90,
               z: 0,
             };
-            this.activeOrder = 47;
+            this.activeOrder = 17;
           } else if (e === 1) {
             // 右
             this.downInfo = {
@@ -372,6 +379,9 @@ export default {
        * e 0 左上 1 左下 2 右上 3 右下
        */
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
+      if (!this.isAnimation) {
+        return
+      }
       switch (node) {
         case 0:
           // 前
@@ -600,6 +610,9 @@ export default {
        * @Date: 2020-09-21 09:44:35
        * @description: 旋转确认 前 0 后 1 上 2 下 3 左 4 右 5
        */
+      if (!this.isAnimation) {
+        return
+      }
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       const oldDownInfo = JSON.parse(JSON.stringify(this.downInfo));
       this.activeFace = e;
@@ -695,8 +708,17 @@ export default {
           let realAnimation = setTimeout(() => {
             this.isAnimation = true;
             clearTimeout(realAnimation);
-          }, 100);
+          }, 10);
         }, 1010);
+      }else{
+        let realTimer = setTimeout(() => {
+          this.isAnimation = false;
+          clearTimeout(realTimer);
+          let realAnimation = setTimeout(() => {
+            this.isAnimation = true;
+            clearTimeout(realAnimation);
+          }, 10);
+        }, 1001);
       }
     },
     changeType(e) {
@@ -740,15 +762,15 @@ export default {
     width: 24px;
     height: 24px;
     position: absolute;
-    top: -10px;
-    left: -20px;
+    top: -12px;
+    left: -30px;
   }
   .drop-down {
     position: absolute;
     background: rgb(131, 236, 187);
     width: 100%;
-    right: -60px;
-    top: 60px;
+    right: -65px;
+    top: 52px;
     .handle-down {
       width: 20px;
       height: 20px;
