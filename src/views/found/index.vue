@@ -136,8 +136,10 @@
           </div>
         </el-upload>
       </div>
-      
-      <div style="margin:10px 40px;margin-top:-20px;text-align:left; font-size: 14px; ">
+
+      <div
+        style="margin:10px 40px;margin-top:-20px;text-align:left; font-size: 14px; "
+      >
         <span style="color:red">*</span>
         文件默认打开初始Revit的三维视图，请将文件在对应视图打开状态下保存，再上传。
       </div>
@@ -248,7 +250,7 @@ export default {
         this.$message.warning('请先创建项目名称')
       }
     },
-    // 开始渲染
+    // 开始转换
     update () {
       // 上传bim模型
       this.$refs.bimupload.submit()
@@ -340,8 +342,9 @@ export default {
       const extension = testmsg === 'rvt'
       if (!extension) {
         this.$message.error('上传模型只能是.rvt格式!')
+      } else {
+        this.$common.openLoading('上传模型中')
       }
-      this.$common.openLoading('上传模型中')
       return extension
     }
   },

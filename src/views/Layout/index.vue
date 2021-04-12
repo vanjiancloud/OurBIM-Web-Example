@@ -333,7 +333,16 @@ export default {
   },
   created () {
     // console.log(this.$route.path)
+    //加载信息数据
     this.showData()
+    //阻止回车键发送请求
+    document.onkeydown = e => {
+      let keyCode = window.event.keyCode
+      if (keyCode == 'Enter' || keyCode == 32) {
+        return false
+      }
+    }
+    // 页面缩放
     window.onload = function () {
       // 获取浏览器页面最大宽度
       var maxWidth = document.documentElement.offsetWidth
@@ -370,6 +379,8 @@ export default {
     // 退出按钮
     toLogin () {
       this.$router.push('../login')
+      // 刷新登陆页
+      location.reload()
       if (sessionStorage.getItem('userInfo')) {
         sessionStorage.removeItem('userInfo')
       }

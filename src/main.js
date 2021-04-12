@@ -6,9 +6,12 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 // 引入全局样式
 import './assets/css/global.css'
-// // 引入less
+// 引入less
 import less from 'less'
-// 加载axios组件 
+// 引入复制链接插件
+import VueClipboard from 'vue-clipboard2'
+
+// 加载axios组件
 import axios from '@/utils/request.js'
 // 自动计算rem大小
 // import 'lib-flexible'
@@ -19,8 +22,11 @@ Vue.prototype.$common = common
 
 Vue.use(VueI18n)
 Vue.use(less)
+Vue.use(VueClipboard)
+
+
 // vue 使用element-ui的el-dialog时 由于滚动条隐藏和出现导致页面抖动问题的解决
-ElementUI.Dialog.props.lockScroll.default = false;
+ElementUI.Dialog.props.lockScroll.default = false
 Vue.use(ElementUI)
 
 // 把axiox放到原型上
@@ -88,8 +94,8 @@ const i18n = new VueI18n({
       state: '状态',
       uploaddate: '上传日期',
       operation: '操作',
-      edit:'编辑',
-      del:'删除',
+      edit: '编辑',
+      del: '删除',
       // 创建应用
       Step: '步骤一',
       twoStep: '步骤二',
@@ -161,74 +167,89 @@ const i18n = new VueI18n({
       servicehotline: '24小时客服热线',
       // 应用详情
       webClient: {
-        setting: [{
-            label: "单位",
-            tips: "请选择单位"
+        setting: [
+          {
+            label: '单位',
+            tips: '请选择单位'
           },
           {
-            label: "精度",
-            tips: "请选择精度"
+            label: '精度',
+            tips: '请选择精度'
           }
         ],
-        weather: [{
-            label: "天气",
-            value: "请选择天气"
+        weather: [
+          {
+            label: '天气',
+            value: '请选择天气'
           },
           {
-            label: "时间"
+            label: '时间'
           }
         ],
         browser: {
-          title: "模型浏览器",
-          tips: ["加载中", "暂无数据"]
+          title: '模型浏览器',
+          tips: ['加载中', '暂无数据']
         },
         attribute: {
-          title: "属性"
+          title: '属性'
         },
         loadBox: {
           title: [
-            "秒后将超过免费体验时长，可刷新重新进入。",
-            "加载中",
-            "超过免费体验时长，可刷新重新进入。",
-            "模型长时间未响应，请刷新重试。"
+            '秒后将超过免费体验时长，可刷新重新进入。',
+            '加载中',
+            '超过免费体验时长，可刷新重新进入。',
+            '模型长时间未响应，请刷新重试。'
           ],
           message: [
-            "免费体验3分钟",
-            "场景未加载，请刷新",
-            "指令下发成功",
-            "指令下发失败",
-            "请求失败",
-            "正在执行添加视角，请稍候……",
-            "当前访问用户过多，请稍后再试。"
+            '免费体验3分钟',
+            '场景未加载，请刷新',
+            '指令下发成功',
+            '指令下发失败',
+            '请求失败',
+            '正在执行添加视角，请稍候……',
+            '当前访问用户过多，请稍后再试。'
           ]
         },
         cubeBox: {
-          direction: ["前", "后", "上", "下", "左", "右"],
-          handle: ["正交投影", "透视投影", "自定义主视图", "重置主视图"]
+          direction: ['前', '后', '上', '下', '左', '右'],
+          handle: ['正交投影', '透视投影', '自定义主视图', '重置主视图']
         },
         tooltipList: {
-          toolPerson: ["第一人称", "第三人称", "跟随人物"],
-          tool: ["视角", "移动速度", "模型剖切", "测量", "标签", "小地图", "关注视点", "模型动画", "分解模型", "渲染环境", "浏览器", "属性"],
-          subtool: ["坐标", "距离", "角度", "设置"]
+          toolPerson: ['第一人称', '第三人称', '跟随人物'],
+          tool: [
+            '视角',
+            '移动速度',
+            '模型剖切',
+            '测量',
+            '标签',
+            '小地图',
+            '关注视点',
+            '模型动画',
+            '分解模型',
+            '渲染环境',
+            '浏览器',
+            '属性'
+          ],
+          subtool: ['坐标', '距离', '角度', '设置']
         },
         deleteList: [
           {
-            title: "提示",
-            content: "此操作将永久删除该记录, 是否继续?",
-            confirm: "确定",
-            cancel: "取消",
-            successMessage: "删除成功！",
-            cancelMessage: "已取消删除"
+            title: '提示',
+            content: '此操作将永久删除该记录, 是否继续?',
+            confirm: '确定',
+            cancel: '取消',
+            successMessage: '删除成功！',
+            cancelMessage: '已取消删除'
           }
         ],
         dialogList: [
           {
-            title: "提示",
-            label: "名称",
-            confirm: "确认",
-            cancel: "取消",
-            successMessage: "修改成功！",
-            saveMessage: "添加成功！"
+            title: '提示',
+            label: '名称',
+            confirm: '确认',
+            cancel: '取消',
+            successMessage: '修改成功！',
+            saveMessage: '添加成功！'
           }
         ]
       }
@@ -289,8 +310,8 @@ const i18n = new VueI18n({
       state: 'State',
       uploaddate: 'Upload date',
       operation: 'Operation',
-      edit:'Edit',
-      del:'Delete',
+      edit: 'Edit',
+      del: 'Delete',
       // 创建应用
       Step: 'Step one',
       twoStep: 'Step two',
@@ -318,7 +339,8 @@ const i18n = new VueI18n({
       accountManage: 'Account Manage',
       information: 'Personal information',
       Authorization: 'Authorization code',
-      nouse: 'If the authorization code is not available, please contact the customer service.',
+      nouse:
+        'If the authorization code is not available, please contact the customer service.',
       submit: 'Submit',
       Authorizations: 'Authorization code:',
       Serviceorder: 'Service order',
@@ -361,72 +383,92 @@ const i18n = new VueI18n({
       servicehotline: '24-hour customer service hotline',
       // 应用详情
       webClient: {
-        setting: [{
-            label: "unit",
-            tips: "Please select a unit"
+        setting: [
+          {
+            label: 'unit',
+            tips: 'Please select a unit'
           },
           {
-            label: "accuracy",
-            tips: "Please select a accuracy"
+            label: 'accuracy',
+            tips: 'Please select a accuracy'
           }
         ],
-        weather: [{
-            label: "weather",
-            value: "Please select a weather"
+        weather: [
+          {
+            label: 'weather',
+            value: 'Please select a weather'
           },
           {
-            label: "time"
+            label: 'time'
           }
         ],
         browser: {
-          title: "Model browser",
-          tips: "No data available"
+          title: 'Model browser',
+          tips: 'No data available'
         },
         attribute: {
-          title: "attribute"
+          title: 'attribute'
         },
         loadBox: {
           title: [
-            "After 3 seconds, it will exceed the free experience time. You can refresh and re-enter.",
-            "Model Loading",
-            "After the free experience time, you can refresh and re-enter.",
-            "The model has not responded for a long time, please refresh and try again."
+            'After 3 seconds, it will exceed the free experience time. You can refresh and re-enter.',
+            'Model Loading',
+            'After the free experience time, you can refresh and re-enter.',
+            'The model has not responded for a long time, please refresh and try again.'
           ],
           message: [
-            "Free experience for 3 minutes",
-            "Scene not loaded, please refresh",
-            "Command issued successfully",
-            "Command issue failed",
-            "request was aborted"            
+            'Free experience for 3 minutes',
+            'Scene not loaded, please refresh',
+            'Command issued successfully',
+            'Command issue failed',
+            'request was aborted'
           ]
         },
         cubeBox: {
-          direction: ["front", "back", "up", "down", "left", "right"],
-          handle: ["Orthogonal projection", "perspective projection", "Reduction model"]
+          direction: ['front', 'back', 'up', 'down', 'left', 'right'],
+          handle: [
+            'Orthogonal projection',
+            'perspective projection',
+            'Reduction model'
+          ]
         },
         tooltipList: {
-          toolPerson: ["first person", "third person", "Follow the characters"],
-          tool: ["visual angle", "Moving speed", "Model slicing", "measure", "label", "Mini Map", "Focus on Perspective", "Model animation", "Decomposition model", "Rendering environment", "browser", "attribute"],          
-          subtool: ["coordinate", "distance", "angle", "set"]
+          toolPerson: ['first person', 'third person', 'Follow the characters'],
+          tool: [
+            'visual angle',
+            'Moving speed',
+            'Model slicing',
+            'measure',
+            'label',
+            'Mini Map',
+            'Focus on Perspective',
+            'Model animation',
+            'Decomposition model',
+            'Rendering environment',
+            'browser',
+            'attribute'
+          ],
+          subtool: ['coordinate', 'distance', 'angle', 'set']
         },
         deleteList: [
           {
-            title: "Tips",
-            content: "This operation will permanently delete the record. Do you want to continue?",
-            confirm: "confirm",
-            cancel: "cancel",
-            successMessage: "Delete successfully!",
-            cancelMessage: "Deletion canceled"
+            title: 'Tips',
+            content:
+              'This operation will permanently delete the record. Do you want to continue?',
+            confirm: 'confirm',
+            cancel: 'cancel',
+            successMessage: 'Delete successfully!',
+            cancelMessage: 'Deletion canceled'
           }
         ],
         dialogList: [
           {
-            title: "Tips",
-            label: "name",
-            confirm: "confirm",
-            cancel: "cancel",
-            successMessage: "Modified successfully!",
-            saveMessage: "Successfully added!"
+            title: 'Tips',
+            label: 'name',
+            confirm: 'confirm',
+            cancel: 'cancel',
+            successMessage: 'Modified successfully!',
+            saveMessage: 'Successfully added!'
           }
         ]
       }

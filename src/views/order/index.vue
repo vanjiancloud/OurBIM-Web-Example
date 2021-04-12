@@ -7,7 +7,7 @@
     </div>
     <!-- 表格 -->
     <div class="table">
-      <el-table :data="tableData" style="width: 100% font-size: 17px;">
+      <el-table :data="tableData" style="width: 100%;" class="sheet">
         <el-table-column
           prop="dingdancode"
           :label="$t('number')"
@@ -203,6 +203,9 @@ export default {
     /deep/ .el-table td {
       text-align: center;
     }
+    .sheet {
+      font-size: 16px;
+    }
     //表格去横线
     // /deep/ .el-table__row > td {
     //   border: none;
@@ -212,9 +215,9 @@ export default {
     //   height: 0px;
     // }
     // 第二列字体颜色
-    /deep/ .el-table_1_column_2 {
-      color: #00aaf0;
-    }
+    // /deep/ .el-table_1_column_2 {
+    //   color: #00aaf0;
+    // }
     // 表头字体颜色
     /deep/ .el-table th > .cell {
       color: #fff;
