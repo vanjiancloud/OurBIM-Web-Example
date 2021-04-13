@@ -242,24 +242,23 @@
               background-color="#fff"
             >
               <!-- 项目管理 -->
-              <el-submenu index="manage">
+              
+              <!-- <el-submenu index="manage">
                 <template slot="title">
                   <i class="el-icon-setting"></i>
                   <span class="write">{{ $t('management') }}</span>
                 </template>
-                <!-- 我的项目 -->
                 <el-menu-item index="/manage">
                   我的项目
                 </el-menu-item>
-                <!-- 模型集成 -->
                 <el-menu-item index="/integration">
                   项目集成
                 </el-menu-item>
-              </el-submenu>
-              <!-- <el-menu-item index="/manage">
+              </el-submenu> -->
+              <el-menu-item index="/manage">
                 <i class="el-icon-setting"></i>
                 <span slot="title" class="write">{{ $t('management') }}</span>
-              </el-menu-item> -->
+              </el-menu-item>
 
               <!-- 创建项目 -->
               <el-menu-item index="/found">
