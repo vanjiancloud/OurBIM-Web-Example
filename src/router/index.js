@@ -7,7 +7,9 @@ import found from '@/views/found/index.vue'
 import bill from '@/views/bill/index.vue'
 import code from '@/views/code/index.vue'
 import order from '@/views/order/index.vue'
-import account from '@/views/order/index.vue'
+import integration from '@/views/integration/index.vue'
+import demo from '@/views/demo/index.vue'
+
 
 Vue.use(VueRouter)
 
@@ -28,10 +30,24 @@ const routes = [
     redirect: 'manage', //重定向到项目管理
     children: [
       {
+        path: 'demo',
+        component: demo,
+        meta: {
+          title:'demo'
+        }
+      },
+      {
         path: 'manage',
         component: manage,
         meta: {
-          title: '项目管理'
+          title: '我的项目'
+        }
+      },
+      {
+        path: 'integration',
+        component: integration,
+        meta: {
+          title: '项目集成'
         }
       },
       {
@@ -40,10 +56,6 @@ const routes = [
         meta: {
           title: '创建项目'
         }
-      },
-      {
-        path: 'account',
-        component: account,
       },
       {
         path: 'bill',

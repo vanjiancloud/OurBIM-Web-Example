@@ -59,7 +59,7 @@
       </div>
     </div>
     <div class="wenzi">
-      Copyright © 2021 www.OurBIM.com, All Rights Reserved.
+      Copyright © 2021 www.OurBIM.com, <br> All Rights Reserved.
     </div>
   </div>
 </template>
