@@ -242,6 +242,8 @@
               background-color="#fff"
             >
               <!-- 项目管理 -->
+             
+
               <el-menu-item index="/manage">
                 <i class="el-icon-setting"></i>
                 <span slot="title" class="write">{{ $t('management') }}</span>
@@ -252,7 +254,7 @@
                 <span slot="title" class="write">{{ $t('Create') }}</span>
               </el-menu-item>
               <!-- 账户管理 -->
-              <el-submenu index="account">
+              <el-submenu index="">
                 <template slot="title">
                   <i class="el-icon-menu"></i>
                   <span class="write">{{ $t('Account') }}</span>
