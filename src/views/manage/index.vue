@@ -537,20 +537,35 @@ export default {
     },
     //进入应用
     GoApp (e) {
+      let isiPad =
+      navigator.userAgent.match(/(iPad)/) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    let isMac = /macintosh|mac os x/i.test(navigator.userAgent);
       MODELAPI.GETBIMTOKEN({
         appid: e.appid
       })
       .then(res => {
         if (res.data.code === 0) {
-          const { href } = this.$router.resolve({
-            name: 'web_client',
-            query: {
-              appid: e.appid,
-              locale: this.$i18n.locale,
-              token: res.data.data.token
-            }
-          })
-          window.open(href, '_blank')
+          if (isiPad !== false || isMac !== false) {
+              this.$router.push({
+                name: 'web_client',
+                query: {
+                  appid: e.appid,
+                  locale: this.$i18n.locale,
+                  token: res.data.data.token
+                }
+              })
+            }else{
+              const { href } = this.$router.resolve({
+                name: 'web_client',
+                query: {
+                  appid: e.appid,
+                  locale: this.$i18n.locale,
+                  token: res.data.data.token
+                }
+              })
+              window.open(href, '_blank')
+            }          
         }else{
           this.$message({
             type: 'warning',
