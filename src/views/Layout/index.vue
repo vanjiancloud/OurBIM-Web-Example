@@ -242,19 +242,32 @@
               background-color="#fff"
             >
               <!-- 项目管理 -->
-             
-
-              <el-menu-item index="/manage">
+              <el-submenu index="manage">
+                <template slot="title">
+                  <i class="el-icon-setting"></i>
+                  <span class="write">{{ $t('management') }}</span>
+                </template>
+                <!-- 我的项目 -->
+                <el-menu-item index="/manage">
+                  我的项目
+                </el-menu-item>
+                <!-- 模型集成 -->
+                <el-menu-item index="/integration">
+                  项目集成
+                </el-menu-item>
+              </el-submenu>
+              <!-- <el-menu-item index="/manage">
                 <i class="el-icon-setting"></i>
                 <span slot="title" class="write">{{ $t('management') }}</span>
-              </el-menu-item>
+              </el-menu-item> -->
+
               <!-- 创建项目 -->
               <el-menu-item index="/found">
                 <i class="el-icon-folder-add"></i>
                 <span slot="title" class="write">{{ $t('Create') }}</span>
               </el-menu-item>
               <!-- 账户管理 -->
-              <el-submenu index="">
+              <el-submenu index="account">
                 <template slot="title">
                   <i class="el-icon-menu"></i>
                   <span class="write">{{ $t('Account') }}</span>
@@ -345,16 +358,16 @@ export default {
       }
     }
     // 页面缩放
-    window.onload = function () {
-      // 获取浏览器页面最大宽度
-      var maxWidth = document.documentElement.offsetWidth
-      document.documentElement.style.fontSize =
-        document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
-      window.onresize = function () {
-        document.documentElement.style.fontSize =
-          document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
-      }
-    }
+    // window.onload = function () {
+    //   // 获取浏览器页面最大宽度
+    //   var maxWidth = document.documentElement.offsetWidth
+    //   document.documentElement.style.fontSize =
+    //     document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
+    //   window.onresize = function () {
+    //     document.documentElement.style.fontSize =
+    //       document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
+    //   }
+    // }
   },
   methods: {
     English () {
