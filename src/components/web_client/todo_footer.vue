@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-10 17:28:20
+ * @LastEditTime: 2021-04-13 10:50:31
  * @description: 
 -->
 <template>
@@ -1041,10 +1041,10 @@ export default {
         return;
       }
       if (e === 0) {
-        this.personTool = this.imgList[e].state === 0 ? true : false;
+        this.personTool = this.imgList[e].state === 1 ? true : false;
       }
       if (e === 6) {
-        this.followTool = this.imgList[e].state === 0 ? true : false;
+        this.followTool = this.imgList[e].state === 1 ? true : false;
       }
 
       if (e !== 0) {
