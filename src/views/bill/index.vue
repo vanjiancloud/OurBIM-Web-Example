@@ -152,6 +152,7 @@ export default {
     },
     //修改用户信息
     changeUserInfo () {
+      this.$common.openLoading('信息修改中')
       // 赋值头像
       modifyUserInfo({
         userid: Getuserid(),
@@ -164,12 +165,13 @@ export default {
         .then(res => {
           if (res.data.code === 0) {
             this.getData()
-            // console.log(res,'66666')
+            this.$common.closeLoading()
             this.$refs.photoUpload.clearFiles()
             this.$message.success(res.data.message)
           } else if (res.data.code === 1) {
             console.log(res)
             this.$message.error(res.data.message)
+            this.$common.closeLoading()
           }
         })
         .catch(err => {

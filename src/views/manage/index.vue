@@ -16,7 +16,7 @@
     </div>
     <!-- 表格 -->
     <div class="table">
-      <el-table :data="itemList" style="width: 100%;font-size: 17px;">
+      <el-table :data="itemList" style="width: 100%;" class="sheet">
         <el-table-column prop="appid" :label="$t('applicationid')">
         </el-table-column>
         <el-table-column prop="appName" :label="$t('applyname')">
@@ -31,7 +31,7 @@
               :text-inside="true"
               :percentage="scope.row.progress"
               :show-text="true"
-              :stroke-width="15"
+              :stroke-width="13"
               :color="customColor"
               v-if="scope.row.applidStatus === '1' ? true : false"
             >
@@ -46,6 +46,16 @@
         </el-table-column>
         <el-table-column :label="$t('operation')">
           <template slot-scope="scope">
+            <!-- 分享 -->
+            <el-button
+              @click="share(scope.row), (dialogFormVisibleOne = true)"
+              type="text"
+              v-if="scope.row.applidStatus === '5' ? false : true"
+              :class="scope.row.applidStatus === '2' ? 'blue' : 'gray'"
+              :disabled="scope.row.applidStatus === '2' ? false : true"
+            >
+              分享
+            </el-button>
             <!-- 编辑 -->
             <el-button
               @click="edit(scope.row), (dialogFormVisible = true)"
@@ -81,7 +91,78 @@
         </el-table-column>
       </el-table>
     </div>
-    <!-- dialog框 -->
+    <!-- 分享dialog框 -->
+    <el-dialog
+      title="分享项目链接"
+      :visible.sync="dialogFormVisibleOne"
+      center
+      :destroy-on-close="true"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      :before-close="handleClose"
+    >
+      <div class="box-one" v-show="isShow == 1">
+        <el-form :model="formShare">
+          <el-form-item label="有效期" label-width="110px">
+            <el-radio v-model="formShare.days" label="999">永久</el-radio>
+            <el-radio v-model="formShare.days" label="30">30天</el-radio>
+            <el-radio v-model="formShare.days" label="7">7天</el-radio>
+            <el-radio v-model="formShare.days" label="1">1天</el-radio>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisibleOne = false" class="btn-one"
+            >取 消</el-button
+          >
+          <el-button type="primary" @click="confirm()" class="btn-two"
+            >确 认</el-button
+          >
+        </div>
+      </div>
+
+      <div class="box-two" v-show="isShow == 2">
+        <div class="title">通过QQ、微信、钉钉等分享给好友吧</div>
+        <el-form :model="formShare">
+          <el-form-item label="链接：">
+            <el-input
+              v-model="formShare.webShareUrl"
+              autocomplete="off"
+              :disabled="true"
+              class="input"
+            >
+              <!-- <span slot="suffix"> 链接{{ this.formShare.days }}天后失效 </span> -->
+            </el-input>
+            <el-button
+              type="primary"
+              class="btn"
+              v-clipboard:copy="formShare.webShareUrl"
+              v-clipboard:success="onCopyUrl"
+              v-clipboard:error="onErrorUrl"
+              >复制链接</el-button
+            >
+          </el-form-item>
+          <el-form-item label="二维码：">
+            <div class="share">
+              <img :src="formShare.qrurl" alt="二维码生成区" />
+            </div>
+            <div class="new">
+              将二维码分享给好友，对方微信、<br />
+              钉钉等扫一扫即可访问BIM场景
+            </div>
+            <el-button
+              type="primary"
+              class="botton"
+              v-clipboard:copy="formShare.qrurl"
+              v-clipboard:success="onCopyUrl"
+              v-clipboard:error="onErrorUrl"
+            >
+              复制二维码
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-dialog>
+    <!-- 编辑dialog框 -->
     <el-dialog
       title="编辑项目"
       :visible.sync="dialogFormVisible"
@@ -188,14 +269,15 @@
 </template>
 
 <script>
-import { getProjectList, deleteProject, updateProject } from '@/api/my.js'
+import { getProjectList, deleteProject, updateProject,getWebUrl } from '@/api/my.js'
+import MODELAPI from "@/api/model_api";
 import { Getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
-
 export default {
   name: 'manage',
   data () {
     return {
+      btnCopy: '',
       itemList: [], //数据列表
       appid: '', //应用ID
       appName: '', //应用名称
@@ -211,6 +293,15 @@ export default {
       fileUpload: '',
       fileList: [{ url: '' }], //上传图片列表显示
       dialogFormVisible: false,
+      dialogFormVisibleOne: false,
+      isShow: '1',
+      //分享应用表单
+      formShare: {
+        days: '999', //链接有效期
+        appid: '',
+        qrurl: '', //二维码图片地址
+        webShareUrl: '' //链接地址
+      },
       //编辑应用表单
       form: {
         name: '',
@@ -249,7 +340,6 @@ export default {
   },
   created () {
     this.GetList()
-    // this.setGetdataIn()
   },
   methods: {
     // 定时器每隔五秒获取数据
@@ -300,7 +390,54 @@ export default {
       }
       return statusObj[status]
     },
-
+    // 分享按钮
+    share (e) {
+      // console.log(e)
+      this.formShare.appid = e.appid
+    },
+    // 关闭分享dialog
+    handleClose (done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done()
+          this.isShow = 1
+          this.formShare.days = '999'
+        })
+        .catch(_ => {})
+    },
+    //确定分享
+    confirm () {
+      this.$common.openLoading('正在加载中....')
+      getWebUrl({
+        appid: this.formShare.appid,
+        days: this.formShare.days,
+        userid: Getuserid()
+      })
+        .then(res => {
+          console.log(res)
+          if (res.data.code === 0) {
+            this.isShow = 2
+            this.formShare.qrurl = res.data.data.qrurl
+            this.formShare.webShareUrl = res.data.data.webShareUrl
+            this.$message.success(res.data.message)
+            this.$common.closeLoading()
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('分享失败,请重新选择')
+          this.$common.closeLoading()
+          this.dialogFormVisibleOne = false
+        })
+    },
+    //复制链接成功
+    onCopyUrl: function (e) {
+      this.$message.success('复制成功！')
+    },
+    //复制链接失败
+    onErrorUrl: function (e) {
+      this.$message.error('复制失败！')
+    },
     // 编辑按钮
     edit (e) {
       console.log(e)
@@ -360,8 +497,8 @@ export default {
     },
     // 删除按钮
     remove (e) {
-      console.log(e)
-      console.log(e.progress)
+      // console.log(e)
+      // console.log(e.progress)
       this.$confirm('此操作将删除该应用, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -381,7 +518,7 @@ export default {
     del (e) {
       deleteProject({
         appliId: e.appid,
-        userid: getuserid()
+        userid: Getuserid()
       })
         .then(res => {
           if (res.data.code === 0) {
@@ -400,14 +537,33 @@ export default {
     },
     //进入应用
     GoApp (e) {
-      const { href } = this.$router.resolve({
-        name: 'web_client',
-        query: {
-          appid: e.appid,
-          locale: this.$i18n.locale
+      MODELAPI.GETBIMTOKEN({
+        appid: e.appid
+      })
+      .then(res => {
+        if (res.data.code === 0) {
+          const { href } = this.$router.resolve({
+            name: 'web_client',
+            query: {
+              appid: e.appid,
+              locale: this.$i18n.locale,
+              token: res.data.data.token
+            }
+          })
+          window.open(href, '_blank')
+        }else{
+          this.$message({
+            type: 'warning',
+            message: res.data.message
+          })
         }
       })
-      window.open(href, '_blank')
+      .catch(err => {
+        this.$message({
+            type: 'error',
+            message: err.data.message
+          })
+      })      
     },
     // 上传封面图
     upLoadImg (response, file, fileList) {
@@ -491,9 +647,10 @@ export default {
     }
   },
   watch: {
-    $route () {
+    $route (to, from) {
       this.GetList()
-      clearInterval(this.timer)
+      // clearInterval(this.timer)
+      this.$router.go(0)
     }
   },
   activated () {
@@ -529,6 +686,9 @@ export default {
   .table {
     margin-top: 20px;
     margin-bottom: 40px;
+    .sheet {
+      font-size: 16px;
+    }
     // 进度条里的文字
     /deep/ .el-progress-bar__innerText {
       color: #000;
@@ -559,9 +719,9 @@ export default {
     //   height: 0px;
     // }
     // 第一列字体颜色
-    /deep/ .el-table_1_column_1 {
-      color: #00aaf0;
-    }
+    // /deep/ .el-table_1_column_1 {
+    //   color: #00aaf0;
+    // }
     .btn-one {
       font-size: 16px;
       color: #00aaf0;
@@ -582,6 +742,10 @@ export default {
       font-size: 16px;
       color: gray;
     }
+    .blue {
+      color: #00aaf0;
+      font-size: 16px;
+    }
   }
   .el-dialog {
     .content {
@@ -593,6 +757,60 @@ export default {
         }
         .el-select {
           width: 150px;
+        }
+      }
+    }
+    .box-one {
+      display: flex;
+      justify-content: center;
+      position: relative;
+      .el-form {
+        margin-bottom: 50px;
+      }
+      .dialog-footer {
+        position: absolute;
+        left: 42%;
+        top: 65%;
+        .btn-one {
+          margin-right: 60px;
+          margin-left: -30px;
+        }
+      }
+    }
+    .box-two {
+      position: relative;
+      .title {
+        text-align: center;
+        margin-top: -20px;
+        margin-bottom: 30px;
+      }
+      .el-form {
+        margin-left: 100px;
+        .input {
+          width: 250px;
+        }
+        /deep/ .el-input.is-disabled .el-input__inner {
+          background-color: #f0f5fe;
+        }
+        .btn {
+          margin-left: 30px;
+        }
+        .share {
+          width: 150px;
+          height: 150px;
+          margin-left: 50px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+        .new {
+          margin-left: 240px;
+          margin-top: -100px;
+        }
+        .botton {
+          margin-top: 15px;
+          margin-left: 240px;
         }
       }
     }

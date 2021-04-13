@@ -17,18 +17,10 @@
         </div>
         <!-- 登录的不同状态 -->
         <div class="state">
-          <span
-            @click="isshow = 0"
-            :class="{ color: isshow == 0 }"
-            style="font-size: 20px;"
-          >
+          <span @click="isshow = 0" :class="{ color: isshow == 0 }">
             账号登录
           </span>
-          <span
-            @click="isshow = 1"
-            :class="{ color: isshow == 1 }"
-            style="font-size: 20px;"
-          >
+          <span @click="isshow = 1" :class="{ color: isshow == 1 }">
             短信登录
           </span>
         </div>
@@ -43,7 +35,7 @@
           <!--  邮箱密码通过双向绑定获取 -->
           <!-- 邮箱 -->
           <el-form-item prop="loginName">
-            <div style="color:#000;font-size: 20px;">
+            <div class="fonts">
               账号
             </div>
             <el-input v-model="form.loginName" placeholder="请输入邮箱或手机号">
@@ -52,7 +44,7 @@
           </el-form-item>
           <!-- 密码 -->
           <el-form-item prop="password">
-            <div style="color:#000;font-size: 20px;">
+            <div class="fonts">
               密码
             </div>
             <el-input
@@ -71,12 +63,8 @@
               name="type"
               v-model="form.isAgree"
             ></el-checkbox>
-            <span @click="changePassword" style="font-size: 16px;color:#00aaf0;"
-              >忘记密码?</span
-            >
-            <span @click="register" style="font-size: 16px;color:#00aaf0;"
-              >注册新用户</span
-            >
+            <span @click="changePassword" class="titles">忘记密码?</span>
+            <span @click="register" class="titles">注册新用户</span>
           </el-form-item>
           <!-- 登录按钮 -->
           <el-form-item>
@@ -98,14 +86,14 @@
           <!--  手机号验证码通过双向绑定获取里面的值 -->
           <!-- 手机号 -->
           <el-form-item prop="mobile">
-            <div style="color:#000;font-size: 20px;">手机号</div>
+            <div class="fonts">手机号</div>
             <el-input v-model="mobForm.mobile" placeholder="请输入手机号">
               <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
             </el-input>
           </el-form-item>
           <!-- 验证码 -->
           <el-form-item prop="code">
-            <div style="color:#000;font-size: 20px;">
+            <div class="fonts">
               验证码
             </div>
             <el-input v-model="mobForm.code" placeholder="请输入短信验证码">
@@ -129,12 +117,8 @@
               name="type"
               v-model="mobForm.checkbox"
             ></el-checkbox>
-            <span @click="changePassword" style="font-size: 16px;color:#00aaf0;"
-              >忘记密码?</span
-            >
-            <span @click="register" style="font-size: 16px;color:#00aaf0;"
-              >注册新用户</span
-            >
+            <span @click="changePassword" class="titles">忘记密码?</span>
+            <span @click="register" class="titles">注册新用户</span>
           </el-form-item>
           <!-- 登录按钮 -->
           <el-form-item>
@@ -147,7 +131,8 @@
       </div>
     </div>
     <div class="wenzi">
-      Copyright © 2021 www.OurBIM.com, All Rights Reserved.
+      Copyright © 2021 www.OurBIM.com, <br>
+      All Rights Reserved.
     </div>
   </div>
 </template>
@@ -236,6 +221,23 @@ export default {
     }
   },
   created () {
+    document.onkeydown = e => {
+      if (e.key == 'Enter') {
+        this.emailLogin()
+        this.Mobilelogin()
+      }
+    }
+    //页面缩放
+    window.onload = function () {
+      // 获取浏览器页面最大宽度
+      var maxWidth = document.documentElement.offsetWidth
+      document.documentElement.style.fontSize =
+        document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
+      window.onresize = function () {
+        document.documentElement.style.fontSize =
+          document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
+      }
+    }
     // 记住账号
     if (localStorage.getItem('email')) {
       this.form.loginName = getemail()
@@ -352,7 +354,7 @@ export default {
             if (this.mobForm.checkbox === false) {
               delmobile()
             }
-            this.$router.push('../manage')
+            this.$router.push('/')
           } else if (res.data.code === 2) {
             this.$message.warning(res.data.message)
             this.logIn = '登录'
@@ -437,8 +439,9 @@ export default {
     }
   },
   watch: {
-    //路由跳转时账号表单清空判断
     $route (to, from) {
+      this.$router.go(0)
+      //路由跳转时账号表单清空判断
       if (this.form.isAgree === false) {
         this.form.loginName = ''
         this.form.password = ''
@@ -460,17 +463,17 @@ export default {
           (this.isSend = false)
       }
     }
-  },
+  }
   /* 把键盘事件放在activated事件里，当清除键盘事件后，
   下次再次进入当前路由的话，可以再次唤起键盘事件 */
-  activated () {
-    // 添加键盘事件
-    document.onkeydown = e => {
-      if (e.key == 'Enter') {
-        this.emailLogin()
-      }
-    }
-  }
+  // activated () {
+  //   // 添加键盘事件
+  //   document.onkeydown = e => {
+  //     if (e.key == 'Enter') {
+  //       this.emailLogin()
+  //     }
+  //   }
+  // }
 }
 </script>
 
@@ -588,6 +591,9 @@ export default {
         width: 510px;
         margin-top: 50px;
         cursor: pointer;
+        span {
+          font-size: 20px;
+        }
         .color {
           color: #00aaf0;
           // color: red;
@@ -607,12 +613,20 @@ export default {
           height: 65px;
           line-height: 65px;
         }
+
+        /deep/ .el-form-item__content {
+          line-height: 30px;
+        }
         .code {
           margin-right: 25px;
           margin-top: 15px;
         }
-        /deep/ .el-form-item__content {
-          line-height: 30px;
+        .fonts {
+          font-size: 20px;
+        }
+        .titles {
+          color: #00aaf0;
+          font-size: 16px;
         }
         .login-btn {
           width: 100%;

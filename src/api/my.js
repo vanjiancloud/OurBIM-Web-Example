@@ -159,7 +159,15 @@ export function getProjectList (data) {
     params: data
   })
 }
+// 分享项目
+export function getWebUrl (data) {
+  return request({
+    url: '/appli/getWebUrl',
+    method: 'POST',
+    params: data
 
+  })
+}
 // 删除项目
 export function deleteProject (data) {
   return request({
