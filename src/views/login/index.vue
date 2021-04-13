@@ -228,16 +228,16 @@ export default {
       }
     }
     //页面缩放
-    window.onload = function () {
-      // 获取浏览器页面最大宽度
-      var maxWidth = document.documentElement.offsetWidth
-      document.documentElement.style.fontSize =
-        document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
-      window.onresize = function () {
-        document.documentElement.style.fontSize =
-          document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
-      }
-    }
+    // window.onload = function () {
+    //   // 获取浏览器页面最大宽度
+    //   var maxWidth = document.documentElement.offsetWidth
+    //   document.documentElement.style.fontSize =
+    //     document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
+    //   window.onresize = function () {
+    //     document.documentElement.style.fontSize =
+    //       document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
+    //   }
+    // }
     // 记住账号
     if (localStorage.getItem('email')) {
       this.form.loginName = getemail()

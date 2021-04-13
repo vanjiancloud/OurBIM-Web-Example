@@ -119,7 +119,6 @@
           >
         </div>
       </div>
-
       <div class="box-two" v-show="isShow == 2">
         <div class="title">通过QQ、微信、钉钉等分享给好友吧</div>
         <el-form :model="formShare">
@@ -130,7 +129,6 @@
               :disabled="true"
               class="input"
             >
-              <!-- <span slot="suffix"> 链接{{ this.formShare.days }}天后失效 </span> -->
             </el-input>
             <el-button
               type="primary"
@@ -142,20 +140,15 @@
             >
           </el-form-item>
           <el-form-item label="二维码：">
-            <div class="share">
-              <img :src="formShare.qrurl" alt="二维码生成区" />
+            <!-- 通过ref获取dom -->
+            <div class="share" ref="foo">
+              <img :src="formShare.qrurl" alt="" />
             </div>
             <div class="new">
               将二维码分享给好友，对方微信、<br />
               钉钉等扫一扫即可访问BIM场景
             </div>
-            <el-button
-              type="primary"
-              class="botton"
-              v-clipboard:copy="formShare.qrurl"
-              v-clipboard:success="onCopyUrl"
-              v-clipboard:error="onErrorUrl"
-            >
+            <el-button type="primary" class="botton" @click="copy">
               复制二维码
             </el-button>
           </el-form-item>
@@ -269,8 +262,13 @@
 </template>
 
 <script>
-import { getProjectList, deleteProject, updateProject,getWebUrl } from '@/api/my.js'
-import MODELAPI from "@/api/model_api";
+import {
+  getProjectList,
+  deleteProject,
+  updateProject,
+  getWebUrl
+} from '@/api/my.js'
+import MODELAPI from '@/api/model_api'
 import { Getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 export default {
@@ -340,15 +338,16 @@ export default {
   },
   created () {
     this.GetList()
+    this.setGetdataIn()
   },
   methods: {
     // 定时器每隔五秒获取数据
-    // setGetdataIn () {
-    //   this.timer = setInterval(() => {
-    //     this.GetList()
-    //     // console.log('每隔5秒更新应用管理')
-    //   }, 5000)
-    // },
+    setGetdataIn () {
+      this.timer = setInterval(() => {
+        this.GetList()
+        // console.log('每隔5秒更新应用管理')
+      }, 5000)
+    },
     // 获取应用数据列表
     GetList () {
       getProjectList({
@@ -414,7 +413,7 @@ export default {
         userid: Getuserid()
       })
         .then(res => {
-          console.log(res)
+          // console.log(res)
           if (res.data.code === 0) {
             this.isShow = 2
             this.formShare.qrurl = res.data.data.qrurl
@@ -432,11 +431,25 @@ export default {
     },
     //复制链接成功
     onCopyUrl: function (e) {
-      this.$message.success('复制成功！')
+      this.$message.success('链接复制成功！')
     },
     //复制链接失败
     onErrorUrl: function (e) {
       this.$message.error('复制失败！')
+    },
+    // 复制二维码图片
+    copy (e) {
+      //nextTick,当前dom渲染完毕的回调
+      this.$nextTick(function () {
+        // console.log('foo', this.$refs.foo) //打印获取的dom
+        const selection = window.getSelection()
+        const range = document.createRange()
+        range.selectNode(this.$refs.foo) //传入dom
+        selection.addRange(range)
+        document.execCommand('copy') //copy是复制
+        selection.removeAllRanges() //清除缓存
+      })
+      this.$message.success('二维码复制成功！')
     },
     // 编辑按钮
     edit (e) {
@@ -537,33 +550,42 @@ export default {
     },
     //进入应用
     GoApp (e) {
+      let isiPad =
+      navigator.userAgent.match(/(iPad)/) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    let isMac = /macintosh|mac os x/i.test(navigator.userAgent);
       MODELAPI.GETBIMTOKEN({
         appid: e.appid
       })
       .then(res => {
         if (res.data.code === 0) {
-          const { href } = this.$router.resolve({
-            name: 'web_client',
-            query: {
-              appid: e.appid,
-              locale: this.$i18n.locale,
-              token: res.data.data.token
-            }
-          })
-          window.open(href, '_blank')
+          if (isiPad !== false || isMac !== false) {
+              this.$router.push({
+                name: 'web_client',
+                query: {
+                  appid: e.appid,
+                  locale: this.$i18n.locale,
+                  token: res.data.data.token
+                }
+              })
+            }else{
+              const { href } = this.$router.resolve({
+                name: 'web_client',
+                query: {
+                  appid: e.appid,
+                  locale: this.$i18n.locale,
+                  token: res.data.data.token
+                }
+              })
+              window.open(href, '_blank')
+            }          
         }else{
           this.$message({
-            type: 'warning',
-            message: res.data.message
-          })
-        }
-      })
-      .catch(err => {
-        this.$message({
             type: 'error',
             message: err.data.message
           })
-      })      
+        }
+      })
     },
     // 上传封面图
     upLoadImg (response, file, fileList) {
@@ -653,12 +675,12 @@ export default {
       this.$router.go(0)
     }
   },
-  activated () {
-    this.timer = setInterval(() => {
-      this.GetList()
-      // console.log('每隔5秒更新应用管理')
-    }, 5000)
-  },
+  // activated () {
+  //   this.timer = setInterval(() => {
+  //     this.GetList()
+  //     // console.log('每隔5秒更新应用管理')
+  //   }, 5000)
+  // },
   // ===== 页面实例销毁 =====
   destroyed () {
     // 清除定时器
@@ -813,6 +835,15 @@ export default {
           margin-left: 240px;
         }
       }
+    }
+    .hidden {
+      width: 0;
+      height: 0;
+      opacity: 0;
+      position: absolute;
+      top: -1000%;
+      left: -1000%;
+      z-index: -9999999;
     }
   }
 }
