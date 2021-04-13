@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-13 10:50:31
+ * @LastEditTime: 2021-04-13 13:50:41
  * @description: 
 -->
 <template>
@@ -68,6 +68,7 @@
                 :min="1"
                 :max="8"
                 @mousedown.native="openMask"
+                @click.native.stop=""
                 @change="changeSpeed"
               ></el-slider>
             </div>
@@ -991,6 +992,10 @@ export default {
         .catch((err) => {});
     },
     handleOrder(e) {
+      // 功能未开放
+      if (e === 4 || e === 5 || e === 7 || e === 8 || e === 9) {
+        return;
+      }
       // 选中状态
       let realImg = null;
       if (this.imgList[e].state === 0) {
@@ -1037,9 +1042,7 @@ export default {
         this.imgList[this.oldState].state = 0;
         this.oldState = e;
       }
-      if (e === 4 || e === 5 || e === 7 || e === 8 || e === 9) {
-        return;
-      }
+      
       if (e === 0) {
         this.personTool = this.imgList[e].state === 1 ? true : false;
       }
