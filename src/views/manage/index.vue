@@ -52,9 +52,9 @@
               type="text"
               v-if="scope.row.applidStatus === '5' ? false : true"
               :class="scope.row.applidStatus === '2' ? 'blue' : 'gray'"
+              :disabled="scope.row.applidStatus === '2' ? false : true"
             >
               分享
-              <!-- :disabled="scope.row.applidStatus === '2' ? false : true" -->
             </el-button>
             <!-- 编辑 -->
             <el-button
