@@ -584,7 +584,8 @@ export default {
             type: 'error',
             message: err.data.message
           })
-        })
+        }
+      })
     },
     // 上传封面图
     upLoadImg (response, file, fileList) {
