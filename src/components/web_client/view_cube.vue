@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-14 10:29:24
+ * @LastEditTime: 2021-04-14 10:55:36
  * @description: 
 -->
 <template>
@@ -28,7 +28,7 @@
         <div class="edge-1" @click.stop="handleEdge(index, 1)"></div>
         <div class="edge-2" @click.stop="handleEdge(index, 2)"></div>
         <div class="edge-3" @click.stop="handleEdge(index, 3)"></div>
-        <div class="spot-0" @click.stop="handleSpot(index, 0)"></div>
+        <div class="spot-0" @click.stop="handleSpot(index, 0)" @mouseenter="enterSpot(index, 0)" @mouseleave="leaveSpot(index, 0)"></div>
         <div class="spot-1" @click.stop="handleSpot(index, 1)"></div>
         <div class="spot-2" @click.stop="handleSpot(index, 2)"></div>
         <div class="spot-3" @click.stop="handleSpot(index, 3)"></div>
@@ -370,6 +370,22 @@ export default {
           break;
       }
       this.resetAngle();
+    },
+    enterSpot(node, e){
+    /**
+     * @Author: zk
+     * @Date: 2021-04-14 10:42:30
+     * @description: 鼠标移入
+     */  
+      console.log(node, e);
+    },
+    leaveSpot(node, e){
+    /**
+     * @Author: zk
+     * @Date: 2021-04-14 10:42:20
+     * @description: 鼠标移出
+     */  
+      console.log(node, e);
     },
     handleSpot(node, e) {
       /**
@@ -909,5 +925,8 @@ export default {
 
 .spot-3 {
   .spotAll(60px, 60px);
+}
+.active-bgi{
+  background-color: #ff6600;
 }
 </style>
