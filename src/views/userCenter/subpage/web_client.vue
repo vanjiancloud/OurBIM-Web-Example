@@ -190,7 +190,6 @@ export default {
       leafInfo: null,
       listenInfo: null,
       cubeState: 6,
-      viewHeight: 0,
       runTimeCode: 0,
       timerInfo: null,
       memberInfo: null,
@@ -213,19 +212,6 @@ export default {
     };
   },
   watch: {
-    viewHeight() {
-      //普通的watch监听
-      if (this.ourbimInfo.expiredTime > 0) {
-        if (this.isFade) {
-          this.$message({
-            type: "success",
-            message: "免费体验时长" + this.ourbimInfo.expiredTime + "分钟",
-          });
-        }
-        this.setTimePass();
-      }
-      this.isFade = false;
-    },
   },
   mounted() {
     this.appId = this.$route.query.appid;
@@ -256,27 +242,6 @@ export default {
       (e) => {
         if (e.data.prex === "pxymessage") {
           this.getError(e.data);
-          if (
-            e.data.data &&
-            e.data.data.frameHeight > 0 &&
-            e.data.type !== 500
-          ) {
-            this.viewHeight = e.data.data.frameHeight;
-          }
-          if (isiPad !== false || isMac !== false) {
-            if (
-              e.data.data &&
-              e.data.data.height &&
-              e.data.data.height > 0 &&
-              e.data.type === 910
-            ) {
-              let dialogTimer = setTimeout(() => {
-                this.hiddenState = 0;
-                this.viewHeight = e.data.data.frameHeight;
-                clearTimeout(dialogTimer);
-              }, 1000);
-            }
-          }
         }
         if (e.data.prex === "ourbimMessage") {
           // 控制栏显示隐藏
@@ -287,10 +252,6 @@ export default {
       },
       false
     );
-
-    if (isiPad !== false) {
-      this.viewHeight = 1;
-    }
   },
   destroyed() {
     this.clearTimePass();
@@ -763,6 +724,18 @@ export default {
           } else if (realData.id === "3") {
             this.$refs.getFooter.resetPointList(realData.object);
           } else if (realData.id === "6") {
+            this.hiddenState = 0;            
+            //普通的watch监听
+            if (this.ourbimInfo.expiredTime > 0) {
+              if (this.isFade) {
+                this.$message({
+                  type: "success",
+                  message: "免费体验时长" + this.ourbimInfo.expiredTime + "分钟",
+                });
+              }
+              this.setTimePass();
+            }
+            this.isFade = false;
             this.handleState = 13
             this.updateOrder()
           }
