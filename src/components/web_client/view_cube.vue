@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-12 17:21:42
+ * @LastEditTime: 2021-04-14 09:42:54
  * @description: 
 -->
 <template>
@@ -536,7 +536,7 @@ export default {
               y: 135,
               z: 0,
             };
-            this.activeOrder = 21;
+            this.activeOrder = 25;
           } else if (e === 1) {
             // 左下
             this.downInfo = {
@@ -708,7 +708,7 @@ export default {
           let realAnimation = setTimeout(() => {
             this.isAnimation = true;
             clearTimeout(realAnimation);
-          }, 10);
+          }, 100);
         }, 1010);
       }else{
         let realTimer = setTimeout(() => {
