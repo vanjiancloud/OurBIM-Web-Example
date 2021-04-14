@@ -151,6 +151,7 @@
 import MODELAPI from "@/api/model_api";
 import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
+import { parse } from 'qs';
 
 export default {
   name: "look_app",
@@ -587,6 +588,10 @@ export default {
             }
           }
           break;
+        case 12:
+          params.id = 48
+          params.splitValue = this.listenTodoInfo.data
+          break;
         default:
           break;
       }
@@ -723,6 +728,11 @@ export default {
           this.handleState = 5;
           this.updateOrder();
         }
+      }
+      if (e.type === 8 && e.data) {
+        this.handleState = 12;
+        this.listenTodoInfo = e;
+        this.updateOrder();
       }
     },
     initWebSocket() {

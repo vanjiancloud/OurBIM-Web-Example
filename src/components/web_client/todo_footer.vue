@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-13 13:50:41
+ * @LastEditTime: 2021-04-14 11:11:44
  * @description: 
 -->
 <template>
@@ -323,8 +323,28 @@
             />
           </el-tooltip>
           <el-collapse-transition>
+            <div class="show-speed" v-if="imgList[1].state === 1">
+              <el-slider
+                v-model="imgList[1].data.speed"
+                :min="1"
+                :max="8"
+                @mousedown.native="openMask"
+                @click.native.stop=""
+                @change="changeSpeed"
+              ></el-slider>
+            </div>
+          </el-collapse-transition>
+          <el-collapse-transition>
             <div class="show-speed" v-if="imgList[8].state === 1">
-              <el-slider v-model="imgList[8].data.speed"></el-slider>
+              <el-slider
+              v-model="imgList[8].data.value"
+              :min="0"
+                :max="1"
+                :step="0.01"
+                @mousedown.native="openMask"
+                @click.native.stop=""
+                @change="changeResolve"
+              ></el-slider>
             </div>
           </el-collapse-transition>
         </div>
@@ -570,7 +590,7 @@ export default {
           url: require("@/assets/images/todo/unchecked/resolve.png"),
           name: "resolve.png",
           data: {
-            speed: 50,
+            value: 0,
           },
           title: "分解模型",
         },
@@ -761,6 +781,19 @@ export default {
       this.$emit("listenTodo", {
         state: this.imgList[1].state,
         type: 1,
+        data: e,
+      });
+    },
+    changeResolve(e){
+      /**
+       * @Author: zk
+       * @Date: 2021-04-14 11:06:54
+       * @description: 设置分解模型
+       */
+      this.isMask = false;
+      this.$emit("listenTodo", {
+        state: this.imgList[8].state,
+        type: 8,
         data: e,
       });
     },
@@ -993,7 +1026,7 @@ export default {
     },
     handleOrder(e) {
       // 功能未开放
-      if (e === 4 || e === 5 || e === 7 || e === 8 || e === 9) {
+      if (e === 4 || e === 5 || e === 7 || e === 9) {
         return;
       }
       // 选中状态
