@@ -151,7 +151,6 @@
 import MODELAPI from "@/api/model_api";
 import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
-import { parse } from 'qs';
 
 export default {
   name: "look_app",
@@ -625,7 +624,7 @@ export default {
     },
     async getMemberList(e) {
       let params = {
-        appliId: this.appId,
+        appliId: this.appId
       };
       e ? (params.uuid = e) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
