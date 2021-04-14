@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-14 09:42:54
+ * @LastEditTime: 2021-04-14 10:29:24
  * @description: 
 -->
 <template>
@@ -809,6 +809,7 @@ export default {
 }
 
 #box div {
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -882,12 +883,12 @@ export default {
   .edgeLine(0, 0, 100%, 3px);
 }
 .spotAll(@left, @top) {
-  width: 3px !important;
-  height: 3px !important;
+  width: 16px !important;
+  height: 16px !important;
+  transform: rotate(45deg);
   z-index: 2;
   left: @left !important;
   top: @top !important;
-  // background: #ff6600;
 
   &:hover {
     background-color: #ff6600;
@@ -895,18 +896,18 @@ export default {
 }
 
 .spot-0 {
-  .spotAll(0px, 0px);
+  .spotAll(-8px, -8px);
 }
 
 .spot-1 {
-  .spotAll(0px, 65px);
+  .spotAll(-8px, 60px);
 }
 
 .spot-2 {
-  .spotAll(65px, 0px);
+  .spotAll(60px, -8px);
 }
 
 .spot-3 {
-  .spotAll(65px, 65px);
+  .spotAll(60px, 60px);
 }
 </style>
