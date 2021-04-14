@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-14 15:37:10
+ * @LastEditTime: 2021-04-14 16:21:39
  * @description: 
 -->
 <template>
@@ -220,12 +220,47 @@ export default {
        * @Date: 2021-04-14 10:42:30
        * @description: 点 鼠标移入
        */
-      console.log(node, e);
-      if ((node === 0 &&  e === 0) ) {
-        this.setActiveEdge(0, 0, true, 'spot')
-        this.setActiveEdge(2, 1, true, 'spot')
-        this.setActiveEdge(4, 2, true, 'spot')
-        // this.setActiveEdge(2, 2, isShow, 'edge')
+      // 上
+      if ((node === 0 &&  e === 0) || (node === 2 &&  e === 1) || (node === 4 &&  e === 2)) {
+        this.setActiveEdge(0, 0, isShow, 'spot')
+        this.setActiveEdge(2, 1, isShow, 'spot')
+        this.setActiveEdge(4, 2, isShow, 'spot')
+      }
+      if ((node === 4 &&  e === 0) || (node === 1 &&  e === 2) || (node === 2 &&  e === 0)) {
+        this.setActiveEdge(2, 0, isShow, 'spot')
+        this.setActiveEdge(1, 2, isShow, 'spot')
+        this.setActiveEdge(4, 0, isShow, 'spot')
+      }
+      if ((node === 1 &&  e === 0) || (node === 5 &&  e === 2) || (node === 2 &&  e === 2)) {
+        this.setActiveEdge(1, 0, isShow, 'spot')
+        this.setActiveEdge(5, 2, isShow, 'spot')
+        this.setActiveEdge(2, 2, isShow, 'spot')
+      }
+      if ((node === 5 &&  e === 0) || (node === 0 &&  e === 2) || (node === 2 &&  e === 3)) {
+        this.setActiveEdge(5, 0, isShow, 'spot')
+        this.setActiveEdge(0, 2, isShow, 'spot')
+        this.setActiveEdge(2, 3, isShow, 'spot')
+      }
+      // 下
+      if ((node === 3 &&  e === 0) || (node === 4 &&  e === 3) || (node === 0 &&  e === 1)) {
+        this.setActiveEdge(3, 0, isShow, 'spot')
+        this.setActiveEdge(4, 3, isShow, 'spot')
+        this.setActiveEdge(0, 1, isShow, 'spot')
+      }
+      if ((node === 1 &&  e === 3) || (node === 4 &&  e === 1) || (node === 3 &&  e === 1)) {
+        this.setActiveEdge(1, 3, isShow, 'spot')
+        this.setActiveEdge(3, 1, isShow, 'spot')
+        this.setActiveEdge(4, 1, isShow, 'spot')
+      }
+      if ((node === 1 &&  e === 1) || (node === 5 &&  e === 3) || (node === 3 &&  e === 3)) {
+        this.setActiveEdge(1, 1, isShow, 'spot')
+        this.setActiveEdge(5, 3, isShow, 'spot')
+        this.setActiveEdge(3, 3, isShow, 'spot')
+      }
+      if ((node === 5 &&  e === 1) || (node === 3 &&  e === 2) || (node === 0 &&  e === 3)) {
+        this.setActiveEdge(5, 1, isShow, 'spot')
+        this.setActiveEdge(3, 2, isShow, 'spot')
+        this.setActiveEdge(0, 3, isShow, 'spot')
       }
     },
     handleEdge(node, e) {
@@ -848,8 +883,7 @@ export default {
 .box-main {
   position: fixed;
   top: 26px;
-  // right: 80px;
-  left: 80px;
+  right: 80px;
   .go-front {
     width: 24px;
     height: 24px;

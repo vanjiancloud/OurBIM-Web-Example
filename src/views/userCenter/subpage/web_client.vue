@@ -1,6 +1,6 @@
 <template>
   <div class="bim-main">
-    <!-- <iframe
+    <iframe
       class="bim-web"
       allowfullscreen="true"
       :class="runTimeCode === 0 ? '' : 'phone-bim'"
@@ -52,7 +52,7 @@
         v-if="hiddenState === 4"
         v-text="$t('webClient.loadBox.message[6]')"
       ></div>
-    </div> -->
+    </div>
     <div v-if="runTimeCode === 0 && controllerInfo.uiBar">
       <div class="mutual-bim">
         <div
@@ -214,16 +214,16 @@ export default {
   },
   watch: {
     viewHeight() {
-      //普通的watch监听        
+      //普通的watch监听
       if (this.ourbimInfo.expiredTime > 0) {
-          if (this.isFade) {
-            this.$message({
-              type: "success",
-              message: "免费体验时长" + this.ourbimInfo.expiredTime + "分钟",
-            });
-          }
-          this.setTimePass();
+        if (this.isFade) {
+          this.$message({
+            type: "success",
+            message: "免费体验时长" + this.ourbimInfo.expiredTime + "分钟",
+          });
         }
+        this.setTimePass();
+      }
       this.isFade = false;
     },
   },
@@ -577,7 +577,7 @@ export default {
                 params.id = 45;
                 break;
               case 3:
-                // params.id = 45;
+                params.id = 47;
                 break;
               case 4:
                 params.id = 46;
@@ -586,6 +586,10 @@ export default {
                 break;
             }
           }
+          break;
+        case 12:
+          params.id = 48
+          params.splitValue = this.listenTodoInfo.data
           break;
         default:
           break;
@@ -620,7 +624,7 @@ export default {
     },
     async getMemberList(e) {
       let params = {
-        appliId: this.appId        
+        appliId: this.appId
       };
       e ? (params.uuid = e) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
@@ -724,6 +728,11 @@ export default {
           this.updateOrder();
         }
       }
+      if (e.type === 8 && e.data !== undefined) {
+        this.handleState = 12;
+        this.listenTodoInfo = e;
+        this.updateOrder();
+      }
     },
     initWebSocket() {
       //初始化weosocket
@@ -765,17 +774,17 @@ export default {
       let appId = this.$route.query.appid;
       MODELAPI.GETMODELINFO({
         appliId: appId,
-        token: this.appToken
+        token: this.appToken,
       })
         .then((res) => {
           if (res.data.code === 0 && res.data.data) {
             this.webUrl = res.data.data.url;
             this.taskId = res.data.data.taskId;
-            this.ourbimInfo = res.data.data
+            this.ourbimInfo = res.data.data;
             if (res.data.data.appliType === "0") {
-              this.controllerInfo.uiBar = true
-            }else{
-              this.controllerInfo.uiBar = false              
+              this.controllerInfo.uiBar = true;
+            } else {
+              this.controllerInfo.uiBar = false;
             }
             let messageInfo = {
               prex: "ourbimMessage",
@@ -833,7 +842,7 @@ export default {
       this.clearTimePass();
       this.timerInfo = setInterval(() => {
         this.timerCount++;
-        let realSecond = this.ourbimInfo.expiredTime * 60
+        let realSecond = this.ourbimInfo.expiredTime * 60;
         if (this.timerCount >= realSecond - 10) {
           this.moreCount = realSecond - this.timerCount;
         }
