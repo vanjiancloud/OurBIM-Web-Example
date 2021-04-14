@@ -2,12 +2,12 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-14 11:11:44
+ * @LastEditTime: 2021-04-14 16:07:40
  * @description: 
 -->
 <template>
   <div>
-    <div class="handle-mask" v-if="isMask"></div>
+    <div class="handle-mask" @click.stop="" v-if="isMask"></div>
     <div class="todo-footer">
       <div class="todo-main">
         <!-- 视角 -->
@@ -323,24 +323,12 @@
             />
           </el-tooltip>
           <el-collapse-transition>
-            <div class="show-speed" v-if="imgList[1].state === 1">
-              <el-slider
-                v-model="imgList[1].data.speed"
-                :min="1"
-                :max="8"
-                @mousedown.native="openMask"
-                @click.native.stop=""
-                @change="changeSpeed"
-              ></el-slider>
-            </div>
-          </el-collapse-transition>
-          <el-collapse-transition>
             <div class="show-speed" v-if="imgList[8].state === 1">
               <el-slider
-              v-model="imgList[8].data.value"
-              :min="0"
-                :max="1"
-                :step="0.01"
+                v-model="imgList[8].data.value"
+                :min="0"
+                :max="10"
+                :step="1"
                 @mousedown.native="openMask"
                 @click.native.stop=""
                 @change="changeResolve"
@@ -817,6 +805,9 @@ export default {
        * @Date: 2021-03-17 09:51:33
        * @description: 关闭tool
        */
+      if (this.isMask) {
+        return
+      }
       this.angleTool = false;
       this.followTool = false;
       this.personTool = false;

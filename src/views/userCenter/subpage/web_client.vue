@@ -728,7 +728,7 @@ export default {
           this.updateOrder();
         }
       }
-      if (e.type === 8 && e.data) {
+      if (e.type === 8 && e.data !== undefined) {
         this.handleState = 12;
         this.listenTodoInfo = e;
         this.updateOrder();
