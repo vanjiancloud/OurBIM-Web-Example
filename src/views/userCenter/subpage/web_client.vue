@@ -1,6 +1,6 @@
 <template>
   <div class="bim-main">
-    <iframe
+    <!-- <iframe
       class="bim-web"
       allowfullscreen="true"
       :class="runTimeCode === 0 ? '' : 'phone-bim'"
@@ -52,7 +52,7 @@
         v-if="hiddenState === 4"
         v-text="$t('webClient.loadBox.message[6]')"
       ></div>
-    </div>
+    </div> -->
     <div v-if="runTimeCode === 0 && controllerInfo.uiBar">
       <div class="mutual-bim">
         <div

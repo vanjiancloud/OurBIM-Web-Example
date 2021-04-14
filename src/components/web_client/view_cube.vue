@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-14 10:55:36
+ * @LastEditTime: 2021-04-14 14:32:09
  * @description: 
 -->
 <template>
@@ -21,17 +21,20 @@
         :class="[
           item.className,
           activeFace === item.value ? 'active-face' : '',
+          'face-' + index
         ]"
       >
         <span v-text="item.label"></span>
-        <div class="edge-0" @click.stop="handleEdge(index, 0)"></div>
-        <div class="edge-1" @click.stop="handleEdge(index, 1)"></div>
-        <div class="edge-2" @click.stop="handleEdge(index, 2)"></div>
-        <div class="edge-3" @click.stop="handleEdge(index, 3)"></div>
+        <!-- 边 -->
+        <div class="edge-0" @click.stop="handleEdge(index, 0)" @mouseenter="enterEdge(index, 0)" @mouseleave="leaveEdge(index, 0)"></div>
+        <div class="edge-1" @click.stop="handleEdge(index, 1)" @mouseenter="enterEdge(index, 1)" @mouseleave="leaveEdge(index, 1)"></div>
+        <div class="edge-2" @click.stop="handleEdge(index, 2)" @mouseenter="enterEdge(index, 2)" @mouseleave="leaveEdge(index, 2)"></div>
+        <div class="edge-3" @click.stop="handleEdge(index, 3)" @mouseenter="enterEdge(index, 3)" @mouseleave="leaveEdge(index, 3)"></div>
+        <!-- 点 -->
         <div class="spot-0" @click.stop="handleSpot(index, 0)" @mouseenter="enterSpot(index, 0)" @mouseleave="leaveSpot(index, 0)"></div>
-        <div class="spot-1" @click.stop="handleSpot(index, 1)"></div>
-        <div class="spot-2" @click.stop="handleSpot(index, 2)"></div>
-        <div class="spot-3" @click.stop="handleSpot(index, 3)"></div>
+        <div class="spot-1" @click.stop="handleSpot(index, 1)" @mouseenter="enterSpot(index, 1)" @mouseleave="leaveSpot(index, 1)"></div>
+        <div class="spot-2" @click.stop="handleSpot(index, 2)" @mouseenter="enterSpot(index, 2)" @mouseleave="leaveSpot(index, 2)"></div>
+        <div class="spot-3" @click.stop="handleSpot(index, 3)" @mouseenter="enterSpot(index, 3)" @mouseleave="leaveSpot(index, 3)"></div>
       </div>
     </div>
     <img class="go-front" @click="goFront" src="../../assets/images/todo/home.png" mode=""></img>
@@ -43,7 +46,7 @@
               <div :class="activeType === item.value ? 'active-type' : ''" v-text="item.label" class="select-type" @click="changeType(item)"></div>
             </div>
           </div>
-        </transition>        
+        </transition>
       </div>
   </div>
 </template>
@@ -86,6 +89,7 @@ export default {
       ],
       activeFace: null,
       activeType: 1,
+      activeSpot: null,
       downInfo: {
         x: -45,
         y: 45,
@@ -120,7 +124,7 @@ export default {
   created() {
     if (this.$route.query.locale) {
       this.$i18n.locale = this.$route.query.locale;
-    }else{
+    } else {
       this.$i18n.locale = "zh";
     }
     if (this.$i18n.locale) {
@@ -137,6 +141,71 @@ export default {
     }
   },
   methods: {
+    enterEdge(node, e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-14 13:28:00
+       * @description: 边 鼠标移入
+       */
+      if ((node === 0 && e === 0) || (node === 2 && e === 2)) {
+        this.setActiveEdge(0, 0, true, 'edge')
+        this.setActiveEdge(2, 2, true, 'edge')
+      }
+      if ((node === 2 && e === 3) || (node === 4 && e === 0)) {
+        this.setActiveEdge(2, 3, true, 'edge')
+        this.setActiveEdge(4, 0, true, 'edge')
+      }
+      if ((node === 1 && e === 0) || (node === 2 && e === 0)) {
+        this.setActiveEdge(1, 0, true, 'edge')
+        this.setActiveEdge(2, 0, true, 'edge')
+      }
+    },
+    leaveEdge(node, e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-14 13:28:17
+       * @description: 边 鼠标移出
+       */
+      if ((node === 0 && e === 0) || (node === 2 && e === 2)) {
+        this.setActiveEdge(0, 0, false, 'edge')
+        this.setActiveEdge(2, 2, false, 'edge')
+      }
+    },
+    setActiveEdge(node, e, isActive, isArea) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-14 13:50:23
+       * @description: 设置选中边
+       */
+      if (isActive) {
+        let faceNode = document.querySelectorAll(".face-" + node)[0];
+        let edgeNode = faceNode.querySelectorAll("." + isArea + "-" + e)[0];
+        edgeNode.classList.add("active-bgi");
+      } else{
+        let faceNode = document.querySelectorAll(".face-" + node)[0];
+        let edgeNode = faceNode.querySelectorAll("." + isArea + "-" + e)[0];
+        edgeNode.classList.remove("active-bgi");
+      }      
+    },
+    enterSpot(node, e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-14 10:42:30
+       * @description: 点 鼠标移入
+       */
+      // console.log(node, e);
+      // if (node === 0 &&  e === 0) {
+      //   this.activeSpot = 0
+      // }
+    },
+    leaveSpot(node, e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-14 10:42:20
+       * @description: 点 鼠标移出
+       */
+      // console.log(node, e);
+    },
     handleEdge(node, e) {
       /**
        * @Author: zk
@@ -147,7 +216,7 @@ export default {
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       // let oldDownInfo = JSON.parse(JSON.stringify(this.downInfo))
       if (!this.isAnimation) {
-        return
+        return;
       }
       switch (node) {
         case 0:
@@ -371,22 +440,6 @@ export default {
       }
       this.resetAngle();
     },
-    enterSpot(node, e){
-    /**
-     * @Author: zk
-     * @Date: 2021-04-14 10:42:30
-     * @description: 鼠标移入
-     */  
-      console.log(node, e);
-    },
-    leaveSpot(node, e){
-    /**
-     * @Author: zk
-     * @Date: 2021-04-14 10:42:20
-     * @description: 鼠标移出
-     */  
-      console.log(node, e);
-    },
     handleSpot(node, e) {
       /**
        * @Author: zk
@@ -396,7 +449,7 @@ export default {
        */
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       if (!this.isAnimation) {
-        return
+        return;
       }
       switch (node) {
         case 0:
@@ -627,7 +680,7 @@ export default {
        * @description: 旋转确认 前 0 后 1 上 2 下 3 左 4 右 5
        */
       if (!this.isAnimation) {
-        return
+        return;
       }
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       const oldDownInfo = JSON.parse(JSON.stringify(this.downInfo));
@@ -726,7 +779,7 @@ export default {
             clearTimeout(realAnimation);
           }, 100);
         }, 1010);
-      }else{
+      } else {
         let realTimer = setTimeout(() => {
           this.isAnimation = false;
           clearTimeout(realTimer);
@@ -773,7 +826,8 @@ export default {
 .box-main {
   position: fixed;
   top: 26px;
-  right: 80px;
+  // right: 80px;
+  left: 80px;
   .go-front {
     width: 24px;
     height: 24px;
@@ -905,6 +959,7 @@ export default {
   z-index: 2;
   left: @left !important;
   top: @top !important;
+  // background-color: #ff6600;
 
   &:hover {
     background-color: #ff6600;
@@ -926,7 +981,7 @@ export default {
 .spot-3 {
   .spotAll(60px, 60px);
 }
-.active-bgi{
+.active-bgi {
   background-color: #ff6600;
 }
 </style>
