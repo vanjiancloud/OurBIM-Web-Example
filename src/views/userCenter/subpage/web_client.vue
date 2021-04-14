@@ -588,8 +588,13 @@ export default {
           }
           break;
         case 12:
+          // 分解模型
           params.id = 48
           params.splitValue = this.listenTodoInfo.data
+          break;
+        case 13:
+          params.id = 14
+          params.plateType = this.isMobile() ? 1 : 0
           break;
         default:
           break;
@@ -757,6 +762,9 @@ export default {
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
             this.$refs.getFooter.resetPointList(realData.object);
+          } else if (realData.id === "6") {
+            this.handleState = 13
+            this.updateOrder()
           }
         }
       };
