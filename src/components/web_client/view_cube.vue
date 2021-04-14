@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-14 14:32:09
+ * @LastEditTime: 2021-04-14 15:37:10
  * @description: 
 -->
 <template>
@@ -26,15 +26,15 @@
       >
         <span v-text="item.label"></span>
         <!-- 边 -->
-        <div class="edge-0" @click.stop="handleEdge(index, 0)" @mouseenter="enterEdge(index, 0)" @mouseleave="leaveEdge(index, 0)"></div>
-        <div class="edge-1" @click.stop="handleEdge(index, 1)" @mouseenter="enterEdge(index, 1)" @mouseleave="leaveEdge(index, 1)"></div>
-        <div class="edge-2" @click.stop="handleEdge(index, 2)" @mouseenter="enterEdge(index, 2)" @mouseleave="leaveEdge(index, 2)"></div>
-        <div class="edge-3" @click.stop="handleEdge(index, 3)" @mouseenter="enterEdge(index, 3)" @mouseleave="leaveEdge(index, 3)"></div>
+        <div class="edge-0" @click.stop="handleEdge(index, 0)" @mouseenter="setEdge(index, 0, true)" @mouseleave="setEdge(index, 0, false)"></div>
+        <div class="edge-1" @click.stop="handleEdge(index, 1)" @mouseenter="setEdge(index, 1, true)" @mouseleave="setEdge(index, 1, false)"></div>
+        <div class="edge-2" @click.stop="handleEdge(index, 2)" @mouseenter="setEdge(index, 2, true)" @mouseleave="setEdge(index, 2, false)"></div>
+        <div class="edge-3" @click.stop="handleEdge(index, 3)" @mouseenter="setEdge(index, 3, true)" @mouseleave="setEdge(index, 3, false)"></div>
         <!-- 点 -->
-        <div class="spot-0" @click.stop="handleSpot(index, 0)" @mouseenter="enterSpot(index, 0)" @mouseleave="leaveSpot(index, 0)"></div>
-        <div class="spot-1" @click.stop="handleSpot(index, 1)" @mouseenter="enterSpot(index, 1)" @mouseleave="leaveSpot(index, 1)"></div>
-        <div class="spot-2" @click.stop="handleSpot(index, 2)" @mouseenter="enterSpot(index, 2)" @mouseleave="leaveSpot(index, 2)"></div>
-        <div class="spot-3" @click.stop="handleSpot(index, 3)" @mouseenter="enterSpot(index, 3)" @mouseleave="leaveSpot(index, 3)"></div>
+        <div class="spot-0" @click.stop="handleSpot(index, 0)" @mouseenter="setSpot(index, 0, true)" @mouseleave="setSpot(index, 0, false)"></div>
+        <div class="spot-1" @click.stop="handleSpot(index, 1)" @mouseenter="setSpot(index, 1, true)" @mouseleave="setSpot(index, 1, false)"></div>
+        <div class="spot-2" @click.stop="handleSpot(index, 2)" @mouseenter="setSpot(index, 2, true)" @mouseleave="setSpot(index, 2, false)"></div>
+        <div class="spot-3" @click.stop="handleSpot(index, 3)" @mouseenter="setSpot(index, 3, true)" @mouseleave="setSpot(index, 3, false)"></div>
       </div>
     </div>
     <img class="go-front" @click="goFront" src="../../assets/images/todo/home.png" mode=""></img>
@@ -89,7 +89,6 @@ export default {
       ],
       activeFace: null,
       activeType: 1,
-      activeSpot: null,
       downInfo: {
         x: -45,
         y: 45,
@@ -141,36 +140,6 @@ export default {
     }
   },
   methods: {
-    enterEdge(node, e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-04-14 13:28:00
-       * @description: 边 鼠标移入
-       */
-      if ((node === 0 && e === 0) || (node === 2 && e === 2)) {
-        this.setActiveEdge(0, 0, true, 'edge')
-        this.setActiveEdge(2, 2, true, 'edge')
-      }
-      if ((node === 2 && e === 3) || (node === 4 && e === 0)) {
-        this.setActiveEdge(2, 3, true, 'edge')
-        this.setActiveEdge(4, 0, true, 'edge')
-      }
-      if ((node === 1 && e === 0) || (node === 2 && e === 0)) {
-        this.setActiveEdge(1, 0, true, 'edge')
-        this.setActiveEdge(2, 0, true, 'edge')
-      }
-    },
-    leaveEdge(node, e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-04-14 13:28:17
-       * @description: 边 鼠标移出
-       */
-      if ((node === 0 && e === 0) || (node === 2 && e === 2)) {
-        this.setActiveEdge(0, 0, false, 'edge')
-        this.setActiveEdge(2, 2, false, 'edge')
-      }
-    },
     setActiveEdge(node, e, isActive, isArea) {
       /**
        * @Author: zk
@@ -187,24 +156,77 @@ export default {
         edgeNode.classList.remove("active-bgi");
       }      
     },
-    enterSpot(node, e) {
+    setEdge(node, e, isShow) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-14 13:28:00
+       * @description: 边 鼠标移入移出
+       */
+      // 上
+      if ((node === 0 && e === 0) || (node === 2 && e === 2)) {
+        this.setActiveEdge(0, 0, isShow, 'edge')
+        this.setActiveEdge(2, 2, isShow, 'edge')
+      }
+      if ((node === 2 && e === 3) || (node === 4 && e === 0)) {
+        this.setActiveEdge(2, 3, isShow, 'edge')
+        this.setActiveEdge(4, 0, isShow, 'edge')
+      }
+      if ((node === 1 && e === 0) || (node === 2 && e === 0)) {
+        this.setActiveEdge(1, 0, isShow, 'edge')
+        this.setActiveEdge(2, 0, isShow, 'edge')
+      }
+      if ((node === 2 && e === 1) || (node === 5 && e === 0)) {
+        this.setActiveEdge(2, 1, isShow, 'edge')
+        this.setActiveEdge(5, 0, isShow, 'edge')
+      }
+      // 中
+      if ((node === 5 && e === 3) || (node === 0 && e === 1)) {
+        this.setActiveEdge(5, 3, isShow, 'edge')
+        this.setActiveEdge(0, 1, isShow, 'edge')
+      }
+      if ((node === 0 && e === 3) || (node === 4 && e === 1)) {
+        this.setActiveEdge(0, 3, isShow, 'edge')
+        this.setActiveEdge(4, 1, isShow, 'edge')
+      }
+      if ((node === 4 && e === 3) || (node === 1 && e === 1)) {
+        this.setActiveEdge(4, 3, isShow, 'edge')
+        this.setActiveEdge(1, 1, isShow, 'edge')
+      }
+      if ((node === 1 && e === 3) || (node === 5 && e === 1)) {
+        this.setActiveEdge(1, 3, isShow, 'edge')
+        this.setActiveEdge(5, 1, isShow, 'edge')
+      }
+      // 下
+      if ((node === 3 && e === 0) || (node === 0 && e === 2)) {
+        this.setActiveEdge(3, 0, isShow, 'edge')
+        this.setActiveEdge(0, 2, isShow, 'edge')
+      }
+      if ((node === 3 && e === 3) || (node === 4 && e === 2)) {
+        this.setActiveEdge(3, 3, isShow, 'edge')
+        this.setActiveEdge(4, 2, isShow, 'edge')
+      }
+      if ((node === 3 && e === 2) || (node === 1 && e === 2)) {
+        this.setActiveEdge(3, 2, isShow, 'edge')
+        this.setActiveEdge(1, 2, isShow, 'edge')
+      }
+      if ((node === 3 && e === 1) || (node === 5 && e === 2)) {
+        this.setActiveEdge(3, 1, isShow, 'edge')
+        this.setActiveEdge(5, 2, isShow, 'edge')
+      }
+    },    
+    setSpot(node, e, isShow) {
       /**
        * @Author: zk
        * @Date: 2021-04-14 10:42:30
        * @description: 点 鼠标移入
        */
-      // console.log(node, e);
-      // if (node === 0 &&  e === 0) {
-      //   this.activeSpot = 0
-      // }
-    },
-    leaveSpot(node, e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-04-14 10:42:20
-       * @description: 点 鼠标移出
-       */
-      // console.log(node, e);
+      console.log(node, e);
+      if ((node === 0 &&  e === 0) ) {
+        this.setActiveEdge(0, 0, true, 'spot')
+        this.setActiveEdge(2, 1, true, 'spot')
+        this.setActiveEdge(4, 2, true, 'spot')
+        // this.setActiveEdge(2, 2, isShow, 'edge')
+      }
     },
     handleEdge(node, e) {
       /**
