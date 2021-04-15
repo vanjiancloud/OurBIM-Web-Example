@@ -211,8 +211,7 @@ export default {
       treeEmpty: this.$t("webClient.browser.tips[0]"),
     };
   },
-  watch: {
-  },
+  watch: {},
   mounted() {
     this.appId = this.$route.query.appid;
     this.appToken = this.$route.query.token;
@@ -354,24 +353,26 @@ export default {
       this.leafInfo = e;
       if (index === 0) {
         // 选中
-        if (e.checked) {
-          this.memberInfo = null;
-          e.checked = false;
-        } else {
-          this.memberInfo = e.data;
-          this.$refs.setTree.setCheckedKeys([e.key]);
-          let messageInfo = {
-            prex: "ourbimMessage",
-            type: 20001,
-            data: e.data,
-            message: "",
-          };
-          this.sentParentIframe(messageInfo);
-        }
-        e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
-        this.handleState = 9;
-        if (e.data.haveChild === "0") {
-          this.updateOrder();
+        if (e.isLeaf) {
+          if (e.checked) {
+            this.memberInfo = null;
+            e.checked = false;
+          } else {
+            this.memberInfo = e.data;
+            this.$refs.setTree.setCheckedKeys([e.key]);
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 20001,
+              data: e.data,
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
+          }
+          e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
+          this.handleState = 9;
+          if (e.data.haveChild === "0") {
+            this.updateOrder();
+          }
         }
       } else if (index === 1) {
         this.handleState = 8;
@@ -550,12 +551,12 @@ export default {
           break;
         case 12:
           // 分解模型
-          params.id = 48
-          params.splitValue = this.listenTodoInfo.data
+          params.id = 48;
+          params.splitValue = this.listenTodoInfo.data;
           break;
         case 13:
-          params.id = 14
-          params.plateType = this.isMobile() ? 1 : 0
+          params.id = 14;
+          params.plateType = this.isMobile() ? 1 : 0;
           break;
         default:
           break;
@@ -590,7 +591,7 @@ export default {
     },
     async getMemberList(e) {
       let params = {
-        appliId: this.appId
+        appliId: this.appId,
       };
       e ? (params.uuid = e) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
@@ -626,6 +627,7 @@ export default {
             return resolve(res);
           } else {
             this.treeEmpty = this.$t("webClient.browser.tips[1]");
+            return resolve([]);
           }
         });
       }
@@ -724,20 +726,21 @@ export default {
           } else if (realData.id === "3") {
             this.$refs.getFooter.resetPointList(realData.object);
           } else if (realData.id === "6") {
-            this.hiddenState = 0;            
+            this.hiddenState = 0;
             //普通的watch监听
             if (this.ourbimInfo.expiredTime > 0) {
               if (this.isFade) {
                 this.$message({
                   type: "success",
-                  message: "免费体验时长" + this.ourbimInfo.expiredTime + "分钟",
+                  message:
+                    "免费体验时长" + this.ourbimInfo.expiredTime + "分钟",
                 });
               }
               this.setTimePass();
             }
             this.isFade = false;
-            this.handleState = 13
-            this.updateOrder()
+            this.handleState = 13;
+            this.updateOrder();
           }
         }
       };
