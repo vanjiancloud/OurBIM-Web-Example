@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-14 16:07:40
+ * @LastEditTime: 2021-04-16 15:45:19
  * @description: 
 -->
 <template>
@@ -34,6 +34,7 @@
             <el-tooltip
               class="item"
               effect="dark"
+              :enterable="false"
               :content="imgList[0].title"
               placement="top"
             >
@@ -50,6 +51,7 @@
         <div class="image-main">
           <el-tooltip
             class="item"
+            :enterable="false"
             effect="dark"
             :content="imgList[1].title"
             placement="top"
@@ -80,6 +82,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[2].title"
             placement="top"
           >
@@ -96,6 +99,7 @@
                 v-for="(item, index) in sliceList"
                 :key="index"
                 class="item"
+                :enterable="false"
                 effect="dark"
                 :content="item.content"
                 placement="left"
@@ -117,6 +121,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[3].title"
             placement="top"
           >
@@ -133,6 +138,7 @@
                 v-for="(item, index) in cuttingList"
                 :key="index"
                 class="item"
+                :enterable="false"
                 effect="dark"
                 :content="item.content"
                 placement="left"
@@ -148,6 +154,7 @@
                 popper-class="tooltip-bgi"
                 placement="right-end"
                 v-model="angleTool"
+                :enterable="false"
                 transition="el-fade-in-linear"
                 manual
               >
@@ -195,6 +202,7 @@
                 <el-tooltip
                   class="item"
                   effect="dark"
+                  :enterable="false"
                   :content="cuttingTips[3]"
                   placement="left"
                 >
@@ -218,6 +226,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[4].title"
             placement="top"
           >
@@ -234,6 +243,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[5].title"
             placement="top"
           >
@@ -250,6 +260,7 @@
           <el-tooltip
             popper-class="follow-bgi"
             placement="top"
+            :enterable="false"
             v-model="followTool"
             transition="el-fade-in-linear"
             manual
@@ -279,6 +290,7 @@
             <el-tooltip
               class="item"
               effect="dark"
+              :enterable="false"
               :content="imgList[6].title"
               placement="top"
             >
@@ -296,6 +308,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[7].title"
             placement="top"
           >
@@ -312,6 +325,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[8].title"
             placement="top"
           >
@@ -341,6 +355,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[9].title"
             placement="top"
           >
@@ -383,6 +398,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[10].title"
             placement="top"
           >
@@ -399,6 +415,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[11].title"
             placement="top"
           >
@@ -846,7 +863,7 @@ export default {
       this.imgList[e].url = oldUrl;
       this.imgList[e].state = 0;
     },
-    resetpPrson(e) {
+    resetPerson(e) {
       /**
        * @Author: zk
        * @Date: 2021-03-12 11:39:50

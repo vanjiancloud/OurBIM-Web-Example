@@ -71,9 +71,12 @@
           <div class="tree-content">
             <el-tree
               ref="setTree"
+              @check="checkTree"
               :empty-text="treeEmpty"
               :props="propsMember"
               :load="loadNode"
+              show-checkbox
+              highlight-current
               node-key="uuid"
               lazy
               accordion
@@ -81,24 +84,23 @@
               <span
                 class="custom-tree-node"
                 :class="
-                  node.checked && node.data.haveChild === '0'
+                  node.data.activeSelect === 1 && node.data.haveChild === '0'
                     ? 'tree-select'
                     : ''
                 "
                 slot-scope="{ node }"
-                @click.stop="handleTree(node, 0)"
+                @click="handleTree(node, 0)"
               >
+              
                 <span class="label-span">{{ node.label }}</span>
                 <span>
                   <i
                     class="iconfont icon-xianshi2"
-                    v-if="node.data.activeState === 0"
-                    @click.stop="handleTree(node, 1)"
+                    v-if="!node.checked"
                   ></i>
                   <i
+                    v-else
                     class="iconfont icon-yincang1"
-                    v-if="node.data.activeState === 1"
-                    @click.stop="handleTree(node, 2)"
                   ></i>
                 </span>
               </span>
@@ -323,7 +325,7 @@ export default {
        */
       if (e === 2) {
         // 第三人称
-        this.$refs.getFooter.resetpPrson(1);
+        this.$refs.getFooter.resetPerson(1);
       }
       this.shadowType = e;
       if (e === 0) {
@@ -344,6 +346,23 @@ export default {
       this.handleState = 10;
       this.updateOrder();
     },
+    checkTree(data, e){
+    /**
+     * @Author: zk
+     * @Date: 2021-04-16 11:56:27
+     * @description: 显示隐藏
+     */
+      this.leafInfo = data;
+      if (e.checkedKeys.includes(data.uuid)) {
+        this.handleState = 8;
+        data.activeState = 1;
+        this.updateOrder();
+      }else{
+        this.handleState = 8;
+        data.activeState = 0;
+        this.updateOrder();
+      }
+    },
     handleTree(e, index) {
       /**
        * @Author: zk
@@ -354,12 +373,10 @@ export default {
       if (index === 0) {
         // 选中
         if (e.isLeaf) {
-          if (e.checked) {
+          if (e.data.activeSelect === 0) {
             this.memberInfo = null;
-            e.checked = false;
           } else {
             this.memberInfo = e.data;
-            this.$refs.setTree.setCheckedKeys([e.key]);
             let messageInfo = {
               prex: "ourbimMessage",
               type: 20001,
@@ -374,14 +391,6 @@ export default {
             this.updateOrder();
           }
         }
-      } else if (index === 1) {
-        this.handleState = 8;
-        e.data.activeState = 1;
-        this.updateOrder();
-      } else if (index === 2) {
-        this.handleState = 8;
-        e.data.activeState = 0;
-        this.updateOrder();
       }
     },
     handleOrder(e) {
@@ -390,6 +399,9 @@ export default {
        * @Date: 2021-03-08 10:40:10
        * @description: cube指令
        */
+      if (this.listenInfo === 0) {
+        this.$refs.getFooter.resetPerson(1);
+      }
       this.handleState = 6;
       this.cubeState = e;
       this.updateOrder();
@@ -492,10 +504,10 @@ export default {
         case 8:
           // 构件显示 隐藏 半透明
           // console.log(this.leafInfo);
-          params.mn = this.leafInfo.key;
-          if (this.leafInfo.data.activeState === 0) {
+          params.mn = this.leafInfo.uuid;
+          if (this.leafInfo.activeState === 0) {
             params.id = 26;
-          } else if (this.leafInfo.data.activeState === 1) {
+          } else if (this.leafInfo.activeState === 1) {
             params.id = 27;
           } else {
             params.id = 30;
@@ -573,7 +585,7 @@ export default {
           if (params.id === 1 && res.data && res.data.data) {
             // 切换到主视图 重置状态
             let realView = res.data.data.viewMode === "1" ? 0 : 1;
-            this.$refs.getFooter.resetpPrson(realView);
+            this.$refs.getFooter.resetPerson(realView);
             let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
             this.$refs.getCube.resetActive(realProject);
           }
@@ -1396,9 +1408,7 @@ export default {
     width: 120vw !important;
   }
 }
-.tree-select {
-  background: rgba(255, 255, 255, 0.2);
-}
+
 </style>
 <style lang="less" >
 .tree-content {
@@ -1418,6 +1428,19 @@ export default {
       }
       .is-leaf {
         color: transparent;
+      }
+      .is-current{      
+        .tree-select{
+          background: rgba(255, 255, 255, 0.2);
+        }
+      }
+      .el-checkbox{
+        position: absolute;
+        right: 0;
+      }
+      .el-checkbox__inner{
+        background-color: transparent;
+        border-color: transparent;
       }
     }
   }
