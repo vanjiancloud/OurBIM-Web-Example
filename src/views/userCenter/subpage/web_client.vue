@@ -190,7 +190,6 @@ export default {
       leafInfo: null,
       listenInfo: null,
       cubeState: 6,
-      viewHeight: 0,
       runTimeCode: 0,
       timerInfo: null,
       memberInfo: null,
@@ -212,21 +211,7 @@ export default {
       treeEmpty: this.$t("webClient.browser.tips[0]"),
     };
   },
-  watch: {
-    viewHeight() {
-      //普通的watch监听        
-      if (this.ourbimInfo.expiredTime > 0) {
-          if (this.isFade) {
-            this.$message({
-              type: "success",
-              message: "免费体验时长" + this.ourbimInfo.expiredTime + "分钟",
-            });
-          }
-          this.setTimePass();
-        }
-      this.isFade = false;
-    },
-  },
+  watch: {},
   mounted() {
     this.appId = this.$route.query.appid;
     this.appToken = this.$route.query.token;
@@ -256,27 +241,6 @@ export default {
       (e) => {
         if (e.data.prex === "pxymessage") {
           this.getError(e.data);
-          if (
-            e.data.data &&
-            e.data.data.frameHeight > 0 &&
-            e.data.type !== 500
-          ) {
-            this.viewHeight = e.data.data.frameHeight;
-          }
-          if (isiPad !== false || isMac !== false) {
-            if (
-              e.data.data &&
-              e.data.data.height &&
-              e.data.data.height > 0 &&
-              e.data.type === 910
-            ) {
-              let dialogTimer = setTimeout(() => {
-                this.hiddenState = 0;
-                this.viewHeight = e.data.data.frameHeight;
-                clearTimeout(dialogTimer);
-              }, 1000);
-            }
-          }
         }
         if (e.data.prex === "ourbimMessage") {
           // 控制栏显示隐藏
@@ -287,10 +251,6 @@ export default {
       },
       false
     );
-
-    if (isiPad !== false) {
-      this.viewHeight = 1;
-    }
   },
   destroyed() {
     this.clearTimePass();
@@ -393,24 +353,26 @@ export default {
       this.leafInfo = e;
       if (index === 0) {
         // 选中
-        if (e.checked) {
-          this.memberInfo = null;
-          e.checked = false;
-        } else {
-          this.memberInfo = e.data;
-          this.$refs.setTree.setCheckedKeys([e.key]);
-          let messageInfo = {
-            prex: "ourbimMessage",
-            type: 20001,
-            data: e.data,
-            message: "",
-          };
-          this.sentParentIframe(messageInfo);
-        }
-        e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
-        this.handleState = 9;
-        if (e.data.haveChild === "0") {
-          this.updateOrder();
+        if (e.isLeaf) {
+          if (e.checked) {
+            this.memberInfo = null;
+            e.checked = false;
+          } else {
+            this.memberInfo = e.data;
+            this.$refs.setTree.setCheckedKeys([e.key]);
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 20001,
+              data: e.data,
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
+          }
+          e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
+          this.handleState = 9;
+          if (e.data.haveChild === "0") {
+            this.updateOrder();
+          }
         }
       } else if (index === 1) {
         this.handleState = 8;
@@ -577,7 +539,7 @@ export default {
                 params.id = 45;
                 break;
               case 3:
-                // params.id = 45;
+                params.id = 47;
                 break;
               case 4:
                 params.id = 46;
@@ -586,6 +548,15 @@ export default {
                 break;
             }
           }
+          break;
+        case 12:
+          // 分解模型
+          params.id = 48;
+          params.splitValue = this.listenTodoInfo.data;
+          break;
+        case 13:
+          params.id = 14;
+          params.plateType = this.isMobile() ? 1 : 0;
           break;
         default:
           break;
@@ -620,7 +591,7 @@ export default {
     },
     async getMemberList(e) {
       let params = {
-        appliId: this.appId        
+        appliId: this.appId,
       };
       e ? (params.uuid = e) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
@@ -656,6 +627,7 @@ export default {
             return resolve(res);
           } else {
             this.treeEmpty = this.$t("webClient.browser.tips[1]");
+            return resolve([]);
           }
         });
       }
@@ -724,6 +696,11 @@ export default {
           this.updateOrder();
         }
       }
+      if (e.type === 8 && e.data !== undefined) {
+        this.handleState = 12;
+        this.listenTodoInfo = e;
+        this.updateOrder();
+      }
     },
     initWebSocket() {
       //初始化weosocket
@@ -748,6 +725,22 @@ export default {
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
             this.$refs.getFooter.resetPointList(realData.object);
+          } else if (realData.id === "6") {
+            this.hiddenState = 0;
+            //普通的watch监听
+            if (this.ourbimInfo.expiredTime > 0) {
+              if (this.isFade) {
+                this.$message({
+                  type: "success",
+                  message:
+                    "免费体验时长" + this.ourbimInfo.expiredTime + "分钟",
+                });
+              }
+              this.setTimePass();
+            }
+            this.isFade = false;
+            this.handleState = 13;
+            this.updateOrder();
           }
         }
       };
@@ -765,17 +758,17 @@ export default {
       let appId = this.$route.query.appid;
       MODELAPI.GETMODELINFO({
         appliId: appId,
-        token: this.appToken
+        token: this.appToken,
       })
         .then((res) => {
           if (res.data.code === 0 && res.data.data) {
             this.webUrl = res.data.data.url;
             this.taskId = res.data.data.taskId;
-            this.ourbimInfo = res.data.data
+            this.ourbimInfo = res.data.data;
             if (res.data.data.appliType === "0") {
-              this.controllerInfo.uiBar = true
-            }else{
-              this.controllerInfo.uiBar = false              
+              this.controllerInfo.uiBar = true;
+            } else {
+              this.controllerInfo.uiBar = false;
             }
             let messageInfo = {
               prex: "ourbimMessage",
@@ -833,7 +826,7 @@ export default {
       this.clearTimePass();
       this.timerInfo = setInterval(() => {
         this.timerCount++;
-        let realSecond = this.ourbimInfo.expiredTime * 60
+        let realSecond = this.ourbimInfo.expiredTime * 60;
         if (this.timerCount >= realSecond - 10) {
           this.moreCount = realSecond - this.timerCount;
         }
