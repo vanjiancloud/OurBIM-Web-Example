@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-14 16:21:39
+ * @LastEditTime: 2021-04-16 15:42:29
  * @description: 
 -->
 <template>
@@ -802,6 +802,10 @@ export default {
        * @Date: 2021-04-01 17:56:46
        * @description: 重置角度
        */
+      if (this.activeType === 2) {
+        this.activeType = 1;
+        this.$emit("handleType", 2);
+      }
       // console.log("x:", this.downInfo.x, "y:", this.downInfo.y, "z:", this.downInfo.z);
       this.$emit("handleOrder", this.activeOrder);
       if (

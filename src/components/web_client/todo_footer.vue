@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-16 13:37:58
+ * @LastEditTime: 2021-04-16 15:45:19
  * @description: 
 -->
 <template>
@@ -863,7 +863,7 @@ export default {
       this.imgList[e].url = oldUrl;
       this.imgList[e].state = 0;
     },
-    resetpPrson(e) {
+    resetPerson(e) {
       /**
        * @Author: zk
        * @Date: 2021-03-12 11:39:50
