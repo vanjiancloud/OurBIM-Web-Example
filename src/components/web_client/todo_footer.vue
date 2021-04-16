@@ -2,12 +2,12 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-13 13:50:41
+ * @LastEditTime: 2021-04-16 13:37:58
  * @description: 
 -->
 <template>
   <div>
-    <div class="handle-mask" v-if="isMask"></div>
+    <div class="handle-mask" @click.stop="" v-if="isMask"></div>
     <div class="todo-footer">
       <div class="todo-main">
         <!-- 视角 -->
@@ -34,6 +34,7 @@
             <el-tooltip
               class="item"
               effect="dark"
+              :enterable="false"
               :content="imgList[0].title"
               placement="top"
             >
@@ -50,6 +51,7 @@
         <div class="image-main">
           <el-tooltip
             class="item"
+            :enterable="false"
             effect="dark"
             :content="imgList[1].title"
             placement="top"
@@ -80,6 +82,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[2].title"
             placement="top"
           >
@@ -96,6 +99,7 @@
                 v-for="(item, index) in sliceList"
                 :key="index"
                 class="item"
+                :enterable="false"
                 effect="dark"
                 :content="item.content"
                 placement="left"
@@ -117,6 +121,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[3].title"
             placement="top"
           >
@@ -133,6 +138,7 @@
                 v-for="(item, index) in cuttingList"
                 :key="index"
                 class="item"
+                :enterable="false"
                 effect="dark"
                 :content="item.content"
                 placement="left"
@@ -148,6 +154,7 @@
                 popper-class="tooltip-bgi"
                 placement="right-end"
                 v-model="angleTool"
+                :enterable="false"
                 transition="el-fade-in-linear"
                 manual
               >
@@ -195,6 +202,7 @@
                 <el-tooltip
                   class="item"
                   effect="dark"
+                  :enterable="false"
                   :content="cuttingTips[3]"
                   placement="left"
                 >
@@ -218,6 +226,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[4].title"
             placement="top"
           >
@@ -234,6 +243,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[5].title"
             placement="top"
           >
@@ -250,6 +260,7 @@
           <el-tooltip
             popper-class="follow-bgi"
             placement="top"
+            :enterable="false"
             v-model="followTool"
             transition="el-fade-in-linear"
             manual
@@ -279,6 +290,7 @@
             <el-tooltip
               class="item"
               effect="dark"
+              :enterable="false"
               :content="imgList[6].title"
               placement="top"
             >
@@ -296,6 +308,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[7].title"
             placement="top"
           >
@@ -312,6 +325,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[8].title"
             placement="top"
           >
@@ -324,7 +338,15 @@
           </el-tooltip>
           <el-collapse-transition>
             <div class="show-speed" v-if="imgList[8].state === 1">
-              <el-slider v-model="imgList[8].data.speed"></el-slider>
+              <el-slider
+                v-model="imgList[8].data.value"
+                :min="0"
+                :max="10"
+                :step="1"
+                @mousedown.native="openMask"
+                @click.native.stop=""
+                @change="changeResolve"
+              ></el-slider>
             </div>
           </el-collapse-transition>
         </div>
@@ -333,6 +355,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[9].title"
             placement="top"
           >
@@ -375,6 +398,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[10].title"
             placement="top"
           >
@@ -391,6 +415,7 @@
           <el-tooltip
             class="item"
             effect="dark"
+            :enterable="false"
             :content="imgList[11].title"
             placement="top"
           >
@@ -570,7 +595,7 @@ export default {
           url: require("@/assets/images/todo/unchecked/resolve.png"),
           name: "resolve.png",
           data: {
-            speed: 50,
+            value: 0,
           },
           title: "分解模型",
         },
@@ -764,6 +789,19 @@ export default {
         data: e,
       });
     },
+    changeResolve(e){
+      /**
+       * @Author: zk
+       * @Date: 2021-04-14 11:06:54
+       * @description: 设置分解模型
+       */
+      this.isMask = false;
+      this.$emit("listenTodo", {
+        state: this.imgList[8].state,
+        type: 8,
+        data: e,
+      });
+    },
     changePerson(e) {
       /**
        * @Author: zk
@@ -784,6 +822,9 @@ export default {
        * @Date: 2021-03-17 09:51:33
        * @description: 关闭tool
        */
+      if (this.isMask) {
+        return
+      }
       this.angleTool = false;
       this.followTool = false;
       this.personTool = false;
@@ -993,7 +1034,7 @@ export default {
     },
     handleOrder(e) {
       // 功能未开放
-      if (e === 4 || e === 5 || e === 7 || e === 8 || e === 9) {
+      if (e === 4 || e === 5 || e === 7 || e === 9) {
         return;
       }
       // 选中状态

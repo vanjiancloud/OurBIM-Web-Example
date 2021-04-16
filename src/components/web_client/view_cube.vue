@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-14 09:42:54
+ * @LastEditTime: 2021-04-14 16:21:39
  * @description: 
 -->
 <template>
@@ -21,17 +21,20 @@
         :class="[
           item.className,
           activeFace === item.value ? 'active-face' : '',
+          'face-' + index
         ]"
       >
         <span v-text="item.label"></span>
-        <div class="edge-0" @click.stop="handleEdge(index, 0)"></div>
-        <div class="edge-1" @click.stop="handleEdge(index, 1)"></div>
-        <div class="edge-2" @click.stop="handleEdge(index, 2)"></div>
-        <div class="edge-3" @click.stop="handleEdge(index, 3)"></div>
-        <div class="spot-0" @click.stop="handleSpot(index, 0)"></div>
-        <div class="spot-1" @click.stop="handleSpot(index, 1)"></div>
-        <div class="spot-2" @click.stop="handleSpot(index, 2)"></div>
-        <div class="spot-3" @click.stop="handleSpot(index, 3)"></div>
+        <!-- 边 -->
+        <div class="edge-0" @click.stop="handleEdge(index, 0)" @mouseenter="setEdge(index, 0, true)" @mouseleave="setEdge(index, 0, false)"></div>
+        <div class="edge-1" @click.stop="handleEdge(index, 1)" @mouseenter="setEdge(index, 1, true)" @mouseleave="setEdge(index, 1, false)"></div>
+        <div class="edge-2" @click.stop="handleEdge(index, 2)" @mouseenter="setEdge(index, 2, true)" @mouseleave="setEdge(index, 2, false)"></div>
+        <div class="edge-3" @click.stop="handleEdge(index, 3)" @mouseenter="setEdge(index, 3, true)" @mouseleave="setEdge(index, 3, false)"></div>
+        <!-- 点 -->
+        <div class="spot-0" @click.stop="handleSpot(index, 0)" @mouseenter="setSpot(index, 0, true)" @mouseleave="setSpot(index, 0, false)"></div>
+        <div class="spot-1" @click.stop="handleSpot(index, 1)" @mouseenter="setSpot(index, 1, true)" @mouseleave="setSpot(index, 1, false)"></div>
+        <div class="spot-2" @click.stop="handleSpot(index, 2)" @mouseenter="setSpot(index, 2, true)" @mouseleave="setSpot(index, 2, false)"></div>
+        <div class="spot-3" @click.stop="handleSpot(index, 3)" @mouseenter="setSpot(index, 3, true)" @mouseleave="setSpot(index, 3, false)"></div>
       </div>
     </div>
     <img class="go-front" @click="goFront" src="../../assets/images/todo/home.png" mode=""></img>
@@ -43,7 +46,7 @@
               <div :class="activeType === item.value ? 'active-type' : ''" v-text="item.label" class="select-type" @click="changeType(item)"></div>
             </div>
           </div>
-        </transition>        
+        </transition>
       </div>
   </div>
 </template>
@@ -120,7 +123,7 @@ export default {
   created() {
     if (this.$route.query.locale) {
       this.$i18n.locale = this.$route.query.locale;
-    }else{
+    } else {
       this.$i18n.locale = "zh";
     }
     if (this.$i18n.locale) {
@@ -137,6 +140,129 @@ export default {
     }
   },
   methods: {
+    setActiveEdge(node, e, isActive, isArea) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-14 13:50:23
+       * @description: 设置选中边
+       */
+      if (isActive) {
+        let faceNode = document.querySelectorAll(".face-" + node)[0];
+        let edgeNode = faceNode.querySelectorAll("." + isArea + "-" + e)[0];
+        edgeNode.classList.add("active-bgi");
+      } else{
+        let faceNode = document.querySelectorAll(".face-" + node)[0];
+        let edgeNode = faceNode.querySelectorAll("." + isArea + "-" + e)[0];
+        edgeNode.classList.remove("active-bgi");
+      }      
+    },
+    setEdge(node, e, isShow) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-14 13:28:00
+       * @description: 边 鼠标移入移出
+       */
+      // 上
+      if ((node === 0 && e === 0) || (node === 2 && e === 2)) {
+        this.setActiveEdge(0, 0, isShow, 'edge')
+        this.setActiveEdge(2, 2, isShow, 'edge')
+      }
+      if ((node === 2 && e === 3) || (node === 4 && e === 0)) {
+        this.setActiveEdge(2, 3, isShow, 'edge')
+        this.setActiveEdge(4, 0, isShow, 'edge')
+      }
+      if ((node === 1 && e === 0) || (node === 2 && e === 0)) {
+        this.setActiveEdge(1, 0, isShow, 'edge')
+        this.setActiveEdge(2, 0, isShow, 'edge')
+      }
+      if ((node === 2 && e === 1) || (node === 5 && e === 0)) {
+        this.setActiveEdge(2, 1, isShow, 'edge')
+        this.setActiveEdge(5, 0, isShow, 'edge')
+      }
+      // 中
+      if ((node === 5 && e === 3) || (node === 0 && e === 1)) {
+        this.setActiveEdge(5, 3, isShow, 'edge')
+        this.setActiveEdge(0, 1, isShow, 'edge')
+      }
+      if ((node === 0 && e === 3) || (node === 4 && e === 1)) {
+        this.setActiveEdge(0, 3, isShow, 'edge')
+        this.setActiveEdge(4, 1, isShow, 'edge')
+      }
+      if ((node === 4 && e === 3) || (node === 1 && e === 1)) {
+        this.setActiveEdge(4, 3, isShow, 'edge')
+        this.setActiveEdge(1, 1, isShow, 'edge')
+      }
+      if ((node === 1 && e === 3) || (node === 5 && e === 1)) {
+        this.setActiveEdge(1, 3, isShow, 'edge')
+        this.setActiveEdge(5, 1, isShow, 'edge')
+      }
+      // 下
+      if ((node === 3 && e === 0) || (node === 0 && e === 2)) {
+        this.setActiveEdge(3, 0, isShow, 'edge')
+        this.setActiveEdge(0, 2, isShow, 'edge')
+      }
+      if ((node === 3 && e === 3) || (node === 4 && e === 2)) {
+        this.setActiveEdge(3, 3, isShow, 'edge')
+        this.setActiveEdge(4, 2, isShow, 'edge')
+      }
+      if ((node === 3 && e === 2) || (node === 1 && e === 2)) {
+        this.setActiveEdge(3, 2, isShow, 'edge')
+        this.setActiveEdge(1, 2, isShow, 'edge')
+      }
+      if ((node === 3 && e === 1) || (node === 5 && e === 2)) {
+        this.setActiveEdge(3, 1, isShow, 'edge')
+        this.setActiveEdge(5, 2, isShow, 'edge')
+      }
+    },    
+    setSpot(node, e, isShow) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-14 10:42:30
+       * @description: 点 鼠标移入
+       */
+      // 上
+      if ((node === 0 &&  e === 0) || (node === 2 &&  e === 1) || (node === 4 &&  e === 2)) {
+        this.setActiveEdge(0, 0, isShow, 'spot')
+        this.setActiveEdge(2, 1, isShow, 'spot')
+        this.setActiveEdge(4, 2, isShow, 'spot')
+      }
+      if ((node === 4 &&  e === 0) || (node === 1 &&  e === 2) || (node === 2 &&  e === 0)) {
+        this.setActiveEdge(2, 0, isShow, 'spot')
+        this.setActiveEdge(1, 2, isShow, 'spot')
+        this.setActiveEdge(4, 0, isShow, 'spot')
+      }
+      if ((node === 1 &&  e === 0) || (node === 5 &&  e === 2) || (node === 2 &&  e === 2)) {
+        this.setActiveEdge(1, 0, isShow, 'spot')
+        this.setActiveEdge(5, 2, isShow, 'spot')
+        this.setActiveEdge(2, 2, isShow, 'spot')
+      }
+      if ((node === 5 &&  e === 0) || (node === 0 &&  e === 2) || (node === 2 &&  e === 3)) {
+        this.setActiveEdge(5, 0, isShow, 'spot')
+        this.setActiveEdge(0, 2, isShow, 'spot')
+        this.setActiveEdge(2, 3, isShow, 'spot')
+      }
+      // 下
+      if ((node === 3 &&  e === 0) || (node === 4 &&  e === 3) || (node === 0 &&  e === 1)) {
+        this.setActiveEdge(3, 0, isShow, 'spot')
+        this.setActiveEdge(4, 3, isShow, 'spot')
+        this.setActiveEdge(0, 1, isShow, 'spot')
+      }
+      if ((node === 1 &&  e === 3) || (node === 4 &&  e === 1) || (node === 3 &&  e === 1)) {
+        this.setActiveEdge(1, 3, isShow, 'spot')
+        this.setActiveEdge(3, 1, isShow, 'spot')
+        this.setActiveEdge(4, 1, isShow, 'spot')
+      }
+      if ((node === 1 &&  e === 1) || (node === 5 &&  e === 3) || (node === 3 &&  e === 3)) {
+        this.setActiveEdge(1, 1, isShow, 'spot')
+        this.setActiveEdge(5, 3, isShow, 'spot')
+        this.setActiveEdge(3, 3, isShow, 'spot')
+      }
+      if ((node === 5 &&  e === 1) || (node === 3 &&  e === 2) || (node === 0 &&  e === 3)) {
+        this.setActiveEdge(5, 1, isShow, 'spot')
+        this.setActiveEdge(3, 2, isShow, 'spot')
+        this.setActiveEdge(0, 3, isShow, 'spot')
+      }
+    },
     handleEdge(node, e) {
       /**
        * @Author: zk
@@ -147,7 +273,7 @@ export default {
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       // let oldDownInfo = JSON.parse(JSON.stringify(this.downInfo))
       if (!this.isAnimation) {
-        return
+        return;
       }
       switch (node) {
         case 0:
@@ -380,7 +506,7 @@ export default {
        */
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       if (!this.isAnimation) {
-        return
+        return;
       }
       switch (node) {
         case 0:
@@ -611,7 +737,7 @@ export default {
        * @description: 旋转确认 前 0 后 1 上 2 下 3 左 4 右 5
        */
       if (!this.isAnimation) {
-        return
+        return;
       }
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       const oldDownInfo = JSON.parse(JSON.stringify(this.downInfo));
@@ -710,7 +836,7 @@ export default {
             clearTimeout(realAnimation);
           }, 100);
         }, 1010);
-      }else{
+      } else {
         let realTimer = setTimeout(() => {
           this.isAnimation = false;
           clearTimeout(realTimer);
@@ -809,6 +935,7 @@ export default {
 }
 
 #box div {
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -882,12 +1009,13 @@ export default {
   .edgeLine(0, 0, 100%, 3px);
 }
 .spotAll(@left, @top) {
-  width: 3px !important;
-  height: 3px !important;
+  width: 16px !important;
+  height: 16px !important;
+  transform: rotate(45deg);
   z-index: 2;
   left: @left !important;
   top: @top !important;
-  // background: #ff6600;
+  // background-color: #ff6600;
 
   &:hover {
     background-color: #ff6600;
@@ -895,18 +1023,21 @@ export default {
 }
 
 .spot-0 {
-  .spotAll(0px, 0px);
+  .spotAll(-8px, -8px);
 }
 
 .spot-1 {
-  .spotAll(0px, 65px);
+  .spotAll(-8px, 60px);
 }
 
 .spot-2 {
-  .spotAll(65px, 0px);
+  .spotAll(60px, -8px);
 }
 
 .spot-3 {
-  .spotAll(65px, 65px);
+  .spotAll(60px, 60px);
+}
+.active-bgi {
+  background-color: #ff6600;
 }
 </style>
