@@ -9,30 +9,63 @@ body
   margin: 0;
   padding: 0; 
 }
-/* >=1100的设备 */
-/* @media (min-width: 1100px) {
+/* <=1200的设备 */
+@media (max-width: 1200px) {
   .container {
-    width: 1420px;
-   
+    width: 100% !important;
+    /* max-width: 100% !important; */
+    font-family: 'microsoft yahei';
     margin: 0 auto;
     font-size: 16px;
   }
-  }  */
-  /* @media (max-width: 1099px) {
+  } 
+/* >=1200的设备 */
+@media (min-width: 1200px) {
     .container {
-     
-      width: 100%;
+      /* min-width: 1200px !important; */
+      max-width: 1420px !important;
+      font-family: 'microsoft yahei';
       margin: 0 auto;
       font-size: 16px;
     }
-    } */
+    }
 
-.container {
+
+    /* @media screen and (max-width: 1200px) and (min-width: 769px) {
+      .md-page {
+        width: 100% !important;
+        min-width: 100% !important;
+      }
+    
+      .m-l-r-0 {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+    
+      .chief-part {
+        margin-right: 10px !important;
+      }
+    }
+    
+    @media screen and (max-width: 768px) {
+      .md-page {
+        width: 1200px !important;
+        min-width: 1200px !important;
+      }
+    
+      .m-l-r-0 {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+      }
+    }
+     */
+    
+/* .container {
   width: 1420px;
   margin: 0 auto;
   font-size: 16px;
   font-family: 'microsoft yahei';
-}
+} */
 body {
   /* 解决滚动条造成的页面抖动问题 */
   overflow: auto !important;

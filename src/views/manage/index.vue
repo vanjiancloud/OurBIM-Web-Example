@@ -52,9 +52,9 @@
               type="text"
               v-if="scope.row.applidStatus === '5' ? false : true"
               :class="scope.row.applidStatus === '2' ? 'blue' : 'gray'"
-              :disabled="scope.row.applidStatus === '2' ? false : true"
             >
               分享
+              <!-- :disabled="scope.row.applidStatus === '2' ? false : true" -->
             </el-button>
             <!-- 编辑 -->
             <el-button
@@ -120,7 +120,7 @@
         </div>
       </div>
       <div class="box-two" v-show="isShow == 2">
-        <div class="title">通过QQ、微信、钉钉等分享给好友吧</div>
+        <div class="title">通过QQ、微信等分享给好友吧</div>
         <el-form :model="formShare">
           <el-form-item label="链接：">
             <el-input
@@ -148,7 +148,7 @@
               将二维码分享给好友，对方微信、<br />
               钉钉等扫一扫即可访问BIM场景
             </div>
-            <el-button type="primary" class="botton" @click="copy">
+            <el-button type="primary" class="botton" @click="copyImg">
               复制二维码
             </el-button>
           </el-form-item>
@@ -438,16 +438,19 @@ export default {
       this.$message.error('复制失败！')
     },
     // 复制二维码图片
-    copy (e) {
+    copyImg (e) {
       //nextTick,当前dom渲染完毕的回调
       this.$nextTick(function () {
         // console.log('foo', this.$refs.foo) //打印获取的dom
         const selection = window.getSelection()
         const range = document.createRange()
+        //复制前先清除粘贴板上的缓存
+        selection.removeAllRanges()
         range.selectNode(this.$refs.foo) //传入dom
         selection.addRange(range)
         document.execCommand('copy') //copy是复制
-        selection.removeAllRanges() //清除缓存
+        //复制后再清除缓存
+        selection.removeAllRanges()
       })
       this.$message.success('二维码复制成功！')
     },
@@ -551,35 +554,34 @@ export default {
     //进入应用
     GoApp (e) {
       let isiPad =
-      navigator.userAgent.match(/(iPad)/) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    let isMac = /macintosh|mac os x/i.test(navigator.userAgent);
+        navigator.userAgent.match(/(iPad)/) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+      let isMac = /macintosh|mac os x/i.test(navigator.userAgent)
       MODELAPI.GETBIMTOKEN({
         appid: e.appid
-      })
-      .then(res => {
+      }).then(res => {
         if (res.data.code === 0) {
           if (isiPad !== false || isMac !== false) {
-              this.$router.push({
-                name: 'web_client',
-                query: {
-                  appid: e.appid,
-                  locale: this.$i18n.locale,
-                  token: res.data.data.token
-                }
-              })
-            }else{
-              const { href } = this.$router.resolve({
-                name: 'web_client',
-                query: {
-                  appid: e.appid,
-                  locale: this.$i18n.locale,
-                  token: res.data.data.token
-                }
-              })
-              window.open(href, '_blank')
-            }          
-        }else{
+            this.$router.push({
+              name: 'web_client',
+              query: {
+                appid: e.appid,
+                locale: this.$i18n.locale,
+                token: res.data.data.token
+              }
+            })
+          } else {
+            const { href } = this.$router.resolve({
+              name: 'web_client',
+              query: {
+                appid: e.appid,
+                locale: this.$i18n.locale,
+                token: res.data.data.token
+              }
+            })
+            window.open(href, '_blank')
+          }
+        } else {
           this.$message({
             type: 'error',
             message: err.data.message
