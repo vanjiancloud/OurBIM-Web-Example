@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-19 09:48:36
+ * @LastEditTime: 2021-04-19 17:04:31
  * @description: 
 -->
 <template>
@@ -847,6 +847,15 @@ export default {
       }`);
       this.imgList[this.oldState].url = oldUrl;
       this.imgList[this.oldState].state = 0;
+      // 分解模型
+      if (this.oldState === 8) {
+        this.imgList[8].data.value = 0
+        this.$emit("listenTodo", {
+          state: this.imgList[8].state,
+          type: 8,
+          data: 0,
+        });
+      }
       // 剖切
       if (this.oldState === 2) {
         if (this.imgList[this.oldState].state === 1) {
@@ -1090,7 +1099,7 @@ export default {
             });
           }
         }
-      }
+      }      
       // 重置状态
       if (e !== this.oldState && e !== 10 && e !== 11) {
         this.angleTool = false;
@@ -1110,7 +1119,18 @@ export default {
       if (e === 6) {
         this.followTool = this.imgList[e].state === 1 ? true : false;
       }
-
+      // 分解模型
+      if (this.oldState === 8) {
+        if (this.imgList[this.oldState].state === 0) {
+            this.imgList[8].data.value = 0
+            this.$emit("listenTodo", {
+              state: 0,
+              type: this.oldState,
+              data: 0,
+            });
+          }
+        return 
+      }
       if (e !== 0) {
         this.$emit("listenTodo", {
           state: this.imgList[e].state,

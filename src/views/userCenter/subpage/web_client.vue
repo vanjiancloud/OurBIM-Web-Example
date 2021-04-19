@@ -880,6 +880,15 @@ export default {
             },
             ""
           );
+          this.sendToIframe(
+            10002,
+            {
+              button: "right",
+              x: 500,
+              y: 500,
+            },
+            ""
+          );
         };
         // 移动滚轮
         document.getElementById("show-bim").onmousewheel = () => {
