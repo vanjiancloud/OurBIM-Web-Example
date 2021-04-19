@@ -59,7 +59,8 @@
       </div>
     </div>
     <div class="wenzi">
-      Copyright © 2021 www.OurBIM.com, <br> All Rights Reserved.
+      Copyright © 2021 www.OurBIM.com, <br />
+      All Rights Reserved.
     </div>
   </div>
 </template>
@@ -105,6 +106,10 @@ export default {
     }
   },
   watch: {
+    $route (to, from) {
+      this.form.mobile = ''
+      this.form.code = ''
+    },
     delay: function (newVal, oldVal) {
       if (oldVal === 0) {
         clearInterval(this.interId)
@@ -120,7 +125,7 @@ export default {
       this.$router.push('../../login')
     },
 
-    // 跳转到重制密码
+    // 跳转到重置密码
     toNext () {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -191,7 +196,6 @@ export default {
         })
         .catch(err => {
           console.log(err)
-
           this.$message.error('获取失败请重新获取')
         })
     }

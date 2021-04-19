@@ -112,6 +112,7 @@
       <div class="cover">
         <el-upload
           :on-success="upLoadModel"
+          :on-error="errorModel"
           drag
           :action="baseURL + '/appli/postProjectModel'"
           name="fileUpload"
@@ -213,13 +214,12 @@ export default {
     },
     // 上传封面图失败
     errorImg (err, file, fileList) {
-      /**
-       * @Author: zk
-       * @Date: 2021-02-22 16:28:11
-       * @description: 上传失败
-       */
-
       console.log(err)
+    },
+    // 上传模型失败
+    errorModel (err, file, fileList) {
+      console.log(err)
+      this.$common.closeLoading()
     },
     // 下一步
     next () {

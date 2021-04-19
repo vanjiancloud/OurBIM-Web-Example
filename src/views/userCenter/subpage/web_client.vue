@@ -325,7 +325,7 @@ export default {
        */
       if (e === 2) {
         // 第三人称
-        this.$refs.getFooter.resetpPrson(1);
+        this.$refs.getFooter.resetPerson(1);
       }
       this.shadowType = e;
       if (e === 0) {
@@ -399,6 +399,9 @@ export default {
        * @Date: 2021-03-08 10:40:10
        * @description: cube指令
        */
+      if (this.listenInfo === 0) {
+        this.$refs.getFooter.resetPerson(1);
+      }
       this.handleState = 6;
       this.cubeState = e;
       this.updateOrder();
@@ -582,7 +585,7 @@ export default {
           if (params.id === 1 && res.data && res.data.data) {
             // 切换到主视图 重置状态
             let realView = res.data.data.viewMode === "1" ? 0 : 1;
-            this.$refs.getFooter.resetpPrson(realView);
+            this.$refs.getFooter.resetPerson(realView);
             let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
             this.$refs.getCube.resetActive(realProject);
           }
@@ -872,6 +875,15 @@ export default {
             10002,
             {
               button: "left",
+              x: 500,
+              y: 500,
+            },
+            ""
+          );
+          this.sendToIframe(
+            10002,
+            {
+              button: "right",
               x: 500,
               y: 500,
             },

@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-14 16:21:39
+ * @LastEditTime: 2021-04-19 16:51:05
  * @description: 
 -->
 <template>
@@ -11,7 +11,7 @@
       id="box"
       :class="isAnimation ? 'box-transition' : ''"
       :style="{
-        transform: `perspective(800px) rotateX(${downInfo.x}deg) rotateY(${downInfo.y}deg) rotateZ(${downInfo.z}deg)`,
+        transform: `perspective(800px) rotateX(${realDownInfo.x}deg) rotateY(${realDownInfo.y}deg) rotateZ(${realDownInfo.z}deg)`,
       }"
     >
       <div
@@ -94,6 +94,11 @@ export default {
         y: 45,
         z: 0,
       },
+      realDownInfo: {
+        x: -45,
+        y: 45,
+        z: 0,
+      },
       disX: 90,
       disY: 0,
       isMonitor: false,
@@ -150,11 +155,11 @@ export default {
         let faceNode = document.querySelectorAll(".face-" + node)[0];
         let edgeNode = faceNode.querySelectorAll("." + isArea + "-" + e)[0];
         edgeNode.classList.add("active-bgi");
-      } else{
+      } else {
         let faceNode = document.querySelectorAll(".face-" + node)[0];
         let edgeNode = faceNode.querySelectorAll("." + isArea + "-" + e)[0];
         edgeNode.classList.remove("active-bgi");
-      }      
+      }
     },
     setEdge(node, e, isShow) {
       /**
@@ -164,56 +169,56 @@ export default {
        */
       // 上
       if ((node === 0 && e === 0) || (node === 2 && e === 2)) {
-        this.setActiveEdge(0, 0, isShow, 'edge')
-        this.setActiveEdge(2, 2, isShow, 'edge')
+        this.setActiveEdge(0, 0, isShow, "edge");
+        this.setActiveEdge(2, 2, isShow, "edge");
       }
       if ((node === 2 && e === 3) || (node === 4 && e === 0)) {
-        this.setActiveEdge(2, 3, isShow, 'edge')
-        this.setActiveEdge(4, 0, isShow, 'edge')
+        this.setActiveEdge(2, 3, isShow, "edge");
+        this.setActiveEdge(4, 0, isShow, "edge");
       }
       if ((node === 1 && e === 0) || (node === 2 && e === 0)) {
-        this.setActiveEdge(1, 0, isShow, 'edge')
-        this.setActiveEdge(2, 0, isShow, 'edge')
+        this.setActiveEdge(1, 0, isShow, "edge");
+        this.setActiveEdge(2, 0, isShow, "edge");
       }
       if ((node === 2 && e === 1) || (node === 5 && e === 0)) {
-        this.setActiveEdge(2, 1, isShow, 'edge')
-        this.setActiveEdge(5, 0, isShow, 'edge')
+        this.setActiveEdge(2, 1, isShow, "edge");
+        this.setActiveEdge(5, 0, isShow, "edge");
       }
       // 中
       if ((node === 5 && e === 3) || (node === 0 && e === 1)) {
-        this.setActiveEdge(5, 3, isShow, 'edge')
-        this.setActiveEdge(0, 1, isShow, 'edge')
+        this.setActiveEdge(5, 3, isShow, "edge");
+        this.setActiveEdge(0, 1, isShow, "edge");
       }
       if ((node === 0 && e === 3) || (node === 4 && e === 1)) {
-        this.setActiveEdge(0, 3, isShow, 'edge')
-        this.setActiveEdge(4, 1, isShow, 'edge')
+        this.setActiveEdge(0, 3, isShow, "edge");
+        this.setActiveEdge(4, 1, isShow, "edge");
       }
       if ((node === 4 && e === 3) || (node === 1 && e === 1)) {
-        this.setActiveEdge(4, 3, isShow, 'edge')
-        this.setActiveEdge(1, 1, isShow, 'edge')
+        this.setActiveEdge(4, 3, isShow, "edge");
+        this.setActiveEdge(1, 1, isShow, "edge");
       }
       if ((node === 1 && e === 3) || (node === 5 && e === 1)) {
-        this.setActiveEdge(1, 3, isShow, 'edge')
-        this.setActiveEdge(5, 1, isShow, 'edge')
+        this.setActiveEdge(1, 3, isShow, "edge");
+        this.setActiveEdge(5, 1, isShow, "edge");
       }
       // 下
       if ((node === 3 && e === 0) || (node === 0 && e === 2)) {
-        this.setActiveEdge(3, 0, isShow, 'edge')
-        this.setActiveEdge(0, 2, isShow, 'edge')
+        this.setActiveEdge(3, 0, isShow, "edge");
+        this.setActiveEdge(0, 2, isShow, "edge");
       }
       if ((node === 3 && e === 3) || (node === 4 && e === 2)) {
-        this.setActiveEdge(3, 3, isShow, 'edge')
-        this.setActiveEdge(4, 2, isShow, 'edge')
+        this.setActiveEdge(3, 3, isShow, "edge");
+        this.setActiveEdge(4, 2, isShow, "edge");
       }
       if ((node === 3 && e === 2) || (node === 1 && e === 2)) {
-        this.setActiveEdge(3, 2, isShow, 'edge')
-        this.setActiveEdge(1, 2, isShow, 'edge')
+        this.setActiveEdge(3, 2, isShow, "edge");
+        this.setActiveEdge(1, 2, isShow, "edge");
       }
       if ((node === 3 && e === 1) || (node === 5 && e === 2)) {
-        this.setActiveEdge(3, 1, isShow, 'edge')
-        this.setActiveEdge(5, 2, isShow, 'edge')
+        this.setActiveEdge(3, 1, isShow, "edge");
+        this.setActiveEdge(5, 2, isShow, "edge");
       }
-    },    
+    },
     setSpot(node, e, isShow) {
       /**
        * @Author: zk
@@ -221,46 +226,78 @@ export default {
        * @description: 点 鼠标移入
        */
       // 上
-      if ((node === 0 &&  e === 0) || (node === 2 &&  e === 1) || (node === 4 &&  e === 2)) {
-        this.setActiveEdge(0, 0, isShow, 'spot')
-        this.setActiveEdge(2, 1, isShow, 'spot')
-        this.setActiveEdge(4, 2, isShow, 'spot')
+      if (
+        (node === 0 && e === 0) ||
+        (node === 2 && e === 1) ||
+        (node === 4 && e === 2)
+      ) {
+        this.setActiveEdge(0, 0, isShow, "spot");
+        this.setActiveEdge(2, 1, isShow, "spot");
+        this.setActiveEdge(4, 2, isShow, "spot");
       }
-      if ((node === 4 &&  e === 0) || (node === 1 &&  e === 2) || (node === 2 &&  e === 0)) {
-        this.setActiveEdge(2, 0, isShow, 'spot')
-        this.setActiveEdge(1, 2, isShow, 'spot')
-        this.setActiveEdge(4, 0, isShow, 'spot')
+      if (
+        (node === 4 && e === 0) ||
+        (node === 1 && e === 2) ||
+        (node === 2 && e === 0)
+      ) {
+        this.setActiveEdge(2, 0, isShow, "spot");
+        this.setActiveEdge(1, 2, isShow, "spot");
+        this.setActiveEdge(4, 0, isShow, "spot");
       }
-      if ((node === 1 &&  e === 0) || (node === 5 &&  e === 2) || (node === 2 &&  e === 2)) {
-        this.setActiveEdge(1, 0, isShow, 'spot')
-        this.setActiveEdge(5, 2, isShow, 'spot')
-        this.setActiveEdge(2, 2, isShow, 'spot')
+      if (
+        (node === 1 && e === 0) ||
+        (node === 5 && e === 2) ||
+        (node === 2 && e === 2)
+      ) {
+        this.setActiveEdge(1, 0, isShow, "spot");
+        this.setActiveEdge(5, 2, isShow, "spot");
+        this.setActiveEdge(2, 2, isShow, "spot");
       }
-      if ((node === 5 &&  e === 0) || (node === 0 &&  e === 2) || (node === 2 &&  e === 3)) {
-        this.setActiveEdge(5, 0, isShow, 'spot')
-        this.setActiveEdge(0, 2, isShow, 'spot')
-        this.setActiveEdge(2, 3, isShow, 'spot')
+      if (
+        (node === 5 && e === 0) ||
+        (node === 0 && e === 2) ||
+        (node === 2 && e === 3)
+      ) {
+        this.setActiveEdge(5, 0, isShow, "spot");
+        this.setActiveEdge(0, 2, isShow, "spot");
+        this.setActiveEdge(2, 3, isShow, "spot");
       }
       // 下
-      if ((node === 3 &&  e === 0) || (node === 4 &&  e === 3) || (node === 0 &&  e === 1)) {
-        this.setActiveEdge(3, 0, isShow, 'spot')
-        this.setActiveEdge(4, 3, isShow, 'spot')
-        this.setActiveEdge(0, 1, isShow, 'spot')
+      if (
+        (node === 3 && e === 0) ||
+        (node === 4 && e === 3) ||
+        (node === 0 && e === 1)
+      ) {
+        this.setActiveEdge(3, 0, isShow, "spot");
+        this.setActiveEdge(4, 3, isShow, "spot");
+        this.setActiveEdge(0, 1, isShow, "spot");
       }
-      if ((node === 1 &&  e === 3) || (node === 4 &&  e === 1) || (node === 3 &&  e === 1)) {
-        this.setActiveEdge(1, 3, isShow, 'spot')
-        this.setActiveEdge(3, 1, isShow, 'spot')
-        this.setActiveEdge(4, 1, isShow, 'spot')
+      if (
+        (node === 1 && e === 3) ||
+        (node === 4 && e === 1) ||
+        (node === 3 && e === 1)
+      ) {
+        this.setActiveEdge(1, 3, isShow, "spot");
+        this.setActiveEdge(3, 1, isShow, "spot");
+        this.setActiveEdge(4, 1, isShow, "spot");
       }
-      if ((node === 1 &&  e === 1) || (node === 5 &&  e === 3) || (node === 3 &&  e === 3)) {
-        this.setActiveEdge(1, 1, isShow, 'spot')
-        this.setActiveEdge(5, 3, isShow, 'spot')
-        this.setActiveEdge(3, 3, isShow, 'spot')
+      if (
+        (node === 1 && e === 1) ||
+        (node === 5 && e === 3) ||
+        (node === 3 && e === 3)
+      ) {
+        this.setActiveEdge(1, 1, isShow, "spot");
+        this.setActiveEdge(5, 3, isShow, "spot");
+        this.setActiveEdge(3, 3, isShow, "spot");
       }
-      if ((node === 5 &&  e === 1) || (node === 3 &&  e === 2) || (node === 0 &&  e === 3)) {
-        this.setActiveEdge(5, 1, isShow, 'spot')
-        this.setActiveEdge(3, 2, isShow, 'spot')
-        this.setActiveEdge(0, 3, isShow, 'spot')
+      if (
+        (node === 5 && e === 1) ||
+        (node === 3 && e === 2) ||
+        (node === 0 && e === 3)
+      ) {
+        this.setActiveEdge(5, 1, isShow, "spot");
+        this.setActiveEdge(3, 2, isShow, "spot");
+        this.setActiveEdge(0, 3, isShow, "spot");
       }
     },
     handleEdge(node, e) {
@@ -353,17 +390,17 @@ export default {
           if (e === 0) {
             // 上
             this.downInfo = {
-              x: -135,
-              y: 0,
+              x: -45,
+              y: -180,
               z: 0,
             };
             this.activeOrder = 13;
           } else if (e === 1) {
             // 右
             this.downInfo = {
-              x: -90,
-              y: 0,
-              z: -45,
+              x: -45,
+              y: -90,
+              z: 0,
             };
             this.activeOrder = 17;
           } else if (e === 2) {
@@ -377,9 +414,9 @@ export default {
           } else if (e === 3) {
             // 左
             this.downInfo = {
-              x: -90,
-              y: 0,
-              z: 45,
+              x: -45,
+              y: 90,
+              z: 0,
             };
             this.activeOrder = 15;
           }
@@ -397,25 +434,25 @@ export default {
           } else if (e === 1) {
             // 右
             this.downInfo = {
-              x: 90,
-              y: 0,
-              z: 45,
+              x: 45,
+              y: -90,
+              z: 0,
             };
             this.activeOrder = 18;
           } else if (e === 2) {
             // 下
             this.downInfo = {
-              x: 135,
-              y: 0,
+              x: 45,
+              y: -180,
               z: 0,
             };
             this.activeOrder = 14;
           } else if (e === 3) {
             // 左
             this.downInfo = {
-              x: 90,
-              y: 0,
-              z: -45,
+              x: 45,
+              y: 90,
+              z: 0,
             };
             this.activeOrder = 16;
           }
@@ -567,7 +604,7 @@ export default {
             // 右上
             this.downInfo = {
               x: -45,
-              y: -225,
+              y: 135,
               z: 0,
             };
             this.activeOrder = 25;
@@ -575,7 +612,7 @@ export default {
             // 右下
             this.downInfo = {
               x: 45,
-              y: -225,
+              y: 135,
               z: 0,
             };
             this.activeOrder = 26;
@@ -586,8 +623,8 @@ export default {
           if (e === 0) {
             // 左上
             this.downInfo = {
-              x: -135,
-              y: -45,
+              x: -45,
+              y: 135,
               z: 0,
             };
             this.activeOrder = 25;
@@ -595,24 +632,24 @@ export default {
             // 左下
             this.downInfo = {
               x: -45,
-              y: 0,
-              z: 45,
+              y: 45,
+              z: 0,
             };
             this.activeOrder = 23;
           } else if (e === 2) {
             // 右上
             this.downInfo = {
-              x: -135,
-              y: 0,
-              z: -45,
+              x: -45,
+              y: -135,
+              z: 0,
             };
             this.activeOrder = 21;
           } else if (e === 3) {
             // 右下
             this.downInfo = {
               x: -45,
-              y: 0,
-              z: -45,
+              y: -45,
+              z: 0,
             };
             this.activeOrder = 19;
           }
@@ -630,25 +667,25 @@ export default {
           } else if (e === 1) {
             // 左下
             this.downInfo = {
-              x: 135,
-              y: 0,
-              z: -45,
+              x: 45,
+              y: 135,
+              z: 0,
             };
             this.activeOrder = 26;
           } else if (e === 2) {
             // 右上
             this.downInfo = {
               x: 45,
-              y: 0,
-              z: 45,
+              y: -45,
+              z: 0,
             };
             this.activeOrder = 20;
           } else if (e === 3) {
             // 右下
             this.downInfo = {
-              x: 135,
-              y: 0,
-              z: 45,
+              x: 45,
+              y: -135,
+              z: 0,
             };
             this.activeOrder = 22;
           }
@@ -802,50 +839,100 @@ export default {
        * @Date: 2021-04-01 17:56:46
        * @description: 重置角度
        */
-      // console.log("x:", this.downInfo.x, "y:", this.downInfo.y, "z:", this.downInfo.z);
-      this.$emit("handleOrder", this.activeOrder);
-      if (
-        this.downInfo.x > 180 ||
-        this.downInfo.x < -180 ||
-        this.downInfo.y >= 180 ||
-        this.downInfo.y < -180 ||
-        this.downInfo.z > 180 ||
-        this.downInfo.z < -180
-      ) {
+      if (this.activeType === 2) {
+        this.activeType = 1;
+        this.$emit("handleType", 2);
+      }
+      if (this.realDownInfo.y < 0 && this.downInfo.y > 0) {
+        if (this.realDownInfo.y === -45 && this.downInfo.y === 45) {
+          let { x, y, z } = JSON.parse(JSON.stringify(this.downInfo));
+          this.realDownInfo = {
+            x: x,
+            y: 45,
+            z: z,
+          };
+        } else {
+          let { x, y, z } = JSON.parse(JSON.stringify(this.downInfo));
+          this.realDownInfo = {
+            x: x,
+            y: -360 + y,
+            z: z,
+          };
+        }
+      } else if (this.realDownInfo.y > 0 && this.downInfo.y < 0) {
+        if (this.realDownInfo.y === 45 && this.downInfo.y === -45) {
+          let { x, y, z } = JSON.parse(JSON.stringify(this.downInfo));
+          this.realDownInfo = {
+            x: x,
+            y: -45,
+            z: z,
+          };
+        } else {
+          let { x, y, z } = JSON.parse(JSON.stringify(this.downInfo));
+          this.realDownInfo = {
+            x: x,
+            y: 360 + y,
+            z: z,
+          };
+        }
+      } else if (this.realDownInfo.y === -315) {
+        if (this.downInfo.y === 0) {
+          let { x, y, z } = JSON.parse(JSON.stringify(this.downInfo));
+          this.realDownInfo = {
+            x: x,
+            y: -360,
+            z: z,
+          };
+        } else if (this.downInfo.y === -45) {
+          let { x, y, z } = JSON.parse(JSON.stringify(this.downInfo));
+          this.realDownInfo = {
+            x: x,
+            y: -405,
+            z: z,
+          };
+        }
+        
+      } else if (this.realDownInfo.y === 315) {
+        if (this.downInfo.y === 0) {
+          let { x, y, z } = JSON.parse(JSON.stringify(this.downInfo));
+        this.realDownInfo = {
+          x: x,
+          y: 360,
+          z: z,
+        };
+        } else if (this.downInfo.y === 45) {
+          let { x, y, z } = JSON.parse(JSON.stringify(this.downInfo));
+          this.realDownInfo = {
+            x: x,
+            y: 405,
+            z: z,
+          };
+        }        
+      } else {
+        this.realDownInfo = JSON.parse(JSON.stringify(this.downInfo));
+      }
+      if (this.realDownInfo.y === 360 || this.realDownInfo.y === -360 || this.realDownInfo.y === 405 || this.realDownInfo.y === -405) {
         let realTimer = setTimeout(() => {
           this.isAnimation = false;
-          this.downInfo.x > 180
-            ? (this.downInfo.x = 360 - this.downInfo.x)
-            : "";
-          this.downInfo.x < -180
-            ? (this.downInfo.x = 360 + this.downInfo.x)
-            : "";
-          this.downInfo.y >= 180 ? (this.downInfo.y = -180) : "";
-          this.downInfo.y < -180
-            ? (this.downInfo.y = 360 + this.downInfo.y)
-            : "";
-          this.downInfo.z > 180
-            ? (this.downInfo.z = 360 - this.downInfo.z)
-            : "";
-          this.downInfo.z < -180
-            ? (this.downInfo.z = 360 + this.downInfo.z)
-            : "";
+          if (this.realDownInfo.y === 360 || this.realDownInfo.y === -360) {
+            this.realDownInfo.y = 0;
+            this.downInfo.y = 0;
+          } else if (this.realDownInfo.y === 405) {
+            this.realDownInfo.y = 45
+            this.downInfo.y = 45;
+          } else if (this.realDownInfo.y === -405) {
+            this.realDownInfo.y = -45
+            this.downInfo.y = -45;
+          }
+          
           clearTimeout(realTimer);
           let realAnimation = setTimeout(() => {
             this.isAnimation = true;
             clearTimeout(realAnimation);
           }, 100);
         }, 1010);
-      } else {
-        let realTimer = setTimeout(() => {
-          this.isAnimation = false;
-          clearTimeout(realTimer);
-          let realAnimation = setTimeout(() => {
-            this.isAnimation = true;
-            clearTimeout(realAnimation);
-          }, 10);
-        }, 1001);
       }
+      this.$emit("handleOrder", this.activeOrder);
     },
     changeType(e) {
       /**

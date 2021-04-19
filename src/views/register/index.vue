@@ -69,12 +69,9 @@
             </el-form-item>
             <!-- 姓名 -->
             <el-form-item label="" prop="name">
-              <el-input
-                v-model="ruleForm.name"
-                placeholder="请输入真实姓名"
-                maxlength="10"
-                show-word-limit
-              >
+              <el-input v-model="ruleForm.name" placeholder="请输入真实姓名">
+                <!-- maxlength="8"
+                show-word-limit -->
                 <i slot="prefix" class="el-icon-s-custom"></i>
               </el-input>
             </el-form-item>
@@ -137,7 +134,7 @@
       </div>
     </div>
     <div class="wenzi">
-      Copyright © 2021 www.OurBIM.com, <br>All Rights Reserved.
+      Copyright © 2021 www.OurBIM.com, <br />All Rights Reserved.
     </div>
   </div>
 </template>
@@ -241,7 +238,12 @@ export default {
         name: [
           {
             required: true,
-            message: '请输入真实姓名',
+            message: '请输入真实姓名，2-4个汉字或2-8个英文字母，不支持混编',
+            trigger: 'blur'
+          },
+          {
+            pattern: /^[\u4e00-\u9fa5]{2,4}$|^[\dA-Za-z_]{2,8}$/,
+            message: '请输入真实姓名，2-4个汉字或2-8个英文字母，不支持混编',
             trigger: 'blur'
           }
         ],
@@ -270,7 +272,21 @@ export default {
       }
     }
   },
+  created () {},
   watch: {
+    $route (to, from) {
+      this.ruleForm.email = ''
+      this.ruleForm.mobile = ''
+      this.ruleForm.name = ''
+      this.ruleForm.company = ''
+      this.ruleForm.code = ''
+      this.ruleForm.password = ''
+      this.ruleForm.newPassword = ''
+      //性别
+      this.ruleForm.sex = '1'
+      // 复选框的状态
+      this.ruleForm.checked = false
+    },
     delay: function (newVal, oldVal) {
       if (oldVal === 0) {
         clearInterval(this.interId)
@@ -298,7 +314,7 @@ export default {
     },
     // 点击注册
     doRegister () {
-      console.log(window.location.href);
+      console.log(window.location.href)
       getRegister({
         email: this.ruleForm.email,
         name: this.ruleForm.name,
