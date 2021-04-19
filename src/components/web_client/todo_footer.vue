@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-16 15:45:19
+ * @LastEditTime: 2021-04-19 09:48:36
  * @description: 
 -->
 <template>
@@ -436,8 +436,12 @@
         :close-on-click-modal="false"
         width="20%"
       >
-        <el-form v-if="followInfo">
-          <el-form-item :label="dialogPointData.label" label-width="50px">
+        <el-form v-if="followInfo" :model="followInfo" :rules="rulesFollow" ref="ruleFollow">
+          <el-form-item
+            :label="dialogPointData.label"
+            label-width="60px"
+            prop="name"
+          >
             <el-input @click.native.stop v-model="followInfo.name"></el-input>
           </el-form-item>
         </el-form>
@@ -469,6 +473,15 @@ export default {
   },
   data() {
     return {
+      rulesFollow: {
+        name: [
+          {
+            required: true,
+            message: "请输入名称",
+            trigger: "blur",
+          },
+        ],
+      },
       sliceList: [
         {
           content: null,
@@ -718,6 +731,7 @@ export default {
        * @Date: 2021-04-08 15:40:38
        * @description: 关闭连接
        */
+      this.$refs["ruleFollow"].resetFields();
       this.$emit("listenFollow", false);
     },
     openMask() {
@@ -789,7 +803,7 @@ export default {
         data: e,
       });
     },
-    changeResolve(e){
+    changeResolve(e) {
       /**
        * @Author: zk
        * @Date: 2021-04-14 11:06:54
@@ -823,7 +837,7 @@ export default {
        * @description: 关闭tool
        */
       if (this.isMask) {
-        return
+        return;
       }
       this.angleTool = false;
       this.followTool = false;
@@ -841,8 +855,8 @@ export default {
             state: this.imgList[this.oldState].state,
             type: this.oldState,
           });
-          this.oldState = 0; 
-        }        
+          this.oldState = 0;
+        }
       }
       // 测量
       if (this.oldState === 3) {
@@ -914,21 +928,27 @@ export default {
        * @Date: 2021-03-17 11:36:27
        * @description: 更新视点
        */
-      MODELAPI.UPDATEFOLLOWPOINT(this.followInfo)
-        .then((res) => {
-          if (res.data.code === 0) {
-            this.ListPoint();
-            this.$message({
-              type: "success",
-              message: this.dialogPointData.successMessage,
-            });
-          }
-        })
-        .catch((err) => {});
-      this.dialogEdit = false;
-      let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
-      this.imgList[6].url = oldUrl;
-      this.imgList[6].state = 0;
+      this.$refs["ruleFollow"].validate((valid) => {
+        if (valid) {
+          MODELAPI.UPDATEFOLLOWPOINT(this.followInfo)
+            .then((res) => {
+              if (res.data.code === 0) {
+                this.ListPoint();
+                this.$message({
+                  type: "success",
+                  message: this.dialogPointData.successMessage,
+                });
+              }
+            })
+            .catch((err) => {});
+          this.dialogEdit = false;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+          this.imgList[6].url = oldUrl;
+          this.imgList[6].state = 0;
+        } else {
+          return false;
+        }
+      });
     },
     DeleteFollow(e) {
       /**
@@ -1083,7 +1103,7 @@ export default {
         this.imgList[this.oldState].state = 0;
         this.oldState = e;
       }
-      
+
       if (e === 0) {
         this.personTool = this.imgList[e].state === 1 ? true : false;
       }
