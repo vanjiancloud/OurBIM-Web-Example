@@ -189,6 +189,7 @@ export default {
       isFade: true,
       isFollow: false,
       handleState: 0,
+      activeTree: null,
       leafInfo: null,
       listenInfo: null,
       cubeState: 6,
@@ -369,27 +370,42 @@ export default {
        * @Date: 2021-03-08 14:39:51
        * @description: 构件树的指令
        */
-      this.leafInfo = e;
       if (index === 0) {
         // 选中
         if (e.isLeaf) {
-          if (e.data.activeSelect === 0) {
-            this.memberInfo = null;
+          if (this.activeTree && this.activeTree.uuid === e.data.uuid) {
+            if (e.data.activeSelect === 0) {
+              this.memberInfo = null;
+            } else {
+              this.memberInfo = e.data;
+              let messageInfo = {
+                prex: "ourbimMessage",
+                type: 20001,
+                data: e.data,
+                message: "",
+              };
+              this.sentParentIframe(messageInfo);
+            }
+            e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
+            this.leafInfo = e;
           } else {
+            this.leafInfo = e;
+            e.data.activeSelect = 1
             this.memberInfo = e.data;
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 20001,
-              data: e.data,
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
+              let messageInfo = {
+                prex: "ourbimMessage",
+                type: 20001,
+                data: e.data,
+                message: "",
+              };
+              this.sentParentIframe(messageInfo);
           }
-          e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
+          
           this.handleState = 9;
           if (e.data.haveChild === "0") {
             this.updateOrder();
           }
+          this.activeTree = e.data
         }
       }
     },
