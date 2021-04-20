@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-19 18:02:29
+ * @LastEditTime: 2021-04-20 14:18:58
  * @description: 
 -->
 <template>
@@ -1070,6 +1070,10 @@ export default {
       // 功能未开放
       if (e === 4 || e === 5 || e === 7 || e === 9) {
         return;
+      }
+      // 剖切 分解模型 返回第三人称
+      if (e === 2 || e === 8) {
+        this.activePerson = 1
       }
       // 选中状态
       let realImg = null;
