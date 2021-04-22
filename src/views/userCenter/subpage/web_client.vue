@@ -374,7 +374,7 @@ export default {
         // 选中
         if (e.isLeaf) {
           if (this.activeTree && this.activeTree.uuid === e.data.uuid) {
-            if (e.data.activeSelect === 0) {
+            if (e.data.activeSelect === 1) {              
               this.memberInfo = null;
             } else {
               this.memberInfo = e.data;
