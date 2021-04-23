@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-19 16:51:05
+ * @LastEditTime: 2021-04-23 14:12:47
  * @description: 
 -->
 <template>
@@ -17,7 +17,7 @@
       <div
         v-for="(item, index) in faceList"
         :key="index"
-        @click="handleBody(item.value)"
+        @click.stop="handleBody(item.value)"
         :class="[
           item.className,
           activeFace === item.value ? 'active-face' : '',
@@ -37,13 +37,13 @@
         <div class="spot-3" @click.stop="handleSpot(index, 3)" @mouseenter="setSpot(index, 3, true)" @mouseleave="setSpot(index, 3, false)"></div>
       </div>
     </div>
-    <img class="go-front" @click="goFront" src="../../assets/images/todo/home.png" mode=""></img>
+    <img class="go-front" @click.stop="goFront" src="../../assets/images/todo/home.png" mode=""></img>
       <div class="drop-down">
-        <img class="handle-down" @click="changeView" src="../../assets/images/todo/drop_down.png" alt="">
+        <img class="handle-down" @click.stop="changeView" src="../../assets/images/todo/drop_down.png" alt="">
         <transition name="el-zoom-in-top">
           <div class="cube-type" v-if="isCubeType">
             <div v-for="(item, index) in handleList" :key="index">
-              <div :class="activeType === item.value ? 'active-type' : ''" v-text="item.label" class="select-type" @click="changeType(item)"></div>
+              <div :class="activeType === item.value ? 'active-type' : ''" v-text="item.label" class="select-type" @click.stop="changeType(item)"></div>
             </div>
           </div>
         </transition>

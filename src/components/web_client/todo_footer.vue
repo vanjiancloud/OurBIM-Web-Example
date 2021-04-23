@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-20 14:18:58
+ * @LastEditTime: 2021-04-23 14:10:54
  * @description: 
 -->
 <template>
@@ -841,6 +841,7 @@ export default {
        * @Date: 2021-03-17 09:51:33
        * @description: 关闭tool
        */
+      console.log(2);
       if (this.isMask) {
         return;
       }
