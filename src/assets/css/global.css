@@ -29,36 +29,6 @@ body
       font-size: 16px;
     }
     }
-
-
-    /* @media screen and (max-width: 1200px) and (min-width: 769px) {
-      .md-page {
-        width: 100% !important;
-        min-width: 100% !important;
-      }
-    
-      .m-l-r-0 {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-      }
-    
-      .chief-part {
-        margin-right: 10px !important;
-      }
-    }
-    
-    @media screen and (max-width: 768px) {
-      .md-page {
-        width: 1200px !important;
-        min-width: 1200px !important;
-      }
-    
-      .m-l-r-0 {
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-      }
-    }
-     */
     
 /* .container {
   width: 1420px;

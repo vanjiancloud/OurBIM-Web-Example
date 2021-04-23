@@ -107,8 +107,7 @@ export default {
   },
   watch: {
     $route (to, from) {
-      this.form.mobile = ''
-      this.form.code = ''
+      this.$router.go(0)
     },
     delay: function (newVal, oldVal) {
       if (oldVal === 0) {

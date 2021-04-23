@@ -275,17 +275,7 @@ export default {
   created () {},
   watch: {
     $route (to, from) {
-      this.ruleForm.email = ''
-      this.ruleForm.mobile = ''
-      this.ruleForm.name = ''
-      this.ruleForm.company = ''
-      this.ruleForm.code = ''
-      this.ruleForm.password = ''
-      this.ruleForm.newPassword = ''
-      //性别
-      this.ruleForm.sex = '1'
-      // 复选框的状态
-      this.ruleForm.checked = false
+      this.$router.go(0)
     },
     delay: function (newVal, oldVal) {
       if (oldVal === 0) {

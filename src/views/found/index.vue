@@ -167,7 +167,7 @@
       <div class="icon">
         <img src="./error.png" alt="" />
       </div>
-      <span class="news">提交失败</span>
+      <span class="news">上传模型失败</span>
       <div class="button">
         <el-button @click="toManage" type="primary">
           {{ $t('manage') }}
@@ -178,7 +178,7 @@
 </template>
 
 <script>
-import { addProject } from '@/api/my.js'
+import { addProject, ProjectModel } from '@/api/my.js'
 import { Getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
@@ -219,6 +219,7 @@ export default {
     // 上传模型失败
     errorModel (err, file, fileList) {
       console.log(err)
+      this.isShow = 4
       this.$common.closeLoading()
     },
     // 下一步
@@ -255,6 +256,7 @@ export default {
       // 上传bim模型
       this.$refs.bimupload.submit()
     },
+    submit (status) {},
     //去往应用管理
     toManage () {
       this.$router.push('../manage')
@@ -306,12 +308,24 @@ export default {
     // 上传模型成功
     upLoadModel (response, file, fileList) {
       this.appModel.push(response.data)
-      this.$message.success('模型上传成功')
-      if (this.bimupNumber === this.appModel.length) {
-        this.$common.closeLoading()
-        if (this.active++ > 3) this.active = 0
-        this.isShow = 3
-        this.disabl = !this.disabl
+      // response等同于后端返回的res，根据response里的code判断状态
+      // console.log(response)
+      if (response.code === 0) {
+        this.$message.success(response.message)
+        if (this.bimupNumber === this.appModel.length) {
+          this.$common.closeLoading()
+          if (this.active++ > 3) this.active = 0
+          this.isShow = 3
+          this.disabl = !this.disabl
+        }
+      } else if (response.code === 1) {
+        this.$message.error(response.message)
+        if (this.bimupNumber === this.appModel.length) {
+          this.$common.closeLoading()
+          if (this.active++ > 3) this.active = 0
+          this.isShow = 4
+          this.disabl = !this.disabl
+        }
       }
     },
     // 限制上传封面次数
