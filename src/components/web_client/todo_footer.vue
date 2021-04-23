@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-16 15:45:19
+ * @LastEditTime: 2021-04-23 14:10:54
  * @description: 
 -->
 <template>
@@ -436,8 +436,17 @@
         :close-on-click-modal="false"
         width="20%"
       >
-        <el-form v-if="followInfo">
-          <el-form-item :label="dialogPointData.label" label-width="50px">
+        <el-form
+          v-if="followInfo"
+          :model="followInfo"
+          :rules="rulesFollow"
+          ref="ruleFollow"
+        >
+          <el-form-item
+            :label="dialogPointData.label"
+            label-width="60px"
+            prop="name"
+          >
             <el-input @click.native.stop v-model="followInfo.name"></el-input>
           </el-form-item>
         </el-form>
@@ -469,6 +478,15 @@ export default {
   },
   data() {
     return {
+      rulesFollow: {
+        name: [
+          {
+            required: true,
+            message: "请输入名称",
+            trigger: "blur",
+          },
+        ],
+      },
       sliceList: [
         {
           content: null,
@@ -718,6 +736,7 @@ export default {
        * @Date: 2021-04-08 15:40:38
        * @description: 关闭连接
        */
+      this.$refs["ruleFollow"].resetFields();
       this.$emit("listenFollow", false);
     },
     openMask() {
@@ -789,7 +808,7 @@ export default {
         data: e,
       });
     },
-    changeResolve(e){
+    changeResolve(e) {
       /**
        * @Author: zk
        * @Date: 2021-04-14 11:06:54
@@ -822,8 +841,9 @@ export default {
        * @Date: 2021-03-17 09:51:33
        * @description: 关闭tool
        */
+      console.log(2);
       if (this.isMask) {
-        return
+        return;
       }
       this.angleTool = false;
       this.followTool = false;
@@ -833,16 +853,25 @@ export default {
       }`);
       this.imgList[this.oldState].url = oldUrl;
       this.imgList[this.oldState].state = 0;
+      // 分解模型
+      if (this.oldState === 8) {
+        this.imgList[8].data.value = 0;
+        this.$emit("listenTodo", {
+          state: this.imgList[8].state,
+          type: 8,
+          data: 0,
+        });
+      }
       // 剖切
       if (this.oldState === 2) {
-        if (this.imgList[this.oldState].state === 1) {
+        if (this.imgList[this.oldState].state === 0) {
           this.activeSlice = null;
           this.$emit("listenTodo", {
-            state: this.imgList[this.oldState].state,
+            state: 0,
             type: this.oldState,
           });
-          this.oldState = 0; 
-        }        
+          this.oldState = 0;
+        }
       }
       // 测量
       if (this.oldState === 3) {
@@ -914,21 +943,27 @@ export default {
        * @Date: 2021-03-17 11:36:27
        * @description: 更新视点
        */
-      MODELAPI.UPDATEFOLLOWPOINT(this.followInfo)
-        .then((res) => {
-          if (res.data.code === 0) {
-            this.ListPoint();
-            this.$message({
-              type: "success",
-              message: this.dialogPointData.successMessage,
-            });
-          }
-        })
-        .catch((err) => {});
-      this.dialogEdit = false;
-      let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
-      this.imgList[6].url = oldUrl;
-      this.imgList[6].state = 0;
+      this.$refs["ruleFollow"].validate((valid) => {
+        if (valid) {
+          MODELAPI.UPDATEFOLLOWPOINT(this.followInfo)
+            .then((res) => {
+              if (res.data.code === 0) {
+                this.ListPoint();
+                this.$message({
+                  type: "success",
+                  message: this.dialogPointData.successMessage,
+                });
+              }
+            })
+            .catch((err) => {});
+          this.dialogEdit = false;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+          this.imgList[6].url = oldUrl;
+          this.imgList[6].state = 0;
+        } else {
+          return false;
+        }
+      });
     },
     DeleteFollow(e) {
       /**
@@ -1037,6 +1072,10 @@ export default {
       if (e === 4 || e === 5 || e === 7 || e === 9) {
         return;
       }
+      // 剖切 分解模型 返回第三人称
+      if (e === 2 || e === 8) {
+        this.activePerson = 1
+      }
       // 选中状态
       let realImg = null;
       if (this.imgList[e].state === 0) {
@@ -1063,12 +1102,25 @@ export default {
           });
           return;
         } else {
-          if (this.imgList[this.oldState].state === 1) {
-            this.$emit("listenTodo", {
-              state: 0,
-              type: this.oldState,
-            });
+          if (!(this.oldState === 3 && e === 2)) {
+            if (this.imgList[this.oldState].state === 1) {
+              this.$emit("listenTodo", {
+                state: 0,
+                type: this.oldState,
+              });
+            }
           }
+        }
+      }
+      // 分解模型
+      if (this.oldState === 8) {
+        this.imgList[8].data.value = 0;
+        if (this.imgList[this.oldState].state === 1 && e !== 2) {
+          this.$emit("listenTodo", {
+            state: 0,
+            type: this.oldState,
+            data: 0,
+          });
         }
       }
       // 重置状态
@@ -1083,14 +1135,13 @@ export default {
         this.imgList[this.oldState].state = 0;
         this.oldState = e;
       }
-      
+
       if (e === 0) {
         this.personTool = this.imgList[e].state === 1 ? true : false;
       }
       if (e === 6) {
         this.followTool = this.imgList[e].state === 1 ? true : false;
       }
-
       if (e !== 0) {
         this.$emit("listenTodo", {
           state: this.imgList[e].state,
