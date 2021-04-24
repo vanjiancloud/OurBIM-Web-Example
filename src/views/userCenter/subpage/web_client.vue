@@ -686,6 +686,8 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
+      console.log(1);
+       this.$refs.getCube.closeView();
       // 浏览器
       if (e.type === 10) {
         this.browserInfo = e;
