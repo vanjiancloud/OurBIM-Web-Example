@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-26 14:21:13
+ * @LastEditTime: 2021-04-26 14:26:55
  * @description: 
 -->
 <template>
@@ -782,19 +782,11 @@ export default {
           }
         }
       }
-
-      // if (indexes === 2) {
-      //   indexes === this.activeSlice
-      //     ? (this.activeSlice = null)
-      //     : (this.activeSlice = indexes);
-      // } else {
-      //   this.activeSlice = indexes;
-      // }
-      // this.$emit("listenTodo", {
-      //   state: this.imgList[2].state,
-      //   type: 2,
-      //   data: indexes,
-      // });
+      this.$emit("listenTodo", {
+        state: this.imgList[2].state,
+        type: 2,
+        data: indexes,
+      });
     },
     changeGauge(e) {
       /**
