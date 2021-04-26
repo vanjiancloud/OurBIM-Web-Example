@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-24 09:19:37
+ * @LastEditTime: 2021-04-26 09:40:26
  * @description: 
 -->
 <template>
@@ -534,7 +534,7 @@ export default {
           name: "angle",
         },
       ],
-      activeSlice: null,
+      activeSlice: [],
       isMask: false,
       unitList: ["m", "cm", "mm", "ft", "in"],
       accuracyList: ["0", "0.1", "0.01"],
@@ -753,18 +753,23 @@ export default {
        * @Date: 2021-04-08 17:55:39
        * @description: 剖切 0 移动 1 旋转 2 反选 3 指定 4 重置
        */
-      if (indexes === 2) {
-        indexes === this.activeSlice
-          ? (this.activeSlice = null)
-          : (this.activeSlice = indexes);
+      if (this.activeSlice.indexOf(indexes) > -1) {
+        
       } else {
-        this.activeSlice = indexes;
+        
       }
-      this.$emit("listenTodo", {
-        state: this.imgList[2].state,
-        type: 2,
-        data: indexes,
-      });
+      // if (indexes === 2) {
+      //   indexes === this.activeSlice
+      //     ? (this.activeSlice = null)
+      //     : (this.activeSlice = indexes);
+      // } else {
+      //   this.activeSlice = indexes;
+      // }
+      // this.$emit("listenTodo", {
+      //   state: this.imgList[2].state,
+      //   type: 2,
+      //   data: indexes,
+      // });
     },
     changeGauge(e) {
       /**

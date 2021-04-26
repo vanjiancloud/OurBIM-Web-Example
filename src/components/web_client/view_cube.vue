@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-24 09:26:20
+ * @LastEditTime: 2021-04-26 09:30:31
  * @description: 
 -->
 <template>
@@ -839,10 +839,11 @@ export default {
        * @Date: 2021-04-01 17:56:46
        * @description: 重置角度
        */
-      if (this.activeType === 2) {
-        this.activeType = 1;
-        this.$emit("handleType", 2);
-      }
+      this.closeView()
+      // if (this.activeType === 2) {
+        // this.activeType = 1;
+        // this.$emit("handleType", 2);
+      // }
       if (this.realDownInfo.y < 0 && this.downInfo.y > 0) {
         if (this.realDownInfo.y === -45 && this.downInfo.y === 45) {
           let { x, y, z } = JSON.parse(JSON.stringify(this.downInfo));
@@ -967,9 +968,10 @@ export default {
      * @Author: zk
      * @Date: 2021-04-24 09:24:21
      * @description: 关闭视图
-     */  
-    console.error(2);
-     this.isCubeType = false;
+     */
+    if (this.isCubeType) {
+      this.isCubeType = false;      
+    }
     }
   },
 };
