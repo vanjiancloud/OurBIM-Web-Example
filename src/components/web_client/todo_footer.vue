@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-26 09:40:26
+ * @LastEditTime: 2021-04-26 14:21:13
  * @description: 
 -->
 <template>
@@ -108,7 +108,11 @@
                   <img
                     class="slice-img"
                     @click.stop="changeSlice(item, index)"
-                    :src="activeSlice === index ? item.activeImg : item.img"
+                    :src="
+                      activeSlice.indexOf(index) > -1
+                        ? item.activeImg
+                        : item.img
+                    "
                     mode=""
                   />
                 </div>
@@ -753,11 +757,32 @@ export default {
        * @Date: 2021-04-08 17:55:39
        * @description: 剖切 0 移动 1 旋转 2 反选 3 指定 4 重置
        */
-      if (this.activeSlice.indexOf(indexes) > -1) {
-        
+      if (indexes === 4) {
+        if (this.activeSlice.indexOf(4) === -1) {
+          this.activeSlice = [4];
+        } else {
+          this.activeSlice = [];
+        }
       } else {
-        
+        if (indexes === 0 && this.activeSlice.indexOf(0) === -1) {
+          this.activeSlice.push(0);
+          if (this.activeSlice.indexOf(1) > -1) {
+            this.activeSlice.splice(this.activeSlice.indexOf(1), 1);
+          }
+        } else if (indexes === 1 && this.activeSlice.indexOf(1) === -1) {
+          this.activeSlice.push(1);
+          if (this.activeSlice.indexOf(0) > -1) {
+            this.activeSlice.splice(this.activeSlice.indexOf(0), 1);
+          }
+        } else {
+          if (this.activeSlice.indexOf(indexes) > -1) {
+            this.activeSlice.splice(this.activeSlice.indexOf(indexes), 1);
+          } else {
+            this.activeSlice.push(indexes);
+          }
+        }
       }
+
       // if (indexes === 2) {
       //   indexes === this.activeSlice
       //     ? (this.activeSlice = null)
@@ -869,7 +894,7 @@ export default {
       // 剖切
       if (this.oldState === 2) {
         if (this.imgList[this.oldState].state === 0) {
-          this.activeSlice = null;
+          this.activeSlice = [];
           this.$emit("listenTodo", {
             state: 0,
             type: this.oldState,
@@ -1078,7 +1103,7 @@ export default {
       }
       // 剖切 分解模型 返回第三人称
       if (e === 2 || e === 8) {
-        this.activePerson = 1
+        this.activePerson = 1;
       }
       // 选中状态
       let realImg = null;
@@ -1092,7 +1117,7 @@ export default {
 
       // 关闭刨切和测量
       if (this.oldState === 2 || this.oldState === 3) {
-        this.activeSlice = null;
+        this.activeSlice = [];
         this.cuttingList.forEach((item, e) => {
           this.cuttingList[e].img = require("@/assets/images/todo/unchecked/" +
             this.cuttingList[e].name +

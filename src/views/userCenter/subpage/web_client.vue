@@ -57,7 +57,7 @@
       <div class="mutual-bim">
         <div
           class="tree-main"
-          v-if="
+          v-show="
             browserInfo && browserInfo.type === 10 && browserInfo.state === 1
           "
         >
@@ -109,7 +109,7 @@
         </div>
         <div
           class="bim-info"
-          v-if="natureInfo && natureInfo.type === 11 && natureInfo.state === 1"
+          v-show="natureInfo && natureInfo.type === 11 && natureInfo.state === 1"
         >
           <!-- 属性 -->
           <div class="bim-title">
@@ -215,9 +215,11 @@ export default {
     };
   },
   watch: {},
-  mounted() {
+  created () {
     this.appId = this.$route.query.appid;
     this.appToken = this.$route.query.token;
+  },
+  mounted() {
     if (this.$route.query.locale) {
       this.locale = this.$route.query.locale;
       this.$i18n.locale = this.locale;
@@ -694,7 +696,7 @@ export default {
       // 构件属性
       if (e.type === 11) {
         this.natureInfo = e;
-        e.state === 0 ? (this.memberInfo = null) : "";
+        // e.state === 0 ? (this.memberInfo = null) : "";
       }
       // 移动速度
       if (e.type === 1 && e.data) {
