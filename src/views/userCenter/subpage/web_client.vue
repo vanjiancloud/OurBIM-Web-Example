@@ -1,3 +1,10 @@
+<!--
+ * @Author: zk
+ * @Date: 2021-03-10 14:08:18
+ * @LastEditors: zk
+ * @LastEditTime: 2021-04-27 11:46:53
+ * @description: 
+-->
 <template>
   <div class="bim-main">
     <iframe
@@ -91,17 +98,10 @@
                 slot-scope="{ node }"
                 @click="handleTree(node, 0)"
               >
-              
                 <span class="label-span">{{ node.label }}</span>
                 <span>
-                  <i
-                    class="iconfont icon-xianshi2"
-                    v-if="!node.checked"
-                  ></i>
-                  <i
-                    v-else
-                    class="iconfont icon-yincang1"
-                  ></i>
+                  <i class="iconfont icon-xianshi2" v-if="!node.checked"></i>
+                  <i v-else class="iconfont icon-yincang1"></i>
                 </span>
               </span>
             </el-tree>
@@ -109,7 +109,9 @@
         </div>
         <div
           class="bim-info"
-          v-show="natureInfo && natureInfo.type === 11 && natureInfo.state === 1"
+          v-show="
+            natureInfo && natureInfo.type === 11 && natureInfo.state === 1
+          "
         >
           <!-- 属性 -->
           <div class="bim-title">
@@ -215,7 +217,7 @@ export default {
     };
   },
   watch: {},
-  created () {
+  created() {
     this.appId = this.$route.query.appid;
     this.appToken = this.$route.query.token;
   },
@@ -349,18 +351,18 @@ export default {
       this.handleState = 10;
       this.updateOrder();
     },
-    checkTree(data, e){
-    /**
-     * @Author: zk
-     * @Date: 2021-04-16 11:56:27
-     * @description: 显示隐藏
-     */
+    checkTree(data, e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-16 11:56:27
+       * @description: 显示隐藏
+       */
       this.leafInfo = data;
       if (e.checkedKeys.includes(data.uuid)) {
         this.handleState = 8;
         data.activeState = 1;
         this.updateOrder();
-      }else{
+      } else {
         this.handleState = 8;
         data.activeState = 0;
         this.updateOrder();
@@ -372,42 +374,34 @@ export default {
        * @Date: 2021-03-08 14:39:51
        * @description: 构件树的指令
        */
+      let messageInfo = {
+        prex: "ourbimMessage",
+        type: 20001,
+        data: e.data,
+        message: "",
+      };
+      this.sentParentIframe(messageInfo);
       if (index === 0) {
         // 选中
         if (e.isLeaf) {
           if (this.activeTree && this.activeTree.uuid === e.data.uuid) {
-            if (e.data.activeSelect === 1) {              
+            if (e.data.activeSelect === 1) {
               this.memberInfo = null;
             } else {
               this.memberInfo = e.data;
-              let messageInfo = {
-                prex: "ourbimMessage",
-                type: 20001,
-                data: e.data,
-                message: "",
-              };
-              this.sentParentIframe(messageInfo);
             }
             e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
             this.leafInfo = e;
           } else {
             this.leafInfo = e;
-            e.data.activeSelect = 1
-            this.memberInfo = e.data;
-              let messageInfo = {
-                prex: "ourbimMessage",
-                type: 20001,
-                data: e.data,
-                message: "",
-              };
-              this.sentParentIframe(messageInfo);
+            e.data.activeSelect = 1;
           }
-          
+
           this.handleState = 9;
           if (e.data.haveChild === "0") {
             this.updateOrder();
           }
-          this.activeTree = e.data
+          this.activeTree = e.data;
         }
       }
     },
@@ -688,7 +682,7 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
-       this.$refs.getCube.closeView();
+      this.$refs.getCube.closeView();
       // 浏览器
       if (e.type === 10) {
         this.browserInfo = e;
@@ -952,6 +946,11 @@ export default {
       }, 1000 * 2);
     },
     sentParentIframe(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-27 11:42:25
+       * @description: 10001: 模型初始化 20001：构件树单击构件
+       */
       window.parent.postMessage(e, "*");
     },
     sendToIframe(type, data, message) {
@@ -1436,7 +1435,6 @@ export default {
     width: 120vw !important;
   }
 }
-
 </style>
 <style lang="less" >
 .tree-content {
@@ -1457,16 +1455,16 @@ export default {
       .is-leaf {
         color: transparent;
       }
-      .is-current{      
-        .tree-select{
+      .is-current {
+        .tree-select {
           background: rgba(255, 255, 255, 0.2);
         }
       }
-      .el-checkbox{
+      .el-checkbox {
         position: absolute;
         right: 0;
       }
-      .el-checkbox__inner{
+      .el-checkbox__inner {
         background-color: transparent;
         border-color: transparent;
       }
