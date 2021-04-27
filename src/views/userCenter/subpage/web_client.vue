@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-04-27 11:46:53
+ * @LastEditTime: 2021-04-27 14:56:58
  * @description: 
 -->
 <template>
@@ -130,6 +130,14 @@
                 <td v-text="item.value"></td>
               </tr>
             </table>
+            <table
+              class="detail-table"
+              v-else
+            >
+              <tr>
+                <td>请选择唯一构件以查看属性</td>
+              </tr>
+            </table>
           </div>
         </div>
       </div>
@@ -147,6 +155,8 @@
         @handleType="handleType"
         ref="getCube"
       ></view-cube>
+      <!-- 标签树 -->
+      <tag-tree ref="tagTree"></tag-tree>
     </div>
   </div>
 </template>
@@ -155,6 +165,7 @@
 import MODELAPI from "@/api/model_api";
 import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
+import tagTree from "@/components/web_client/tag_tree"
 
 export default {
   name: "look_app",
@@ -162,6 +173,7 @@ export default {
   components: {
     todoFooter,
     viewCube,
+    tagTree
   },
   data() {
     return {
@@ -721,6 +733,10 @@ export default {
           this.updateOrder();
         }
       }
+      // 标签
+      if (e.type === 4) {
+        this.$refs.tagTree.closePart(e.state === 0 ? false : true)
+      }
       if (e.type === 8 && e.data !== undefined) {
         this.handleState = 12;
         this.listenTodoInfo = e;
@@ -772,7 +788,7 @@ export default {
       this.websock.onopen = (e) => {
         this.isSocket = true;
         this.socketTimer = setInterval(() => {
-          this.websock.send("heartbeat");
+          this.websock.send("Bang");
         }, 1000 * 60);
       };
       this.websock.onerror = (e) => {

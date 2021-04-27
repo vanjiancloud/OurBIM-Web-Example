@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-26 14:26:55
+ * @LastEditTime: 2021-04-27 14:59:44
  * @description: 
 -->
 <template>
@@ -907,6 +907,14 @@ export default {
         });
         this.oldState = 0;
       }
+      // 标签
+      if (this.oldState === 4) {
+        this.$emit("listenTodo", {
+            state: 0,
+            type: this.oldState,
+          });
+          this.oldState = 0;
+      }
     },
     editTool(e) {
       let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
@@ -1090,8 +1098,20 @@ export default {
     },
     handleOrder(e) {
       // 功能未开放
-      if (e === 4 || e === 5 || e === 7 || e === 9) {
+      if (e === 5 || e === 7 || e === 9) {
         return;
+      }
+      // 模型浏览器 重置标签
+      if (this.oldState === 4 && this.oldState !== e) {
+        if (this.imgList[4].state === 1) {
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
+          this.imgList[4].url = oldUrl;
+          this.imgList[4].state = 0;
+          this.$emit("listenTodo", {
+            state: 0,
+            type: 4,
+          });
+        }
       }
       // 剖切 分解模型 返回第三人称
       if (e === 2 || e === 8) {
@@ -1160,6 +1180,31 @@ export default {
       if (e === 0) {
         this.personTool = this.imgList[e].state === 1 ? true : false;
       }
+      // 标签 重置模型浏览器
+      if (e === 4) {
+        if (this.imgList[10].state === 1) {
+          this.imgList[10].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[10].name}`);
+          this.imgList[10].url = oldUrl;
+          this.$emit("listenTodo", {
+            state: this.imgList[10].state,
+            type: 10,
+          });
+        }
+      }
+      // 模型浏览器 重置标签
+      if (e === 10) {
+        if (this.imgList[4].state === 1) {
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
+          this.imgList[4].url = oldUrl;
+          this.imgList[4].state = 0;
+          this.$emit("listenTodo", {
+            state: this.imgList[4].state,
+            type: 4,
+          });
+        }
+      }
+
       if (e === 6) {
         this.followTool = this.imgList[e].state === 1 ? true : false;
       }
