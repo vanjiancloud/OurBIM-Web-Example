@@ -88,7 +88,7 @@
       </div> -->
       <!-- 按钮 -->
       <div class="anNiu">
-        <el-button @click="next" type="primary">
+        <el-button @click="next" :loading="isLoading" type="primary">
           {{ $t('nextstep') }}
         </el-button>
       </div>
@@ -145,7 +145,7 @@
         文件默认打开初始Revit的三维视图，请将文件在对应视图打开状态下保存，再上传。
       </div>
       <div class="btn">
-        <el-button @click="update" type="primary" :disabled="disabl">
+        <el-button @click="update" type="primary" :loading="isLoading" :disabled="disabl">
           {{ $t('Render') }}
         </el-button>
       </div>
@@ -204,7 +204,8 @@ export default {
       limt: 1, // 限制模型数量
       bimupNumber: 0, // 监听
       appliId: '',
-      fileUpload: ''
+      fileUpload: '',
+      isLoading: false,
     }
   },
   methods: {
@@ -218,12 +219,14 @@ export default {
     },
     // 上传模型失败
     errorModel (err, file, fileList) {
+      this.isLoading = false
       console.log(err)
       this.isShow = 4
       this.$common.closeLoading()
     },
     // 下一步
     next () {
+      this.isLoading = true
       // if (this.appName !== '' && this.appImgSrc.length !== 0) {
       if (this.appName !== '') {
         if (this.active++ > 3) this.active = 0
@@ -233,6 +236,7 @@ export default {
           screenImg: this.appImgSrc.toString()
         })
           .then(res => {
+            this.isLoading = false
             if (res.data.code === 0) {
               this.appInfo = res.data.data
               this.appliId = res.data.data.appid
@@ -244,6 +248,7 @@ export default {
             }
           })
           .catch(err => {
+            this.isLoading = false
             console.log(err)
             this.$message.error('创建失败，请创建项目')
           })
@@ -253,6 +258,7 @@ export default {
     },
     // 开始转换
     update () {
+      this.isLoading = true
       // 上传bim模型
       this.$refs.bimupload.submit()
     },
@@ -307,6 +313,7 @@ export default {
     },
     // 上传模型成功
     upLoadModel (response, file, fileList) {
+      this.isLoading = false
       this.appModel.push(response.data)
       // response等同于后端返回的res，根据response里的code判断状态
       // console.log(response)
