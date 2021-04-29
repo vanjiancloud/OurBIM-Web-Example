@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-04-27 15:01:00
+ * @LastEditTime: 2021-04-27 15:11:18
  * @description: 标签树
 -->
 <template>
@@ -13,7 +13,7 @@
         <i class="el-icon-close" @click="closePart(false)"></i>
       </div>
     </div>
-    <div class="tree-content">1</div>
+    <!-- <div class="tree-content">1</div> -->
   </div>
 </template>
 
