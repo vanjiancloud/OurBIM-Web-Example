@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-04-29 17:21:41
+ * @LastEditTime: 2021-05-06 15:39:18
  * @description: 
 -->
 <template>
@@ -160,7 +160,11 @@
         ref="getCube"
       ></view-cube>
       <!-- 标签树 -->
-      <tag-tree ref="tagTree"></tag-tree>
+      <tag-tree
+        @click.native.stop=""
+        @closeTag="closeTag"
+        ref="tagTree"
+      ></tag-tree>
     </div>
   </div>
 </template>
@@ -206,6 +210,7 @@ export default {
       ourbimInfo: null,
       isFade: true,
       isFollow: false,
+      isTag: false,
       handleState: 0,
       activeTree: null,
       leafInfo: null,
@@ -699,6 +704,15 @@ export default {
       }
       this.$refs.getFooter.editTool(e);
     },
+    closeTag() {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-06 10:13:08
+       * @description: 关闭标签组件
+       */
+      this.isTag = false;
+      this.$refs.getFooter.editTool(4);
+    },
     listenPerson(e) {
       /**
        * @Author: zk
@@ -756,6 +770,7 @@ export default {
       }
       // 标签
       if (e.type === 4) {
+        this.isTag = true;
         this.$refs.tagTree.closePart(e.state === 0 ? false : true);
       }
       if (e.type === 8 && e.data !== undefined) {
@@ -779,6 +794,13 @@ export default {
        * 7 点击空白
        * 8 初始化成功
        */
+       let messageInfo = {
+              prex: "ourbimMessage",
+              type: 10001,
+              data: res.data.data.taskId,
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
@@ -809,12 +831,26 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "6") {
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 10002,
+              data: "",
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
             this.handleState = 13;
             this.updateOrder();
           } else if (realData.id === "7") {
             this.memberInfo = null;
-            this.activeLeaf = false
+            this.activeLeaf = false;
           } else if (realData.id === "8") {
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 10003,
+              data: "",
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
             this.hiddenState = 0;
             //普通的watch监听
             if (this.ourbimInfo.expiredTime > 0) {
@@ -856,14 +892,7 @@ export default {
               this.controllerInfo.uiBar = true;
             } else {
               this.controllerInfo.uiBar = false;
-            }
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 10001,
-              data: res.data.data.taskId,
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
+            }            
             this.propsFooter.taskId = res.data.data.taskId;
             this.initWebSocket();
             this.getMonitor();
@@ -980,7 +1009,7 @@ export default {
         // 关闭tool
         this.sendToIframe(10200, "false", "");
         document.addEventListener("keydown", (e) => {
-          if (this.isFollow) {
+          if (this.isFollow || this.isTag) {
             return;
           }
           this.sendToIframe(
@@ -993,7 +1022,7 @@ export default {
           );
         });
         document.addEventListener("keyup", (e) => {
-          if (this.isFollow) {
+          if (this.isFollow || this.isTag) {
             return;
           }
           this.sendToIframe(
@@ -1012,7 +1041,9 @@ export default {
        * @Author: zk
        * @Date: 2021-04-27 11:42:25
        * @description:
-       * 10001: 模型初始化
+       * 10001: 已获取平台资源，开始初始化
+       * 10002：平台初始化成功
+       * 10003：平台加载成功
        * 20001：单击构件
        * 20002: 框选构件
        */
