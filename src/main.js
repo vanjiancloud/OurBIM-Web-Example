@@ -188,6 +188,10 @@ const i18n = new VueI18n({
           title: '模型浏览器',
           tips: ['加载中', '暂无数据']
         },
+        tag: {
+          title: '标签树',
+          tips: ['加载中', '暂无数据']
+        },
         attribute: {
           title: '属性'
         },

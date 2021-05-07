@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-23 14:10:54
+ * @LastEditTime: 2021-04-27 14:59:44
  * @description: 
 -->
 <template>
@@ -108,7 +108,11 @@
                   <img
                     class="slice-img"
                     @click.stop="changeSlice(item, index)"
-                    :src="activeSlice === index ? item.activeImg : item.img"
+                    :src="
+                      activeSlice.indexOf(index) > -1
+                        ? item.activeImg
+                        : item.img
+                    "
                     mode=""
                   />
                 </div>
@@ -534,7 +538,7 @@ export default {
           name: "angle",
         },
       ],
-      activeSlice: null,
+      activeSlice: [],
       isMask: false,
       unitList: ["m", "cm", "mm", "ft", "in"],
       accuracyList: ["0", "0.1", "0.01"],
@@ -753,12 +757,30 @@ export default {
        * @Date: 2021-04-08 17:55:39
        * @description: 剖切 0 移动 1 旋转 2 反选 3 指定 4 重置
        */
-      if (indexes === 2) {
-        indexes === this.activeSlice
-          ? (this.activeSlice = null)
-          : (this.activeSlice = indexes);
+      if (indexes === 4) {
+        if (this.activeSlice.indexOf(4) === -1) {
+          this.activeSlice = [4];
+        } else {
+          this.activeSlice = [];
+        }
       } else {
-        this.activeSlice = indexes;
+        if (indexes === 0 && this.activeSlice.indexOf(0) === -1) {
+          this.activeSlice.push(0);
+          if (this.activeSlice.indexOf(1) > -1) {
+            this.activeSlice.splice(this.activeSlice.indexOf(1), 1);
+          }
+        } else if (indexes === 1 && this.activeSlice.indexOf(1) === -1) {
+          this.activeSlice.push(1);
+          if (this.activeSlice.indexOf(0) > -1) {
+            this.activeSlice.splice(this.activeSlice.indexOf(0), 1);
+          }
+        } else {
+          if (this.activeSlice.indexOf(indexes) > -1) {
+            this.activeSlice.splice(this.activeSlice.indexOf(indexes), 1);
+          } else {
+            this.activeSlice.push(indexes);
+          }
+        }
       }
       this.$emit("listenTodo", {
         state: this.imgList[2].state,
@@ -841,7 +863,6 @@ export default {
        * @Date: 2021-03-17 09:51:33
        * @description: 关闭tool
        */
-      console.log(2);
       if (this.isMask) {
         return;
       }
@@ -865,7 +886,7 @@ export default {
       // 剖切
       if (this.oldState === 2) {
         if (this.imgList[this.oldState].state === 0) {
-          this.activeSlice = null;
+          this.activeSlice = [];
           this.$emit("listenTodo", {
             state: 0,
             type: this.oldState,
@@ -885,6 +906,14 @@ export default {
           type: this.oldState,
         });
         this.oldState = 0;
+      }
+      // 标签
+      if (this.oldState === 4) {
+        this.$emit("listenTodo", {
+            state: 0,
+            type: this.oldState,
+          });
+          this.oldState = 0;
       }
     },
     editTool(e) {
@@ -1069,12 +1098,24 @@ export default {
     },
     handleOrder(e) {
       // 功能未开放
-      if (e === 4 || e === 5 || e === 7 || e === 9) {
+      if (e === 5 || e === 7 || e === 9) {
         return;
+      }
+      // 模型浏览器 重置标签
+      if (this.oldState === 4 && this.oldState !== e) {
+        if (this.imgList[4].state === 1) {
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
+          this.imgList[4].url = oldUrl;
+          this.imgList[4].state = 0;
+          this.$emit("listenTodo", {
+            state: 0,
+            type: 4,
+          });
+        }
       }
       // 剖切 分解模型 返回第三人称
       if (e === 2 || e === 8) {
-        this.activePerson = 1
+        this.activePerson = 1;
       }
       // 选中状态
       let realImg = null;
@@ -1088,7 +1129,7 @@ export default {
 
       // 关闭刨切和测量
       if (this.oldState === 2 || this.oldState === 3) {
-        this.activeSlice = null;
+        this.activeSlice = [];
         this.cuttingList.forEach((item, e) => {
           this.cuttingList[e].img = require("@/assets/images/todo/unchecked/" +
             this.cuttingList[e].name +
@@ -1139,6 +1180,31 @@ export default {
       if (e === 0) {
         this.personTool = this.imgList[e].state === 1 ? true : false;
       }
+      // 标签 重置模型浏览器
+      if (e === 4) {
+        if (this.imgList[10].state === 1) {
+          this.imgList[10].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[10].name}`);
+          this.imgList[10].url = oldUrl;
+          this.$emit("listenTodo", {
+            state: this.imgList[10].state,
+            type: 10,
+          });
+        }
+      }
+      // 模型浏览器 重置标签
+      if (e === 10) {
+        if (this.imgList[4].state === 1) {
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
+          this.imgList[4].url = oldUrl;
+          this.imgList[4].state = 0;
+          this.$emit("listenTodo", {
+            state: this.imgList[4].state,
+            type: 4,
+          });
+        }
+      }
+
       if (e === 6) {
         this.followTool = this.imgList[e].state === 1 ? true : false;
       }

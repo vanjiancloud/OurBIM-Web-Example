@@ -1,3 +1,10 @@
+<!--
+ * @Author: zk
+ * @Date: 2021-03-10 14:08:18
+ * @LastEditors: zk
+ * @LastEditTime: 2021-04-29 17:21:41
+ * @description: 
+-->
 <template>
   <div class="bim-main">
     <iframe
@@ -57,7 +64,7 @@
       <div class="mutual-bim">
         <div
           class="tree-main"
-          v-if="
+          v-show="
             browserInfo && browserInfo.type === 10 && browserInfo.state === 1
           "
         >
@@ -74,6 +81,7 @@
               @check="checkTree"
               :empty-text="treeEmpty"
               :props="propsMember"
+              :expand-on-click-node="false"
               :load="loadNode"
               show-checkbox
               highlight-current
@@ -84,24 +92,17 @@
               <span
                 class="custom-tree-node"
                 :class="
-                  node.data.activeSelect === 1 && node.data.haveChild === '0'
+                  activeTree && node.data.uuid === activeTree.uuid && activeLeaf
                     ? 'tree-select'
                     : ''
                 "
                 slot-scope="{ node }"
                 @click="handleTree(node, 0)"
               >
-              
                 <span class="label-span">{{ node.label }}</span>
                 <span>
-                  <i
-                    class="iconfont icon-xianshi2"
-                    v-if="!node.checked"
-                  ></i>
-                  <i
-                    v-else
-                    class="iconfont icon-yincang1"
-                  ></i>
+                  <i class="iconfont icon-xianshi2" v-if="!node.checked"></i>
+                  <i v-else class="iconfont icon-yincang1"></i>
                 </span>
               </span>
             </el-tree>
@@ -109,7 +110,9 @@
         </div>
         <div
           class="bim-info"
-          v-if="natureInfo && natureInfo.type === 11 && natureInfo.state === 1"
+          v-show="
+            natureInfo && natureInfo.type === 11 && natureInfo.state === 1
+          "
         >
           <!-- 属性 -->
           <div class="bim-title">
@@ -121,11 +124,22 @@
           <div class="detail-main">
             <table
               class="detail-table"
-              v-if="memberInfo && memberInfo.dynamicData"
+              v-if="memberInfo && memberInfo.type === 1"
             >
-              <tr v-for="(item, index) in memberInfo.dynamicData" :key="index">
+              <tr
+                v-for="(item, index) in memberInfo.data.dynamicData"
+                :key="index"
+              >
                 <td v-text="item.name"></td>
                 <td v-text="item.value"></td>
+              </tr>
+            </table>
+            <table
+              class="detail-table"
+              v-else-if="memberInfo && memberInfo.type === 5"
+            >
+              <tr>
+                <td>请选择唯一构件以查看属性</td>
               </tr>
             </table>
           </div>
@@ -145,6 +159,8 @@
         @handleType="handleType"
         ref="getCube"
       ></view-cube>
+      <!-- 标签树 -->
+      <tag-tree ref="tagTree"></tag-tree>
     </div>
   </div>
 </template>
@@ -153,6 +169,7 @@
 import MODELAPI from "@/api/model_api";
 import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
+import tagTree from "@/components/web_client/tag_tree";
 
 export default {
   name: "look_app",
@@ -160,6 +177,7 @@ export default {
   components: {
     todoFooter,
     viewCube,
+    tagTree,
   },
   data() {
     return {
@@ -196,6 +214,7 @@ export default {
       runTimeCode: 0,
       timerInfo: null,
       memberInfo: null,
+      activeLeaf: false,
       loadTimer: null,
       timerCount: 0,
       moreCount: 10,
@@ -207,6 +226,10 @@ export default {
       natureInfo: null,
       shadowType: null,
       listenTodoInfo: null,
+      pageSizeInfo: {
+        width: null,
+        height: null,
+      },
       gaugeInfo: {
         unit: "m",
         accuracy: 0.01,
@@ -215,9 +238,22 @@ export default {
     };
   },
   watch: {},
-  mounted() {
+  created() {
     this.appId = this.$route.query.appid;
     this.appToken = this.$route.query.token;
+    if (this.$route.query.width && this.$route.query.height) {
+      this.pageSizeInfo = {
+        width: this.$route.query.width,
+        height: this.$route.query.height,
+      };
+    } else {
+      this.pageSizeInfo = {
+        width: 1920,
+        height: 1080,
+      };
+    }
+  },
+  mounted() {
     if (this.$route.query.locale) {
       this.locale = this.$route.query.locale;
       this.$i18n.locale = this.locale;
@@ -347,18 +383,18 @@ export default {
       this.handleState = 10;
       this.updateOrder();
     },
-    checkTree(data, e){
-    /**
-     * @Author: zk
-     * @Date: 2021-04-16 11:56:27
-     * @description: 显示隐藏
-     */
+    checkTree(data, e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-16 11:56:27
+       * @description: 显示隐藏
+       */
       this.leafInfo = data;
       if (e.checkedKeys.includes(data.uuid)) {
         this.handleState = 8;
         data.activeState = 1;
         this.updateOrder();
-      }else{
+      } else {
         this.handleState = 8;
         data.activeState = 0;
         this.updateOrder();
@@ -370,44 +406,34 @@ export default {
        * @Date: 2021-03-08 14:39:51
        * @description: 构件树的指令
        */
-      if (index === 0) {
-        // 选中
-        if (e.isLeaf) {
-          if (this.activeTree && this.activeTree.uuid === e.data.uuid) {
-            if (e.data.activeSelect === 1) {              
-              this.memberInfo = null;
-            } else {
-              this.memberInfo = e.data;
-              let messageInfo = {
-                prex: "ourbimMessage",
-                type: 20001,
-                data: e.data,
-                message: "",
-              };
-              this.sentParentIframe(messageInfo);
-            }
-            e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
-            this.leafInfo = e;
-          } else {
-            this.leafInfo = e;
-            e.data.activeSelect = 1
-            this.memberInfo = e.data;
-              let messageInfo = {
-                prex: "ourbimMessage",
-                type: 20001,
-                data: e.data,
-                message: "",
-              };
-              this.sentParentIframe(messageInfo);
-          }
-          
-          this.handleState = 9;
-          if (e.data.haveChild === "0") {
-            this.updateOrder();
-          }
-          this.activeTree = e.data
+      let messageInfo = {
+        prex: "ourbimMessage",
+        type: 20001,
+        data: e.data,
+        message: "",
+      };
+      this.sentParentIframe(messageInfo);
+      if (this.activeTree && this.activeTree.uuid === e.data.uuid) {
+        if (e.data.activeSelect === 1) {
+          this.activeLeaf = false;
+        } else {
+          this.activeLeaf = true;
         }
+        e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
+        this.leafInfo = e;
+      } else {
+        this.activeLeaf = true;
+        this.leafInfo = e;
+        e.data.activeSelect = 1;
       }
+      this.memberInfo = {
+        type: e.data.haveChild === "0" ? 1 : 5,
+        data: e.data,
+      };
+      this.leafInfo = e;
+      this.handleState = 9;
+      this.updateOrder();
+      this.activeTree = e.data;
     },
     handleOrder(e) {
       /**
@@ -583,8 +609,11 @@ export default {
           params.splitValue = this.listenTodoInfo.data;
           break;
         case 13:
+          // 启动应用
           params.id = 14;
           params.plateType = this.isMobile() ? 1 : 0;
+          params.width = this.pageSizeInfo.width;
+          params.height = this.pageSizeInfo.height;
           break;
         default:
           break;
@@ -686,6 +715,7 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
+      this.$refs.getCube.closeView();
       // 浏览器
       if (e.type === 10) {
         this.browserInfo = e;
@@ -693,7 +723,7 @@ export default {
       // 构件属性
       if (e.type === 11) {
         this.natureInfo = e;
-        e.state === 0 ? (this.memberInfo = null) : "";
+        // e.state === 0 ? (this.memberInfo = null) : "";
       }
       // 移动速度
       if (e.type === 1 && e.data) {
@@ -724,6 +754,10 @@ export default {
           this.updateOrder();
         }
       }
+      // 标签
+      if (e.type === 4) {
+        this.$refs.tagTree.closePart(e.state === 0 ? false : true);
+      }
       if (e.type === 8 && e.data !== undefined) {
         this.handleState = 12;
         this.listenTodoInfo = e;
@@ -736,6 +770,14 @@ export default {
        * @Author: zk
        * @Date: 2021-02-24 13:42:13
        * @description: 初始化socket通信
+       * 1 单击构件
+       * 2.场景部分加载
+       * 3 返回关注视角
+       * 4 返回主视图信息
+       * 5 多选构件
+       * 6 启动事件
+       * 7 点击空白
+       * 8 初始化成功
        */
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
@@ -743,7 +785,10 @@ export default {
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
           if (realData.id === "1") {
-            this.memberInfo = realData.data;
+            this.memberInfo = {
+              type: 1,
+              data: realData.data,
+            };
             let messageInfo = {
               prex: "ourbimMessage",
               type: 20001,
@@ -753,7 +798,23 @@ export default {
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
             this.$refs.getFooter.resetPointList(realData.object);
+          } else if (realData.id === "5") {
+            this.memberInfo = {
+              type: 5,
+            };
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 20002,
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
           } else if (realData.id === "6") {
+            this.handleState = 13;
+            this.updateOrder();
+          } else if (realData.id === "7") {
+            this.memberInfo = null;
+            this.activeLeaf = false
+          } else if (realData.id === "8") {
             this.hiddenState = 0;
             //普通的watch监听
             if (this.ourbimInfo.expiredTime > 0) {
@@ -767,15 +828,13 @@ export default {
               this.setTimePass();
             }
             this.isFade = false;
-            this.handleState = 13;
-            this.updateOrder();
           }
         }
       };
       this.websock.onopen = (e) => {
         this.isSocket = true;
         this.socketTimer = setInterval(() => {
-          this.websock.send("heartbeat");
+          this.websock.send("Bang");
         }, 1000 * 60);
       };
       this.websock.onerror = (e) => {
@@ -949,6 +1008,14 @@ export default {
       }, 1000 * 2);
     },
     sentParentIframe(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-27 11:42:25
+       * @description:
+       * 10001: 模型初始化
+       * 20001：单击构件
+       * 20002: 框选构件
+       */
       window.parent.postMessage(e, "*");
     },
     sendToIframe(type, data, message) {
@@ -1433,7 +1500,6 @@ export default {
     width: 120vw !important;
   }
 }
-
 </style>
 <style lang="less" >
 .tree-content {
@@ -1454,19 +1520,22 @@ export default {
       .is-leaf {
         color: transparent;
       }
-      .is-current{      
-        .tree-select{
-          background: rgba(255, 255, 255, 0.2);
-        }
-      }
-      .el-checkbox{
+      // .is-current {
+      //   .tree-select {
+      //     background: rgba(255, 255, 255, 0.2);
+      //   }
+      // }
+      .el-checkbox {
         position: absolute;
         right: 0;
       }
-      .el-checkbox__inner{
+      .el-checkbox__inner {
         background-color: transparent;
         border-color: transparent;
       }
+    }
+    .tree-select {
+      background: rgba(255, 255, 255, 0.2);
     }
   }
 }
