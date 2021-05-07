@@ -225,6 +225,7 @@ export default {
     // 下一步
     next () {
       // if (this.appName !== '' && this.appImgSrc.length !== 0) {
+      this.$common.openLoading()
       if (this.appName !== '') {
         if (this.active++ > 3) this.active = 0
         addProject({
@@ -238,13 +239,16 @@ export default {
               this.appliId = res.data.data.appid
               console.log(this.appInfo)
               this.$message.success('创建项目成功')
+              this.$common.closeLoading()
               this.isShow = 2
             } else if (res.data.code === 1) {
               this.$message.error('创建项目失败')
+              this.$common.closeLoading()
             }
           })
           .catch(err => {
             console.log(err)
+            this.$common.closeLoading()
             this.$message.error('创建失败，请创建项目')
           })
       } else {
