@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-06 15:39:18
+ * @LastEditTime: 2021-05-07 09:56:04
  * @description: 
 -->
 <template>
@@ -163,6 +163,8 @@
       <tag-tree
         @click.native.stop=""
         @closeTag="closeTag"
+        @setListenClick="setListenClick"
+        :setProps="propsFooter"
         ref="tagTree"
       ></tag-tree>
     </div>
@@ -713,6 +715,14 @@ export default {
       this.isTag = false;
       this.$refs.getFooter.editTool(4);
     },
+    setListenClick(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-05-07 09:54:23
+     * @description: 设置监听点击状态
+     */
+    this.$refs.getFooter.setListenClick(e);
+    },
     listenPerson(e) {
       /**
        * @Author: zk
@@ -793,14 +803,7 @@ export default {
        * 6 启动事件
        * 7 点击空白
        * 8 初始化成功
-       */
-       let messageInfo = {
-              prex: "ourbimMessage",
-              type: 10001,
-              data: res.data.data.taskId,
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
+       */      
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
@@ -894,6 +897,13 @@ export default {
               this.controllerInfo.uiBar = false;
             }            
             this.propsFooter.taskId = res.data.data.taskId;
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 10001,
+              data: res.data.data.taskId,
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
             this.initWebSocket();
             this.getMonitor();
           } else {

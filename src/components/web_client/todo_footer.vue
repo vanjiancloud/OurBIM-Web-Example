@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-27 14:59:44
+ * @LastEditTime: 2021-05-07 09:56:50
  * @description: 
 -->
 <template>
@@ -734,6 +734,18 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    setListenClick(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-05-07 09:56:15
+     * @description: 设置监听点击状态
+     */  
+    if (e) {
+      window.addEventListener("click", this.clickOther);      
+    } else {
+      window.removeEventListener("click", this.clickOther);      
+    }
+    },
     closeFollow() {
       /**
        * @Author: zk

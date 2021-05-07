@@ -2,11 +2,11 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-06 14:00:59
+ * @LastEditTime: 2021-05-07 10:06:57
  * @description: 标签树
 -->
 <template>
-  <div class="tag-tree" v-show="isTag">
+  <div class="tag-tree" v-if="isTag">
     <div class="tree-title">
       <!-- 关闭 -->
       <div class="close-part">
@@ -25,12 +25,18 @@
       >
         <i slot="prefix" class="el-input__icon el-icon-search"></i>
       </el-input>
-      <img src="../../assets/images/tag/1.png" alt="" />
-      <img src="../../assets/images/tag/2.png" alt="" />
+      <img src="../../assets/images/tag/1.png" @click="saveTag(0)" alt="" />
+      <img src="../../assets/images/tag/2.png" @click="saveTag(1)" alt="" />
     </div>
     <!-- 标签树 -->
-    <div class="tree-content">
-      <el-tree :props="propsTag" :load="loadTag" lazy>
+    <div class="tree-content" v-if="getProps">
+      <el-tree
+        :props="propsTag"
+        :empty-text="treeEmpty"
+        node-key="id"
+        :load="loadTag"
+        lazy
+      >
         <div class="tag-slot" slot-scope="{ node }">
           <div class="upload-tag">
             <img src="../../assets/images/tag/4.png" alt="" />
@@ -38,8 +44,8 @@
           <div class="label-tag">{{ node.label }}</div>
           <div class="handle-tag">
             <img src="../../assets/images/tag/5.png" alt="" />
-            <img src="../../assets/images/tag/7.png" alt="" />
-            <img src="../../assets/images/tag/6.png" alt="" />
+            <img v-if="node.data.isFolder === '1'" src="../../assets/images/tag/7.png" alt="" />
+            <img src="../../assets/images/tag/6.png" @click="removeTag(node)" alt="" />
           </div>
         </div>
       </el-tree>
@@ -48,19 +54,128 @@
 </template>
 
 <script>
+import TAGTREE from "../../api/tag_tree";
+
 export default {
+  props: {
+    setProps: {
+      type: Object,
+      default: () => {},
+    },
+  },
+  watch: {
+    setProps: {
+      handler() {
+        if (this.setProps.taskId) {
+          this.getProps = this.setProps;
+          this.listTag();
+        }
+      },
+      // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
+      deep: true,
+    },
+  },
   data() {
     return {
       isTag: false,
       modelTag: null,
+      getProps: null,
       propsTag: {
-        label: "name",
-        children: "zones",
-        isLeaf: "leaf",
+        label: "fileName",
+        isLeaf: (e) => {
+          if (e.isFolder === "1") {
+            return false;
+          }
+          if (e.isFolder === "0") {
+            return true;
+          }
+        },
       },
+      treeEmpty: this.$t("webClient.browser.tips[0]"),
     };
   },
   methods: {
+    removeTag(node){
+    /**
+     * @Author: zk
+     * @Date: 2021-05-07 09:22:44
+     * @description: 删除标签
+     */  
+    this.$emit("setListenClick", false)
+    console.log(node);
+    this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$emit("setListenClick", true)
+          let params = {
+            taskid: this.getProps.taskId,
+            tagId: node.key
+          }
+          TAGTREE.REMOVERTAG(params)
+            .then(res => {
+              const parent = node.parent;
+              const children = parent.childNodes || (parent.childNodes && parent.childNodes.childNodes);
+              const index = children.findIndex(d => d.key === node.key);
+              children.splice(index, 1);
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+            })
+            .catch(err => {
+              console.log(err);
+            })          
+        }).catch(() => {
+          this.$emit("setListenClick", true)
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+    },
+    saveTag(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-05-06 18:07:38
+     * @description: 新增 0 标签 1 标签集
+     */  
+    let params = {
+      taskid: this.getProps.taskId
+    }
+     TAGTREE.SAVETAGGATHER(params)
+     .then(res => {
+       this.listTag()
+       console.log(res);
+     })
+     .catch(err => {
+       console.log(err);
+     })
+    },
+    async listTag(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-06 16:33:20
+       * @description: 获取标签树
+       */
+      let params = {
+        taskid: this.getProps.taskId,
+      };
+      e ? (params.tagId = e) : "";
+      let realTag = await TAGTREE.LISTTAG(params)
+        .then((res) => {
+          if (res.data.code === 0) {
+            return res.data.data;
+          } else {
+            return [];
+          }
+        })
+        .catch((err) => {
+          return [];
+        });
+      return realTag;
+    },
     loadTag(node, resolve) {
       /**
        * @Author: zk
@@ -68,22 +183,24 @@ export default {
        * @description: 加载数据
        */
       if (node.level === 0) {
-        return resolve([{ name: "region" }]);
+        this.listTag(node.key).then((res) => {
+          if (res.length > 0) {
+            return resolve(res);
+          } else {
+            this.treeEmpty = this.$t("webClient.browser.tips[1]");
+          }
+        });
       }
-      if (node.level > 1) return resolve([]);
-      setTimeout(() => {
-        const data = [
-          {
-            name: "leaf",
-            leaf: true,
-          },
-          {
-            name: "zone",
-          },
-        ];
-
-        resolve(data);
-      }, 500);
+      if (node.level >= 1) {
+        this.listTag(node.key).then((res) => {
+          if (res.length > 0) {
+            return resolve(res);
+          } else {
+            this.treeEmpty = this.$t("webClient.browser.tips[1]");
+            return resolve([]);
+          }
+        });
+      }
     },
     changeTag() {
       /**
@@ -148,7 +265,7 @@ export default {
   .tree-content {
     margin: 0 auto;
     height: ~"calc(100% - 110px)";
-    width: ~"calc(100% - 30px)";
+    width: ~"calc(100% - 20px)";
     overflow-x: hidden;
     overflow-y: auto;
     &::-webkit-scrollbar {
@@ -198,6 +315,7 @@ export default {
       .handle-tag {
         width: 90px;
         display: flex;
+        justify-content: flex-end;
         align-items: center;
         position: absolute;
         right: 0;
