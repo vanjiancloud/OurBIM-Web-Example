@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-07 18:26:27
+ * @LastEditTime: 2021-05-08 18:12:19
  * @description: 标签树
 -->
 <template>
@@ -51,7 +51,11 @@
           slot-scope="{ node }"
         >
           <div class="upload-tag">
-            <img src="../../assets/images/tag/4.png" alt="" />
+            <img
+              :src="node.data.tagUrl"
+              @click="editTagIcon(node)"
+              alt=""
+            />
           </div>
           <div class="label-tag" @click="handleTag(node)">{{ node.label }}</div>
           <div class="handle-tag">
@@ -104,11 +108,71 @@
         ></el-button>
       </div>
     </el-dialog>
+    <!-- 上传图片 -->
+    <el-dialog
+      :title="dialogPointData.title"
+      :visible.sync="dialogIconEdit"
+      :close-on-click-modal="false"
+      append-to-body
+      width="20%"
+    >
+    <div class="main-cropper">
+      <div class="copy-cropper">
+        <vueCropper
+          ref="cropper"
+          :img="cropperOption.img"
+          :outputSize="cropperOption.size"
+          :outputType="cropperOption.outputType"
+          :info="false"
+          :full="cropperOption.full"
+          :canMove="cropperOption.canMove"
+          :canMoveBox="cropperOption.canMoveBox"
+          :fixedBox="cropperOption.fixedBox"
+          :original="cropperOption.original"
+          :autoCrop="cropperOption.autoCrop"
+          :autoCropWidth="cropperOption.autoCropWidth"
+          :autoCropHeight="cropperOption.autoCropHeight"
+          :centerBox="cropperOption.centerBox"
+          :high="cropperOption.high"
+          :infoTrue="cropperOption.infoTrue"
+          :enlarge="cropperOption.enlarge"
+        ></vueCropper>
+      </div>
+    </div>      
+      <div slot="footer" class="dialog-footer">
+        <el-button
+          @click="dialogIconEdit = false"
+          v-text="dialogPointData.cancel"
+        ></el-button>
+        <el-button
+          type="primary"
+          @click="updateTagIcon"
+          v-text="dialogPointData.confirm"
+        ></el-button>
+      </div>
+    </el-dialog>
+    <el-upload
+      v-if="tagIconInfo"
+      class="upload-icon"
+      ref="refUploadIcon"
+      name="fileUpload"
+      :data="{
+        tagId: tagIconInfo.id,
+      }"
+      :action="uploadInfo.action"
+      :show-file-list="false"
+      :http-request="UploadImage"
+      :auto-upload="false"
+      :on-change="changeUpload"
+    >
+    </el-upload>
   </div>
 </template>
 
 <script>
 import TAGTREE from "../../api/tag_tree";
+import BASE from "../../utils/request";
+import axios from 'axios'
 
 export default {
   props: {
@@ -133,6 +197,29 @@ export default {
   },
   data() {
     return {
+      uploadInfo: {
+        action: BASE.defaults.baseURL + "/TagControl/postTagImg",
+      },
+      cropperOption: {
+        img: null, // 裁剪图片的地址
+        imgName: null,
+        imgUrl: null,
+        info: true, // 裁剪框的大小信息
+        outputSize: 0.8, // 裁剪生成图片的质量
+        outputType: "png", // 裁剪生成图片的格式
+        canScale: false, // 图片是否允许滚轮缩放
+        autoCrop: true, // 是否默认生成截图框
+        autoCropWidth: 200, // 默认生成截图框宽度
+        autoCropHeight: 200, // 默认生成截图框高度
+        fixedBox: true, // 固定截图框大小 不允许改变
+        fixed: true, // 是否开启截图框宽高固定比例
+        fixedNumber: [7, 5], // 截图框的宽高比例
+        full: true, // 是否输出原图比例的截图
+        canMoveBox: false, // 截图框能否拖动
+        original: false, // 上传图片按照原始比例渲染
+        centerBox: true, // 截图框是否被限制在图片里面
+        infoTrue: true, // true 为展示真实输出图片宽高 false 展示看到的截图框宽高
+      },
       defaultTag: null,
       activeLeaf: false,
       activeTree: null,
@@ -156,6 +243,9 @@ export default {
       dialogEdit: false,
       tagInfo: null,
       tagNode: null,
+      tagIconInfo: null,
+      tagIconNode: null,
+      dialogIconEdit: false,
       isTag: false,
       modelTag: null,
       getProps: null,
@@ -174,6 +264,119 @@ export default {
     };
   },
   methods: {
+    UploadImage(res) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-08 16:54:31
+       * @description: 自定义上传
+       */
+      let formData = new FormData();
+      formData.append("fileUpload", this.cropperOption.imgUrl, this.cropperOption.imgName);
+      formData.append("tagId", this.tagIconInfo.id);
+      const config = {
+        headers: { "Content-Type": "multipart/form-data;boundary="+new Date().getTime() },
+      };
+      axios
+      .post(this.uploadInfo.action , formData, config)
+      .then((res) => {
+        this.dialogIconEdit = false
+        this.$refs.refTag.getNode(
+                this.activeLeaf ? this.activeTree.id : this.defaultTag.id
+              ).parent.loaded = false;
+              this.$refs.refTag
+                .getNode(
+                  this.activeLeaf ? this.activeTree.id : this.defaultTag.id
+                )
+                .parent.expand();
+      })
+      .catch(() => {
+        this.$message.error("上传失败")
+      });
+    },
+    getBase64(file) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-08 16:55:32
+       * @description: 文件转换
+       */
+      return new Promise(function (resolve, reject) {
+        let reader = new FileReader();
+        let imgResult = "";
+        reader.readAsDataURL(file);
+        reader.onload = function () {
+          imgResult = reader.result;
+        };
+        reader.onerror = function (error) {
+          reject(error);
+        };
+        reader.onloadend = function () {
+          resolve(imgResult);
+        };
+      });
+    },
+    getBlob(dataurl){
+    /**
+     * @Author: zk
+     * @Date: 2021-05-08 17:12:17
+     * @description: base64转blob
+     */  
+     let arr = dataurl.split(","),
+          mime = arr[0].match(/:(.*?);/)[1],
+          bstr = atob(arr[1]),
+          n = bstr.length,
+          u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+    },
+    async getFile(theBlob, fileName) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-08 17:09:19
+       * @description: 转换file
+       */
+      theBlob.lastModifiedDate = await new Date();
+        theBlob.name = fileName;
+        return theBlob;
+    },
+    changeUpload(file) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-08 15:54:26
+       * @description: 文件上传之前
+       */
+      const fileType = file.raw.type;
+      if (
+        fileType !== "image/jpeg" &&
+        fileType !== "image/png" &&
+        fileType !== "image/jpg"
+      ) {
+        this.$message({
+          type: "warning",
+          message: "请上传图片",
+        });
+      } else {
+        this.cropperOption.imgName = file.name
+        this.getBase64(file.raw).then((res) => {
+          this.cropperOption.img = res;
+          this.$emit("setListenClick", false);
+          this.dialogIconEdit = true;
+        });
+      }
+    },
+    editTagIcon(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-08 13:54:10
+       * @description: 上传图片弹窗
+       */
+      this.tagIconInfo = JSON.parse(JSON.stringify(e.data));
+      this.tagIconNode = e;
+      this.$nextTick(() => {
+        this.$refs.refUploadIcon.$children[0].$refs.input.click();
+      });
+    },
     handleTag(e) {
       /**
        * @Author: zk
@@ -201,6 +404,21 @@ export default {
       this.tagInfo = JSON.parse(JSON.stringify(e.data));
       this.tagNode = e;
       this.dialogEdit = true;
+    },
+    updateTagIcon() {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-08 15:06:25
+       * @description: 上传icon
+       */
+      this.$refs.cropper.getCropData((data) => {
+        this.getBlob(data)
+        this.getFile(this.getBlob(data), this.cropperOption.imgName)
+        .then(res => {
+          this.cropperOption.imgUrl = res
+          this.$refs.refUploadIcon.submit();
+        })
+      });
     },
     updateTag() {
       /**
@@ -303,11 +521,14 @@ export default {
               this.$refs.refTag.getNode(
                 this.activeLeaf ? this.activeTree.id : this.defaultTag.id
               ).parent.loaded = false;
-              this.$refs.refTag.getNode(this.activeLeaf ? this.activeTree.id : this.defaultTag.id).parent.expand();
+              this.$refs.refTag
+                .getNode(
+                  this.activeLeaf ? this.activeTree.id : this.defaultTag.id
+                )
+                .parent.expand();
             });
           })
-          .catch((err) => {
-          });
+          .catch((err) => {});
       } else {
         TAGTREE.SAVETAGGATHER(params)
           .then(() => {
@@ -484,6 +705,10 @@ export default {
         margin-right: 10px;
         display: flex;
         align-items: center;
+        img{
+          width: 20px;
+          height: 20px;
+        }
       }
       .label-tag {
         width: ~"calc(100% - 120px)";
@@ -503,6 +728,18 @@ export default {
         }
       }
     }
+  }
+  .upload-icon {
+    position: absolute;
+    z-index: -1;
+  }  
+}
+.main-cropper{
+  width: 100%;
+  .copy-cropper{
+    margin: 0 auto;
+    width: 200px;
+    height: 200px;
   }
 }
 </style>
