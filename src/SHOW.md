@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:42:41
  * @LastEditors: zk
- * @LastEditTime: 2021-05-12 10:02:30
+ * @LastEditTime: 2021-05-12 17:59:11
  * @description: 
 -->
 # 说明
@@ -34,6 +34,13 @@ window.addEventListener("message", function(e) {
     * 构件相关
     * 20001：单击构件
     * 20002: 框选构件
+
+    * 标签相关
+    * 30001：点击标签
+    *data: {
+    *    state: true // 是否选中
+    *    tagId: "111" // 标签ID
+    *}
 */
 
 
@@ -100,9 +107,12 @@ function sendToIframe(type, data, message) {
 // 属性显示/隐藏
     type = 1014
     data = true/false
-//  构件树的显示/隐藏
+// 构件树的显示/隐藏
     type = 2001
     data = true/false
 // 属性显示/隐藏
     type = 2002
+    data = true/false
+// 标签树显示/隐藏
+    type = 2003
     data = true/false

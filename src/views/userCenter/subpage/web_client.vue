@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-12 16:28:08
+ * @LastEditTime: 2021-05-12 18:02:06
  * @description: 
 -->
 <template>
@@ -170,6 +170,7 @@
         @click.native.stop=""
         @closeTag="closeTag"
         @setListenClick="setListenClick"
+        @setTagClick="setTagClick"
         :setProps="propsFooter"
         ref="tagTree"
       ></tag-tree>
@@ -322,6 +323,8 @@ export default {
             this.controllerInfo.modelClient = e.data.data;
           } else if (e.data.type === 2002) {
             this.controllerInfo.memberAvttribute = e.data.data;
+          } else if (e.data.type === 2003) {
+            this.$refs.tagTree.closePart(e.data.data)
           }
         }
       },
@@ -773,6 +776,20 @@ export default {
        */
       this.$refs.getFooter.setListenClick(e);
     },
+    setTagClick(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-05-12 16:49:12
+     * @description: 标签树是否选中
+     */
+      let messageInfo = {
+              prex: "ourbimMessage",
+              type: 30001,
+              data: e,
+              message: "",
+            };
+      this.sentParentIframe(messageInfo);
+    },
     listenPerson(e) {
       /**
        * @Author: zk
@@ -949,6 +966,17 @@ export default {
               this.setTimePass();
             }
             this.isFade = false;
+          } else if (realData.id === "9") {
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 30001,
+              data: {
+                state: true,
+                tagId: realData.tagId
+              },
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
           }
         }
       };
