@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:15:52
  * @LastEditors: zk
- * @LastEditTime: 2021-05-12 15:54:57
+ * @LastEditTime: 2021-05-12 16:25:47
  * @description: 
  */
   import request from '../utils/request'
@@ -57,6 +57,14 @@
                 data: qsStringify(params)
               })
         },
+        // focus
+        UPDATAFOCUSTAG: params => {
+          return request({
+              url: '/TagControl/clickTag',
+              method: 'POST',
+              data: qsStringify(params)
+            })
+      },
   }
 
   export default TAGTREE

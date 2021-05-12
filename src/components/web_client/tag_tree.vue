@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-12 16:15:01
+ * @LastEditTime: 2021-05-12 16:43:01
  * @description: 标签树
 -->
 <template>
@@ -458,6 +458,23 @@ export default {
        * @Date: 2021-05-07 10:18:09
        * @description: 定位标签
        */
+       let params = {
+        taskid: this.getProps.taskId,
+        tagId: e.key
+      }
+      TAGTREE.UPDATAFOCUSTAG(params)
+      .then(() => {
+        this.$message({
+            message: this.$t("webClient.loadBox.message[2]"),
+            type: "success",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            message: this.$t("webClient.loadBox.message[3]"),
+            type: "error",
+          });
+        });
     },
     removeTag(node) {
       /**
