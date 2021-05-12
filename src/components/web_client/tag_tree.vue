@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-08 18:12:19
+ * @LastEditTime: 2021-05-12 16:15:01
  * @description: 标签树
 -->
 <template>
@@ -32,6 +32,7 @@
     <div class="tree-content" v-if="getProps">
       <el-tree
         ref="refTag"
+        :data="DataTagTree"
         :props="propsTag"
         :expand-on-click-node="false"
         :highlight-current="true"
@@ -51,11 +52,7 @@
           slot-scope="{ node }"
         >
           <div class="upload-tag">
-            <img
-              :src="node.data.tagUrl"
-              @click="editTagIcon(node)"
-              alt=""
-            />
+            <img :src="node.data.tagUrl" @click="editTagIcon(node)" alt="" />
           </div>
           <div class="label-tag" @click="handleTag(node)">{{ node.label }}</div>
           <div class="handle-tag">
@@ -116,29 +113,29 @@
       append-to-body
       width="20%"
     >
-    <div class="main-cropper">
-      <div class="copy-cropper">
-        <vueCropper
-          ref="cropper"
-          :img="cropperOption.img"
-          :outputSize="cropperOption.size"
-          :outputType="cropperOption.outputType"
-          :info="false"
-          :full="cropperOption.full"
-          :canMove="cropperOption.canMove"
-          :canMoveBox="cropperOption.canMoveBox"
-          :fixedBox="cropperOption.fixedBox"
-          :original="cropperOption.original"
-          :autoCrop="cropperOption.autoCrop"
-          :autoCropWidth="cropperOption.autoCropWidth"
-          :autoCropHeight="cropperOption.autoCropHeight"
-          :centerBox="cropperOption.centerBox"
-          :high="cropperOption.high"
-          :infoTrue="cropperOption.infoTrue"
-          :enlarge="cropperOption.enlarge"
-        ></vueCropper>
+      <div class="main-cropper">
+        <div class="copy-cropper">
+          <vueCropper
+            ref="cropper"
+            :img="cropperOption.img"
+            :outputSize="cropperOption.size"
+            :outputType="cropperOption.outputType"
+            :info="false"
+            :full="cropperOption.full"
+            :canMove="cropperOption.canMove"
+            :canMoveBox="cropperOption.canMoveBox"
+            :fixedBox="cropperOption.fixedBox"
+            :original="cropperOption.original"
+            :autoCrop="cropperOption.autoCrop"
+            :autoCropWidth="cropperOption.autoCropWidth"
+            :autoCropHeight="cropperOption.autoCropHeight"
+            :centerBox="cropperOption.centerBox"
+            :high="cropperOption.high"
+            :infoTrue="cropperOption.infoTrue"
+            :enlarge="cropperOption.enlarge"
+          ></vueCropper>
+        </div>
       </div>
-    </div>      
       <div slot="footer" class="dialog-footer">
         <el-button
           @click="dialogIconEdit = false"
@@ -172,7 +169,7 @@
 <script>
 import TAGTREE from "../../api/tag_tree";
 import BASE from "../../utils/request";
-import axios from 'axios'
+import axios from "axios";
 
 export default {
   props: {
@@ -180,6 +177,10 @@ export default {
       type: Object,
       default: () => {},
     },
+    taskId: {
+      type: String,
+      default: ""
+    }
   },
   watch: {
     setProps: {
@@ -197,6 +198,7 @@ export default {
   },
   data() {
     return {
+      DataTagTree: [],
       uploadInfo: {
         action: BASE.defaults.baseURL + "/TagControl/postTagImg",
       },
@@ -246,7 +248,7 @@ export default {
       tagIconInfo: null,
       tagIconNode: null,
       dialogIconEdit: false,
-      isTag: false,
+      isTag: true,
       modelTag: null,
       getProps: null,
       propsTag: {
@@ -271,27 +273,29 @@ export default {
        * @description: 自定义上传
        */
       let formData = new FormData();
-      formData.append("fileUpload", this.cropperOption.imgUrl, this.cropperOption.imgName);
+      formData.append(
+        "fileUpload",
+        this.cropperOption.imgUrl,
+        this.cropperOption.imgName
+      );
       formData.append("tagId", this.tagIconInfo.id);
+      formData.append("taskid", this.getProps.taskId);
+      formData.append("lableVisibility", true);
       const config = {
-        headers: { "Content-Type": "multipart/form-data;boundary="+new Date().getTime() },
+        headers: {
+          "Content-Type":
+            "multipart/form-data;boundary=" + new Date().getTime(),
+        },
       };
       axios
-      .post(this.uploadInfo.action , formData, config)
-      .then((res) => {
-        this.dialogIconEdit = false
-        this.$refs.refTag.getNode(
-                this.activeLeaf ? this.activeTree.id : this.defaultTag.id
-              ).parent.loaded = false;
-              this.$refs.refTag
-                .getNode(
-                  this.activeLeaf ? this.activeTree.id : this.defaultTag.id
-                )
-                .parent.expand();
-      })
-      .catch(() => {
-        this.$message.error("上传失败")
-      });
+        .post(this.uploadInfo.action, formData, config)
+        .then(() => {
+          this.dialogIconEdit = false;
+          this.reloadTree();
+        })
+        .catch(() => {
+          this.$message.error("上传失败");
+        });
     },
     getBase64(file) {
       /**
@@ -314,21 +318,21 @@ export default {
         };
       });
     },
-    getBlob(dataurl){
-    /**
-     * @Author: zk
-     * @Date: 2021-05-08 17:12:17
-     * @description: base64转blob
-     */  
-     let arr = dataurl.split(","),
-          mime = arr[0].match(/:(.*?);/)[1],
-          bstr = atob(arr[1]),
-          n = bstr.length,
-          u8arr = new Uint8Array(n);
-        while (n--) {
-          u8arr[n] = bstr.charCodeAt(n);
-        }
-        return new Blob([u8arr], { type: mime });
+    getBlob(dataurl) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-08 17:12:17
+       * @description: base64转blob
+       */
+      let arr = dataurl.split(","),
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]),
+        n = bstr.length,
+        u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], { type: mime });
     },
     async getFile(theBlob, fileName) {
       /**
@@ -337,8 +341,8 @@ export default {
        * @description: 转换file
        */
       theBlob.lastModifiedDate = await new Date();
-        theBlob.name = fileName;
-        return theBlob;
+      theBlob.name = fileName;
+      return theBlob;
     },
     changeUpload(file) {
       /**
@@ -357,7 +361,7 @@ export default {
           message: "请上传图片",
         });
       } else {
-        this.cropperOption.imgName = file.name
+        this.cropperOption.imgName = file.name;
         this.getBase64(file.raw).then((res) => {
           this.cropperOption.img = res;
           this.$emit("setListenClick", false);
@@ -412,12 +416,13 @@ export default {
        * @description: 上传icon
        */
       this.$refs.cropper.getCropData((data) => {
-        this.getBlob(data)
-        this.getFile(this.getBlob(data), this.cropperOption.imgName)
-        .then(res => {
-          this.cropperOption.imgUrl = res
-          this.$refs.refUploadIcon.submit();
-        })
+        this.getBlob(data);
+        this.getFile(this.getBlob(data), this.cropperOption.imgName).then(
+          (res) => {
+            this.cropperOption.imgUrl = res;
+            this.$refs.refUploadIcon.submit();
+          }
+        );
       });
     },
     updateTag() {
@@ -430,9 +435,10 @@ export default {
         taskid: this.getProps.taskId,
         tagId: this.tagInfo.id,
         tagName: this.tagInfo.fileName,
+        lableVisibility: true
       };
       TAGTREE.UPDATETAG(params)
-        .then((res) => {
+        .then(() => {
           this.dialogEdit = false;
           this.tagNode.data.fileName = this.tagInfo.fileName;
           this.$refs.refTag.updateKeyChildren(this.tagNode.key, this.tagNode);
@@ -472,9 +478,14 @@ export default {
             tagId: node.key,
           };
           TAGTREE.REMOVERTAG(params)
-            .then((res) => {
+            .then(() => {
               this.listTag().then((listRes) => {
-                this.defaultTag = listRes[0];
+                if (listRes && listRes.length > 0) {
+                  this.defaultTag = listRes[0];
+                } else {
+                  this.treeEmpty = this.$t("webClient.browser.tips[1]");
+                  this.defaultTag = null;
+                }
               });
               this.$refs.refTag.remove(node);
               this.$message({
@@ -517,35 +528,35 @@ export default {
       if (e === 0) {
         TAGTREE.SAVETAG(params)
           .then(() => {
-            this.listTag().then(() => {
-              this.$refs.refTag.getNode(
-                this.activeLeaf ? this.activeTree.id : this.defaultTag.id
-              ).parent.loaded = false;
-              this.$refs.refTag
-                .getNode(
-                  this.activeLeaf ? this.activeTree.id : this.defaultTag.id
-                )
-                .parent.expand();
+            this.listTag().then((res) => {
+              this.realTreeList = res;
+              this.reloadTree();
             });
           })
           .catch((err) => {});
       } else {
         TAGTREE.SAVETAGGATHER(params)
           .then(() => {
-            this.listTag().then(() => {
-              this.$refs.refTag.getNode(
-                this.activeLeaf ? this.activeTree.id : this.defaultTag.id
-              ).parent.loaded = false;
-              this.$refs.refTag
-                .getNode(
-                  this.activeLeaf ? this.activeTree.id : this.defaultTag.id
-                )
-                .parent.expand();
+            this.listTag().then((res) => {
+              this.realTreeList = res;
+              this.reloadTree();
             });
           })
           .catch((err) => {
             console.log(err);
           });
+      }
+    },
+    reloadTree() {
+      if (this.defaultTag) {
+        this.$refs.refTag.getNode(
+          this.activeLeaf ? this.activeTree.id : this.defaultTag.id
+        ).parent.loaded = false;
+        this.$refs.refTag
+          .getNode(this.activeLeaf ? this.activeTree.id : this.defaultTag.id)
+          .parent.expand();
+      } else {
+        this.DataTagTree = this.realTreeList;
       }
     },
     async listTag(e) {
@@ -705,7 +716,7 @@ export default {
         margin-right: 10px;
         display: flex;
         align-items: center;
-        img{
+        img {
           width: 20px;
           height: 20px;
         }
@@ -732,11 +743,11 @@ export default {
   .upload-icon {
     position: absolute;
     z-index: -1;
-  }  
+  }
 }
-.main-cropper{
+.main-cropper {
   width: 100%;
-  .copy-cropper{
+  .copy-cropper {
     margin: 0 auto;
     width: 200px;
     height: 200px;

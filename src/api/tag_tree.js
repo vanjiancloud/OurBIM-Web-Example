@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:15:52
  * @LastEditors: zk
- * @LastEditTime: 2021-05-07 09:28:15
+ * @LastEditTime: 2021-05-12 15:54:57
  * @description: 
  */
   import request from '../utils/request'
@@ -45,6 +45,14 @@
         REMOVERTAG: params => {
             return request({
                 url: '/TagControl/deleteTag',
+                method: 'POST',
+                data: qsStringify(params)
+              })
+        },
+        // 显示隐藏
+        UPDATASHOWTAG: params => {
+            return request({
+                url: '/TagControl/controlTagShow',
                 method: 'POST',
                 data: qsStringify(params)
               })

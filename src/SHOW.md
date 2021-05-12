@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:42:41
  * @LastEditors: zk
- * @LastEditTime: 2021-05-06 16:24:20
+ * @LastEditTime: 2021-05-12 10:02:30
  * @description: 
 -->
 # 说明
@@ -59,5 +59,50 @@ function sendToIframe(type, data, message) {
 
 // 操作指令
 // 控制栏整体显示/隐藏
-    type = 1010 
+    type = 1001 
+    data = true/false
+// 框选显示/隐藏
+    type = 1002
+    data = true/false
+// 视角显示/隐藏
+    type = 1003
+    data = true/false
+// 移动速度显示/隐藏
+    type = 1004
+    data = true/false
+// 剖切显示/隐藏
+    type = 1005
+    data = true/false
+// 测量显示/隐藏
+    type = 1006
+    data = true/false
+// 标签显示/隐藏
+    type = 1007
+    data = true/false
+// 小地图显示/隐藏
+    type = 1008
+    data = true/false
+// 关注视点显示/隐藏
+    type = 1009
+    data = true/false
+// 模型动画显示/隐藏
+    type = 1010
+    data = true/false
+// 分解模型显示/隐藏
+    type = 1011
+    data = true/false
+// 渲染环境显示/隐藏
+    type = 1012
+    data = true/false
+// 浏览器显示/隐藏
+    type = 1013
+    data = ture/false
+// 属性显示/隐藏
+    type = 1014
+    data = true/false
+//  构件树的显示/隐藏
+    type = 2001
+    data = true/false
+// 属性显示/隐藏
+    type = 2002
     data = true/false

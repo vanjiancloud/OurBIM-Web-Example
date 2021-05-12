@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-07 14:00:39
+ * @LastEditTime: 2021-05-12 16:18:51
  * @description: 
 -->
 <template>
@@ -60,12 +60,15 @@
         v-text="$t('webClient.loadBox.message[6]')"
       ></div>
     </div>
-    <div v-if="runTimeCode === 0 && controllerInfo.uiBar">
+    <div v-if="runTimeCode === 0">
       <div class="mutual-bim">
         <div
           class="tree-main"
           v-show="
-            browserInfo && browserInfo.type === 10 && browserInfo.state === 1
+            (browserInfo &&
+              browserInfo.type === 10 &&
+              browserInfo.state === 1) ||
+            controllerInfo.modelClient
           "
         >
           <!-- 模型浏览器 -->
@@ -111,7 +114,8 @@
         <div
           class="bim-info"
           v-show="
-            natureInfo && natureInfo.type === 11 && natureInfo.state === 1
+            (natureInfo && natureInfo.type === 11 && natureInfo.state === 1) ||
+            controllerInfo.memberAvttribute
           "
         >
           <!-- 属性 -->
@@ -146,12 +150,14 @@
         </div>
       </div>
       <todo-footer
+        v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar"
         ref="getFooter"
         @listenTodo="listenTodo"
         @listenPerson="listenPerson"
         @listenMode="listenMode"
         @listenFollow="listenFollow"
         :setProps="propsFooter"
+        :singleList="controllerInfo.singleList"
       ></todo-footer>
       <view-cube
         @handleOrder="handleOrder"
@@ -173,6 +179,7 @@
 
 <script>
 import MODELAPI from "@/api/model_api";
+import TAGTREE from "@/api/tag_tree";
 import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
@@ -187,6 +194,7 @@ export default {
   },
   data() {
     return {
+      actionList: [],
       propsFooter: {
         taskId: null,
       },
@@ -203,6 +211,9 @@ export default {
       },
       controllerInfo: {
         uiBar: true,
+        modelClient: false,
+        memberAvttribute: false,
+        singleList: [],
       },
       webUrl: null,
       appId: null,
@@ -246,6 +257,7 @@ export default {
   },
   watch: {},
   created() {
+    this.setOrderList();
     this.appId = this.$route.query.appid;
     this.appToken = this.$route.query.token;
     if (this.$route.query.width && this.$route.query.height) {
@@ -290,8 +302,26 @@ export default {
         }
         if (e.data.prex === "ourbimMessage") {
           // 控制栏显示隐藏
-          if (e.data.type === 1010) {
+          if (e.data.type === 1001) {
             this.controllerInfo.uiBar = e.data.data;
+          } else if (e.data.type >= 1002 && e.data.type <= 1014) {
+            if (this.actionList.indexOf(e.data.type) > -1) {
+              if (e.data.data === false) {
+                this.controllerInfo.singleList.push(e.data.type);
+              } else {
+                this.controllerInfo.singleList.indexOf(e.data.type) > -1
+                  ? this.controllerInfo.singleList.splice(
+                      this.controllerInfo.singleList.indexOf(e.data.type),
+                      1
+                    )
+                  : "";
+              }
+            }
+          } else if (e.data.type === 2001) {
+            // 构件树的显示隐藏
+            this.controllerInfo.modelClient = e.data.data;
+          } else if (e.data.type === 2002) {
+            this.controllerInfo.memberAvttribute = e.data.data;
           }
         }
       },
@@ -303,6 +333,16 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    setOrderList() {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-10 17:54:24
+       * @description: 初始化指令对照表
+       */
+      for (let index = 0; index < 13; index++) {
+        this.actionList.push(1002 + index);
+      }
+    },
     listenFollow(e) {
       /**
        * @Author: zk
@@ -622,6 +662,11 @@ export default {
           params.width = this.pageSizeInfo.width;
           params.height = this.pageSizeInfo.height;
           break;
+        case 14:
+          // 框选
+          params.id = 18;
+          params.Switch = this.listenTodoInfo.state === 1 ? "on" : "off";
+          break;
         default:
           break;
       }
@@ -713,15 +758,20 @@ export default {
        * @description: 关闭标签组件
        */
       this.isTag = false;
+      this.listenTodoInfo = {
+        type: 4,
+        state: 0
+      }
+      this.handleTagShow()
       this.$refs.getFooter.editTool(4);
     },
-    setListenClick(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-05-07 09:54:23
-     * @description: 设置监听点击状态
-     */
-    this.$refs.getFooter.setListenClick(e);
+    setListenClick(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-07 09:54:23
+       * @description: 设置监听点击状态
+       */
+      this.$refs.getFooter.setListenClick(e);
     },
     listenPerson(e) {
       /**
@@ -748,6 +798,12 @@ export default {
       if (e.type === 11) {
         this.natureInfo = e;
         // e.state === 0 ? (this.memberInfo = null) : "";
+      }
+      // 框选
+      if (e.type === 12) {
+        this.handleState = 14;
+        this.listenTodoInfo = e;
+        this.updateOrder();
       }
       // 移动速度
       if (e.type === 1 && e.data) {
@@ -782,12 +838,38 @@ export default {
       if (e.type === 4) {
         this.isTag = true;
         this.$refs.tagTree.closePart(e.state === 0 ? false : true);
+        this.listenTodoInfo = e;
+        this.handleTagShow()
       }
       if (e.type === 8 && e.data !== undefined) {
         this.handleState = 12;
         this.listenTodoInfo = e;
         this.updateOrder();
       }
+    },
+    handleTagShow(){
+    /**
+     * @Author: zk
+     * @Date: 2021-05-12 16:05:22
+     * @description: 标签显示/隐藏
+     */  
+      let params = {
+        taskid: this.taskId,
+        lableVisibility: this.listenTodoInfo.state === 0 ? false : true
+      }
+      TAGTREE.UPDATASHOWTAG(params)
+      .then(() => {
+        this.$message({
+            message: this.$t("webClient.loadBox.message[2]"),
+            type: "success",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            message: this.$t("webClient.loadBox.message[3]"),
+            type: "error",
+          });
+        });
     },
     initWebSocket() {
       //初始化weosocket
@@ -803,7 +885,7 @@ export default {
        * 6 启动事件
        * 7 点击空白
        * 8 初始化成功
-       */      
+       */
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
@@ -895,7 +977,7 @@ export default {
               this.controllerInfo.uiBar = true;
             } else {
               this.controllerInfo.uiBar = false;
-            }            
+            }
             this.propsFooter.taskId = res.data.data.taskId;
             let messageInfo = {
               prex: "ourbimMessage",
