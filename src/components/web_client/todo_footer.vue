@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-05-13 10:23:19
+ * @LastEditTime: 2021-05-13 10:35:58
  * @description: 
 -->
 <template>
@@ -1252,10 +1252,10 @@ export default {
             type: 10,
           });
         }
-      }else{
+      } else {
         this.imgList[4].state = 0;
-          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
-          this.imgList[4].url = oldUrl;
+        let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
+        this.imgList[4].url = oldUrl;
       }
       // 模型浏览器 重置标签
       if (this.oldState === 4 && this.oldState !== e) {
@@ -1270,7 +1270,7 @@ export default {
             });
           }
         } else {
-          if (this.imgList[4].state === 0) {
+          if (this.imgList[4].state === 0 && e !== 11) {
             let oldUrl = require(`@/assets/images/todo/check/${this.imgList[4].name}`);
             this.imgList[4].url = oldUrl;
             this.imgList[4].state = 1;
