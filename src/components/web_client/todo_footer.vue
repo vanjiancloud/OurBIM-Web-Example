@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-05-12 16:14:33
+ * @LastEditTime: 2021-05-13 10:23:19
  * @description: 
 -->
 <template>
@@ -590,7 +590,7 @@ export default {
           url: require("@/assets/images/todo/unchecked/visual_angle.png"),
           name: "visual_angle.png",
           title: "视角",
-          id: 1003
+          id: 1003,
         },
         {
           state: 0,
@@ -600,49 +600,49 @@ export default {
             speed: 4,
           },
           title: "移动速度",
-          id: 1004
+          id: 1004,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/cutting.png"),
           name: "cutting.png",
           title: "剪裁盒",
-          id: 1005
+          id: 1005,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/meter.png"),
           name: "meter.png",
           title: "测量",
-          id: 1006
+          id: 1006,
         },
         {
           state: 1,
           url: require("@/assets/images/todo/check/label.png"),
           name: "label.png",
           title: "标签",
-          id: 1007
+          id: 1007,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/map.png"),
           name: "map.png",
           title: "小地图",
-          id: 1008
+          id: 1008,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/follow.png"),
           name: "follow.png",
           title: "关注视角",
-          id: 1009
+          id: 1009,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/animation.png"),
           name: "animation.png",
           title: "模型动画",
-          id: 1010
+          id: 1010,
         },
         {
           state: 0,
@@ -652,7 +652,7 @@ export default {
             value: 0,
           },
           title: "分解模型",
-          id: 1011
+          id: 1011,
         },
         {
           state: 0,
@@ -662,28 +662,28 @@ export default {
             speed: 50,
           },
           title: "渲染环境",
-          id: 1012
+          id: 1012,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/tree.png"),
           name: "tree.png",
           title: "浏览器",
-          id: 1013
+          id: 1013,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/attribute.png"),
           name: "attribute.png",
           title: "属性",
-          id: 1014
+          id: 1014,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/selection.png"),
           name: "selection.png",
           title: "框选",
-          id: 1002
+          id: 1002,
         },
       ],
       activePerson: 1,
@@ -983,7 +983,7 @@ export default {
       // 标签
       if (this.oldState === 4) {
         this.$emit("listenTodo", {
-          state: 1,
+          state: 0,
           type: this.oldState,
         });
         this.oldState = 0;
@@ -1174,18 +1174,6 @@ export default {
       if (e === 5 || e === 7 || e === 9) {
         return;
       }
-      // 模型浏览器 重置标签
-      if (this.oldState === 4 && this.oldState !== e) {
-        if (this.imgList[4].state === 0) {
-          let oldUrl = require(`@/assets/images/todo/check/${this.imgList[4].name}`);
-          this.imgList[4].url = oldUrl;
-          this.imgList[4].state = 1;
-          this.$emit("listenTodo", {
-            state: 1,
-            type: 4,
-          });
-        }
-      }
       // 剖切 分解模型 返回第三人称
       if (e === 2 || e === 8) {
         this.activePerson = 1;
@@ -1263,6 +1251,34 @@ export default {
             state: this.imgList[10].state,
             type: 10,
           });
+        }
+      }else{
+        this.imgList[4].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
+          this.imgList[4].url = oldUrl;
+      }
+      // 模型浏览器 重置标签
+      if (this.oldState === 4 && this.oldState !== e) {
+        if (e === 10) {
+          if (this.imgList[4].state === 1) {
+            let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
+            this.imgList[4].url = oldUrl;
+            this.imgList[4].state = 0;
+            this.$emit("listenTodo", {
+              state: this.imgList[4].state,
+              type: 4,
+            });
+          }
+        } else {
+          if (this.imgList[4].state === 0) {
+            let oldUrl = require(`@/assets/images/todo/check/${this.imgList[4].name}`);
+            this.imgList[4].url = oldUrl;
+            this.imgList[4].state = 1;
+            this.$emit("listenTodo", {
+              state: 1,
+              type: 4,
+            });
+          }
         }
       }
       // 模型浏览器 重置标签

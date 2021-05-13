@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-12 18:02:06
+ * @LastEditTime: 2021-05-13 10:19:12
  * @description: 
 -->
 <template>
@@ -224,7 +224,7 @@ export default {
       ourbimInfo: null,
       isFade: true,
       isFollow: false,
-      isTag: false,
+      isTag: true,
       handleState: 0,
       activeTree: null,
       leafInfo: null,
@@ -853,9 +853,16 @@ export default {
       }
       // 标签
       if (e.type === 4) {
-        this.isTag = true;
+        this.isTag = e.state === 0 ? false : true;
         this.$refs.tagTree.closePart(e.state === 0 ? false : true);
         this.listenTodoInfo = e;
+        this.handleTagShow()
+      }else{
+        this.$refs.tagTree.closePart(false);
+        this.listenTodoInfo = {
+          type: 4,
+          state: 0
+        };
         this.handleTagShow()
       }
       if (e.type === 8 && e.data !== undefined) {
