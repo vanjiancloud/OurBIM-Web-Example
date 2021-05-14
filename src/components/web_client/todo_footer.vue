@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-05-13 10:35:58
+ * @LastEditTime: 2021-05-14 16:07:34
  * @description: 
 -->
 <template>
@@ -1187,7 +1187,6 @@ export default {
       }
       this.imgList[e].url = realImg;
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
-
       // 关闭刨切和测量
       if (this.oldState === 2 || this.oldState === 3) {
         this.activeSlice = [];
@@ -1237,6 +1236,13 @@ export default {
         this.imgList[this.oldState].state = 0;
         this.oldState = e;
       }
+      if ((e === 10 || e === 11) && this.imgList[2].state === 1) {
+        this.imgList[2].state = 0
+        let oldUrl = require(`@/assets/images/todo/unchecked/${
+          this.imgList[2].name
+        }`);
+        this.imgList[2].url = oldUrl;
+      }
 
       if (e === 0) {
         this.personTool = this.imgList[e].state === 1 ? true : false;
@@ -1279,18 +1285,6 @@ export default {
               type: 4,
             });
           }
-        }
-      }
-      // 模型浏览器 重置标签
-      if (e === 10) {
-        if (this.imgList[4].state === 1) {
-          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
-          this.imgList[4].url = oldUrl;
-          this.imgList[4].state = 0;
-          this.$emit("listenTodo", {
-            state: this.imgList[4].state,
-            type: 4,
-          });
         }
       }
 

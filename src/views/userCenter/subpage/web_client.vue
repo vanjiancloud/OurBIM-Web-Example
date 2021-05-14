@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-13 10:42:54
+ * @LastEditTime: 2021-05-14 16:10:38
  * @description: 
 -->
 <template>
@@ -865,6 +865,7 @@ export default {
             state: 0
           };
           this.handleTagShow()
+          this.isTag = false
         }        
       }
       if (e.type === 8 && e.data !== undefined) {

@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-13 09:42:06
+ * @LastEditTime: 2021-05-14 14:53:46
  * @description: 标签树
 -->
 <template>
@@ -179,8 +179,8 @@ export default {
     },
     taskId: {
       type: String,
-      default: ""
-    }
+      default: "",
+    },
   },
   watch: {
     setProps: {
@@ -398,9 +398,9 @@ export default {
       }
       this.activeTree = e.data;
       this.$emit("setTagClick", {
-          state: this.activeLeaf,
-          tagId: this.activeLeaf ? this.activeTree.id : null
-      })
+        state: this.activeLeaf,
+        tagId: this.activeLeaf ? this.activeTree.id : null,
+      });
     },
     editTag(e) {
       /**
@@ -439,7 +439,7 @@ export default {
         taskid: this.getProps.taskId,
         tagId: this.tagInfo.id,
         tagName: this.tagInfo.fileName,
-        lableVisibility: true
+        lableVisibility: true,
       };
       TAGTREE.UPDATETAG(params)
         .then(() => {
@@ -462,13 +462,13 @@ export default {
        * @Date: 2021-05-07 10:18:09
        * @description: 定位标签
        */
-       let params = {
+      let params = {
         taskid: this.getProps.taskId,
-        tagId: e.key
-      }
+        tagId: e.key,
+      };
       TAGTREE.UPDATAFOCUSTAG(params)
-      .then(() => {
-        this.$message({
+        .then(() => {
+          this.$message({
             message: this.$t("webClient.loadBox.message[2]"),
             type: "success",
           });
@@ -492,7 +492,9 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {
+        .then(() => {          
+          this.activeLeaf = false
+          this.activeTree = null
           this.$emit("setListenClick", true);
           let params = {
             taskid: this.getProps.taskId,
