@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-14 16:10:38
+ * @LastEditTime: 2021-05-14 18:18:39
  * @description: 
 -->
 <template>
@@ -160,6 +160,7 @@
         :singleList="controllerInfo.singleList"
       ></todo-footer>
       <view-cube
+      v-if="controllerInfo.viewCube"
         @handleOrder="handleOrder"
         @goFront="goFront"
         @handleType="handleType"
@@ -212,6 +213,7 @@ export default {
       },
       controllerInfo: {
         uiBar: true,
+        viewCube: true,
         modelClient: false,
         memberAvttribute: false,
         singleList: [],
@@ -245,6 +247,7 @@ export default {
       natureInfo: null,
       shadowType: null,
       listenTodoInfo: null,
+      isUiBar: true, 
       pageSizeInfo: {
         width: null,
         height: null,
@@ -261,6 +264,7 @@ export default {
     this.setOrderList();
     this.appId = this.$route.query.appid;
     this.appToken = this.$route.query.token;
+    this.isUiBar = this.$route.query.uibar === undefined || this.$route.query.uibar === true ? true : false
     if (this.$route.query.width && this.$route.query.height) {
       this.pageSizeInfo = {
         width: this.$route.query.width,
@@ -324,7 +328,7 @@ export default {
           } else if (e.data.type === 2002) {
             this.controllerInfo.memberAvttribute = e.data.data;
           } else if (e.data.type === 2003) {
-            this.$refs.tagTree.closePart(e.data.data)
+            this.$refs.tagTree.closePart(e.data.data);
           }
         }
       },
@@ -763,9 +767,9 @@ export default {
       this.isTag = false;
       this.listenTodoInfo = {
         type: 4,
-        state: 0
-      }
-      this.handleTagShow()
+        state: 0,
+      };
+      this.handleTagShow();
       this.$refs.getFooter.editTool(4);
     },
     setListenClick(e) {
@@ -776,18 +780,18 @@ export default {
        */
       this.$refs.getFooter.setListenClick(e);
     },
-    setTagClick(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-05-12 16:49:12
-     * @description: 标签树是否选中
-     */
+    setTagClick(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-12 16:49:12
+       * @description: 标签树是否选中
+       */
       let messageInfo = {
-              prex: "ourbimMessage",
-              type: 30001,
-              data: e,
-              message: "",
-            };
+        prex: "ourbimMessage",
+        type: 30001,
+        data: e,
+        message: "",
+      };
       this.sentParentIframe(messageInfo);
     },
     listenPerson(e) {
@@ -856,17 +860,17 @@ export default {
         this.isTag = e.state === 0 ? false : true;
         this.$refs.tagTree.closePart(e.state === 0 ? false : true);
         this.listenTodoInfo = e;
-        this.handleTagShow()
-      }else{
+        this.handleTagShow();
+      } else {
         if (this.isTag) {
           this.$refs.tagTree.closePart(false);
           this.listenTodoInfo = {
             type: 4,
-            state: 0
+            state: 0,
           };
-          this.handleTagShow()
-          this.isTag = false
-        }        
+          this.handleTagShow();
+          this.isTag = false;
+        }
       }
       if (e.type === 8 && e.data !== undefined) {
         this.handleState = 12;
@@ -874,19 +878,19 @@ export default {
         this.updateOrder();
       }
     },
-    handleTagShow(){
-    /**
-     * @Author: zk
-     * @Date: 2021-05-12 16:05:22
-     * @description: 标签显示/隐藏
-     */  
+    handleTagShow() {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-12 16:05:22
+       * @description: 标签显示/隐藏
+       */
       let params = {
         taskid: this.taskId,
-        lableVisibility: this.listenTodoInfo.state === 0 ? false : true
-      }
+        lableVisibility: this.listenTodoInfo.state === 0 ? false : true,
+      };
       TAGTREE.UPDATASHOWTAG(params)
-      .then(() => {
-        this.$message({
+        .then(() => {
+          this.$message({
             message: this.$t("webClient.loadBox.message[2]"),
             type: "success",
           });
@@ -982,7 +986,7 @@ export default {
               type: 30001,
               data: {
                 state: true,
-                tagId: realData.tagId
+                tagId: realData.tagId,
               },
               message: "",
             };
@@ -1013,9 +1017,17 @@ export default {
             this.ourbimInfo = res.data.data;
             if (res.data.data.appliType === "0") {
               this.controllerInfo.uiBar = true;
+              if (this.isUiBar) {
+                this.controllerInfo.uiBar = true;                
+              }else{
+                this.controllerInfo.uiBar = false;
+                this.controllerInfo.viewCube = false
+                this.$refs.tagTree.closePart(false);
+              }
             } else {
               this.controllerInfo.uiBar = false;
             }
+
             this.propsFooter.taskId = res.data.data.taskId;
             let messageInfo = {
               prex: "ourbimMessage",
