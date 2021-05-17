@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-08 09:27:06
  * @LastEditors: zk
- * @LastEditTime: 2021-04-19 16:51:05
+ * @LastEditTime: 2021-04-26 13:14:16
  * @description: 
 -->
 <template>
@@ -17,7 +17,7 @@
       <div
         v-for="(item, index) in faceList"
         :key="index"
-        @click="handleBody(item.value)"
+        @click.stop="handleBody(item.value)"
         :class="[
           item.className,
           activeFace === item.value ? 'active-face' : '',
@@ -37,13 +37,13 @@
         <div class="spot-3" @click.stop="handleSpot(index, 3)" @mouseenter="setSpot(index, 3, true)" @mouseleave="setSpot(index, 3, false)"></div>
       </div>
     </div>
-    <img class="go-front" @click="goFront" src="../../assets/images/todo/home.png" mode=""></img>
+    <img class="go-front" @click.stop="goFront" src="../../assets/images/todo/home.png" mode=""></img>
       <div class="drop-down">
-        <img class="handle-down" @click="changeView" src="../../assets/images/todo/drop_down.png" alt="">
+        <img class="handle-down" @click.stop="changeView" src="../../assets/images/todo/drop_down.png" alt="">
         <transition name="el-zoom-in-top">
           <div class="cube-type" v-if="isCubeType">
             <div v-for="(item, index) in handleList" :key="index">
-              <div :class="activeType === item.value ? 'active-type' : ''" v-text="item.label" class="select-type" @click="changeType(item)"></div>
+              <div :class="activeType === item.value ? 'active-type' : ''" v-text="item.label" class="select-type" @click.stop="changeType(item)"></div>
             </div>
           </div>
         </transition>
@@ -144,7 +144,22 @@ export default {
       this.handleList[3].label = this.$t("webClient.cubeBox.handle[3]");
     }
   },
+  mounted() {
+    window.addEventListener("click", this.clickOther);
+  },
+  beforeDestroy() {
+    // 实例销毁之前对点击事件进行解绑
+    window.removeEventListener("click", this.clickOther);
+  },
   methods: {
+    clickOther() {
+      /**
+       * @Author: zk
+       * @Date: 2021-03-17 09:51:33
+       * @description: 关闭tool
+       */
+      this.closeView();
+    },
     setActiveEdge(node, e, isActive, isArea) {
       /**
        * @Author: zk
@@ -839,10 +854,11 @@ export default {
        * @Date: 2021-04-01 17:56:46
        * @description: 重置角度
        */
-      if (this.activeType === 2) {
-        this.activeType = 1;
-        this.$emit("handleType", 2);
-      }
+      this.closeView();
+      // if (this.activeType === 2) {
+      // this.activeType = 1;
+      // this.$emit("handleType", 2);
+      // }
       if (this.realDownInfo.y < 0 && this.downInfo.y > 0) {
         if (this.realDownInfo.y === -45 && this.downInfo.y === 45) {
           let { x, y, z } = JSON.parse(JSON.stringify(this.downInfo));
@@ -891,15 +907,14 @@ export default {
             z: z,
           };
         }
-        
       } else if (this.realDownInfo.y === 315) {
         if (this.downInfo.y === 0) {
           let { x, y, z } = JSON.parse(JSON.stringify(this.downInfo));
-        this.realDownInfo = {
-          x: x,
-          y: 360,
-          z: z,
-        };
+          this.realDownInfo = {
+            x: x,
+            y: 360,
+            z: z,
+          };
         } else if (this.downInfo.y === 45) {
           let { x, y, z } = JSON.parse(JSON.stringify(this.downInfo));
           this.realDownInfo = {
@@ -907,24 +922,29 @@ export default {
             y: 405,
             z: z,
           };
-        }        
+        }
       } else {
         this.realDownInfo = JSON.parse(JSON.stringify(this.downInfo));
       }
-      if (this.realDownInfo.y === 360 || this.realDownInfo.y === -360 || this.realDownInfo.y === 405 || this.realDownInfo.y === -405) {
+      if (
+        this.realDownInfo.y === 360 ||
+        this.realDownInfo.y === -360 ||
+        this.realDownInfo.y === 405 ||
+        this.realDownInfo.y === -405
+      ) {
         let realTimer = setTimeout(() => {
           this.isAnimation = false;
           if (this.realDownInfo.y === 360 || this.realDownInfo.y === -360) {
             this.realDownInfo.y = 0;
             this.downInfo.y = 0;
           } else if (this.realDownInfo.y === 405) {
-            this.realDownInfo.y = 45
+            this.realDownInfo.y = 45;
             this.downInfo.y = 45;
           } else if (this.realDownInfo.y === -405) {
-            this.realDownInfo.y = -45
+            this.realDownInfo.y = -45;
             this.downInfo.y = -45;
           }
-          
+
           clearTimeout(realTimer);
           let realAnimation = setTimeout(() => {
             this.isAnimation = true;
@@ -961,6 +981,16 @@ export default {
        * @description: 视图切换
        */
       this.isCubeType = !this.isCubeType;
+    },
+    closeView() {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-24 09:24:21
+       * @description: 关闭视图
+       */
+      if (this.isCubeType) {
+        this.isCubeType = false;
+      }
     },
   },
 };

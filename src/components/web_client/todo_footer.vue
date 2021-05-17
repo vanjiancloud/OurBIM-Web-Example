@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-04-20 14:18:58
+ * @LastEditTime: 2021-05-14 16:07:34
  * @description: 
 -->
 <template>
@@ -10,8 +10,25 @@
     <div class="handle-mask" @click.stop="" v-if="isMask"></div>
     <div class="todo-footer">
       <div class="todo-main">
+        <!-- 框选 -->
+        <div class="image-main" v-if="showBar(imgList[12].id)">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :enterable="false"
+            :content="imgList[12].title"
+            placement="top"
+          >
+            <img
+              class="footer-image"
+              :src="imgList[12].url"
+              @click.stop="handleOrder(12)"
+              mode=""
+            />
+          </el-tooltip>
+        </div>
         <!-- 视角 -->
-        <div class="image-main">
+        <div class="image-main" v-if="showBar(imgList[0].id)">
           <el-tooltip
             placement="top"
             v-model="personTool"
@@ -48,7 +65,7 @@
           </el-tooltip>
         </div>
         <!-- 移动速度 -->
-        <div class="image-main">
+        <div class="image-main" v-if="showBar(imgList[1].id)">
           <el-tooltip
             class="item"
             :enterable="false"
@@ -76,9 +93,9 @@
             </div>
           </el-collapse-transition>
         </div>
-        <div class="cut-apart"></div>
+        <!-- <div class="cut-apart"></div> -->
         <!-- 剖切 -->
-        <div class="image-main">
+        <div class="image-main" v-if="showBar(imgList[2].id)">
           <el-tooltip
             class="item"
             effect="dark"
@@ -108,7 +125,11 @@
                   <img
                     class="slice-img"
                     @click.stop="changeSlice(item, index)"
-                    :src="activeSlice === index ? item.activeImg : item.img"
+                    :src="
+                      activeSlice.indexOf(index) > -1
+                        ? item.activeImg
+                        : item.img
+                    "
                     mode=""
                   />
                 </div>
@@ -117,7 +138,7 @@
           </el-collapse-transition>
         </div>
         <!-- 测量 -->
-        <div class="image-main">
+        <div class="image-main" v-if="showBar(imgList[3].id)">
           <el-tooltip
             class="item"
             effect="dark"
@@ -222,7 +243,7 @@
           </el-collapse-transition>
         </div>
         <!-- 标签 -->
-        <div class="image-main">
+        <div class="image-main" v-if="showBar(imgList[4].id)">
           <el-tooltip
             class="item"
             effect="dark"
@@ -239,7 +260,7 @@
           </el-tooltip>
         </div>
         <!-- 小地图 -->
-        <div class="image-main">
+        <div class="image-main" v-if="showBar(imgList[5].id)">
           <el-tooltip
             class="item"
             effect="dark"
@@ -256,7 +277,7 @@
           </el-tooltip>
         </div>
         <!-- 关注视点 -->
-        <div class="image-main">
+        <div class="image-main" v-if="showBar(imgList[6].id)">
           <el-tooltip
             popper-class="follow-bgi"
             placement="top"
@@ -304,7 +325,7 @@
           </el-tooltip>
         </div>
         <!-- 模型动画 -->
-        <div class="image-main">
+        <div class="image-main" v-if="showBar(imgList[7].id)">
           <el-tooltip
             class="item"
             effect="dark"
@@ -321,7 +342,7 @@
           </el-tooltip>
         </div>
         <!-- 分解模型 -->
-        <div class="image-main">
+        <div class="image-main" v-if="showBar(imgList[8].id)">
           <el-tooltip
             class="item"
             effect="dark"
@@ -351,7 +372,7 @@
           </el-collapse-transition>
         </div>
         <!-- 渲染环境 -->
-        <div class="image-main">
+        <div class="image-main" v-if="showBar(imgList[9].id)">
           <el-tooltip
             class="item"
             effect="dark"
@@ -392,9 +413,9 @@
             </div>
           </el-collapse-transition>
         </div>
-        <div class="cut-apart"></div>
+        <!-- <div class="cut-apart"></div> -->
         <!-- 浏览器 -->
-        <div class="image-main">
+        <div class="image-main" v-if="showBar(imgList[10].id)">
           <el-tooltip
             class="item"
             effect="dark"
@@ -411,7 +432,7 @@
           </el-tooltip>
         </div>
         <!-- 属性 -->
-        <div class="image-main">
+        <div class="image-main" v-if="showBar(imgList[11].id)">
           <el-tooltip
             class="item"
             effect="dark"
@@ -475,6 +496,12 @@ export default {
       type: Object,
       default: () => {},
     },
+    singleList: {
+      type: Array,
+      default: () => {
+        return [];
+      },
+    },
   },
   data() {
     return {
@@ -487,6 +514,7 @@ export default {
           },
         ],
       },
+      uiList: [],
       sliceList: [
         {
           content: null,
@@ -534,7 +562,7 @@ export default {
           name: "angle",
         },
       ],
-      activeSlice: null,
+      activeSlice: [],
       isMask: false,
       unitList: ["m", "cm", "mm", "ft", "in"],
       accuracyList: ["0", "0.1", "0.01"],
@@ -562,6 +590,7 @@ export default {
           url: require("@/assets/images/todo/unchecked/visual_angle.png"),
           name: "visual_angle.png",
           title: "视角",
+          id: 1003,
         },
         {
           state: 0,
@@ -571,42 +600,49 @@ export default {
             speed: 4,
           },
           title: "移动速度",
+          id: 1004,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/cutting.png"),
           name: "cutting.png",
           title: "剪裁盒",
+          id: 1005,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/meter.png"),
           name: "meter.png",
           title: "测量",
+          id: 1006,
         },
         {
-          state: 0,
-          url: require("@/assets/images/todo/unchecked/label.png"),
+          state: 1,
+          url: require("@/assets/images/todo/check/label.png"),
           name: "label.png",
           title: "标签",
+          id: 1007,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/map.png"),
           name: "map.png",
           title: "小地图",
+          id: 1008,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/follow.png"),
           name: "follow.png",
           title: "关注视角",
+          id: 1009,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/animation.png"),
           name: "animation.png",
           title: "模型动画",
+          id: 1010,
         },
         {
           state: 0,
@@ -616,6 +652,7 @@ export default {
             value: 0,
           },
           title: "分解模型",
+          id: 1011,
         },
         {
           state: 0,
@@ -625,18 +662,28 @@ export default {
             speed: 50,
           },
           title: "渲染环境",
+          id: 1012,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/tree.png"),
           name: "tree.png",
           title: "浏览器",
+          id: 1013,
         },
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/attribute.png"),
           name: "attribute.png",
           title: "属性",
+          id: 1014,
+        },
+        {
+          state: 0,
+          url: require("@/assets/images/todo/unchecked/selection.png"),
+          name: "selection.png",
+          title: "框选",
+          id: 1002,
         },
       ],
       activePerson: 1,
@@ -684,8 +731,16 @@ export default {
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
       deep: true,
     },
+    singleList: {
+      handler() {
+        this.uiList = this.singleList;
+      },
+      // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
+      deep: true,
+    },
   },
   created() {
+    this.uiList = this.singleList;
     if (this.setProps.taskId) {
       this.getProps = this.setProps;
       this.ListPoint();
@@ -730,6 +785,28 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    showBar(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-10 18:11:55
+       * @description: 判断是否显示隐藏
+       */
+      let isShow = false;
+      isShow = this.uiList.indexOf(e) > -1 ? false : true;
+      return isShow;
+    },
+    setListenClick(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-07 09:56:15
+       * @description: 设置监听点击状态
+       */
+      if (e) {
+        window.addEventListener("click", this.clickOther);
+      } else {
+        window.removeEventListener("click", this.clickOther);
+      }
+    },
     closeFollow() {
       /**
        * @Author: zk
@@ -753,12 +830,30 @@ export default {
        * @Date: 2021-04-08 17:55:39
        * @description: 剖切 0 移动 1 旋转 2 反选 3 指定 4 重置
        */
-      if (indexes === 2) {
-        indexes === this.activeSlice
-          ? (this.activeSlice = null)
-          : (this.activeSlice = indexes);
+      if (indexes === 4) {
+        if (this.activeSlice.indexOf(4) === -1) {
+          this.activeSlice = [4];
+        } else {
+          this.activeSlice = [];
+        }
       } else {
-        this.activeSlice = indexes;
+        if (indexes === 0 && this.activeSlice.indexOf(0) === -1) {
+          this.activeSlice.push(0);
+          if (this.activeSlice.indexOf(1) > -1) {
+            this.activeSlice.splice(this.activeSlice.indexOf(1), 1);
+          }
+        } else if (indexes === 1 && this.activeSlice.indexOf(1) === -1) {
+          this.activeSlice.push(1);
+          if (this.activeSlice.indexOf(0) > -1) {
+            this.activeSlice.splice(this.activeSlice.indexOf(0), 1);
+          }
+        } else {
+          if (this.activeSlice.indexOf(indexes) > -1) {
+            this.activeSlice.splice(this.activeSlice.indexOf(indexes), 1);
+          } else {
+            this.activeSlice.push(indexes);
+          }
+        }
       }
       this.$emit("listenTodo", {
         state: this.imgList[2].state,
@@ -864,7 +959,7 @@ export default {
       // 剖切
       if (this.oldState === 2) {
         if (this.imgList[this.oldState].state === 0) {
-          this.activeSlice = null;
+          this.activeSlice = [];
           this.$emit("listenTodo", {
             state: 0,
             type: this.oldState,
@@ -881,6 +976,14 @@ export default {
         });
         this.$emit("listenTodo", {
           state: this.imgList[this.oldState].state,
+          type: this.oldState,
+        });
+        this.oldState = 0;
+      }
+      // 标签
+      if (this.oldState === 4) {
+        this.$emit("listenTodo", {
+          state: 0,
           type: this.oldState,
         });
         this.oldState = 0;
@@ -1068,12 +1171,12 @@ export default {
     },
     handleOrder(e) {
       // 功能未开放
-      if (e === 4 || e === 5 || e === 7 || e === 9) {
+      if (e === 5 || e === 7 || e === 9) {
         return;
       }
       // 剖切 分解模型 返回第三人称
       if (e === 2 || e === 8) {
-        this.activePerson = 1
+        this.activePerson = 1;
       }
       // 选中状态
       let realImg = null;
@@ -1084,10 +1187,9 @@ export default {
       }
       this.imgList[e].url = realImg;
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
-
       // 关闭刨切和测量
       if (this.oldState === 2 || this.oldState === 3) {
-        this.activeSlice = null;
+        this.activeSlice = [];
         this.cuttingList.forEach((item, e) => {
           this.cuttingList[e].img = require("@/assets/images/todo/unchecked/" +
             this.cuttingList[e].name +
@@ -1134,10 +1236,58 @@ export default {
         this.imgList[this.oldState].state = 0;
         this.oldState = e;
       }
+      if ((e === 10 || e === 11) && this.imgList[2].state === 1) {
+        this.imgList[2].state = 0
+        let oldUrl = require(`@/assets/images/todo/unchecked/${
+          this.imgList[2].name
+        }`);
+        this.imgList[2].url = oldUrl;
+      }
 
       if (e === 0) {
         this.personTool = this.imgList[e].state === 1 ? true : false;
       }
+      // 标签 重置模型浏览器
+      if (e === 4) {
+        if (this.imgList[10].state === 1) {
+          this.imgList[10].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[10].name}`);
+          this.imgList[10].url = oldUrl;
+          this.$emit("listenTodo", {
+            state: this.imgList[10].state,
+            type: 10,
+          });
+        }
+      } else {
+        this.imgList[4].state = 0;
+        let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
+        this.imgList[4].url = oldUrl;
+      }
+      // 模型浏览器 重置标签
+      if (this.oldState === 4 && this.oldState !== e) {
+        if (e === 10) {
+          if (this.imgList[4].state === 1) {
+            let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
+            this.imgList[4].url = oldUrl;
+            this.imgList[4].state = 0;
+            this.$emit("listenTodo", {
+              state: this.imgList[4].state,
+              type: 4,
+            });
+          }
+        } else {
+          if (this.imgList[4].state === 0 && e !== 11) {
+            let oldUrl = require(`@/assets/images/todo/check/${this.imgList[4].name}`);
+            this.imgList[4].url = oldUrl;
+            this.imgList[4].state = 1;
+            this.$emit("listenTodo", {
+              state: 1,
+              type: 4,
+            });
+          }
+        }
+      }
+
       if (e === 6) {
         this.followTool = this.imgList[e].state === 1 ? true : false;
       }
@@ -1179,7 +1329,7 @@ export default {
   justify-content: center;
 
   .todo-main {
-    width: 800px;
+    // max-width: 800px;
     padding: 10px;
     background: rgba(0, 0, 0, 0.6);
     display: flex;
@@ -1194,6 +1344,7 @@ export default {
 
     .image-main {
       flex: 1;
+      padding: 0 10px;
       text-align: center;
       width: auto;
       position: relative;

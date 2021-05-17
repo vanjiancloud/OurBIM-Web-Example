@@ -88,7 +88,7 @@
       </div> -->
       <!-- 按钮 -->
       <div class="anNiu">
-        <el-button @click="next" type="primary">
+        <el-button @click="next" :loading="isLoading" type="primary">
           {{ $t('nextstep') }}
         </el-button>
       </div>
@@ -145,7 +145,7 @@
         文件默认打开初始Revit的三维视图，请将文件在对应视图打开状态下保存，再上传。
       </div>
       <div class="btn">
-        <el-button @click="update" type="primary" :disabled="disabl">
+        <el-button @click="update" type="primary" :loading="isLoading" :disabled="disabl">
           {{ $t('Render') }}
         </el-button>
       </div>
@@ -167,7 +167,7 @@
       <div class="icon">
         <img src="./error.png" alt="" />
       </div>
-      <span class="news">提交失败</span>
+      <span class="news">上传模型失败</span>
       <div class="button">
         <el-button @click="toManage" type="primary">
           {{ $t('manage') }}
@@ -178,7 +178,7 @@
 </template>
 
 <script>
-import { addProject } from '@/api/my.js'
+import { addProject, ProjectModel } from '@/api/my.js'
 import { Getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
@@ -204,7 +204,8 @@ export default {
       limt: 1, // 限制模型数量
       bimupNumber: 0, // 监听
       appliId: '',
-      fileUpload: ''
+      fileUpload: '',
+      isLoading: false,
     }
   },
   methods: {
@@ -218,12 +219,16 @@ export default {
     },
     // 上传模型失败
     errorModel (err, file, fileList) {
+      this.isLoading = false
       console.log(err)
+      this.isShow = 4
       this.$common.closeLoading()
     },
     // 下一步
     next () {
+      this.isLoading = true
       // if (this.appName !== '' && this.appImgSrc.length !== 0) {
+      this.$common.openLoading()
       if (this.appName !== '') {
         if (this.active++ > 3) this.active = 0
         addProject({
@@ -232,18 +237,23 @@ export default {
           screenImg: this.appImgSrc.toString()
         })
           .then(res => {
+            this.isLoading = false
             if (res.data.code === 0) {
               this.appInfo = res.data.data
               this.appliId = res.data.data.appid
               console.log(this.appInfo)
               this.$message.success('创建项目成功')
+              this.$common.closeLoading()
               this.isShow = 2
             } else if (res.data.code === 1) {
               this.$message.error('创建项目失败')
+              this.$common.closeLoading()
             }
           })
           .catch(err => {
+            this.isLoading = false
             console.log(err)
+            this.$common.closeLoading()
             this.$message.error('创建失败，请创建项目')
           })
       } else {
@@ -252,9 +262,11 @@ export default {
     },
     // 开始转换
     update () {
+      this.isLoading = true
       // 上传bim模型
       this.$refs.bimupload.submit()
     },
+    submit (status) {},
     //去往应用管理
     toManage () {
       this.$router.push('../manage')
@@ -305,13 +317,26 @@ export default {
     },
     // 上传模型成功
     upLoadModel (response, file, fileList) {
+      this.isLoading = false
       this.appModel.push(response.data)
-      this.$message.success('模型上传成功')
-      if (this.bimupNumber === this.appModel.length) {
-        this.$common.closeLoading()
-        if (this.active++ > 3) this.active = 0
-        this.isShow = 3
-        this.disabl = !this.disabl
+      // response等同于后端返回的res，根据response里的code判断状态
+      // console.log(response)
+      if (response.code === 0) {
+        this.$message.success(response.message)
+        if (this.bimupNumber === this.appModel.length) {
+          this.$common.closeLoading()
+          if (this.active++ > 3) this.active = 0
+          this.isShow = 3
+          this.disabl = !this.disabl
+        }
+      } else if (response.code === 1) {
+        this.$message.error(response.message)
+        if (this.bimupNumber === this.appModel.length) {
+          this.$common.closeLoading()
+          if (this.active++ > 3) this.active = 0
+          this.isShow = 4
+          this.disabl = !this.disabl
+        }
       }
     },
     // 限制上传封面次数

@@ -321,7 +321,7 @@
 <script>
 import { showDetail } from '@/api/my.js'
 import { Getuserid } from '@/store/index.js'
-import { deluserid, Deluserid } from '@/store/index.js'
+import { Deluserid } from '@/store/index.js'
 
 export default {
   name: 'myHeader',

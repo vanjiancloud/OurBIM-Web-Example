@@ -18,13 +18,12 @@ import axios from '@/utils/request.js'
 // 引入国际化语言包
 import VueI18n from 'vue-i18n'
 import common from './utils/common.js' // 公共方法
-Vue.prototype.$common = common
+import VueCropper from 'vue-cropper'
 
 Vue.use(VueI18n)
+Vue.use(VueCropper)
 Vue.use(less)
 Vue.use(VueClipboard)
-
-
 // vue 使用element-ui的el-dialog时 由于滚动条隐藏和出现导致页面抖动问题的解决
 ElementUI.Dialog.props.lockScroll.default = false
 Vue.use(ElementUI)
@@ -33,7 +32,8 @@ Vue.use(ElementUI)
 Vue.prototype.$axios = axios
 // 把$EventBus放到原型上
 Vue.prototype.$EventBus = new Vue()
-
+// 把公共方法放到原型上
+Vue.prototype.$common = common
 Vue.config.productionTip = false
 const i18n = new VueI18n({
   locale: 'zh',
@@ -188,6 +188,10 @@ const i18n = new VueI18n({
         ],
         browser: {
           title: '模型浏览器',
+          tips: ['加载中', '暂无数据']
+        },
+        tag: {
+          title: '标签树',
           tips: ['加载中', '暂无数据']
         },
         attribute: {
