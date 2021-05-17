@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-05-17 15:42:18
+ * @LastEditTime: 2021-05-17 17:28:48
  * @description: 
 -->
 <template>
@@ -617,8 +617,8 @@ export default {
           id: 1006,
         },
         {
-          state: 1,
-          url: require("@/assets/images/todo/check/label.png"),
+          state: 0,
+          url: require("@/assets/images/todo/unchecked/label.png"),
           name: "label.png",
           title: "标签",
           id: 1007,
@@ -1241,6 +1241,14 @@ export default {
           });
         }
       }
+      if (this.oldState === e && e === 8 && this.imgList[8].state === 0) {
+        this.imgList[8].data.value = 0;
+        this.$emit("listenTodo", {
+            state: 0,
+            type: this.oldState,
+            data: 0,
+          });
+      }
       // 重置状态
       if (e !== this.oldState && e !== 10 && e !== 11) {
         this.angleTool = false;
@@ -1294,9 +1302,9 @@ export default {
           }
         } else {
           if (this.imgList[4].state === 0 && e !== 11) {
-            let oldUrl = require(`@/assets/images/todo/check/${this.imgList[4].name}`);
+            let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
             this.imgList[4].url = oldUrl;
-            this.imgList[4].state = 1;
+            this.imgList[4].state = 0;
             this.$emit("listenTodo", {
               state: 1,
               type: 4,
