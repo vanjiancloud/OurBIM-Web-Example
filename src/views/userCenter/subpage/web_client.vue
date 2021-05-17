@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-17 14:47:51
+ * @LastEditTime: 2021-05-17 14:59:34
  * @description: 
 -->
 <template>
@@ -1675,7 +1675,7 @@ export default {
 
   .phone-bim {
     height: 100vh !important;
-    width: 120vw !important;
+    width: 100vw !important;
   }
 }
 </style>
