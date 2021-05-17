@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-05-17 14:29:55
+ * @LastEditTime: 2021-05-17 15:42:18
  * @description: 
 -->
 <template>
@@ -1221,6 +1221,15 @@ export default {
           }
         }
       }
+      // 框选
+      if (this.oldState === 12) {
+        if (this.imgList[this.oldState].state === 1 && e !== 10 && e !== 11 && e !== 12) {
+          this.$emit("listenTodo", {
+            state: 0,
+            type: this.oldState,
+          });
+        }
+      }
       // 分解模型
       if (this.oldState === 8) {
         this.imgList[8].data.value = 0;
@@ -1295,7 +1304,6 @@ export default {
           }
         }
       }
-
       if (e === 6) {
         this.followTool = this.imgList[e].state === 1 ? true : false;
       }
