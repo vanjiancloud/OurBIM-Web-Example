@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-17 14:00:15
+ * @LastEditTime: 2021-05-17 14:47:51
  * @description: 
 -->
 <template>
@@ -1110,6 +1110,7 @@ export default {
         this.isSocket = false;
         this.websock.close(); //离开路由之后断开websocket连接
         this.websock = null;
+        this.webUrl = null
       }
     },
     getMonitor() {
