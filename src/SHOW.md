@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:42:41
  * @LastEditors: zk
- * @LastEditTime: 2021-05-12 17:59:11
+ * @LastEditTime: 2021-05-17 09:30:46
  * @description: 
 -->
 # 说明
@@ -37,7 +37,7 @@ window.addEventListener("message", function(e) {
 
     * 标签相关
     * 30001：点击标签
-    *data: {
+    * data: {
     *    state: true // 是否选中
     *    tagId: "111" // 标签ID
     *}
