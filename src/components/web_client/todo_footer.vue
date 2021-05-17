@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-05-14 16:07:34
+ * @LastEditTime: 2021-05-17 14:29:55
  * @description: 
 -->
 <template>
@@ -982,6 +982,14 @@ export default {
       }
       // 标签
       if (this.oldState === 4) {
+        this.$emit("listenTodo", {
+          state: 0,
+          type: this.oldState,
+        });
+        this.oldState = 0;
+      }
+      // 框选
+      if (this.oldState === 12) {
         this.$emit("listenTodo", {
           state: 0,
           type: this.oldState,

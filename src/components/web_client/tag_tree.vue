@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-14 14:53:46
+ * @LastEditTime: 2021-05-17 14:17:05
  * @description: 标签树
 -->
 <template>
@@ -434,26 +434,32 @@ export default {
        * @Author: zk
        * @Date: 2021-05-07 10:18:25
        * @description: 更新标签
-       */
-      let params = {
-        taskid: this.getProps.taskId,
-        tagId: this.tagInfo.id,
-        tagName: this.tagInfo.fileName,
-        lableVisibility: true,
-      };
-      TAGTREE.UPDATETAG(params)
-        .then(() => {
-          this.dialogEdit = false;
-          this.tagNode.data.fileName = this.tagInfo.fileName;
-          this.$refs.refTag.updateKeyChildren(this.tagNode.key, this.tagNode);
-          this.$emit("setListenClick", true);
-          this.$message({
-            type: "success",
-            message: "修改成功!",
-          });
-        })
-        .catch((err) => {
-          console.log(err);
+       */      
+      this.$refs["rulesTag"].validate((valid) => {
+          if (valid) {
+            let params = {
+              taskid: this.getProps.taskId,
+              tagId: this.tagInfo.id,
+              tagName: this.tagInfo.fileName,
+              lableVisibility: true,
+            };
+            TAGTREE.UPDATETAG(params)
+              .then(() => {
+                this.dialogEdit = false;
+                this.tagNode.data.fileName = this.tagInfo.fileName;
+                this.$refs.refTag.updateKeyChildren(this.tagNode.key, this.tagNode);
+                this.$emit("setListenClick", true);
+                this.$message({
+                  type: "success",
+                  message: "修改成功!",
+                });
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            return false;
+          }
         });
     },
     locationTag(e) {

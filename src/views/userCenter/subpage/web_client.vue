@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-14 18:18:39
+ * @LastEditTime: 2021-05-17 14:57:42
  * @description: 
 -->
 <template>
@@ -688,10 +688,14 @@ export default {
         .then((res) => {
           if (params.id === 1 && res.data && res.data.data) {
             // 切换到主视图 重置状态
-            let realView = res.data.data.viewMode === "1" ? 0 : 1;
-            this.$refs.getFooter.resetPerson(realView);
-            let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
-            this.$refs.getCube.resetActive(realProject);
+            if (this.$refs.getFooter) {
+              let realView = res.data.data.viewMode === "1" ? 0 : 1;
+              this.$refs.getFooter.resetPerson(realView);              
+            }
+            if (this.$refs.getCube) {
+              let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
+              this.$refs.getCube.resetActive(realProject);              
+            }
           }
           this.$message({
             message: this.$t("webClient.loadBox.message[2]"),
@@ -1106,6 +1110,7 @@ export default {
         this.isSocket = false;
         this.websock.close(); //离开路由之后断开websocket连接
         this.websock = null;
+        this.webUrl = null
       }
     },
     getMonitor() {
@@ -1670,7 +1675,7 @@ export default {
 
   .phone-bim {
     height: 100vh !important;
-    width: 120vw !important;
+    width: 100vw !important;
   }
 }
 </style>
