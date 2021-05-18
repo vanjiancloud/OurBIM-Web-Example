@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-17 14:59:34
+ * @LastEditTime: 2021-05-18 11:30:15
  * @description: 
 -->
 <template>
@@ -75,7 +75,7 @@
           <div class="tree-title">
             <div class="" v-text="$t('webClient.browser.title')"></div>
             <div class="close-part">
-              <i class="el-icon-close" @click="closePart(browserInfo.type)"></i>
+              <i class="el-icon-close" @click.stop="closePart(browserInfo.type)"></i>
             </div>
           </div>
           <div class="tree-content">
@@ -122,7 +122,7 @@
           <div class="bim-title">
             <div class="" v-text="$t('webClient.attribute.title')"></div>
             <div class="close-part">
-              <i class="el-icon-close" @click="closePart(natureInfo.type)"></i>
+              <i class="el-icon-close" @click.stop="closePart(natureInfo.type)"></i>
             </div>
           </div>
           <div class="detail-main">
@@ -226,7 +226,7 @@ export default {
       ourbimInfo: null,
       isFade: true,
       isFollow: false,
-      isTag: true,
+      isTag: false,
       handleState: 0,
       activeTree: null,
       leafInfo: null,
@@ -836,6 +836,23 @@ export default {
         this.listenTodoInfo = e;
         this.updateOrder();
       }
+      // 标签
+      if (e.type === 4) {
+        this.isTag = e.state === 0 ? false : true;
+        this.$refs.tagTree.closePart(e.state === 0 ? false : true);
+        this.listenTodoInfo = e;
+        this.handleTagShow();
+      } else {
+        if (this.isTag && e.type !== 11) {
+          this.$refs.tagTree.closePart(false);
+          this.listenTodoInfo = {
+            type: 4,
+            state: 0,
+          };
+          this.handleTagShow();
+          this.isTag = false;
+        }
+      }
       // 模型剖切
       if (e.type === 2) {
         this.handleState = 11;
@@ -858,24 +875,7 @@ export default {
           this.handleState = 5;
           this.updateOrder();
         }
-      }
-      // 标签
-      if (e.type === 4) {
-        this.isTag = e.state === 0 ? false : true;
-        this.$refs.tagTree.closePart(e.state === 0 ? false : true);
-        this.listenTodoInfo = e;
-        this.handleTagShow();
-      } else {
-        if (this.isTag) {
-          this.$refs.tagTree.closePart(false);
-          this.listenTodoInfo = {
-            type: 4,
-            state: 0,
-          };
-          this.handleTagShow();
-          this.isTag = false;
-        }
-      }
+      }      
       if (e.type === 8 && e.data !== undefined) {
         this.handleState = 12;
         this.listenTodoInfo = e;

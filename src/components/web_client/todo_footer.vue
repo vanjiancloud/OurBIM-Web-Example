@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-05-17 17:28:48
+ * @LastEditTime: 2021-05-18 11:29:28
  * @description: 
 -->
 <template>
@@ -1223,7 +1223,12 @@ export default {
       }
       // 框选
       if (this.oldState === 12) {
-        if (this.imgList[this.oldState].state === 1 && e !== 10 && e !== 11 && e !== 12) {
+        if (
+          this.imgList[this.oldState].state === 1 &&
+          e !== 10 &&
+          e !== 11 &&
+          e !== 12
+        ) {
           this.$emit("listenTodo", {
             state: 0,
             type: this.oldState,
@@ -1231,7 +1236,7 @@ export default {
         }
       }
       // 分解模型
-      if (this.oldState === 8) {
+      if (this.oldState === 8 && e !== 10 && e !== 11) {
         this.imgList[8].data.value = 0;
         if (this.imgList[this.oldState].state === 1 && e !== 2) {
           this.$emit("listenTodo", {
@@ -1244,10 +1249,10 @@ export default {
       if (this.oldState === e && e === 8 && this.imgList[8].state === 0) {
         this.imgList[8].data.value = 0;
         this.$emit("listenTodo", {
-            state: 0,
-            type: this.oldState,
-            data: 0,
-          });
+          state: 0,
+          type: this.oldState,
+          data: 0,
+        });
       }
       // 重置状态
       if (e !== this.oldState && e !== 10 && e !== 11) {
@@ -1259,13 +1264,17 @@ export default {
         }`);
         this.imgList[this.oldState].url = oldUrl;
         this.imgList[this.oldState].state = 0;
+        if (e === 0 && this.oldState === 4) {
+          this.$emit("listenTodo", {
+            state: 0,
+            type: 4,
+          });
+        }
         this.oldState = e;
       }
       if ((e === 10 || e === 11) && this.imgList[2].state === 1) {
-        this.imgList[2].state = 0
-        let oldUrl = require(`@/assets/images/todo/unchecked/${
-          this.imgList[2].name
-        }`);
+        this.imgList[2].state = 0;
+        let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[2].name}`);
         this.imgList[2].url = oldUrl;
       }
 
@@ -1284,9 +1293,11 @@ export default {
           });
         }
       } else {
-        this.imgList[4].state = 0;
-        let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
-        this.imgList[4].url = oldUrl;
+        if (e !== 11 && this.oldState !== 4) {
+          this.imgList[4].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
+          this.imgList[4].url = oldUrl;
+        }
       }
       // 模型浏览器 重置标签
       if (this.oldState === 4 && this.oldState !== e) {
