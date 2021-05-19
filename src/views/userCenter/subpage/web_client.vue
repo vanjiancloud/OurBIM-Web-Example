@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-17 14:57:42
+ * @LastEditTime: 2021-05-19 09:13:23
  * @description: 
 -->
 <template>
@@ -75,7 +75,7 @@
           <div class="tree-title">
             <div class="" v-text="$t('webClient.browser.title')"></div>
             <div class="close-part">
-              <i class="el-icon-close" @click="closePart(browserInfo.type)"></i>
+              <i class="el-icon-close" @click.stop="closePart(browserInfo.type)"></i>
             </div>
           </div>
           <div class="tree-content">
@@ -122,7 +122,7 @@
           <div class="bim-title">
             <div class="" v-text="$t('webClient.attribute.title')"></div>
             <div class="close-part">
-              <i class="el-icon-close" @click="closePart(natureInfo.type)"></i>
+              <i class="el-icon-close" @click.stop="closePart(natureInfo.type)"></i>
             </div>
           </div>
           <div class="detail-main">
@@ -226,7 +226,7 @@ export default {
       ourbimInfo: null,
       isFade: true,
       isFollow: false,
-      isTag: true,
+      isTag: false,
       handleState: 0,
       activeTree: null,
       leafInfo: null,
@@ -836,6 +836,23 @@ export default {
         this.listenTodoInfo = e;
         this.updateOrder();
       }
+      // 标签
+      if (e.type === 4) {
+        this.isTag = e.state === 0 ? false : true;
+        this.$refs.tagTree.closePart(e.state === 0 ? false : true);
+        this.listenTodoInfo = e;
+        this.handleTagShow();
+      } else {
+        if (this.isTag && e.type !== 11) {
+          this.$refs.tagTree.closePart(false);
+          this.listenTodoInfo = {
+            type: 4,
+            state: 0,
+          };
+          this.handleTagShow();
+          this.isTag = false;
+        }
+      }
       // 模型剖切
       if (e.type === 2) {
         this.handleState = 11;
@@ -858,24 +875,7 @@ export default {
           this.handleState = 5;
           this.updateOrder();
         }
-      }
-      // 标签
-      if (e.type === 4) {
-        this.isTag = e.state === 0 ? false : true;
-        this.$refs.tagTree.closePart(e.state === 0 ? false : true);
-        this.listenTodoInfo = e;
-        this.handleTagShow();
-      } else {
-        if (this.isTag) {
-          this.$refs.tagTree.closePart(false);
-          this.listenTodoInfo = {
-            type: 4,
-            state: 0,
-          };
-          this.handleTagShow();
-          this.isTag = false;
-        }
-      }
+      }      
       if (e.type === 8 && e.data !== undefined) {
         this.handleState = 12;
         this.listenTodoInfo = e;
@@ -963,6 +963,13 @@ export default {
           } else if (realData.id === "7") {
             this.memberInfo = null;
             this.activeLeaf = false;
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 20003,
+              data: "",
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
           } else if (realData.id === "8") {
             let messageInfo = {
               prex: "ourbimMessage",
@@ -1030,6 +1037,8 @@ export default {
               }
             } else {
               this.controllerInfo.uiBar = false;
+              this.controllerInfo.viewCube = false
+              this.$refs.tagTree.closePart(false);
             }
 
             this.propsFooter.taskId = res.data.data.taskId;
@@ -1188,11 +1197,7 @@ export default {
        * @Author: zk
        * @Date: 2021-04-27 11:42:25
        * @description:
-       * 10001: 已获取平台资源，开始初始化
-       * 10002：平台初始化成功
-       * 10003：平台加载成功
-       * 20001：单击构件
-       * 20002: 框选构件
+       * 参考readme
        */
       window.parent.postMessage(e, "*");
     },

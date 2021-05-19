@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-17 14:17:05
+ * @LastEditTime: 2021-05-18 10:22:08
  * @description: 标签树
 -->
 <template>
@@ -248,7 +248,7 @@ export default {
       tagIconInfo: null,
       tagIconNode: null,
       dialogIconEdit: false,
-      isTag: true,
+      isTag: false,
       modelTag: null,
       getProps: null,
       propsTag: {
