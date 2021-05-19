@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 13:46:45
+ * @LastEditTime: 2021-05-19 14:31:26
  * @description: 标签树
 -->
 <template>
@@ -493,7 +493,7 @@ export default {
        * @description: 删除标签
        */
       this.$emit("setListenClick", false);
-      this.$confirm("此操作将永久删除该记录, 是否继续?", "提示", {
+      this.$confirm(`将删除名称为"${node.label}"的构件, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
