@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 15:16:59
+ * @LastEditTime: 2021-05-19 18:21:20
  * @description: 
 -->
 <template>
@@ -208,7 +208,7 @@ export default {
     return {
       actionList: [],
       propsFooter: {
-        taskId: null,
+        taskId: null
       },
       propsMember: {
         label: "name",
@@ -344,6 +344,7 @@ export default {
             this.controllerInfo.memberAvttribute = e.data.data;
           } else if (e.data.type === 2003) {
             this.$refs.tagTree.closePart(e.data.data);
+            this.$refs.tagTree.closeIcon()
           }
         }
       },
@@ -792,7 +793,7 @@ export default {
       };
       this.handleTagShow();
       if (this.$refs.getFooter) {
-        this.$refs.getFooter.editTool(4);        
+        this.$refs.getFooter.editTool(4);
       }
     },
     setListenClick(e) {
@@ -802,7 +803,7 @@ export default {
        * @description: 设置监听点击状态
        */
       if (this.$refs.getFooter) {
-        this.$refs.getFooter.setListenClick(e);        
+        this.$refs.getFooter.setListenClick(e);
       }
     },
     setTagClick(e) {
@@ -1047,6 +1048,7 @@ export default {
               data: {
                 state: true,
                 tagId: realData.tagId,
+                tagType: 0
               },
               message: "",
             };

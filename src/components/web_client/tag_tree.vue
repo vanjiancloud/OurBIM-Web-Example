@@ -1,13 +1,20 @@
 <!--
  * @Author: zk
+ * @Date: 2021-05-06 09:20:40
+ * @LastEditors: zk
+ * @LastEditTime: 2021-05-19 18:23:25
+ * @description: 
+-->
+<!--
+ * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 14:31:26
+ * @LastEditTime: 2021-05-19 17:53:13
  * @description: 标签树
 -->
 <template>
   <div class="tag-tree" v-show="isTag">
-    <div class="tree-title">
+    <div class="tree-title" v-if="isColseBar">
       <!-- 关闭 -->
       <div class="close-part">
         <i class="el-icon-close" @click="closeTag(false)"></i>
@@ -196,9 +203,12 @@ export default {
       deep: true,
     },
   },
+  mounted () {
+  },
   data() {
     return {
       DataTagTree: [],
+      isColseBar: true,
       uploadInfo: {
         action: BASE.defaults.baseURL + "/TagControl/postTagImg",
       },
@@ -400,6 +410,7 @@ export default {
       this.$emit("setTagClick", {
         state: this.activeLeaf,
         tagId: this.activeLeaf ? this.activeTree.id : null,
+        tagType: e.data.isFolder === "0" ? 0 : 1
       });
     },
     editTag(e) {
@@ -666,6 +677,14 @@ export default {
        * @description: 全局控制显示隐藏
        */
       this.isTag = e;
+    },
+    closeIcon(){
+    /**
+     * @Author: zk
+     * @Date: 2021-05-19 18:04:06
+     * @description: 关闭按钮控制
+     */      
+      this.isColseBar = false
     },
     closeTag(e) {
       /**

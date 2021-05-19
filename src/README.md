@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:42:41
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 13:43:13
+ * @LastEditTime: 2021-05-19 18:22:09
  * @description: 
 -->
 # 说明
@@ -40,6 +40,7 @@ window.addEventListener("message", function(e) {
     * data: {
     *    state: true // 是否选中
     *    tagId: "111" // 标签ID
+    *    tagType: 0/1 // 标签类型 0 标签 1 标签组
     *}
     * 30002: 构件新建成功
     * data: {
