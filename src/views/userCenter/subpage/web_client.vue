@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 13:48:30
+ * @LastEditTime: 2021-05-19 15:16:59
  * @description: 
 -->
 <template>
@@ -429,7 +429,7 @@ export default {
        * @Date: 2021-03-12 11:34:19
        * @description: 选择类型 e 0: 重置主视图 1: 透视投影 2: 正交投影 3 自定义主视图
        */
-      if (e === 2) {
+      if (e === 2 && this.$refs.getFooter) {
         // 第三人称
         this.$refs.getFooter.resetPerson(1);
       }
@@ -510,7 +510,7 @@ export default {
        * @Date: 2021-03-08 10:40:10
        * @description: cube指令
        */
-      if (this.listenInfo === 0) {
+      if (this.listenInfo === 0 && this.$refs.getFooter) {
         this.$refs.getFooter.resetPerson(1);
       }
       this.handleState = 6;
@@ -775,7 +775,9 @@ export default {
       if (e === 11) {
         this.natureInfo = null;
       }
-      this.$refs.getFooter.editTool(e);
+      if (this.$refs.getFooter) {
+        this.$refs.getFooter.editTool(e);
+      }
     },
     closeTag() {
       /**
@@ -789,7 +791,9 @@ export default {
         state: 0,
       };
       this.handleTagShow();
-      this.$refs.getFooter.editTool(4);
+      if (this.$refs.getFooter) {
+        this.$refs.getFooter.editTool(4);        
+      }
     },
     setListenClick(e) {
       /**
@@ -797,7 +801,9 @@ export default {
        * @Date: 2021-05-07 09:54:23
        * @description: 设置监听点击状态
        */
-      this.$refs.getFooter.setListenClick(e);
+      if (this.$refs.getFooter) {
+        this.$refs.getFooter.setListenClick(e);        
+      }
     },
     setTagClick(e) {
       /**
@@ -980,7 +986,9 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
-            this.$refs.getFooter.resetPointList(realData.object);
+            if (this.$refs.getFooter) {
+              this.$refs.getFooter.resetPointList(realData.object);
+            }
           } else if (realData.id === "5") {
             this.memberInfo = {
               type: 5,
