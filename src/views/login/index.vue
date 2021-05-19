@@ -18,10 +18,10 @@
         <!-- 登录的不同状态 -->
         <div class="state">
           <span @click="isshow = 0" :class="{ color: isshow == 0 }">
-            账号登录
+            <i>账号登录</i>
           </span>
           <span @click="isshow = 1" :class="{ color: isshow == 1 }">
-            短信登录
+            <i>短信登录</i>
           </span>
         </div>
         <!-- 邮箱登录的表单 -->
@@ -131,7 +131,7 @@
       </div>
     </div>
     <div class="wenzi">
-      Copyright © 2021 www.OurBIM.com, <br>
+      Copyright © 2021 www.OurBIM.com, <br />
       All Rights Reserved.
     </div>
   </div>
@@ -227,7 +227,7 @@ export default {
         this.Mobilelogin()
       }
     }
-    //页面缩放
+    // 页面缩放
     // window.onload = function () {
     //   // 获取浏览器页面最大宽度
     //   var maxWidth = document.documentElement.offsetWidth
@@ -480,10 +480,6 @@ export default {
 <style scoped lang="less">
 // 书写样式铺满整
 .login-container {
-  // width: 100%;
-  // height: 100%;
-  // width: 100vw;
-  // height: 100vh;
   position: fixed;
   left: 0;
   top: 0;
@@ -491,34 +487,29 @@ export default {
   bottom: 0;
   display: flex;
   flex-direction: row;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   background-image: url(./bg.png);
   background-size: cover;
   .picture {
-    float: left;
-    width: 795px;
-    height: 945px;
-    margin-left: -200px;
-    margin-right: 350px;
+    width: 532px;
+    height: 633px;
     img {
       width: 100%;
       height: 100%;
     }
   }
   .right {
-    width: 560px;
-    height: 600px;
     background-color: #fff;
-    float: right;
     display: flex;
     justify-content: center;
     align-items: center;
     border-radius: 25px;
     box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
     .login-form-wrap {
-      // width: 500px;
+      width: 470px;
       // background-color: red;
+      height: 440px;
       // 错误提示
       /deep/ .el-form-item__error {
         position: absolute;
@@ -527,10 +518,9 @@ export default {
       }
       // 输入框
       /deep/ .el-input__inner {
-        height: 65px;
-        font-size: 20px;
+        // font-size: 20px;
         background-color: #f4f4f4;
-        padding-left: 90px;
+        padding-left: 60px;
         color: #000;
       }
       /deep/ .el-checkbox__label {
@@ -547,9 +537,9 @@ export default {
       }
       // 输入框内图标
       /deep/ .el-input__prefix {
-        font-size: 25px;
-        line-height: 65px;
-        margin-left: 36px;
+        font-size: 20px;
+        line-height: 40px;
+        margin-left: 16px;
       }
       /deep/ .el-checkbox__inner::after {
         width: 9px;
@@ -559,9 +549,12 @@ export default {
       .login-head {
         width: 520px;
         height: 46px;
+        margin-top: 10px;
+        margin-left: 20px;
         .icon {
           width: 16px;
           height: 32px;
+
           img {
             width: 100%;
             height: 100%;
@@ -570,8 +563,8 @@ export default {
         .logo {
           width: 185px;
           height: 46px;
-          margin: 0 auto;
           margin-top: -55px;
+          margin-left: 120px;
           img {
             width: 100%;
             height: 100%;
@@ -583,57 +576,59 @@ export default {
         }
       }
       .state {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-bottom: 18px;
-        // background-color: red;
-        width: 510px;
-        margin-top: 50px;
+        margin-left: 65px;
+        margin-bottom: 20px;
+        margin-top: 20px;
         cursor: pointer;
-        span {
-          font-size: 20px;
+        i {
+          margin-left: -30px;
+          font-style: normal;
         }
         .color {
           color: #00aaf0;
-          // color: red;
-          // width: 80px;
+          // background-color: blue;
           border-bottom: 1px solid #00aaf0;
           border-width: 4px;
         }
         span {
-          padding-right: 20px;
           border-bottom: 1px solid #e9e9e9;
           border-width: 4px;
-          padding: 0px 80px 15px 80px;
+          padding: 0px 45px 5px 80px;
+          font-size: 18px;
         }
       }
       .login-form {
+        padding: 0 20px;
         /deep/ .el-input__inner {
-          height: 65px;
-          line-height: 65px;
+          height: 40px;
+          width: 400px;
+          line-height: 40px;
         }
 
         /deep/ .el-form-item__content {
           line-height: 30px;
+          margin-left: 15px;
         }
         .code {
           margin-right: 25px;
-          margin-top: 15px;
+          margin-top: 3px;
+          font-size: 12px;
         }
         .fonts {
-          font-size: 20px;
+          font-size: 16px;
         }
         .titles {
           color: #00aaf0;
           font-size: 16px;
+          margin-right: 20px;
         }
         .login-btn {
-          width: 100%;
-          height: 60px;
+          width: 400px;
+          height: 40px;
           font-size: 25px;
           border-radius: 30px;
           background-color: #00aaf0;
+          font-size: 18px;
         }
         span {
           padding-left: 20px;
@@ -648,7 +643,7 @@ export default {
   .wenzi {
     width: 340px;
     position: fixed;
-    bottom: 21px;
+    bottom: 15px;
     text-align: center;
     color: #ccc;
     font-size: 16px;

@@ -12,8 +12,8 @@ body
 /* <=1200的设备 */
 @media (max-width: 1200px) {
   .container {
-    width: 100% !important;
-    /* max-width: 100% !important; */
+    /* min-width: 100% !important; */
+    width: 1200px !important;
     font-family: 'microsoft yahei';
     margin: 0 auto;
     font-size: 16px;
@@ -22,7 +22,7 @@ body
 /* >=1200的设备 */
 @media (min-width: 1200px) {
     .container {
-      /* min-width: 1200px !important; */
+      min-width: 1200px !important;
       max-width: 1420px !important;
       font-family: 'microsoft yahei';
       margin: 0 auto;
