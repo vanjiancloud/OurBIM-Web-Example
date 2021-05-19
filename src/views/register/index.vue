@@ -35,12 +35,6 @@
               >
                 <i slot="prefix" class="el-icon-message"></i>
               </el-input>
-              <!-- <div class="hint">
-                <span style="font-size: 14px;">
-                  <i style="color:#e4551b;">*</i>
-                  您将同意我们不定期给您发送OurBIM产品相关资讯邮件
-                </span>
-              </div> -->
             </el-form-item>
             <!-- 手机号 -->
             <el-form-item label="" prop="mobile">
@@ -103,11 +97,11 @@
             </el-form-item>
             <!-- 勾选状态 -->
             <el-form-item label="" prop="checked" class="check">
-              <el-checkbox v-model="ruleForm.checked">我同意 </el-checkbox>
+              <el-checkbox v-model="ruleForm.checked">我同意</el-checkbox>
               <a
                 class="link"
                 @click="toxieyi"
-                style="text-decoration:none; font-size: 16px;"
+                style="text-decoration:none; font-size: 14px;"
               >
                 《OurBIM用户服务协议》
               </a>
@@ -439,44 +433,38 @@ export default {
   right: 0;
   bottom: 0;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   background-image: url(./img/bg.png);
   background-size: cover;
   .picture {
-    float: left;
-    width: 795px;
-    height: 945px;
-    margin-left: -200px;
-    margin-right: 350px;
+    width: 532px;
+    height: 633px;
     img {
       width: 100%;
       height: 100%;
     }
   }
   .right {
-    width: 560px;
-    height: 770px;
+    width: 400px;
+    height: 560px;
     background-color: #fff;
-    float: right;
     display: flex;
     justify-content: center;
     border-radius: 25px;
     box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
     .zhuce {
-      width: 490px;
+      width: 100%;
       .header {
-        width: 521px;
-        height: 46px;
-        margin-bottom: 10px;
-        margin-top: 20px;
+        width: 421px;
+        height: 40px;
         display: flex;
         align-items: center;
         .logo {
-          width: 185px;
-          height: 46px;
-          // margin: 0 auto;
-          margin-left: 110px;
+          width: 180px;
+          height: 40px;
+          margin-left: 50px;
+          margin-top: 5px;
           img {
             width: 100%;
             height: 100%;
@@ -484,23 +472,21 @@ export default {
         }
         .el-icon-arrow-left {
           color: #00aaf0;
-          font-size: 60px;
-          margin-left: -15px;
+          font-size: 40px;
+          margin-left: 15px;
         }
       }
       .body {
+        margin-left: 25px;
         .news {
-          margin-bottom: 10px;
-          font-size: 16px;
+          font-size: 14px;
         }
         // 单选框
         .el-radio {
-          position: relative;
-          margin-left: 105px;
-          margin-bottom: 10px;
+          margin-left: 70px;
           img {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
           }
           /deep/ .el-radio__input {
             position: absolute;
@@ -514,9 +500,10 @@ export default {
         }
         // 输入框
         /deep/ .el-input__inner {
-          height: 45px;
-          font-size: 20px;
-          padding-left: 90px;
+          height: 30px;
+          font-size: 14px;
+          width: 350px;
+          padding-left: 50px;
           background-color: #f4f4f4;
           color: #000;
         }
@@ -535,9 +522,9 @@ export default {
         }
         // 输入框内图标
         /deep/ .el-input__prefix {
-          font-size: 20px;
-          line-height: 45px;
-          margin-left: 36px;
+          font-size: 16px;
+          line-height: 30px;
+          margin-left: 20px;
         }
         // 对钩
         /deep/ .el-checkbox__inner::after {
@@ -547,41 +534,40 @@ export default {
         .link {
           cursor: pointer;
         }
-        .hint {
-          margin-top: -13px;
-          margin-bottom: -30px;
-          font-size: 4px;
-          color: #999999;
-        }
         .btn {
-          width: 100%;
-          height: 60px;
+          width: 350px;
+          height: 20px;
           margin-bottom: 12px;
-          font-size: 25px;
+          font-size: 20px;
           border-radius: 30px;
           background-color: #00aaf0;
         }
         .code {
-          margin-right: 27px;
-          margin-top: 2px;
+          margin-right: 47px;
+          margin-top: -2px;
+          font-size: 12px;
         }
         .check {
           margin-top: -15px;
           margin-bottom: 1px;
           color: #00aaf0;
+          font-size: 14px;
         }
       }
       .footer {
         margin-top: 20px;
         .btn {
-          height: 50px;
+          height: 30px;
+          font-size: 14px;
+          line-height: 5px;
         }
         .footer-size {
           text-align: center;
-          font-size: 16px;
-          margin-top: -10px;
+          margin-top: -20px;
           .el-button {
             color: #00aaf0;
+            font-size: 12px;
+            margin-left: -20px;
           }
         }
       }

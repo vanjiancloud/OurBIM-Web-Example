@@ -44,7 +44,7 @@
           width="200"
         >
         </el-table-column>
-        <el-table-column :label="$t('operation')">
+        <el-table-column :label="$t('operation')" width="150">
           <template slot-scope="scope">
             <!-- 分享 -->
             <el-button
