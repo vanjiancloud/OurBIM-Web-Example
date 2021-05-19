@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-18 10:22:08
+ * @LastEditTime: 2021-05-19 09:22:18
  * @description: 标签树
 -->
 <template>
@@ -647,6 +647,9 @@ export default {
       this.$refs.refTag.filter(this.modelTag);
     },
     filterNode(value, data) {
+      console.log(data);
+      console.log(value);
+      console.log(this.DataTagTree);
       if (!value) return true;
       return data.fileName.indexOf(value) !== -1;
     },
