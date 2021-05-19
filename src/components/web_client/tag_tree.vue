@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 11:20:44
+ * @LastEditTime: 2021-05-19 13:46:45
  * @description: 标签树
 -->
 <template>
@@ -508,6 +508,9 @@ export default {
           };
           TAGTREE.REMOVERTAG(params)
             .then(() => {
+              this.$emit("setRemoveTag", {
+                tagId: node.key
+              })
               this.listTag().then((listRes) => {
                 if (listRes && listRes.length > 0) {
                   this.defaultTag = listRes[0];
@@ -648,7 +651,7 @@ export default {
        */
       this.$refs.refTag.filter(this.modelTag);
     },
-    filterNode(value, data, node) {      
+    filterNode(value, data) { 
       if (!value) return true;
       const reamVal = data.fileName.indexOf(value) !== -1
       if (!reamVal) {

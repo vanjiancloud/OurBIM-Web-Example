@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:42:41
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 10:40:18
+ * @LastEditTime: 2021-05-19 13:43:13
  * @description: 
 -->
 # 说明
@@ -29,6 +29,7 @@ window.addEventListener("message", function(e) {
     * 10001: 已获取平台资源，开始初始化
     * 10002：平台初始化成功
     * 10003：平台加载成功
+    
     * 构件相关
     * 20001：单击构件
     * 20002: 框选构件
@@ -42,8 +43,12 @@ window.addEventListener("message", function(e) {
     *}
     * 30002: 构件新建成功
     * data: {
-        tagId: "" // 标签ID        
-    }
+    *    tagId: "" // 标签ID        
+    * }
+    * 30003: 删除构件
+    * data: {
+    *   tagId: "" // 标签ID
+    * }
 */
 
 
