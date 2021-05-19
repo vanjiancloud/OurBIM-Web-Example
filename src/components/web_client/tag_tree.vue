@@ -2,11 +2,11 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 09:22:18
+ * @LastEditTime: 2021-05-19 11:00:34
  * @description: 标签树
 -->
 <template>
-  <div class="tag-tree" v-if="isTag">
+  <div class="tag-tree" v-show="isTag">
     <div class="tree-title">
       <!-- 关闭 -->
       <div class="close-part">
@@ -560,7 +560,9 @@ export default {
             this.listTag().then((res) => {
               this.realTreeList = res;
               this.reloadTree();
-            });
+              this.closePart(false)
+              this.$emit("setAddTag")
+            });            
           })
           .catch((err) => {});
       } else {

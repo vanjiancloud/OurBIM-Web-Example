@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 09:09:03
+ * @LastEditTime: 2021-05-19 10:55:25
  * @description: 
 -->
 <template>
@@ -151,6 +151,7 @@
       </div>
       <todo-footer
         v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar"
+        v-show="controllerInfo.tagUiBar"
         ref="getFooter"
         @listenTodo="listenTodo"
         @listenPerson="listenPerson"
@@ -161,6 +162,7 @@
       ></todo-footer>
       <view-cube
       v-if="controllerInfo.viewCube"
+      v-show="controllerInfo.tagViewCube"
         @handleOrder="handleOrder"
         @goFront="goFront"
         @handleType="handleType"
@@ -171,6 +173,7 @@
         @click.native.stop=""
         @closeTag="closeTag"
         @setListenClick="setListenClick"
+        @setAddTag="setAddTag"
         @setTagClick="setTagClick"
         :setProps="propsFooter"
         ref="tagTree"
@@ -214,6 +217,8 @@ export default {
       controllerInfo: {
         uiBar: true,
         viewCube: true,
+        tagUiBar: true,
+        tagViewCube: true,
         modelClient: false,
         memberAvttribute: false,
         singleList: [],
@@ -798,6 +803,18 @@ export default {
       };
       this.sentParentIframe(messageInfo);
     },
+    setAddTag(){
+    /**
+     * @Author: zk
+     * @Date: 2021-05-19 10:45:00
+     * @description: 添加标签
+     */      
+      // console.log(1);
+      if (this.controllerInfo.uiBar) {
+        this.controllerInfo.tagUiBar = false;
+        this.controllerInfo.tagViewCube = false
+      }
+    },
     listenPerson(e) {
       /**
        * @Author: zk
@@ -997,6 +1014,21 @@ export default {
               type: 30001,
               data: {
                 state: true,
+                tagId: realData.tagId,
+              },
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
+          } else if (realData.id === "10") {
+            this.$refs.tagTree.closePart(true);
+            if (this.controllerInfo.uiBar) {
+              this.controllerInfo.tagUiBar = true;
+              this.controllerInfo.tagViewCube = true
+            }
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 30002,
+              data: {
                 tagId: realData.tagId,
               },
               message: "",
