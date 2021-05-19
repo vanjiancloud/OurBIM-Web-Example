@@ -227,7 +227,6 @@ export default {
     // 下一步
     next () {
       this.isLoading = true
-      // if (this.appName !== '' && this.appImgSrc.length !== 0) {
       this.$common.openLoading()
       if (this.appName !== '') {
         if (this.active++ > 3) this.active = 0

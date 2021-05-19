@@ -3,14 +3,14 @@
     <!-- 顶部导航栏 -->
     <el-header>
       <div class="header">
-        <div class="container">
-          <!-- logo -->
-          <div class="logo">
-            <a href="http://www.ourbim.com">
-              <img src="./img/logo.png" alt="" class="img"
-            /></a>
-          </div>
-          <!-- 导航 -->
+        <!-- logo图标 -->
+        <div class="logo">
+          <a href="http://www.ourbim.com">
+            <img src="./img/logo.png" alt="" class="img"
+          /></a>
+        </div>
+        <!-- 导航栏 -->
+        <div class="nav">
           <ul>
             <!-- 首页 -->
             <li>
@@ -79,78 +79,75 @@
               </el-dropdown>
             </li>
           </ul>
-          <!-- 项目中心 -->
-          <div class="project" @click="toManage">
-            <span>
-              <img src="./img/project.png" alt="" />
-            </span>
-            项目中心
-          </div>
-          <!-- 头像和中英文切换栏 -->
-          <div class="end">
-            <div class="touxiang">
-              <el-dropdown>
-                <span>
-                  <img
-                    :src="
-                      imgUrl
-                        ? imgUrl
-                        : require(sex == 1
-                            ? './img/man.png'
-                            : './img/woman.png')
-                    "
-                    alt=""
-                  />
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <!-- <el-dropdown-item @click.native="toUserCenter">{{
+        </div>
+        <!--项目中心-->
+        <div class="project" @click="toManage">
+          <span>
+            <img src="./img/project.png" alt="" />
+          </span>
+          项目中心
+        </div>
+        <!-- 头像 -->
+        <div class="end">
+          <div class="touxiang">
+            <el-dropdown>
+              <span>
+                <img
+                  :src="
+                    imgUrl
+                      ? imgUrl
+                      : require(sex == 1 ? './img/man.png' : './img/woman.png')
+                  "
+                  alt=""
+                />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <!-- <el-dropdown-item @click.native="toUserCenter">{{
                     $t('userCenter')
                   }}</el-dropdown-item> -->
-                  <el-dropdown-item
-                    @click.native="toLogin"
-                    style="background-color:#fff;"
-                    >{{ $t('quit') }}</el-dropdown-item
-                  >
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-            <!-- <div class="language">
+                <el-dropdown-item
+                  @click.native="toLogin"
+                  style="background-color:#fff;"
+                  >{{ $t('quit') }}</el-dropdown-item
+                >
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+          <!-- <div class="language">
               <a @click="Chinese" href="javascript:;">中文</a>
               <span style="margin: 0 5px;">|</span>
               <a href="javascript:;">English</a>
             </div> -->
-          </div>
-          <!-- 预约演示 -->
-          <el-popover placement="bottom" width="840" trigger="hover">
-            <img
-              src="./img/1.png"
-              alt=""
-              style=" margin-right: 80px;margin-left: 40px;margin-top: 10px;margin-bottom: 10px;"
-            />
-            <img
-              src="./img/2.png"
-              alt=""
-              style=" margin-right: 80px;margin-top: 10px;margin-bottom: 10px;"
-            />
-            <img
-              src="./img/3.png"
-              alt=""
-              style=" margin-right: 80px;margin-top: 10px;margin-bottom: 10px;"
-            />
-            <img
-              src="./img/4.png"
-              alt=""
-              style=" margin-right: 40px;margin-top: 10px;margin-bottom: 10px;"
-            />
-            <el-button slot="reference" class="btn">
-              <img src="./img/yuyue.png" alt="" />
-              <span>预约演示</span>
-            </el-button>
-          </el-popover>
         </div>
+        <!--预约演示-->
+        <el-popover placement="bottom" width="840" trigger="hover">
+          <img
+            src="./img/1.png"
+            alt=""
+            style=" margin-right: 80px;margin-left: 40px;margin-top: 10px;margin-bottom: 10px;"
+          />
+          <img
+            src="./img/2.png"
+            alt=""
+            style=" margin-right: 80px;margin-top: 10px;margin-bottom: 10px;"
+          />
+          <img
+            src="./img/3.png"
+            alt=""
+            style=" margin-right: 80px;margin-top: 10px;margin-bottom: 10px;"
+          />
+          <img
+            src="./img/4.png"
+            alt=""
+            style=" margin-right: 40px;margin-top: 10px;margin-bottom: 10px;"
+          />
+          <el-button slot="reference" class="btn">
+            <img src="./img/yuyue.png" alt="" />
+            <span>预约演示</span>
+          </el-button>
+        </el-popover>
       </div>
     </el-header>
-
     <!-- 内容区 -->
     <el-main>
       <div class="container">
@@ -196,7 +193,7 @@
             </div>
           </div>
           <div class="jindu">
-            <h3>{{ bfPer }}%</h3>
+            <h3 style="color: #00AAF0;">{{ bfPer }}%</h3>
             <el-progress
               :text-inside="true"
               :stroke-width="15"
@@ -242,7 +239,7 @@
               background-color="#fff"
             >
               <!-- 项目管理 -->
-              
+
               <!-- <el-submenu index="manage">
                 <template slot="title">
                   <i class="el-icon-setting"></i>
@@ -490,59 +487,56 @@ export default {
     margin: 0;
     padding: 0;
     .header {
-      // width: 100%;
-      // display: flex;
-      // justify-content: center;
+      width: 100%;
+      display: flex;
+      justify-content: center;
       min-height: 60px;
       background-color: #fff;
       line-height: 60px;
-      a {
-        text-decoration: none;
-        font-size: 17px;
-        color: #000;
-        font-family: PingFang SC;
-      }
-      a:hover {
-        color: #ff6600;
-      }
       .logo {
         width: 150px;
         height: 37px;
-        float: left;
         margin-top: 11px;
-        margin-left: 112px;
-        margin-right: 66px;
+        margin-right: 50px;
         img {
           width: 100%;
           height: 100%;
         }
       }
-      li {
-        height: 16px;
-        float: left;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        margin-right: 30px;
-        a {
-          font-size: 16px;
-          color: #999;
-        }
-        .el-dropdown {
-          height: 35px;
-          .el-dropdown-link {
-            cursor: pointer;
+      .nav {
+        li {
+          height: 16px;
+          list-style: none;
+          margin: 0;
+          padding: 0;
+          float: left;
+          margin-right: 30px;
+          a {
+            text-decoration: none;
+            color: #000;
+            font-family: PingFang SC;
+            font-size: 16px;
             color: #999;
-            font-size: 16px;
-          }
-          .el-dropdown-link:hover {
-            color: #ff6600;
-          }
-          .el-icon-arrow-down {
-            font-size: 16px;
           }
           a:hover {
-            color: #ff6600 !important;
+            color: #ff6600;
+          }
+          .el-dropdown {
+            height: 35px;
+            .el-dropdown-link {
+              cursor: pointer;
+              color: #999;
+              font-size: 16px;
+            }
+            .el-dropdown-link:hover {
+              color: #ff6600;
+            }
+            .el-icon-arrow-down {
+              font-size: 16px;
+            }
+            a:hover {
+              color: #ff6600 !important;
+            }
           }
         }
       }
@@ -552,10 +546,9 @@ export default {
         line-height: 25px;
         background-color: #ff6600;
         color: #fff;
-        float: left;
         margin-top: 17px;
+        margin-left: 20px;
         border-radius: 5px;
-        margin-left: 85px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -629,108 +622,72 @@ export default {
     }
   }
   .el-main {
-    .container {
-      margin-bottom: 35px;
-      .top {
+    margin-bottom: 35px;
+    .top {
+      height: 152px;
+      margin-bottom: 20px;
+      background-color: #fff;
+      display: flex;
+      justify-content: space-between;
+      .left {
         height: 152px;
-        margin-bottom: 20px;
-        background-color: #fff;
-        .left {
-          height: 152px;
-          width: 288px;
-          margin-left: 20px;
-          float: left;
-          // background-color: green;
-          display: flex;
-
-          .im {
-            margin-top: 36px;
-            width: 80px;
-            height: 80px;
-            // float: left;
+        width: 288px;
+        margin-left: 20px;
+        // background-color: green;
+        display: flex;
+        .im {
+          margin-top: 36px;
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          // background-color: blue;
+          margin-right: 20px;
+          img {
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
-            // background-color: blue;
-            margin-right: 20px;
-            img {
-              width: 100%;
-              height: 100%;
-              border-radius: 50%;
-            }
-          }
-          .Info {
-            width: 187px;
-            .name {
-              width: 100%;
-              font-weight: bold;
-              text-align: center;
-              // background-color: red;
-              margin-top: 45px;
-            }
-            .note {
-              width: 100%;
-              text-align: center;
-              margin-top: 10px;
-            }
           }
         }
-        .line {
-          width: 1px;
-          height: 100px;
-          float: left;
-          background-color: #ccc;
-          margin: 0 20px;
-          margin-top: 26px;
-        }
-        .middle {
-          height: 152px;
-          float: left;
-          margin-right: 30px;
-          // background-color: red;
-          h3 {
-            margin-top: 6px;
+        .Info {
+          width: 187px;
+          .name {
+            width: 100%;
+            font-weight: bold;
+            text-align: center;
+            // background-color: red;
+            margin-top: 45px;
           }
-          .tiao {
-            width: 318px;
-            float: left;
-            margin-left: 100px;
-            .tu {
-              float: left;
-              width: 318px;
-              margin-right: 29px;
-              margin-top: 10px;
-              // background-color: red;
-              .icon {
-                width: 20px;
-                height: 20px;
-                float: left;
-                margin-right: 10px;
-                margin-top: 3px;
-                img {
-                  width: 100%;
-                  height: 100%;
-                }
-              }
-            }
-          }
-        }
-        .jindu {
-          width: 318px;
-          // height: 152px;
-          // background-color: pink;
-          float: left;
-          h3 {
-            margin-top: 37px;
-            color: #00aaf0;
-          }
-          .tutu {
-            float: left;
+          .note {
+            width: 100%;
+            text-align: center;
             margin-top: 10px;
+          }
+        }
+      }
+      .line {
+        width: 1px;
+        height: 100px;
+        background-color: #ccc;
+        margin: 0 20px;
+        margin-top: 26px;
+      }
+      .middle {
+        height: 100%;
+        margin-right: 30px;
+        min-width: 270px;
+        // background-color: blue;
+        h3 {
+          margin-top: 6px;
+        }
+        .tiao {
+          .tu {
+            margin-top: 10px;
+            display: flex;
             .icon {
               width: 20px;
               height: 20px;
-              float: left;
               margin-right: 10px;
-              margin-top: 4px;
+              margin-top: 3px;
               img {
                 width: 100%;
                 height: 100%;
@@ -738,108 +695,126 @@ export default {
             }
           }
         }
-        .right {
-          height: 152px;
-          width: 207px;
-          margin-right: 42px;
-          float: right;
-          text-align: center;
-          // background-color: green;
-          .content {
-            margin-top: 36px;
-            width: 207px;
-            div {
-              margin-bottom: 10px;
+      }
+      .jindu {
+        min-width: 270px;
+        height: 80px;
+        margin-top: 35px;
+        // background-color: pink;
+        .tutu {
+          margin-top: 10px;
+          display: flex;
+          .icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            margin-top: 4px;
+            img {
+              width: 100%;
+              height: 100%;
             }
           }
         }
       }
-      .bottom {
-        display: flex;
-        justify-content: center;
-        min-height: 961px;
-        .nav {
-          float: left;
-          width: 230px;
-          min-height: 961px;
-          margin-right: 20px;
-          .tac {
-            width: 100%;
-            height: 100%;
-            .el-menu-item {
-              font-size: 16px;
-              height: 60px;
-              line-height: 60px;
-              i {
-                color: #000;
-              }
-            }
-            .el-submenu {
-              i {
-                color: #000;
-              }
-            }
-            // 每一项选中状态
-            /deep/ .el-menu-item.is-active {
-              background-color: #ff6600 !important;
-              i {
-                color: #fff;
-              }
-            }
-            // 每一项鼠标悬停状态
-            /deep/ .el-menu-item:hover {
-              background-color: #ff6600 !important;
-              color: #fff !important;
-              i {
-                color: #fff;
-              }
-            }
-            // el-submenu 每一项选中状态
-            // /deep/ .el-submenu.is-active {
-            //   background-color: #00aaf0 !important;
-            //   // color: #fff !important;
-            //   i {
-            //     color: #fff;
-            //   }
-            // }
-            /deep/ .el-submenu {
-              i.el-submenu__icon-arrow.el-icon-arrow-down {
-                color: #000;
-              }
-            }
-            // el-submenu 每一项鼠标悬停状态
-            /deep/ .el-submenu__title:hover {
-              background-color: #ff6600 !important;
-              color: #fff !important;
-              i {
-                color: #fff;
-              }
-              i.el-submenu__icon-arrow.el-icon-arrow-down {
-                color: #fff;
-              }
-            }
-            /deep/ i.el-submenu__icon-arrow.el-icon-arrow-down {
-              font-size: 20px;
-              color: #ff6600;
-            }
-
-            .write {
-              font-size: 20px;
-            }
-            i {
-              margin-right: 20px;
-              margin-left: 10px;
-              font-size: 25px;
-              // color: #fff;
-            }
+      .right {
+        height: 152px;
+        margin-right: 40px;
+        text-align: center;
+        // background-color: green;
+        .content {
+          margin-top: 36px;
+          width: 207px;
+          div {
+            margin-bottom: 10px;
           }
         }
-        .content {
-          float: left;
-          width: 1170px;
-          min-height: 961px;
-          background-color: #fff;
+      }
+    }
+    .bottom {
+      display: flex;
+      justify-content: center;
+      min-height: 961px;
+      .nav {
+        float: left;
+        width: 230px;
+        min-height: 961px;
+        margin-right: 20px;
+        .tac {
+          width: 100%;
+          height: 100%;
+          .el-menu-item {
+            font-size: 16px;
+            height: 60px;
+            line-height: 60px;
+            i {
+              color: #000;
+            }
+          }
+          .el-submenu {
+            i {
+              color: #000;
+            }
+          }
+          // 每一项选中状态
+          /deep/ .el-menu-item.is-active {
+            background-color: #ff6600 !important;
+            i {
+              color: #fff;
+            }
+          }
+          // 每一项鼠标悬停状态
+          /deep/ .el-menu-item:hover {
+            background-color: #ff6600 !important;
+            color: #fff !important;
+            i {
+              color: #fff;
+            }
+          }
+          // el-submenu 每一项选中状态
+          // /deep/ .el-submenu.is-active {
+          //   background-color: #00aaf0 !important;
+          //   // color: #fff !important;
+          //   i {
+          //     color: #fff;
+          //   }
+          // }
+          /deep/ .el-submenu {
+            i.el-submenu__icon-arrow.el-icon-arrow-down {
+              color: #000;
+            }
+          }
+          // el-submenu 每一项鼠标悬停状态
+          /deep/ .el-submenu__title:hover {
+            background-color: #ff6600 !important;
+            color: #fff !important;
+            i {
+              color: #fff;
+            }
+            i.el-submenu__icon-arrow.el-icon-arrow-down {
+              color: #fff;
+            }
+          }
+          /deep/ i.el-submenu__icon-arrow.el-icon-arrow-down {
+            font-size: 20px;
+            color: #ff6600;
+          }
+
+          .write {
+            font-size: 20px;
+          }
+          i {
+            margin-right: 20px;
+            margin-left: 10px;
+            font-size: 25px;
+            // color: #fff;
+          }
         }
+      }
+      .content {
+        float: left;
+        width: 1170px;
+        min-height: 961px;
+        background-color: #fff;
       }
     }
   }

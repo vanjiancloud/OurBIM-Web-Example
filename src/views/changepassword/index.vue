@@ -212,24 +212,21 @@ export default {
   right: 0;
   bottom: 0;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   background-image: url(./bg.png);
   background-size: cover;
   .picture {
-    float: left;
-    width: 795px;
-    height: 945px;
-    margin-left: -200px;
-    margin-right: 350px;
+    width: 532px;
+    height: 633px;
     img {
       width: 100%;
       height: 100%;
     }
   }
   .right {
-    width: 560px;
-    height: 520px;
+    width: 472px;
+    height: 440px;
     background-color: #fff;
     float: right;
     display: flex;
@@ -239,25 +236,26 @@ export default {
     box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
   }
   .login-form-wrap {
-    width: 490px;
+    width: 402px;
+    padding: 20px;
     // 输入框
     /deep/ .el-input__inner {
-      height: 65px;
+      height: 40px;
       margin-top: 25px;
-      font-size: 20px;
+      font-size: 16px;
       background-color: #f4f4f4;
       padding-left: 90px;
       color: #000;
     }
     // 输入框内图标
     /deep/ .el-input__icon {
-      font-size: 25px;
+      font-size: 20px;
       margin-top: 15px;
       margin-left: 36px;
     }
     // 按钮内文字
     /deep/ .el-button--primary {
-      font-size: 25px;
+      font-size: 20px;
     }
     .login-head {
       position: relative;
@@ -266,6 +264,7 @@ export default {
         width: 185px;
         height: 46px;
         margin-top: 5px;
+        margin-left: -45px;
         img {
           width: 100%;
           height: 100%;
@@ -279,21 +278,21 @@ export default {
       }
     }
     .state {
-      font-size: 30px;
+      font-size: 25px;
       display: flex;
       justify-content: center;
       align-items: center;
       span {
         padding-right: 20px;
-        padding: 15px 70px 15px 70px;
+        padding: 0px 70px;
         color: #999999;
       }
     }
 
     .login-form {
       .login-btn {
-        width: 100%;
-        height: 60px;
+        width: 402px;
+        height: 40px;
         margin-top: 20px;
         border-radius: 30px;
         background-color: #00aaf0;
@@ -302,9 +301,10 @@ export default {
         margin-right: 10px;
       }
       .btnMes {
-        width: 104px;
-        height: 41px;
-        margin-top: 15px;
+        width: 80px;
+        height: 40px;
+        margin-top: 3px;
+        font-size: 13px;
       }
       span {
         padding-left: 20px;
@@ -317,7 +317,7 @@ export default {
   .wenzi {
     width: 340px;
     position: fixed;
-    bottom: 21px;
+    bottom: 15px;
     text-align: center;
     color: #ccc;
     font-size: 16px;
