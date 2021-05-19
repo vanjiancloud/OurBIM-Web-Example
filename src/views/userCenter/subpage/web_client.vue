@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-04-29 17:21:41
+ * @LastEditTime: 2021-05-19 09:09:03
  * @description: 
 -->
 <template>
@@ -60,19 +60,22 @@
         v-text="$t('webClient.loadBox.message[6]')"
       ></div>
     </div>
-    <div v-if="runTimeCode === 0 && controllerInfo.uiBar">
+    <div v-if="runTimeCode === 0">
       <div class="mutual-bim">
         <div
           class="tree-main"
           v-show="
-            browserInfo && browserInfo.type === 10 && browserInfo.state === 1
+            (browserInfo &&
+              browserInfo.type === 10 &&
+              browserInfo.state === 1) ||
+            controllerInfo.modelClient
           "
         >
           <!-- 模型浏览器 -->
           <div class="tree-title">
             <div class="" v-text="$t('webClient.browser.title')"></div>
             <div class="close-part">
-              <i class="el-icon-close" @click="closePart(browserInfo.type)"></i>
+              <i class="el-icon-close" @click.stop="closePart(browserInfo.type)"></i>
             </div>
           </div>
           <div class="tree-content">
@@ -111,14 +114,15 @@
         <div
           class="bim-info"
           v-show="
-            natureInfo && natureInfo.type === 11 && natureInfo.state === 1
+            (natureInfo && natureInfo.type === 11 && natureInfo.state === 1) ||
+            controllerInfo.memberAvttribute
           "
         >
           <!-- 属性 -->
           <div class="bim-title">
             <div class="" v-text="$t('webClient.attribute.title')"></div>
             <div class="close-part">
-              <i class="el-icon-close" @click="closePart(natureInfo.type)"></i>
+              <i class="el-icon-close" @click.stop="closePart(natureInfo.type)"></i>
             </div>
           </div>
           <div class="detail-main">
@@ -146,27 +150,38 @@
         </div>
       </div>
       <todo-footer
+        v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar"
         ref="getFooter"
         @listenTodo="listenTodo"
         @listenPerson="listenPerson"
         @listenMode="listenMode"
         @listenFollow="listenFollow"
         :setProps="propsFooter"
+        :singleList="controllerInfo.singleList"
       ></todo-footer>
       <view-cube
+      v-if="controllerInfo.viewCube"
         @handleOrder="handleOrder"
         @goFront="goFront"
         @handleType="handleType"
         ref="getCube"
       ></view-cube>
       <!-- 标签树 -->
-      <tag-tree ref="tagTree"></tag-tree>
+      <tag-tree
+        @click.native.stop=""
+        @closeTag="closeTag"
+        @setListenClick="setListenClick"
+        @setTagClick="setTagClick"
+        :setProps="propsFooter"
+        ref="tagTree"
+      ></tag-tree>
     </div>
   </div>
 </template>
 
 <script>
 import MODELAPI from "@/api/model_api";
+import TAGTREE from "@/api/tag_tree";
 import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
@@ -181,6 +196,7 @@ export default {
   },
   data() {
     return {
+      actionList: [],
       propsFooter: {
         taskId: null,
       },
@@ -197,6 +213,10 @@ export default {
       },
       controllerInfo: {
         uiBar: true,
+        viewCube: true,
+        modelClient: false,
+        memberAvttribute: false,
+        singleList: [],
       },
       webUrl: null,
       appId: null,
@@ -206,6 +226,7 @@ export default {
       ourbimInfo: null,
       isFade: true,
       isFollow: false,
+      isTag: false,
       handleState: 0,
       activeTree: null,
       leafInfo: null,
@@ -226,6 +247,7 @@ export default {
       natureInfo: null,
       shadowType: null,
       listenTodoInfo: null,
+      isUiBar: true, 
       pageSizeInfo: {
         width: null,
         height: null,
@@ -239,8 +261,10 @@ export default {
   },
   watch: {},
   created() {
+    this.setOrderList();
     this.appId = this.$route.query.appid;
     this.appToken = this.$route.query.token;
+    this.isUiBar = this.$route.query.uibar === undefined || this.$route.query.uibar === true ? true : false
     if (this.$route.query.width && this.$route.query.height) {
       this.pageSizeInfo = {
         width: this.$route.query.width,
@@ -283,8 +307,28 @@ export default {
         }
         if (e.data.prex === "ourbimMessage") {
           // 控制栏显示隐藏
-          if (e.data.type === 1010) {
+          if (e.data.type === 1001) {
             this.controllerInfo.uiBar = e.data.data;
+          } else if (e.data.type >= 1002 && e.data.type <= 1014) {
+            if (this.actionList.indexOf(e.data.type) > -1) {
+              if (e.data.data === false) {
+                this.controllerInfo.singleList.push(e.data.type);
+              } else {
+                this.controllerInfo.singleList.indexOf(e.data.type) > -1
+                  ? this.controllerInfo.singleList.splice(
+                      this.controllerInfo.singleList.indexOf(e.data.type),
+                      1
+                    )
+                  : "";
+              }
+            }
+          } else if (e.data.type === 2001) {
+            // 构件树的显示隐藏
+            this.controllerInfo.modelClient = e.data.data;
+          } else if (e.data.type === 2002) {
+            this.controllerInfo.memberAvttribute = e.data.data;
+          } else if (e.data.type === 2003) {
+            this.$refs.tagTree.closePart(e.data.data);
           }
         }
       },
@@ -296,6 +340,16 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    setOrderList() {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-10 17:54:24
+       * @description: 初始化指令对照表
+       */
+      for (let index = 0; index < 13; index++) {
+        this.actionList.push(1002 + index);
+      }
+    },
     listenFollow(e) {
       /**
        * @Author: zk
@@ -615,6 +669,11 @@ export default {
           params.width = this.pageSizeInfo.width;
           params.height = this.pageSizeInfo.height;
           break;
+        case 14:
+          // 框选
+          params.id = 18;
+          params.Switch = this.listenTodoInfo.state === 1 ? "on" : "off";
+          break;
         default:
           break;
       }
@@ -629,10 +688,14 @@ export default {
         .then((res) => {
           if (params.id === 1 && res.data && res.data.data) {
             // 切换到主视图 重置状态
-            let realView = res.data.data.viewMode === "1" ? 0 : 1;
-            this.$refs.getFooter.resetPerson(realView);
-            let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
-            this.$refs.getCube.resetActive(realProject);
+            if (this.$refs.getFooter) {
+              let realView = res.data.data.viewMode === "1" ? 0 : 1;
+              this.$refs.getFooter.resetPerson(realView);              
+            }
+            if (this.$refs.getCube) {
+              let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
+              this.$refs.getCube.resetActive(realProject);              
+            }
           }
           this.$message({
             message: this.$t("webClient.loadBox.message[2]"),
@@ -699,6 +762,42 @@ export default {
       }
       this.$refs.getFooter.editTool(e);
     },
+    closeTag() {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-06 10:13:08
+       * @description: 关闭标签组件
+       */
+      this.isTag = false;
+      this.listenTodoInfo = {
+        type: 4,
+        state: 0,
+      };
+      this.handleTagShow();
+      this.$refs.getFooter.editTool(4);
+    },
+    setListenClick(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-07 09:54:23
+       * @description: 设置监听点击状态
+       */
+      this.$refs.getFooter.setListenClick(e);
+    },
+    setTagClick(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-12 16:49:12
+       * @description: 标签树是否选中
+       */
+      let messageInfo = {
+        prex: "ourbimMessage",
+        type: 30001,
+        data: e,
+        message: "",
+      };
+      this.sentParentIframe(messageInfo);
+    },
     listenPerson(e) {
       /**
        * @Author: zk
@@ -725,11 +824,34 @@ export default {
         this.natureInfo = e;
         // e.state === 0 ? (this.memberInfo = null) : "";
       }
+      // 框选
+      if (e.type === 12) {
+        this.handleState = 14;
+        this.listenTodoInfo = e;
+        this.updateOrder();
+      }
       // 移动速度
       if (e.type === 1 && e.data) {
         this.handleState = 3;
         this.listenTodoInfo = e;
         this.updateOrder();
+      }
+      // 标签
+      if (e.type === 4) {
+        this.isTag = e.state === 0 ? false : true;
+        this.$refs.tagTree.closePart(e.state === 0 ? false : true);
+        this.listenTodoInfo = e;
+        this.handleTagShow();
+      } else {
+        if (this.isTag && e.type !== 11) {
+          this.$refs.tagTree.closePart(false);
+          this.listenTodoInfo = {
+            type: 4,
+            state: 0,
+          };
+          this.handleTagShow();
+          this.isTag = false;
+        }
       }
       // 模型剖切
       if (e.type === 2) {
@@ -753,16 +875,36 @@ export default {
           this.handleState = 5;
           this.updateOrder();
         }
-      }
-      // 标签
-      if (e.type === 4) {
-        this.$refs.tagTree.closePart(e.state === 0 ? false : true);
-      }
+      }      
       if (e.type === 8 && e.data !== undefined) {
         this.handleState = 12;
         this.listenTodoInfo = e;
         this.updateOrder();
       }
+    },
+    handleTagShow() {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-12 16:05:22
+       * @description: 标签显示/隐藏
+       */
+      let params = {
+        taskid: this.taskId,
+        lableVisibility: this.listenTodoInfo.state === 0 ? false : true,
+      };
+      TAGTREE.UPDATASHOWTAG(params)
+        .then(() => {
+          this.$message({
+            message: this.$t("webClient.loadBox.message[2]"),
+            type: "success",
+          });
+        })
+        .catch(() => {
+          this.$message({
+            message: this.$t("webClient.loadBox.message[3]"),
+            type: "error",
+          });
+        });
     },
     initWebSocket() {
       //初始化weosocket
@@ -809,12 +951,33 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "6") {
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 10002,
+              data: "",
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
             this.handleState = 13;
             this.updateOrder();
           } else if (realData.id === "7") {
             this.memberInfo = null;
-            this.activeLeaf = false
+            this.activeLeaf = false;
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 20003,
+              data: "",
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
           } else if (realData.id === "8") {
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 10003,
+              data: "",
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
             this.hiddenState = 0;
             //普通的watch监听
             if (this.ourbimInfo.expiredTime > 0) {
@@ -828,6 +991,17 @@ export default {
               this.setTimePass();
             }
             this.isFade = false;
+          } else if (realData.id === "9") {
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 30001,
+              data: {
+                state: true,
+                tagId: realData.tagId,
+              },
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
           }
         }
       };
@@ -854,9 +1028,20 @@ export default {
             this.ourbimInfo = res.data.data;
             if (res.data.data.appliType === "0") {
               this.controllerInfo.uiBar = true;
+              if (this.isUiBar) {
+                this.controllerInfo.uiBar = true;                
+              }else{
+                this.controllerInfo.uiBar = false;
+                this.controllerInfo.viewCube = false
+                this.$refs.tagTree.closePart(false);
+              }
             } else {
               this.controllerInfo.uiBar = false;
+              this.controllerInfo.viewCube = false
+              this.$refs.tagTree.closePart(false);
             }
+
+            this.propsFooter.taskId = res.data.data.taskId;
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10001,
@@ -864,7 +1049,6 @@ export default {
               message: "",
             };
             this.sentParentIframe(messageInfo);
-            this.propsFooter.taskId = res.data.data.taskId;
             this.initWebSocket();
             this.getMonitor();
           } else {
@@ -935,6 +1119,7 @@ export default {
         this.isSocket = false;
         this.websock.close(); //离开路由之后断开websocket连接
         this.websock = null;
+        this.webUrl = null
       }
     },
     getMonitor() {
@@ -980,7 +1165,7 @@ export default {
         // 关闭tool
         this.sendToIframe(10200, "false", "");
         document.addEventListener("keydown", (e) => {
-          if (this.isFollow) {
+          if (this.isFollow || this.isTag) {
             return;
           }
           this.sendToIframe(
@@ -993,7 +1178,7 @@ export default {
           );
         });
         document.addEventListener("keyup", (e) => {
-          if (this.isFollow) {
+          if (this.isFollow || this.isTag) {
             return;
           }
           this.sendToIframe(
@@ -1012,9 +1197,7 @@ export default {
        * @Author: zk
        * @Date: 2021-04-27 11:42:25
        * @description:
-       * 10001: 模型初始化
-       * 20001：单击构件
-       * 20002: 框选构件
+       * 参考readme
        */
       window.parent.postMessage(e, "*");
     },
@@ -1497,7 +1680,7 @@ export default {
 
   .phone-bim {
     height: 100vh !important;
-    width: 120vw !important;
+    width: 100vw !important;
   }
 }
 </style>
