@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:42:41
  * @LastEditors: zk
- * @LastEditTime: 2021-05-18 17:47:02
+ * @LastEditTime: 2021-05-18 18:26:17
  * @description: 
 -->
 # 说明
@@ -32,6 +32,7 @@ window.addEventListener("message", function(e) {
     * 构件相关
     * 20001：单击构件
     * 20002: 框选构件
+    * 20003：点击空白
 
     * 标签相关
     * 30001：点击标签

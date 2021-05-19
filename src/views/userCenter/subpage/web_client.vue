@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-18 11:30:15
+ * @LastEditTime: 2021-05-19 09:09:03
  * @description: 
 -->
 <template>
@@ -963,6 +963,13 @@ export default {
           } else if (realData.id === "7") {
             this.memberInfo = null;
             this.activeLeaf = false;
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 20003,
+              data: "",
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
           } else if (realData.id === "8") {
             let messageInfo = {
               prex: "ourbimMessage",
@@ -1030,6 +1037,8 @@ export default {
               }
             } else {
               this.controllerInfo.uiBar = false;
+              this.controllerInfo.viewCube = false
+              this.$refs.tagTree.closePart(false);
             }
 
             this.propsFooter.taskId = res.data.data.taskId;
@@ -1188,11 +1197,7 @@ export default {
        * @Author: zk
        * @Date: 2021-04-27 11:42:25
        * @description:
-       * 10001: 已获取平台资源，开始初始化
-       * 10002：平台初始化成功
-       * 10003：平台加载成功
-       * 20001：单击构件
-       * 20002: 框选构件
+       * 参考readme
        */
       window.parent.postMessage(e, "*");
     },
