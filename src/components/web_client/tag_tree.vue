@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 11:00:34
+ * @LastEditTime: 2021-05-19 11:20:44
  * @description: 标签树
 -->
 <template>
@@ -648,12 +648,13 @@ export default {
        */
       this.$refs.refTag.filter(this.modelTag);
     },
-    filterNode(value, data) {
-      console.log(data);
-      console.log(value);
-      console.log(this.DataTagTree);
+    filterNode(value, data, node) {      
       if (!value) return true;
-      return data.fileName.indexOf(value) !== -1;
+      const reamVal = data.fileName.indexOf(value) !== -1
+      if (!reamVal) {
+        this.treeEmpty = this.$t("webClient.browser.tips[1]")
+      }
+      return reamVal;
     },
     closePart(e) {
       /**
