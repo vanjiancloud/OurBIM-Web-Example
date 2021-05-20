@@ -21,7 +21,7 @@
         </el-table-column>
         <el-table-column prop="appName" :label="$t('applyname')">
         </el-table-column>
-        <el-table-column prop="maxInstance" :label="$t('maximum')">
+        <el-table-column prop="fileSize" label="模型大小">
         </el-table-column>
         <el-table-column :label="$t('state')">
           <template slot-scope="scope">
@@ -279,7 +279,7 @@ export default {
       itemList: [], //数据列表
       appid: '', //应用ID
       appName: '', //应用名称
-      maxInstance: '', //最大并发数量
+      fileSize: '', //文件大小
       applidStatus: null, //状态
       createTime: '', //上传日期
       timer: null, //定时器
@@ -360,7 +360,7 @@ export default {
             this.reverse()
             this.appid = res.data.data.appid
             this.appName = res.data.data.appName
-            this.maxInstance = res.data.data.maxInstance
+            this.fileSize = res.data.data.fileSize
             this.applidStatus = res.data.data.applidStatus
             this.createTime = res.data.data.createTime
           } else if (res.data.message === '应用信息为空') {

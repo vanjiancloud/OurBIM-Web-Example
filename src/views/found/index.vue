@@ -142,7 +142,7 @@
         style="margin:10px 40px;margin-top:-20px;text-align:left; font-size: 14px; "
       >
         <span style="color:red">*</span>
-        文件默认打开初始Revit的三维视图，请将文件在对应视图打开状态下保存，再上传。
+        文件默认打开初始Revit的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
       </div>
       <div class="btn">
         <el-button @click="update" type="primary" :loading="isLoading" :disabled="disabl">
@@ -226,8 +226,8 @@ export default {
     },
     // 下一步
     next () {
-      this.isLoading = true
-      this.$common.openLoading()
+      // this.isLoading = true
+      // this.$common.openLoading()
       if (this.appName !== '') {
         if (this.active++ > 3) this.active = 0
         addProject({
