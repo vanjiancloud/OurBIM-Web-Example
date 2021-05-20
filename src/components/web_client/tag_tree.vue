@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 09:20:40
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 18:23:25
+ * @LastEditTime: 2021-05-20 09:59:52
  * @description: 
 -->
 <!--
@@ -519,9 +519,6 @@ export default {
           };
           TAGTREE.REMOVERTAG(params)
             .then(() => {
-              this.$emit("setRemoveTag", {
-                tagId: node.key
-              })
               this.listTag().then((listRes) => {
                 if (listRes && listRes.length > 0) {
                   this.defaultTag = listRes[0];

@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 18:21:20
+ * @LastEditTime: 2021-05-20 10:07:49
  * @description: 
 -->
 <template>
@@ -180,7 +180,6 @@
         @closeTag="closeTag"
         @setListenClick="setListenClick"
         @setAddTag="setAddTag"
-        @setRemoveTag="setRemoveTag"
         @setTagClick="setTagClick"
         :setProps="propsFooter"
         ref="tagTree"
@@ -208,7 +207,7 @@ export default {
     return {
       actionList: [],
       propsFooter: {
-        taskId: null
+        taskId: null,
       },
       propsMember: {
         label: "name",
@@ -344,7 +343,7 @@ export default {
             this.controllerInfo.memberAvttribute = e.data.data;
           } else if (e.data.type === 2003) {
             this.$refs.tagTree.closePart(e.data.data);
-            this.$refs.tagTree.closeIcon()
+            this.$refs.tagTree.closeIcon();
           }
         }
       },
@@ -832,20 +831,6 @@ export default {
         this.controllerInfo.tagViewCube = false;
       }
     },
-    setRemoveTag(e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-05-19 13:47:12
-       * @description: 删除标签
-       */
-      let messageInfo = {
-        prex: "ourbimMessage",
-        type: 30003,
-        data: e,
-        message: "",
-      };
-      this.sentParentIframe(messageInfo);
-    },
     listenPerson(e) {
       /**
        * @Author: zk
@@ -1048,7 +1033,7 @@ export default {
               data: {
                 state: true,
                 tagId: realData.tagId,
-                tagType: 0
+                tagType: 0,
               },
               message: "",
             };
@@ -1064,6 +1049,16 @@ export default {
               type: 30002,
               data: {
                 tagId: realData.tagId,
+              },
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
+          } else if (realData.id === "11") {
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 30003,
+              data: {
+                tagId: realData.tagId
               },
               message: "",
             };
