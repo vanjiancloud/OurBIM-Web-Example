@@ -1,13 +1,20 @@
 <!--
  * @Author: zk
+ * @Date: 2021-05-06 09:20:40
+ * @LastEditors: zk
+ * @LastEditTime: 2021-05-20 15:29:25
+ * @description: 
+-->
+<!--
+ * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 09:22:18
+ * @LastEditTime: 2021-05-19 17:53:13
  * @description: 标签树
 -->
 <template>
-  <div class="tag-tree" v-if="isTag">
-    <div class="tree-title">
+  <div class="tag-tree" v-show="isTag">
+    <div class="tree-title" v-if="isColseBar">
       <!-- 关闭 -->
       <div class="close-part">
         <i class="el-icon-close" @click="closeTag(false)"></i>
@@ -196,9 +203,12 @@ export default {
       deep: true,
     },
   },
+  mounted () {
+  },
   data() {
     return {
       DataTagTree: [],
+      isColseBar: true,
       uploadInfo: {
         action: BASE.defaults.baseURL + "/TagControl/postTagImg",
       },
@@ -400,6 +410,7 @@ export default {
       this.$emit("setTagClick", {
         state: this.activeLeaf,
         tagId: this.activeLeaf ? this.activeTree.id : null,
+        tagType: e.data.isFolder === "0" ? 0 : 1
       });
     },
     editTag(e) {
@@ -447,7 +458,7 @@ export default {
               .then(() => {
                 this.dialogEdit = false;
                 this.tagNode.data.fileName = this.tagInfo.fileName;
-                this.$refs.refTag.updateKeyChildren(this.tagNode.key, this.tagNode);
+                this.reloadTree();
                 this.$emit("setListenClick", true);
                 this.$message({
                   type: "success",
@@ -493,7 +504,7 @@ export default {
        * @description: 删除标签
        */
       this.$emit("setListenClick", false);
-      this.$confirm("此操作将永久删除该记录, 是否继续?", "提示", {
+      this.$confirm(`将删除名称为"${node.label}"的构件, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
@@ -560,7 +571,9 @@ export default {
             this.listTag().then((res) => {
               this.realTreeList = res;
               this.reloadTree();
-            });
+              this.closePart(false)
+              this.$emit("setAddTag")
+            });            
           })
           .catch((err) => {});
       } else {
@@ -646,12 +659,13 @@ export default {
        */
       this.$refs.refTag.filter(this.modelTag);
     },
-    filterNode(value, data) {
-      console.log(data);
-      console.log(value);
-      console.log(this.DataTagTree);
+    filterNode(value, data) { 
       if (!value) return true;
-      return data.fileName.indexOf(value) !== -1;
+      const reamVal = data.fileName.indexOf(value) !== -1
+      if (!reamVal) {
+        this.treeEmpty = this.$t("webClient.browser.tips[1]")
+      }
+      return reamVal;
     },
     closePart(e) {
       /**
@@ -660,6 +674,14 @@ export default {
        * @description: 全局控制显示隐藏
        */
       this.isTag = e;
+    },
+    closeIcon(){
+    /**
+     * @Author: zk
+     * @Date: 2021-05-19 18:04:06
+     * @description: 关闭按钮控制
+     */      
+      this.isColseBar = false
     },
     closeTag(e) {
       /**

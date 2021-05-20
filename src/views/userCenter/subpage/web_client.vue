@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 09:13:23
+ * @LastEditTime: 2021-05-20 17:48:37
  * @description: 
 -->
 <template>
@@ -75,7 +75,10 @@
           <div class="tree-title">
             <div class="" v-text="$t('webClient.browser.title')"></div>
             <div class="close-part">
-              <i class="el-icon-close" @click.stop="closePart(browserInfo.type)"></i>
+              <i
+                class="el-icon-close"
+                @click.stop="closePart(browserInfo.type)"
+              ></i>
             </div>
           </div>
           <div class="tree-content">
@@ -122,7 +125,10 @@
           <div class="bim-title">
             <div class="" v-text="$t('webClient.attribute.title')"></div>
             <div class="close-part">
-              <i class="el-icon-close" @click.stop="closePart(natureInfo.type)"></i>
+              <i
+                class="el-icon-close"
+                @click.stop="closePart(natureInfo.type)"
+              ></i>
             </div>
           </div>
           <div class="detail-main">
@@ -151,6 +157,7 @@
       </div>
       <todo-footer
         v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar"
+        v-show="controllerInfo.tagUiBar"
         ref="getFooter"
         @listenTodo="listenTodo"
         @listenPerson="listenPerson"
@@ -160,7 +167,8 @@
         :singleList="controllerInfo.singleList"
       ></todo-footer>
       <view-cube
-      v-if="controllerInfo.viewCube"
+        v-if="controllerInfo.viewCube"
+        v-show="controllerInfo.tagViewCube"
         @handleOrder="handleOrder"
         @goFront="goFront"
         @handleType="handleType"
@@ -171,6 +179,7 @@
         @click.native.stop=""
         @closeTag="closeTag"
         @setListenClick="setListenClick"
+        @setAddTag="setAddTag"
         @setTagClick="setTagClick"
         :setProps="propsFooter"
         ref="tagTree"
@@ -214,6 +223,8 @@ export default {
       controllerInfo: {
         uiBar: true,
         viewCube: true,
+        tagUiBar: true,
+        tagViewCube: true,
         modelClient: false,
         memberAvttribute: false,
         singleList: [],
@@ -247,7 +258,7 @@ export default {
       natureInfo: null,
       shadowType: null,
       listenTodoInfo: null,
-      isUiBar: true, 
+      isUiBar: true,
       pageSizeInfo: {
         width: null,
         height: null,
@@ -264,7 +275,10 @@ export default {
     this.setOrderList();
     this.appId = this.$route.query.appid;
     this.appToken = this.$route.query.token;
-    this.isUiBar = this.$route.query.uibar === undefined || this.$route.query.uibar === true ? true : false
+    this.isUiBar =
+      this.$route.query.uibar === undefined || this.$route.query.uibar === true
+        ? true
+        : false;
     if (this.$route.query.width && this.$route.query.height) {
       this.pageSizeInfo = {
         width: this.$route.query.width,
@@ -329,6 +343,7 @@ export default {
             this.controllerInfo.memberAvttribute = e.data.data;
           } else if (e.data.type === 2003) {
             this.$refs.tagTree.closePart(e.data.data);
+            this.$refs.tagTree.closeIcon();
           }
         }
       },
@@ -414,7 +429,7 @@ export default {
        * @Date: 2021-03-12 11:34:19
        * @description: 选择类型 e 0: 重置主视图 1: 透视投影 2: 正交投影 3 自定义主视图
        */
-      if (e === 2) {
+      if (e === 2 && this.$refs.getFooter) {
         // 第三人称
         this.$refs.getFooter.resetPerson(1);
       }
@@ -495,7 +510,7 @@ export default {
        * @Date: 2021-03-08 10:40:10
        * @description: cube指令
        */
-      if (this.listenInfo === 0) {
+      if (this.listenInfo === 0 && this.$refs.getFooter) {
         this.$refs.getFooter.resetPerson(1);
       }
       this.handleState = 6;
@@ -690,11 +705,11 @@ export default {
             // 切换到主视图 重置状态
             if (this.$refs.getFooter) {
               let realView = res.data.data.viewMode === "1" ? 0 : 1;
-              this.$refs.getFooter.resetPerson(realView);              
+              this.$refs.getFooter.resetPerson(realView);
             }
             if (this.$refs.getCube) {
               let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
-              this.$refs.getCube.resetActive(realProject);              
+              this.$refs.getCube.resetActive(realProject);
             }
           }
           this.$message({
@@ -760,7 +775,9 @@ export default {
       if (e === 11) {
         this.natureInfo = null;
       }
-      this.$refs.getFooter.editTool(e);
+      if (this.$refs.getFooter) {
+        this.$refs.getFooter.editTool(e);
+      }
     },
     closeTag() {
       /**
@@ -774,7 +791,9 @@ export default {
         state: 0,
       };
       this.handleTagShow();
-      this.$refs.getFooter.editTool(4);
+      if (this.$refs.getFooter) {
+        this.$refs.getFooter.editTool(4);
+      }
     },
     setListenClick(e) {
       /**
@@ -782,7 +801,20 @@ export default {
        * @Date: 2021-05-07 09:54:23
        * @description: 设置监听点击状态
        */
-      this.$refs.getFooter.setListenClick(e);
+      if (this.$refs.getFooter) {
+        this.$refs.getFooter.setListenClick(e);
+      } else {
+        if (e) {
+          this.isTag = false;
+          window.addEventListener("click", this.clickOthers);
+        } else {
+          this.isTag = true;
+          window.removeEventListener("click", this.clickOthers);
+        }
+      }
+    },
+    clickOthers() {
+      return;
     },
     setTagClick(e) {
       /**
@@ -797,6 +829,18 @@ export default {
         message: "",
       };
       this.sentParentIframe(messageInfo);
+    },
+    setAddTag() {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-19 10:45:00
+       * @description: 添加标签
+       */
+      // console.log(1);
+      if (this.controllerInfo.uiBar) {
+        this.controllerInfo.tagUiBar = false;
+        this.controllerInfo.tagViewCube = false;
+      }
     },
     listenPerson(e) {
       /**
@@ -875,7 +919,7 @@ export default {
           this.handleState = 5;
           this.updateOrder();
         }
-      }      
+      }
       if (e.type === 8 && e.data !== undefined) {
         this.handleState = 12;
         this.listenTodoInfo = e;
@@ -939,7 +983,9 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
-            this.$refs.getFooter.resetPointList(realData.object);
+            if (this.$refs.getFooter) {
+              this.$refs.getFooter.resetPointList(realData.object);
+            }
           } else if (realData.id === "5") {
             this.memberInfo = {
               type: 5,
@@ -998,6 +1044,32 @@ export default {
               data: {
                 state: true,
                 tagId: realData.tagId,
+                tagType: 0,
+              },
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
+          } else if (realData.id === "10") {
+            this.$refs.tagTree.closePart(true);
+            if (this.controllerInfo.uiBar) {
+              this.controllerInfo.tagUiBar = true;
+              this.controllerInfo.tagViewCube = true;
+            }
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 30002,
+              data: {
+                tagId: realData.tagId,
+              },
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
+          } else if (realData.id === "11") {
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 30003,
+              data: {
+                tagId: realData.tagId,
               },
               message: "",
             };
@@ -1029,15 +1101,15 @@ export default {
             if (res.data.data.appliType === "0") {
               this.controllerInfo.uiBar = true;
               if (this.isUiBar) {
-                this.controllerInfo.uiBar = true;                
-              }else{
+                this.controllerInfo.uiBar = true;
+              } else {
                 this.controllerInfo.uiBar = false;
-                this.controllerInfo.viewCube = false
+                this.controllerInfo.viewCube = false;
                 this.$refs.tagTree.closePart(false);
               }
             } else {
               this.controllerInfo.uiBar = false;
-              this.controllerInfo.viewCube = false
+              this.controllerInfo.viewCube = false;
               this.$refs.tagTree.closePart(false);
             }
 
@@ -1119,7 +1191,7 @@ export default {
         this.isSocket = false;
         this.websock.close(); //离开路由之后断开websocket连接
         this.websock = null;
-        this.webUrl = null
+        this.webUrl = null;
       }
     },
     getMonitor() {

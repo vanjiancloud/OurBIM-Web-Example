@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="boxs">
     <div class="picture">
       <img src="./img.png" alt="" />
     </div>
@@ -50,44 +50,41 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.container {
-  width: 100%;
-  height: 100%;
+.boxs {
   position: fixed;
   left: 0;
   top: 0;
   right: 0;
   bottom: 0;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   background-image: url(./bg.png);
   background-size: cover;
+  background-size: 100% 100%;
   .picture {
-    float: left;
-    width: 795px;
-    height: 945px;
-    margin-right: 350px;
+    height: 100%;
+    width: 40%;
     img {
       width: 100%;
       height: 100%;
     }
   }
   .box {
-    width: 520px;
-    height: 520px;
-    margin-right: 220px;
+    width: 30%;
+    height: 60%;
     border-radius: 25px;
     box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
     .head {
       display: flex;
       justify-content: center;
-      margin-top: 50px;
+      margin-top: 5%;
+      width: 100%;
+      height: 20%;
       .logo {
-        width: 185px;
-        height: 46px;
+        width: 50%;
+        height: 100%;
         margin: 0 auto;
-        margin-left: 100px;
         img {
           width: 100%;
           height: 100%;
@@ -101,11 +98,11 @@ export default {
     }
     .icon {
       text-align: center;
-      width: 140px;
-      height: 135px;
+      width: 30%;
+      height: 25%;
       margin: 0 auto;
-      margin-top: 40px;
-      margin-bottom: 30px;
+      margin-bottom: 3%;
+      margin-top: 3%;
       .icon-img {
         width: 100%;
         height: 100%;
@@ -114,17 +111,17 @@ export default {
     .write {
       text-align: center;
       color: #999999;
-      font-size: 16px;
+      font-size: 30px;
       span {
         font-size: 30px;
       }
     }
     .btn {
       text-align: center;
-      margin-top: 50px;
+      margin-top: 3%;
       .button {
-        width: 200px;
-        height: 50px;
+        width: 50%;
+        // height: 50%;
         font-size: 18px;
         background-color: #00aaf0;
         border-radius: 25px;
