@@ -2,11 +2,12 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-20 10:07:49
+ * @LastEditTime: 2021-05-20 13:32:16
  * @description: 
 -->
 <template>
   <div class="bim-main">
+    <div class="handle-mask" @click.stop="" v-if="isMask"></div>
     <iframe
       class="bim-web"
       allowfullscreen="true"
@@ -205,6 +206,7 @@ export default {
   },
   data() {
     return {
+      isMask: false,
       actionList: [],
       propsFooter: {
         taskId: null,
@@ -803,7 +805,16 @@ export default {
        */
       if (this.$refs.getFooter) {
         this.$refs.getFooter.setListenClick(e);
+      }else{
+        if (e) {
+          window.addEventListener("click", this.clickOthers);
+        } else {
+          window.removeEventListener("click", this.clickOthers);
+        }
       }
+    },
+    clickOthers(){
+      return
     },
     setTagClick(e) {
       /**
@@ -1743,6 +1754,12 @@ export default {
     height: 100vh !important;
     width: 100vw !important;
   }
+}
+.handle-mask {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
 }
 </style>
 <style lang="less" >
