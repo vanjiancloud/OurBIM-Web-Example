@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 09:09:03
+ * @LastEditTime: 2021-05-19 13:48:30
  * @description: 
 -->
 <template>
@@ -75,7 +75,10 @@
           <div class="tree-title">
             <div class="" v-text="$t('webClient.browser.title')"></div>
             <div class="close-part">
-              <i class="el-icon-close" @click.stop="closePart(browserInfo.type)"></i>
+              <i
+                class="el-icon-close"
+                @click.stop="closePart(browserInfo.type)"
+              ></i>
             </div>
           </div>
           <div class="tree-content">
@@ -122,7 +125,10 @@
           <div class="bim-title">
             <div class="" v-text="$t('webClient.attribute.title')"></div>
             <div class="close-part">
-              <i class="el-icon-close" @click.stop="closePart(natureInfo.type)"></i>
+              <i
+                class="el-icon-close"
+                @click.stop="closePart(natureInfo.type)"
+              ></i>
             </div>
           </div>
           <div class="detail-main">
@@ -151,6 +157,7 @@
       </div>
       <todo-footer
         v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar"
+        v-show="controllerInfo.tagUiBar"
         ref="getFooter"
         @listenTodo="listenTodo"
         @listenPerson="listenPerson"
@@ -160,7 +167,8 @@
         :singleList="controllerInfo.singleList"
       ></todo-footer>
       <view-cube
-      v-if="controllerInfo.viewCube"
+        v-if="controllerInfo.viewCube"
+        v-show="controllerInfo.tagViewCube"
         @handleOrder="handleOrder"
         @goFront="goFront"
         @handleType="handleType"
@@ -171,6 +179,8 @@
         @click.native.stop=""
         @closeTag="closeTag"
         @setListenClick="setListenClick"
+        @setAddTag="setAddTag"
+        @setRemoveTag="setRemoveTag"
         @setTagClick="setTagClick"
         :setProps="propsFooter"
         ref="tagTree"
@@ -214,6 +224,8 @@ export default {
       controllerInfo: {
         uiBar: true,
         viewCube: true,
+        tagUiBar: true,
+        tagViewCube: true,
         modelClient: false,
         memberAvttribute: false,
         singleList: [],
@@ -247,7 +259,7 @@ export default {
       natureInfo: null,
       shadowType: null,
       listenTodoInfo: null,
-      isUiBar: true, 
+      isUiBar: true,
       pageSizeInfo: {
         width: null,
         height: null,
@@ -264,7 +276,10 @@ export default {
     this.setOrderList();
     this.appId = this.$route.query.appid;
     this.appToken = this.$route.query.token;
-    this.isUiBar = this.$route.query.uibar === undefined || this.$route.query.uibar === true ? true : false
+    this.isUiBar =
+      this.$route.query.uibar === undefined || this.$route.query.uibar === true
+        ? true
+        : false;
     if (this.$route.query.width && this.$route.query.height) {
       this.pageSizeInfo = {
         width: this.$route.query.width,
@@ -690,11 +705,11 @@ export default {
             // 切换到主视图 重置状态
             if (this.$refs.getFooter) {
               let realView = res.data.data.viewMode === "1" ? 0 : 1;
-              this.$refs.getFooter.resetPerson(realView);              
+              this.$refs.getFooter.resetPerson(realView);
             }
             if (this.$refs.getCube) {
               let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
-              this.$refs.getCube.resetActive(realProject);              
+              this.$refs.getCube.resetActive(realProject);
             }
           }
           this.$message({
@@ -798,6 +813,32 @@ export default {
       };
       this.sentParentIframe(messageInfo);
     },
+    setAddTag() {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-19 10:45:00
+       * @description: 添加标签
+       */
+      // console.log(1);
+      if (this.controllerInfo.uiBar) {
+        this.controllerInfo.tagUiBar = false;
+        this.controllerInfo.tagViewCube = false;
+      }
+    },
+    setRemoveTag(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-19 13:47:12
+       * @description: 删除标签
+       */
+      let messageInfo = {
+        prex: "ourbimMessage",
+        type: 30003,
+        data: e,
+        message: "",
+      };
+      this.sentParentIframe(messageInfo);
+    },
     listenPerson(e) {
       /**
        * @Author: zk
@@ -875,7 +916,7 @@ export default {
           this.handleState = 5;
           this.updateOrder();
         }
-      }      
+      }
       if (e.type === 8 && e.data !== undefined) {
         this.handleState = 12;
         this.listenTodoInfo = e;
@@ -1002,6 +1043,21 @@ export default {
               message: "",
             };
             this.sentParentIframe(messageInfo);
+          } else if (realData.id === "10") {
+            this.$refs.tagTree.closePart(true);
+            if (this.controllerInfo.uiBar) {
+              this.controllerInfo.tagUiBar = true;
+              this.controllerInfo.tagViewCube = true;
+            }
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 30002,
+              data: {
+                tagId: realData.tagId,
+              },
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
           }
         }
       };
@@ -1029,15 +1085,15 @@ export default {
             if (res.data.data.appliType === "0") {
               this.controllerInfo.uiBar = true;
               if (this.isUiBar) {
-                this.controllerInfo.uiBar = true;                
-              }else{
+                this.controllerInfo.uiBar = true;
+              } else {
                 this.controllerInfo.uiBar = false;
-                this.controllerInfo.viewCube = false
+                this.controllerInfo.viewCube = false;
                 this.$refs.tagTree.closePart(false);
               }
             } else {
               this.controllerInfo.uiBar = false;
-              this.controllerInfo.viewCube = false
+              this.controllerInfo.viewCube = false;
               this.$refs.tagTree.closePart(false);
             }
 
@@ -1119,7 +1175,7 @@ export default {
         this.isSocket = false;
         this.websock.close(); //离开路由之后断开websocket连接
         this.websock = null;
-        this.webUrl = null
+        this.webUrl = null;
       }
     },
     getMonitor() {

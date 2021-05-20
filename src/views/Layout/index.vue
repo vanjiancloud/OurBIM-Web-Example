@@ -125,8 +125,7 @@
             </div> -->
           </div>
           <!--预约演示-->
-        </div>
-        <el-popover placement="bottom" trigger="hover">
+          <el-popover placement="bottom" trigger="hover">
           <img
             src="./img/1.png"
             alt=""
@@ -152,6 +151,8 @@
             <span>预约演示</span>
           </el-button>
         </el-popover>
+        </div>
+        
       </div>
     </el-header>
     <!-- 内容区 -->
@@ -527,7 +528,7 @@ export default {
             color: #ff6600;
           }
           .el-dropdown {
-            height: 35px;
+            height: 40px;
             .el-dropdown-link {
               cursor: pointer;
               color: #999;
@@ -549,7 +550,7 @@ export default {
         height: 100%;
         display: flex;
         align-items: center;
-        margin-right: -210px;
+        // margin-right: -7vw;
         .project {
           width: 100px;
           height: 30px;
@@ -574,6 +575,8 @@ export default {
         }
         .end {
           height: 64px;
+          margin-left: 10px;
+          margin-right: 10px;
           .touxiang {
             .el-dropdown {
               height: 35px;

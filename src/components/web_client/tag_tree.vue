@@ -2,11 +2,11 @@
  * @Author: zk
  * @Date: 2021-04-27 13:47:02
  * @LastEditors: zk
- * @LastEditTime: 2021-05-18 10:22:08
+ * @LastEditTime: 2021-05-19 13:46:45
  * @description: 标签树
 -->
 <template>
-  <div class="tag-tree" v-if="isTag">
+  <div class="tag-tree" v-show="isTag">
     <div class="tree-title">
       <!-- 关闭 -->
       <div class="close-part">
@@ -508,6 +508,9 @@ export default {
           };
           TAGTREE.REMOVERTAG(params)
             .then(() => {
+              this.$emit("setRemoveTag", {
+                tagId: node.key
+              })
               this.listTag().then((listRes) => {
                 if (listRes && listRes.length > 0) {
                   this.defaultTag = listRes[0];
@@ -560,7 +563,9 @@ export default {
             this.listTag().then((res) => {
               this.realTreeList = res;
               this.reloadTree();
-            });
+              this.closePart(false)
+              this.$emit("setAddTag")
+            });            
           })
           .catch((err) => {});
       } else {
@@ -646,9 +651,13 @@ export default {
        */
       this.$refs.refTag.filter(this.modelTag);
     },
-    filterNode(value, data) {
+    filterNode(value, data) { 
       if (!value) return true;
-      return data.fileName.indexOf(value) !== -1;
+      const reamVal = data.fileName.indexOf(value) !== -1
+      if (!reamVal) {
+        this.treeEmpty = this.$t("webClient.browser.tips[1]")
+      }
+      return reamVal;
     },
     closePart(e) {
       /**
