@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-20 13:54:18
+ * @LastEditTime: 2021-05-20 17:07:36
  * @description: 
 -->
 <template>
@@ -801,21 +801,20 @@ export default {
        * @Date: 2021-05-07 09:54:23
        * @description: 设置监听点击状态
        */
-      console.log(e);
       if (this.$refs.getFooter) {
         this.$refs.getFooter.setListenClick(e);
-      }else{
+      } else {
         if (e) {
-          this.isTag = false
+          this.isTag = false;
           window.addEventListener("click", this.clickOthers);
         } else {
-          this.isTag = true
+          this.isTag = true;
           window.removeEventListener("click", this.clickOthers);
         }
       }
     },
-    clickOthers(){
-      return
+    clickOthers() {
+      return;
     },
     setTagClick(e) {
       /**
@@ -1070,7 +1069,7 @@ export default {
               prex: "ourbimMessage",
               type: 30003,
               data: {
-                tagId: realData.tagId
+                tagId: realData.tagId,
               },
               message: "",
             };
@@ -1238,7 +1237,6 @@ export default {
         // 关闭tool
         this.sendToIframe(10200, "false", "");
         document.addEventListener("keydown", (e) => {
-          console.log(this.isTag);
           if (this.isFollow || this.isTag) {
             return;
           }
