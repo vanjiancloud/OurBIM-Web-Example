@@ -10,7 +10,6 @@
           <a href="http://www.ourbim.com">
             <i class="el-icon-arrow-left"></i>
           </a>
-
           <div class="logo">
             <img src="./logo.png" alt="" />
           </div>
@@ -480,20 +479,16 @@ export default {
 <style scoped lang="less">
 // 书写样式铺满整
 .login-container {
-  position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  position: relative;
   display: flex;
-  flex-direction: row;
   justify-content: space-around;
   align-items: center;
   background-image: url(./bg.png);
   background-size: cover;
+  background-size: 100% 100%;
   .picture {
-    width: 532px;
-    height: 633px;
+    height: 100vh;
+    width: 40vw;
     img {
       width: 100%;
       height: 100%;
@@ -507,9 +502,9 @@ export default {
     border-radius: 25px;
     box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
     .login-form-wrap {
-      width: 470px;
+      max-width: 500px;
+      min-height: 450px;
       // background-color: red;
-      height: 440px;
       // 错误提示
       /deep/ .el-form-item__error {
         position: absolute;
@@ -547,22 +542,13 @@ export default {
         color: #00aaf0;
       }
       .login-head {
-        width: 520px;
-        height: 46px;
+        width: 100%;
+        height: 15%;
         margin-top: 10px;
-        margin-left: 20px;
-        .icon {
-          width: 16px;
-          height: 32px;
-
-          img {
-            width: 100%;
-            height: 100%;
-          }
-        }
         .logo {
-          width: 185px;
-          height: 46px;
+          // width: 185px;
+          width: 50%;
+          height: 100%;
           margin-top: -55px;
           margin-left: 120px;
           img {
@@ -576,7 +562,7 @@ export default {
         }
       }
       .state {
-        margin-left: 65px;
+       text-align: center;
         margin-bottom: 20px;
         margin-top: 20px;
         cursor: pointer;
@@ -600,9 +586,10 @@ export default {
       .login-form {
         padding: 0 20px;
         /deep/ .el-input__inner {
-          height: 40px;
-          width: 400px;
-          line-height: 40px;
+          height: 50px;
+          // width: 400px;
+          width: 95%;
+          line-height: 50px;
         }
 
         /deep/ .el-form-item__content {
@@ -611,7 +598,7 @@ export default {
         }
         .code {
           margin-right: 25px;
-          margin-top: 3px;
+          margin-top: 6px;
           font-size: 12px;
         }
         .fonts {
@@ -623,8 +610,9 @@ export default {
           margin-right: 20px;
         }
         .login-btn {
-          width: 400px;
-          height: 40px;
+          // width: 400px;
+          width: 95%;
+          height: 50px;
           font-size: 25px;
           border-radius: 30px;
           background-color: #00aaf0;

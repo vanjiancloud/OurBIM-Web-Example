@@ -8,7 +8,9 @@
       <div class="zhuce">
         <!-- 头部区域 -->
         <div class="header">
-          <i class="el-icon-arrow-left" @click="toReturn"></i>
+          <a href="http://www.ourbim.com">
+            <i class="el-icon-arrow-left"></i
+          ></a>
           <div class="logo">
             <img src="./img/logo.png" alt="" />
           </div>
@@ -101,7 +103,7 @@
               <a
                 class="link"
                 @click="toxieyi"
-                style="text-decoration:none; font-size: 14px;"
+                style="text-decoration:none; font-size: 16px;"
               >
                 《OurBIM用户服务协议》
               </a>
@@ -177,7 +179,7 @@ export default {
           {
             required: true,
             message:
-              '请输入正确邮箱,字符为英文&数字，结尾必须有“@xx.com/cn”字符',
+              '请输入正确邮箱,字符为英文&数字，结尾必须有“@xx.com/cn”',
             trigger: 'blur'
           },
           {
@@ -425,8 +427,6 @@ export default {
 
 <style lang="less" scoped>
 .box {
-  width: 100%;
-  height: 100%;
   position: fixed;
   left: 0;
   top: 0;
@@ -437,34 +437,34 @@ export default {
   align-items: center;
   background-image: url(./img/bg.png);
   background-size: cover;
+  background-size: 100% 100%;
   .picture {
-    width: 532px;
-    height: 633px;
+    height: 100vh;
+    width: 40vw;
     img {
       width: 100%;
       height: 100%;
     }
   }
   .right {
-    width: 400px;
-    height: 560px;
-    background-color: #fff;
-    display: flex;
-    justify-content: center;
+    width: 28vw;
+    height: 85vh;
+    padding: 2vh;
     border-radius: 25px;
     box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
     .zhuce {
-      width: 100%;
+      height: 100%;
+      // background-color: red;
       .header {
-        width: 421px;
-        height: 40px;
+        width: 100%;
+        height: 7vh;
         display: flex;
         align-items: center;
+        // background-color: green;
         .logo {
-          width: 180px;
-          height: 40px;
-          margin-left: 50px;
-          margin-top: 5px;
+          width: 50%;
+          height: 100%;
+          margin: 0 auto;
           img {
             width: 100%;
             height: 100%;
@@ -472,21 +472,23 @@ export default {
         }
         .el-icon-arrow-left {
           color: #00aaf0;
-          font-size: 40px;
-          margin-left: 15px;
+          font-size: 8vh;
         }
       }
       .body {
-        margin-left: 25px;
+        // overflow-y:scroll;
+        width: 100%;
+        height: 80%;
+        // background-color: green;
         .news {
-          font-size: 14px;
+          font-size: 2vh;
         }
         // 单选框
         .el-radio {
-          margin-left: 70px;
+          margin-left: 15%;
           img {
-            width: 40px;
-            height: 40px;
+            width: 3vw;
+            height: 5vh;
           }
           /deep/ .el-radio__input {
             position: absolute;
@@ -500,10 +502,10 @@ export default {
         }
         // 输入框
         /deep/ .el-input__inner {
-          height: 30px;
-          font-size: 14px;
-          width: 350px;
-          padding-left: 50px;
+          height: 4vh;
+          font-size: 16px;
+          width: 100%;
+          padding-left: 70px;
           background-color: #f4f4f4;
           color: #000;
         }
@@ -523,8 +525,8 @@ export default {
         // 输入框内图标
         /deep/ .el-input__prefix {
           font-size: 16px;
-          line-height: 30px;
-          margin-left: 20px;
+          line-height: 4vh;
+          margin: 0 20px;
         }
         // 对钩
         /deep/ .el-checkbox__inner::after {
@@ -534,40 +536,34 @@ export default {
         .link {
           cursor: pointer;
         }
-        .btn {
-          width: 350px;
-          height: 20px;
-          margin-bottom: 12px;
-          font-size: 20px;
-          border-radius: 30px;
-          background-color: #00aaf0;
-        }
         .code {
-          margin-right: 47px;
-          margin-top: -2px;
-          font-size: 12px;
+          margin-top: -6%;
+          font-size: 1.5vh;
         }
         .check {
           margin-top: -15px;
-          margin-bottom: 1px;
           color: #00aaf0;
           font-size: 14px;
         }
       }
       .footer {
-        margin-top: 20px;
+        height: 20vh;
+        // background-color: red;
         .btn {
-          height: 30px;
-          font-size: 14px;
-          line-height: 5px;
+          height: 5vh;
+          width: 100%;
+          font-size: 2.5vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 30px;
+          background-color: #00aaf0;
         }
         .footer-size {
           text-align: center;
-          margin-top: -20px;
           .el-button {
             color: #00aaf0;
-            font-size: 12px;
-            margin-left: -20px;
+            font-size: 2vh;
           }
         }
       }

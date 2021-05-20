@@ -7,7 +7,7 @@
       <div class="login-form-wrap">
         <!-- .logo区域 -->
         <div class="login-head">
-          <i class="el-icon-arrow-left" @click="toReturn"></i>
+          <a href=""> <i class="el-icon-arrow-left" @click="toReturn"></i></a>
           <div class="logo">
             <img src="./logo.png" alt="" />
           </div>
@@ -204,8 +204,6 @@ export default {
 
 <style scoped lang="less">
 .login-container {
-  width: 100%;
-  height: 100%;
   position: fixed;
   left: 0;
   top: 0;
@@ -216,19 +214,21 @@ export default {
   align-items: center;
   background-image: url(./bg.png);
   background-size: cover;
+  background-size: 100% 100%;
   .picture {
-    width: 532px;
-    height: 633px;
+    height: 100vh;
+    width: 40%;
     img {
       width: 100%;
       height: 100%;
     }
   }
   .right {
-    width: 472px;
-    height: 440px;
+    min-width: 500px;
+    min-height: 450px;
+    // width: 30%;
+    // height: 70%;
     background-color: #fff;
-    float: right;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -236,11 +236,10 @@ export default {
     box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
   }
   .login-form-wrap {
-    width: 402px;
-    padding: 20px;
+    width: 90%;
     // 输入框
     /deep/ .el-input__inner {
-      height: 40px;
+      height: 50px;
       margin-top: 25px;
       font-size: 16px;
       background-color: #f4f4f4;
@@ -258,13 +257,15 @@ export default {
       font-size: 20px;
     }
     .login-head {
-      position: relative;
+      // background-color: red;
+      width: 100%;
+      height: 60px;
       display: flex;
+      margin-top: -20px;
       .logo {
-        width: 185px;
-        height: 46px;
-        margin-top: 5px;
-        margin-left: -45px;
+        width: 265px;
+        // background-color: green;
+        height: 100%;
         img {
           width: 100%;
           height: 100%;
@@ -272,9 +273,9 @@ export default {
       }
       .el-icon-arrow-left {
         color: #00aaf0;
-        // padding-top: 10px;
-        margin-right: 100px;
+        margin-right: 40px;
         font-size: 60px;
+        margin-left: -15px;
       }
     }
     .state {
@@ -288,12 +289,11 @@ export default {
         color: #999999;
       }
     }
-
     .login-form {
       .login-btn {
-        width: 402px;
-        height: 40px;
-        margin-top: 20px;
+        width: 100%;
+        height: 50px;
+        margin-top: 10px;
         border-radius: 30px;
         background-color: #00aaf0;
       }
@@ -301,10 +301,9 @@ export default {
         margin-right: 10px;
       }
       .btnMes {
-        width: 80px;
-        height: 40px;
-        margin-top: 3px;
-        font-size: 13px;
+        margin-right: -20px;
+        margin-top: 6px;
+        font-size: 12px;
       }
       span {
         padding-left: 20px;

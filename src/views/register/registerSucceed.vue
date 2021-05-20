@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="boxs">
     <div class="picture">
       <img src="./img/img.png" alt="" />
     </div>
@@ -52,44 +52,41 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.container {
-  width: 100%;
-  height: 100%;
+.boxs {
   position: fixed;
   left: 0;
   top: 0;
   right: 0;
   bottom: 0;
   display: flex;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   background-image: url(./img/bg.png);
   background-size: cover;
+  background-size: 100% 100%;
   .picture {
-    float: left;
-    width: 795px;
-    height: 945px;
-    margin-right: 350px;
+    height: 100vh;
+    width: 40vw;
     img {
       width: 100%;
       height: 100%;
     }
   }
   .box {
-    width: 520px;
-    height: 580px;
-    margin-right: 220px;
+    width: 30vw;
+    height: 70vh;
     border-radius: 25px;
     box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
     .head {
       display: flex;
       justify-content: center;
-      margin-top: 50px;
+      margin-top: 5%;
+      width: 100%;
+      height: 10%;
       .logo {
-        width: 185px;
-        height: 46px;
+        width: 50%;
+        height: 100%;
         margin: 0 auto;
-        margin-left: 100px;
         img {
           width: 100%;
           height: 100%;
@@ -98,16 +95,15 @@ export default {
       .el-icon-arrow-left {
         color: #00aaf0;
         font-size: 60px;
-        margin-top: -5px;
       }
     }
     .icon {
       text-align: center;
-      width: 140px;
-      height: 135px;
+      width: 30%;
+      height: 25%;
       margin: 0 auto;
-      margin-bottom: 30px;
-      margin-top: 40px;
+      margin-bottom: 3%;
+      margin-top: 3%;
       .icon-img {
         width: 100%;
         height: 100%;
@@ -121,17 +117,17 @@ export default {
     .section {
       text-align: center;
       padding: 0 90px;
-      margin-top: 30px;
-      margin-bottom: -20px;
+      margin-top: 3%;
+      margin-bottom: 3%;
       color: #929292;
       font-size: 16px;
     }
     .btn {
       text-align: center;
-      margin-top: 50px;
+      margin-top: 3%;
       .button {
-        width: 200px;
-        height: 50px;
+        width: 50%;
+        // height: 50%;
         font-size: 18px;
         background-color: #00aaf0;
         border-radius: 25px;
