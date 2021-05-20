@@ -2,12 +2,11 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-20 13:32:16
+ * @LastEditTime: 2021-05-20 13:54:18
  * @description: 
 -->
 <template>
   <div class="bim-main">
-    <div class="handle-mask" @click.stop="" v-if="isMask"></div>
     <iframe
       class="bim-web"
       allowfullscreen="true"
@@ -206,7 +205,6 @@ export default {
   },
   data() {
     return {
-      isMask: false,
       actionList: [],
       propsFooter: {
         taskId: null,
@@ -803,12 +801,15 @@ export default {
        * @Date: 2021-05-07 09:54:23
        * @description: 设置监听点击状态
        */
+      console.log(e);
       if (this.$refs.getFooter) {
         this.$refs.getFooter.setListenClick(e);
       }else{
         if (e) {
+          this.isTag = false
           window.addEventListener("click", this.clickOthers);
         } else {
+          this.isTag = true
           window.removeEventListener("click", this.clickOthers);
         }
       }
@@ -1237,6 +1238,7 @@ export default {
         // 关闭tool
         this.sendToIframe(10200, "false", "");
         document.addEventListener("keydown", (e) => {
+          console.log(this.isTag);
           if (this.isFollow || this.isTag) {
             return;
           }
@@ -1754,12 +1756,6 @@ export default {
     height: 100vh !important;
     width: 100vw !important;
   }
-}
-.handle-mask {
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  top: 0;
 }
 </style>
 <style lang="less" >

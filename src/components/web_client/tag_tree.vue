@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 09:20:40
  * @LastEditors: zk
- * @LastEditTime: 2021-05-20 11:35:11
+ * @LastEditTime: 2021-05-20 15:29:25
  * @description: 
 -->
 <!--
@@ -102,7 +102,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button
-          @click="cancelUpdateTag"
+          @click="dialogEdit = false"
           v-text="dialogPointData.cancel"
         ></el-button>
         <el-button
@@ -440,15 +440,6 @@ export default {
         );
       });
     },
-    cancelUpdateTag(){
-    /**
-     * @Author: zk
-     * @Date: 2021-05-20 11:34:22
-     * @description: 取消删除
-     */      
-      this.dialogEdit = false
-      this.$emit("setListenClick", true);
-    },
     updateTag() {
       /**
        * @Author: zk
@@ -467,7 +458,7 @@ export default {
               .then(() => {
                 this.dialogEdit = false;
                 this.tagNode.data.fileName = this.tagInfo.fileName;
-                this.$refs.refTag.updateKeyChildren(this.tagNode.key, this.tagNode);
+                this.reloadTree();
                 this.$emit("setListenClick", true);
                 this.$message({
                   type: "success",
@@ -475,7 +466,6 @@ export default {
                 });
               })
               .catch((err) => {
-              this.$emit("setListenClick", true);
                 console.log(err);
               });
           } else {
