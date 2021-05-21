@@ -173,68 +173,9 @@
             <el-input
               v-model="form.maxInstance"
               autocomplete="off"
-              :disabled="true"
+             
             ></el-input>
           </el-form-item>
-          <!-- <el-form-item label="修改封面：" label-width="110px"> -->
-          <!-- <el-upload
-              :action="baseURL + '/appli/postScreenImg'"
-              :on-success="upLoadImg"
-              name="fileUpload"
-              :on-error="errorImg"
-              list-type="picture-card"
-              :limit="1"
-              :on-exceed="handleExceed"
-              :before-upload="beforeUpload"
-              accept=".png,.jpg,.jpeg"
-              ref="upload"
-              :file-list="fileList"
-            >
-              <i slot="default" class="el-icon-plus"></i>
-              <div slot="file" slot-scope="{ file }">
-                <img
-                  class="el-upload-list__item-thumbnail"
-                  :src="file.url"
-                  alt=""
-                />
-                <span class="el-upload-list__item-actions">
-                  <span
-                    class="el-upload-list__item-delete"
-                    @click="handleRemove(file)"
-                  >
-                    <i class="el-icon-delete"></i>
-                  </span>
-                </span>
-              </div>
-            </el-upload> -->
-          <!-- <div class="xiaoxi">
-              {{ $t('extensions') }}：.png .jpg .jpeg
-            </div> -->
-          <!-- </el-form-item> -->
-          <!-- <el-form-item label="上传模型" :label-width="formLabelWidth">
-              <el-upload
-                :on-success="upLoadModel"
-                drag
-                :action="baseURL + '/appli/postProjectModel'"
-                name="fileUpload"
-                :data="{
-                  appliId: appInfo.appid
-                }"
-                multiple
-                :limit="1"
-                :on-exceed="exceed"
-                :before-upload="beforeModelUpload"
-                accept=".rvt"
-                :disabled="this.form.applidStatus === 0 ? false : true"
-              >
-                <img src="./file.png" style="margin-top:60px" />
-                <div class="el-upload__text">
-                  {{ $t('methods') }}<br />
-                  {{ $t('xianzhi') }}<br />
-                  {{ $t('limit') }}
-                </div>
-              </el-upload>
-            </el-form-item> -->
           <el-form-item label="鼠标操作模式：">
             <el-select v-model="form.doMouse" placeholder="请选择操作模式">
               <el-option label="非锁定模式" value="0"></el-option>
@@ -490,8 +431,8 @@ export default {
         appName: this.form.name,
         doMouse: this.form.doMouse,
         displayWindow: this.form.displayWindow,
-        screenImg: this.form.screenImg
-        // appModel: this.form.appModel
+        screenImg: this.form.screenImg,
+        maxInstance: this.form.maxInstance
       })
         .then(res => {
           if (res.data.code === 0) {

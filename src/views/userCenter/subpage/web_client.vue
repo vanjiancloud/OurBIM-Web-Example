@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-20 17:48:37
+ * @LastEditTime: 2021-05-21 18:12:18
  * @description: 
 -->
 <template>
@@ -336,6 +336,8 @@ export default {
                   : "";
               }
             }
+          } else if (e.data.type === 1015) {
+            this.controllerInfo.viewCube = e.data.data
           } else if (e.data.type === 2001) {
             // 构件树的显示隐藏
             this.controllerInfo.modelClient = e.data.data;
