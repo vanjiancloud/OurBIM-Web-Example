@@ -503,6 +503,7 @@ export default {
         // 输入框
         /deep/ .el-input__inner {
           height: 4vh;
+          line-height: 4vh;
           font-size: 16px;
           width: 100%;
           padding-left: 70px;
@@ -537,8 +538,8 @@ export default {
           cursor: pointer;
         }
         .code {
-          margin-top: -6%;
-          font-size: 1.5vh;
+          // margin-top: -0.2vh;
+          font-size: 12px;
         }
         .check {
           margin-top: -15px;
