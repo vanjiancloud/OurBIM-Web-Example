@@ -496,6 +496,7 @@ export default {
   }
   .right {
     background-color: #fff;
+    // background-color: red;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -587,7 +588,6 @@ export default {
         padding: 0 20px;
         /deep/ .el-input__inner {
           height: 50px;
-          // width: 400px;
           width: 95%;
           line-height: 50px;
         }
