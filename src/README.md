@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:42:41
  * @LastEditors: zk
- * @LastEditTime: 2021-05-19 18:22:09
+ * @LastEditTime: 2021-05-21 14:24:25
  * @description: 
 -->
 # 说明
@@ -115,6 +115,9 @@ function sendToIframe(type, data, message) {
     data = ture/false
 // 属性显示/隐藏
     type = 1014
+    data = true/false
+// viewcube显示/隐藏
+    type = 1015
     data = true/false
 // 构件树的显示/隐藏
     type = 2001
