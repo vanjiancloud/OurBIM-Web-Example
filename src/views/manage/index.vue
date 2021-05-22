@@ -21,7 +21,11 @@
         </el-table-column>
         <el-table-column prop="appName" :label="$t('applyname')">
         </el-table-column>
-        <el-table-column prop="fileSize" label="模型大小">
+        <el-table-column prop="fileSize" label="模型大小"> </el-table-column>
+        <el-table-column prop="" label="并发节点">
+          <template slot-scope="scope">
+            {{ scope.row.currentInstance }}/{{ scope.row.maxInstance }}
+          </template>
         </el-table-column>
         <el-table-column :label="$t('state')">
           <template slot-scope="scope">
@@ -170,11 +174,7 @@
             <el-input v-model="form.name" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="最大并发数：" label-width="110px">
-            <el-input
-              v-model="form.maxInstance"
-              autocomplete="off"
-             
-            ></el-input>
+            <el-input v-model="form.maxInstance" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="鼠标操作模式：">
             <el-select v-model="form.doMouse" placeholder="请选择操作模式">
@@ -221,6 +221,8 @@ export default {
       appid: '', //应用ID
       appName: '', //应用名称
       fileSize: '', //文件大小
+      maxInstance: '', //最大并发数
+      currentInstance: '', //当前并发数
       applidStatus: null, //状态
       createTime: '', //上传日期
       timer: null, //定时器
@@ -297,9 +299,12 @@ export default {
         .then(res => {
           // console.log(res, '应用数据列表')
           if (res.data.message == '查询成功') {
+            // console.log('33333333', res.data.data)
             this.itemList = res.data.data
             this.reverse()
             this.appid = res.data.data.appid
+            this.maxInstance = res.data.data.maxInstance
+            this.currentInstance = res.data.data.currentInstance
             this.appName = res.data.data.appName
             this.fileSize = res.data.data.fileSize
             this.applidStatus = res.data.data.applidStatus
@@ -437,13 +442,14 @@ export default {
         .then(res => {
           if (res.data.code === 0) {
             console.log(res)
-            this.$message.success('编辑成功')
+            this.$message.success(res.data.message)
             this.$common.closeLoading()
             this.GetList()
             this.dialogFormVisible = false
           } else if (res.data.code === 1) {
             console.log(res)
-            this.$message.error('编辑失败')
+            this.$message.error('修改失败，' + res.data.message)
+            this.$common.closeLoading()
             this.dialogFormVisible = false
           }
         })

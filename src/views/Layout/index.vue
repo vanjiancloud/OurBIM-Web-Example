@@ -113,27 +113,96 @@
                   </div>
                   <!--预约演示-->
                 </div>
+                <!--预约演示-->
                 <el-popover placement="bottom" trigger="hover">
-                  <img
-                    src="./img/1.png"
-                    alt=""
-                    style=" margin-right: 80px;margin-left: 40px;margin-top: 10px;margin-bottom: 10px;"
-                  />
-                  <img
-                    src="./img/2.png"
-                    alt=""
-                    style=" margin-right: 80px;margin-top: 10px;margin-bottom: 10px;"
-                  />
-                  <img
-                    src="./img/3.png"
-                    alt=""
-                    style=" margin-right: 80px;margin-top: 10px;margin-bottom: 10px;"
-                  />
-                  <img
-                    src="./img/4.png"
-                    alt=""
-                    style=" margin-right: 40px;margin-top: 10px;margin-bottom: 10px;"
-                  />
+                  <div class="box-p">
+                    <div class="one">
+                      <div class="one-c">
+                        <img src="../Layout/img/sun.png" alt="" />
+                      </div>
+                    </div>
+                    <div class="two">华北区</div>
+                    <div class="three">
+                      <div>
+                        <span class="first">
+                          <img src="../Layout/img/user.png" alt="" />
+                        </span>
+                        <span class="second">孙经理</span>
+                      </div>
+                      <div>
+                        <span class="first">
+                          <img src="../Layout/img/phone.png" alt="" />
+                        </span>
+                        <span class="second">150&emsp;2261&nbsp;8868</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="box-p">
+                    <div class="one">
+                      <div class="one-c">
+                        <img src="../Layout/img/niu.png" alt="" />
+                      </div>
+                    </div>
+                    <div class="two">华南区</div>
+                    <div class="three">
+                      <div class="three-o">
+                        <span class="first">
+                          <img src="../Layout/img/user.png" alt="" />
+                        </span>
+                        <span class="second">牛经理</span>
+                      </div>
+                      <div>
+                        <span class="first">
+                          <img src="../Layout/img/phone.png" alt="" />
+                        </span>
+                        <span class="second">198&emsp;6771&nbsp;9871</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="box-p">
+                    <div class="one">
+                      <div class="one-c">
+                        <img src="../Layout/img/cao.png" alt="" />
+                      </div>
+                    </div>
+                    <div class="two">华东区</div>
+                    <div class="three">
+                      <div>
+                        <span class="first">
+                          <img src="../Layout/img/user.png" alt="" />
+                        </span>
+                        <span class="second">曹经理</span>
+                      </div>
+                      <div>
+                        <span class="first">
+                          <img src="../Layout/img/phone.png" alt="" />
+                        </span>
+                        <span class="second">139&emsp;6266&nbsp;2352</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="box-p">
+                    <div class="one">
+                      <div class="one-c">
+                        <img src="../Layout/img/liu.png" alt="" />
+                      </div>
+                    </div>
+                    <div class="two">华中区、西部地区</div>
+                    <div class="three">
+                      <div>
+                        <span class="first">
+                          <img src="../Layout/img/user.png" alt="" />
+                        </span>
+                        <span class="second">刘经理</span>
+                      </div>
+                      <div>
+                        <span class="first">
+                          <img src="../Layout/img/phone.png" alt="" />
+                        </span>
+                        <span class="second">186&emsp;2283&nbsp;7275</span>
+                      </div>
+                    </div>
+                  </div>
                   <el-button slot="reference" class="btn">
                     <img src="./img/yuyue.png" alt="" />
                     <span>预约演示</span>
@@ -475,6 +544,61 @@ export default {
 }
 </script>
 
+<style lang="less">
+.el-popover {
+  width: 800px;
+  height: 240px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  .box-p {
+    width: 130px;
+    height: 200px;
+    background-color: #fff;
+    .one {
+      width: 100%;
+      height: 128px;
+      background-color: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      .one-c {
+        width: 95px;
+        height: 95px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+    .two {
+      width: 100%;
+      height: 21px;
+      line-height: 21px;
+      background-color: #ff6600;
+      margin-bottom: 5px;
+      text-align: center;
+      color: #fff;
+      font-size: 12px;
+    }
+    .three {
+      width: 100%;
+      height: 46px;
+      border: 1px solid #00aaf0;
+      img {
+        width: 12px;
+        height: 12px;
+        margin: 0 5px;
+      }
+      .second {
+        font-size: 12px;
+        color: #000;
+      }
+    }
+  }
+}
+</style>
+
 <style lang="less" scoped>
 .el-container {
   margin: 0;
@@ -537,7 +661,7 @@ export default {
           margin: 0 20px;
           .touxiang {
             .el-dropdown {
-              height: 40px;
+              height: 52px;
             }
             img {
               width: 40px;
@@ -546,11 +670,6 @@ export default {
               cursor: pointer;
               margin-top: 10px;
             }
-          }
-        }
-        .el-popover {
-          img {
-            margin-right: 50px;
           }
         }
       }
