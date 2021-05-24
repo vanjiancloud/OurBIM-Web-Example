@@ -58,7 +58,9 @@
               :class="scope.row.applidStatus === '2' ? 'blue' : 'gray'"
               :disabled="scope.row.applidStatus === '2' ? false : true"
             >
-              分享
+              {{
+                scope.row.applidStatus === '2' ? '分享' : '暂停'
+              }}
             </el-button>
             <!-- 编辑 -->
             <el-button
