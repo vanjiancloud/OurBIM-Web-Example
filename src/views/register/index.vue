@@ -538,7 +538,7 @@ export default {
           cursor: pointer;
         }
         .code {
-          // margin-top: -0.2vh;
+          margin-top: -0.1vh;
           font-size: 12px;
         }
         .check {

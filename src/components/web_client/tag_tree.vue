@@ -2,15 +2,8 @@
  * @Author: zk
  * @Date: 2021-05-06 09:20:40
  * @LastEditors: zk
- * @LastEditTime: 2021-05-20 15:29:25
+ * @LastEditTime: 2021-05-24 09:30:25
  * @description: 
--->
-<!--
- * @Author: zk
- * @Date: 2021-04-27 13:47:02
- * @LastEditors: zk
- * @LastEditTime: 2021-05-19 17:53:13
- * @description: 标签树
 -->
 <template>
   <div class="tag-tree" v-show="isTag">
@@ -203,11 +196,11 @@ export default {
       deep: true,
     },
   },
-  mounted () {
-  },
+  mounted() {},
   data() {
     return {
       DataTagTree: [],
+      realTreeList: [],
       isColseBar: true,
       uploadInfo: {
         action: BASE.defaults.baseURL + "/TagControl/postTagImg",
@@ -301,7 +294,7 @@ export default {
         .post(this.uploadInfo.action, formData, config)
         .then(() => {
           this.dialogIconEdit = false;
-          this.reloadTree();
+          this.reloadTree(0);
         })
         .catch(() => {
           this.$message.error("上传失败");
@@ -396,7 +389,7 @@ export default {
        * @Author: zk
        * @Date: 2021-05-07 17:05:24
        * @description: 操作标签栏
-       */
+       */      
       if (this.activeTree) {
         if (this.activeTree.id === e.data.id) {
           this.activeLeaf = this.activeLeaf ? false : true;
@@ -410,7 +403,7 @@ export default {
       this.$emit("setTagClick", {
         state: this.activeLeaf,
         tagId: this.activeLeaf ? this.activeTree.id : null,
-        tagType: e.data.isFolder === "0" ? 0 : 1
+        tagType: e.data.isFolder === "0" ? 0 : 1,
       });
     },
     editTag(e) {
@@ -445,33 +438,33 @@ export default {
        * @Author: zk
        * @Date: 2021-05-07 10:18:25
        * @description: 更新标签
-       */      
+       */
       this.$refs["rulesTag"].validate((valid) => {
-          if (valid) {
-            let params = {
-              taskid: this.getProps.taskId,
-              tagId: this.tagInfo.id,
-              tagName: this.tagInfo.fileName,
-              lableVisibility: true,
-            };
-            TAGTREE.UPDATETAG(params)
-              .then(() => {
-                this.dialogEdit = false;
-                this.tagNode.data.fileName = this.tagInfo.fileName;
-                this.reloadTree();
-                this.$emit("setListenClick", true);
-                this.$message({
-                  type: "success",
-                  message: "修改成功!",
-                });
-              })
-              .catch((err) => {
-                console.log(err);
+        if (valid) {
+          let params = {
+            taskid: this.getProps.taskId,
+            tagId: this.tagInfo.id,
+            tagName: this.tagInfo.fileName,
+            lableVisibility: true,
+          };
+          TAGTREE.UPDATETAG(params)
+            .then(() => {
+              this.dialogEdit = false;
+              this.tagNode.data.fileName = this.tagInfo.fileName;
+              // this.reloadTree(1);
+              this.$emit("setListenClick", true);
+              this.$message({
+                type: "success",
+                message: "修改成功!",
               });
-          } else {
-            return false;
-          }
-        });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          return false;
+        }
+      });
     },
     locationTag(e) {
       /**
@@ -504,14 +497,14 @@ export default {
        * @description: 删除标签
        */
       this.$emit("setListenClick", false);
-      this.$confirm(`将删除名称为"${node.label}"的构件, 是否继续?`, "提示", {
+      this.$confirm(`将删除名称为"${node.label}"的数据, 是否继续?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {          
-          this.activeLeaf = false
-          this.activeTree = null
+        .then(() => {
+          this.activeLeaf = false;
+          this.activeTree = null;
           this.$emit("setListenClick", true);
           let params = {
             taskid: this.getProps.taskId,
@@ -564,24 +557,27 @@ export default {
         taskid: this.getProps.taskId,
       };
       this.activeLeaf ? (params.tagId = this.activeTree.id) : "";
-
       if (e === 0) {
         TAGTREE.SAVETAG(params)
           .then(() => {
-            this.listTag().then((res) => {
+            this.listTag(
+              this.activeLeaf ? (params.tagId = this.activeTree.id) : ""
+            ).then((res) => {
               this.realTreeList = res;
-              this.reloadTree();
-              this.closePart(false)
-              this.$emit("setAddTag")
-            });            
+              this.reloadTree(2);
+              this.closePart(false);
+              this.$emit("setAddTag");
+            });
           })
           .catch((err) => {});
       } else {
         TAGTREE.SAVETAGGATHER(params)
           .then(() => {
-            this.listTag().then((res) => {
+            this.listTag(
+              this.activeLeaf ? (params.tagId = this.activeTree.id) : ""
+            ).then((res) => {
               this.realTreeList = res;
-              this.reloadTree();
+              this.reloadTree(3);
             });
           })
           .catch((err) => {
@@ -589,16 +585,34 @@ export default {
           });
       }
     },
-    reloadTree() {
+    reloadTree(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-22 14:48:30
+       * @description: 更新标签树
+       * @param {*} 0 修改图片 1 修改标签名称 2 新增标签 3 新增标签树
+       */
       if (this.defaultTag) {
-        this.$refs.refTag.getNode(
+        let sonTag = this.$refs.refTag.getNode(
           this.activeLeaf ? this.activeTree.id : this.defaultTag.id
-        ).parent.loaded = false;
-        this.$refs.refTag
-          .getNode(this.activeLeaf ? this.activeTree.id : this.defaultTag.id)
-          .parent.expand();
+        ).childNodes;
+        if (sonTag.length > 0 && (e === 2 || e === 3)) {
+          this.$refs.refTag.insertBefore(this.realTreeList[0], sonTag[0].key);
+        } else {
+          this.$refs.refTag.getNode(
+            this.activeLeaf ? this.activeTree.id : this.defaultTag.id
+          ).parent.loaded = false;
+          this.$refs.refTag
+            .getNode(this.activeLeaf ? this.activeTree.id : this.defaultTag.id)
+            .parent.expand();
+        }
       } else {
-        this.DataTagTree = this.realTreeList;
+        if (this.activeTree) {
+          this.$refs.refTag.getNode(this.activeTree.id).parent.loaded = false;
+          this.$refs.refTag.getNode(this.activeTree.id).parent.expand();
+        } else {
+          this.DataTagTree = this.realTreeList;
+        }
       }
     },
     async listTag(e) {
@@ -632,7 +646,7 @@ export default {
        */
       if (node.level === 0) {
         this.listTag(node.key).then((res) => {
-          if (res.length > 0) {
+          if (res.length > 0) {            
             this.defaultTag = res[0];
             return resolve(res);
           } else {
@@ -659,11 +673,11 @@ export default {
        */
       this.$refs.refTag.filter(this.modelTag);
     },
-    filterNode(value, data) { 
+    filterNode(value, data) {
       if (!value) return true;
-      const reamVal = data.fileName.indexOf(value) !== -1
+      const reamVal = data.fileName.indexOf(value) !== -1;
       if (!reamVal) {
-        this.treeEmpty = this.$t("webClient.browser.tips[1]")
+        this.treeEmpty = this.$t("webClient.browser.tips[1]");
       }
       return reamVal;
     },
@@ -675,13 +689,13 @@ export default {
        */
       this.isTag = e;
     },
-    closeIcon(){
-    /**
-     * @Author: zk
-     * @Date: 2021-05-19 18:04:06
-     * @description: 关闭按钮控制
-     */      
-      this.isColseBar = false
+    closeIcon() {
+      /**
+       * @Author: zk
+       * @Date: 2021-05-19 18:04:06
+       * @description: 关闭按钮控制
+       */
+      this.isColseBar = false;
     },
     closeTag(e) {
       /**

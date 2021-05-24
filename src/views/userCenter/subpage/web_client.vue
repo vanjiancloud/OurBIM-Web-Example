@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-21 18:12:18
+ * @LastEditTime: 2021-05-24 09:33:49
  * @description: 
 -->
 <template>
@@ -1155,7 +1155,7 @@ export default {
           this.closeWebSocket();
         }
         clearTimeout(this.loadTimer);
-      }, 1000 * 60);
+      }, 1000 * 60 * 3);
     },
     // 清除定时器
     clearTimePass() {
