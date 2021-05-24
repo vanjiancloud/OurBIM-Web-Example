@@ -169,11 +169,15 @@
       :close-on-press-escape="false"
     >
       <div class="content">
-        <el-form :model="form">
+        <el-form :model="form" :rules="rules" ref="form">
           <el-form-item label="项目名称：" label-width="110px">
             <el-input v-model="form.name" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="最大并发数：" label-width="110px">
+          <el-form-item
+            label="最大并发数："
+            label-width="110px"
+            prop="maxInstance"
+          >
             <el-input v-model="form.maxInstance" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="鼠标操作模式：">
@@ -274,6 +278,16 @@ export default {
           {
             value: '1',
             label: '锁定模式'
+          }
+        ]
+      },
+      // 最大并发校验规则
+      rules: {
+        maxInstance: [
+          {
+            pattern: /^([1-9]\d{0,3})$/,
+            message: '请输入1-9999的正整数',
+            trigger: 'blur'
           }
         ]
       }
@@ -419,8 +433,8 @@ export default {
       let param = this.form
       // 1 验证必填项
       const verify = {
-        name: '项目名称'
-        // screenImg: '封面'
+        name: '项目名称',
+        maxInstance: '最大并发数'
       }
       console.log(param)
       for (const k in verify) {
@@ -430,33 +444,38 @@ export default {
           return
         }
       }
+      this.$refs.form.validate(valid => {
+        if (valid) {
       this.$common.openLoading('正在加载中....')
-      updateProject({
-        appid: this.form.appid,
-        appName: this.form.name,
-        doMouse: this.form.doMouse,
-        displayWindow: this.form.displayWindow,
-        screenImg: this.form.screenImg,
-        maxInstance: this.form.maxInstance
+          updateProject({
+            appid: this.form.appid,
+            appName: this.form.name,
+            doMouse: this.form.doMouse,
+            displayWindow: this.form.displayWindow,
+            screenImg: this.form.screenImg,
+            maxInstance: this.form.maxInstance
+          })
+            .then(res => {
+              if (res.data.code === 0) {
+                console.log(res)
+                this.$message.success(res.data.message)
+                this.$common.closeLoading()
+                this.GetList()
+                this.dialogFormVisible = false
+              } else if (res.data.code === 1) {
+                console.log(res)
+                this.$message.error('修改失败，' + res.data.message)
+                this.$common.closeLoading()
+                this.dialogFormVisible = false
+              }
+            })
+            .catch(err => {
+              console.log(err)
+              this.$message.error('修改信息失败,请重新修改')
+              this.$common.closeLoading()
+            })
+        }
       })
-        .then(res => {
-          if (res.data.code === 0) {
-            console.log(res)
-            this.$message.success(res.data.message)
-            this.$common.closeLoading()
-            this.GetList()
-            this.dialogFormVisible = false
-          } else if (res.data.code === 1) {
-            console.log(res)
-            this.$message.error('修改失败，' + res.data.message)
-            this.$common.closeLoading()
-            this.dialogFormVisible = false
-          }
-        })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('修改信息失败,请重新修改')
-        })
     },
     // 删除按钮
     remove (e) {

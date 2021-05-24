@@ -747,7 +747,9 @@ export default {
       height: 152px;
       margin-bottom: 20px;
       background-color: #fff;
+      // background-color: red;
       display: flex;
+      align-items: center;
       justify-content: space-between;
       .left {
         height: 152px;
@@ -789,7 +791,7 @@ export default {
         height: 100px;
         background-color: #ccc;
         margin: 0 20px;
-        margin-top: 26px;
+        // margin-top: 26px;
       }
       .middle {
         height: 100%;
@@ -797,7 +799,7 @@ export default {
         min-width: 270px;
         // background-color: blue;
         h3 {
-          margin-top: 6px;
+          margin-top: 5px;
         }
         .tiao {
           .tu {
@@ -819,7 +821,7 @@ export default {
       .jindu {
         min-width: 270px;
         height: 80px;
-        margin-top: 35px;
+        // margin-top: 35px;
         // background-color: pink;
         .tutu {
           margin-top: 10px;
