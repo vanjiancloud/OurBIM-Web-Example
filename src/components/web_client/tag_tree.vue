@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 09:20:40
  * @LastEditors: zk
- * @LastEditTime: 2021-05-24 09:30:25
+ * @LastEditTime: 2021-05-24 09:59:51
  * @description: 
 -->
 <template>
@@ -84,13 +84,13 @@
       append-to-body
       width="20%"
     >
-      <el-form v-if="tagInfo" :model="tagInfo" :rules="rulesTag" ref="rulesTag">
+      <el-form v-if="tagInfo" :model="tagInfo" :rules="rulesTag" ref="rulesTag" @keyup.enter.native="updateTag">
         <el-form-item
           :label="dialogPointData.label"
           label-width="60px"
           prop="fileName"
         >
-          <el-input @click.native.stop v-model="tagInfo.fileName"></el-input>
+          <el-input v-model="tagInfo.fileName" ref="focusName" autofocus="true"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -416,6 +416,9 @@ export default {
       this.tagInfo = JSON.parse(JSON.stringify(e.data));
       this.tagNode = e;
       this.dialogEdit = true;
+      this.$nextTick(() => {
+        this.$refs.focusName.focus()        
+      })
     },
     updateTagIcon() {
       /**
