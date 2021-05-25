@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-25 11:18:13
+ * @LastEditTime: 2021-05-25 16:20:39
  * @description: 
 -->
 <template>
@@ -155,6 +155,12 @@
           </div>
         </div>
       </div>
+      <transition name="el-fade-in-linear">
+        <progress-bar
+        v-if="isProgress"
+        :propsProgress="propsProgress"
+      ></progress-bar>
+      </transition>      
       <todo-footer
         v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar"
         v-show="controllerInfo.tagUiBar"
@@ -194,6 +200,7 @@ import TAGTREE from "@/api/tag_tree";
 import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
+import progressBar from "@/components/web_client/progress_bar";
 
 export default {
   name: "look_app",
@@ -202,6 +209,7 @@ export default {
     todoFooter,
     viewCube,
     tagTree,
+    progressBar,
   },
   data() {
     return {
@@ -209,6 +217,10 @@ export default {
       propsFooter: {
         taskId: null,
       },
+      propsProgress: {
+        data: 0,
+      },
+      isProgress: true,
       propsMember: {
         label: "name",
         isLeaf: (e) => {
@@ -337,7 +349,7 @@ export default {
               }
             }
           } else if (e.data.type === 1015) {
-            this.controllerInfo.viewCube = e.data.data
+            this.controllerInfo.viewCube = e.data.data;
           } else if (e.data.type === 2001) {
             // 构件树的显示隐藏
             this.controllerInfo.modelClient = e.data.data;
@@ -655,22 +667,22 @@ export default {
           ) {
             switch (this.listenTodoInfo.data.id) {
               case 0:
-                if (this.listenTodoInfo.data.state === 'on') {
+                if (this.listenTodoInfo.data.state === "on") {
                   params.id = 43;
-                }else{
+                } else {
                   params.id = 49;
                 }
                 break;
               case 1:
-              if (this.listenTodoInfo.data.state  === 'on') {
+                if (this.listenTodoInfo.data.state === "on") {
                   params.id = 44;
-                }else{
+                } else {
                   params.id = 49;
                 }
                 break;
               case 2:
                 params.id = 45;
-                params.Switch = this.listenTodoInfo.data.state
+                params.Switch = this.listenTodoInfo.data.state;
                 break;
               case 3:
                 params.id = 47;
@@ -1028,10 +1040,11 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "8") {
+            console.log(realData);
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10003,
-              data: "",
+              data: realData.progress,
               message: "",
             };
             this.sentParentIframe(messageInfo);
@@ -1048,6 +1061,13 @@ export default {
               this.setTimePass();
             }
             this.isFade = false;
+            this.propsProgress.data = realData.progress * 100;
+            if (realData.progress === "1.00") {
+              let noneTimer = setTimeout(() => {
+                this.isProgress = false;
+                clearTimeout(noneTimer);
+              }, 1000);
+            }
           } else if (realData.id === "9") {
             let messageInfo = {
               prex: "ourbimMessage",

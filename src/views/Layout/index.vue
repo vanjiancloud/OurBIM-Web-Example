@@ -306,7 +306,7 @@
             >
               <!-- 项目管理 -->
 
-              <el-submenu index="manage">
+              <!-- <el-submenu index="manage">
                 <template slot="title">
                   <i class="el-icon-setting"></i>
                   <span class="write">{{ $t('management') }}</span>
@@ -317,7 +317,7 @@
                 <el-menu-item index="/integration">
                   项目集成
                 </el-menu-item>
-              </el-submenu>
+              </el-submenu> -->
               <el-menu-item index="/manage">
                 <i class="el-icon-setting"></i>
                 <span slot="title" class="write">{{ $t('management') }}</span>
