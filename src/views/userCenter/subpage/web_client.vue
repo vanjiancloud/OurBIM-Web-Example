@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-22 14:23:26
+ * @LastEditTime: 2021-05-25 11:18:13
  * @description: 
 -->
 <template>
@@ -653,15 +653,24 @@ export default {
             this.listenTodoInfo.state === 1 &&
             this.listenTodoInfo.data !== undefined
           ) {
-            switch (this.listenTodoInfo.data) {
+            switch (this.listenTodoInfo.data.id) {
               case 0:
-                params.id = 43;
+                if (this.listenTodoInfo.data.state === 'on') {
+                  params.id = 43;
+                }else{
+                  params.id = 49;
+                }
                 break;
               case 1:
-                params.id = 44;
+              if (this.listenTodoInfo.data.state  === 'on') {
+                  params.id = 44;
+                }else{
+                  params.id = 49;
+                }
                 break;
               case 2:
                 params.id = 45;
+                params.Switch = this.listenTodoInfo.data.state
                 break;
               case 3:
                 params.id = 47;
