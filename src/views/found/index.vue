@@ -234,7 +234,7 @@ export default {
       if (this.appName !== '') {
         this.isLoading = true
         this.$common.openLoading('正在加载请稍后')
-        if (this.active++ > 3) this.active = 0
+        // if (this.active++ > 3) this.active = 0
         addProject({
           userId: Getuserid(),
           appName: this.appName,
@@ -248,6 +248,7 @@ export default {
               console.log(this.appInfo)
               this.$message.success('创建项目成功')
               this.$common.closeLoading()
+              if (this.active++ > 3) this.active = 0
               this.isShow = 2
             } else if (res.data.code === 1) {
               this.$message.error('创建项目失败')
@@ -258,7 +259,7 @@ export default {
             this.isLoading = false
             console.log(err)
             this.$common.closeLoading()
-            this.$message.error('创建失败，请创建项目')
+            this.$message.error('创建失败，请稍后重试')
           })
       } else {
         this.$message.warning('请先创建项目名称')
