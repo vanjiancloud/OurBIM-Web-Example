@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 09:20:40
  * @LastEditors: zk
- * @LastEditTime: 2021-05-24 09:59:51
+ * @LastEditTime: 2021-05-27 14:54:04
  * @description: 
 -->
 <template>
@@ -84,13 +84,23 @@
       append-to-body
       width="20%"
     >
-      <el-form v-if="tagInfo" :model="tagInfo" :rules="rulesTag" ref="rulesTag" @keyup.enter.native="updateTag">
+      <el-form
+        v-if="tagInfo"
+        :model="tagInfo"
+        :rules="rulesTag"
+        ref="rulesTag"
+        @keyup.enter.native="updateTag"
+      >
         <el-form-item
           :label="dialogPointData.label"
           label-width="60px"
           prop="fileName"
         >
-          <el-input v-model="tagInfo.fileName" ref="focusName" autofocus="true"></el-input>
+          <el-input
+            v-model="tagInfo.fileName"
+            ref="focusName"
+            autofocus="true"
+          ></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -133,8 +143,11 @@
             :high="cropperOption.high"
             :infoTrue="cropperOption.infoTrue"
             :enlarge="cropperOption.enlarge"
-          ></vueCropper>
+          ></vueCropper>          
         </div>
+        <div class="copy-tips">
+            *支持png、jpg、jpeg、bmp格式
+          </div>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -142,10 +155,12 @@
           v-text="dialogPointData.cancel"
         ></el-button>
         <el-button
+        :loading="loading.updataIcon"
           type="primary"
           @click="updateTagIcon"
-          v-text="dialogPointData.confirm"
-        ></el-button>
+        >
+        <span v-text="dialogPointData.confirm"></span>
+        </el-button>
       </div>
     </el-dialog>
     <el-upload
@@ -201,6 +216,9 @@ export default {
     return {
       DataTagTree: [],
       realTreeList: [],
+      loading:{
+        updataIcon: false
+      },
       isColseBar: true,
       uploadInfo: {
         action: BASE.defaults.baseURL + "/TagControl/postTagImg",
@@ -209,6 +227,7 @@ export default {
         img: null, // 裁剪图片的地址
         imgName: null,
         imgUrl: null,
+        fileType: null, // 图片类型
         info: true, // 裁剪框的大小信息
         outputSize: 0.8, // 裁剪生成图片的质量
         outputType: "png", // 裁剪生成图片的格式
@@ -294,6 +313,7 @@ export default {
         .post(this.uploadInfo.action, formData, config)
         .then(() => {
           this.dialogIconEdit = false;
+          this.loading.updataIcon = false
           this.reloadTree(0);
         })
         .catch(() => {
@@ -353,24 +373,13 @@ export default {
        * @Date: 2021-05-08 15:54:26
        * @description: 文件上传之前
        */
-      const fileType = file.raw.type;
-      if (
-        fileType !== "image/jpeg" &&
-        fileType !== "image/png" &&
-        fileType !== "image/jpg"
-      ) {
-        this.$message({
-          type: "warning",
-          message: "请上传图片",
-        });
-      } else {
-        this.cropperOption.imgName = file.name;
+       this.cropperOption.fileType = file.raw.type;
+       this.cropperOption.imgName = file.name;
         this.getBase64(file.raw).then((res) => {
           this.cropperOption.img = res;
           this.$emit("setListenClick", false);
           this.dialogIconEdit = true;
-        });
-      }
+        });      
     },
     editTagIcon(e) {
       /**
@@ -389,7 +398,7 @@ export default {
        * @Author: zk
        * @Date: 2021-05-07 17:05:24
        * @description: 操作标签栏
-       */      
+       */
       if (this.activeTree) {
         if (this.activeTree.id === e.data.id) {
           this.activeLeaf = this.activeLeaf ? false : true;
@@ -399,7 +408,11 @@ export default {
       } else {
         this.activeLeaf = true;
       }
-      this.activeTree = e.data;
+      if (this.activeLeaf) {
+        this.activeTree = e.data;
+      } else {
+        this.activeTree = null;
+      }
       this.$emit("setTagClick", {
         state: this.activeLeaf,
         tagId: this.activeLeaf ? this.activeTree.id : null,
@@ -417,8 +430,8 @@ export default {
       this.tagNode = e;
       this.dialogEdit = true;
       this.$nextTick(() => {
-        this.$refs.focusName.focus()        
-      })
+        this.$refs.focusName.focus();
+      });
     },
     updateTagIcon() {
       /**
@@ -426,7 +439,21 @@ export default {
        * @Date: 2021-05-08 15:06:25
        * @description: 上传icon
        */
-      this.$refs.cropper.getCropData((data) => {
+       this.loading.updataIcon = true
+       if (
+        this.cropperOption.fileType !== "image/jpeg" &&
+        this.cropperOption.fileType !== "image/png" &&
+        this.cropperOption.fileType !== "image/jpg" &&
+        this.cropperOption.fileType !== "image/bmp"
+      ) {
+        this.$message({
+          type: "warning",
+          message: "请上传支持的图片格式",
+        });
+        this.dialogIconEdit = false;
+        this.loading.updataIcon = false
+      }else{
+        this.$refs.cropper.getCropData((data) => {
         this.getBlob(data);
         this.getFile(this.getBlob(data), this.cropperOption.imgName).then(
           (res) => {
@@ -435,6 +462,8 @@ export default {
           }
         );
       });
+      }
+      
     },
     updateTag() {
       /**
@@ -596,18 +625,25 @@ export default {
        * @param {*} 0 修改图片 1 修改标签名称 2 新增标签 3 新增标签树
        */
       if (this.defaultTag) {
-        let sonTag = this.$refs.refTag.getNode(
-          this.activeLeaf ? this.activeTree.id : this.defaultTag.id
-        ).childNodes;
-        if (sonTag.length > 0 && (e === 2 || e === 3)) {
-          this.$refs.refTag.insertBefore(this.realTreeList[0], sonTag[0].key);
-        } else {
-          this.$refs.refTag.getNode(
+        if (this.activeTree) {
+          let sonTag = this.$refs.refTag.getNode(
             this.activeLeaf ? this.activeTree.id : this.defaultTag.id
-          ).parent.loaded = false;
-          this.$refs.refTag
-            .getNode(this.activeLeaf ? this.activeTree.id : this.defaultTag.id)
-            .parent.expand();
+          ).childNodes;
+          if (sonTag.length > 0 && (e === 2 || e === 3)) {
+            this.$refs.refTag.insertBefore(this.realTreeList[0], sonTag[0].key);
+          } else {
+            this.$refs.refTag.getNode(
+              this.activeLeaf ? this.activeTree.id : this.defaultTag.id
+            ).parent.loaded = false;
+            this.$refs.refTag
+              .getNode(
+                this.activeLeaf ? this.activeTree.id : this.defaultTag.id
+              )
+              .parent.expand();
+          }
+        } else {
+          this.$refs.refTag.getNode(this.defaultTag.id).parent.loaded = false;
+          this.$refs.refTag.getNode(this.defaultTag.id).parent.expand();
         }
       } else {
         if (this.activeTree) {
@@ -615,6 +651,12 @@ export default {
           this.$refs.refTag.getNode(this.activeTree.id).parent.expand();
         } else {
           this.DataTagTree = this.realTreeList;
+          if (e === 0) {
+            this.$refs.refTag.getNode(
+              this.realTreeList[0].id
+            ).parent.loaded = false;
+            this.$refs.refTag.getNode(this.realTreeList[0].id).parent.expand();
+          }
         }
       }
     },
@@ -649,7 +691,7 @@ export default {
        */
       if (node.level === 0) {
         this.listTag(node.key).then((res) => {
-          if (res.length > 0) {            
+          if (res.length > 0) {
             this.defaultTag = res[0];
             return resolve(res);
           } else {
@@ -822,6 +864,11 @@ export default {
     margin: 0 auto;
     width: 200px;
     height: 200px;
+  }
+  .copy-tips{
+    color: #F56C6C;
+    margin-top: 20px;
+    text-align: center;
   }
 }
 </style>

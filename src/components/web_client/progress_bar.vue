@@ -2,14 +2,14 @@
  * @Author: zk
  * @Date: 2021-05-25 14:55:54
  * @LastEditors: zk
- * @LastEditTime: 2021-05-25 15:48:17
+ * @LastEditTime: 2021-05-27 14:59:58
  * @description: 
 -->
 <template>
   <div>
     <el-progress
       type="line"
-      :percentage="getProgress.data"
+      :percentage="getProgress.data ? getProgress.data : 0"
       :stroke-width="16"
       class="el-bg-inner-running"
       :text-inside="true"
@@ -38,7 +38,6 @@ export default {
   },
   created () {
     this.getProgress = this.propsProgress
-    console.log(this.getProgress);
   },
 };
 </script>

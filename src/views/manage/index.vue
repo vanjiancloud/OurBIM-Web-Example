@@ -709,23 +709,23 @@ export default {
 
 <style>
 /* 背景 */
-.el-tooltip__popper {
+/* .el-tooltip__popper {
   background-color: #00aaf0 !important;
-}
+} */
 /* 箭头 */
-.el-tooltip__popper[x-placement^='top'] .popper__arrow:after {
+/* .el-tooltip__popper[x-placement^='top'] .popper__arrow:after {
   border-top-color: #00aaf0 !important;
-}
-.el-tooltip__popper[x-placement^='bottom'] .popper__arrow:after {
+} */
+/* .el-tooltip__popper[x-placement^='bottom'] .popper__arrow:after {
   border-bottom-color: #00aaf0 !important;
-}
+} */
 /* 箭头边框 */
-.el-tooltip__popper[x-placement^='bottom'] .popper__arrow {
+/* .el-tooltip__popper[x-placement^='bottom'] .popper__arrow {
   border-bottom-color: #00aaf0 !important;
-}
-.el-tooltip__popper[x-placement^='top'] .popper__arrow {
+} */
+/* .el-tooltip__popper[x-placement^='top'] .popper__arrow {
   border-top-color: #00aaf0 !important;
-}
+} */
 </style>
 
 <style lang="less" scoped>

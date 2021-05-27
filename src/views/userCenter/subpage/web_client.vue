@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-26 17:09:45
+ * @LastEditTime: 2021-05-27 15:01:02
  * @description: 
 -->
 <template>
@@ -1040,7 +1040,6 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "8") {
-            console.log(realData);
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10003,
@@ -1061,7 +1060,9 @@ export default {
               this.setTimePass();
             }
             this.isFade = false;
+            if (Number(this.propsProgress.data) >= 0 && Number(this.propsProgress.data) <= 100) {
             this.propsProgress.data = realData.progress * 100;
+            }
             if (realData.progress === "1.00") {
               let noneTimer = setTimeout(() => {
                 this.isProgress = false;
