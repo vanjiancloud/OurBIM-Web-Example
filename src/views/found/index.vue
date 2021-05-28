@@ -245,7 +245,7 @@ export default {
             if (res.data.code === 0) {
               this.appInfo = res.data.data
               this.appliId = res.data.data.appid
-              console.log(this.appInfo)
+              // console.log(this.appInfo)
               this.$message.success('创建项目成功')
               this.$common.closeLoading()
               if (this.active++ > 3) this.active = 0
@@ -371,6 +371,7 @@ export default {
       var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
       const extension = testmsg === 'rvt'
       if (!extension) {
+        this.isLoading = false
         this.$message.error('上传模型只能是.rvt格式!')
       } else {
         this.$common.openLoading('上传模型中')
