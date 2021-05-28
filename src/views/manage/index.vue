@@ -19,7 +19,40 @@
       <el-table :data="itemList" style="width: 100%;" class="sheet">
         <el-table-column prop="appid" :label="$t('applicationid')">
         </el-table-column>
-        <el-table-column prop="appName" :label="$t('applyname')">
+        <el-table-column
+          prop="appName"
+          :label="$t('applyname')"
+          show-overflow-tooltip
+          width="150"
+        >
+          <!-- <template slot-scope="scope">
+          <div class="name-two">
+              {{ scope.row.appName }}
+            </div>
+           </template> -->
+          <!-- <template slot-scope="scope">
+             <div class="name-two">
+              {{ scope.row.appName }}
+            </div>
+            <div class="name-none">
+              {{ scope.row.appName }}
+            </div> -->
+          <!-- {{ scope.row.appName }} -->
+
+          <!-- tips悬浮提示 -->
+          <!-- <el-tooltip
+              placement="top"
+              v-model="scope.row.showTooltip"
+              :open-delay="500"
+              effect="dark"
+              :disabled="!scope.row.showTooltip"
+            >
+              <div slot="content">{{ scope.row.appName }}</div>
+              <div @mouseenter="showTips($event, scope.row)" class="name-two">
+                {{ scope.row.appName }}
+              </div>
+            </el-tooltip>
+          </template> -->
         </el-table-column>
         <el-table-column prop="fileSize" label="模型大小"> </el-table-column>
         <el-table-column prop="" label="并发节点">
@@ -58,9 +91,7 @@
               :class="scope.row.applidStatus === '2' ? 'blue' : 'gray'"
               :disabled="scope.row.applidStatus === '2' ? false : true"
             >
-              {{
-                scope.row.applidStatus === '2' ? '分享' : '暂停'
-              }}
+              {{ scope.row.applidStatus === '2' ? '分享' : '暂停' }}
             </el-button>
             <!-- 编辑 -->
             <el-button
@@ -298,8 +329,25 @@ export default {
   created () {
     this.GetList()
     this.setGetdataIn()
+    // this.showTips()
   },
   methods: {
+    // showTips (obj, row) {
+    //   /*obj为鼠标移入时的事件对象*/
+    //   /*currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除*/
+    //   let TemporaryTag = document.createElement('span')
+    //   TemporaryTag.innerText = row.appName
+    //   TemporaryTag.className = 'getTextWidth'
+    //   document.querySelector('body').appendChild(TemporaryTag)
+    //   let currentWidth = document.querySelector('.getTextWidth').offsetWidth
+    //   document.querySelector('.getTextWidth').remove()
+    //   /*cellWidth为表格容器的宽度*/
+    //   const cellWidth = obj.target.offsetWidth
+    //   /*当文本宽度小于||等于容器宽度两倍时，代表文本显示未超过两行*/
+    //   currentWidth <= 2 * cellWidth
+    //     ? (row.showTooltip = false)
+    //     : (row.showTooltip = true)
+    // },
     // 定时器每隔五秒获取数据
     setGetdataIn () {
       this.timer = setInterval(() => {
@@ -448,7 +496,7 @@ export default {
       }
       this.$refs.form.validate(valid => {
         if (valid) {
-      this.$common.openLoading('正在加载中....')
+          this.$common.openLoading('正在加载中....')
           updateProject({
             appid: this.form.appid,
             appName: this.form.name,
@@ -659,6 +707,27 @@ export default {
 }
 </script>
 
+<style>
+/* 背景 */
+/* .el-tooltip__popper {
+  background-color: #00aaf0 !important;
+} */
+/* 箭头 */
+/* .el-tooltip__popper[x-placement^='top'] .popper__arrow:after {
+  border-top-color: #00aaf0 !important;
+} */
+/* .el-tooltip__popper[x-placement^='bottom'] .popper__arrow:after {
+  border-bottom-color: #00aaf0 !important;
+} */
+/* 箭头边框 */
+/* .el-tooltip__popper[x-placement^='bottom'] .popper__arrow {
+  border-bottom-color: #00aaf0 !important;
+} */
+/* .el-tooltip__popper[x-placement^='top'] .popper__arrow {
+  border-top-color: #00aaf0 !important;
+} */
+</style>
+
 <style lang="less" scoped>
 .box {
   overflow: hidden;
@@ -678,6 +747,9 @@ export default {
   .table {
     margin-top: 20px;
     margin-bottom: 40px;
+    .name-two {
+      background-color: red !important;
+    }
     .sheet {
       font-size: 16px;
     }
