@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 09:20:40
  * @LastEditors: zk
- * @LastEditTime: 2021-05-27 14:54:04
+ * @LastEditTime: 2021-05-28 11:43:46
  * @description: 
 -->
 <template>
@@ -146,7 +146,8 @@
           ></vueCropper>          
         </div>
         <div class="copy-tips">
-            *支持png、jpg、jpeg、bmp格式
+            *支持png格式
+            <!-- 、jpg、jpeg、bmp格式 -->
           </div>
       </div>
       <div slot="footer" class="dialog-footer">
@@ -166,6 +167,7 @@
     <el-upload
       v-if="tagIconInfo"
       class="upload-icon"
+      accept=".png"
       ref="refUploadIcon"
       name="fileUpload"
       :data="{
@@ -441,10 +443,10 @@ export default {
        */
        this.loading.updataIcon = true
        if (
-        this.cropperOption.fileType !== "image/jpeg" &&
-        this.cropperOption.fileType !== "image/png" &&
-        this.cropperOption.fileType !== "image/jpg" &&
-        this.cropperOption.fileType !== "image/bmp"
+        // this.cropperOption.fileType !== "image/jpeg" &&
+        this.cropperOption.fileType !== "image/png"
+        // this.cropperOption.fileType !== "image/jpg" &&
+        // this.cropperOption.fileType !== "image/bmp"
       ) {
         this.$message({
           type: "warning",

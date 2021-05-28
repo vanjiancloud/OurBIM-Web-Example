@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-28 09:48:01
+ * @LastEditTime: 2021-05-28 17:05:00
  * @description: 
 -->
 <template>
@@ -29,36 +29,34 @@
       class="hidden-bim"
       :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
       v-if="isFade"
-    >
-      <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
-      <div class="hidden-text load-text" v-if="hiddenState === 0">
+    >      
+      <div class="hidden-bim">
+        <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
+        <div class="bim-progress" v-if="hiddenState === 0 || hiddenState === 3">
+          <div class="load-tip">
+            基础环境加载中…
+            <div>
+              {{propsProgress.lodaData}}%
+            </div>
+          </div>
+          <el-progress type="line" :show-text="false" :percentage="propsProgress.lodaData"></el-progress>        
+        </div>
         <div
-          class="model-loading"
-          v-text="$t('webClient.loadBox.title[1]')"
+          class="hidden-text learn-text"
+          v-if="hiddenState === 1"
+          v-text="$t('webClient.loadBox.title[2]')"
         ></div>
-        <div class="dot">...</div>
-        <div class="wait-main"></div>
+        <div
+          class="hidden-text learn-text"
+          v-if="hiddenState === 2"
+          v-text="$t('webClient.loadBox.title[3]')"
+        ></div>
+        <div
+          class="hidden-text learn-text"
+          v-if="hiddenState === 4"
+          v-text="$t('webClient.loadBox.message[6]')"
+        ></div>
       </div>
-      <div
-        class="hidden-text learn-text"
-        v-if="hiddenState === 1"
-        v-text="$t('webClient.loadBox.title[2]')"
-      ></div>
-      <div
-        class="hidden-text learn-text"
-        v-if="hiddenState === 2"
-        v-text="$t('webClient.loadBox.title[3]')"
-      ></div>
-      <div
-        class="hidden-text learn-text"
-        v-if="hiddenState === 3"
-        v-text="$t('webClient.loadBox.title[1]')"
-      ></div>
-      <div
-        class="hidden-text learn-text"
-        v-if="hiddenState === 4"
-        v-text="$t('webClient.loadBox.message[6]')"
-      ></div>
     </div>
     <div v-if="runTimeCode === 0">
       <div class="mutual-bim">
@@ -219,6 +217,7 @@ export default {
       },
       propsProgress: {
         data: 0,
+        lodaData: 0
       },
       isProgress: true,
       propsMember: {
@@ -1019,16 +1018,6 @@ export default {
               message: "",
             };
             this.sentParentIframe(messageInfo);
-          } else if (realData.id === "6") {
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 10002,
-              data: "",
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
-            this.handleState = 13;
-            this.updateOrder();
           } else if (realData.id === "7") {
             this.memberInfo = null;
             this.activeLeaf = false;
@@ -1059,7 +1048,7 @@ export default {
               }
               this.setTimePass();
             }
-            this.isFade = false;
+            // this.isFade = false;
             if (
               Number(this.propsProgress.data) >= 0 &&
               Number(this.propsProgress.data) <= 100
@@ -1109,6 +1098,28 @@ export default {
               message: "",
             };
             this.sentParentIframe(messageInfo);
+          } else if (realData.id === "12") {
+            if (
+              Number(this.propsProgress.lodaData) >= 0 &&
+              Number(this.propsProgress.lodaData) <= 100
+            ) {
+              this.propsProgress.lodaData = realData.progress * 100;
+            }
+            let messageInfo = {
+                prex: "ourbimMessage",
+                type: 10002,
+                data: "",
+                message: "",
+              };
+              this.sentParentIframe(messageInfo);
+            if (realData.progress === "1.00") {
+              this.handleState = 13;
+              this.updateOrder();
+              let loadTimer = setTimeout(() => {
+                this.isFade = false
+                clearTimeout(loadTimer)
+              }, 500);
+            }
           }
         }
       };
@@ -1516,7 +1527,6 @@ export default {
       letter-spacing: 1px;
       // font-size: 30px;
     }
-
     .hidden-text {
       margin-top: 130px;
       position: absolute;
@@ -1831,5 +1841,35 @@ export default {
 }
 .set-index-message {
   z-index: 5000 !important;
+}
+.bim-progress {
+  position: absolute;
+  margin-top: 120px;
+  width: 260px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  .el-progress {
+    margin: 0 auto;
+    width: 100%;
+    .el-progress-bar__outer {
+      // height: 6px!important;
+      background-color: #00a8f054;
+    }
+    .el-progress-bar__inner {
+      line-height: 0;
+      background-color: #00AAF0;
+    }
+  }
+  .load-tip {
+    width: 100%;
+    display: flex;
+    margin: 20px 0;
+    letter-spacing: 2px;
+    color: #00AAF0;
+    div{
+      margin-left: auto;
+    }
+  }
 }
 </style>

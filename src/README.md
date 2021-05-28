@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:42:41
  * @LastEditors: zk
- * @LastEditTime: 2021-05-21 14:24:25
+ * @LastEditTime: 2021-05-28 15:15:40
  * @description: 
 -->
 # 说明
@@ -27,8 +27,8 @@ window.addEventListener("message", function(e) {
     * e.data.message 为附加信息
     * 模型加载
     * 10001: 已获取平台资源，开始初始化
-    * 10002：平台初始化成功
-    * 10003：平台加载成功
+    * 10002：基础环境加载中 [0, 1]
+    * 10003：bim模型加载中 [0, 1]
     
     * 构件相关
     * 20001：单击构件

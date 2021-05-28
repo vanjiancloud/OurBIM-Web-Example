@@ -5,9 +5,9 @@
     <div class="record">
       <!-- 消息提示 -->
       <div class="left">
-        {{ $t('Youhave') }}&nbsp;
-        <span style="color:#00aaf0;">{{ itemList.length }} </span>&nbsp;
-        {{ $t('project') }}
+        {{ $t("Youhave") }}&nbsp;
+        <span style="color: #00aaf0">{{ itemList.length }} </span>&nbsp;
+        {{ $t("project") }}
       </div>
       <!-- 按钮 -->
       <!-- <div class="right">
@@ -16,7 +16,7 @@
     </div>
     <!-- 表格 -->
     <div class="table">
-      <el-table :data="itemList" style="width: 100%;" class="sheet">
+      <el-table :data="itemList" style="width: 100%" class="sheet">
         <el-table-column prop="appid" :label="$t('applicationid')">
         </el-table-column>
         <el-table-column
@@ -25,6 +25,22 @@
           show-overflow-tooltip
           width="150"
         >
+          <template slot-scope="scope">
+            <!-- <span style="margin-left: 10px">{{ scope.row.appName }}</span> -->
+            <el-tooltip
+              popper-class="app-name-tip"
+              placement="top"
+              v-model="scope.row.showTooltip"
+              :open-delay="500"
+              effect="dark"
+              :disabled="!scope.row.showTooltip"
+            >
+              <div slot="content">{{ scope.row.appName }}</div>
+              <div @mouseenter="showTips($event, scope.row)">
+                {{ scope.row.appName }}
+              </div>
+            </el-tooltip>
+          </template>
           <!-- <template slot-scope="scope">
           <div class="name-two">
               {{ scope.row.appName }}
@@ -83,36 +99,36 @@
         </el-table-column>
         <el-table-column :label="$t('operation')" width="150">
           <template slot-scope="scope">
-            <!-- 分享 -->
-            <el-button
-              @click="share(scope.row), (dialogFormVisibleOne = true)"
-              type="text"
-              v-if="scope.row.applidStatus === '5' ? false : true"
-              :class="scope.row.applidStatus === '2' ? 'blue' : 'gray'"
-              :disabled="scope.row.applidStatus === '2' ? false : true"
-            >
-              {{ scope.row.applidStatus === '2' ? '分享' : '暂停' }}
-            </el-button>
-            <!-- 编辑 -->
-            <el-button
-              @click="edit(scope.row), (dialogFormVisible = true)"
-              type="text"
-              class="btn-one"
-              :disabled="scope.row.applidStatus === '4' ? true : false"
-              v-if="scope.row.applidStatus === '5' ? false : true"
-            >
-              {{ $t('edit') }}
-            </el-button>
-            <!-- 删除 -->
-            <el-button
-              @click="remove(scope.row)"
-              type="text"
-              :class="scope.row.applidStatus === '1' ? 'gray' : 'red'"
-              :disabled="scope.row.applidStatus === '1' ? true : false"
-              v-if="scope.row.applidStatus === '5' ? false : true"
-            >
-              {{ $t('del') }}
-            </el-button>
+            <div class="handle-btn">
+              <!-- 分享 -->
+              <el-button
+                @click="share(scope.row), (dialogFormVisibleOne = true)"
+                type="text"
+                v-if="scope.row.applidStatus === '5' ? false : true"
+                :class="scope.row.applidStatus === '2' ? 'blue' : 'gray'"
+                :disabled="scope.row.applidStatus === '2' ? false : true"
+              >
+                {{ scope.row.applidStatus === "2" ? "分享" : "" }}
+              </el-button>
+              <!-- 编辑 -->
+              <el-button
+                @click="edit(scope.row), (dialogFormVisible = true)"
+                type="text"
+                class="btn-one"
+                :disabled="scope.row.applidStatus === '4' ? true : false"
+                v-if="scope.row.applidStatus === '5' ? false : true"
+              >
+                {{ $t("edit") }}
+              </el-button>
+              <!-- 删除 -->
+              <el-button
+                @click="remove(scope.row)"
+                type="text"
+                v-if="scope.row.applidStatus === '5' ? false : true"
+              >
+                {{ $t("del") }}
+              </el-button>
+            </div>
           </template>
         </el-table-column>
         <el-table-column label="进入项目">
@@ -122,7 +138,7 @@
               :disabled="scope.row.applidStatus === '2' ? false : true"
               :class="scope.row.applidStatus === '2' ? 'ff' : 'bbb'"
             >
-              {{ $t('into') }}
+              {{ $t("into") }}
             </el-button>
           </template>
         </el-table-column>
@@ -244,454 +260,454 @@ import {
   getProjectList,
   deleteProject,
   updateProject,
-  getWebUrl
-} from '@/api/my.js'
-import MODELAPI from '@/api/model_api'
-import { Getuserid } from '@/store/index.js'
-import axios from '@/utils/request'
+  getWebUrl,
+} from "@/api/my.js";
+import MODELAPI from "@/api/model_api";
+import { Getuserid } from "@/store/index.js";
+import axios from "@/utils/request";
 export default {
-  name: 'manage',
-  data () {
+  name: "manage",
+  data() {
     return {
-      btnCopy: '',
+      btnCopy: "",
       itemList: [], //数据列表
-      appid: '', //应用ID
-      appName: '', //应用名称
-      fileSize: '', //文件大小
-      maxInstance: '', //最大并发数
-      currentInstance: '', //当前并发数
+      appid: "", //应用ID
+      appName: "", //应用名称
+      fileSize: "", //文件大小
+      maxInstance: "", //最大并发数
+      currentInstance: "", //当前并发数
       applidStatus: null, //状态
-      createTime: '', //上传日期
+      createTime: "", //上传日期
       timer: null, //定时器
       display: false, //转换进度条默认隐藏
-      customColor: '#00AAF0', //进度条颜色
+      customColor: "#00AAF0", //进度条颜色
       baseURL: axios.defaults.baseURL,
-      appInfo: '',
-      appliId: '',
-      fileUpload: '',
-      fileList: [{ url: '' }], //上传图片列表显示
+      appInfo: "",
+      appliId: "",
+      fileUpload: "",
+      fileList: [{ url: "" }], //上传图片列表显示
       dialogFormVisible: false,
       dialogFormVisibleOne: false,
-      isShow: '1',
+      isShow: "1",
       //分享应用表单
       formShare: {
-        days: '999', //链接有效期
-        appid: '',
-        qrurl: '', //二维码图片地址
-        webShareUrl: '' //链接地址
+        days: "999", //链接有效期
+        appid: "",
+        qrurl: "", //二维码图片地址
+        webShareUrl: "", //链接地址
       },
       //编辑应用表单
       form: {
-        name: '',
-        maxInstance: '',
-        appid: '',
-        screenImg: '',
-        appModel: '',
-        dialogImageUrl: '',
+        name: "",
+        maxInstance: "",
+        appid: "",
+        screenImg: "",
+        appModel: "",
+        dialogImageUrl: "",
         applidStatus: null,
         displayWindow: [
           {
-            value: '0',
-            label: '完全填充'
+            value: "0",
+            label: "完全填充",
           },
           {
-            value: '1',
-            label: '尽量填充'
+            value: "1",
+            label: "尽量填充",
           },
           {
-            value: '2',
-            label: '原始大小'
-          }
+            value: "2",
+            label: "原始大小",
+          },
         ],
         doMouse: [
           {
-            value: '0',
-            label: '非锁定模式'
+            value: "0",
+            label: "非锁定模式",
           },
           {
-            value: '1',
-            label: '锁定模式'
-          }
-        ]
+            value: "1",
+            label: "锁定模式",
+          },
+        ],
       },
       // 最大并发校验规则
       rules: {
         maxInstance: [
           {
             pattern: /^([1-9]\d{0,3})$/,
-            message: '请输入1-9999的正整数',
-            trigger: 'blur'
-          }
-        ]
-      }
-    }
+            message: "请输入1-9999的正整数",
+            trigger: "blur",
+          },
+        ],
+      },
+    };
   },
-  created () {
-    this.GetList()
-    this.setGetdataIn()
+  created() {
+    this.GetList();
+    this.setGetdataIn();
     // this.showTips()
   },
   methods: {
-    // showTips (obj, row) {
-    //   /*obj为鼠标移入时的事件对象*/
-    //   /*currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除*/
-    //   let TemporaryTag = document.createElement('span')
-    //   TemporaryTag.innerText = row.appName
-    //   TemporaryTag.className = 'getTextWidth'
-    //   document.querySelector('body').appendChild(TemporaryTag)
-    //   let currentWidth = document.querySelector('.getTextWidth').offsetWidth
-    //   document.querySelector('.getTextWidth').remove()
-    //   /*cellWidth为表格容器的宽度*/
-    //   const cellWidth = obj.target.offsetWidth
-    //   /*当文本宽度小于||等于容器宽度两倍时，代表文本显示未超过两行*/
-    //   currentWidth <= 2 * cellWidth
-    //     ? (row.showTooltip = false)
-    //     : (row.showTooltip = true)
-    // },
+    showTips(obj, row) {
+      /*obj为鼠标移入时的事件对象*/
+      /*currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除*/
+      let TemporaryTag = document.createElement("span");
+      TemporaryTag.innerText = row.appName;
+      TemporaryTag.className = "getTextWidth";
+      document.querySelector("body").appendChild(TemporaryTag);
+      let currentWidth = document.querySelector(".getTextWidth").offsetWidth;
+      document.querySelector(".getTextWidth").remove();
+      /*cellWidth为表格容器的宽度*/
+      const cellWidth = obj.target.offsetWidth;
+      /*当文本宽度小于||等于容器宽度两倍时，代表文本显示未超过两行*/
+      currentWidth <= 2 * cellWidth
+        ? (row.showTooltip = false)
+        : (row.showTooltip = true);
+    },
     // 定时器每隔五秒获取数据
-    setGetdataIn () {
+    setGetdataIn() {
       this.timer = setInterval(() => {
-        this.GetList()
+        this.GetList();
         // console.log('每隔5秒更新应用管理')
-      }, 5000)
+      }, 5000);
     },
     // 获取应用数据列表
-    GetList () {
+    GetList() {
       getProjectList({
-        userid: Getuserid()
+        userid: Getuserid(),
       })
-        .then(res => {
+        .then((res) => {
           // console.log(res, '应用数据列表')
-          if (res.data.message == '查询成功') {
+          if (res.data.message == "查询成功") {
             // console.log('33333333', res.data.data)
-            this.itemList = res.data.data
-            this.reverse()
-            this.appid = res.data.data.appid
-            this.maxInstance = res.data.data.maxInstance
-            this.currentInstance = res.data.data.currentInstance
-            this.appName = res.data.data.appName
-            this.fileSize = res.data.data.fileSize
-            this.applidStatus = res.data.data.applidStatus
-            this.createTime = res.data.data.createTime
-          } else if (res.data.message === '应用信息为空') {
+            this.itemList = res.data.data;
+            this.reverse();
+            this.appid = res.data.data.appid;
+            this.maxInstance = res.data.data.maxInstance;
+            this.currentInstance = res.data.data.currentInstance;
+            this.appName = res.data.data.appName;
+            this.fileSize = res.data.data.fileSize;
+            this.applidStatus = res.data.data.applidStatus;
+            this.createTime = res.data.data.createTime;
+          } else if (res.data.message === "应用信息为空") {
             // this.$message.warning('暂无数据')
-            this.itemList = ''
+            this.itemList = "";
           }
         })
-        .catch(err => {
-          console.log(err)
+        .catch((err) => {
+          console.log(err);
           // this.$message.error('请求失败')
-        })
+        });
     },
     //翻转数组
-    reverse () {
-      this.itemList.reverse()
+    reverse() {
+      this.itemList.reverse();
     },
     // 根据传入的status做适配
-    formatStatus (status) {
+    formatStatus(status) {
       const statusObj = {
-        0: '未上传',
-        1: '转换中',
-        2: '转换完成',
-        3: '转换失败',
-        4: '文件损坏',
-        5: '删除中'
-      }
-      return statusObj[status]
+        0: "未上传",
+        1: "转换中",
+        2: "转换完成",
+        3: "转换失败",
+        4: "文件损坏",
+        5: "删除中",
+      };
+      return statusObj[status];
     },
     // 分享按钮
-    share (e) {
+    share(e) {
       // console.log(e)
-      this.formShare.appid = e.appid
+      this.formShare.appid = e.appid;
     },
     // 关闭分享dialog
-    handleClose (done) {
-      this.$confirm('确认关闭？')
-        .then(_ => {
-          done()
-          this.isShow = 1
-          this.formShare.days = '999'
+    handleClose(done) {
+      this.$confirm("确认关闭？")
+        .then((_) => {
+          done();
+          this.isShow = 1;
+          this.formShare.days = "999";
         })
-        .catch(_ => {})
+        .catch((_) => {});
     },
     //确定分享
-    confirm () {
-      this.$common.openLoading('正在加载中....')
+    confirm() {
+      this.$common.openLoading("正在加载中....");
       getWebUrl({
         appid: this.formShare.appid,
         days: this.formShare.days,
-        userid: Getuserid()
+        userid: Getuserid(),
       })
-        .then(res => {
+        .then((res) => {
           // console.log(res)
           if (res.data.code === 0) {
-            this.isShow = 2
-            this.formShare.qrurl = res.data.data.qrurl
-            this.formShare.webShareUrl = res.data.data.webShareUrl
-            this.$message.success(res.data.message)
-            this.$common.closeLoading()
+            this.isShow = 2;
+            this.formShare.qrurl = res.data.data.qrurl;
+            this.formShare.webShareUrl = res.data.data.webShareUrl;
+            this.$message.success(res.data.message);
+            this.$common.closeLoading();
           }
         })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('分享失败,请重新选择')
-          this.$common.closeLoading()
-          this.dialogFormVisibleOne = false
-        })
+        .catch((err) => {
+          console.log(err);
+          this.$message.error("分享失败,请重新选择");
+          this.$common.closeLoading();
+          this.dialogFormVisibleOne = false;
+        });
     },
     //复制链接成功
     onCopyUrl: function (e) {
-      this.$message.success('链接复制成功！')
+      this.$message.success("链接复制成功！");
     },
     //复制链接失败
     onErrorUrl: function (e) {
-      this.$message.error('复制失败！')
+      this.$message.error("复制失败！");
     },
     // 复制二维码图片
-    copyImg (e) {
+    copyImg(e) {
       //nextTick,当前dom渲染完毕的回调
       this.$nextTick(function () {
         // console.log('foo', this.$refs.foo) //打印获取的dom
-        const selection = window.getSelection()
-        const range = document.createRange()
+        const selection = window.getSelection();
+        const range = document.createRange();
         //复制前先清除粘贴板上的缓存
-        selection.removeAllRanges()
-        range.selectNode(this.$refs.foo) //传入dom
-        selection.addRange(range)
-        document.execCommand('copy') //copy是复制
+        selection.removeAllRanges();
+        range.selectNode(this.$refs.foo); //传入dom
+        selection.addRange(range);
+        document.execCommand("copy"); //copy是复制
         //复制后再清除缓存
-        selection.removeAllRanges()
-      })
-      this.$message.success('二维码复制成功！')
+        selection.removeAllRanges();
+      });
+      this.$message.success("二维码复制成功！");
     },
     // 编辑按钮
-    edit (e) {
-      console.log(e)
-      this.form.name = e.appName
-      this.form.appid = e.appid
-      this.form.displayWindow = e.displayWindow
-      this.form.doMouse = e.doMouse
-      this.form.maxInstance = e.maxInstance
-      this.form.applidStatus = e.applidStatus
-      this.form.screenImg = e.screenImg
+    edit(e) {
+      console.log(e);
+      this.form.name = e.appName;
+      this.form.appid = e.appid;
+      this.form.displayWindow = e.displayWindow;
+      this.form.doMouse = e.doMouse;
+      this.form.maxInstance = e.maxInstance;
+      this.form.applidStatus = e.applidStatus;
+      this.form.screenImg = e.screenImg;
       for (let index = 0; index < this.fileList.length; index++) {
-        this.fileList[index].url = e.screenImg
+        this.fileList[index].url = e.screenImg;
       }
     },
     //确定修改
-    amend () {
-      let param = this.form
+    amend() {
+      let param = this.form;
       // 1 验证必填项
       const verify = {
-        name: '项目名称',
-        maxInstance: '最大并发数'
-      }
-      console.log(param)
+        name: "项目名称",
+        maxInstance: "最大并发数",
+      };
+      console.log(param);
       for (const k in verify) {
-        const val = Array.isArray(param[k]) ? param[k][0] : param[k]
+        const val = Array.isArray(param[k]) ? param[k][0] : param[k];
         if (!this.$common.noNull(val)) {
-          this.$common.message(verify[k] + ' 不能为空', 'warning') // 提示信息
-          return
+          this.$common.message(verify[k] + " 不能为空", "warning"); // 提示信息
+          return;
         }
       }
-      this.$refs.form.validate(valid => {
+      this.$refs.form.validate((valid) => {
         if (valid) {
-          this.$common.openLoading('正在加载中....')
+          this.$common.openLoading("正在加载中....");
           updateProject({
             appid: this.form.appid,
             appName: this.form.name,
             doMouse: this.form.doMouse,
             displayWindow: this.form.displayWindow,
             screenImg: this.form.screenImg,
-            maxInstance: this.form.maxInstance
+            maxInstance: this.form.maxInstance,
           })
-            .then(res => {
+            .then((res) => {
               if (res.data.code === 0) {
-                console.log(res)
-                this.$message.success(res.data.message)
-                this.$common.closeLoading()
-                this.GetList()
-                this.dialogFormVisible = false
+                console.log(res);
+                this.$message.success(res.data.message);
+                this.$common.closeLoading();
+                this.GetList();
+                this.dialogFormVisible = false;
               } else if (res.data.code === 1) {
-                console.log(res)
-                this.$message.error('修改失败，' + res.data.message)
-                this.$common.closeLoading()
-                this.dialogFormVisible = false
+                // console.log(res)
+                this.$message.error("修改失败，" + res.data.message);
+                this.$common.closeLoading();
+                this.dialogFormVisible = false;
               }
             })
-            .catch(err => {
-              console.log(err)
-              this.$message.error('修改信息失败,请重新修改')
-              this.$common.closeLoading()
-            })
+            .catch((err) => {
+              console.log(err);
+              this.$message.error("修改信息失败,请重新修改");
+              this.$common.closeLoading();
+            });
         }
-      })
+      });
     },
     // 删除按钮
-    remove (e) {
+    remove(e) {
       // console.log(e)
       // console.log(e.progress)
-      this.$confirm('此操作将删除该应用, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+      this.$confirm("此操作将删除该应用, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
       })
         .then(() => {
-          this.del(e)
+          this.del(e);
         })
         .catch(() => {
           this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
+            type: "info",
+            message: "已取消删除",
+          });
+        });
     },
     //删除应用
-    del (e) {
+    del(e) {
       deleteProject({
         appliId: e.appid,
-        userid: Getuserid()
+        userid: Getuserid(),
       })
-        .then(res => {
+        .then((res) => {
           if (res.data.code === 0) {
-            console.log(res)
-            this.$message.success(res.data.message)
-            this.GetList()
+            console.log(res);
+            this.$message.success(res.data.message);
+            this.GetList();
           } else if (res.data.code === 1) {
-            console.log(res)
-            this.$message.warning(res.data.message)
+            console.log(res);
+            this.$message.warning(res.data.message);
           }
         })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('删除失败')
-        })
+        .catch((err) => {
+          console.log(err);
+          this.$message.error("删除失败");
+        });
     },
     //进入应用
-    GoApp (e) {
+    GoApp(e) {
       let isiPad =
         navigator.userAgent.match(/(iPad)/) ||
-        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-      let isMac = /macintosh|mac os x/i.test(navigator.userAgent)
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      let isMac = /macintosh|mac os x/i.test(navigator.userAgent);
       MODELAPI.GETBIMTOKEN({
-        appid: e.appid
-      }).then(res => {
+        appid: e.appid,
+      }).then((res) => {
         if (res.data.code === 0) {
           if (isiPad !== false || isMac !== false) {
             this.$router.push({
-              name: 'web_client',
+              name: "web_client",
               query: {
                 appid: e.appid,
                 locale: this.$i18n.locale,
-                token: res.data.data.token
-              }
-            })
+                token: res.data.data.token,
+              },
+            });
           } else {
             const { href } = this.$router.resolve({
-              name: 'web_client',
+              name: "web_client",
               query: {
                 appid: e.appid,
                 locale: this.$i18n.locale,
-                token: res.data.data.token
-              }
-            })
-            window.open(href, '_blank')
+                token: res.data.data.token,
+              },
+            });
+            window.open(href, "_blank");
           }
         } else {
           this.$message({
-            type: 'error',
-            message: err.data.message
-          })
+            type: "error",
+            message: err.data.message,
+          });
         }
-      })
+      });
     },
     // 上传封面图
-    upLoadImg (response, file, fileList) {
-      this.form.screenImg = response.data
+    upLoadImg(response, file, fileList) {
+      this.form.screenImg = response.data;
     },
     // 上传模型
-    upLoadModel (response, file, fileList) {
-      console.log('模型上传成功')
-      this.$message.success('模型上传成功')
-      this.form.appModel = response.data
-      this.disabl = false
+    upLoadModel(response, file, fileList) {
+      console.log("模型上传成功");
+      this.$message.success("模型上传成功");
+      this.form.appModel = response.data;
+      this.disabl = false;
     },
     // 上传封面图失败
-    errorImg (err, file, fileList) {
-      console.log(err)
+    errorImg(err, file, fileList) {
+      console.log(err);
     },
     // 删除图片
-    handleRemove (file) {
-      this.$confirm('此操作将删除该图片, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+    handleRemove(file) {
+      this.$confirm("此操作将删除该图片, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
       })
         .then(() => {
-          this.form.screenImg = ''
+          this.form.screenImg = "";
           // 删除文件
-          this.$refs.upload.clearFiles()
+          this.$refs.upload.clearFiles();
           this.$message({
-            type: 'success',
-            message: '删除成功'
-          })
+            type: "success",
+            message: "删除成功",
+          });
         })
         .catch(() => {
           this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
+            type: "info",
+            message: "已取消删除",
+          });
+        });
     },
 
     // 限制上传封面次数
-    handleExceed () {
-      this.$message.warning(`亲，只能上传一张图片哦！`)
+    handleExceed() {
+      this.$message.warning(`亲，只能上传一张图片哦！`);
     },
     // 限制上传封面格式
-    beforeUpload (file) {
-      var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
-      const one = testmsg === 'jpg'
-      const two = testmsg === 'jpeg'
-      const three = testmsg === 'png'
+    beforeUpload(file) {
+      var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
+      const one = testmsg === "jpg";
+      const two = testmsg === "jpeg";
+      const three = testmsg === "png";
       if (!one && !two && !three) {
-        this.$message.error('上传封面只能是.jpg .jpeg .png格式!')
+        this.$message.error("上传封面只能是.jpg .jpeg .png格式!");
       }
-      return one || two || three
+      return one || two || three;
     },
     // 限制上传模型次数
-    exceed () {
-      this.$message.warning(`您只能上传一个模型`)
+    exceed() {
+      this.$message.warning(`您只能上传一个模型`);
     },
     // 限制上传模型格式
-    beforeModelUpload (file) {
-      var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
-      const extension = testmsg === 'rvt'
+    beforeModelUpload(file) {
+      var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
+      const extension = testmsg === "rvt";
       if (!extension) {
-        this.$message.error('上传模型只能是.rvt格式!')
+        this.$message.error("上传模型只能是.rvt格式!");
       }
-      return extension
-    }
+      return extension;
+    },
   },
-  mounted () {
+  mounted() {
     //禁用返回键
     if (window.history && window.history.pushState) {
-      history.pushState(null, null, document.URL)
+      history.pushState(null, null, document.URL);
       window.addEventListener(
-        'popstate',
+        "popstate",
         function () {
-          history.pushState(null, null, document.URL)
+          history.pushState(null, null, document.URL);
         },
         false
-      )
+      );
     }
   },
   watch: {
-    $route (to, from) {
-      this.GetList()
+    $route(to, from) {
+      this.GetList();
       // clearInterval(this.timer)
-      this.$router.go(0)
-    }
+      this.$router.go(0);
+    },
   },
   // activated () {
   //   this.timer = setInterval(() => {
@@ -700,35 +716,17 @@ export default {
   //   }, 5000)
   // },
   // ===== 页面实例销毁 =====
-  destroyed () {
+  destroyed() {
     // 清除定时器
-    clearInterval(this.timer)
-  }
-}
+    clearInterval(this.timer);
+  },
+};
 </script>
 
-<style>
-/* 背景 */
-/* .el-tooltip__popper {
-  background-color: #00aaf0 !important;
-} */
-/* 箭头 */
-/* .el-tooltip__popper[x-placement^='top'] .popper__arrow:after {
-  border-top-color: #00aaf0 !important;
-} */
-/* .el-tooltip__popper[x-placement^='bottom'] .popper__arrow:after {
-  border-bottom-color: #00aaf0 !important;
-} */
-/* 箭头边框 */
-/* .el-tooltip__popper[x-placement^='bottom'] .popper__arrow {
-  border-bottom-color: #00aaf0 !important;
-} */
-/* .el-tooltip__popper[x-placement^='top'] .popper__arrow {
-  border-top-color: #00aaf0 !important;
-} */
-</style>
-
 <style lang="less" scoped>
+.handle-btn {
+  text-align: right;
+}
 .box {
   overflow: hidden;
   padding: 20px;
@@ -887,6 +885,28 @@ export default {
       left: -1000%;
       z-index: -9999999;
     }
+  }
+}
+</style>
+<style lang="less">
+/* 背景 */
+.app-name-tip {
+  .el-tooltip__popper {
+    background-color: #00aaf0 !important;
+  }
+  /* 箭头 */
+  .el-tooltip__popper[x-placement^="top"] .popper__arrow:after {
+    border-top-color: #00aaf0 !important;
+  }
+  .el-tooltip__popper[x-placement^="bottom"] .popper__arrow:after {
+    border-bottom-color: #00aaf0 !important;
+  }
+  /* 箭头边框 */
+  .el-tooltip__popper[x-placement^="bottom"] .popper__arrow {
+    border-bottom-color: #00aaf0 !important;
+  }
+  .el-tooltip__popper[x-placement^="top"] .popper__arrow {
+    border-top-color: #00aaf0 !important;
   }
 }
 </style>
