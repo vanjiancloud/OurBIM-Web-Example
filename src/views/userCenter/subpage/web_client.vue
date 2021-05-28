@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-27 15:01:02
+ * @LastEditTime: 2021-05-27 15:36:55
  * @description: 
 -->
 <template>
@@ -157,10 +157,10 @@
       </div>
       <transition name="el-fade-in-linear">
         <progress-bar
-        v-if="isProgress"
-        :propsProgress="propsProgress"
-      ></progress-bar>
-      </transition>      
+          v-if="isProgress"
+          :propsProgress="propsProgress"
+        ></progress-bar>
+      </transition>
       <todo-footer
         v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar"
         v-show="controllerInfo.tagUiBar"
@@ -1060,8 +1060,11 @@ export default {
               this.setTimePass();
             }
             this.isFade = false;
-            if (Number(this.propsProgress.data) >= 0 && Number(this.propsProgress.data) <= 100) {
-            this.propsProgress.data = realData.progress * 100;
+            if (
+              Number(this.propsProgress.data) >= 0 &&
+              Number(this.propsProgress.data) <= 100
+            ) {
+              this.propsProgress.data = realData.progress * 100;
             }
             if (realData.progress === "1.00") {
               let noneTimer = setTimeout(() => {
