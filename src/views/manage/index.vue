@@ -22,7 +22,6 @@
         <el-table-column
           prop="appName"
           :label="$t('applyname')"
-          show-overflow-tooltip
           width="150"
         >
           <template slot-scope="scope">
@@ -30,13 +29,10 @@
             <el-tooltip
               popper-class="app-name-tip"
               placement="top"
-              v-model="scope.row.showTooltip"
-              :open-delay="500"
               effect="dark"
-              :disabled="!scope.row.showTooltip"
             >
               <div slot="content">{{ scope.row.appName }}</div>
-              <div @mouseenter="showTips($event, scope.row)">
+              <div>
                 {{ scope.row.appName }}
               </div>
             </el-tooltip>
@@ -348,6 +344,9 @@ export default {
     // this.showTips()
   },
   methods: {
+    noneTips(obj, row){
+      row.showTooltip = false
+    },
     showTips(obj, row) {
       /*obj为鼠标移入时的事件对象*/
       /*currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除*/
