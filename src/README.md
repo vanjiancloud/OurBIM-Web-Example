@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:42:41
  * @LastEditors: zk
- * @LastEditTime: 2021-05-28 15:15:40
+ * @LastEditTime: 2021-05-31 16:55:56
  * @description: 
 -->
 # 说明
@@ -44,7 +44,7 @@ window.addEventListener("message", function(e) {
     *}
     * 30002: 构件新建成功
     * data: {
-    *    tagId: "" // 标签ID        
+    *    tagId: "" // 标签ID
     * }
     * 30003: 删除构件
     * data: {
@@ -53,7 +53,7 @@ window.addEventListener("message", function(e) {
 */
 
 
-## 发送消息
+## 发送消息 
 
 通过调用OurBIM平台iframe的window对象的postMessage方法向平台内部传递数据。
 

@@ -142,6 +142,7 @@
     </div>
     <!-- 分享dialog框 -->
     <el-dialog
+      width="26%"
       title="分享项目链接"
       :visible.sync="dialogFormVisibleOne"
       center
@@ -207,6 +208,7 @@
     <!-- 编辑dialog框 -->
     <el-dialog
       title="编辑项目"
+      width="20%"
       :visible.sync="dialogFormVisible"
       center
       :destroy-on-close="true"
@@ -830,11 +832,11 @@ export default {
       }
       .dialog-footer {
         position: absolute;
-        left: 42%;
+        // left: 42%;
         top: 65%;
         .btn-one {
-          margin-right: 60px;
-          margin-left: -30px;
+          // margin-right: 60px;
+          // margin-left: -30px;
         }
       }
     }
@@ -890,21 +892,19 @@ export default {
 <style lang="less">
 /* 背景 */
 .app-name-tip {
-  .el-tooltip__popper {
-    background-color: #00aaf0 !important;
-  }
+  background-color: #00aaf0 !important;
   /* 箭头 */
-  .el-tooltip__popper[x-placement^="top"] .popper__arrow:after {
+  &[x-placement^="top"] .popper__arrow:after {
     border-top-color: #00aaf0 !important;
   }
-  .el-tooltip__popper[x-placement^="bottom"] .popper__arrow:after {
+  &[x-placement^="bottom"] .popper__arrow:after {
     border-bottom-color: #00aaf0 !important;
   }
   /* 箭头边框 */
-  .el-tooltip__popper[x-placement^="bottom"] .popper__arrow {
+  &[x-placement^="bottom"] .popper__arrow {
     border-bottom-color: #00aaf0 !important;
   }
-  .el-tooltip__popper[x-placement^="top"] .popper__arrow {
+  &[x-placement^="top"] .popper__arrow {
     border-top-color: #00aaf0 !important;
   }
 }
