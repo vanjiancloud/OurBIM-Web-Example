@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-02 18:32:05
+ * @LastEditTime: 2021-06-03 09:36:55
  * @description: 
 -->
 <template>
@@ -1178,7 +1178,9 @@ export default {
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10001,
-              data: res.data.data.taskId,
+              data: {              
+                taskId: res.data.data.taskId
+              },
               message: "",
             };
             this.sentParentIframe(messageInfo);
