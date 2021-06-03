@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:42:41
  * @LastEditors: zk
- * @LastEditTime: 2021-05-28 15:15:40
+ * @LastEditTime: 2021-06-03 09:51:23
  * @description: 
 -->
 # 说明
@@ -27,6 +27,9 @@ window.addEventListener("message", function(e) {
     * e.data.message 为附加信息
     * 模型加载
     * 10001: 已获取平台资源，开始初始化
+    * data: {
+    *   taskId: ''  
+    * }
     * 10002：基础环境加载中 [0, 1]
     * 10003：bim模型加载中 [0, 1]
     
@@ -44,7 +47,7 @@ window.addEventListener("message", function(e) {
     *}
     * 30002: 构件新建成功
     * data: {
-    *    tagId: "" // 标签ID        
+    *    tagId: "" // 标签ID
     * }
     * 30003: 删除构件
     * data: {
@@ -53,7 +56,7 @@ window.addEventListener("message", function(e) {
 */
 
 
-## 发送消息
+## 发送消息 
 
 通过调用OurBIM平台iframe的window对象的postMessage方法向平台内部传递数据。
 

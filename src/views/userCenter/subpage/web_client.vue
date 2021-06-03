@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-05-28 17:05:00
+ * @LastEditTime: 2021-06-03 10:10:52
  * @description: 
 -->
 <template>
@@ -29,7 +29,7 @@
       class="hidden-bim"
       :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
       v-if="isFade"
-    >      
+    >
       <div class="hidden-bim">
         <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
         <div class="bim-progress" v-if="hiddenState === 0 || hiddenState === 3">
@@ -274,6 +274,7 @@ export default {
         width: null,
         height: null,
       },
+      uaInfo: null,
       gaugeInfo: {
         unit: "m",
         accuracy: 0.01,
@@ -283,6 +284,7 @@ export default {
   },
   watch: {},
   created() {
+    this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
     this.appToken = this.$route.query.token;
@@ -1115,10 +1117,11 @@ export default {
             if (realData.progress === "1.00") {
               this.handleState = 13;
               this.updateOrder();
-              let loadTimer = setTimeout(() => {
-                this.isFade = false
-                clearTimeout(loadTimer)
-              }, 500);
+              if (this.uaInfo.match(/MicroMessenger/i) != "micromessenger") {
+                this.delMaskTimer(500)
+              }else{
+                this.delMaskTimer(1000 * 5)
+              }
             }
           }
         }
@@ -1132,6 +1135,18 @@ export default {
       this.websock.onerror = (e) => {
         // console.log(e);
       };
+    },
+    delMaskTimer(e){
+      /**
+       * @Author: zk
+       * @Date: 2021-06-02 18:08:55
+       * @description: 去除遮罩时限
+       * @param {*} setTimeout
+       */      
+      let loadTimer = setTimeout(() => {
+                this.isFade = false                
+                clearTimeout(loadTimer)
+      }, e);
     },
     getSceneUrl() {
       let appId = this.$route.query.appid;
@@ -1163,7 +1178,9 @@ export default {
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10001,
-              data: res.data.data.taskId,
+              data: {              
+                taskId: res.data.data.taskId
+              },
               message: "",
             };
             this.sentParentIframe(messageInfo);

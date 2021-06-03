@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-05-25 11:12:03
+ * @LastEditTime: 2021-06-02 15:53:34
  * @description: 
 -->
 <template>
@@ -1188,6 +1188,13 @@ export default {
       if (e === 5 || e === 7 || e === 9) {
         return;
       }
+      if (e === 12 && this.activePerson === 0) {
+        this.$message({
+              message: "请在第三人称下使用框选功能",
+              type: "warning",
+            });
+        return
+      }
       // 剖切 分解模型 返回第三人称
       if (e === 2 || e === 8) {
         this.activePerson = 1;
@@ -1228,7 +1235,7 @@ export default {
         }
       }
       // 框选
-      if (this.oldState === 12) {
+      if (this.oldState === 12) {        
         if (
           this.imgList[this.oldState].state === 1 &&
           e !== 10 &&
