@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-02-20 13:30:48
  * @LastEditors: zk
- * @LastEditTime: 2021-06-03 10:10:39
+ * @LastEditTime: 2021-06-03 17:54:06
  * @description: 
  */
 
@@ -13,7 +13,7 @@ import {
 } from '@/store/index.js'
 
 axios.defaults.baseURL = 'http://1.182.89.34:11011/vjapi'
-// axios.defaults.baseURL = 'http://192.168.3.166:11011/vjapi'
+// axios.defaults.baseURL = 'http://192.168.3.160:11011/vjapi'
 // axios.defaults.baseURL = 'http://192.168.3.235:11011/vjapi'
 axios.defaults.transformResponse = [
   function (data) {
