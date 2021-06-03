@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-03 14:44:25
+ * @LastEditTime: 2021-06-03 17:53:19
  * @description: 
 -->
 <template>
@@ -336,6 +336,7 @@ export default {
           // 控制栏显示隐藏
           if (e.data.type === 1001) {
             this.controllerInfo.uiBar = e.data.data;
+            this.controllerInfo.viewCube = e.data.data;
           } else if (e.data.type >= 1002 && e.data.type <= 1014) {
             if (this.actionList.indexOf(e.data.type) > -1) {
               if (e.data.data === false) {
