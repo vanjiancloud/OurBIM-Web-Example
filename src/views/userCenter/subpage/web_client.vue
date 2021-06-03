@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-03 10:10:52
+ * @LastEditTime: 2021-06-03 14:46:28
  * @description: 
 -->
 <template>
@@ -1034,7 +1034,9 @@ export default {
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10003,
-              data: realData.progress,
+              data: {
+                  progress: Number(realData.progress)
+              },
               message: "",
             };
             this.sentParentIframe(messageInfo);
@@ -1055,9 +1057,9 @@ export default {
               Number(this.propsProgress.data) >= 0 &&
               Number(this.propsProgress.data) <= 100
             ) {
-              this.propsProgress.data = realData.progress * 100;
+              this.propsProgress.data = Number(realData.progress) * 100;
             }
-            if (realData.progress === "1.00") {
+            if (Number(realData.progress) === 1) {
               let noneTimer = setTimeout(() => {
                 this.isProgress = false;
                 clearTimeout(noneTimer);
@@ -1105,16 +1107,18 @@ export default {
               Number(this.propsProgress.lodaData) >= 0 &&
               Number(this.propsProgress.lodaData) <= 100
             ) {
-              this.propsProgress.lodaData = realData.progress * 100;
+              this.propsProgress.lodaData = Number(realData.progress) * 100;
             }
             let messageInfo = {
                 prex: "ourbimMessage",
                 type: 10002,
-                data: "",
+                data: {
+                  progress: Number(realData.progress)
+                },
                 message: "",
               };
               this.sentParentIframe(messageInfo);
-            if (realData.progress === "1.00") {
+            if (Number(realData.progress) === 1) {
               this.handleState = 13;
               this.updateOrder();
               if (this.uaInfo.match(/MicroMessenger/i) != "micromessenger") {
