@@ -207,7 +207,6 @@
     <!-- 编辑dialog框 -->
     <el-dialog
       title="编辑项目"
-      width="20%"
       :visible.sync="dialogFormVisible"
       center
       :destroy-on-close="true"
