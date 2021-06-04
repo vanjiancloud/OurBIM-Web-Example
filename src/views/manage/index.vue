@@ -142,7 +142,6 @@
     </div>
     <!-- 分享dialog框 -->
     <el-dialog
-      width="26%"
       title="分享项目链接"
       :visible.sync="dialogFormVisibleOne"
       center
