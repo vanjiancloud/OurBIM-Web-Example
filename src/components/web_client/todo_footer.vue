@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-06-05 15:59:06
+ * @LastEditTime: 2021-06-05 17:22:08
  * @description: 
 -->
 <template>
@@ -1476,11 +1476,11 @@ export default {
     }
     .show-weather {
       position: absolute;
-      width: 200px;
+      width: 260px;
       height: 200px;
       overflow-y: auto;
-      left: -75px;
-      padding: 10px 5px 0 5px;
+      left: -115px;
+      padding: 10px 10px 0 10px;
       border-radius: 10px 10px 0 0;
       top: -220px;
       background-color: rgba(0, 0, 0, 0.6);

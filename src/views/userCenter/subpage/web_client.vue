@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-05 15:54:58
+ * @LastEditTime: 2021-06-05 16:55:14
  * @description: 
 -->
 <template>
@@ -35,11 +35,13 @@
         <div class="bim-progress" v-if="hiddenState === 0 || hiddenState === 3">
           <div class="load-tip">
             基础环境加载中…
-            <div>
-              {{propsProgress.lodaData}}%
-            </div>
+            <div>{{ propsProgress.lodaData }}%</div>
           </div>
-          <el-progress type="line" :show-text="false" :percentage="propsProgress.lodaData"></el-progress>        
+          <el-progress
+            type="line"
+            :show-text="false"
+            :percentage="propsProgress.lodaData"
+          ></el-progress>
         </div>
         <div
           class="hidden-text learn-text"
@@ -217,7 +219,7 @@ export default {
       },
       propsProgress: {
         data: 0,
-        lodaData: 0
+        lodaData: 0,
       },
       isProgress: true,
       propsMember: {
@@ -716,8 +718,8 @@ export default {
           break;
         case 15:
           // 渲染环境
-          params.id = 50
-          params.weahterId = this.listenTodoInfo.data.id
+          params.id = 50;
+          params.weahterId = this.listenTodoInfo.data.id;
         default:
           break;
       }
@@ -730,21 +732,28 @@ export default {
 
       await MODELAPI.UPDATEORDER(params)
         .then((res) => {
-          if (params.id === 1 && res.data && res.data.data) {
-            // 切换到主视图 重置状态
-            if (this.$refs.getFooter) {
-              let realView = res.data.data.viewMode === "1" ? 0 : 1;
-              this.$refs.getFooter.resetPerson(realView);
+          if (res.data.code === 0) {
+            if (params.id === 1 && res.data && res.data.data) {
+              // 切换到主视图 重置状态
+              if (this.$refs.getFooter) {
+                let realView = res.data.data.viewMode === "1" ? 0 : 1;
+                this.$refs.getFooter.resetPerson(realView);
+              }
+              if (this.$refs.getCube) {
+                let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
+                this.$refs.getCube.resetActive(realProject);
+              }
             }
-            if (this.$refs.getCube) {
-              let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
-              this.$refs.getCube.resetActive(realProject);
-            }
+            this.$message({
+              message: this.$t("webClient.loadBox.message[2]"),
+              type: "success",
+            });
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: "error",
+            });
           }
-          this.$message({
-            message: this.$t("webClient.loadBox.message[2]"),
-            type: "success",
-          });
         })
         .catch(() => {
           this.$message({
@@ -753,11 +762,12 @@ export default {
           });
         });
     },
-    async getMemberList(e) {
+    async getMemberList(node) {
       let params = {
-        appliId: this.appId,
+        appliId:
+          node.data && node.data.projectId ? node.data.projectId : this.appId,
       };
-      e ? (params.uuid = e) : "";
+      node.key ? (params.uuid = node.key) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
         if (res.data.code === 0) {
           return res.data.data;
@@ -769,7 +779,7 @@ export default {
     },
     loadNode(node, resolve) {
       if (node.level === 0) {
-        this.getMemberList(node.key).then((res) => {
+        this.getMemberList(node).then((res) => {
           if (res.length > 0) {
             res.forEach((item) => {
               item.activeState = 0;
@@ -782,7 +792,7 @@ export default {
         });
       }
       if (node.level >= 1) {
-        this.getMemberList(node.key).then((res) => {
+        this.getMemberList(node).then((res) => {
           if (res.length > 0) {
             res.forEach((item) => {
               item.activeState = 0;
@@ -1047,7 +1057,7 @@ export default {
               prex: "ourbimMessage",
               type: 10003,
               data: {
-                  progress: Number(realData.progress)
+                progress: Number(realData.progress),
               },
               message: "",
             };
@@ -1122,21 +1132,21 @@ export default {
               this.propsProgress.lodaData = Number(realData.progress) * 100;
             }
             let messageInfo = {
-                prex: "ourbimMessage",
-                type: 10002,
-                data: {
-                  progress: Number(realData.progress)
-                },
-                message: "",
-              };
-              this.sentParentIframe(messageInfo);
+              prex: "ourbimMessage",
+              type: 10002,
+              data: {
+                progress: Number(realData.progress),
+              },
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
             if (Number(realData.progress) === 1) {
               this.handleState = 13;
               this.updateOrder();
               if (this.uaInfo.match(/MicroMessenger/i) != "micromessenger") {
-                this.delMaskTimer(500)
-              }else{
-                this.delMaskTimer(1000 * 5)
+                this.delMaskTimer(500);
+              } else {
+                this.delMaskTimer(1000 * 5);
               }
             }
           }
@@ -1152,16 +1162,16 @@ export default {
         // console.log(e);
       };
     },
-    delMaskTimer(e){
+    delMaskTimer(e) {
       /**
        * @Author: zk
        * @Date: 2021-06-02 18:08:55
        * @description: 去除遮罩时限
        * @param {*} setTimeout
-       */      
+       */
       let loadTimer = setTimeout(() => {
-                this.isFade = false                
-                clearTimeout(loadTimer)
+        this.isFade = false;
+        clearTimeout(loadTimer);
       }, e);
     },
     getSceneUrl() {
@@ -1175,7 +1185,7 @@ export default {
             this.webUrl = res.data.data.url;
             this.taskId = res.data.data.taskId;
             this.ourbimInfo = res.data.data;
-            if (res.data.data.appliType === "0") {
+            if (res.data.data.appliType !== "1") {
               this.controllerInfo.uiBar = true;
               if (this.isUiBar) {
                 this.controllerInfo.uiBar = true;
@@ -1194,8 +1204,8 @@ export default {
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10001,
-              data: {              
-                taskId: res.data.data.taskId
+              data: {
+                taskId: res.data.data.taskId,
               },
               message: "",
             };
@@ -1891,7 +1901,7 @@ export default {
     }
     .el-progress-bar__inner {
       line-height: 0;
-      background-color: #00AAF0;
+      background-color: #00aaf0;
     }
   }
   .load-tip {
@@ -1899,8 +1909,8 @@ export default {
     display: flex;
     margin: 20px 0;
     letter-spacing: 2px;
-    color: #00AAF0;
-    div{
+    color: #00aaf0;
+    div {
       margin-left: auto;
     }
   }
