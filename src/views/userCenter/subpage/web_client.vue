@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-03 17:53:19
+ * @LastEditTime: 2021-06-05 15:54:58
  * @description: 
 -->
 <template>
@@ -714,6 +714,10 @@ export default {
           params.id = 18;
           params.Switch = this.listenTodoInfo.state === 1 ? "on" : "off";
           break;
+        case 15:
+          // 渲染环境
+          params.id = 50
+          params.weahterId = this.listenTodoInfo.data.id
         default:
           break;
       }
@@ -945,8 +949,15 @@ export default {
           this.updateOrder();
         }
       }
+      // 分解模型
       if (e.type === 8 && e.data !== undefined) {
         this.handleState = 12;
+        this.listenTodoInfo = e;
+        this.updateOrder();
+      }
+      // 渲染环境
+      if (e.type === 9 && e.data !== undefined) {
+        this.handleState = 15;
         this.listenTodoInfo = e;
         this.updateOrder();
       }

@@ -10,22 +10,17 @@
         {{ $t("project") }}
       </div>
       <!-- 按钮 -->
-      <!-- <div class="right">
-            <el-button type="primary">{{ $t('link') }}</el-button>
-          </div> -->
+      <div class="right">
+        <el-button type="primary" @click="AddIntegrate">链接模型</el-button>
+      </div>
     </div>
     <!-- 表格 -->
     <div class="table">
       <el-table :data="itemList" style="width: 100%" class="sheet">
         <el-table-column prop="appid" :label="$t('applicationid')">
         </el-table-column>
-        <el-table-column
-          prop="appName"
-          :label="$t('applyname')"
-          width="150"
-        >
+        <el-table-column prop="appName" :label="$t('applyname')" width="150">
           <template slot-scope="scope">
-            <!-- <span style="margin-left: 10px">{{ scope.row.appName }}</span> -->
             <el-tooltip
               popper-class="app-name-tip"
               placement="top"
@@ -37,34 +32,14 @@
               </div>
             </el-tooltip>
           </template>
-          <!-- <template slot-scope="scope">
-          <div class="name-two">
-              {{ scope.row.appName }}
-            </div>
-           </template> -->
-          <!-- <template slot-scope="scope">
-             <div class="name-two">
-              {{ scope.row.appName }}
-            </div>
-            <div class="name-none">
-              {{ scope.row.appName }}
-            </div> -->
-          <!-- {{ scope.row.appName }} -->
-
-          <!-- tips悬浮提示 -->
-          <!-- <el-tooltip
-              placement="top"
-              v-model="scope.row.showTooltip"
-              :open-delay="500"
-              effect="dark"
-              :disabled="!scope.row.showTooltip"
-            >
-              <div slot="content">{{ scope.row.appName }}</div>
-              <div @mouseenter="showTips($event, scope.row)" class="name-two">
-                {{ scope.row.appName }}
-              </div>
-            </el-tooltip>
-          </template> -->
+        </el-table-column>
+        <el-table-column prop="" label="项目类型">
+          <template slot-scope="scope">
+            <span v-if="scope.row.appType === '0'">普通模型</span>
+            <span v-else-if="scope.row.appType === '1'">漫游模型</span>
+            <span v-else-if="scope.row.appType === '3'">链接模型</span>
+            <span v-else>其他模型</span>
+          </template>
         </el-table-column>
         <el-table-column prop="fileSize" label="模型大小"> </el-table-column>
         <el-table-column prop="" label="并发节点">
@@ -248,6 +223,35 @@
         <el-button type="primary" @click="amend()">确 定</el-button>
       </div>
     </el-dialog>
+    <el-dialog
+      title="链接模型"
+      custom-class="integrate-dialog"
+      :visible.sync="IsIntegrate"
+      width="690px">
+      <div>
+        <el-transfer
+        class="integrate-transfer"
+        filterable
+        :titles="['模型', '模型']"
+        v-model="ActiveLinkModel"
+        :data="ListLinkModel"
+        :props="{
+          key: 'appid',
+          label: 'appName'
+        }">
+        <span slot-scope="{ option }">{{ option.appName }}</span>
+      </el-transfer>
+      <el-form :model="FormIntegrate" class="form-integrate" :rules="rulesIntegrate" ref="FormIntegrate" label-width="80px">
+        <el-form-item label="链接名称" prop="appName">
+          <el-input v-model="FormIntegrate.appName"></el-input>
+        </el-form-item>
+      </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="IsIntegrate = false">取 消</el-button>
+        <el-button type="primary" @click="SubmitIntegrate">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -265,6 +269,17 @@ export default {
   name: "manage",
   data() {
     return {
+      FormIntegrate: {
+        appName: null
+      },
+      rulesIntegrate: {
+        appName: [
+          { required: true, message: '请输入链接模型名称', trigger: 'blur' },
+        ]
+      },
+      ActiveLinkModel: [],
+      ListLinkModel: [],
+      IsIntegrate: false,
       btnCopy: "",
       itemList: [], //数据列表
       appid: "", //应用ID
@@ -344,8 +359,72 @@ export default {
     // this.showTips()
   },
   methods: {
-    noneTips(obj, row){
-      row.showTooltip = false
+    SubmitIntegrate(){
+    /**
+     * @Author: zk
+     * @Date: 2021-06-05 11:20:15
+     * @description: 确认集成
+     */      
+    if (this.ActiveLinkModel.length === 0) {
+      this.$message({
+          message: '请选择模型',
+          type: 'warning'
+        });
+        return false
+    }
+     this.$refs['FormIntegrate'].validate((valid) => {
+          if (valid) {
+            let params = {
+              userId: Getuserid(),
+              appName: this.FormIntegrate.appName,
+              bimList: this.ActiveLinkModel.join()
+            }
+            MODELAPI.ADDINTEGRARE(params)
+            .then(res => {
+              if (res.data.code === 0) {
+                this.GetList();
+                this.ActiveLinkModel = []
+                this.$refs['FormIntegrate'].resetFields();
+                this.IsIntegrate = false
+              }else{
+                this.$message({
+                message: res.data.message,
+                type: 'warning'
+              });
+              }
+            })
+            
+          } else {
+            return false;
+          }
+        });
+    },
+    GetIntegrate(){
+      getProjectList({
+        userid: Getuserid(),
+        isHandle: 1,
+        appType: 0
+      })
+      .then(res => {
+        if (res.data.code === 0) {
+        this.ListLinkModel = res.data.data
+          
+        } else {
+        this.ListLinkModel = []          
+        }
+      })
+    },
+    AddIntegrate(){
+    /**
+     * @Author: zk
+     * @Date: 2021-06-05 10:14:30
+     * @description: 新增集成
+     */
+      this.GetIntegrate()
+      this.IsIntegrate = true
+    },
+    noneTips(obj, row) {
+      row.showTooltip = false;
     },
     showTips(obj, row) {
       /*obj为鼠标移入时的事件对象*/
@@ -717,6 +796,7 @@ export default {
   // ===== 页面实例销毁 =====
   destroyed() {
     // 清除定时器
+    console.log(1);
     clearInterval(this.timer);
   },
 };
@@ -733,12 +813,12 @@ export default {
     background-color: #00aaf0;
   }
   .record {
+    display: flex;
+    align-items: center;
     font-size: 16px;
     position: relative;
     .right {
-      position: absolute;
-      right: 0px;
-      top: 0px;
+      margin-left: auto;
     }
   }
   .table {
@@ -886,6 +966,27 @@ export default {
     }
   }
 }
+.form-integrate{
+  margin-top: 20px;
+}
+.integrate-transfer{
+  /deep/ .el-transfer__buttons{
+    padding: 0 10px;
+  }
+  /deep/ .el-transfer__button{
+    display: block;
+    margin-left: 0;
+    padding: 7px;
+    background-color: #ecf5ff;
+    border-color: #ecf5ff;
+    color: #606266;
+    &:hover{
+      background-color: #ecf5ff8f;
+      border-color: #ecf5ff8f;
+      color: #606266;
+    }
+  }
+}
 </style>
 <style lang="less">
 /* 背景 */
@@ -904,6 +1005,19 @@ export default {
   }
   &[x-placement^="top"] .popper__arrow {
     border-top-color: #00aaf0 !important;
+  }
+}
+.integrate-transfer{
+  .el-transfer-panel{
+    width: 300px;
+  }
+}
+.integrate-dialog{
+  .el-dialog__body{
+    padding: 20px !important;
+  }
+  .el-dialog__footer{
+    padding-top: 0;
   }
 }
 </style>
