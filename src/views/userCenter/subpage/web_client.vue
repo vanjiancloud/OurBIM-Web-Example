@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-08 14:02:08
+ * @LastEditTime: 2021-06-08 15:52:20
  * @description: 
 -->
 <template>
@@ -636,6 +636,7 @@ export default {
           break;
         case 9:
           // 当前 focus + 高亮 /取消
+          params.projectId = this.leafInfo.projectId
           params.mn = this.leafInfo.key;
           this.leafInfo.data.activeSelect === 0
             ? (params.id = 29)
