@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-03 17:54:23
+ * @LastEditTime: 2021-06-09 16:56:42
  * @description: 
 -->
 <template>
@@ -35,11 +35,13 @@
         <div class="bim-progress" v-if="hiddenState === 0 || hiddenState === 3">
           <div class="load-tip">
             基础环境加载中…
-            <div>
-              {{propsProgress.lodaData}}%
-            </div>
+            <div>{{ propsProgress.lodaData }}%</div>
           </div>
-          <el-progress type="line" :show-text="false" :percentage="propsProgress.lodaData"></el-progress>        
+          <el-progress
+            type="line"
+            :show-text="false"
+            :percentage="propsProgress.lodaData"
+          ></el-progress>
         </div>
         <div
           class="hidden-text learn-text"
@@ -217,7 +219,7 @@ export default {
       },
       propsProgress: {
         data: 0,
-        lodaData: 0
+        lodaData: 0,
       },
       isProgress: true,
       propsMember: {
@@ -405,28 +407,8 @@ export default {
        * @description: 处理异常
        */
       let errorList = [
-        101,
-        102,
-        103,
-        201,
-        202,
-        203,
-        301,
-        401,
-        402,
-        403,
-        404,
-        501,
-        502,
-        503,
-        504,
-        601,
-        602,
-        603,
-        1001,
-        1002,
-        1003,
-        1004,
+        101, 102, 103, 201, 202, 203, 301, 401, 402, 403, 404, 501, 502, 503,
+        504, 601, 602, 603, 1001, 1002, 1003, 1004,
       ];
       if (errorList.indexOf(e.type) !== -1) {
         this.hiddenState = 4;
@@ -760,7 +742,8 @@ export default {
         } else {
           return [];
         }
-      });
+      })
+      .catch(() => {})
       return realMember;
     },
     loadNode(node, resolve) {
@@ -1036,7 +1019,7 @@ export default {
               prex: "ourbimMessage",
               type: 10003,
               data: {
-                  progress: Number(realData.progress)
+                progress: Number(realData.progress),
               },
               message: "",
             };
@@ -1111,21 +1094,21 @@ export default {
               this.propsProgress.lodaData = Number(realData.progress) * 100;
             }
             let messageInfo = {
-                prex: "ourbimMessage",
-                type: 10002,
-                data: {
-                  progress: Number(realData.progress)
-                },
-                message: "",
-              };
-              this.sentParentIframe(messageInfo);
+              prex: "ourbimMessage",
+              type: 10002,
+              data: {
+                progress: Number(realData.progress),
+              },
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
             if (Number(realData.progress) === 1) {
               this.handleState = 13;
               this.updateOrder();
               if (this.uaInfo.match(/MicroMessenger/i) != "micromessenger") {
-                this.delMaskTimer(500)
-              }else{
-                this.delMaskTimer(1000 * 5)
+                this.delMaskTimer(500);
+              } else {
+                this.delMaskTimer(1000 * 5);
               }
             }
           }
@@ -1141,16 +1124,16 @@ export default {
         // console.log(e);
       };
     },
-    delMaskTimer(e){
+    delMaskTimer(e) {
       /**
        * @Author: zk
        * @Date: 2021-06-02 18:08:55
        * @description: 去除遮罩时限
        * @param {*} setTimeout
-       */      
+       */
       let loadTimer = setTimeout(() => {
-                this.isFade = false                
-                clearTimeout(loadTimer)
+        this.isFade = false;
+        clearTimeout(loadTimer);
       }, e);
     },
     getSceneUrl() {
@@ -1171,20 +1154,24 @@ export default {
               } else {
                 this.controllerInfo.uiBar = false;
                 this.controllerInfo.viewCube = false;
-                this.$refs.tagTree.closePart(false);
+                if (this.$refs.tagTree) {
+                  this.$refs.tagTree.closePart(false);
+                }
               }
             } else {
               this.controllerInfo.uiBar = false;
               this.controllerInfo.viewCube = false;
-              this.$refs.tagTree.closePart(false);
+              if (this.$refs.tagTree) {
+                this.$refs.tagTree.closePart(false);
+              }
             }
 
             this.propsFooter.taskId = res.data.data.taskId;
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10001,
-              data: {              
-                taskId: res.data.data.taskId
+              data: {
+                taskId: res.data.data.taskId,
               },
               message: "",
             };
@@ -1880,7 +1867,7 @@ export default {
     }
     .el-progress-bar__inner {
       line-height: 0;
-      background-color: #00AAF0;
+      background-color: #00aaf0;
     }
   }
   .load-tip {
@@ -1888,8 +1875,8 @@ export default {
     display: flex;
     margin: 20px 0;
     letter-spacing: 2px;
-    color: #00AAF0;
-    div{
+    color: #00aaf0;
+    div {
       margin-left: auto;
     }
   }
