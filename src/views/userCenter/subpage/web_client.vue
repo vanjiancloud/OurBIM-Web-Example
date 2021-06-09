@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-09 11:07:15
+ * @LastEditTime: 2021-06-09 16:54:17
  * @description: 
 -->
 <template>
@@ -1026,7 +1026,7 @@ export default {
        * 6 启动事件
        * 7 点击空白
        * 8 初始化成功
-       */
+       */      
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
@@ -1189,21 +1189,6 @@ export default {
             this.webUrl = res.data.data.url;
             this.taskId = res.data.data.taskId;
             this.ourbimInfo = res.data.data;
-            if (res.data.data.appliType !== "1") {
-              this.controllerInfo.uiBar = true;
-              if (this.isUiBar) {
-                this.controllerInfo.uiBar = true;
-              } else {
-                this.controllerInfo.uiBar = false;
-                this.controllerInfo.viewCube = false;
-                this.$refs.tagTree.closePart(false);
-              }
-            } else {
-              this.controllerInfo.uiBar = false;
-              this.controllerInfo.viewCube = false;
-              this.$refs.tagTree.closePart(false);
-            }
-
             this.propsFooter.taskId = res.data.data.taskId;
             let messageInfo = {
               prex: "ourbimMessage",
@@ -1216,6 +1201,26 @@ export default {
             this.sentParentIframe(messageInfo);
             this.initWebSocket();
             this.getMonitor();
+            if (res.data.data.appliType !== "1") {
+              this.controllerInfo.uiBar = true;
+              if (this.isUiBar) {
+                this.controllerInfo.uiBar = true;
+              } else {
+                this.controllerInfo.uiBar = false;
+                this.controllerInfo.viewCube = false;
+                if (this.$refs.tagTree) {
+              this.$refs.tagTree.closePart(false);                
+              }
+              }
+            } else {
+              this.controllerInfo.uiBar = false;
+              this.controllerInfo.viewCube = false;
+              if (this.$refs.tagTree) {
+              this.$refs.tagTree.closePart(false);                
+              }
+            }
+
+            
           } else {
             this.$message({
               type: "warning",
