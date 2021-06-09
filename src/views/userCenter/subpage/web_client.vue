@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-08 15:52:20
+ * @LastEditTime: 2021-06-09 11:07:15
  * @description: 
 -->
 <template>
@@ -622,7 +622,6 @@ export default {
           break;
         case 8:
           // 构件显示 隐藏 半透明
-          console.log(this.leafInfo);
           params.mn = this.leafInfo.uuid;
           params.projectId = this.leafInfo.projectId
           if (this.leafInfo.activeState === 0) {
@@ -636,7 +635,7 @@ export default {
           break;
         case 9:
           // 当前 focus + 高亮 /取消
-          params.projectId = this.leafInfo.projectId
+          params.projectId = this.leafInfo.data.projectId
           params.mn = this.leafInfo.key;
           this.leafInfo.data.activeSelect === 0
             ? (params.id = 29)
@@ -889,6 +888,7 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
+      console.log(e);
       this.$refs.getCube.closeView();
       // 浏览器
       if (e.type === 10) {
@@ -963,6 +963,30 @@ export default {
         this.listenTodoInfo = e;
         this.updateOrder();
       }
+      // 构件显示隐藏
+      // 渲染环境
+      if (e.type === 13) {
+        this.listenTodoInfo = e;
+        this.UpdateMemeberState();
+      }
+    },
+    UpdateMemeberState(){
+    /**
+     * @Author: zk
+     * @Date: 2021-06-09 11:02:14
+     * @description: 更改选中构件状态
+     */      
+    let params = {
+      taskid: this.taskId,
+      visible: this.listenTodoInfo.state === 0 ? true : false
+    }
+     MODELAPI.UPDATEMEMBER(params)
+     .then(res => {
+      this.$message({
+              message: this.$t("webClient.loadBox.message[2]"),
+              type: "success",
+            });
+     })
     },
     handleTagShow() {
       /**
@@ -1059,7 +1083,7 @@ export default {
               Number(this.propsProgress.data) >= 0 &&
               Number(this.propsProgress.data) <= 100
             ) {
-              this.propsProgress.data = Number(realData.progress) * 100;
+              this.propsProgress.data = Number(String(Number(realData.progress) * 100).substring(0,2));
             }
             if (Number(realData.progress) === 1) {
               let noneTimer = setTimeout(() => {
@@ -1109,7 +1133,7 @@ export default {
               Number(this.propsProgress.lodaData) >= 0 &&
               Number(this.propsProgress.lodaData) <= 100
             ) {
-              this.propsProgress.lodaData = Number(realData.progress) * 100;
+              this.propsProgress.lodaData = Number(String(Number(realData.progress) * 100).substring(0,2));
             }
             let messageInfo = {
               prex: "ourbimMessage",

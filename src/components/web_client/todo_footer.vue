@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-06-05 17:22:08
+ * @LastEditTime: 2021-06-09 10:57:45
  * @description: 
 -->
 <template>
@@ -10,6 +10,23 @@
     <div class="handle-mask" @click.stop="" v-if="isMask"></div>
     <div class="todo-footer">
       <div class="todo-main">
+        <!-- 构件显示隐藏 -->
+        <div class="image-main" v-if="showBar(imgList[13].id)">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :enterable="false"
+            :content="imgList[13].title"
+            placement="top"
+          >
+            <img
+              class="footer-image"
+              :src="imgList[13].url"
+              @click.stop="handleOrder(13)"
+              mode=""
+            />
+          </el-tooltip>
+        </div>
         <!-- 框选 -->
         <div class="image-main" v-if="showBar(imgList[12].id)">
           <el-tooltip
@@ -668,6 +685,13 @@ export default {
           title: "框选",
           id: 1002,
         },
+        {
+          state: 0,
+          url: require("@/assets/images/todo/unchecked/member_show.png"),
+          name: "member_show.png",
+          title: "显示",
+          id: 1015,
+        },
       ],
       activePerson: 1,
       oldState: 0,
@@ -1217,6 +1241,13 @@ export default {
       } else {
         realImg = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
       }
+      // 构件显示隐藏
+      if (this.imgList[e].state === 0 && e === 13) {
+        this.imgList[e].title = "隐藏"
+      } else {
+        this.imgList[e].title = "显示"
+      }
+
       this.imgList[e].url = realImg;
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
       // 关闭刨切和测量
