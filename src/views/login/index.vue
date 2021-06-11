@@ -34,18 +34,18 @@
           <!--  邮箱密码通过双向绑定获取 -->
           <!-- 邮箱 -->
           <el-form-item prop="loginName">
-            <div class="fonts">
-              账号
-            </div>
-            <el-input v-model="form.loginName" placeholder="请输入邮箱或手机号">
+            <div class="fonts">账号</div>
+            <el-input
+              v-model="form.loginName"
+              placeholder="请输入邮箱或手机号"
+              @input="InputPassword"
+            >
               <i slot="prefix" class="el-input__icon el-icon-message"></i>
             </el-input>
           </el-form-item>
           <!-- 密码 -->
           <el-form-item prop="password">
-            <div class="fonts">
-              密码
-            </div>
+            <div class="fonts">密码</div>
             <el-input
               v-model="form.password"
               placeholder="请输入登录密码"
@@ -86,15 +86,17 @@
           <!-- 手机号 -->
           <el-form-item prop="mobile">
             <div class="fonts">手机号</div>
-            <el-input v-model="mobForm.mobile" placeholder="请输入手机号">
+            <el-input
+              v-model="mobForm.mobile"
+              placeholder="请输入手机号"
+              @input="InputPassword"
+            >
               <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
             </el-input>
           </el-form-item>
           <!-- 验证码 -->
           <el-form-item prop="code">
-            <div class="fonts">
-              验证码
-            </div>
+            <div class="fonts">验证码</div>
             <el-input v-model="mobForm.code" placeholder="请输入短信验证码">
               <!-- 验证码按钮 -->
               <el-button
@@ -137,46 +139,46 @@
 </template>
 
 <script>
-import { sendMsgCode, login, loginMobile } from '@/api/my.js'
-import { setuserid } from '@/store/index.js'
-import { Setuserid } from '@/store/index.js'
-import { setemail, getemail, delemail } from '@/store/index.js'
-import { setpassword, getpassword, delpassword } from '@/store/index.js'
-import { setmobile, getmobile, delmobile } from '@/store/index.js'
+import { sendMsgCode, login, loginMobile } from "@/api/my.js";
+import { setuserid } from "@/store/index.js";
+import { Setuserid } from "@/store/index.js";
+import { setemail, getemail, delemail } from "@/store/index.js";
+import { setpassword, getpassword, delpassword } from "@/store/index.js";
+import { setmobile, getmobile, delmobile } from "@/store/index.js";
 // const Base64 = require('js-base64').Base64
 
 export default {
-  name: 'login',
-  data () {
+  name: "login",
+  data() {
     return {
       isSend: false, // 是否显示
       delay: 60, // 倒计时
       interId: null, // 定时器
-      btnMes: '获取验证码', // 按钮的文本
+      btnMes: "获取验证码", // 按钮的文本
       isshow: 0, // 切换登录类别
       isLoading: false, // 是否正在登录,默认隐藏
-      logIn: '登录',
+      logIn: "登录",
       // 账号登录表单
       form: {
         isAgree: false, // 复选框的状态
-        password: '',
-        loginName: ''
+        password: "",
+        loginName: "",
       },
       // 手机登录表单
       mobForm: {
-        mobile: '',
-        code: '',
-        msgType: '2', // 验证状态
-        checkbox: false // 复选框的状态
+        mobile: "",
+        code: "",
+        msgType: "2", // 验证状态
+        checkbox: false, // 复选框的状态
       },
       // 定义验证规则rules
       rules: {
         loginName: [
           {
             required: true,
-            message: '请输入邮箱或手机号',
-            trigger: 'blur'
-          }
+            message: "请输入邮箱或手机号",
+            trigger: "blur",
+          },
           // {
           //   // pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
           //pattern: /^([a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+)|(1[0-9]{1}[0-9]{9})$/,
@@ -185,47 +187,47 @@ export default {
           // }
         ],
         mobile: [
-          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { required: true, message: "请输入手机号", trigger: "blur" },
           {
             pattern: /^1[0-9]{1}[0-9]{9}$/,
-            message: '请输入正确的11位手机号',
-            trigger: 'blur'
-          }
+            message: "请输入正确的11位手机号",
+            trigger: "blur",
+          },
         ],
         password: [
           {
             required: true,
-            message: '请输入密码,字符为英文&数字&英文符号，位数6-20',
-            trigger: 'blur'
+            message: "请输入密码,字符为英文&数字&英文符号，位数6-20",
+            trigger: "blur",
           },
           {
             pattern: /^[\w.]{6,20}$/,
-            message: '请输入密码,字符为英文&数字&英文符号，位数6-20',
-            trigger: 'blur'
-          }
+            message: "请输入密码,字符为英文&数字&英文符号，位数6-20",
+            trigger: "blur",
+          },
         ],
         code: [
           {
             required: true,
-            message: '请输入验证码',
-            trigger: 'blur'
+            message: "请输入验证码",
+            trigger: "blur",
           },
           {
             pattern: /^\d{4}|\d{6}$/,
-            message: '您输入的验证码不正确',
-            trigger: 'blur'
-          }
-        ]
-      }
-    }
+            message: "您输入的验证码不正确",
+            trigger: "blur",
+          },
+        ],
+      },
+    };
   },
-  created () {
-    document.onkeydown = e => {
-      if (e.key == 'Enter') {
-        this.emailLogin()
-        this.Mobilelogin()
+  created() {
+    document.onkeydown = (e) => {
+      if (e.key == "Enter") {
+        this.emailLogin();
+        this.Mobilelogin();
       }
-    }
+    };
     // 页面缩放
     // window.onload = function () {
     //   // 获取浏览器页面最大宽度
@@ -238,231 +240,247 @@ export default {
     //   }
     // }
     // 记住账号
-    if (localStorage.getItem('email')) {
-      this.form.loginName = getemail()
+    if (localStorage.getItem("email")) {
+      this.form.loginName = getemail();
       // console.log(this.form.isAgree)
-      this.form.isAgree = true
-    } else if (localStorage.getItem('email') === null) {
-      this.form.loginName = ''
+      this.form.isAgree = true;
+    } else if (localStorage.getItem("email") === null) {
+      this.form.loginName = "";
     }
 
     // 记住密码
-    if (localStorage.getItem('password')) {
-      this.form.password = getpassword()
+    if (localStorage.getItem("password")) {
+      this.form.password = getpassword();
       // console.log(this.form.isAgree)
-      this.form.isAgree = true
-    } else if (localStorage.getItem('password') === null) {
-      this.form.password = ''
+      this.form.isAgree = true;
+    } else if (localStorage.getItem("password") === null) {
+      this.form.password = "";
     }
 
     // 记住手机号
-    if (localStorage.getItem('mobile')) {
-      this.mobForm.mobile = getmobile()
+    if (localStorage.getItem("mobile")) {
+      this.mobForm.mobile = getmobile();
       // console.log(this.mobForm.checkbox)
-      this.mobForm.checkbox = true
-    } else if (localStorage.getItem('mobile') === null) {
-      this.mobForm.mobile = ''
+      this.mobForm.checkbox = true;
+    } else if (localStorage.getItem("mobile") === null) {
+      this.mobForm.mobile = "";
     }
   },
   methods: {
+    InputPassword() {
+      /**
+       * @Author: zk
+       * @Date: 2021-06-11 10:02:25
+       * @description: 输入账号时重置密码
+       */
+      if (this.isshow === 0) {
+        if (this.form.password) {
+          this.form.password = "";
+        }
+      } else if (this.isshow === 1) {
+        if (this.mobForm.code) {
+          this.mobForm.code = "";
+        }
+      }
+    },
     // 注册新用户
-    register () {
-      this.$router.push('../../register')
+    register() {
+      this.$router.push("../../register");
     },
     // 忘记密码
-    changePassword () {
-      this.$router.push('../../changePassword')
+    changePassword() {
+      this.$router.push("../../changePassword");
     },
     // 点击账号登录
-    emailLogin () {
-      this.$refs.form.validate(valid => {
+    emailLogin() {
+      this.$refs.form.validate((valid) => {
         if (valid) {
-          this.logIn = '登录中'
-          this.isLoading = true
-          this.doLogin()
+          this.logIn = "登录中";
+          this.isLoading = true;
+          this.doLogin();
         }
-      })
+      });
     },
     // 点击手机登录
-    Mobilelogin () {
-      this.$refs.mobForm.validate(valid => {
+    Mobilelogin() {
+      this.$refs.mobForm.validate((valid) => {
         if (valid) {
-          this.logIn = '登录中'
-          this.isLoading = true
-          this.mobLogin()
+          this.logIn = "登录中";
+          this.isLoading = true;
+          this.mobLogin();
         }
-      })
+      });
     },
     // 账号登录接口
-    doLogin () {
+    doLogin() {
       login({
         loginName: this.form.loginName,
-        password: this.form.password
+        password: this.form.password,
       })
-        .then(res => {
+        .then((res) => {
           if (res.data.code === 0) {
-            this.$message.success(res.data.message)
-            this.logIn = '登录'
-            this.isLoading = false
-            sessionStorage.setItem('userInfo', JSON.stringify(res.data.data))
-            setemail(this.form.loginName)
-            setpassword(this.form.password)
+            this.$message.success(res.data.message);
+            this.logIn = "登录";
+            this.isLoading = false;
+            sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
+            setemail(this.form.loginName);
+            setpassword(this.form.password);
             // 存储用户信息userid，到sessionStorage
-            Setuserid(res.data.data.userid)
+            Setuserid(res.data.data.userid);
             // console.log(this.form.isAgree)
             if (this.form.isAgree === false) {
-              delemail()
-              delpassword()
+              delemail();
+              delpassword();
             }
-            this.$router.push('/')
+            this.$router.push("/");
           } else if (res.data.code === 2) {
-            this.$message.warning(res.data.message)
-            this.logIn = '登录'
-            this.isLoading = false
+            this.$message.warning(res.data.message);
+            this.logIn = "登录";
+            this.isLoading = false;
           } else {
-            this.$message.error('账号或密码不正确，请重新输入')
-            this.logIn = '登录'
-            this.isLoading = false
+            this.$message.error("账号或密码不正确，请重新输入");
+            this.logIn = "登录";
+            this.isLoading = false;
           }
         })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('请检查网络或稍后重试')
-          this.logIn = '登录'
-          this.isLoading = false
-        })
+        .catch((err) => {
+          console.log(err);
+          this.$message.error("请检查网络或稍后重试");
+          this.logIn = "登录";
+          this.isLoading = false;
+        });
     },
     // 手机登录接口
-    mobLogin () {
+    mobLogin() {
       loginMobile({
         mobile: this.mobForm.mobile,
-        code: this.mobForm.code
+        code: this.mobForm.code,
       })
-        .then(res => {
-          console.log(res)
+        .then((res) => {
+          console.log(res);
           if (res.data.code === 0) {
-            this.$message.success(res.data.message)
-            this.logIn = '登录'
-            this.isLoading = false
+            this.$message.success(res.data.message);
+            this.logIn = "登录";
+            this.isLoading = false;
             // 存储用户信息userid，到localStorage
-            sessionStorage.setItem('userInfo', JSON.stringify(res.data.data))
-            setuserid(res.data.data.userid)
+            sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
+            setuserid(res.data.data.userid);
             // 存储用户信息userid，到sessionStorage
-            Setuserid(res.data.data.userid)
-            setmobile(this.mobForm.mobile)
+            Setuserid(res.data.data.userid);
+            setmobile(this.mobForm.mobile);
             if (this.mobForm.checkbox === false) {
-              delmobile()
+              delmobile();
             }
-            this.$router.push('/')
+            this.$router.push("/");
           } else if (res.data.code === 2) {
-            this.$message.warning(res.data.message)
-            this.logIn = '登录'
-            this.isLoading = false
+            this.$message.warning(res.data.message);
+            this.logIn = "登录";
+            this.isLoading = false;
           } else if (res.data.code === 1) {
-            this.$message.error(res.data.message)
-            this.logIn = '登录'
-            this.isLoading = false
+            this.$message.error(res.data.message);
+            this.logIn = "登录";
+            this.isLoading = false;
           } else {
-            this.$message.error('验证码验证失败，您的操作过于频繁，请稍后再试')
-            this.logIn = '登录'
-            this.isLoading = false
+            this.$message.error("验证码验证失败，您的操作过于频繁，请稍后再试");
+            this.logIn = "登录";
+            this.isLoading = false;
           }
         })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('请检查网络或稍后重试')
-          this.logIn = '登录'
-          this.isLoading = false
-        })
+        .catch((err) => {
+          console.log(err);
+          this.$message.error("请检查网络或稍后重试");
+          this.logIn = "登录";
+          this.isLoading = false;
+        });
     },
     // 取cookie
     getCookie: function (key) {
       if (document.cookie.length > 0) {
-        var start = document.cookie.indexOf(key + '=')
+        var start = document.cookie.indexOf(key + "=");
         if (start !== -1) {
-          start = start + key.length + 1
-          var end = document.cookie.indexOf(';', start)
-          if (end === -1) end = document.cookie.length
-          return unescape(document.cookie.substring(start, end))
+          start = start + key.length + 1;
+          var end = document.cookie.indexOf(";", start);
+          if (end === -1) end = document.cookie.length;
+          return unescape(document.cookie.substring(start, end));
         }
       }
-      return ''
+      return "";
     },
     // 存cookie
     setCookie: function (cName, value, expiredays) {
-      var exdate = new Date()
-      exdate.setDate(exdate.getDate() + expiredays)
+      var exdate = new Date();
+      exdate.setDate(exdate.getDate() + expiredays);
       document.cookie =
         cName +
-        '=' +
+        "=" +
         decodeURIComponent(value) +
-        (expiredays == null ? '' : ';expires=' + exdate.toGMTString())
+        (expiredays == null ? "" : ";expires=" + exdate.toGMTString());
     },
 
     // 点击获取验证码
-    getVerification () {
-      this.$refs.mobForm.validateField('mobile', codeError => {
+    getVerification() {
+      this.$refs.mobForm.validateField("mobile", (codeError) => {
         // 验证通过把结构赋值写载这里
         if (!codeError) {
-          this.toGetCode()
+          this.toGetCode();
         }
-      })
+      });
     },
     // 获取验证码
-    toGetCode () {
-      this.isSend = true
-      this.btnMes = `正在发送验证码...`
+    toGetCode() {
+      this.isSend = true;
+      this.btnMes = `正在发送验证码...`;
       sendMsgCode({
         mobile: this.mobForm.mobile,
-        msgType: this.mobForm.msgType
+        msgType: this.mobForm.msgType,
       })
-        .then(res => {
-          console.log(res)
+        .then((res) => {
+          console.log(res);
           if (res.data.code === 0) {
-            this.$message.success('获取成功')
+            this.$message.success("获取成功");
             // 开启定时器
             this.interId = setInterval(() => {
-              this.delay--
-              this.btnMes = `${this.delay}S后继续`
-            }, 1000)
+              this.delay--;
+              this.btnMes = `${this.delay}S后继续`;
+            }, 1000);
           } else if (res.data.code === 1) {
-            this.$message.error('短信请求失败')
+            this.$message.error("短信请求失败");
           } else {
-            this.$message.error('短信请求失败，您的操作过于频繁，请稍后在试')
+            this.$message.error("短信请求失败，您的操作过于频繁，请稍后在试");
           }
         })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('获取失败')
-        })
-    }
+        .catch((err) => {
+          console.log(err);
+          this.$message.error("获取失败");
+        });
+    },
   },
   watch: {
-    $route (to, from) {
-      this.$router.go(0)
+    $route(to, from) {
+      this.$router.go(0);
       //路由跳转时账号表单清空判断
       if (this.form.isAgree === false) {
-        this.form.loginName = ''
-        this.form.password = ''
+        this.form.loginName = "";
+        this.form.password = "";
       }
       //路由跳转时手机表单清空判断
       if (this.mobForm.checkbox === false) {
-        this.mobForm.mobile = ''
-        this.mobForm.code = ''
+        this.mobForm.mobile = "";
+        this.mobForm.code = "";
       } else if (this.mobForm.checkbox === true) {
-        this.mobForm.code = ''
+        this.mobForm.code = "";
       }
     },
     // 倒计时重置
     delay: function (newVal, oldVal) {
       if (oldVal === 0) {
-        clearInterval(this.interId)
-        this.btnMes = '获取验证码'
-        ;(this.delay = 60), // 倒计时
-          (this.isSend = false)
+        clearInterval(this.interId);
+        this.btnMes = "获取验证码";
+        (this.delay = 60), // 倒计时
+          (this.isSend = false);
       }
-    }
-  }
+    },
+  },
   /* 把键盘事件放在activated事件里，当清除键盘事件后，
   下次再次进入当前路由的话，可以再次唤起键盘事件 */
   // activated () {
@@ -473,7 +491,7 @@ export default {
   //     }
   //   }
   // }
-}
+};
 </script>
 
 <style scoped lang="less">
@@ -563,7 +581,7 @@ export default {
         }
       }
       .state {
-       text-align: center;
+        text-align: center;
         margin-bottom: 20px;
         margin-top: 20px;
         cursor: pointer;
