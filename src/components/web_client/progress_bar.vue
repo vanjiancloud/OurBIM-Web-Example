@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-25 14:55:54
  * @LastEditors: zk
- * @LastEditTime: 2021-05-28 17:02:27
+ * @LastEditTime: 2021-06-09 10:30:35
  * @description: 
 -->
 <template>
@@ -30,7 +30,6 @@ export default {
   },
   watch: {
     propsProgress(newValue, oldValue) {
-      console.log(newValue);
     }
   },
   data() {
