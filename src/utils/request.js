@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-02-20 13:30:48
  * @LastEditors: zk
- * @LastEditTime: 2021-06-09 17:14:43
+ * @LastEditTime: 2021-06-11 16:45:28
  * @description: 
  */
 import axios from 'axios'
@@ -13,8 +13,8 @@ import {
 
 // axios.defaults.baseURL = 'http://1.182.89.34:11011/vjapi'
 // axios.defaults.baseURL = 'http://192.168.3.160:11011/vjapi'
-axios.defaults.baseURL = 'http://192.168.3.235:11011/vjapi'
-// axios.defaults.baseURL = 'http://cloud.ourbim.com:11011/vjapi'
+// axios.defaults.baseURL = 'http://192.168.3.235:11011/vjapi'
+axios.defaults.baseURL = 'http://cloud.ourbim.com:11011/vjapi'
 axios.defaults.transformResponse = [
   function (data) {
     try {
