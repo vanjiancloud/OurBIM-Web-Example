@@ -6,7 +6,7 @@
  * @description: 
  */
 module.exports = {
-    // publicPath: "/project_center/",
+     publicPath: "/project_center/",
     // 生产环境是否生成 sourceMap 文件
     productionSourceMap: false,
 }
