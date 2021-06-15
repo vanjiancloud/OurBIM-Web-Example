@@ -90,7 +90,7 @@ export default {
       getOrder({
         pageNo: this.editForm.currentPage,
         pageSize: this.editForm.pageSize,
-        userid: getuserid()
+        // userid: getuserid()
       })
         .then(res => {
           // console.log(res)
