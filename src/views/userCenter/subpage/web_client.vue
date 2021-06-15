@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-09 16:54:17
+ * @LastEditTime: 2021-06-15 09:25:42
  * @description: 
 -->
 <template>
@@ -26,12 +26,12 @@
         <div class="bim-progress" v-if="hiddenState === 0 || hiddenState === 3">
           <div class="load-tip">
             基础环境加载中…
-            <div>{{ propsProgress.lodaData }}%</div>
+            <div>{{ propsProgress.loadData }}%</div>
           </div>
           <el-progress
             type="line"
             :show-text="false"
-            :percentage="propsProgress.lodaData"
+            :percentage="propsProgress.loadData"
           ></el-progress>
         </div>
         <div
@@ -210,7 +210,7 @@ export default {
       },
       propsProgress: {
         data: 0,
-        lodaData: 0,
+        loadData: 0,
       },
       isProgress: true,
       propsMember: {
@@ -1083,7 +1083,7 @@ export default {
               Number(this.propsProgress.data) >= 0 &&
               Number(this.propsProgress.data) <= 100
             ) {
-              this.propsProgress.data = Number(String(Number(realData.progress) * 100).substring(0,2));
+              this.propsProgress.data = Number(String(Number(realData.progress) * 100).substring(0,3));
             }
             if (Number(realData.progress) === 1) {
               let noneTimer = setTimeout(() => {
@@ -1130,10 +1130,10 @@ export default {
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "12") {
             if (
-              Number(this.propsProgress.lodaData) >= 0 &&
-              Number(this.propsProgress.lodaData) <= 100
+              Number(this.propsProgress.loadData) >= 0 &&
+              Number(this.propsProgress.loadData) <= 100
             ) {
-              this.propsProgress.lodaData = Number(String(Number(realData.progress) * 100).substring(0,2));
+              this.propsProgress.loadData = Number(String(Number(realData.progress) * 100).substring(0,3));
             }
             let messageInfo = {
               prex: "ourbimMessage",
