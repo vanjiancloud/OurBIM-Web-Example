@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-06-09 10:57:45
+ * @LastEditTime: 2021-06-15 09:45:01
  * @description: 
 -->
 <template>
@@ -1282,7 +1282,8 @@ export default {
           this.imgList[this.oldState].state === 1 &&
           e !== 10 &&
           e !== 11 &&
-          e !== 12
+          e !== 12 &&
+          e !== 13
         ) {
           this.$emit("listenTodo", {
             state: 0,
@@ -1310,7 +1311,7 @@ export default {
         });
       }
       // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11) {
+      if (e !== this.oldState && e !== 10 && e !== 11 && (e !== 13 && this.oldState !== 12)) {
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;

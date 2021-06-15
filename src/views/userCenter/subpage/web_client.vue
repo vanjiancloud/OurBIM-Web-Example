@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-15 09:26:36
+ * @LastEditTime: 2021-06-15 09:48:08
  * @description: 
 -->
 <template>
@@ -869,7 +869,6 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
-      console.log(e);
       this.$refs.getCube.closeView();
       // 浏览器
       if (e.type === 10) {
