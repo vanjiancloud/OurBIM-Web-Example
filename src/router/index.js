@@ -7,7 +7,6 @@ import found from '@/views/found/index.vue'
 import bill from '@/views/bill/index.vue'
 import code from '@/views/code/index.vue'
 import order from '@/views/order/index.vue'
-import integration from '@/views/integration/index.vue'
 import demo from '@/views/demo/index.vue'
 
 
@@ -41,13 +40,6 @@ const routes = [
         component: manage,
         meta: {
           title: '我的项目'
-        }
-      },
-      {
-        path: 'integration',
-        component: integration,
-        meta: {
-          title: '项目集成'
         }
       },
       {

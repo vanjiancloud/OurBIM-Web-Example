@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-02-24 13:47:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-01 14:50:57
+ * @LastEditTime: 2021-06-09 11:10:08
  * @description: 
  */
 import {
@@ -79,7 +79,30 @@ const MODELAPI = {
         params
       })
   },
-
+  // 新建集成项目
+  ADDINTEGRARE: params => {
+    return request({
+        url: '/appli/addCombineApp',
+        method: 'post',
+        params
+      })
+  },
+  // 获取环境列表
+  LISTWEATHER: params => {
+    return request({      
+      url: '/appli/getWeatherList',
+      method: 'get',
+      params
+    })
+  },
+  // 改变选中构件状态
+  UPDATEMEMBER: params => {
+    return request({      
+      url: '/OurBim/conChoiceVisible',
+      method: 'get',
+      params
+    })
+  },
 }
 
 export default MODELAPI

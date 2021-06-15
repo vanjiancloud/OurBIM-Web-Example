@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-06-02 15:53:34
+ * @LastEditTime: 2021-06-09 10:57:45
  * @description: 
 -->
 <template>
@@ -10,6 +10,23 @@
     <div class="handle-mask" @click.stop="" v-if="isMask"></div>
     <div class="todo-footer">
       <div class="todo-main">
+        <!-- 构件显示隐藏 -->
+        <div class="image-main" v-if="showBar(imgList[13].id)">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :enterable="false"
+            :content="imgList[13].title"
+            placement="top"
+          >
+            <img
+              class="footer-image"
+              :src="imgList[13].url"
+              @click.stop="handleOrder(13)"
+              mode=""
+            />
+          </el-tooltip>
+        </div>
         <!-- 框选 -->
         <div class="image-main" v-if="showBar(imgList[12].id)">
           <el-tooltip
@@ -387,31 +404,13 @@
               mode=""
             />
           </el-tooltip>
-          <el-collapse-transition>
-            <div class="show-weather" v-if="imgList[9].state === 1">
-              <el-form class="set-form" :model="setForm" label-width="80px">
-                <el-form-item :label="$t('webClient.weather[0].label')">
-                  <el-select
-                    size="mini"
-                    popper-class="popper-bgi"
-                    v-model="setForm.weather"
-                    :placeholder="$t('webClient.weather[0].value')"
-                  >
-                    <el-option label="区域一" value="shanghai"></el-option>
-                    <el-option label="区域二" value="beijing"></el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item :label="$t('webClient.weather[1].label')">
-                  <div
-                    class="show-speed weahter-speed"
-                    v-if="imgList[9].state === 1"
-                  >
-                    <el-slider v-model="imgList[9].data.speed"></el-slider>
-                  </div>
-                </el-form-item>
-              </el-form>
+          <!-- <el-collapse-transition> -->
+            <div class="show-weather" v-show="imgList[9].state === 1">
+              <div v-show="weatherData.length > 0">
+                <bim-weather @click.native="SetWeather(item)" v-for="item in weatherData" :key="item.id" :setProps="item"></bim-weather>
+              </div>
             </div>
-          </el-collapse-transition>
+          <!-- </el-collapse-transition> -->
         </div>
         <!-- <div class="cut-apart"></div> -->
         <!-- 浏览器 -->
@@ -489,8 +488,12 @@
 
 <script>
 import MODELAPI from "@/api/model_api";
+import BimWeather from "./bim_weather"
 
 export default {
+  components: {
+    BimWeather
+  },
   props: {
     setProps: {
       type: Object,
@@ -658,9 +661,6 @@ export default {
           state: 0,
           url: require("@/assets/images/todo/unchecked/weather.png"),
           name: "weather.png",
-          data: {
-            speed: 50,
-          },
           title: "渲染环境",
           id: 1012,
         },
@@ -685,6 +685,13 @@ export default {
           title: "框选",
           id: 1002,
         },
+        {
+          state: 0,
+          url: require("@/assets/images/todo/unchecked/member_show.png"),
+          name: "member_show.png",
+          title: "显示",
+          id: 1015,
+        },
       ],
       activePerson: 1,
       oldState: 0,
@@ -695,7 +702,6 @@ export default {
       setForm: {
         unit: 0,
         accuracy: 2,
-        weather: null,
       },
       deleteData: {
         title: "提示",
@@ -718,6 +724,7 @@ export default {
         cancelMessage: "指令下发失败",
         addLoadMessage: "正在执行添加视角，请稍候……",
       },
+      weatherData: []
     };
   },
   watch: {
@@ -740,6 +747,7 @@ export default {
     },
   },
   created() {
+    this.ListWeather()
     this.uiList = this.singleList;
     if (this.setProps.taskId) {
       this.getProps = this.setProps;
@@ -785,6 +793,33 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    SetWeather(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-06-05 15:49:31
+     * @description: 选择环境
+     */
+      this.$emit("listenTodo", {
+          state: this.imgList[9].state,
+          type: 9,
+          data: e,
+        });
+    },
+    ListWeather(){
+    /**
+     * @Author: zk
+     * @Date: 2021-06-05 14:57:55
+     * @description: 获取环境列表
+     */      
+     MODELAPI.LISTWEATHER()
+            .then((res) => {
+              if (res.data.code === 0) {
+                this.weatherData = res.data.data
+              }else{
+                this.weatherData = []
+              }
+            })
+    },
     showBar(e) {
       /**
        * @Author: zk
@@ -1185,7 +1220,7 @@ export default {
     },
     handleOrder(e) {
       // 功能未开放
-      if (e === 5 || e === 7 || e === 9) {
+      if (e === 5 || e === 7) {
         return;
       }
       if (e === 12 && this.activePerson === 0) {
@@ -1206,6 +1241,13 @@ export default {
       } else {
         realImg = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
       }
+      // 构件显示隐藏
+      if (this.imgList[e].state === 0 && e === 13) {
+        this.imgList[e].title = "隐藏"
+      } else {
+        this.imgList[e].title = "显示"
+      }
+
       this.imgList[e].url = realImg;
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
       // 关闭刨切和测量
@@ -1465,12 +1507,32 @@ export default {
     }
     .show-weather {
       position: absolute;
-      width: 200%;
-      left: -60%;
-      padding: 10%;
+      width: 260px;
+      height: 200px;
+      overflow-y: auto;
+      left: -115px;
+      padding: 10px 10px 0 10px;
       border-radius: 10px 10px 0 0;
-      top: -139px;
+      top: -220px;
       background-color: rgba(0, 0, 0, 0.6);
+      &::-webkit-scrollbar {
+        /*滚动条整体样式*/
+        width: 6px;
+        /*高宽分别对应横竖滚动条的尺寸*/
+        height: 1px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        /*滚动条里面小方块*/
+        border-radius: 10px;
+        background: rgba(0, 0, 0, 0.3);
+      }
+
+      &::-webkit-scrollbar-track {
+        /*滚动条里面轨道*/
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.295);
+      }
     }
 
     .footer-image {

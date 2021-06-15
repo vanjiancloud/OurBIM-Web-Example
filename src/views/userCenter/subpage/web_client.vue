@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-09 16:56:42
+ * @LastEditTime: 2021-06-15 09:17:24
  * @description: 
 -->
 <template>
@@ -16,15 +16,6 @@
       frameborder="0"
       id="show-bim"
     ></iframe>
-    <div class="time-log" v-if="moreCount < 10">
-      <div class="log-main" :class="runTimeCode === 0 ? '' : 'phone-log-main'">
-        <div>
-          <img class="show-logo" src="@/assets/img/ourbim-logo.png" alt="" />
-        </div>
-        <span v-text="moreCount"></span>
-        <span v-text="$t('webClient.loadBox.title[0]')"></span>
-      </div>
-    </div>
     <div
       class="hidden-bim"
       :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
@@ -262,7 +253,6 @@ export default {
       activeLeaf: false,
       loadTimer: null,
       timerCount: 0,
-      moreCount: 10,
       hiddenState: 0,
       websock: null,
       isSocket: false,
@@ -612,8 +602,8 @@ export default {
           break;
         case 8:
           // 构件显示 隐藏 半透明
-          // console.log(this.leafInfo);
           params.mn = this.leafInfo.uuid;
+          params.projectId = this.leafInfo.projectId
           if (this.leafInfo.activeState === 0) {
             params.id = 26;
           } else if (this.leafInfo.activeState === 1) {
@@ -625,6 +615,7 @@ export default {
           break;
         case 9:
           // 当前 focus + 高亮 /取消
+          params.projectId = this.leafInfo.data.projectId
           params.mn = this.leafInfo.key;
           this.leafInfo.data.activeSelect === 0
             ? (params.id = 29)
@@ -696,6 +687,10 @@ export default {
           params.id = 18;
           params.Switch = this.listenTodoInfo.state === 1 ? "on" : "off";
           break;
+        case 15:
+          // 渲染环境
+          params.id = 50;
+          params.weahterId = this.listenTodoInfo.data.id;
         default:
           break;
       }
@@ -708,21 +703,28 @@ export default {
 
       await MODELAPI.UPDATEORDER(params)
         .then((res) => {
-          if (params.id === 1 && res.data && res.data.data) {
-            // 切换到主视图 重置状态
-            if (this.$refs.getFooter) {
-              let realView = res.data.data.viewMode === "1" ? 0 : 1;
-              this.$refs.getFooter.resetPerson(realView);
+          if (res.data.code === 0) {
+            if (params.id === 1 && res.data && res.data.data) {
+              // 切换到主视图 重置状态
+              if (this.$refs.getFooter) {
+                let realView = res.data.data.viewMode === "1" ? 0 : 1;
+                this.$refs.getFooter.resetPerson(realView);
+              }
+              if (this.$refs.getCube) {
+                let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
+                this.$refs.getCube.resetActive(realProject);
+              }
             }
-            if (this.$refs.getCube) {
-              let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
-              this.$refs.getCube.resetActive(realProject);
-            }
+            this.$message({
+              message: this.$t("webClient.loadBox.message[2]"),
+              type: "success",
+            });
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: "error",
+            });
           }
-          this.$message({
-            message: this.$t("webClient.loadBox.message[2]"),
-            type: "success",
-          });
         })
         .catch(() => {
           this.$message({
@@ -731,11 +733,12 @@ export default {
           });
         });
     },
-    async getMemberList(e) {
+    async getMemberList(node) {
       let params = {
-        appliId: this.appId,
+        appliId:
+          node.data && node.data.projectId ? node.data.projectId : this.appId,
       };
-      e ? (params.uuid = e) : "";
+      node.key ? (params.uuid = node.key) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
         if (res.data.code === 0) {
           return res.data.data;
@@ -748,7 +751,7 @@ export default {
     },
     loadNode(node, resolve) {
       if (node.level === 0) {
-        this.getMemberList(node.key).then((res) => {
+        this.getMemberList(node).then((res) => {
           if (res.length > 0) {
             res.forEach((item) => {
               item.activeState = 0;
@@ -761,7 +764,7 @@ export default {
         });
       }
       if (node.level >= 1) {
-        this.getMemberList(node.key).then((res) => {
+        this.getMemberList(node).then((res) => {
           if (res.length > 0) {
             res.forEach((item) => {
               item.activeState = 0;
@@ -866,6 +869,7 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
+      console.log(e);
       this.$refs.getCube.closeView();
       // 浏览器
       if (e.type === 10) {
@@ -928,11 +932,42 @@ export default {
           this.updateOrder();
         }
       }
+      // 分解模型
       if (e.type === 8 && e.data !== undefined) {
         this.handleState = 12;
         this.listenTodoInfo = e;
         this.updateOrder();
       }
+      // 渲染环境
+      if (e.type === 9 && e.data !== undefined) {
+        this.handleState = 15;
+        this.listenTodoInfo = e;
+        this.updateOrder();
+      }
+      // 构件显示隐藏
+      // 渲染环境
+      if (e.type === 13) {
+        this.listenTodoInfo = e;
+        this.UpdateMemeberState();
+      }
+    },
+    UpdateMemeberState(){
+    /**
+     * @Author: zk
+     * @Date: 2021-06-09 11:02:14
+     * @description: 更改选中构件状态
+     */      
+    let params = {
+      taskid: this.taskId,
+      visible: this.listenTodoInfo.state === 0 ? true : false
+    }
+     MODELAPI.UPDATEMEMBER(params)
+     .then(res => {
+      this.$message({
+              message: this.$t("webClient.loadBox.message[2]"),
+              type: "success",
+            });
+     })
     },
     handleTagShow() {
       /**
@@ -972,7 +1007,7 @@ export default {
        * 6 启动事件
        * 7 点击空白
        * 8 初始化成功
-       */
+       */      
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
@@ -1025,23 +1060,11 @@ export default {
             };
             this.sentParentIframe(messageInfo);
             this.hiddenState = 0;
-            //普通的watch监听
-            if (this.ourbimInfo.expiredTime > 0) {
-              if (this.isFade) {
-                this.$message({
-                  type: "success",
-                  message:
-                    "免费体验时长" + this.ourbimInfo.expiredTime + "分钟",
-                });
-              }
-              this.setTimePass();
-            }
-            // this.isFade = false;
             if (
               Number(this.propsProgress.data) >= 0 &&
               Number(this.propsProgress.data) <= 100
             ) {
-              this.propsProgress.data = Number(realData.progress) * 100;
+              this.propsProgress.data = Number(String(Number(realData.progress) * 100).substring(0,2));
             }
             if (Number(realData.progress) === 1) {
               let noneTimer = setTimeout(() => {
@@ -1091,7 +1114,7 @@ export default {
               Number(this.propsProgress.lodaData) >= 0 &&
               Number(this.propsProgress.lodaData) <= 100
             ) {
-              this.propsProgress.lodaData = Number(realData.progress) * 100;
+              this.propsProgress.lodaData = Number(String(Number(realData.progress) * 100).substring(0,2));
             }
             let messageInfo = {
               prex: "ourbimMessage",
@@ -1147,7 +1170,19 @@ export default {
             this.webUrl = res.data.data.url;
             this.taskId = res.data.data.taskId;
             this.ourbimInfo = res.data.data;
-            if (res.data.data.appliType === "0") {
+            this.propsFooter.taskId = res.data.data.taskId;
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 10001,
+              data: {
+                taskId: res.data.data.taskId,
+              },
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
+            this.initWebSocket();
+            this.getMonitor();
+            if (res.data.data.appliType !== "1") {
               this.controllerInfo.uiBar = true;
               if (this.isUiBar) {
                 this.controllerInfo.uiBar = true;
@@ -1162,22 +1197,11 @@ export default {
               this.controllerInfo.uiBar = false;
               this.controllerInfo.viewCube = false;
               if (this.$refs.tagTree) {
-                this.$refs.tagTree.closePart(false);
+              this.$refs.tagTree.closePart(false);                
               }
             }
 
-            this.propsFooter.taskId = res.data.data.taskId;
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 10001,
-              data: {
-                taskId: res.data.data.taskId,
-              },
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
-            this.initWebSocket();
-            this.getMonitor();
+            
           } else {
             this.$message({
               type: "warning",
@@ -1218,23 +1242,6 @@ export default {
       if (this.loadTimer) {
         clearTimeout(this.loadTimer);
       }
-    },
-    // 设置超时时间
-    setTimePass() {
-      this.clearTimePass();
-      this.timerInfo = setInterval(() => {
-        this.timerCount++;
-        let realSecond = this.ourbimInfo.expiredTime * 60;
-        if (this.timerCount >= realSecond - 10) {
-          this.moreCount = realSecond - this.timerCount;
-        }
-        if (this.moreCount <= 0) {
-          this.closeWebSocket();
-          this.isFade = true;
-          this.hiddenState = 1;
-          this.clearTimePass();
-        }
-      }, 1000);
     },
     closeWebSocket() {
       // 清除定时器
