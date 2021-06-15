@@ -65,7 +65,7 @@
         <el-table-column
           prop="createTime"
           :label="$t('uploaddate')"
-          width="200"
+          width="180"
         >
         </el-table-column>
         <el-table-column :label="$t('operation')" width="150">
@@ -102,7 +102,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="进入项目">
+        <el-table-column label="进入项目" width="120">
           <template slot-scope="scope">
             <el-button
               @click="GoApp(scope.row)"
