@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-06-15 09:45:01
+ * @LastEditTime: 2021-06-15 10:00:14
  * @description: 
 -->
 <template>
@@ -405,11 +405,16 @@
             />
           </el-tooltip>
           <!-- <el-collapse-transition> -->
-            <div class="show-weather" v-show="imgList[9].state === 1">
-              <div v-show="weatherData.length > 0">
-                <bim-weather @click.native="SetWeather(item)" v-for="item in weatherData" :key="item.id" :setProps="item"></bim-weather>
-              </div>
+          <div class="show-weather" v-show="imgList[9].state === 1">
+            <div v-show="weatherData.length > 0">
+              <bim-weather
+                @click.native="SetWeather(item)"
+                v-for="item in weatherData"
+                :key="item.id"
+                :setProps="item"
+              ></bim-weather>
             </div>
+          </div>
           <!-- </el-collapse-transition> -->
         </div>
         <!-- <div class="cut-apart"></div> -->
@@ -488,11 +493,11 @@
 
 <script>
 import MODELAPI from "@/api/model_api";
-import BimWeather from "./bim_weather"
+import BimWeather from "./bim_weather";
 
 export default {
   components: {
-    BimWeather
+    BimWeather,
   },
   props: {
     setProps: {
@@ -724,7 +729,7 @@ export default {
         cancelMessage: "指令下发失败",
         addLoadMessage: "正在执行添加视角，请稍候……",
       },
-      weatherData: []
+      weatherData: [],
     };
   },
   watch: {
@@ -747,7 +752,7 @@ export default {
     },
   },
   created() {
-    this.ListWeather()
+    this.ListWeather();
     this.uiList = this.singleList;
     if (this.setProps.taskId) {
       this.getProps = this.setProps;
@@ -793,32 +798,31 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
-    SetWeather(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-06-05 15:49:31
-     * @description: 选择环境
-     */
+    SetWeather(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-06-05 15:49:31
+       * @description: 选择环境
+       */
       this.$emit("listenTodo", {
-          state: this.imgList[9].state,
-          type: 9,
-          data: e,
-        });
+        state: this.imgList[9].state,
+        type: 9,
+        data: e,
+      });
     },
-    ListWeather(){
-    /**
-     * @Author: zk
-     * @Date: 2021-06-05 14:57:55
-     * @description: 获取环境列表
-     */      
-     MODELAPI.LISTWEATHER()
-            .then((res) => {
-              if (res.data.code === 0) {
-                this.weatherData = res.data.data
-              }else{
-                this.weatherData = []
-              }
-            })
+    ListWeather() {
+      /**
+       * @Author: zk
+       * @Date: 2021-06-05 14:57:55
+       * @description: 获取环境列表
+       */
+      MODELAPI.LISTWEATHER().then((res) => {
+        if (res.data.code === 0) {
+          this.weatherData = res.data.data;
+        } else {
+          this.weatherData = [];
+        }
+      });
     },
     showBar(e) {
       /**
@@ -891,15 +895,16 @@ export default {
         }
       }
       let setParams = {
-          id: indexes,
-        }
-        if (indexes === 2 || indexes === 0 || indexes === 1) {
-          setParams.state = this.activeSlice.indexOf(indexes) === -1 ? "off" : "on" 
-        }
+        id: indexes,
+      };
+      if (indexes === 2 || indexes === 0 || indexes === 1) {
+        setParams.state =
+          this.activeSlice.indexOf(indexes) === -1 ? "off" : "on";
+      }
       this.$emit("listenTodo", {
         state: this.imgList[2].state,
         type: 2,
-        data: setParams
+        data: setParams,
       });
     },
     changeGauge(e) {
@@ -1225,10 +1230,10 @@ export default {
       }
       if (e === 12 && this.activePerson === 0) {
         this.$message({
-              message: "请在第三人称下使用框选功能",
-              type: "warning",
-            });
-        return
+          message: "请在第三人称下使用框选功能",
+          type: "warning",
+        });
+        return;
       }
       // 剖切 分解模型 返回第三人称
       if (e === 2 || e === 8) {
@@ -1242,10 +1247,12 @@ export default {
         realImg = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
       }
       // 构件显示隐藏
-      if (this.imgList[e].state === 0 && e === 13) {
-        this.imgList[e].title = "隐藏"
-      } else {
-        this.imgList[e].title = "显示"
+      if (e === 13) {
+        if (this.imgList[e].state === 0) {
+          this.imgList[e].title = "隐藏";
+        } else {
+          this.imgList[e].title = "显示";
+        }
       }
 
       this.imgList[e].url = realImg;
@@ -1277,7 +1284,7 @@ export default {
         }
       }
       // 框选
-      if (this.oldState === 12) {        
+      if (this.oldState === 12) {
         if (
           this.imgList[this.oldState].state === 1 &&
           e !== 10 &&
@@ -1311,7 +1318,13 @@ export default {
         });
       }
       // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11 && (e !== 13 && this.oldState !== 12)) {
+      if (
+        e !== this.oldState &&
+        e !== 10 &&
+        e !== 11 &&
+        e !== 13 &&
+        this.oldState !== 12
+      ) {
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;
