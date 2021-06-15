@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:42:41
  * @LastEditors: zk
- * @LastEditTime: 2021-06-03 09:51:23
+ * @LastEditTime: 2021-06-15 09:13:29
  * @description: 
 -->
 # 说明
@@ -22,9 +22,9 @@ window.addEventListener("message", function(e) {
 /**
     * @description:
     * e.data.prex 为"ourbimMessage"，用来标识信息来源的标识
-    * e.data.type 为消息类型1
-    * e.data.data 为消息的详细信息1
-    * e.data.message 为附加信息1
+    * e.data.type 为消息类型
+    * e.data.data 为消息的详细信息
+    * e.data.message 为附加信息
     * 模型加载
     * 10001: 已获取平台资源，开始初始化
     * data: {
