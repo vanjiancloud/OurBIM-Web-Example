@@ -39,6 +39,11 @@
                     ></el-menu-item
                   >
                   <el-menu-item index=""
+                    ><a href="http://www.ourbim.com/application_scenarios">
+                      应用场景</a
+                    ></el-menu-item
+                  >
+                  <el-menu-item index=""
                     ><a href="http://www.ourbim.com/product_pricing">
                       产品定价</a
                     ></el-menu-item
@@ -699,12 +704,11 @@ export default {
       .logo-index {
         width: 150px;
         margin-right: 50px;
-        margin-top: 3px;
       }
       .el-menu-item {
         border-bottom: none;
         font-size: 16px;
-        padding: 0 15px;
+        padding: 0 10px;
         height: 60px;
         line-height: 60px;
         background: #fff !important;
