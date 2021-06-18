@@ -857,12 +857,11 @@ export default {
       justify-content: center;
       min-height: 961px;
       .nav {
-        float: left;
-        width: 230px;
+        width: 200px;
         min-height: 961px;
         margin-right: 20px;
         .tac {
-          width: 100%;
+          width: 200px;
           height: 100%;
           .el-menu-item {
             font-size: 16px;
@@ -873,6 +872,7 @@ export default {
             }
           }
           .el-submenu {
+            overflow: hidden;
             i {
               color: #000;
             }
@@ -933,8 +933,9 @@ export default {
         }
       }
       .content {
-        float: left;
-        width: 1170px;
+        // float: left;
+        width: calc(100% - 300px);
+        flex-grow: 1;
         min-height: 961px;
         background-color: #fff;
       }

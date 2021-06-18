@@ -17,7 +17,7 @@
     <!-- 表格 -->
     <div class="table">
       <el-table :data="itemList" style="width: 100%" class="sheet">
-        <el-table-column prop="appid" :label="$t('applicationid')">
+        <el-table-column prop="appid" :label="$t('applicationid')" width="130">
         </el-table-column>
         <el-table-column prop="appName" :label="$t('applyname')" width="150">
           <template slot-scope="scope">
@@ -33,7 +33,7 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="" label="项目类型">
+        <el-table-column prop="" label="项目类型" width="60">
           <template slot-scope="scope">
             <span v-if="scope.row.appType === '0'">普通模型</span>
             <span v-else-if="scope.row.appType === '1'">漫游模型</span>
@@ -41,7 +41,7 @@
             <span v-else>其他模型</span>
           </template>
         </el-table-column>
-        <el-table-column prop="fileSize" label="模型大小"> </el-table-column>
+        <el-table-column prop="fileSize" label="模型大小" width="100"> </el-table-column>
         <el-table-column prop="" label="并发节点">
           <template slot-scope="scope">
             {{ scope.row.currentInstance }}/{{ scope.row.maxInstance }}
@@ -63,10 +63,12 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="createTime"
           :label="$t('uploaddate')"
-          width="180"
+          width="120"
         >
+        <template slot-scope="scope">
+          <div v-text="scope.row.createTime.slice(0, 10)"></div>
+        </template>
         </el-table-column>
         <el-table-column :label="$t('operation')" width="150">
           <template slot-scope="scope">
@@ -808,7 +810,8 @@ export default {
 }
 .box {
   overflow: hidden;
-  padding: 20px;
+  width: 96%;
+  padding: 20px 2%;
   /deep/ .el-button--primary {
     background-color: #00aaf0;
   }
@@ -1018,6 +1021,12 @@ export default {
   }
   .el-dialog__footer{
     padding-top: 0;
+  }
+}
+.sheet{
+  .el-table__body, .el-table__header{
+    width: 100% !important;
+    table-layout: auto
   }
 }
 </style>

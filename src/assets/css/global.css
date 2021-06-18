@@ -23,7 +23,8 @@ body
 @media (min-width: 1200px) {
     .container {
       min-width: 1200px !important;
-      max-width: 1420px !important;
+      width: 1200px;
+      /* max-width: 1420px !important; */
       font-family: 'microsoft yahei';
       margin: 0 auto;
       font-size: 16px;
