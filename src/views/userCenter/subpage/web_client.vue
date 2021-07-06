@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-15 09:48:08
+ * @LastEditTime: 2021-07-06 18:00:47
  * @description: 
 -->
 <template>
@@ -72,37 +72,43 @@
               ></i>
             </div>
           </div>
-          <div class="tree-content">
-            <el-tree
-              ref="setTree"
-              @check="checkTree"
-              :empty-text="treeEmpty"
-              :props="propsMember"
-              :expand-on-click-node="false"
-              :load="loadNode"
-              show-checkbox
-              highlight-current
-              node-key="uuid"
-              lazy
-              accordion
-            >
-              <span
-                class="custom-tree-node"
-                :class="
-                  activeTree && node.data.uuid === activeTree.uuid && activeLeaf
-                    ? 'tree-select'
-                    : ''
-                "
-                slot-scope="{ node }"
-                @click="handleTree(node, 0)"
+          <div class="tree-part">
+            <div class="tree-content" id="tree-content">
+              <el-tree
+                class="set-tree"
+                ref="setTree"
+                @check="checkTree"
+                :empty-text="treeEmpty"
+                @node-expand="ExpandNode"
+                :props="propsMember"
+                :expand-on-click-node="false"
+                :load="loadNode"
+                show-checkbox
+                highlight-current
+                node-key="uuid"
+                lazy
+                accordion
               >
-                <span class="label-span">{{ node.label }}</span>
-                <span>
-                  <i class="iconfont icon-xianshi2" v-if="!node.checked"></i>
-                  <i v-else class="iconfont icon-yincang1"></i>
+                <span
+                  class="custom-tree-node"
+                  :class="
+                    activeTree &&
+                    node.data.uuid === activeTree.uuid &&
+                    activeLeaf
+                      ? 'tree-select'
+                      : ''
+                  "
+                  slot-scope="{ node }"
+                  @click="handleTree(node, 0)"
+                >
+                  <span class="label-span">{{ node.label }}</span>
+                  <span>
+                    <i class="iconfont icon-xianshi2" v-if="!node.checked"></i>
+                    <i v-else class="iconfont icon-yincang1"></i>
+                  </span>
                 </span>
-              </span>
-            </el-tree>
+              </el-tree>
+            </div>
           </div>
         </div>
         <div
@@ -204,6 +210,7 @@ export default {
   },
   data() {
     return {
+      openNode: null,
       actionList: [],
       propsFooter: {
         taskId: null,
@@ -272,6 +279,8 @@ export default {
         accuracy: 0.01,
       },
       treeEmpty: this.$t("webClient.browser.tips[0]"),
+      TreePageNo: 2,
+      ScrollDistance: 0
     };
   },
   watch: {},
@@ -297,6 +306,9 @@ export default {
     }
   },
   mounted() {
+    document
+      .querySelector("#tree-content")
+      .addEventListener("scroll", this.throttle(this.handleScroll));
     if (this.$route.query.locale) {
       this.locale = this.$route.query.locale;
       this.$i18n.locale = this.locale;
@@ -363,6 +375,80 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    ExpandNode(e, data) {
+      /**
+       * @Author: zk
+       * @Date: 2021-06-18 17:06:25
+       * @description: 节点展开
+       */
+      this.TreePageNo = 2;
+      this.openNode = data;
+    },
+    throttle(fn, delay = 500) {
+      /**
+       * @Author: zk
+       * @Date: 2021-06-18 16:50:53
+       * @description: 节流优化
+       */
+      // 设置变量默认为true
+      let flag = true;
+      // 为了保证this指向，返回一个箭头函数
+      return (...args) => {
+        // 判断如果已经在执行就直接return
+        if (!flag) return;
+        // 否则就是没有执行，将状态赋值为false
+        flag = false;
+        // 设置定时器，设置时间
+        let timer = setTimeout(() => {
+          // 调用apply方法确保this指向问题
+          fn.apply(this, args);
+          // 最后将状态重新更改为true，以便程序下次执行
+          flag = true;
+          clearTimeout(timer);
+        }, delay);
+      };
+    },
+    handleScroll() {
+      /**
+       * @Author: zk
+       * @Date: 2021-06-18 16:22:59
+       * @description: 监听滚动
+       */
+      let offsetHeight = document.querySelector(".tree-part").offsetHeight;
+      let scrollTop = document.querySelector("#tree-content").scrollTop;
+      let scrollHeight = document.querySelector("#tree-content").scrollHeight;
+      let scrollBottom = scrollHeight - (offsetHeight + scrollTop);
+      const ScrollDistance = scrollTop - this.ScrollDistance;
+      this.ScrollDistance = scrollTop
+      if (ScrollDistance >0) {
+          this.ListScrollTree();
+      }
+      
+    },
+    ListScrollTree() {
+      /**
+       * @Author: zk
+       * @Date: 2021-06-18 17:03:03
+       * @description: 滚动加载构件树
+       */
+      this.LisetMemberPage(this.openNode).then((res) => {
+        this.TreePageNo++;
+        if (res.length > 0) {
+          res.forEach((item) => {
+            let noneNode = this.$refs.setTree.getNode(item)
+            if (!noneNode) {
+              this.$refs.setTree.append(item, this.openNode.key);              
+            }
+          });
+        } else {
+          if (this.openNode.parent.data) {
+            this.TreePageNo = 1;
+            this.openNode = this.openNode.parent
+            this.ListScrollTree();            
+          }
+        }
+      });
+    },
     setOrderList() {
       /**
        * @Author: zk
@@ -603,7 +689,7 @@ export default {
         case 8:
           // 构件显示 隐藏 半透明
           params.mn = this.leafInfo.uuid;
-          params.projectId = this.leafInfo.projectId
+          params.projectId = this.leafInfo.projectId;
           if (this.leafInfo.activeState === 0) {
             params.id = 26;
           } else if (this.leafInfo.activeState === 1) {
@@ -615,7 +701,7 @@ export default {
           break;
         case 9:
           // 当前 focus + 高亮 /取消
-          params.projectId = this.leafInfo.data.projectId
+          params.projectId = this.leafInfo.data.projectId;
           params.mn = this.leafInfo.key;
           this.leafInfo.data.activeSelect === 0
             ? (params.id = 29)
@@ -733,10 +819,29 @@ export default {
           });
         });
     },
+    async LisetMemberPage(node) {
+      let params = {
+        appliId:
+          node.data && node.data.projectId ? node.data.projectId : this.appId,
+        pageNo: this.TreePageNo,
+        pageSize: 20,
+      };
+      node.key ? (params.uuid = node.key) : "";
+      let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
+        if (res.data.code === 0) {
+          return res.data.data;
+        } else {
+          return [];
+        }
+      });
+      return realMember;
+    },
     async getMemberList(node) {
       let params = {
         appliId:
           node.data && node.data.projectId ? node.data.projectId : this.appId,
+        pageNo: 1,
+        pageSize: 20,
       };
       node.key ? (params.uuid = node.key) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
@@ -950,23 +1055,22 @@ export default {
         this.UpdateMemeberState();
       }
     },
-    UpdateMemeberState(){
-    /**
-     * @Author: zk
-     * @Date: 2021-06-09 11:02:14
-     * @description: 更改选中构件状态
-     */      
-    let params = {
-      taskid: this.taskId,
-      visible: this.listenTodoInfo.state === 0 ? true : false
-    }
-     MODELAPI.UPDATEMEMBER(params)
-     .then(res => {
-      this.$message({
-              message: this.$t("webClient.loadBox.message[2]"),
-              type: "success",
-            });
-     })
+    UpdateMemeberState() {
+      /**
+       * @Author: zk
+       * @Date: 2021-06-09 11:02:14
+       * @description: 更改选中构件状态
+       */
+      let params = {
+        taskid: this.taskId,
+        visible: this.listenTodoInfo.state === 0 ? true : false,
+      };
+      MODELAPI.UPDATEMEMBER(params).then((res) => {
+        this.$message({
+          message: this.$t("webClient.loadBox.message[2]"),
+          type: "success",
+        });
+      });
     },
     handleTagShow() {
       /**
@@ -1006,7 +1110,7 @@ export default {
        * 6 启动事件
        * 7 点击空白
        * 8 初始化成功
-       */      
+       */
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
@@ -1063,7 +1167,9 @@ export default {
               Number(this.propsProgress.data) >= 0 &&
               Number(this.propsProgress.data) <= 100
             ) {
-              this.propsProgress.data = Number(String(Number(realData.progress) * 100).substring(0,3));
+              this.propsProgress.data = Number(
+                String(Number(realData.progress) * 100).substring(0, 3)
+              );
             }
             if (Number(realData.progress) === 1) {
               let noneTimer = setTimeout(() => {
@@ -1113,7 +1219,9 @@ export default {
               Number(this.propsProgress.loadData) >= 0 &&
               Number(this.propsProgress.loadData) <= 100
             ) {
-              this.propsProgress.loadData = Number(String(Number(realData.progress) * 100).substring(0,3));
+              this.propsProgress.loadData = Number(
+                String(Number(realData.progress) * 100).substring(0, 3)
+              );
             }
             let messageInfo = {
               prex: "ourbimMessage",
@@ -1196,11 +1304,9 @@ export default {
               this.controllerInfo.uiBar = false;
               this.controllerInfo.viewCube = false;
               if (this.$refs.tagTree) {
-              this.$refs.tagTree.closePart(false);                
+                this.$refs.tagTree.closePart(false);
               }
             }
-
-            
           } else {
             this.$message({
               type: "warning",
@@ -1659,10 +1765,14 @@ export default {
           cursor: pointer;
         }
       }
+      .tree-part {
+        height: 40vh;
+        overflow: hidden;
+      }
       .tree-content {
         margin-top: 1vh;
-        height: 40vh;
         width: 99.5%;
+        height: 40vh;
         overflow-x: hidden;
         overflow-y: auto;
         &::-webkit-scrollbar {
