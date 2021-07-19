@@ -335,10 +335,9 @@ export default {
         mobile: this.ruleForm.mobile,
         code: this.ruleForm.code,
         password: this.ruleForm.password,
-        activeUrl: window.location.href,
+        activeUrl: window.location.href.split('?')[0],
       })
         .then((res) => {
-          console.log(res);
           if (res.data.code === 0) {
             this.$message.success("注册成功");
             this.$router.push("/registerSucceed");
