@@ -326,7 +326,6 @@ export default {
     },
     // 点击注册
     doRegister() {
-      console.log(window.location.href);
       getRegister({
         email: this.ruleForm.email,
         name: this.ruleForm.name,
