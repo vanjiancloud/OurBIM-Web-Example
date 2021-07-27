@@ -7,8 +7,8 @@
  */
 // let WSPRO = "ws://1.182.89.34:11011/vjapi/";
 // let WSPRO = "ws://192.168.3.160:11011/vjapi/";
-let WSPRO = "ws://192.168.3.235:11011/vjapi/";
-// let WSPRO = "ws://cloud.ourbim.com:11011/vjapi/";
+// let WSPRO = "ws://192.168.3.235:11011/vjapi/";
+let WSPRO = "ws://cloud.ourbim.com:11011/vjapi/";
 export let BASE = {
   WSPRO
 }
