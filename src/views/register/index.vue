@@ -288,9 +288,9 @@ export default {
       if (source === null) {
         window.location.href = "http://www.ourbim.com";
       } else if (source === 'docs') {
-        window.location.href = "http://docs.vanjian.com/#/login";
+        window.location.href = "http://yun.vanjian.com/Docs/#/login";
       } else if (source === 'beta_docs') {
-        window.location.href = "http://beta_docs.vanjian.com/#/login";
+        window.location.href = "http://yun.vanjian.com/DocsBeta/#/login";
       }
     },
     getUrlKey(name) {
