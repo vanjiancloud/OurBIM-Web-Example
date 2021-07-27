@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-07-27 18:16:51
+ * @LastEditTime: 2021-07-27 18:21:18
  * @description: 
 -->
 <template>
@@ -777,10 +777,13 @@ export default {
           // 渲染环境
           params.id = 50;
           params.weahterId = this.listenTodoInfo.data.id;
+          break;
           case 16:
           // 渲染环境
           params.id = 34;
           params.Switch = this.listenTodoInfo.state === 0 ? 'off' : 'on';
+          break;
+
         default:
           break;
       }
