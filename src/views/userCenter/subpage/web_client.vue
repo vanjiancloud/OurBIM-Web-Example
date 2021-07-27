@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-06-18 18:05:05
+ * @LastEditTime: 2021-07-27 18:16:51
  * @description: 
 -->
 <template>
@@ -777,6 +777,10 @@ export default {
           // 渲染环境
           params.id = 50;
           params.weahterId = this.listenTodoInfo.data.id;
+          case 16:
+          // 渲染环境
+          params.id = 34;
+          params.Switch = this.listenTodoInfo.state === 0 ? 'off' : 'on';
         default:
           break;
       }
@@ -1044,6 +1048,12 @@ export default {
       // 渲染环境
       if (e.type === 9 && e.data !== undefined) {
         this.handleState = 15;
+        this.listenTodoInfo = e;
+        this.updateOrder();
+      }
+      // 小地图
+      if (e.type === 5) {
+        this.handleState = 16;
         this.listenTodoInfo = e;
         this.updateOrder();
       }
