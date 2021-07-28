@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-07-27 18:21:18
+ * @LastEditTime: 2021-07-28 17:35:13
  * @description: 
 -->
 <template>
@@ -280,7 +280,7 @@ export default {
       },
       treeEmpty: this.$t("webClient.browser.tips[0]"),
       TreePageNo: 2,
-      ScrollDistance: 0
+      ScrollDistance: 0,
     };
   },
   watch: {},
@@ -419,11 +419,10 @@ export default {
       let scrollHeight = document.querySelector("#tree-content").scrollHeight;
       let scrollBottom = scrollHeight - (offsetHeight + scrollTop);
       const ScrollDistance = scrollTop - this.ScrollDistance;
-      this.ScrollDistance = scrollTop
-      if (ScrollDistance >0) {
-          this.ListScrollTree();
+      this.ScrollDistance = scrollTop;
+      if (ScrollDistance > 0) {
+        this.ListScrollTree();
       }
-      
     },
     ListScrollTree() {
       /**
@@ -435,16 +434,16 @@ export default {
         this.TreePageNo++;
         if (res.length > 0) {
           res.forEach((item) => {
-            let noneNode = this.$refs.setTree.getNode(item)
+            let noneNode = this.$refs.setTree.getNode(item);
             if (!noneNode) {
-              this.$refs.setTree.append(item, this.openNode.key);              
+              this.$refs.setTree.append(item, this.openNode.key);
             }
           });
         } else {
           if (this.openNode.parent.data) {
             this.TreePageNo = 1;
-            this.openNode = this.openNode.parent
-            this.ListScrollTree();            
+            this.openNode = this.openNode.parent;
+            this.ListScrollTree();
           }
         }
       });
@@ -486,6 +485,9 @@ export default {
         101, 102, 103, 201, 202, 203, 301, 401, 402, 403, 404, 501, 502, 503,
         504, 601, 602, 603, 1001, 1002, 1003, 1004,
       ];
+      if (e.type === 600) {
+        this.getMonitor();
+      }
       if (errorList.indexOf(e.type) !== -1) {
         this.hiddenState = 4;
         this.isFade = true;
@@ -778,10 +780,10 @@ export default {
           params.id = 50;
           params.weahterId = this.listenTodoInfo.data.id;
           break;
-          case 16:
+        case 16:
           // 渲染环境
           params.id = 34;
-          params.Switch = this.listenTodoInfo.state === 0 ? 'off' : 'on';
+          params.Switch = this.listenTodoInfo.state === 0 ? "off" : "on";
           break;
 
         default:
@@ -1300,7 +1302,6 @@ export default {
             };
             this.sentParentIframe(messageInfo);
             this.initWebSocket();
-            this.getMonitor();
             if (res.data.data.appliType !== "1") {
               this.controllerInfo.uiBar = true;
               if (this.isUiBar) {

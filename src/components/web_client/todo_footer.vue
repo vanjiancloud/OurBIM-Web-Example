@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-07-27 18:20:56
+ * @LastEditTime: 2021-07-28 10:31:34
  * @description: 
 -->
 <template>
@@ -406,14 +406,43 @@
           </el-tooltip>
           <!-- <el-collapse-transition> -->
           <div class="show-weather" v-show="imgList[9].state === 1">
-            <div v-show="weatherData.length > 0">
-              <bim-weather
-                @click.native="SetWeather(item)"
-                v-for="item in weatherData"
-                :key="item.id"
-                :setProps="item"
-              ></bim-weather>
-            </div>
+            <el-form class="set-form" :model="setForm" label-width="80px">
+              <el-form-item :label="$t('webClient.weather[0].label')">
+                <el-select
+                  size="mini"
+                  @change="SetWeather"
+                  class="w-100"
+                  popper-class="popper-bgi"
+                  v-model="setForm.weather"
+                  :placeholder="$t('webClient.weather[0].value')"
+                >
+                  <el-option
+                    :label="item.weatherName"
+                    :value="item.id"
+                    v-for="(item, index) in weatherData"
+                    :key="index"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item
+                :label="$t('webClient.weather[1].label')"
+                v-if="imgList[9].isTimer"
+              >
+                <div
+                  class="show-speed weahter-speed"
+                  v-if="imgList[9].state === 1"
+                >
+                  <el-slider
+                    :min="6"
+                    :max="17"
+                    v-model="imgList[9].data.speed"
+                    @mousedown.native="openMask"
+                    @click.native.stop=""
+                    @change="changeTime"
+                  ></el-slider>
+                </div>
+              </el-form-item>
+            </el-form>
           </div>
           <!-- </el-collapse-transition> -->
         </div>
@@ -493,12 +522,9 @@
 
 <script>
 import MODELAPI from "@/api/model_api";
-import BimWeather from "./bim_weather";
 
 export default {
-  components: {
-    BimWeather,
-  },
+  components: {},
   props: {
     setProps: {
       type: Object,
@@ -668,6 +694,10 @@ export default {
           name: "weather.png",
           title: "渲染环境",
           id: 1012,
+          data: {
+            speed: 4,
+          },
+          isTimer: false,
         },
         {
           state: 0,
@@ -707,6 +737,7 @@ export default {
       setForm: {
         unit: 0,
         accuracy: 2,
+        weather: null,
       },
       deleteData: {
         title: "提示",
@@ -804,10 +835,21 @@ export default {
        * @Date: 2021-06-05 15:49:31
        * @description: 选择环境
        */
+      let activeInfo = this.weatherData.find((val) => {
+        if (val.id === e) {
+          return val;
+        }
+      });
+      if (activeInfo && activeInfo.isDynamic === "1") {
+        this.imgList[9].isTimer = true;
+      } else {
+        this.imgList[9].isTimer = false;
+        this.imgList[9].data.speed = 6
+      }
       this.$emit("listenTodo", {
         state: this.imgList[9].state,
         type: 9,
-        data: e,
+        data: activeInfo,
       });
     },
     ListWeather() {
@@ -961,6 +1003,14 @@ export default {
         type: 8,
         data: e,
       });
+    },
+    changeTime(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-07-28 10:19:02
+     * @description: 渲染环境 切换时间
+     */      
+      console.log(e);
     },
     changePerson(e) {
       /**
@@ -1432,6 +1482,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.w-100 {
+  width: 100%;
+}
 .todo-footer {
   position: absolute;
   bottom: 26px;
@@ -1530,12 +1583,12 @@ export default {
     .show-weather {
       position: absolute;
       width: 260px;
-      height: 200px;
+      height: 130px;
       overflow-y: auto;
       left: -115px;
-      padding: 10px 10px 0 10px;
+      padding: 10px 20px 0 20px;
       border-radius: 10px 10px 0 0;
-      top: -220px;
+      top: -150px;
       background-color: rgba(0, 0, 0, 0.6);
       &::-webkit-scrollbar {
         /*滚动条整体样式*/
