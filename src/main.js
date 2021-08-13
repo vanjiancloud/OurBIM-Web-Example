@@ -197,6 +197,12 @@ const i18n = new VueI18n({
         attribute: {
           title: '属性'
         },
+        componentLibrary: {
+          title: '构件库'
+        },
+        qrcodePart: {
+          title: '二维码',
+        },
         loadBox: {
           title: [
             '长时间未交互，已自动断开，刷新即可重连。',
@@ -400,6 +406,12 @@ const i18n = new VueI18n({
         },
         attribute: {
           title: 'attribute'
+        },
+        componentLibrary: {
+          title: 'component library'
+        },
+        qrcodePart: {
+          title: 'QR code',
         },
         loadBox: {
           title: [

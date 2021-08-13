@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-07-28 10:31:34
+ * @LastEditTime: 2021-07-30 15:15:47
  * @description: 
 -->
 <template>
@@ -447,6 +447,23 @@
           <!-- </el-collapse-transition> -->
         </div>
         <!-- <div class="cut-apart"></div> -->
+        <!-- 构件库 -->
+        <div class="image-main" v-if="showBar(imgList[14].id)">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :enterable="false"
+            :content="imgList[14].title"
+            placement="top"
+          >
+            <img
+              @click.stop="handleOrder(14)"
+              class="footer-image"
+              :src="imgList[14].url"
+              mode=""
+            />
+          </el-tooltip>
+        </div>
         <!-- 浏览器 -->
         <div class="image-main" v-if="showBar(imgList[10].id)">
           <el-tooltip
@@ -727,6 +744,13 @@ export default {
           title: "显示",
           id: 1015,
         },
+        {
+          state: 0,
+          url: require("@/assets/images/todo/unchecked/component-library.png"),
+          name: "component-library.png",
+          title: "构件库",
+          id: 1016,
+        },
       ],
       activePerson: 1,
       oldState: 0,
@@ -844,7 +868,7 @@ export default {
         this.imgList[9].isTimer = true;
       } else {
         this.imgList[9].isTimer = false;
-        this.imgList[9].data.speed = 6
+        this.imgList[9].data.speed = 6;
       }
       this.$emit("listenTodo", {
         state: this.imgList[9].state,
@@ -1004,12 +1028,12 @@ export default {
         data: e,
       });
     },
-    changeTime(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-07-28 10:19:02
-     * @description: 渲染环境 切换时间
-     */      
+    changeTime(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-07-28 10:19:02
+       * @description: 渲染环境 切换时间
+       */
       console.log(e);
     },
     changePerson(e) {
@@ -1381,6 +1405,7 @@ export default {
         e !== 10 &&
         e !== 11 &&
         e !== 13 &&
+        e !== 14 &&
         this.oldState !== 12
       ) {
         this.angleTool = false;
@@ -1449,6 +1474,24 @@ export default {
             });
           }
         }
+      }
+      // 打开构件库 关闭属性
+      if (e === 14 && this.imgList[11].state === 1) {
+        this.imgList[11].url = require(`@/assets/images/todo/unchecked/${this.imgList[11].name}`);
+        this.imgList[11].state = 0
+        this.$emit("listenTodo", {
+          state: 0,
+          type: 11,
+        });
+      }
+      // 打开属性 关闭构件库
+      if (e === 11 && this.imgList[14].state === 1) {
+        this.imgList[14].url = require(`@/assets/images/todo/unchecked/${this.imgList[14].name}`);
+        this.imgList[14].state = 0
+        this.$emit("listenTodo", {
+          state: 0,
+          type: 14,
+        });
       }
       if (e === 6) {
         this.followTool = this.imgList[e].state === 1 ? true : false;

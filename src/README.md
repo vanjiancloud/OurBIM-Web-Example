@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 15:42:41
  * @LastEditors: zk
- * @LastEditTime: 2021-06-15 09:13:29
+ * @LastEditTime: 2021-07-30 11:26:41
  * @description: 
 -->
 # 说明
@@ -130,4 +130,7 @@ function sendToIframe(type, data, message) {
     data = true/false
 // 标签树显示/隐藏
     type = 2003
+    data = true/false
+// 构件库显示/隐藏
+    type = 2004
     data = true/false

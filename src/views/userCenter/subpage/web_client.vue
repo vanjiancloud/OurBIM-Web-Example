@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-07-28 17:35:13
+ * @LastEditTime: 2021-08-10 13:54:01
  * @description: 
 -->
 <template>
@@ -56,10 +56,11 @@
         <div
           class="tree-main"
           v-show="
-            (browserInfo &&
+            controllerInfo.tagUiBar &&
+            ((browserInfo &&
               browserInfo.type === 10 &&
               browserInfo.state === 1) ||
-            controllerInfo.modelClient
+              controllerInfo.modelClient)
           "
         >
           <!-- 模型浏览器 -->
@@ -102,7 +103,7 @@
                   @click="handleTree(node, 0)"
                 >
                   <span class="label-span">{{ node.label }}</span>
-                  <span>
+                  <span v-if="node.data.typeId !== 'comp'">
                     <i class="iconfont icon-xianshi2" v-if="!node.checked"></i>
                     <i v-else class="iconfont icon-yincang1"></i>
                   </span>
@@ -114,8 +115,9 @@
         <div
           class="bim-info"
           v-show="
-            (natureInfo && natureInfo.type === 11 && natureInfo.state === 1) ||
-            controllerInfo.memberAvttribute
+            controllerInfo.tagUiBar &&
+            ((natureInfo && natureInfo.type === 11 && natureInfo.state === 1) ||
+              controllerInfo.memberAvttribute)
           "
         >
           <!-- 属性 -->
@@ -151,6 +153,41 @@
             </table>
           </div>
         </div>
+        <!-- 构件库 -->
+        <div
+          class="bim-info"
+          @click.stop=""
+          v-show="
+            controllerInfo.tagUiBar &&
+            ((listenTodoInfo &&
+              listenTodoInfo.type === 14 &&
+              listenTodoInfo.state === 1) ||
+              controllerInfo.componentLibrary)
+          "
+        >
+          <div class="bim-title">
+            <div class="" v-text="$t('webClient.componentLibrary.title')"></div>
+            <div class="close-part">
+              <i
+                class="el-icon-close"
+                @click.stop="closePart(listenTodoInfo.type)"
+              ></i>
+            </div>
+          </div>
+          <div class="detail-main detail-collapse">
+            <el-collapse v-model="componentCollapse" accordion>
+              <el-collapse-item title="二维码" name="1">
+                <div class="collapse-main">
+                  <el-button size="mini" type="primary" @click="AddQrCode"
+                    >新增</el-button
+                  >
+                </div>
+              </el-collapse-item>
+            </el-collapse>
+          </div>
+        </div>
+        <!-- 二维码 -->        
+        <qrcode-part v-if="isQrcode" :leafInfo="leafInfo"  @click.native.stop="" @setListenClick="setListenClick"></qrcode-part>
       </div>
       <transition name="el-fade-in-linear">
         <progress-bar
@@ -194,10 +231,12 @@
 <script>
 import MODELAPI from "@/api/model_api";
 import TAGTREE from "@/api/tag_tree";
+import COMPONENTLIBRARY from "@/api/component-library";
 import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
 import progressBar from "@/components/web_client/progress_bar";
+import qrcodePart from "@/components/web_client/qrcode-part.vue"
 
 export default {
   name: "look_app",
@@ -207,9 +246,11 @@ export default {
     viewCube,
     tagTree,
     progressBar,
+    qrcodePart
   },
   data() {
     return {
+      componentCollapse: "1",
       openNode: null,
       actionList: [],
       propsFooter: {
@@ -238,6 +279,7 @@ export default {
         tagViewCube: true,
         modelClient: false,
         memberAvttribute: false,
+        componentLibrary: false,
         singleList: [],
       },
       webUrl: null,
@@ -249,6 +291,7 @@ export default {
       isFade: true,
       isFollow: false,
       isTag: false,
+      isQrCodeClick: false,
       handleState: 0,
       activeTree: null,
       leafInfo: null,
@@ -281,6 +324,7 @@ export default {
       treeEmpty: this.$t("webClient.browser.tips[0]"),
       TreePageNo: 2,
       ScrollDistance: 0,
+      isQrcode: true,
     };
   },
   watch: {},
@@ -364,6 +408,8 @@ export default {
           } else if (e.data.type === 2003) {
             this.$refs.tagTree.closePart(e.data.data);
             this.$refs.tagTree.closeIcon();
+          } else if (e.data.type === 2004) {
+            this.controllerInfo.componentLibrary = e.data.data;
           }
         }
       },
@@ -375,6 +421,22 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    AddQrCode() {
+      /**
+       * @Author: zk
+       * @Date: 2021-07-30 14:25:42
+       * @description: 新增二维码
+       */
+      let params = {
+        taskid: this.taskId,
+      };
+      COMPONENTLIBRARY.ADDCOMPONENT(params).then(() => {
+        if (this.controllerInfo.uiBar) {
+          this.controllerInfo.tagUiBar = false;
+          this.controllerInfo.tagViewCube = false;
+        }
+      });
+    },
     ExpandNode(e, data) {
       /**
        * @Author: zk
@@ -485,7 +547,7 @@ export default {
         101, 102, 103, 201, 202, 203, 301, 401, 402, 403, 404, 501, 502, 503,
         504, 601, 602, 603, 1001, 1002, 1003, 1004,
       ];
-      if (e.type === 600) {
+      if (e.type === 200) {
         this.getMonitor();
       }
       if (errorList.indexOf(e.type) !== -1) {
@@ -551,7 +613,12 @@ export default {
        * @Date: 2021-03-08 14:39:51
        * @description: 构件树的指令
        */
-      let messageInfo = {
+      if (e.data.typeId === "comp" && e.data.haveChild === '0') {
+        this.leafInfo = e;
+       this.isQrCodeClick = true
+        this.handleQrcode(true)
+      }else{
+        let messageInfo = {
         prex: "ourbimMessage",
         type: 20001,
         data: e.data,
@@ -579,6 +646,15 @@ export default {
       this.handleState = 9;
       this.updateOrder();
       this.activeTree = e.data;
+      }
+    },
+    handleQrcode(e){
+    /**
+     * @Author: zk
+     * @Date: 2021-07-30 16:28:24
+     * @description: 打开二维码框
+     */      
+      this.isQrcode = e
     },
     handleOrder(e) {
       /**
@@ -899,6 +975,9 @@ export default {
       if (e === 11) {
         this.natureInfo = null;
       }
+      if (e === 14) {
+        this.listenTodoInfo = null;
+      }
       if (this.$refs.getFooter) {
         this.$refs.getFooter.editTool(e);
       }
@@ -983,6 +1062,10 @@ export default {
        * @description: 监听操作栏
        */
       this.$refs.getCube.closeView();
+      // 构件库
+      if (e.type === 14) {
+        this.listenTodoInfo = e;        
+      }
       // 浏览器
       if (e.type === 10) {
         this.browserInfo = e;
@@ -1184,6 +1267,12 @@ export default {
               this.propsProgress.data = Number(
                 String(Number(realData.progress) * 100).substring(0, 3)
               );
+              if (Number(this.propsProgress.data) === 100) {
+                let params = {
+                  taskid: this.taskId,
+                };
+                COMPONENTLIBRARY.INITCOMPONENT(params);
+              }
             }
             if (Number(realData.progress) === 1) {
               let noneTimer = setTimeout(() => {
@@ -1204,7 +1293,9 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "10") {
-            this.$refs.tagTree.closePart(true);
+            if (this.listenTodoInfo.type !== 14) {
+              this.$refs.tagTree.closePart(true);              
+            }
             if (this.controllerInfo.uiBar) {
               this.controllerInfo.tagUiBar = true;
               this.controllerInfo.tagViewCube = true;
@@ -1417,7 +1508,7 @@ export default {
         // 关闭tool
         this.sendToIframe(10200, "false", "");
         document.addEventListener("keydown", (e) => {
-          if (this.isFollow || this.isTag) {
+          if (this.isFollow || this.isTag || this.isQrCodeClick) {
             return;
           }
           this.sendToIframe(
@@ -1430,7 +1521,7 @@ export default {
           );
         });
         document.addEventListener("keyup", (e) => {
-          if (this.isFollow || this.isTag) {
+          if (this.isFollow || this.isTag || this.isQrCodeClick) {
             return;
           }
           this.sendToIframe(
@@ -1866,6 +1957,24 @@ export default {
           background: rgba(255, 255, 255, 0.295);
         }
       }
+      .detail-collapse {
+        padding: 0 10px;
+        .el-collapse {
+          border-bottom: none;
+          /deep/ .el-collapse-item__header {
+            background: none;
+            color: #fff;
+            border-bottom: none;
+          }
+          /deep/ .el-collapse-item__wrap {
+            background: none;
+            border-bottom: none;
+          }
+          .collapse-main {
+            padding: 0 10px;
+          }
+        }
+      }
       .detail-table {
         width: 100%;
         line-height: 35px;
@@ -2001,7 +2110,7 @@ export default {
   }
   .load-tip {
     width: 100%;
-    display: flex;
+    // display: flex;
     margin: 20px 0;
     letter-spacing: 2px;
     color: #00aaf0;
