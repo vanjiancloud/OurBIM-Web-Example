@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-07-30 17:06:19
  * @LastEditors: zk
- * @LastEditTime: 2021-07-31 15:39:59
+ * @LastEditTime: 2021-08-17 14:59:05
  * @description: 二维码框
 -->
 <template>
@@ -13,7 +13,7 @@
         <i class="el-icon-close" @click.stop="closePart()"></i>
       </div>
     </div>
-    <div class="detail-main">
+    <div class="detail-main" v-if="qrcodeInfo">
       <div class="qr-code">
         <el-image
           :src="qrcodeInfo.tagUrl"
@@ -24,7 +24,6 @@
           class="qrcode-el-form"
           ref="qrcode-elForm"
           :model="qrcodeInfo"
-          :rules="qrcodeRules"
           size="medium"
           label-width="80px"
         >
@@ -99,57 +98,17 @@ export default {
         leftMargin: true,
         rightMargin: true,
       },
-      // qrcodeRules: {
-      //   bottomMargin: [
-      //     {
-      //       required: true,
-      //       message: "请输入下边距",
-      //       trigger: "blur",
-      //     },
-      //   ],
-      //   leftMargin: [
-      //     {
-      //       required: true,
-      //       message: "请输入左边距",
-      //       trigger: "blur",
-      //     },
-      //   ],
-      //   rightMargin: [
-      //     {
-      //       required: true,
-      //       message: "请输入右边距",
-      //       trigger: "blur",
-      //     },
-      //   ],
-      // },
-      qrcodeInfo: {
-        id: "09e8913468934cc98b66295d39e6bb20",
-        fileName: "测试二维码",
-        tagUrl:
-          "http://cloud.ourbim.com:11011/vjapi/qrcode/09e8913468934cc98b66295d39e6bb20.jpg",
-        childCount: null,
-        parentId: "god",
-        userId: null,
-        createTime: "2021-07-30 15:32:13",
-        projectId: "BIM2021052815033753",
-        isDelete: null,
-        leftMargin: "0.0",
-        companyId: null,
-        fileSuffix: null,
-        isVisible: null,
-        fileStorge: null,
-        extraId: null,
-        isFolder: "0",
-        status: "0",
-        location: "X=550.508 Y=1018.503 Z=49378.812",
-        rotation: "P=0.000000 Y=0.044962 R=0.000000",
-        scale: "X=1.000 Y=1.000 Z=1.000",
-        rightMargin: "0.0",
-        bottomMargin: "1256.3125",
-      },
+      qrcodeInfo: null
     };
   },
-  mounted() {},
+  mounted() {
+    this.qrcodeInfo = this.leafInfo.data.compData
+  },
+  watch: {
+    leafInfo(newValue, oldValue) {
+      this.qrcodeInfo = this.leafInfo.data.compData
+    }
+  },
   methods: {
     downloadQrcode() {
       /**
@@ -205,8 +164,7 @@ export default {
   margin: 2vh 20px 0 0;
   border-radius: 10px;
   width: 400px;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
   background: rgba(0, 0, 0, 0.5);
   color: #ffffff;
   .qrcode-title {
@@ -244,11 +202,12 @@ export default {
     }
     .qr-code {
       text-align: center;
+      padding-bottom: 20px;
       .el-image {
         width: 120px;
       }
       .qrcode-el-form {
-        margin-top: 20px;
+        margin-top: 50px;
         /deep/ .el-form-item__label {
           color: #fff;
         }

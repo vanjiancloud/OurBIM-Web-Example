@@ -125,7 +125,7 @@
           :on-exceed="exceed"
           :on-remove="onremove"
           :before-upload="beforeModelUpload"
-          accept=".rvt"
+          accept=".rvt,.ifc"
           ref="bimupload"
           :auto-upload="false"
         >
@@ -368,12 +368,15 @@ export default {
     },
     // 上传bim模型前
     beforeModelUpload (file) {
-      var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
-      const extension = testmsg === 'rvt'
-      if (!extension) {
+      let testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+      let listModel = ['rvt', 'ifc']
+      let extension = false
+      if (listModel.indexOf(testmsg) === -1) {
+        extension = false
         this.isLoading = false
-        this.$message.error('上传模型只能是.rvt格式!')
+        this.$message.error('请上传支持的文件格式!')
       } else {
+        extension = true
         this.$common.openLoading('上传模型中')
       }
       return extension

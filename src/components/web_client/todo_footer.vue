@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-07-30 15:15:47
+ * @LastEditTime: 2021-08-17 16:54:12
  * @description: 
 -->
 <template>
@@ -1034,7 +1034,10 @@ export default {
        * @Date: 2021-07-28 10:19:02
        * @description: 渲染环境 切换时间
        */
-      console.log(e);
+      this.$emit("listenTodo", {
+        type: 15,
+        data: e,
+      });
     },
     changePerson(e) {
       /**
@@ -1305,6 +1308,28 @@ export default {
         })
         .catch((err) => {});
     },
+    resetState() {
+      /**
+       * @Author: zk
+       * @Date: 2021-08-17 14:36:12
+       * @description: 重置状态 打开
+       */
+      let realArr = [
+        11, // 属性框
+        14, // 构件库
+      ];
+      realArr.forEach((item) => {
+        if (this.imgList[item].state === 1) {
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[item].name}`);
+          this.imgList[item].url = oldUrl;
+          this.imgList[item].state = 0;
+          this.$emit("listenTodo", {
+            state: 0,
+            type: item,
+          });
+        }
+      });
+    },
     handleOrder(e) {
       // 功能未开放
       if (e === 7) {
@@ -1414,8 +1439,10 @@ export default {
         let oldUrl = require(`@/assets/images/todo/unchecked/${
           this.imgList[this.oldState].name
         }`);
-        this.imgList[this.oldState].url = oldUrl;
-        this.imgList[this.oldState].state = 0;
+        if (this.oldState !== 5) {
+          this.imgList[this.oldState].url = oldUrl;
+          this.imgList[this.oldState].state = 0;
+        }
         if (e === 0 && this.oldState === 4) {
           this.$emit("listenTodo", {
             state: 0,
@@ -1478,7 +1505,7 @@ export default {
       // 打开构件库 关闭属性
       if (e === 14 && this.imgList[11].state === 1) {
         this.imgList[11].url = require(`@/assets/images/todo/unchecked/${this.imgList[11].name}`);
-        this.imgList[11].state = 0
+        this.imgList[11].state = 0;
         this.$emit("listenTodo", {
           state: 0,
           type: 11,
@@ -1487,7 +1514,7 @@ export default {
       // 打开属性 关闭构件库
       if (e === 11 && this.imgList[14].state === 1) {
         this.imgList[14].url = require(`@/assets/images/todo/unchecked/${this.imgList[14].name}`);
-        this.imgList[14].state = 0
+        this.imgList[14].state = 0;
         this.$emit("listenTodo", {
           state: 0,
           type: 14,
