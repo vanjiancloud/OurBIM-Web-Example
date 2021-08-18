@@ -2,20 +2,20 @@
  * @Author: zk
  * @Date: 2021-02-20 13:30:48
  * @LastEditors: zk
- * @LastEditTime: 2021-07-19 17:50:27
+ * @LastEditTime: 2021-08-17 10:36:59
  * @description: 
  */
-
 import axios from 'axios'
 import JSONBig from 'json-bigint'
 import {
   Getuserid
 } from '@/store/index.js'
 
-axios.defaults.baseURL = 'http://1.182.89.34:11011/vjapi'
+// axios.defaults.baseURL = 'http://1.182.89.34:11011/vjapi'
+// axios.defaults.baseURL = 'http://139.9.188.164:11011/vjapi'
 // axios.defaults.baseURL = 'http://192.168.3.160:11011/vjapi'
 // axios.defaults.baseURL = 'http://192.168.3.235:11011/vjapi'
-// axios.defaults.baseURL = 'http://cloud.ourbim.com:11011/vjapi'
+axios.defaults.baseURL = 'http://cloud.ourbim.com:11011/vjapi'
 axios.defaults.transformResponse = [
   function (data) {
     try {

@@ -169,9 +169,12 @@ router.beforeEach(function (to, from, next) {
       to.path !== '/'
     ) {
       next('/login')
+    }else{
+      next()
     }
+  }else{
+    next()
   }
-  next()
 })
 
 router.afterEach((to, from) => {

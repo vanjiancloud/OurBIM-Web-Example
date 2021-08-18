@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-06-15 10:00:14
+ * @LastEditTime: 2021-08-17 16:54:12
  * @description: 
 -->
 <template>
@@ -406,18 +406,64 @@
           </el-tooltip>
           <!-- <el-collapse-transition> -->
           <div class="show-weather" v-show="imgList[9].state === 1">
-            <div v-show="weatherData.length > 0">
-              <bim-weather
-                @click.native="SetWeather(item)"
-                v-for="item in weatherData"
-                :key="item.id"
-                :setProps="item"
-              ></bim-weather>
-            </div>
+            <el-form class="set-form" :model="setForm" label-width="80px">
+              <el-form-item :label="$t('webClient.weather[0].label')">
+                <el-select
+                  size="mini"
+                  @change="SetWeather"
+                  class="w-100"
+                  popper-class="popper-bgi"
+                  v-model="setForm.weather"
+                  :placeholder="$t('webClient.weather[0].value')"
+                >
+                  <el-option
+                    :label="item.weatherName"
+                    :value="item.id"
+                    v-for="(item, index) in weatherData"
+                    :key="index"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item
+                :label="$t('webClient.weather[1].label')"
+                v-if="imgList[9].isTimer"
+              >
+                <div
+                  class="show-speed weahter-speed"
+                  v-if="imgList[9].state === 1"
+                >
+                  <el-slider
+                    :min="6"
+                    :max="17"
+                    v-model="imgList[9].data.speed"
+                    @mousedown.native="openMask"
+                    @click.native.stop=""
+                    @change="changeTime"
+                  ></el-slider>
+                </div>
+              </el-form-item>
+            </el-form>
           </div>
           <!-- </el-collapse-transition> -->
         </div>
         <!-- <div class="cut-apart"></div> -->
+        <!-- 构件库 -->
+        <div class="image-main" v-if="showBar(imgList[14].id)">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :enterable="false"
+            :content="imgList[14].title"
+            placement="top"
+          >
+            <img
+              @click.stop="handleOrder(14)"
+              class="footer-image"
+              :src="imgList[14].url"
+              mode=""
+            />
+          </el-tooltip>
+        </div>
         <!-- 浏览器 -->
         <div class="image-main" v-if="showBar(imgList[10].id)">
           <el-tooltip
@@ -493,12 +539,9 @@
 
 <script>
 import MODELAPI from "@/api/model_api";
-import BimWeather from "./bim_weather";
 
 export default {
-  components: {
-    BimWeather,
-  },
+  components: {},
   props: {
     setProps: {
       type: Object,
@@ -668,6 +711,10 @@ export default {
           name: "weather.png",
           title: "渲染环境",
           id: 1012,
+          data: {
+            speed: 4,
+          },
+          isTimer: false,
         },
         {
           state: 0,
@@ -697,6 +744,13 @@ export default {
           title: "显示",
           id: 1015,
         },
+        {
+          state: 0,
+          url: require("@/assets/images/todo/unchecked/component-library.png"),
+          name: "component-library.png",
+          title: "构件库",
+          id: 1016,
+        },
       ],
       activePerson: 1,
       oldState: 0,
@@ -707,6 +761,7 @@ export default {
       setForm: {
         unit: 0,
         accuracy: 2,
+        weather: null,
       },
       deleteData: {
         title: "提示",
@@ -804,10 +859,21 @@ export default {
        * @Date: 2021-06-05 15:49:31
        * @description: 选择环境
        */
+      let activeInfo = this.weatherData.find((val) => {
+        if (val.id === e) {
+          return val;
+        }
+      });
+      if (activeInfo && activeInfo.isDynamic === "1") {
+        this.imgList[9].isTimer = true;
+      } else {
+        this.imgList[9].isTimer = false;
+        this.imgList[9].data.speed = 6;
+      }
       this.$emit("listenTodo", {
         state: this.imgList[9].state,
         type: 9,
-        data: e,
+        data: activeInfo,
       });
     },
     ListWeather() {
@@ -962,6 +1028,17 @@ export default {
         data: e,
       });
     },
+    changeTime(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-07-28 10:19:02
+       * @description: 渲染环境 切换时间
+       */
+      this.$emit("listenTodo", {
+        type: 15,
+        data: e,
+      });
+    },
     changePerson(e) {
       /**
        * @Author: zk
@@ -1036,6 +1113,14 @@ export default {
       }
       // 框选
       if (this.oldState === 12) {
+        this.$emit("listenTodo", {
+          state: 0,
+          type: this.oldState,
+        });
+        this.oldState = 0;
+      }
+      // 小地图
+      if (this.oldState === 5) {
         this.$emit("listenTodo", {
           state: 0,
           type: this.oldState,
@@ -1223,9 +1308,31 @@ export default {
         })
         .catch((err) => {});
     },
+    resetState() {
+      /**
+       * @Author: zk
+       * @Date: 2021-08-17 14:36:12
+       * @description: 重置状态 打开
+       */
+      let realArr = [
+        11, // 属性框
+        14, // 构件库
+      ];
+      realArr.forEach((item) => {
+        if (this.imgList[item].state === 1) {
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[item].name}`);
+          this.imgList[item].url = oldUrl;
+          this.imgList[item].state = 0;
+          this.$emit("listenTodo", {
+            state: 0,
+            type: item,
+          });
+        }
+      });
+    },
     handleOrder(e) {
       // 功能未开放
-      if (e === 5 || e === 7) {
+      if (e === 7) {
         return;
       }
       if (e === 12 && this.activePerson === 0) {
@@ -1323,6 +1430,7 @@ export default {
         e !== 10 &&
         e !== 11 &&
         e !== 13 &&
+        e !== 14 &&
         this.oldState !== 12
       ) {
         this.angleTool = false;
@@ -1331,8 +1439,10 @@ export default {
         let oldUrl = require(`@/assets/images/todo/unchecked/${
           this.imgList[this.oldState].name
         }`);
-        this.imgList[this.oldState].url = oldUrl;
-        this.imgList[this.oldState].state = 0;
+        if (this.oldState !== 5) {
+          this.imgList[this.oldState].url = oldUrl;
+          this.imgList[this.oldState].state = 0;
+        }
         if (e === 0 && this.oldState === 4) {
           this.$emit("listenTodo", {
             state: 0,
@@ -1392,6 +1502,24 @@ export default {
           }
         }
       }
+      // 打开构件库 关闭属性
+      if (e === 14 && this.imgList[11].state === 1) {
+        this.imgList[11].url = require(`@/assets/images/todo/unchecked/${this.imgList[11].name}`);
+        this.imgList[11].state = 0;
+        this.$emit("listenTodo", {
+          state: 0,
+          type: 11,
+        });
+      }
+      // 打开属性 关闭构件库
+      if (e === 11 && this.imgList[14].state === 1) {
+        this.imgList[14].url = require(`@/assets/images/todo/unchecked/${this.imgList[14].name}`);
+        this.imgList[14].state = 0;
+        this.$emit("listenTodo", {
+          state: 0,
+          type: 14,
+        });
+      }
       if (e === 6) {
         this.followTool = this.imgList[e].state === 1 ? true : false;
       }
@@ -1424,6 +1552,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.w-100 {
+  width: 100%;
+}
 .todo-footer {
   position: absolute;
   bottom: 26px;
@@ -1522,12 +1653,12 @@ export default {
     .show-weather {
       position: absolute;
       width: 260px;
-      height: 200px;
+      height: 130px;
       overflow-y: auto;
       left: -115px;
-      padding: 10px 10px 0 10px;
+      padding: 10px 20px 0 20px;
       border-radius: 10px 10px 0 0;
-      top: -220px;
+      top: -150px;
       background-color: rgba(0, 0, 0, 0.6);
       &::-webkit-scrollbar {
         /*滚动条整体样式*/
