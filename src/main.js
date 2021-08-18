@@ -111,7 +111,7 @@ const i18n = new VueI18n({
       Uploadto: '同时上传倾斜摄影模型',
       methods: '点击或将文件拖拽到这里上传',
       xianzhi: '每次只能上传一个模型',
-      limit: '仅支持上传扩展名：.rvt',
+      limit: '支持上传扩展名：.rvt, .ifc',
       Render: '开始转换',
       application: '项目名称：',
       Required: '必填项',

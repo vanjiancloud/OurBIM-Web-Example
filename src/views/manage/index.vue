@@ -798,7 +798,6 @@ export default {
   // ===== 页面实例销毁 =====
   destroyed() {
     // 清除定时器
-    console.log(1);
     clearInterval(this.timer);
   },
 };

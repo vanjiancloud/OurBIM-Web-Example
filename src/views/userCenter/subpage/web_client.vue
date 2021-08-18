@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-08-10 13:54:01
+ * @LastEditTime: 2021-08-18 09:07:30
  * @description: 
 -->
 <template>
@@ -186,8 +186,13 @@
             </el-collapse>
           </div>
         </div>
-        <!-- 二维码 -->        
-        <qrcode-part v-if="isQrcode" :leafInfo="leafInfo"  @click.native.stop="" @setListenClick="setListenClick"></qrcode-part>
+        <!-- 二维码 -->
+        <qrcode-part
+          v-if="isQrcode"
+          :leafInfo="leafInfo"
+          @click.native.stop=""
+          @setListenClick="setListenClick"
+        ></qrcode-part>
       </div>
       <transition name="el-fade-in-linear">
         <progress-bar
@@ -236,7 +241,7 @@ import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
 import progressBar from "@/components/web_client/progress_bar";
-import qrcodePart from "@/components/web_client/qrcode-part.vue"
+import qrcodePart from "@/components/web_client/qrcode-part.vue";
 
 export default {
   name: "look_app",
@@ -246,7 +251,7 @@ export default {
     viewCube,
     tagTree,
     progressBar,
-    qrcodePart
+    qrcodePart,
   },
   data() {
     return {
@@ -324,7 +329,7 @@ export default {
       treeEmpty: this.$t("webClient.browser.tips[0]"),
       TreePageNo: 2,
       ScrollDistance: 0,
-      isQrcode: true,
+      isQrcode: false,
     };
   },
   watch: {},
@@ -613,48 +618,78 @@ export default {
        * @Date: 2021-03-08 14:39:51
        * @description: 构件树的指令
        */
-      if (e.data.typeId === "comp" && e.data.haveChild === '0') {
-        this.leafInfo = e;
-       this.isQrCodeClick = true
-        this.handleQrcode(true)
-      }else{
+      if (e.data.typeId === "comp") {
+        if (e.data.haveChild === "0") {
+          this.leafInfo = e;
+          this.isQrCodeClick = true;
+          this.handleQrcode(true);
+          this.handleFocusTag(e.data);
+        } else {
+          return;
+        }
+      } else {
         let messageInfo = {
-        prex: "ourbimMessage",
-        type: 20001,
-        data: e.data,
-        message: "",
-      };
-      this.sentParentIframe(messageInfo);
-      if (this.activeTree && this.activeTree.uuid === e.data.uuid) {
-        if (e.data.activeSelect === 1) {
-          this.activeLeaf = false;
+          prex: "ourbimMessage",
+          type: 20001,
+          data: e.data,
+          message: "",
+        };
+        this.sentParentIframe(messageInfo);
+        if (this.activeTree && this.activeTree.uuid === e.data.uuid) {
+          if (e.data.activeSelect === 1) {
+            this.activeLeaf = false;
+          } else {
+            this.activeLeaf = true;
+          }
+          e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
+          this.leafInfo = e;
         } else {
           this.activeLeaf = true;
+          this.leafInfo = e;
+          e.data.activeSelect = 1;
         }
-        e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
+        this.memberInfo = {
+          type: e.data.haveChild === "0" ? 1 : 5,
+          data: e.data,
+        };
         this.leafInfo = e;
-      } else {
-        this.activeLeaf = true;
-        this.leafInfo = e;
-        e.data.activeSelect = 1;
-      }
-      this.memberInfo = {
-        type: e.data.haveChild === "0" ? 1 : 5,
-        data: e.data,
-      };
-      this.leafInfo = e;
-      this.handleState = 9;
-      this.updateOrder();
-      this.activeTree = e.data;
+        this.handleState = 9;
+        this.updateOrder();
+        this.activeTree = e.data;
       }
     },
-    handleQrcode(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-07-30 16:28:24
-     * @description: 打开二维码框
-     */      
-      this.isQrcode = e
+    handleFocusTag(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-08-17 16:00:55
+       * @description: 定位二维码
+       */
+      let params = {
+        taskid: this.taskId,
+        uuid: e.compData.id,
+      };
+      COMPONENTLIBRARY.FOCUSCOMPONENT(params)
+        .then((res) => {
+          this.$message({
+            message: this.$t("webClient.loadBox.message[2]"),
+            type: "success",
+          });
+        })
+        .catch((err) => {
+          this.$message({
+            message: this.$t("webClient.loadBox.message[3]"),
+            type: "error",
+          });
+        });
+    },
+    handleQrcode(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-07-30 16:28:24
+       * @description: 打开二维码框
+       */
+      this.$refs.getFooter.resetState();
+      this.isQrcode = e;
     },
     handleOrder(e) {
       /**
@@ -861,7 +896,11 @@ export default {
           params.id = 34;
           params.Switch = this.listenTodoInfo.state === 0 ? "off" : "on";
           break;
-
+        case 17:
+          // 渲染环境
+          params.id = 51;
+          params.rate = this.listenTodoInfo.data ? this.listenTodoInfo.data : 6;
+          break;
         default:
           break;
       }
@@ -1039,7 +1078,6 @@ export default {
        * @Date: 2021-05-19 10:45:00
        * @description: 添加标签
        */
-      // console.log(1);
       if (this.controllerInfo.uiBar) {
         this.controllerInfo.tagUiBar = false;
         this.controllerInfo.tagViewCube = false;
@@ -1062,9 +1100,12 @@ export default {
        * @description: 监听操作栏
        */
       this.$refs.getCube.closeView();
+      if (e.type === 14 || e.type === 11) {
+        this.isQrcode = false;
+      }
       // 构件库
       if (e.type === 14) {
-        this.listenTodoInfo = e;        
+        this.listenTodoInfo = e;
       }
       // 浏览器
       if (e.type === 10) {
@@ -1150,6 +1191,12 @@ export default {
       if (e.type === 13) {
         this.listenTodoInfo = e;
         this.UpdateMemeberState();
+      }
+      // 渲染环境修改时间
+      if (e.type === 15) {
+        this.handleState = 17;
+        this.listenTodoInfo = e;
+        this.updateOrder();
       }
     },
     UpdateMemeberState() {
@@ -1294,7 +1341,7 @@ export default {
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "10") {
             if (this.listenTodoInfo.type !== 14) {
-              this.$refs.tagTree.closePart(true);              
+              this.$refs.tagTree.closePart(true);
             }
             if (this.controllerInfo.uiBar) {
               this.controllerInfo.tagUiBar = true;
