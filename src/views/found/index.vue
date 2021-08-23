@@ -129,11 +129,11 @@
           ref="bimupload"
           :auto-upload="false"
         >
-          <img src="./file.png" style="margin-top:30px" />
+          <img src="./file.png" style="margin-top:70px" />
           <div class="el-upload__text">
             {{ $t('methods') }}<br />
-            {{ $t('xianzhi') }}<br />
-            {{ $t('limit') }}<br />
+            <!-- {{ $t('xianzhi') }}<br />
+            {{ $t('limit') }}<br /> -->
           </div>
         </el-upload>
       </div>
@@ -142,7 +142,7 @@
         style="margin:10px 40px;margin-top:-20px;text-align:left; font-size: 14px; "
       >
         <span style="color:red">*</span>
-        文件默认打开初始Revit的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
+        文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
       </div>
       <div class="btn">
         <el-button
