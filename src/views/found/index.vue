@@ -132,6 +132,8 @@
           <img src="./file.png" style="margin-top:70px" />
           <div class="el-upload__text">
             {{ $t('methods') }}<br />
+            {{ $t('uploadLimit') }}<br />
+            {{ $t('uploadGoBeyond') }}<br />
             <!-- {{ $t('xianzhi') }}<br />
             {{ $t('limit') }}<br /> -->
           </div>
@@ -370,6 +372,20 @@ export default {
     beforeModelUpload (file) {
       let testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
       let listModel = ['rvt', 'ifc']
+      const isLt = file.size / 1024 / 1024 < 200
+       if(!isLt) {
+
+          this.$message({
+
+            message: '上传文件大小不能超过200MB!',
+
+            type: 'warning'
+
+          });
+
+          return false;
+
+        }
       let extension = false
       if (listModel.indexOf(testmsg) === -1) {
         extension = false

@@ -110,6 +110,8 @@ const i18n = new VueI18n({
       UploadBIM: '仅上传BIM模型',
       Uploadto: '同时上传倾斜摄影模型',
       methods: '点击或将文件拖拽到这里上传',
+      uploadLimit: '文件上传限制200MB',
+      uploadGoBeyond: '超出200MB请联系我们',
       xianzhi: '每次只能上传一个模型',
       limit: '支持上传扩展名：.rvt, .ifc',
       Render: '开始转换',
