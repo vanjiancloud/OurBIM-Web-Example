@@ -199,6 +199,9 @@ const i18n = new VueI18n({
         attribute: {
           title: '属性'
         },
+        labelBox: {
+          title: '标签'
+        },
         componentLibrary: {
           title: '构件库'
         },

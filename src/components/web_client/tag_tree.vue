@@ -2,12 +2,13 @@
  * @Author: zk
  * @Date: 2021-05-06 09:20:40
  * @LastEditors: zk
- * @LastEditTime: 2021-05-28 11:43:46
+ * @LastEditTime: 2021-09-01 10:27:48
  * @description: 
 -->
 <template>
   <div class="tag-tree" v-show="isTag">
     <div class="tree-title" v-if="isColseBar">
+      <div class="" v-text="$t('webClient.labelBox.title')"></div>
       <!-- 关闭 -->
       <div class="close-part">
         <i class="el-icon-close" @click="closeTag(false)"></i>

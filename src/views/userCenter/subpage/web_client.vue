@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-09-01 10:19:26
+ * @LastEditTime: 2021-09-01 10:56:13
  * @description: 
 -->
 <template>
@@ -73,6 +73,19 @@
               ></i>
             </div>
           </div>
+          <!-- 操作 -->
+          <div class="handle-part">
+            <el-input
+              class="search-tag"
+              placeholder="请输入你要搜索的内容"
+              @click.native.stop
+              @change="changeBrowser"
+              @keyup.enter.native="changeBrowser"
+              v-model="modelBrowser"
+            >
+              <i slot="prefix" class="el-input__icon el-icon-search"></i>
+            </el-input>
+          </div>
           <div class="tree-part">
             <div class="tree-content" id="tree-content">
               <el-tree
@@ -84,6 +97,7 @@
                 :props="propsMember"
                 :expand-on-click-node="false"
                 :load="loadNode"
+                :filter-node-method="filterNode"
                 show-checkbox
                 highlight-current
                 node-key="uuid"
@@ -256,6 +270,7 @@ export default {
   data() {
     return {
       componentCollapse: "1",
+      modelBrowser: null,
       openNode: null,
       actionList: [],
       propsFooter: {
@@ -426,6 +441,27 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    filterNode(value, data) {
+      /**
+       * @Author: zk
+       * @Date: 2021-09-01 10:49:56
+       * @description: 筛选模型浏览器
+       */      
+      if (!value) return true;
+      const reamVal = data.name.indexOf(value) !== -1;
+      if (!reamVal) {
+        this.treeEmpty = this.$t("webClient.browser.tips[0]");
+      }
+      return reamVal;
+    },
+    changeBrowser(){
+    /**
+     * @Author: zk
+     * @Date: 2021-09-01 10:46:13
+     * @description: 搜索 
+     */      
+    this.$refs.setTree.filter(this.modelBrowser);
+    },
     AddQrCode() {
       /**
        * @Author: zk
@@ -1915,6 +1951,9 @@ export default {
           margin-left: auto;
           cursor: pointer;
         }
+      }
+      .handle-part{
+        padding: 1vh 15px 0 15px;
       }
       .tree-part {
         height: 40vh;
