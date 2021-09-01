@@ -41,7 +41,11 @@
             <span v-else>其他模型</span>
           </template>
         </el-table-column>
-        <el-table-column prop="fileSize" label="模型大小" width="100"> </el-table-column>
+        <el-table-column prop="fileSize" label="模型大小">
+          <template slot-scope="scope">
+            {{ scope.row.fileSize !== '0' ? scope.row.fileSize : '-' }}
+          </template>
+        </el-table-column>
         <el-table-column prop="" label="并发节点">
           <template slot-scope="scope">
             {{ scope.row.currentInstance }}/{{ scope.row.maxInstance }}
@@ -243,8 +247,8 @@
         }">
         <span slot-scope="{ option }">{{ option.appName }}</span>
       </el-transfer>
-      <el-form :model="FormIntegrate" class="form-integrate" :rules="rulesIntegrate" ref="FormIntegrate" label-width="80px">
-        <el-form-item label="链接名称" prop="appName">
+      <el-form :model="FormIntegrate" class="form-integrate" :rules="rulesIntegrate" ref="FormIntegrate" label-width="110px">
+        <el-form-item label="链接模型名称" prop="appName">
           <el-input v-model="FormIntegrate.appName"></el-input>
         </el-form-item>
       </el-form>
