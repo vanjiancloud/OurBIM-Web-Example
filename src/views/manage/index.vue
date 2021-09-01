@@ -650,11 +650,9 @@ export default {
       })
         .then((res) => {
           if (res.data.code === 0) {
-            console.log(res);
             this.$message.success(res.data.message);
             this.GetList();
           } else if (res.data.code === 1) {
-            console.log(res);
             this.$message.warning(res.data.message);
           }
         })
