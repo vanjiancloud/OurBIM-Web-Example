@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-08-18 09:07:59
+ * @LastEditTime: 2021-09-01 10:20:39
  * @description: 
 -->
 <template>
@@ -627,11 +627,11 @@ export default {
           value: 0,
         },
         {
-          name: "第三人称",
+          name: "上帝视角",
           value: 1,
         },
         {
-          name: "跟随人物",
+          name: "跟随视角",
           value: 2,
         },
       ],
@@ -1137,7 +1137,7 @@ export default {
       /**
        * @Author: zk
        * @Date: 2021-03-12 11:39:50
-       * @description: 重置为第三人称
+       * @description: 重置为上帝视角
        */
       this.activePerson = e;
     },
@@ -1337,12 +1337,12 @@ export default {
       }
       if (e === 12 && this.activePerson === 0) {
         this.$message({
-          message: "请在第三人称下使用框选功能",
+          message: "请在上帝视角下使用框选功能",
           type: "warning",
         });
         return;
       }
-      // 剖切 分解模型 返回第三人称
+      // 剖切 分解模型 返回上帝视角
       if (e === 2 || e === 8) {
         this.activePerson = 1;
       }

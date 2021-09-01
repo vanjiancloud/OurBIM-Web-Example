@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-08-18 09:08:24
+ * @LastEditTime: 2021-09-01 10:19:26
  * @description: 
 -->
 <template>
@@ -573,7 +573,7 @@ export default {
        * @description: 选择类型 e 0: 重置主视图 1: 透视投影 2: 正交投影 3 自定义主视图
        */
       if (e === 2 && this.$refs.getFooter) {
-        // 第三人称
+        // 上帝视角
         this.$refs.getFooter.resetPerson(1);
       }
       this.shadowType = e;
@@ -740,7 +740,7 @@ export default {
           params.id = 8;
           // 投影类型切换
           if (this.shadowType === 2) {
-            // 正交 必须为第三人称
+            // 正交 必须为上帝视角
             params.projectionMode = 2;
             params.viewMode = 2;
           }
