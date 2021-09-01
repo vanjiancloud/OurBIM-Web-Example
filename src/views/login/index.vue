@@ -605,11 +605,7 @@ export default {
       }
       .login-form {
         padding: 0 20px;
-        /deep/ .el-input__inner {
-          height: 50px;
-          width: 100%;
-          line-height: 50px;
-        }
+        
 
         /deep/ .el-form-item__content {
           line-height: 30px;

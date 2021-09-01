@@ -264,21 +264,6 @@
             </div>
           </div>
           <div class="jindu">
-            <h3 style="color: #00AAF0;">{{ bfPer }}%</h3>
-            <el-progress
-              :text-inside="true"
-              :stroke-width="15"
-              :percentage="Number(bfPer)"
-              :show-text="false"
-              :color="customColor"
-            >
-            </el-progress>
-            <div class="tutu">
-              <div class="icon">
-                <img src="./img/jiedian.png" alt="" />
-              </div>
-              {{ $t('Node') }}&nbsp;&nbsp;{{ currentCountBF }}/{{ countBF }}
-            </div>
           </div>
           <div class="line"></div>
           <div class="right">
@@ -398,7 +383,7 @@ export default {
       customColor: '#00AAF0',
       note: '', //签名
       name: '', //用户名
-      sex: '', //性别
+      sex: '0', //性别
       imgUrl: '', //用户头像
       email: '', //邮箱
       mobile: '', //手机号

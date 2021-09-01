@@ -15,15 +15,7 @@
         </div>
         <!-- 主体区域 -->
         <div class="body">
-          <div class="news">请选择您的用户头像：</div>
           <el-form ref="ruleForm" :model="ruleForm" :rules="rules">
-            <!-- 性别 -->
-            <el-radio v-model="ruleForm.sex" label="1">
-              <img src="./img/man.png" alt="" />
-            </el-radio>
-            <el-radio v-model="ruleForm.sex" label="2">
-              <img src="./img/woman.png" alt="" />
-            </el-radio>
             <!-- 邮箱 -->
             <el-form-item label="" prop="email">
               <el-input
@@ -57,20 +49,6 @@
                   {{ btnMes }}
                 </el-button>
                 <i slot="prefix" class="el-icon-s-comment"></i>
-              </el-input>
-            </el-form-item>
-            <!-- 姓名 -->
-            <el-form-item label="" prop="name">
-              <el-input v-model="ruleForm.name" placeholder="请输入真实姓名">
-                <!-- maxlength="8"
-                show-word-limit -->
-                <i slot="prefix" class="el-icon-s-custom"></i>
-              </el-input>
-            </el-form-item>
-            <!-- 公司 -->
-            <el-form-item label="" prop="company">
-              <el-input v-model="ruleForm.company" placeholder="请输入公司名称">
-                <i slot="prefix" class="el-icon-office-building"></i>
               </el-input>
             </el-form-item>
             <!-- 密码 -->
@@ -472,7 +450,7 @@ export default {
   }
   .right {
     width: 28vw;
-    height: 85vh;
+    // height: 85vh;
     padding: 2vh;
     border-radius: 25px;
     box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
@@ -501,6 +479,7 @@ export default {
       }
       .body {
         // overflow-y:scroll;
+        padding-top: 2vh;
         width: 100%;
         height: 80%;
         // background-color: green;
@@ -526,8 +505,6 @@ export default {
         }
         // 输入框
         /deep/ .el-input__inner {
-          height: 4vh;
-          line-height: 4vh;
           font-size: 16px;
           width: 100%;
           padding-left: 70px;
@@ -572,7 +549,7 @@ export default {
         }
       }
       .footer {
-        height: 20vh;
+        // height: 20vh;
         // background-color: red;
         .btn {
           height: 5vh;
