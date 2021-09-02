@@ -39,8 +39,6 @@
             {{ formatSqMISUsed(scope.row.sqMISUsed) }}
           </template>
         </el-table-column>
-        <el-table-column prop="dcount" :label="$t('amountofmoney')">
-        </el-table-column>
       </el-table>
     </div>
     <!-- 分页 -->
@@ -75,7 +73,6 @@ export default {
         dingdanStatus: '', //服务
         sqm: '', //授权码默认隐藏，点击查看
         sqMISUsed: '', //状态
-        dcount: '', //金额
         pageSize: 10, //每页条数
         currentPage: 1 //当前页
       }
@@ -90,7 +87,7 @@ export default {
       getOrder({
         pageNo: this.editForm.currentPage,
         pageSize: this.editForm.pageSize,
-        userid: getuserid()
+        // userid: getuserid()
       })
         .then(res => {
           // console.log(res)

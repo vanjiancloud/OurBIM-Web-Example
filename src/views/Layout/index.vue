@@ -39,6 +39,11 @@
                     ></el-menu-item
                   >
                   <el-menu-item index=""
+                    ><a href="http://www.ourbim.com/application_scenarios">
+                      应用场景</a
+                    ></el-menu-item
+                  >
+                  <el-menu-item index=""
                     ><a href="http://www.ourbim.com/product_pricing">
                       产品定价</a
                     ></el-menu-item
@@ -258,7 +263,7 @@
               </div>
             </div>
           </div>
-          <div class="jindu">
+          <div class="jindu" v-if="isPay !== '0'">
             <h3 style="color: #00AAF0;">{{ bfPer }}%</h3>
             <el-progress
               :text-inside="true"
@@ -279,7 +284,7 @@
           <div class="right">
             <div class="content">
               <div>{{ $t('service') }}</div>
-              <div>{{ countStartTime }}&nbsp;--&nbsp;{{ countendTime }}</div>
+              <div>{{ countStartTime }}&nbsp;{{$t('to')}}&nbsp;{{ countendTime }}</div>
               <el-button
                 plain
                 round
@@ -305,19 +310,6 @@
               background-color="#fff"
             >
               <!-- 项目管理 -->
-
-              <!-- <el-submenu index="manage">
-                <template slot="title">
-                  <i class="el-icon-setting"></i>
-                  <span class="write">{{ $t('management') }}</span>
-                </template>
-                <el-menu-item index="/manage">
-                  我的项目
-                </el-menu-item>
-                <el-menu-item index="/integration">
-                  项目集成
-                </el-menu-item>
-              </el-submenu> -->
               <el-menu-item index="/manage">
                 <i class="el-icon-setting"></i>
                 <span slot="title" class="write">{{ $t('management') }}</span>
@@ -393,7 +385,8 @@ export default {
       customColor: '#00AAF0',
       note: '', //签名
       name: '', //用户名
-      sex: '', //性别
+      sex: '0', //性别
+      isPay: '0', // 免费用户
       imgUrl: '', //用户头像
       email: '', //邮箱
       mobile: '', //手机号
@@ -487,6 +480,7 @@ export default {
           this.currentCountSpace = res.data.data.currentCountSpace
           this.countBF = res.data.data.countBF
           this.currentCountBF = res.data.data.currentCountBF
+          this.isPay = res.data.data.isPay
         })
         .catch(err => {
           // this.$message.error('信息展示失败')
@@ -699,12 +693,11 @@ export default {
       .logo-index {
         width: 150px;
         margin-right: 50px;
-        margin-top: 3px;
       }
       .el-menu-item {
         border-bottom: none;
         font-size: 16px;
-        padding: 0 15px;
+        padding: 0 10px;
         height: 60px;
         line-height: 60px;
         background: #fff !important;
@@ -857,12 +850,11 @@ export default {
       justify-content: center;
       min-height: 961px;
       .nav {
-        float: left;
-        width: 230px;
+        width: 200px;
         min-height: 961px;
         margin-right: 20px;
         .tac {
-          width: 100%;
+          width: 200px;
           height: 100%;
           .el-menu-item {
             font-size: 16px;
@@ -873,6 +865,7 @@ export default {
             }
           }
           .el-submenu {
+            overflow: hidden;
             i {
               color: #000;
             }
@@ -933,8 +926,9 @@ export default {
         }
       }
       .content {
-        float: left;
-        width: 1170px;
+        // float: left;
+        width: calc(100% - 300px);
+        flex-grow: 1;
         min-height: 961px;
         background-color: #fff;
       }

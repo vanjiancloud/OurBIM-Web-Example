@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-06-09 10:57:45
+ * @LastEditTime: 2021-09-01 10:20:39
  * @description: 
 -->
 <template>
@@ -405,14 +405,65 @@
             />
           </el-tooltip>
           <!-- <el-collapse-transition> -->
-            <div class="show-weather" v-show="imgList[9].state === 1">
-              <div v-show="weatherData.length > 0">
-                <bim-weather @click.native="SetWeather(item)" v-for="item in weatherData" :key="item.id" :setProps="item"></bim-weather>
-              </div>
-            </div>
+          <div class="show-weather" v-show="imgList[9].state === 1">
+            <el-form class="set-form" :model="setForm" label-width="80px">
+              <el-form-item :label="$t('webClient.weather[0].label')">
+                <el-select
+                  size="mini"
+                  @change="SetWeather"
+                  class="w-100"
+                  popper-class="popper-bgi"
+                  v-model="setForm.weather"
+                  :placeholder="$t('webClient.weather[0].value')"
+                >
+                  <el-option
+                    :label="item.weatherName"
+                    :value="item.id"
+                    v-for="(item, index) in weatherData"
+                    :key="index"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item
+                :label="$t('webClient.weather[1].label')"
+                v-if="imgList[9].isTimer"
+              >
+                <div
+                  class="show-speed weahter-speed"
+                  v-if="imgList[9].state === 1"
+                >
+                  <el-slider
+                    :min="6"
+                    :max="17"
+                    v-model="imgList[9].data.speed"
+                    @mousedown.native="openMask"
+                    @click.native.stop=""
+                    @change="changeTime"
+                  ></el-slider>
+                </div>
+              </el-form-item>
+            </el-form>
+          </div>
           <!-- </el-collapse-transition> -->
         </div>
         <!-- <div class="cut-apart"></div> -->
+        <!-- 构件库 -->
+        <div class="image-main" v-if="showBar(imgList[14].id)">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :enterable="false"
+            :content="imgList[14].title"
+            placement="top"
+          >
+            <img
+              @click.stop="handleOrder(14)"
+              class="footer-image"
+              :src="imgList[14].url"
+              mode=""
+            />
+          </el-tooltip>
+        </div>
         <!-- 浏览器 -->
         <div class="image-main" v-if="showBar(imgList[10].id)">
           <el-tooltip
@@ -488,12 +539,9 @@
 
 <script>
 import MODELAPI from "@/api/model_api";
-import BimWeather from "./bim_weather"
 
 export default {
-  components: {
-    BimWeather
-  },
+  components: {},
   props: {
     setProps: {
       type: Object,
@@ -579,11 +627,11 @@ export default {
           value: 0,
         },
         {
-          name: "第三人称",
+          name: "上帝视角",
           value: 1,
         },
         {
-          name: "跟随人物",
+          name: "跟随视角",
           value: 2,
         },
       ],
@@ -663,6 +711,10 @@ export default {
           name: "weather.png",
           title: "渲染环境",
           id: 1012,
+          data: {
+            speed: 4,
+          },
+          isTimer: false,
         },
         {
           state: 0,
@@ -692,6 +744,13 @@ export default {
           title: "显示",
           id: 1015,
         },
+        {
+          state: 0,
+          url: require("@/assets/images/todo/unchecked/component-library.png"),
+          name: "component-library.png",
+          title: "构件库",
+          id: 1016,
+        },
       ],
       activePerson: 1,
       oldState: 0,
@@ -702,6 +761,7 @@ export default {
       setForm: {
         unit: 0,
         accuracy: 2,
+        weather: null,
       },
       deleteData: {
         title: "提示",
@@ -724,7 +784,7 @@ export default {
         cancelMessage: "指令下发失败",
         addLoadMessage: "正在执行添加视角，请稍候……",
       },
-      weatherData: []
+      weatherData: [],
     };
   },
   watch: {
@@ -747,7 +807,7 @@ export default {
     },
   },
   created() {
-    this.ListWeather()
+    this.ListWeather();
     this.uiList = this.singleList;
     if (this.setProps.taskId) {
       this.getProps = this.setProps;
@@ -793,32 +853,42 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
-    SetWeather(e){
-    /**
-     * @Author: zk
-     * @Date: 2021-06-05 15:49:31
-     * @description: 选择环境
-     */
+    SetWeather(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-06-05 15:49:31
+       * @description: 选择环境
+       */
+      let activeInfo = this.weatherData.find((val) => {
+        if (val.id === e) {
+          return val;
+        }
+      });
+      if (activeInfo && activeInfo.isDynamic === "1") {
+        this.imgList[9].isTimer = true;
+      } else {
+        this.imgList[9].isTimer = false;
+        this.imgList[9].data.speed = 6;
+      }
       this.$emit("listenTodo", {
-          state: this.imgList[9].state,
-          type: 9,
-          data: e,
-        });
+        state: this.imgList[9].state,
+        type: 9,
+        data: activeInfo,
+      });
     },
-    ListWeather(){
-    /**
-     * @Author: zk
-     * @Date: 2021-06-05 14:57:55
-     * @description: 获取环境列表
-     */      
-     MODELAPI.LISTWEATHER()
-            .then((res) => {
-              if (res.data.code === 0) {
-                this.weatherData = res.data.data
-              }else{
-                this.weatherData = []
-              }
-            })
+    ListWeather() {
+      /**
+       * @Author: zk
+       * @Date: 2021-06-05 14:57:55
+       * @description: 获取环境列表
+       */
+      MODELAPI.LISTWEATHER().then((res) => {
+        if (res.data.code === 0) {
+          this.weatherData = res.data.data;
+        } else {
+          this.weatherData = [];
+        }
+      });
     },
     showBar(e) {
       /**
@@ -891,15 +961,16 @@ export default {
         }
       }
       let setParams = {
-          id: indexes,
-        }
-        if (indexes === 2 || indexes === 0 || indexes === 1) {
-          setParams.state = this.activeSlice.indexOf(indexes) === -1 ? "off" : "on" 
-        }
+        id: indexes,
+      };
+      if (indexes === 2 || indexes === 0 || indexes === 1) {
+        setParams.state =
+          this.activeSlice.indexOf(indexes) === -1 ? "off" : "on";
+      }
       this.$emit("listenTodo", {
         state: this.imgList[2].state,
         type: 2,
-        data: setParams
+        data: setParams,
       });
     },
     changeGauge(e) {
@@ -954,6 +1025,17 @@ export default {
       this.$emit("listenTodo", {
         state: this.imgList[8].state,
         type: 8,
+        data: e,
+      });
+    },
+    changeTime(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-07-28 10:19:02
+       * @description: 渲染环境 切换时间
+       */
+      this.$emit("listenTodo", {
+        type: 15,
         data: e,
       });
     },
@@ -1037,6 +1119,14 @@ export default {
         });
         this.oldState = 0;
       }
+      // 小地图
+      if (this.oldState === 5) {
+        this.$emit("listenTodo", {
+          state: 0,
+          type: this.oldState,
+        });
+        this.oldState = 0;
+      }
     },
     editTool(e) {
       let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
@@ -1047,7 +1137,7 @@ export default {
       /**
        * @Author: zk
        * @Date: 2021-03-12 11:39:50
-       * @description: 重置为第三人称
+       * @description: 重置为上帝视角
        */
       this.activePerson = e;
     },
@@ -1218,19 +1308,41 @@ export default {
         })
         .catch((err) => {});
     },
+    resetState() {
+      /**
+       * @Author: zk
+       * @Date: 2021-08-17 14:36:12
+       * @description: 重置状态 打开
+       */
+      let realArr = [
+        11, // 属性框
+        14, // 构件库
+      ];
+      realArr.forEach((item) => {
+        if (this.imgList[item].state === 1) {
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[item].name}`);
+          this.imgList[item].url = oldUrl;
+          this.imgList[item].state = 0;
+          this.$emit("listenTodo", {
+            state: 0,
+            type: item,
+          });
+        }
+      });
+    },
     handleOrder(e) {
       // 功能未开放
-      if (e === 5 || e === 7) {
+      if (e === 7) {
         return;
       }
       if (e === 12 && this.activePerson === 0) {
         this.$message({
-              message: "请在第三人称下使用框选功能",
-              type: "warning",
-            });
-        return
+          message: "请在上帝视角下使用框选功能",
+          type: "warning",
+        });
+        return;
       }
-      // 剖切 分解模型 返回第三人称
+      // 剖切 分解模型 返回上帝视角
       if (e === 2 || e === 8) {
         this.activePerson = 1;
       }
@@ -1242,10 +1354,12 @@ export default {
         realImg = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
       }
       // 构件显示隐藏
-      if (this.imgList[e].state === 0 && e === 13) {
-        this.imgList[e].title = "隐藏"
-      } else {
-        this.imgList[e].title = "显示"
+      if (e === 13) {
+        if (this.imgList[e].state === 0) {
+          this.imgList[e].title = "隐藏";
+        } else {
+          this.imgList[e].title = "显示";
+        }
       }
 
       this.imgList[e].url = realImg;
@@ -1277,12 +1391,13 @@ export default {
         }
       }
       // 框选
-      if (this.oldState === 12) {        
+      if (this.oldState === 12) {
         if (
           this.imgList[this.oldState].state === 1 &&
           e !== 10 &&
           e !== 11 &&
-          e !== 12
+          e !== 12 &&
+          e !== 13
         ) {
           this.$emit("listenTodo", {
             state: 0,
@@ -1310,15 +1425,24 @@ export default {
         });
       }
       // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11) {
+      if (
+        e !== this.oldState &&
+        e !== 10 &&
+        e !== 11 &&
+        e !== 13 &&
+        e !== 14 &&
+        this.oldState !== 12
+      ) {
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;
         let oldUrl = require(`@/assets/images/todo/unchecked/${
           this.imgList[this.oldState].name
         }`);
-        this.imgList[this.oldState].url = oldUrl;
-        this.imgList[this.oldState].state = 0;
+        if (this.oldState !== 5) {
+          this.imgList[this.oldState].url = oldUrl;
+          this.imgList[this.oldState].state = 0;
+        }
         if (e === 0 && this.oldState === 4) {
           this.$emit("listenTodo", {
             state: 0,
@@ -1378,6 +1502,24 @@ export default {
           }
         }
       }
+      // 打开构件库 关闭属性
+      if (e === 14 && this.imgList[11].state === 1) {
+        this.imgList[11].url = require(`@/assets/images/todo/unchecked/${this.imgList[11].name}`);
+        this.imgList[11].state = 0;
+        this.$emit("listenTodo", {
+          state: 0,
+          type: 11,
+        });
+      }
+      // 打开属性 关闭构件库
+      if (e === 11 && this.imgList[14].state === 1) {
+        this.imgList[14].url = require(`@/assets/images/todo/unchecked/${this.imgList[14].name}`);
+        this.imgList[14].state = 0;
+        this.$emit("listenTodo", {
+          state: 0,
+          type: 14,
+        });
+      }
       if (e === 6) {
         this.followTool = this.imgList[e].state === 1 ? true : false;
       }
@@ -1410,6 +1552,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.w-100 {
+  width: 100%;
+}
 .todo-footer {
   position: absolute;
   bottom: 26px;
@@ -1508,12 +1653,12 @@ export default {
     .show-weather {
       position: absolute;
       width: 260px;
-      height: 200px;
+      height: 130px;
       overflow-y: auto;
       left: -115px;
-      padding: 10px 10px 0 10px;
+      padding: 10px 20px 0 20px;
       border-radius: 10px 10px 0 0;
-      top: -220px;
+      top: -150px;
       background-color: rgba(0, 0, 0, 0.6);
       &::-webkit-scrollbar {
         /*滚动条整体样式*/

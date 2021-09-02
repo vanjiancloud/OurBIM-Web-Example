@@ -50,6 +50,7 @@
               v-model="form.password"
               placeholder="请输入登录密码"
               type="password"
+              show-password
             >
               <i slot="prefix" class="el-input__icon el-icon-unlock"></i>
             </el-input>
@@ -604,11 +605,7 @@ export default {
       }
       .login-form {
         padding: 0 20px;
-        /deep/ .el-input__inner {
-          height: 50px;
-          width: 95%;
-          line-height: 50px;
-        }
+        
 
         /deep/ .el-form-item__content {
           line-height: 30px;

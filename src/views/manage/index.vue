@@ -17,7 +17,7 @@
     <!-- 表格 -->
     <div class="table">
       <el-table :data="itemList" style="width: 100%" class="sheet">
-        <el-table-column prop="appid" :label="$t('applicationid')">
+        <el-table-column prop="appid" :label="$t('applicationid')" width="130">
         </el-table-column>
         <el-table-column prop="appName" :label="$t('applyname')" width="150">
           <template slot-scope="scope">
@@ -33,7 +33,7 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="" label="项目类型">
+        <el-table-column prop="" label="项目类型" width="60">
           <template slot-scope="scope">
             <span v-if="scope.row.appType === '0'">普通模型</span>
             <span v-else-if="scope.row.appType === '1'">漫游模型</span>
@@ -41,7 +41,11 @@
             <span v-else>其他模型</span>
           </template>
         </el-table-column>
-        <el-table-column prop="fileSize" label="模型大小"> </el-table-column>
+        <el-table-column prop="fileSize" label="模型大小">
+          <template slot-scope="scope">
+            {{ scope.row.fileSize !== '0' ? scope.row.fileSize : '-' }}
+          </template>
+        </el-table-column>
         <el-table-column prop="" label="并发节点">
           <template slot-scope="scope">
             {{ scope.row.currentInstance }}/{{ scope.row.maxInstance }}
@@ -63,10 +67,12 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="createTime"
           :label="$t('uploaddate')"
-          width="200"
+          width="120"
         >
+        <template slot-scope="scope">
+          <div v-text="scope.row.createTime.slice(0, 10)"></div>
+        </template>
         </el-table-column>
         <el-table-column :label="$t('operation')" width="150">
           <template slot-scope="scope">
@@ -102,7 +108,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="进入项目">
+        <el-table-column label="进入项目" width="120">
           <template slot-scope="scope">
             <el-button
               @click="GoApp(scope.row)"
@@ -241,8 +247,8 @@
         }">
         <span slot-scope="{ option }">{{ option.appName }}</span>
       </el-transfer>
-      <el-form :model="FormIntegrate" class="form-integrate" :rules="rulesIntegrate" ref="FormIntegrate" label-width="80px">
-        <el-form-item label="链接名称" prop="appName">
+      <el-form :model="FormIntegrate" class="form-integrate" :rules="rulesIntegrate" ref="FormIntegrate" label-width="110px">
+        <el-form-item label="链接模型名称" prop="appName">
           <el-input v-model="FormIntegrate.appName"></el-input>
         </el-form-item>
       </el-form>
@@ -648,11 +654,9 @@ export default {
       })
         .then((res) => {
           if (res.data.code === 0) {
-            console.log(res);
             this.$message.success(res.data.message);
             this.GetList();
           } else if (res.data.code === 1) {
-            console.log(res);
             this.$message.warning(res.data.message);
           }
         })
@@ -796,7 +800,6 @@ export default {
   // ===== 页面实例销毁 =====
   destroyed() {
     // 清除定时器
-    console.log(1);
     clearInterval(this.timer);
   },
 };
@@ -808,7 +811,8 @@ export default {
 }
 .box {
   overflow: hidden;
-  padding: 20px;
+  width: 96%;
+  padding: 20px 2%;
   /deep/ .el-button--primary {
     background-color: #00aaf0;
   }
@@ -1018,6 +1022,12 @@ export default {
   }
   .el-dialog__footer{
     padding-top: 0;
+  }
+}
+.sheet{
+  .el-table__body, .el-table__header{
+    width: 100% !important;
+    table-layout: auto
   }
 }
 </style>

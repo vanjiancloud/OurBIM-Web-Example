@@ -110,8 +110,10 @@ const i18n = new VueI18n({
       UploadBIM: '仅上传BIM模型',
       Uploadto: '同时上传倾斜摄影模型',
       methods: '点击或将文件拖拽到这里上传',
+      uploadLimit: '文件上传限制200MB',
+      uploadGoBeyond: '超出200MB请联系我们',
       xianzhi: '每次只能上传一个模型',
-      limit: '仅支持上传扩展名：.rvt',
+      limit: '支持上传扩展名：.rvt, .ifc',
       Render: '开始转换',
       application: '项目名称：',
       Required: '必填项',
@@ -197,6 +199,15 @@ const i18n = new VueI18n({
         attribute: {
           title: '属性'
         },
+        labelBox: {
+          title: '标签'
+        },
+        componentLibrary: {
+          title: '构件库'
+        },
+        qrcodePart: {
+          title: '二维码',
+        },
         loadBox: {
           title: [
             '长时间未交互，已自动断开，刷新即可重连。',
@@ -211,7 +222,7 @@ const i18n = new VueI18n({
             '指令下发失败',
             '请求失败',
             '正在执行添加视角，请稍候……',
-            '当前访问用户过多，请稍后再试。'
+            '长时间未操作，已自动关闭，刷新即可重新进入。'
           ]
         },
         cubeBox: {
@@ -219,7 +230,7 @@ const i18n = new VueI18n({
           handle: ['正交投影', '透视投影', '自定义主视图', '重置主视图']
         },
         tooltipList: {
-          toolPerson: ["第一人称", "第三人称", "跟随人物"],
+          toolPerson: ["第一人称", "上帝视角", "跟随视角"],
           tool: ["视角", "移动速度", "模型剖切", "测量", "标签", "小地图", "关注视点", "模型动画", "分解模型", "渲染环境", "浏览器", "属性"],
           subtool: ["坐标", "距离", "角度", "设置"],
           sliceTool: ["移动", "旋转", "反选", "指定", "重置"],
@@ -400,6 +411,12 @@ const i18n = new VueI18n({
         },
         attribute: {
           title: 'attribute'
+        },
+        componentLibrary: {
+          title: 'component library'
+        },
+        qrcodePart: {
+          title: 'QR code',
         },
         loadBox: {
           title: [

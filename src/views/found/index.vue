@@ -125,15 +125,17 @@
           :on-exceed="exceed"
           :on-remove="onremove"
           :before-upload="beforeModelUpload"
-          accept=".rvt"
+          accept=".rvt,.ifc,.fbx"
           ref="bimupload"
           :auto-upload="false"
         >
-          <img src="./file.png" style="margin-top:30px" />
+          <img src="./file.png" style="margin-top:70px" />
           <div class="el-upload__text">
             {{ $t('methods') }}<br />
-            {{ $t('xianzhi') }}<br />
-            {{ $t('limit') }}<br />
+            {{ $t('uploadLimit') }}<br />
+            {{ $t('uploadGoBeyond') }}<br />
+            <!-- {{ $t('xianzhi') }}<br />
+            {{ $t('limit') }}<br /> -->
           </div>
         </el-upload>
       </div>
@@ -142,7 +144,7 @@
         style="margin:10px 40px;margin-top:-20px;text-align:left; font-size: 14px; "
       >
         <span style="color:red">*</span>
-        文件默认打开初始Revit的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
+        文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
       </div>
       <div class="btn">
         <el-button
@@ -368,12 +370,29 @@ export default {
     },
     // 上传bim模型前
     beforeModelUpload (file) {
-      var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
-      const extension = testmsg === 'rvt'
-      if (!extension) {
+      let testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
+      let listModel = ['rvt', 'ifc', 'fbx']
+      const isLt = file.size / 1024 / 1024 < 200
+       if(!isLt) {
+
+          this.$message({
+
+            message: '上传文件大小不能超过200MB!',
+
+            type: 'warning'
+
+          });
+
+          return false;
+
+        }
+      let extension = false
+      if (listModel.indexOf(testmsg) === -1) {
+        extension = false
         this.isLoading = false
-        this.$message.error('上传模型只能是.rvt格式!')
+        this.$message.error('请上传支持的文件格式!')
       } else {
+        extension = true
         this.$common.openLoading('上传模型中')
       }
       return extension
