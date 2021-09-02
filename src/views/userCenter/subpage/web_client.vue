@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-09-01 10:56:13
+ * @LastEditTime: 2021-09-02 14:34:27
  * @description: 
 -->
 <template>
@@ -2196,7 +2196,7 @@ export default {
   }
   .load-tip {
     width: 100%;
-    // display: flex;
+    display: flex;
     margin: 20px 0;
     letter-spacing: 2px;
     color: #00aaf0;

@@ -263,13 +263,28 @@
               </div>
             </div>
           </div>
-          <div class="jindu">
+          <div class="jindu" v-if="isPay !== '0'">
+            <h3 style="color: #00AAF0;">{{ bfPer }}%</h3>
+            <el-progress
+              :text-inside="true"
+              :stroke-width="15"
+              :percentage="Number(bfPer)"
+              :show-text="false"
+              :color="customColor"
+            >
+            </el-progress>
+            <div class="tutu">
+              <div class="icon">
+                <img src="./img/jiedian.png" alt="" />
+              </div>
+              {{ $t('Node') }}&nbsp;&nbsp;{{ currentCountBF }}/{{ countBF }}
+            </div>
           </div>
           <div class="line"></div>
           <div class="right">
             <div class="content">
               <div>{{ $t('service') }}</div>
-              <div>{{ countStartTime }}&nbsp;--&nbsp;{{ countendTime }}</div>
+              <div>{{ countStartTime }}&nbsp;{{$t('to')}}&nbsp;{{ countendTime }}</div>
               <el-button
                 plain
                 round
@@ -295,19 +310,6 @@
               background-color="#fff"
             >
               <!-- 项目管理 -->
-
-              <!-- <el-submenu index="manage">
-                <template slot="title">
-                  <i class="el-icon-setting"></i>
-                  <span class="write">{{ $t('management') }}</span>
-                </template>
-                <el-menu-item index="/manage">
-                  我的项目
-                </el-menu-item>
-                <el-menu-item index="/integration">
-                  项目集成
-                </el-menu-item>
-              </el-submenu> -->
               <el-menu-item index="/manage">
                 <i class="el-icon-setting"></i>
                 <span slot="title" class="write">{{ $t('management') }}</span>
@@ -384,6 +386,7 @@ export default {
       note: '', //签名
       name: '', //用户名
       sex: '0', //性别
+      isPay: '0', // 免费用户
       imgUrl: '', //用户头像
       email: '', //邮箱
       mobile: '', //手机号
@@ -477,6 +480,7 @@ export default {
           this.currentCountSpace = res.data.data.currentCountSpace
           this.countBF = res.data.data.countBF
           this.currentCountBF = res.data.data.currentCountBF
+          this.isPay = res.data.data.isPay
         })
         .catch(err => {
           // this.$message.error('信息展示失败')
