@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-09-02 14:34:27
+ * @LastEditTime: 2021-09-03 11:14:57
  * @description: 
 -->
 <template>
@@ -450,7 +450,7 @@ export default {
       if (!value) return true;
       const reamVal = data.name.indexOf(value) !== -1;
       if (!reamVal) {
-        this.treeEmpty = this.$t("webClient.browser.tips[0]");
+        this.treeEmpty = this.$t("webClient.browser.tips[1]");
       }
       return reamVal;
     },
