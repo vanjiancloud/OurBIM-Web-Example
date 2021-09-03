@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-09-03 15:46:17
+ * @LastEditTime: 2021-09-03 17:48:08
  * @description: 
 -->
 <template>
@@ -884,7 +884,7 @@ export default {
        */
       MODELAPI.LISTWEATHER().then((res) => {
         if (res.data.code === 0) {
-          this.setForm.weather = res.data.data[0].id
+          this.setForm.weather = res.data.data[0].id;
           this.weatherData = res.data.data;
         } else {
           this.weatherData = [];
@@ -973,6 +973,21 @@ export default {
         type: 2,
         data: setParams,
       });
+    },
+    resetSection() {
+      /**
+       * @Author: zk
+       * @Date: 2021-09-03 17:09:43
+       * @description: 重置剖切状态
+       */
+      // 设置重置状态
+      let resetSection = this.activeSlice.indexOf(4);
+      if (resetSection !== -1) {
+        const timer = setTimeout(() => {
+          this.activeSlice.splice(resetSection, 1);
+          clearTimeout(timer)
+        }, 300);
+      }
     },
     changeGauge(e) {
       /**

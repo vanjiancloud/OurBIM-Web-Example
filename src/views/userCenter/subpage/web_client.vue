@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-09-03 14:05:34
+ * @LastEditTime: 2021-09-03 17:47:21
  * @description: 
 -->
 <template>
@@ -950,6 +950,9 @@ export default {
       await MODELAPI.UPDATEORDER(params)
         .then((res) => {
           if (res.data.code === 0) {
+            // 剖切 重置恢复
+            this.resetSection();
+
             if (params.id === 1 && res.data && res.data.data) {
               // 切换到主视图 重置状态
               if (this.$refs.getFooter) {
@@ -973,11 +976,25 @@ export default {
           }
         })
         .catch(() => {
+          // 剖切 重置恢复
+          this.resetSection();
           this.$message({
             message: this.$t("webClient.loadBox.message[3]"),
             type: "error",
           });
         });
+    },
+    resetSection() {
+      /**
+       * @Author: zk
+       * @Date: 2021-09-03 17:40:45
+       * @description: 剖切 重置恢复
+       * @param {*} this
+       */
+      const realId = this.listenTodoInfo && this.listenTodoInfo.data && this.listenTodoInfo.data.id ? this.listenTodoInfo.data.id : ''
+      if (this.handleState === 11 && realId === 4) {
+        this.$refs.getFooter.resetSection();
+      }
     },
     async LisetMemberPage(node) {
       let params = {
