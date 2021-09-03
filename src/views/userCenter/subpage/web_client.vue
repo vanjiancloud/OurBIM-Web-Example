@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-09-03 11:14:57
+ * @LastEditTime: 2021-09-03 14:05:34
  * @description: 
 -->
 <template>
@@ -446,7 +446,7 @@ export default {
        * @Author: zk
        * @Date: 2021-09-01 10:49:56
        * @description: 筛选模型浏览器
-       */      
+       */
       if (!value) return true;
       const reamVal = data.name.indexOf(value) !== -1;
       if (!reamVal) {
@@ -454,13 +454,13 @@ export default {
       }
       return reamVal;
     },
-    changeBrowser(){
-    /**
-     * @Author: zk
-     * @Date: 2021-09-01 10:46:13
-     * @description: 搜索 
-     */      
-    this.$refs.setTree.filter(this.modelBrowser);
+    changeBrowser() {
+      /**
+       * @Author: zk
+       * @Date: 2021-09-01 10:46:13
+       * @description: 搜索
+       */
+      this.$refs.setTree.filter(this.modelBrowser);
     },
     AddQrCode() {
       /**
@@ -1952,17 +1952,17 @@ export default {
           cursor: pointer;
         }
       }
-      .handle-part{
-        padding: 1vh 15px 0 15px;
+      .handle-part {
+        padding: 1vh 15px 10px 15px;
       }
       .tree-part {
-        height: 40vh;
+        height: calc(100% - 110px);
         overflow: hidden;
       }
       .tree-content {
         margin-top: 1vh;
         width: 99.5%;
-        height: 40vh;
+        height: calc(100% - 1vh);
         overflow-x: hidden;
         overflow-y: auto;
         &::-webkit-scrollbar {
