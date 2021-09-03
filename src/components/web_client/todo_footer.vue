@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-09-01 10:20:39
+ * @LastEditTime: 2021-09-03 15:46:17
  * @description: 
 -->
 <template>
@@ -884,6 +884,7 @@ export default {
        */
       MODELAPI.LISTWEATHER().then((res) => {
         if (res.data.code === 0) {
+          this.setForm.weather = res.data.data[0].id
           this.weatherData = res.data.data;
         } else {
           this.weatherData = [];
@@ -1701,7 +1702,7 @@ export default {
 .follow-bgi {
   .follow-main {
     .follow-list {
-      max-height: 200px;
+      height: 200px;
       overflow-y: auto;
       margin-bottom: 10px;
 
