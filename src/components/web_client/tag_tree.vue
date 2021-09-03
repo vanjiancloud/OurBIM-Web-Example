@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 09:20:40
  * @LastEditors: zk
- * @LastEditTime: 2021-09-03 15:53:36
+ * @LastEditTime: 2021-09-03 18:29:32
  * @description: 
 -->
 <template>
@@ -837,8 +837,13 @@ export default {
       align-items: center;
       justify-content: space-between;
       padding-right: 8px;
+      width: calc(100% - 50px);
       .label-span {
         padding-left: 5px;
+        width: calc(100% - 30px);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
     .tag-slot {

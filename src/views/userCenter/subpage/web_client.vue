@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-09-03 17:47:21
+ * @LastEditTime: 2021-09-03 18:29:37
  * @description: 
 -->
 <template>
@@ -991,7 +991,12 @@ export default {
        * @description: 剖切 重置恢复
        * @param {*} this
        */
-      const realId = this.listenTodoInfo && this.listenTodoInfo.data && this.listenTodoInfo.data.id ? this.listenTodoInfo.data.id : ''
+      const realId =
+        this.listenTodoInfo &&
+        this.listenTodoInfo.data &&
+        this.listenTodoInfo.data.id
+          ? this.listenTodoInfo.data.id
+          : "";
       if (this.handleState === 11 && realId === 4) {
         this.$refs.getFooter.resetSection();
       }
@@ -2006,8 +2011,13 @@ export default {
           align-items: center;
           justify-content: space-between;
           padding-right: 8px;
+          width: calc(100% - 50px);
           .label-span {
             padding-left: 5px;
+            width: calc(100% - 30px);
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
           }
         }
       }
