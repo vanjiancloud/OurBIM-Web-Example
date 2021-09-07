@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 09:20:40
  * @LastEditors: zk
- * @LastEditTime: 2021-09-03 18:29:32
+ * @LastEditTime: 2021-09-07 11:55:49
  * @description: 
 -->
 <template>
@@ -318,9 +318,11 @@ export default {
           this.dialogIconEdit = false;
           this.loading.updataIcon = false;
           this.reloadTree(0);
+          this.$refs.refUploadIcon.clearFiles()
         })
         .catch(() => {
           this.$message.error("上传失败");
+          this.$refs.refUploadIcon.clearFiles()
         });
     },
     getBase64(file) {
@@ -490,7 +492,6 @@ export default {
             .then(() => {
               this.dialogEdit = false;
               this.tagNode.data.fileName = this.tagInfo.fileName;
-              // this.reloadTree(1);
               this.$emit("setListenClick", true);
               this.$message({
                 type: "success",
@@ -645,8 +646,10 @@ export default {
        * @description: 更新标签树
        * @param {*} 0 修改图片 1 修改标签名称 2 新增标签 3 新增标签树
        */
+      const realKey = this.tagIconInfo ? this.tagIconInfo.id : null
       if (this.defaultTag) {
         if (this.activeTree) {
+          const activeKey = this.activeLeaf ? this.activeTree.id : this.defaultTag.id
           let sonTag = this.$refs.refTag.getNode(
             this.activeLeaf ? this.activeTree.id : this.defaultTag.id
           ).childNodes;
@@ -654,11 +657,11 @@ export default {
             this.$refs.refTag.insertBefore(this.realTreeList[0], sonTag[0].key);
           } else {
             this.$refs.refTag.getNode(
-              this.activeLeaf ? this.activeTree.id : this.defaultTag.id
+              realKey ? realKey : this.activeLeaf ? this.activeTree.id : this.defaultTag.id
             ).parent.loaded = false;
             this.$refs.refTag
               .getNode(
-                this.activeLeaf ? this.activeTree.id : this.defaultTag.id
+                realKey ? realKey : this.activeLeaf ? this.activeTree.id : this.defaultTag.id
               )
               .parent.expand();
           }

@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-09-03 17:48:08
+ * @LastEditTime: 2021-09-07 10:19:22
  * @description: 
 -->
 <template>
@@ -1446,8 +1446,7 @@ export default {
         e !== 10 &&
         e !== 11 &&
         e !== 13 &&
-        e !== 14 &&
-        this.oldState !== 12
+        e !== 14
       ) {
         this.angleTool = false;
         this.followTool = false;
@@ -1472,7 +1471,6 @@ export default {
         let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[2].name}`);
         this.imgList[2].url = oldUrl;
       }
-
       if (e === 0) {
         this.personTool = this.imgList[e].state === 1 ? true : false;
       }

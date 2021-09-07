@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-09-03 18:29:37
+ * @LastEditTime: 2021-09-07 09:44:34
  * @description: 
 -->
 <template>
@@ -118,7 +118,7 @@
                 >
                   <span class="label-span">{{ node.label }}</span>
                   <span v-if="node.data.typeId !== 'comp'">
-                    <i class="iconfont icon-xianshi2" v-if="!node.checked"></i>
+                    <i class="iconfont icon-xianshi2" v-if="node.checked"></i>
                     <i v-else class="iconfont icon-yincang1"></i>
                   </span>
                 </span>
