@@ -17,7 +17,7 @@
         <div class="body">
           <el-form ref="ruleForm" :model="ruleForm" :rules="rules">
             <!-- 邮箱 -->
-            <el-form-item label="" prop="email">
+            <!-- <el-form-item label="" prop="email">
               <el-input
                 v-model="ruleForm.email"
                 placeholder="请输入邮箱"
@@ -25,7 +25,7 @@
               >
                 <i slot="prefix" class="el-icon-message"></i>
               </el-input>
-            </el-form-item>
+            </el-form-item> -->
             <!-- 手机号 -->
             <el-form-item label="" prop="mobile">
               <el-input
@@ -52,7 +52,7 @@
               </el-input>
             </el-form-item>
             <!-- 密码 -->
-            <el-form-item label="" prop="password">
+            <!-- <el-form-item label="" prop="password">
               <el-input
                 show-password
                 v-model="ruleForm.password"
@@ -60,9 +60,9 @@
               >
                 <i slot="prefix" class="el-icon-lock"></i>
               </el-input>
-            </el-form-item>
+            </el-form-item> -->
             <!-- 再次输入密码 -->
-            <el-form-item label="" prop="newPassword">
+            <!-- <el-form-item label="" prop="newPassword">
               <el-input
                 show-password
                 v-model="ruleForm.newPassword"
@@ -70,7 +70,7 @@
               >
                 <i slot="prefix" class="el-icon-lock"></i>
               </el-input>
-            </el-form-item>
+            </el-form-item> -->
             <!-- 勾选状态 -->
             <el-form-item label="" prop="checked" class="check">
               <el-checkbox v-model="ruleForm.checked">我同意</el-checkbox>
@@ -449,13 +449,13 @@ export default {
     }
   }
   .right {
-    width: 28vw;
+    width: calc(500px - 2vh);
     // height: 85vh;
     padding: 2vh;
     border-radius: 25px;
     box-shadow: 0px 1px 13px 0px rgba(135, 206, 235, 0.9);
     .zhuce {
-      height: 100%;
+      max-width: 500px;
       // background-color: red;
       .header {
         width: 100%;
@@ -467,6 +467,7 @@ export default {
           width: 50%;
           height: 100%;
           margin: 0 auto;
+          margin-left: 37px;
           img {
             width: 100%;
             height: 100%;
@@ -539,7 +540,6 @@ export default {
           cursor: pointer;
         }
         .code {
-          margin-top: -0.1vh;
           font-size: 12px;
         }
         .check {

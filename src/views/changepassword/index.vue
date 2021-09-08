@@ -263,8 +263,9 @@ export default {
       display: flex;
       margin-top: -20px;
       .logo {
-        width: 265px;
+        // width: 265px;
         // background-color: green;
+        margin-left: 20px;
         height: 100%;
         img {
           width: 100%;
