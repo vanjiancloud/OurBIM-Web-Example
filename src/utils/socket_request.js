@@ -6,7 +6,7 @@
  * @description: 
  */
 // let WSPRO = "ws://api.ourbim.com:21012/vjapi/";
-// let WSPRO = "ws://api.ourbim.com:11011/vjapi/";
+let WSPRO = "ws://api.ourbim.com:11011/vjapi/";
 // let WSPRO = "ws://192.168.3.151:11011/vjapi/";
 // let WSPRO = "ws://192.168.3.235:11011/vjapi/";
 // let WSPRO = "ws://cloud.ourbim.com:11011/vjapi/";
