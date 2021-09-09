@@ -99,9 +99,7 @@
                             :src="
                               imgUrl
                                 ? imgUrl
-                                : require(sex == 1
-                                    ? './img/man.png'
-                                    : './img/woman.png')
+                                : require('./img/man.png')
                             "
                             alt=""
                           />
@@ -230,7 +228,7 @@
                 :src="
                   imgUrl
                     ? imgUrl
-                    : require(sex == 1 ? './img/man.png' : './img/woman.png')
+                    : require('./img/man.png')
                 "
               />
             </div>

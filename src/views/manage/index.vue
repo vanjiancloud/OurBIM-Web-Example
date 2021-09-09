@@ -462,7 +462,7 @@ export default {
       })
         .then((res) => {
           // console.log(res, '应用数据列表')
-          if (res.data.message == "查询成功") {
+          if (res.data.code == "0" ) {
             // console.log('33333333', res.data.data)
             this.itemList = res.data.data;
             this.reverse();
@@ -475,7 +475,7 @@ export default {
             this.createTime = res.data.data.createTime;
           } else if (res.data.message === "应用信息为空") {
             // this.$message.warning('暂无数据')
-            this.itemList = "";
+            this.itemList = [];
           }
         })
         .catch((err) => {

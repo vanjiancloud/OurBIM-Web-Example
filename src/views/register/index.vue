@@ -265,9 +265,9 @@ export default {
       let source = this.getUrlKey("source");
       if (source === null) {
         window.location.href = "http://www.ourbim.com";
-      } else if (source === 'docs') {
+      } else if (source === "docs") {
         window.location.href = "http://yun.vanjian.com/Docs/#/login";
-      } else if (source === 'beta_docs') {
+      } else if (source === "beta_docs") {
         window.location.href = "http://yun.vanjian.com/DocsBeta/#/login";
       }
     },
@@ -296,23 +296,23 @@ export default {
       let source = this.getUrlKey("source");
       if (source === null) {
         this.$router.push("../login");
-      } else if (source === 'docs') {
+      } else if (source === "docs") {
         window.location.href = "http://yun.vanjian.com/Docs/#/login";
-      } else if (source === 'beta_docs') {
+      } else if (source === "beta_docs") {
         window.location.href = "http://yun.vanjian.com/DocsBeta/#/login";
       }
     },
     // 点击注册
     doRegister() {
       getRegister({
-        email: this.ruleForm.email,
-        name: this.ruleForm.name,
-        company: this.ruleForm.company,
-        sex: this.ruleForm.sex,
+        // email: this.ruleForm.email,
+        // name: this.ruleForm.name,
+        // company: this.ruleForm.company,
+        // sex: this.ruleForm.sex,
         mobile: this.ruleForm.mobile,
         code: this.ruleForm.code,
-        password: this.ruleForm.password,
-        activeUrl: window.location.href.split('?')[0],
+        // password: this.ruleForm.password,
+        activeUrl: window.location.href.split("?")[0],
       })
         .then((res) => {
           if (res.data.code === 0) {
@@ -411,7 +411,6 @@ export default {
         email: this.ruleForm.email,
       })
         .then((res) => {
-          console.log(res);
           if (res.data.code === 0) {
             this.$message.success(res.data.message);
           } else if (res.data.code === 1) {
@@ -419,7 +418,6 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(err);
           this.$message.error("校验失败，请检查网络");
         });
     },
