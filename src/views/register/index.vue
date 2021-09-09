@@ -465,7 +465,7 @@ export default {
           width: 50%;
           height: 100%;
           margin: 0 auto;
-          margin-left: 37px;
+          margin-left: 60px;
           img {
             width: 100%;
             height: 100%;
@@ -473,7 +473,7 @@ export default {
         }
         .el-icon-arrow-left {
           color: #00aaf0;
-          font-size: 8vh;
+          font-size: 60px;
         }
       }
       .body {
