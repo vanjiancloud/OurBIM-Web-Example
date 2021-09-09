@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-09-09 09:45:19
+ * @LastEditTime: 2021-09-09 17:31:52
  * @description: 
 -->
 <template>
@@ -1348,7 +1348,7 @@ export default {
     },
     handleOrder(e) {
       // 功能未开放
-      if (e === 7) {
+      if (e === 7 || e === 14) {
         return;
       }
       if (e === 12 && this.activePerson === 0) {
