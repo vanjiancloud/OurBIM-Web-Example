@@ -52,7 +52,7 @@
               </el-input>
             </el-form-item>
             <!-- 密码 -->
-            <!-- <el-form-item label="" prop="password">
+            <el-form-item label="" prop="password">
               <el-input
                 show-password
                 v-model="ruleForm.password"
@@ -60,9 +60,9 @@
               >
                 <i slot="prefix" class="el-icon-lock"></i>
               </el-input>
-            </el-form-item> -->
+            </el-form-item>
             <!-- 再次输入密码 -->
-            <!-- <el-form-item label="" prop="newPassword">
+            <el-form-item label="" prop="newPassword">
               <el-input
                 show-password
                 v-model="ruleForm.newPassword"
@@ -70,7 +70,7 @@
               >
                 <i slot="prefix" class="el-icon-lock"></i>
               </el-input>
-            </el-form-item> -->
+            </el-form-item>
             <!-- 勾选状态 -->
             <el-form-item label="" prop="checked" class="check">
               <el-checkbox v-model="ruleForm.checked">我同意</el-checkbox>
@@ -311,7 +311,7 @@ export default {
         // sex: this.ruleForm.sex,
         mobile: this.ruleForm.mobile,
         code: this.ruleForm.code,
-        // password: this.ruleForm.password,
+        password: this.ruleForm.password,
         activeUrl: window.location.href.split("?")[0],
       })
         .then((res) => {

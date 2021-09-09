@@ -88,7 +88,7 @@ const routes = [
     name: 'register',
     component: () => import('../views/register/index.vue'),
     meta: {
-      title: 'OurBIM请注册'
+      title: 'OurBIM注册'
     }
   },
   // 协议书
