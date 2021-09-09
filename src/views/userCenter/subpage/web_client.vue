@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-10 14:08:18
  * @LastEditors: zk
- * @LastEditTime: 2021-09-02 14:34:27
+ * @LastEditTime: 2021-09-07 09:44:34
  * @description: 
 -->
 <template>
@@ -118,7 +118,7 @@
                 >
                   <span class="label-span">{{ node.label }}</span>
                   <span v-if="node.data.typeId !== 'comp'">
-                    <i class="iconfont icon-xianshi2" v-if="!node.checked"></i>
+                    <i class="iconfont icon-xianshi2" v-if="node.checked"></i>
                     <i v-else class="iconfont icon-yincang1"></i>
                   </span>
                 </span>
@@ -446,21 +446,21 @@ export default {
        * @Author: zk
        * @Date: 2021-09-01 10:49:56
        * @description: 筛选模型浏览器
-       */      
+       */
       if (!value) return true;
       const reamVal = data.name.indexOf(value) !== -1;
       if (!reamVal) {
-        this.treeEmpty = this.$t("webClient.browser.tips[0]");
+        this.treeEmpty = this.$t("webClient.browser.tips[1]");
       }
       return reamVal;
     },
-    changeBrowser(){
-    /**
-     * @Author: zk
-     * @Date: 2021-09-01 10:46:13
-     * @description: 搜索 
-     */      
-    this.$refs.setTree.filter(this.modelBrowser);
+    changeBrowser() {
+      /**
+       * @Author: zk
+       * @Date: 2021-09-01 10:46:13
+       * @description: 搜索
+       */
+      this.$refs.setTree.filter(this.modelBrowser);
     },
     AddQrCode() {
       /**
@@ -950,6 +950,9 @@ export default {
       await MODELAPI.UPDATEORDER(params)
         .then((res) => {
           if (res.data.code === 0) {
+            // 剖切 重置恢复
+            this.resetSection();
+
             if (params.id === 1 && res.data && res.data.data) {
               // 切换到主视图 重置状态
               if (this.$refs.getFooter) {
@@ -973,11 +976,30 @@ export default {
           }
         })
         .catch(() => {
+          // 剖切 重置恢复
+          this.resetSection();
           this.$message({
             message: this.$t("webClient.loadBox.message[3]"),
             type: "error",
           });
         });
+    },
+    resetSection() {
+      /**
+       * @Author: zk
+       * @Date: 2021-09-03 17:40:45
+       * @description: 剖切 重置恢复
+       * @param {*} this
+       */
+      const realId =
+        this.listenTodoInfo &&
+        this.listenTodoInfo.data &&
+        this.listenTodoInfo.data.id
+          ? this.listenTodoInfo.data.id
+          : "";
+      if (this.handleState === 11 && realId === 4) {
+        this.$refs.getFooter.resetSection();
+      }
     },
     async LisetMemberPage(node) {
       let params = {
@@ -1952,17 +1974,17 @@ export default {
           cursor: pointer;
         }
       }
-      .handle-part{
-        padding: 1vh 15px 0 15px;
+      .handle-part {
+        padding: 1vh 15px 10px 15px;
       }
       .tree-part {
-        height: 40vh;
+        height: calc(100% - 110px);
         overflow: hidden;
       }
       .tree-content {
         margin-top: 1vh;
         width: 99.5%;
-        height: 40vh;
+        height: calc(100% - 1vh);
         overflow-x: hidden;
         overflow-y: auto;
         &::-webkit-scrollbar {
@@ -1989,8 +2011,13 @@ export default {
           align-items: center;
           justify-content: space-between;
           padding-right: 8px;
+          width: calc(100% - 50px);
           .label-span {
             padding-left: 5px;
+            width: calc(100% - 30px);
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
           }
         }
       }

@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-03-04 14:00:23
  * @LastEditors: zk
- * @LastEditTime: 2021-09-02 16:17:13
+ * @LastEditTime: 2021-09-09 09:45:19
  * @description: 
 -->
 <template>
@@ -884,6 +884,7 @@ export default {
        */
       MODELAPI.LISTWEATHER().then((res) => {
         if (res.data.code === 0) {
+          this.setForm.weather = res.data.data[0].id;
           this.weatherData = res.data.data;
         } else {
           this.weatherData = [];
@@ -972,6 +973,21 @@ export default {
         type: 2,
         data: setParams,
       });
+    },
+    resetSection() {
+      /**
+       * @Author: zk
+       * @Date: 2021-09-03 17:09:43
+       * @description: 重置剖切状态
+       */
+      // 设置重置状态
+      let resetSection = this.activeSlice.indexOf(4);
+      if (resetSection !== -1) {
+        const timer = setTimeout(() => {
+          this.activeSlice.splice(resetSection, 1);
+          clearTimeout(timer)
+        }, 300);
+      }
     },
     changeGauge(e) {
       /**
@@ -1430,8 +1446,7 @@ export default {
         e !== 10 &&
         e !== 11 &&
         e !== 13 &&
-        e !== 14 &&
-        this.oldState !== 12
+        e !== 14
       ) {
         this.angleTool = false;
         this.followTool = false;
@@ -1456,7 +1471,6 @@ export default {
         let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[2].name}`);
         this.imgList[2].url = oldUrl;
       }
-
       if (e === 0) {
         this.personTool = this.imgList[e].state === 1 ? true : false;
       }
@@ -1701,7 +1715,7 @@ export default {
 .follow-bgi {
   .follow-main {
     .follow-list {
-      max-height: 200px;
+      height: 200px;
       overflow-y: auto;
       margin-bottom: 10px;
 

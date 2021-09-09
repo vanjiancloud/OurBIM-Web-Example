@@ -570,7 +570,7 @@ export default {
           width: 50%;
           height: 100%;
           margin-top: -55px;
-          margin-left: 120px;
+          margin-left: 125px;
           img {
             width: 100%;
             height: 100%;
@@ -612,8 +612,7 @@ export default {
           margin-left: 15px;
         }
         .code {
-          margin-right: 25px;
-          margin-top: 6px;
+          margin-top: 3px;
           font-size: 12px;
         }
         .fonts {

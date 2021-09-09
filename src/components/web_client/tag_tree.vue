@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-05-06 09:20:40
  * @LastEditors: zk
- * @LastEditTime: 2021-09-01 10:27:48
+ * @LastEditTime: 2021-09-07 15:51:00
  * @description: 
 -->
 <template>
@@ -144,12 +144,12 @@
             :high="cropperOption.high"
             :infoTrue="cropperOption.infoTrue"
             :enlarge="cropperOption.enlarge"
-          ></vueCropper>          
+          ></vueCropper>
         </div>
         <div class="copy-tips">
-            *支持png格式
-            <!-- 、jpg、jpeg、bmp格式 -->
-          </div>
+          *支持png格式
+          <!-- 、jpg、jpeg、bmp格式 -->
+        </div>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button
@@ -157,11 +157,11 @@
           v-text="dialogPointData.cancel"
         ></el-button>
         <el-button
-        :loading="loading.updataIcon"
+          :loading="loading.updataIcon"
           type="primary"
           @click="updateTagIcon"
         >
-        <span v-text="dialogPointData.confirm"></span>
+          <span v-text="dialogPointData.confirm"></span>
         </el-button>
       </div>
     </el-dialog>
@@ -219,8 +219,8 @@ export default {
     return {
       DataTagTree: [],
       realTreeList: [],
-      loading:{
-        updataIcon: false
+      loading: {
+        updataIcon: false,
       },
       isColseBar: true,
       uploadInfo: {
@@ -316,11 +316,13 @@ export default {
         .post(this.uploadInfo.action, formData, config)
         .then(() => {
           this.dialogIconEdit = false;
-          this.loading.updataIcon = false
+          this.loading.updataIcon = false;
           this.reloadTree(0);
+          this.$refs.refUploadIcon.clearFiles();
         })
         .catch(() => {
           this.$message.error("上传失败");
+          this.$refs.refUploadIcon.clearFiles();
         });
     },
     getBase64(file) {
@@ -376,13 +378,13 @@ export default {
        * @Date: 2021-05-08 15:54:26
        * @description: 文件上传之前
        */
-       this.cropperOption.fileType = file.raw.type;
-       this.cropperOption.imgName = file.name;
-        this.getBase64(file.raw).then((res) => {
-          this.cropperOption.img = res;
-          this.$emit("setListenClick", false);
-          this.dialogIconEdit = true;
-        });      
+      this.cropperOption.fileType = file.raw.type;
+      this.cropperOption.imgName = file.name;
+      this.getBase64(file.raw).then((res) => {
+        this.cropperOption.img = res;
+        this.$emit("setListenClick", false);
+        this.dialogIconEdit = true;
+      });
     },
     editTagIcon(e) {
       /**
@@ -442,8 +444,8 @@ export default {
        * @Date: 2021-05-08 15:06:25
        * @description: 上传icon
        */
-       this.loading.updataIcon = true
-       if (
+      this.loading.updataIcon = true;
+      if (
         // this.cropperOption.fileType !== "image/jpeg" &&
         this.cropperOption.fileType !== "image/png"
         // this.cropperOption.fileType !== "image/jpg" &&
@@ -454,19 +456,23 @@ export default {
           message: "请上传支持的图片格式",
         });
         this.dialogIconEdit = false;
-        this.loading.updataIcon = false
-      }else{
+        this.loading.updataIcon = false;
+      } else {
         this.$refs.cropper.getCropData((data) => {
-        this.getBlob(data);
-        this.getFile(this.getBlob(data), this.cropperOption.imgName).then(
-          (res) => {
-            this.cropperOption.imgUrl = res;
-            this.$refs.refUploadIcon.submit();
-          }
-        );
-      });
+          this.getBlob(data);
+          this.getFile(this.getBlob(data), this.cropperOption.imgName)
+            .then((res) => {
+              this.cropperOption.imgUrl = res;
+              this.$refs.refUploadIcon.submit();
+            })
+            .catch((err) => {
+              this.$message({
+                message: this.$t("webClient.loadBox.message[4]"),
+                type: "error",
+              });
+            });
+        });
       }
-      
     },
     updateTag() {
       /**
@@ -486,7 +492,6 @@ export default {
             .then(() => {
               this.dialogEdit = false;
               this.tagNode.data.fileName = this.tagInfo.fileName;
-              // this.reloadTree(1);
               this.$emit("setListenClick", true);
               this.$message({
                 type: "success",
@@ -494,7 +499,10 @@ export default {
               });
             })
             .catch((err) => {
-              console.log(err);
+              this.$message({
+                message: this.$t("webClient.loadBox.message[4]"),
+                type: "error",
+              });
             });
         } else {
           return false;
@@ -562,7 +570,10 @@ export default {
               });
             })
             .catch((err) => {
-              console.log(err);
+              this.$message({
+                message: this.$t("webClient.loadBox.message[4]"),
+                type: "error",
+              });
             });
         })
         .catch(() => {
@@ -604,7 +615,12 @@ export default {
               this.$emit("setAddTag");
             });
           })
-          .catch((err) => {});
+          .catch((err) => {
+            this.$message({
+              message: this.$t("webClient.loadBox.message[4]"),
+              type: "error",
+            });
+          });
       } else {
         TAGTREE.SAVETAGGATHER(params)
           .then(() => {
@@ -616,7 +632,10 @@ export default {
             });
           })
           .catch((err) => {
-            console.log(err);
+            this.$message({
+              message: this.$t("webClient.loadBox.message[4]"),
+              type: "error",
+            });
           });
       }
     },
@@ -627,8 +646,12 @@ export default {
        * @description: 更新标签树
        * @param {*} 0 修改图片 1 修改标签名称 2 新增标签 3 新增标签树
        */
+      const realKey = this.tagIconInfo ? this.tagIconInfo.id : null;
       if (this.defaultTag) {
         if (this.activeTree) {
+          const activeKey = this.activeLeaf
+            ? this.activeTree.id
+            : this.defaultTag.id;
           let sonTag = this.$refs.refTag.getNode(
             this.activeLeaf ? this.activeTree.id : this.defaultTag.id
           ).childNodes;
@@ -636,11 +659,19 @@ export default {
             this.$refs.refTag.insertBefore(this.realTreeList[0], sonTag[0].key);
           } else {
             this.$refs.refTag.getNode(
-              this.activeLeaf ? this.activeTree.id : this.defaultTag.id
+              realKey
+                ? realKey
+                : this.activeLeaf
+                ? this.activeTree.id
+                : this.defaultTag.id
             ).parent.loaded = false;
             this.$refs.refTag
               .getNode(
-                this.activeLeaf ? this.activeTree.id : this.defaultTag.id
+                realKey
+                  ? realKey
+                  : this.activeLeaf
+                  ? this.activeTree.id
+                  : this.defaultTag.id
               )
               .parent.expand();
           }
@@ -819,8 +850,13 @@ export default {
       align-items: center;
       justify-content: space-between;
       padding-right: 8px;
+      width: calc(100% - 50px);
       .label-span {
         padding-left: 5px;
+        width: calc(100% - 30px);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
     .tag-slot {
@@ -868,8 +904,8 @@ export default {
     width: 200px;
     height: 200px;
   }
-  .copy-tips{
-    color: #F56C6C;
+  .copy-tips {
+    color: #f56c6c;
     margin-top: 20px;
     text-align: center;
   }
