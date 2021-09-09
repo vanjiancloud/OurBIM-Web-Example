@@ -2,7 +2,7 @@
  * @Author: zk
  * @Date: 2021-02-20 13:30:48
  * @LastEditors: zk
- * @LastEditTime: 2021-09-09 09:34:30
+ * @LastEditTime: 2021-09-09 17:28:16
  * @description: 
  */
 import axios from 'axios'
@@ -11,8 +11,8 @@ import {
   Getuserid
 } from '@/store/index.js'
 
-// axios.defaults.baseURL = 'http://1.182.89.34:11011/vjapi'
-axios.defaults.baseURL = 'http://api.ourbim.com:21012/vjapi'
+axios.defaults.baseURL = 'http://api.ourbim.com:11011/vjapi'
+// axios.defaults.baseURL = 'http://api.ourbim.com:21012/vjapi'
 // axios.defaults.baseURL = 'http://192.168.3.151:11011/vjapi'
 // axios.defaults.baseURL = 'http://192.168.3.235:11011/vjapi'
 // axios.defaults.baseURL = 'http://cloud.ourbim.com:11011/vjapi'
