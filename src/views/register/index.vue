@@ -507,7 +507,6 @@ export default {
           font-size: 16px;
           width: 100%;
           padding-left: 70px;
-          background-color: #f4f4f4;
           color: #000;
         }
         // 输入框名字字段字数限制的背景色

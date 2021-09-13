@@ -242,7 +242,6 @@ export default {
       height: 50px;
       margin-top: 25px;
       font-size: 16px;
-      background-color: #f4f4f4;
       padding-left: 90px;
       color: #000;
     }
