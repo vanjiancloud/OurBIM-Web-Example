@@ -46,11 +46,11 @@
             {{ scope.row.fileSize !== '0' ? scope.row.fileSize : '-' }}
           </template>
         </el-table-column>
-        <el-table-column prop="" label="并发节点">
+        <!-- <el-table-column prop="" label="并发节点">
           <template slot-scope="scope">
             {{ scope.row.currentInstance }}/{{ scope.row.maxInstance }}
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column :label="$t('state')">
           <template slot-scope="scope">
             <!-- 做自定义操作 需要改成template的形式,scope.row代表的是表格数据itemList中的每一项 -->
