@@ -533,8 +533,6 @@ export default {
       }
       // 输入框
       /deep/ .el-input__inner {
-        // font-size: 20px;
-        background-color: #f4f4f4;
         padding-left: 60px;
         color: #000;
       }
