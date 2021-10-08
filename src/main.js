@@ -19,6 +19,9 @@ import axios from '@/utils/request.js'
 import VueI18n from 'vue-i18n'
 import common from './utils/common.js' // 公共方法
 import VueCropper from 'vue-cropper'
+// 引入echart
+import * as echarts from "echarts"
+import 'echarts-liquidfill'
 
 Vue.use(VueI18n)
 Vue.use(VueCropper)
@@ -230,7 +233,7 @@ const i18n = new VueI18n({
           handle: ['正交投影', '透视投影', '自定义主视图', '重置主视图']
         },
         tooltipList: {
-          toolPerson: ["第一人称", "上帝视角", "跟随视角"],
+          toolPerson: ["第一人称", "上帝视角", "第三人称"],
           tool: ["视角", "移动速度", "模型剖切", "测量", "标签", "小地图", "关注视点", "模型动画", "分解模型", "渲染环境", "浏览器", "属性"],
           subtool: ["坐标", "距离", "角度", "设置"],
           sliceTool: ["移动", "旋转", "反选", "指定", "重置"],
@@ -484,6 +487,11 @@ const i18n = new VueI18n({
     }
   }
 })
+// 把echarts放到原型上
+Vue.prototype.$echarts = echarts
+
+console.log("当前请求的基本地址", process.env.REQUEST_URL);
+
 
 new Vue({
   router,

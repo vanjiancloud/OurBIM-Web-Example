@@ -11,11 +11,22 @@ import {
   Getuserid
 } from '@/store/index.js'
 
-axios.defaults.baseURL = 'http://api.ourbim.com:11011/vjapi'
+// axios.defaults.baseURL = 'http://api.ourbim.com:11011/vjapi'
+
 // axios.defaults.baseURL = 'http://api.ourbim.com:21012/vjapi'
 // axios.defaults.baseURL = 'http://192.168.3.151:11011/vjapi'
 // axios.defaults.baseURL = 'http://192.168.3.235:11011/vjapi'
-// axios.defaults.baseURL = 'http://cloud.ourbim.com:11011/vjapi'
+
+// axios.defaults.baseURL = 'http://192.168.1.33:11011/vjapi'//范 本地
+
+
+// axios.defaults.baseURL = 'http://cloud.ourbim.com:11011/vjapi' // 测试服务器
+
+axios.defaults.baseURL = process.env.REQUEST_URL
+
+console.log("当前请求的基本地址", process.env);
+
+
 axios.defaults.transformResponse = [
   function (data) {
     try {

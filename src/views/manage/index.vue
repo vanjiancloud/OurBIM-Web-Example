@@ -665,6 +665,7 @@ export default {
           this.$message.error("删除失败");
         });
     },
+ 
     //进入应用
     GoApp(e) {
       let isiPad =
@@ -691,10 +692,11 @@ export default {
                 appid: e.appid,
                 locale: this.$i18n.locale,
                 token: res.data.data.token,
+                // isScene:true
               },
             });
             window.open(href, "_blank");
-          }
+          } 
         } else {
           this.$message({
             type: "error",

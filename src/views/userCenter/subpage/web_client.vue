@@ -215,7 +215,11 @@
         ></progress-bar>
       </transition>
       <todo-footer
-        v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar"
+        v-if="
+          controllerInfo.singleList.length !== 13 &&
+          controllerInfo.uiBar &&
+          isScene === false
+        "
         v-show="controllerInfo.tagUiBar"
         ref="getFooter"
         @listenTodo="listenTodo"
@@ -226,7 +230,7 @@
         :singleList="controllerInfo.singleList"
       ></todo-footer>
       <view-cube
-        v-if="controllerInfo.viewCube"
+        v-if="controllerInfo.viewCube && isScene === false"
         v-show="controllerInfo.tagViewCube"
         @handleOrder="handleOrder"
         @goFront="goFront"
@@ -244,6 +248,7 @@
         ref="tagTree"
       ></tag-tree>
     </div>
+    <underground-scene v-if="sceneName === 'underground'" />
   </div>
 </template>
 
@@ -257,6 +262,8 @@ import tagTree from "@/components/web_client/tag_tree";
 import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
 
+import undergroundScene from "@/components/scene/wisdom-underground/WisdomUndergroundItem";
+
 export default {
   name: "look_app",
   layout: "reset",
@@ -266,9 +273,11 @@ export default {
     tagTree,
     progressBar,
     qrcodePart,
+    undergroundScene,
   },
   data() {
     return {
+      windowChangeFlag: true,
       componentCollapse: "1",
       modelBrowser: null,
       openNode: null,
@@ -280,6 +289,7 @@ export default {
         data: 0,
         loadData: 0,
       },
+      isScene: false,
       isProgress: true,
       propsMember: {
         label: "name",
@@ -347,8 +357,15 @@ export default {
       isQrcode: false,
     };
   },
+
   watch: {},
   created() {
+    // 判断是不是应用场景
+    let { sceneName } = this.$route.query;
+    this.sceneName = sceneName || "";
+    this.isScene = !!sceneName;
+    console.log(this.isScene, this.sceneName);
+
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -370,6 +387,7 @@ export default {
     }
   },
   mounted() {
+    this.listenWindowSize();
     document
       .querySelector("#tree-content")
       .addEventListener("scroll", this.throttle(this.handleScroll));
@@ -441,6 +459,26 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    listenWindowSize() {
+      // 监听窗口大小变化 id=14 height
+      window.onresize = () => {
+        if (this.windowChangeFlag) {
+          let params = {
+            taskid: this.taskId,
+            id: 14,
+            height: document.body.clientHeight,
+            width: document.body.clientWidth,
+          };
+          MODELAPI.UPDATEORDER(params)
+          this.windowChangeFlag = false;
+          const windowTimeout = setTimeout(() => {
+            this.windowChangeFlag = true;
+            clearTimeout(windowTimeout);
+          }, 50);
+        } else {
+        }
+      };
+    },
     filterNode(value, data) {
       /**
        * @Author: zk
@@ -562,6 +600,7 @@ export default {
       }
     },
     listenFollow(e) {
+      console.log("listenFollow", e);
       /**
        * @Author: zk
        * @Date: 2021-04-08 15:30:38
@@ -570,6 +609,7 @@ export default {
       this.isFollow = e;
     },
     listenMode(e) {
+      console.log("listenMode");
       /**
        * @Author: zk
        * @Date: 2021-03-17 16:01:54
@@ -1142,6 +1182,7 @@ export default {
       }
     },
     listenPerson(e) {
+      console.log("listenPerson");
       /**
        * @Author: zk
        * @Date: 2021-03-16 18:06:24
@@ -1152,11 +1193,13 @@ export default {
       this.updateOrder();
     },
     listenTodo(e) {
+      console.log("listenTodo");
       /**
        * @Author: zk
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
+
       this.$refs.getCube.closeView();
       if (e.type === 14 || e.type === 11) {
         this.isQrcode = false;
@@ -1460,9 +1503,7 @@ export default {
           this.websock.send("Bang");
         }, 1000 * 60);
       };
-      this.websock.onerror = (e) => {
-        // console.log(e);
-      };
+      this.websock.onerror = (e) => {};
     },
     delMaskTimer(e) {
       /**
@@ -1579,24 +1620,24 @@ export default {
       let realTimer = setTimeout(() => {
         // 鼠标移出
         document.getElementById("show-bim").onmouseout = () => {
-          this.sendToIframe(
-            10002,
-            {
-              button: "left",
-              x: 500,
-              y: 500,
-            },
-            ""
-          );
-          this.sendToIframe(
-            10002,
-            {
-              button: "right",
-              x: 500,
-              y: 500,
-            },
-            ""
-          );
+          // this.sendToIframe(
+          //   10002,
+          //   {
+          //     button: "left",
+          //     x: 500,
+          //     y: 500,
+          //   },
+          //   ""
+          // );
+          // this.sendToIframe(
+          //   10002,
+          //   {
+          //     button: "right",
+          //     x: 500,
+          //     y: 500,
+          //   },
+          //   ""
+          // );
         };
         // 移动滚轮
         document.getElementById("show-bim").onmousewheel = () => {

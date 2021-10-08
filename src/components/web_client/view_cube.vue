@@ -37,7 +37,7 @@
         <div class="spot-3" @click.stop="handleSpot(index, 3)" @mouseenter="setSpot(index, 3, true)" @mouseleave="setSpot(index, 3, false)"></div>
       </div>
     </div>
-    <img class="go-front" @click.stop="goFront" src="../../assets/images/todo/home.png" mode=""></img>
+    <img class="go-front" @click.stop="goFront" src="../../assets/images/todo/home.png" mode="">
       <div class="drop-down">
         <img class="handle-down" @click.stop="changeView" src="../../assets/images/todo/drop_down.png" alt="">
         <transition name="el-zoom-in-top">
@@ -794,6 +794,7 @@ export default {
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       const oldDownInfo = JSON.parse(JSON.stringify(this.downInfo));
       this.activeFace = e;
+      console.log(555,e);
       switch (e) {
         case 0:
           this.downInfo = {
@@ -854,6 +855,7 @@ export default {
        * @Date: 2021-04-01 17:56:46
        * @description: 重置角度
        */
+      console.log(666);
       this.closeView();
       // if (this.activeType === 2) {
       // this.activeType = 1;

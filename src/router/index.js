@@ -144,6 +144,15 @@ const routes = [
     meta: {
       title: '应用详情'
     }
+  },
+  // test
+  {
+    path: '/test',
+    name: 'test',
+    component: () => import('../views/test.vue'),
+    meta: {
+      title: '应用详情'
+    }
   }
 ]
 

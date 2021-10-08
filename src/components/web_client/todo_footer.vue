@@ -27,6 +27,7 @@
             />
           </el-tooltip>
         </div>
+        <!-- 跟随视角改为第三人称 -->
         <!-- 框选 -->
         <div class="image-main" v-if="showBar(imgList[12].id)">
           <el-tooltip
@@ -631,7 +632,7 @@ export default {
           value: 1,
         },
         {
-          name: "跟随视角",
+          name: "第三人称",
           value: 2,
         },
       ],
