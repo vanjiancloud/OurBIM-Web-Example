@@ -986,7 +986,7 @@ export default {
       if (resetSection !== -1) {
         const timer = setTimeout(() => {
           this.activeSlice.splice(resetSection, 1);
-          clearTimeout(timer)
+          clearTimeout(timer);
         }, 300);
       }
     },
@@ -1174,7 +1174,7 @@ export default {
        */
       let params = {
         taskid: this.getProps.taskId,
-        id: 9,
+        action: "addViewPoint",
       };
       this.UpdateOrder(params).then(() => {
         this.followTool = false;
@@ -1271,7 +1271,7 @@ export default {
       this.followInfo = e;
       let params = {
         taskid: this.getProps.taskId,
-        id: 10,
+        action: "moveToViewPoint",
         camerashotId: e.tid,
       };
       if (this.followInfo.available === "0") {
@@ -1442,13 +1442,7 @@ export default {
         });
       }
       // 重置状态
-      if (
-        e !== this.oldState &&
-        e !== 10 &&
-        e !== 11 &&
-        e !== 13 &&
-        e !== 14
-      ) {
+      if (e !== this.oldState && e !== 10 && e !== 11 && e !== 13 && e !== 14) {
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;

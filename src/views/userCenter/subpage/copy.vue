@@ -364,6 +364,7 @@ export default {
     let { sceneName } = this.$route.query;
     this.sceneName = sceneName || "";
     this.isScene = !!sceneName;
+    console.log(this.isScene, this.sceneName);
 
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
@@ -464,7 +465,7 @@ export default {
         if (this.windowChangeFlag) {
           let params = {
             taskid: this.taskId,
-            action: "platform",
+            id: 14,
             height: document.body.clientHeight,
             width: document.body.clientWidth,
           };
@@ -1359,6 +1360,7 @@ export default {
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
+        console.log(111,e.data);
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
           if (realData.id === "1") {

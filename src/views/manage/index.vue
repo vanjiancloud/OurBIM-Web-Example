@@ -17,8 +17,6 @@
     <!-- 表格 -->
     <div class="table">
       <el-table :data="itemList" style="width: 100%" class="sheet">
-        <el-table-column prop="appid" :label="$t('applicationid')" width="130">
-        </el-table-column>
         <el-table-column prop="appName" :label="$t('applyname')" width="150">
           <template slot-scope="scope">
             <el-tooltip
@@ -33,17 +31,25 @@
             </el-tooltip>
           </template>
         </el-table-column>
+        <el-table-column prop="appid" :label="$t('applicationid')" width="130">
+        </el-table-column>
+        <el-table-column :label="$t('uploaddate')" width="120">
+          <template slot-scope="scope">
+            <div v-text="scope.row.createTime"></div>
+            <!-- <div v-text="scope.row.createTime.slice(0, 10)"></div> -->
+          </template>
+        </el-table-column>
+        <el-table-column prop="fileSize" label="模型大小">
+          <template slot-scope="scope">
+            {{ scope.row.fileSize !== "0" ? scope.row.fileSize : "-" }}
+          </template>
+        </el-table-column>
         <el-table-column prop="" label="项目类型" width="60">
           <template slot-scope="scope">
             <span v-if="scope.row.appType === '0'">普通模型</span>
             <span v-else-if="scope.row.appType === '1'">漫游模型</span>
             <span v-else-if="scope.row.appType === '3'">链接模型</span>
             <span v-else>其他模型</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="fileSize" label="模型大小">
-          <template slot-scope="scope">
-            {{ scope.row.fileSize !== '0' ? scope.row.fileSize : '-' }}
           </template>
         </el-table-column>
         <!-- <el-table-column prop="" label="并发节点">
@@ -66,14 +72,7 @@
             </el-progress>
           </template>
         </el-table-column>
-        <el-table-column
-          :label="$t('uploaddate')"
-          width="120"
-        >
-        <template slot-scope="scope">
-          <div v-text="scope.row.createTime.slice(0, 10)"></div>
-        </template>
-        </el-table-column>
+
         <el-table-column :label="$t('operation')" width="150">
           <template slot-scope="scope">
             <div class="handle-btn">
@@ -233,25 +232,33 @@
       title="链接模型"
       custom-class="integrate-dialog"
       :visible.sync="IsIntegrate"
-      width="690px">
+      width="690px"
+    >
       <div>
         <el-transfer
-        class="integrate-transfer"
-        filterable
-        :titles="['模型', '模型']"
-        v-model="ActiveLinkModel"
-        :data="ListLinkModel"
-        :props="{
-          key: 'appid',
-          label: 'appName'
-        }">
-        <span slot-scope="{ option }">{{ option.appName }}</span>
-      </el-transfer>
-      <el-form :model="FormIntegrate" class="form-integrate" :rules="rulesIntegrate" ref="FormIntegrate" label-width="110px">
-        <el-form-item label="链接模型名称" prop="appName">
-          <el-input v-model="FormIntegrate.appName"></el-input>
-        </el-form-item>
-      </el-form>
+          class="integrate-transfer"
+          filterable
+          :titles="['模型', '模型']"
+          v-model="ActiveLinkModel"
+          :data="ListLinkModel"
+          :props="{
+            key: 'appid',
+            label: 'appName',
+          }"
+        >
+          <span slot-scope="{ option }">{{ option.appName }}</span>
+        </el-transfer>
+        <el-form
+          :model="FormIntegrate"
+          class="form-integrate"
+          :rules="rulesIntegrate"
+          ref="FormIntegrate"
+          label-width="110px"
+        >
+          <el-form-item label="链接模型名称" prop="appName">
+            <el-input v-model="FormIntegrate.appName"></el-input>
+          </el-form-item>
+        </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="IsIntegrate = false">取 消</el-button>
@@ -276,12 +283,12 @@ export default {
   data() {
     return {
       FormIntegrate: {
-        appName: null
+        appName: null,
       },
       rulesIntegrate: {
         appName: [
-          { required: true, message: '请输入链接模型名称', trigger: 'blur' },
-        ]
+          { required: true, message: "请输入链接模型名称", trigger: "blur" },
+        ],
       },
       ActiveLinkModel: [],
       ListLinkModel: [],
@@ -365,69 +372,65 @@ export default {
     // this.showTips()
   },
   methods: {
-    SubmitIntegrate(){
-    /**
-     * @Author: zk
-     * @Date: 2021-06-05 11:20:15
-     * @description: 确认集成
-     */      
-    if (this.ActiveLinkModel.length === 0) {
-      this.$message({
-          message: '请选择模型',
-          type: 'warning'
+    SubmitIntegrate() {
+      /**
+       * @Author: zk
+       * @Date: 2021-06-05 11:20:15
+       * @description: 确认集成
+       */
+      if (this.ActiveLinkModel.length === 0) {
+        this.$message({
+          message: "请选择模型",
+          type: "warning",
         });
-        return false
-    }
-     this.$refs['FormIntegrate'].validate((valid) => {
-          if (valid) {
-            let params = {
-              userId: Getuserid(),
-              appName: this.FormIntegrate.appName,
-              bimList: this.ActiveLinkModel.join()
-            }
-            MODELAPI.ADDINTEGRARE(params)
-            .then(res => {
-              if (res.data.code === 0) {
-                this.GetList();
-                this.ActiveLinkModel = []
-                this.$refs['FormIntegrate'].resetFields();
-                this.IsIntegrate = false
-              }else{
-                this.$message({
+        return false;
+      }
+      this.$refs["FormIntegrate"].validate((valid) => {
+        if (valid) {
+          let params = {
+            userId: Getuserid(),
+            appName: this.FormIntegrate.appName,
+            bimList: this.ActiveLinkModel.join(),
+          };
+          MODELAPI.ADDINTEGRARE(params).then((res) => {
+            if (res.data.code === 0) {
+              this.GetList();
+              this.ActiveLinkModel = [];
+              this.$refs["FormIntegrate"].resetFields();
+              this.IsIntegrate = false;
+            } else {
+              this.$message({
                 message: res.data.message,
-                type: 'warning'
+                type: "warning",
               });
-              }
-            })
-            
-          } else {
-            return false;
-          }
-        });
+            }
+          });
+        } else {
+          return false;
+        }
+      });
     },
-    GetIntegrate(){
+    GetIntegrate() {
       getProjectList({
         userid: Getuserid(),
         isHandle: 1,
-        appType: 0
-      })
-      .then(res => {
+        appType: 0,
+      }).then((res) => {
         if (res.data.code === 0) {
-        this.ListLinkModel = res.data.data
-          
+          this.ListLinkModel = res.data.data;
         } else {
-        this.ListLinkModel = []          
+          this.ListLinkModel = [];
         }
-      })
+      });
     },
-    AddIntegrate(){
-    /**
-     * @Author: zk
-     * @Date: 2021-06-05 10:14:30
-     * @description: 新增集成
-     */
-      this.GetIntegrate()
-      this.IsIntegrate = true
+    AddIntegrate() {
+      /**
+       * @Author: zk
+       * @Date: 2021-06-05 10:14:30
+       * @description: 新增集成
+       */
+      this.GetIntegrate();
+      this.IsIntegrate = true;
     },
     noneTips(obj, row) {
       row.showTooltip = false;
@@ -462,8 +465,7 @@ export default {
       })
         .then((res) => {
           // console.log(res, '应用数据列表')
-          if (res.data.code == "0" ) {
-            // console.log('33333333', res.data.data)
+          if (res.data.code == "0") {
             this.itemList = res.data.data;
             this.reverse();
             this.appid = res.data.data.appid;
@@ -665,7 +667,7 @@ export default {
           this.$message.error("删除失败");
         });
     },
- 
+
     //进入应用
     GoApp(e) {
       let isiPad =
@@ -696,7 +698,7 @@ export default {
               },
             });
             window.open(href, "_blank");
-          } 
+          }
         } else {
           this.$message({
             type: "error",
@@ -972,21 +974,21 @@ export default {
     }
   }
 }
-.form-integrate{
+.form-integrate {
   margin-top: 20px;
 }
-.integrate-transfer{
-  /deep/ .el-transfer__buttons{
+.integrate-transfer {
+  /deep/ .el-transfer__buttons {
     padding: 0 10px;
   }
-  /deep/ .el-transfer__button{
+  /deep/ .el-transfer__button {
     display: block;
     margin-left: 0;
     padding: 7px;
     background-color: #ecf5ff;
     border-color: #ecf5ff;
     color: #606266;
-    &:hover{
+    &:hover {
       background-color: #ecf5ff8f;
       border-color: #ecf5ff8f;
       color: #606266;
@@ -1013,23 +1015,24 @@ export default {
     border-top-color: #00aaf0 !important;
   }
 }
-.integrate-transfer{
-  .el-transfer-panel{
+.integrate-transfer {
+  .el-transfer-panel {
     width: 300px;
   }
 }
-.integrate-dialog{
-  .el-dialog__body{
+.integrate-dialog {
+  .el-dialog__body {
     padding: 20px !important;
   }
-  .el-dialog__footer{
+  .el-dialog__footer {
     padding-top: 0;
   }
 }
-.sheet{
-  .el-table__body, .el-table__header{
+.sheet {
+  .el-table__body,
+  .el-table__header {
     width: 100% !important;
-    table-layout: auto
+    table-layout: auto;
   }
 }
 </style>

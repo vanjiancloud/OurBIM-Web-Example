@@ -364,6 +364,7 @@ export default {
     let { sceneName } = this.$route.query;
     this.sceneName = sceneName || "";
     this.isScene = !!sceneName;
+    console.log(this.isScene, this.sceneName);
 
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
@@ -464,7 +465,7 @@ export default {
         if (this.windowChangeFlag) {
           let params = {
             taskid: this.taskId,
-            action: "platform",
+            action:'platform',
             height: document.body.clientHeight,
             width: document.body.clientWidth,
           };
@@ -799,7 +800,7 @@ export default {
       switch (this.handleState) {
         case 0:
           // 一三人称
-          params.action = 'switchViewMode';
+          params.id = 8;
           params.viewMode = this.listenInfo === 0 ? 1 : 2;
           if (this.listenInfo === 0) {
             this.shadowType = 1;
@@ -812,7 +813,7 @@ export default {
           break;
         case 1:
           // 模式切换
-          params.action = 'switchViewMode';
+          params.id = 8;
           // 投影类型切换
           if (this.shadowType === 2) {
             // 正交 必须为上帝视角
@@ -831,59 +832,59 @@ export default {
           break;
         case 2:
           // 自定义主视图
-          params.action = 'setGodPos';
+          params.id = 11;
           break;
         case 3:
           // 移动速度
-          params.action = 'setSpeedLevel';
+          params.id = 12;
           params.speedLevel = this.listenTodoInfo.data;
           break;
         case 4:
           // 测量
           if (this.listenTodoInfo.data === 0) {
             // 坐标
-            params.action = 'coordinate';
+            params.id = 37;
           } else if (this.listenTodoInfo.data === 1) {
             // 距离
-            params.action = 'distance';
+            params.id = 35;
           } else if (this.listenTodoInfo.data === 2) {
             // 角度
-            params.action = 'angle';
+            params.id = 36;
           } else if (this.listenTodoInfo.data === 3) {
             // 设置单位
-            params.action = 'changePrecisionOrUnit';
+            params.id = 38;
             params.unit = this.listenTodoInfo.set;
             params.precision = this.gaugeInfo.accuracy;
           } else if (this.listenTodoInfo.data === 4) {
             // 设置精度
-            params.action = 'changePrecisionOrUnit';
+            params.id = 38;
             params.precision = this.listenTodoInfo.set;
             params.unit = this.gaugeInfo.unit;
           }
           break;
         case 5:
           // 关闭测量
-          params.action = 'endMeasure';
+          params.id = 39;
           break;
         case 6:
           // 六面体
-          params.action = 'cameraPosSpecial';
+          params.id = 2;
           params.sjid = this.cubeState;
           break;
         case 7:
           // 重置主视图
-          params.action = 'clearGodCamerashot';
+          params.id = 13;
           break;
         case 8:
           // 构件显示 隐藏 半透明
           params.mn = this.leafInfo.uuid;
           params.projectId = this.leafInfo.projectId;
           if (this.leafInfo.activeState === 0) {
-            params.action = 'showComponents';
+            params.id = 26;
           } else if (this.leafInfo.activeState === 1) {
-            params.action = 'hideComponents';
+            params.id = 27;
           } else {
-            params.action = 'setTransparency';
+            params.id = 30;
             params.Opacity = 0.5;
           }
           break;
@@ -892,23 +893,23 @@ export default {
           params.projectId = this.leafInfo.data.projectId;
           params.mn = this.leafInfo.key;
           this.leafInfo.data.activeSelect === 0
-            ? (params.action = 'cancelSelectComponent')
-            : (params.action = 'selectComponent');
+            ? (params.id = 29)
+            : (params.id = 28);
           break;
         case 10:
           // 定位主视图
-          params.action = 'cameraPosAll';
+          params.id = 1;
           break;
         case 11:
           // 剖切
           if (this.listenTodoInfo.state === 0) {
-            params.action = 'end';
+            params.id = 42;
           }
           if (
             this.listenTodoInfo.state === 1 &&
             this.listenTodoInfo.data === undefined
           ) {
-            params.action = 'start';
+            params.id = 41;
           }
           if (
             this.listenTodoInfo.state === 1 &&
@@ -917,27 +918,27 @@ export default {
             switch (this.listenTodoInfo.data.id) {
               case 0:
                 if (this.listenTodoInfo.data.state === "on") {
-                  params.action = 'move';
+                  params.id = 43;
                 } else {
-                  params.action = 'cutBox';
+                  params.id = 49;
                 }
                 break;
               case 1:
                 if (this.listenTodoInfo.data.state === "on") {
-                  params.action = 'rotate';
+                  params.id = 44;
                 } else {
-                  params.action = 'cutBox';
+                  params.id = 49;
                 }
                 break;
               case 2:
-                params.action = 'invert';
+                params.id = 45;
                 params.Switch = this.listenTodoInfo.data.state;
                 break;
               case 3:
-                params.action = 'startItem';
+                params.id = 47;
                 break;
               case 4:
-                params.action = 'restoration';
+                params.id = 46;
                 break;
               default:
                 break;
@@ -946,34 +947,34 @@ export default {
           break;
         case 12:
           // 分解模型
-          params.action = 'splitModel';
+          params.id = 48;
           params.splitValue = this.listenTodoInfo.data;
           break;
         case 13:
           // 启动应用
-          params.action = 'platform';
+          params.id = 14;
           params.plateType = this.isMobile() ? 1 : 0;
           params.width = this.pageSizeInfo.width;
           params.height = this.pageSizeInfo.height;
           break;
         case 14:
           // 框选
-          params.action = 'componentBoxSelection';
+          params.id = 18;
           params.Switch = this.listenTodoInfo.state === 1 ? "on" : "off";
           break;
         case 15:
           // 渲染环境
-          params.action = 'Weather';
+          params.id = 50;
           params.weahterId = this.listenTodoInfo.data.id;
           break;
         case 16:
           // 渲染环境
-          params.action = 'minimapSethidden';
+          params.id = 34;
           params.Switch = this.listenTodoInfo.state === 0 ? "off" : "on";
           break;
         case 17:
           // 渲染环境
-          params.action = 51;
+          params.id = 51;
           params.rate = this.listenTodoInfo.data ? this.listenTodoInfo.data : 6;
           break;
         default:
@@ -992,7 +993,7 @@ export default {
             // 剖切 重置恢复
             this.resetSection();
 
-            if (params.action === 'cameraPosAll' && res.data && res.data.data) {
+            if (params.id === 1 && res.data && res.data.data) {
               // 切换到主视图 重置状态
               if (this.$refs.getFooter) {
                 let realView = res.data.data.viewMode === "1" ? 0 : 1;
@@ -1359,6 +1360,7 @@ export default {
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
+        console.log(111,e.data);
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
           if (realData.id === "1") {

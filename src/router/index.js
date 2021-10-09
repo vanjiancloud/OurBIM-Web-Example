@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 // 引入路由组件
 import Layout from '@/views/Layout/index.vue'
 import manage from '@/views/manage/index.vue'
-import found from '@/views/found/index.vue'
+import found from '@/views/found/index copy.vue'
 import bill from '@/views/bill/index.vue'
 import code from '@/views/code/index.vue'
 import order from '@/views/order/index.vue'
