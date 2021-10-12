@@ -216,6 +216,9 @@ export default {
       isLoading: false
     }
   },
+  created(){
+    console.log(666);
+  },
   methods: {
     // 上传封面图
     upLoadImg (response, file, fileList) {
@@ -313,14 +316,18 @@ export default {
     },
     // 删除模型事件
     onremove (file, fileList) {
+      console.log('onremove');
       this.bimupNumber--
       this.disabl = !this.disabl
     },
     // 添加模型文件
     onchange (file, fileList) {
+      console.log(333,file, fileList);
       if (!file.response) {
         this.bimupNumber++
+        console.log('this.bimupNumber',this.bimupNumber);
         this.disabl = !this.disabl
+        console.log('this.disabl',this.disabl);
       }
     },
     // 上传模型成功
@@ -404,6 +411,9 @@ export default {
     // 监听路由变化，当路由发生变化的时候，重新加载组件
     $route (to, from) {
       window.location.reload()
+    },
+    disabl(){
+      console.log(111);
     }
   }
 }

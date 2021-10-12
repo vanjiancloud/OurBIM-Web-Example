@@ -996,11 +996,37 @@ export default {
        * @Date: 2021-03-24 15:43:44
        * @description: 测量 0 坐标 1 距离 2 角度 3 单位 4 精度
        */
+      /* 
+      status:begin end
+       */
+
       let realSet = null;
+      // let status = null; // params:begin end
       if (e === 0 || e === 1 || e === 2) {
+        let img = this.cuttingList[e].img;
+        for (let i = 0; i <= 2; i++) {
+          this.cuttingList[i].img = require("@/assets/images/todo/unchecked/" +
+            this.cuttingList[i].name +
+            ".png");
+        }
         this.cuttingList[e].img = require("@/assets/images/todo/check/" +
           this.cuttingList[e].name +
           ".png");
+          //如果点了同一个图标，关闭测量
+        if (img === this.cuttingList[e].img) {
+          for (let i = 0; i <= 2; i++) {
+            this.cuttingList[
+              i
+            ].img = require("@/assets/images/todo/unchecked/" +
+              this.cuttingList[i].name +
+              ".png");
+          }
+          this.$emit("listenTodo", {
+            state: 0,
+            type: 3,
+          });
+          return
+        }
       }
       if (e === 3) {
         realSet = this.unitList[this.setForm.unit]
@@ -1012,11 +1038,13 @@ export default {
           ? this.accuracyList[this.setForm.accuracy]
           : "0.01";
       }
+      //触发测量方法
       this.$emit("listenTodo", {
         state: this.imgList[3].state,
         type: 3,
         data: e,
         set: realSet,
+        status: status,
       });
     },
     changeSpeed(e) {
@@ -1347,7 +1375,9 @@ export default {
         }
       });
     },
+    // handleOrder点击方法
     handleOrder(e) {
+      console.log("handleOrder", e);
       // 功能未开放
       if (e === 7 || e === 14) {
         return;
@@ -1634,11 +1664,13 @@ export default {
       left: 25%;
       border-radius: 10px 10px 0 0;
       top: -151px;
-      padding-bottom: 5px;
+      // padding-bottom: 5px;
+      padding-top: 5px;
       background-color: rgba(0, 0, 0, 0.6);
 
       .cutting-img {
-        margin-top: 10px;
+        // margin-top: 10px;
+        padding: 5px 0;
         width: 20px;
         height: 20px;
       }

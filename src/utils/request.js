@@ -24,7 +24,6 @@ import {
 
 axios.defaults.baseURL = process.env.VUE_APP_REQUEST_URL
 
-console.log('request',process.env.VUE_APP_REQUEST_URL);
 
 axios.defaults.transformResponse = [
   function (data) {

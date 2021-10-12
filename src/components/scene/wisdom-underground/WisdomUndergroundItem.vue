@@ -1,6 +1,6 @@
 <template>
   <div id="echarts">
-    <div class="dsaasdad"></div>
+    <div class="shadow-mask"></div>
     <div class="header-wrap">智慧地下管网</div>
     <div class="left-right left">
       <div class="chart-title">
@@ -693,7 +693,10 @@ export default {
 </script>
 
 <style scoped lang="less">
-.dsaasdad {
+#echarts {
+  z-index: 9999;
+}
+.shadow-mask {
   position: fixed;
   left: 0;
   top: 0;

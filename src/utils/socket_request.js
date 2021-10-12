@@ -16,7 +16,6 @@
 // let WSPRO = "ws://cloud.ourbim.com:11011/vjapi/";
 
 let WSPRO = process.env.VUE_APP_SOCKET_URL;
-console.log('socket',process.env.VUE_APP_SOCKET_URL);
 export let BASE = {
   WSPRO
 }

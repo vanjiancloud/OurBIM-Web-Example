@@ -273,13 +273,13 @@ export default {
     // 删除模型事件
     onremove(file, fileList) {
       this.bimupNumber--;
-      this.disabl = !this.disabl;
+      // this.disabl = !this.disabl;
     },
     // 添加模型文件
     onchange(file, fileList) {
       if (!file.response) {
         this.bimupNumber++;
-        this.disabl = !this.disabl;
+        // this.disabl = !this.disabl;
       }
     },
     // 上传模型成功
@@ -360,6 +360,13 @@ export default {
     // 监听路由变化，当路由发生变化的时候，重新加载组件
     $route(to, from) {
       window.location.reload();
+    },
+    bimupNumber(num) {
+      if (num) {
+        this.disabl = false;
+      } else {
+        this.disabl = true;
+      }
     },
   },
 };
