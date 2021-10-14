@@ -314,7 +314,7 @@
               </el-menu-item>
 
               <!-- 创建项目 -->
-              <el-menu-item index="/found">
+              <el-menu-item>
                 <i class="el-icon-folder-add"></i>
                 <span slot="title" class="write">{{ $t('Create') }}</span>
               </el-menu-item>
