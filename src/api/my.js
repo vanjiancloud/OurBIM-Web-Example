@@ -4,7 +4,7 @@ import request from '../utils/request'
 import qsStringify from 'qs-stringify'
 
 // 激活账号
-export function activation (data) {
+export function activation(data) {
   const { code } = data
   return request({
     url: 'UserCenter/ActiveServlet',
@@ -16,7 +16,7 @@ export function activation (data) {
 }
 
 // 获取邮箱密码登录
-export function login (data) {
+export function login(data) {
   const { loginName, password } = data
   return request({
     url: '/UserCenter/login',
@@ -29,7 +29,7 @@ export function login (data) {
 }
 
 // 获取手机短信登录
-export function loginMobile (data) {
+export function loginMobile(data) {
   const { mobile, code } = data
   return request({
     url: '/UserCenter/loginMobile',
@@ -42,7 +42,7 @@ export function loginMobile (data) {
 }
 
 // 获取注册
-export function getRegister (data) {
+export function getRegister(data) {
   const { email, mobile, code, password, activeUrl, name, company, sex } = data
   return request({
     url: '/UserCenter/addUser',
@@ -61,7 +61,7 @@ export function getRegister (data) {
 }
 
 // 手机号查重
-export function repeatMobile (data) {
+export function repeatMobile(data) {
   const { mobile } = data
   return request({
     url: '/UserCenter/repeatMobile',
@@ -73,7 +73,7 @@ export function repeatMobile (data) {
 }
 
 // 邮箱查重
-export function repeatEmail (data) {
+export function repeatEmail(data) {
   const { email } = data
   return request({
     url: '/UserCenter/repeatEmail',
@@ -85,7 +85,7 @@ export function repeatEmail (data) {
 }
 
 // 获取验证码
-export function sendMsgCode (data) {
+export function sendMsgCode(data) {
   const { mobile, msgType } = data
   return request({
     url: '/UserCenter/sendMsgCode',
@@ -98,7 +98,7 @@ export function sendMsgCode (data) {
 }
 
 // 修改密码验证手机号密码
-export function updateJudgeMsg (data) {
+export function updateJudgeMsg(data) {
   const { mobile, code } = data
   return request({
     url: '/UserCenter/judgeMsg',
@@ -111,7 +111,7 @@ export function updateJudgeMsg (data) {
 }
 
 // 修改密码
-export function updatePassword (data) {
+export function updatePassword(data) {
   const { mobile, code, password } = data
   return request({
     url: '/UserCenter/updatePassword',
@@ -125,7 +125,7 @@ export function updatePassword (data) {
 }
 
 // 修改手机号
-export function updatePhone (data) {
+export function updatePhone(data) {
   return request({
     url: '/UserCenter/updatePhone',
     method: 'POST',
@@ -134,7 +134,7 @@ export function updatePhone (data) {
 }
 
 // 新建项目
-export function addProject (data) {
+export function addProject(data) {
   return request({
     url: '/appli/addProject',
     method: 'POST',
@@ -143,7 +143,7 @@ export function addProject (data) {
 }
 
 // 上传项目模型
-export function ProjectModel (data) {
+export function ProjectModel(data) {
   return request({
     url: '/appli/postProjectModel',
     method: 'POST',
@@ -152,15 +152,22 @@ export function ProjectModel (data) {
 }
 
 // 获取项目列表
-export function getProjectList (data) {
+export function getProjectList(data) {
   return request({
     url: '/appli/getApplicationList',
     method: 'GET',
     params: data
   })
 }
+export function upgradeModle(params) {// 升级模型
+  return request({
+    url: '/appli/upgradeBIMModel',
+    method: 'POST',
+    params
+  })
+}
 // 分享项目
-export function getWebUrl (data) {
+export function getWebUrl(data) {
   return request({
     url: '/appli/getWebUrl',
     method: 'POST',
@@ -169,7 +176,7 @@ export function getWebUrl (data) {
   })
 }
 // 删除项目
-export function deleteProject (data) {
+export function deleteProject(data) {
   return request({
     url: '/appli/deleteProject',
     method: 'POST',
@@ -178,7 +185,7 @@ export function deleteProject (data) {
 }
 
 // 编辑项目
-export function updateProject (data) {
+export function updateProject(data) {
   return request({
     url: '/appli/updateProject',
     method: 'POST',
@@ -187,7 +194,7 @@ export function updateProject (data) {
 }
 
 // 获取用户已有信息
-export function getUserInfo (data) {
+export function getUserInfo(data) {
   return request({
     url: '/CountManager/getUserCount',
     method: 'GET',
@@ -196,7 +203,7 @@ export function getUserInfo (data) {
 }
 
 // 修改用户信息
-export function modifyUserInfo (data) {
+export function modifyUserInfo(data) {
   return request({
     url: '/CountManager/ModifyUserCount',
     method: 'POST',
@@ -205,7 +212,7 @@ export function modifyUserInfo (data) {
 }
 
 // 上传头像
-export function uploadImg (data) {
+export function uploadImg(data) {
   return request({
     url: '/CountManager/postUserImg',
     method: 'POST',
@@ -214,7 +221,7 @@ export function uploadImg (data) {
 }
 
 // 当前用户信息展示
-export function showDetail (data) {
+export function showDetail(data) {
   return request({
     url: '/CountManager/getCountDetail',
     method: 'GET',
@@ -223,7 +230,7 @@ export function showDetail (data) {
 }
 
 // 获取服务订单数据列表
-export function getOrder (data) {
+export function getOrder(data) {
   return request({
     url: '/dingdanManager/searchDingdan',
     method: 'POST',
@@ -232,7 +239,7 @@ export function getOrder (data) {
 }
 
 // 提交授权码
-export function updateSQM (data) {
+export function updateSQM(data) {
   return request({
     url: '/dingdanManager/updateSQM',
     method: 'POST',
@@ -241,7 +248,7 @@ export function updateSQM (data) {
 }
 
 // 验证授权码
-export function verification (data) {
+export function verification(data) {
   return request({
     url: '/dingdanManager/verification',
     method: 'POST',

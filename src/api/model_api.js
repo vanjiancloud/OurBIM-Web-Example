@@ -31,6 +31,7 @@ const MODELAPI = {
       params
     })
   },
+  
   // 指令下发
   UPDATEORDER: params => {
     return request({
@@ -47,49 +48,49 @@ const MODELAPI = {
       params
     })
   },
-//   修改关注视角
+  //   修改关注视角
   UPDATEFOLLOWPOINT: params => {
     return request({
-        url: '/OurBim/updateCamerashotGod',
-        method: 'post',
-        params
-      })
+      url: '/OurBim/updateCamerashotGod',
+      method: 'post',
+      params
+    })
   },
-//   删除关注视角
-    DElETEFOLLOWPOINT: params => {
+  //   删除关注视角
+  DElETEFOLLOWPOINT: params => {
     return request({
-        url: '/OurBim/deleteCamerashotGod',
-        method: 'post',
-        params
-      })
+      url: '/OurBim/deleteCamerashotGod',
+      method: 'post',
+      params
+    })
   },
   // 还原模型
   UPDATERESETANGLE: params => {
     return request({
-        url: '/OurBim/clearGodCamerashot',
-        method: 'post',
-        params
-      })
+      url: '/OurBim/clearGodCamerashot',
+      method: 'post',
+      params
+    })
   },
   // 获取模型token
   GETBIMTOKEN: params => {
     return request({
-        url: '/OurBim/getEnterToken',
-        method: 'get',
-        params
-      })
+      url: '/OurBim/getEnterToken',
+      method: 'get',
+      params
+    })
   },
   // 新建集成项目
   ADDINTEGRARE: params => {
     return request({
-        url: '/appli/addCombineApp',
-        method: 'post',
-        params
-      })
+      url: '/appli/addCombineApp',
+      method: 'post',
+      params
+    })
   },
   // 获取环境列表
   LISTWEATHER: params => {
-    return request({      
+    return request({
       url: '/appli/getWeatherList',
       method: 'get',
       params
@@ -97,7 +98,7 @@ const MODELAPI = {
   },
   // 改变选中构件状态
   UPDATEMEMBER: params => {
-    return request({      
+    return request({
       url: '/OurBim/conChoiceVisible',
       method: 'get',
       params

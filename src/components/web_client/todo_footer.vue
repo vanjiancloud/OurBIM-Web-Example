@@ -786,6 +786,50 @@ export default {
         addLoadMessage: "正在执行添加视角，请稍候……",
       },
       weatherData: [],
+      iconSelectList: [
+        {
+          name: "分解模型",
+          index: 8,
+          params: {
+            action: "splitModel",
+            splitValue: 0,
+          },
+          select: false,
+        },
+        {
+          name: "模型剖切",
+          index: 2,
+          params: {
+            action: "end",
+          },
+          select: false,
+        },
+        {
+          name: "测量",
+          index: 3,
+          params: {
+            action: "endMeasure",
+          },
+          select: false,
+        },
+        {
+          name: "切换视角",
+          index: 0,
+          params: {
+            action: "",
+          },
+          select: false,
+        },
+        {
+          name: "框选",
+          index: 12,
+          params: {
+            action: "componentBoxSelection",
+            Switch: "off",
+          },
+          select: false,
+        },
+      ],
     };
   },
   watch: {
@@ -804,6 +848,13 @@ export default {
         this.uiList = this.singleList;
       },
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
+      deep: true,
+    },
+    imgList: {
+      // 监听的对象数组
+      handler(newValue, oldValue) {
+        // console.log(newValue==oldValue);
+      },
       deep: true,
     },
   },
@@ -932,6 +983,7 @@ export default {
       this.isMask = true;
     },
     changeSlice(e, indexes) {
+      console.log(25555);
       /**
        * @Author: zk
        * @Date: 2021-04-08 17:55:39
@@ -996,12 +1048,7 @@ export default {
        * @Date: 2021-03-24 15:43:44
        * @description: 测量 0 坐标 1 距离 2 角度 3 单位 4 精度
        */
-      /* 
-      status:begin end
-       */
-
       let realSet = null;
-      // let status = null; // params:begin end
       if (e === 0 || e === 1 || e === 2) {
         let img = this.cuttingList[e].img;
         for (let i = 0; i <= 2; i++) {
@@ -1012,7 +1059,7 @@ export default {
         this.cuttingList[e].img = require("@/assets/images/todo/check/" +
           this.cuttingList[e].name +
           ".png");
-          //如果点了同一个图标，关闭测量
+        //如果点了同一个图标，关闭测量
         if (img === this.cuttingList[e].img) {
           for (let i = 0; i <= 2; i++) {
             this.cuttingList[
@@ -1025,7 +1072,7 @@ export default {
             state: 0,
             type: 3,
           });
-          return
+          return;
         }
       }
       if (e === 3) {
@@ -1044,7 +1091,6 @@ export default {
         type: 3,
         data: e,
         set: realSet,
-        status: status,
       });
     },
     changeSpeed(e) {
@@ -1375,9 +1421,44 @@ export default {
         }
       });
     },
-    // handleOrder点击方法
+    // 图片点击事件
+    footerIconChange(index) {
+      if (
+        index === 8 ||
+        index === 2 ||
+        index === 3 ||
+        index === 0 ||
+        index === 12
+      ) {
+      } else {
+        return;
+      }
+
+      let params = {};
+      // 8 2 3 0 12
+
+      let { iconSelectList } = this;
+      let selectData = iconSelectList.find((item) => {
+        if (item.select === true && item.index !==index) {
+          return item;
+        }
+      });
+      this.iconSelectList = iconSelectList.map((item) => {
+        if (item.index === index) {
+          item.select = true;
+        } else {
+          item.select = false;
+        }
+        return item;
+      });
+      // 原本没有选中，返回
+      if (!selectData || !selectData.params.action) return;
+      // if (!selectData || !selectData.params.action) return;
+      this.$emit("updataModle", selectData.params);
+    },
     handleOrder(e) {
       console.log("handleOrder", e);
+      this.footerIconChange(e);
       // 功能未开放
       if (e === 7 || e === 14) {
         return;
@@ -1408,10 +1489,14 @@ export default {
           this.imgList[e].title = "显示";
         }
       }
-
+      //点了测量图标
+      if (e === 3) {
+        this.setForm.unit = 0;
+        this.setForm.accuracy = 2;
+      }
       this.imgList[e].url = realImg;
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
-      // 关闭刨切和测量
+      // 关闭剖切和测量
       if (this.oldState === 2 || this.oldState === 3) {
         this.activeSlice = [];
         this.cuttingList.forEach((item, e) => {
@@ -1492,6 +1577,7 @@ export default {
         this.oldState = e;
       }
       if ((e === 10 || e === 11) && this.imgList[2].state === 1) {
+      
         this.imgList[2].state = 0;
         let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[2].name}`);
         this.imgList[2].url = oldUrl;

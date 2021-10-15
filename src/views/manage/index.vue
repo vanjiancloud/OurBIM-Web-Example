@@ -11,6 +11,9 @@
       </div>
       <!-- 按钮 -->
       <div class="right">
+        <el-button type="primary" @click="handleCreateProjectDialog"
+          >上传模型</el-button
+        >
         <el-button type="primary" @click="AddIntegrate">链接模型</el-button>
       </div>
     </div>
@@ -67,24 +70,33 @@
               :show-text="true"
               :stroke-width="13"
               :color="customColor"
-              v-if="scope.row.applidStatus === '1' ? true : false"
+              v-if="scope.row.applidStatus === '1'||scope.row.applidStatus === '6' ? true : false"
             >
             </el-progress>
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('operation')" width="150">
+        <el-table-column :label="$t('operation')" width="190" align="canter">
           <template slot-scope="scope">
             <div class="handle-btn">
+              <!-- 升级 -->
+              <el-button
+                @click="upgrade(scope.row)"
+                type="text"
+                v-if="scope.row.currVersion !== 'V5' && scope.row.applidStatus === '2'"
+                class="blue"
+              >
+                {{ scope.row.currVersion !== 'V5' && scope.row.applidStatus ==='2' ? "升级" : "" }}
+              </el-button>
               <!-- 分享 -->
               <el-button
                 @click="share(scope.row), (dialogFormVisibleOne = true)"
                 type="text"
-                v-if="scope.row.applidStatus === '5' ? false : true"
+                v-if="scope.row.applidStatus === '2'"
                 :class="scope.row.applidStatus === '2' ? 'blue' : 'gray'"
                 :disabled="scope.row.applidStatus === '2' ? false : true"
               >
-                {{ scope.row.applidStatus === "2" ? "分享" : "" }}
+                {{scope.row.applidStatus ==='2' ? "分享" : "" }}
               </el-button>
               <!-- 编辑 -->
               <el-button
@@ -274,6 +286,7 @@ import {
   deleteProject,
   updateProject,
   getWebUrl,
+  upgradeModle,
 } from "@/api/my.js";
 import MODELAPI from "@/api/model_api";
 import { Getuserid } from "@/store/index.js";
@@ -372,6 +385,9 @@ export default {
     // this.showTips()
   },
   methods: {
+    handleCreateProjectDialog() {
+      this.$emit("handleCreateProjectDialog", true);
+    },
     SubmitIntegrate() {
       /**
        * @Author: zk
@@ -416,6 +432,7 @@ export default {
         isHandle: 1,
         appType: 0,
       }).then((res) => {
+        console.log(111,res);
         if (res.data.code === 0) {
           this.ListLinkModel = res.data.data;
         } else {
@@ -498,8 +515,28 @@ export default {
         3: "转换失败",
         4: "文件损坏",
         5: "删除中",
+        6: "升级中",
       };
       return statusObj[status];
+    },
+    upgrade(row) {
+      this.$confirm("此操作将升级该应用, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async (res) => {
+          const { data: upRes } = await upgradeModle({
+            userId: Getuserid(),
+            appId: row.appid,
+          });
+          if (upRes.code === 0) {
+            this.$message.success(upRes.message);
+          } else {
+            this.$message.error(upRes.message);
+          }
+        })
+        .catch((res) => {});
     },
     // 分享按钮
     share(e) {
@@ -811,7 +848,7 @@ export default {
 
 <style lang="less" scoped>
 .handle-btn {
-  text-align: right;
+  text-align: center;
 }
 .box {
   overflow: hidden;

@@ -19,7 +19,7 @@
     <div
       class="hidden-bim"
       :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
-      v-if="isFade && isScene===false"
+      v-if="isFade && isScene === false"
     >
       <div class="hidden-bim">
         <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
@@ -226,6 +226,7 @@
         @listenPerson="listenPerson"
         @listenMode="listenMode"
         @listenFollow="listenFollow"
+        @updataModle="updataModle"
         :setProps="propsFooter"
         :singleList="controllerInfo.singleList"
       ></todo-footer>
@@ -249,7 +250,7 @@
       ></tag-tree>
     </div>
     <div v-if="sceneName === 'underground'">
-      <underground-scene  />
+      <underground-scene />
     </div>
   </div>
 </template>
@@ -481,6 +482,15 @@ export default {
         }
       };
     },
+    async updataModle(params) {
+      params.taskid = this.taskId;
+      const { data: res } = await MODELAPI.UPDATEORDER(params);
+      if (res.code === 0) {
+        this.$message.success(res.message);
+      } else {
+        this.$message.error(res.message);
+      }
+    },
     filterNode(value, data) {
       /**
        * @Author: zk
@@ -691,7 +701,6 @@ export default {
       }
     },
     handleTree(e, index) {
-      console.log(111,e);
       /**
        * @Author: zk
        * @Date: 2021-03-08 14:39:51
@@ -843,9 +852,15 @@ export default {
           params.speedLevel = this.listenTodoInfo.data;
           break;
         case 4:
-          // 测量前先关闭其他测量（排他思想）
-          params.action = "endMeasure";
-          await MODELAPI.UPDATEORDER(params)
+          if (
+            this.listenTodoInfo.data === 0 ||
+            this.listenTodoInfo.data === 1 ||
+            this.listenTodoInfo.data === 2
+          ) {
+            // 测量前先关闭其他测量（排他思想）
+            params.action = "endMeasure";
+            await MODELAPI.UPDATEORDER(params);
+          }
           // 测量
           if (this.listenTodoInfo.data === 0) {
             // 坐标
@@ -860,10 +875,12 @@ export default {
           } else if (this.listenTodoInfo.data === 3) {
             // 设置单位
             params.action = "changePrecisionOrUnit";
+  
             params.unit = this.listenTodoInfo.set;
             params.precision = this.gaugeInfo.accuracy;
           } else if (this.listenTodoInfo.data === 4) {
             // 设置精度
+        
             params.action = "changePrecisionOrUnit";
             params.precision = this.listenTodoInfo.set;
             params.unit = this.gaugeInfo.unit;
@@ -910,6 +927,7 @@ export default {
         case 11:
           // 剖切
           if (this.listenTodoInfo.state === 0) {
+            console.log('end');
             params.action = "end";
           }
           if (

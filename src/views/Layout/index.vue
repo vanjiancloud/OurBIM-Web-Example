@@ -12,7 +12,7 @@
                   :default-active="$route.path"
                   text-color="#999"
                   active-text-color="#FF6600"
-                  class=" nav-menu"
+                  class="nav-menu"
                   mode="horizontal"
                 >
                   <el-menu-item index="/" style="padding: 0">
@@ -58,7 +58,11 @@
                     <el-menu-item index="/"
                       ><a
                         href="http://www.ourbim.com/developer/developer_guide"
-                        style="text-decoration:none;color:#999;font-size: 16px;"
+                        style="
+                          text-decoration: none;
+                          color: #999;
+                          font-size: 16px;
+                        "
                       >
                         开发指南
                       </a></el-menu-item
@@ -66,16 +70,24 @@
                     <el-menu-item index="/"
                       ><a
                         href="http://www.ourbim.com/developer/api_file"
-                        style="text-decoration:none;color:#999;font-size: 16px;"
+                        style="
+                          text-decoration: none;
+                          color: #999;
+                          font-size: 16px;
+                        "
                       >
-                        {{ $t('APIdov') }}
+                        {{ $t("APIdov") }}
                       </a></el-menu-item
                     >
                     <el-menu-item index="/">
                       <a
                         href="http://www.ourbim.com/developer/update_log"
-                        style="text-decoration:none;color:#999;font-size: 16px;"
-                        >{{ $t('log') }}</a
+                        style="
+                          text-decoration: none;
+                          color: #999;
+                          font-size: 16px;
+                        "
+                        >{{ $t("log") }}</a
                       ></el-menu-item
                     >
                   </el-submenu>
@@ -86,9 +98,7 @@
                     <div class="photo">
                       <img src="./img/project.png" alt="" />
                     </div>
-                    <span>
-                      项目中心
-                    </span>
+                    <span> 项目中心 </span>
                   </div>
                   <!-- 头像 -->
                   <div class="end">
@@ -96,19 +106,15 @@
                       <el-dropdown>
                         <span>
                           <img
-                            :src="
-                              imgUrl
-                                ? imgUrl
-                                : require('./img/man.png')
-                            "
+                            :src="imgUrl ? imgUrl : require('./img/man.png')"
                             alt=""
                           />
                         </span>
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item
                             @click.native="toLogin"
-                            style="background-color:#fff;"
-                            >{{ $t('quit') }}</el-dropdown-item
+                            style="background-color: #fff"
+                            >{{ $t("quit") }}</el-dropdown-item
                           >
                         </el-dropdown-menu>
                       </el-dropdown>
@@ -224,13 +230,7 @@
         <div class="top">
           <div class="left">
             <div class="im">
-              <img
-                :src="
-                  imgUrl
-                    ? imgUrl
-                    : require('./img/man.png')
-                "
-              />
+              <img :src="imgUrl ? imgUrl : require('./img/man.png')" />
             </div>
             <!-- 昵称和签名栏 -->
             <div class="Info">
@@ -240,9 +240,9 @@
           </div>
           <div class="line"></div>
           <div class="middle">
-            <h3>{{ $t('occupancy') }}</h3>
+            <h3>{{ $t("occupancy") }}</h3>
             <div class="tiao">
-              <h3 style="color: #00AAF0;">{{ spacePer }}%</h3>
+              <h3 style="color: #00aaf0">{{ spacePer }}%</h3>
               <el-progress
                 :text-inside="true"
                 :stroke-width="15"
@@ -255,14 +255,14 @@
                 <div class="icon">
                   <img src="./img/cunchu.png" alt="" />
                 </div>
-                {{ $t('storage') }}&nbsp;&nbsp;{{ currentCountSpace }}GB/{{
+                {{ $t("storage") }}&nbsp;&nbsp;{{ currentCountSpace }}GB/{{
                   countSpace
                 }}GB
               </div>
             </div>
           </div>
           <div class="jindu" v-if="isPay !== '0'">
-            <h3 style="color: #00AAF0;">{{ bfPer }}%</h3>
+            <h3 style="color: #00aaf0">{{ bfPer }}%</h3>
             <el-progress
               :text-inside="true"
               :stroke-width="15"
@@ -275,14 +275,16 @@
               <div class="icon">
                 <img src="./img/jiedian.png" alt="" />
               </div>
-              {{ $t('Node') }}&nbsp;&nbsp;{{ currentCountBF }}/{{ countBF }}
+              {{ $t("Node") }}&nbsp;&nbsp;{{ currentCountBF }}/{{ countBF }}
             </div>
           </div>
           <div class="line"></div>
           <div class="right">
             <div class="content">
-              <div>{{ $t('service') }}</div>
-              <div>{{ countStartTime }}&nbsp;{{$t('to')}}&nbsp;{{ countendTime }}</div>
+              <div>{{ $t("service") }}</div>
+              <div>
+                {{ countStartTime }}&nbsp;{{ $t("to") }}&nbsp;{{ countendTime }}
+              </div>
               <el-button
                 plain
                 round
@@ -290,7 +292,7 @@
                 @click="toOrder"
                 :disabled="this.$route.path === '/order' ? true : false"
               >
-                {{ $t('Extension') }}
+                {{ $t("Extension") }}
               </el-button>
             </div>
           </div>
@@ -310,38 +312,41 @@
               <!-- 项目管理 -->
               <el-menu-item index="/manage">
                 <i class="el-icon-setting"></i>
-                <span slot="title" class="write">{{ $t('management') }}</span>
+                <span slot="title" class="write">{{ $t("management") }}</span>
               </el-menu-item>
 
               <!-- 创建项目 -->
-              <el-menu-item>
+             <!--  <el-menu-item index="/found">
                 <i class="el-icon-folder-add"></i>
-                <span slot="title" class="write">{{ $t('Create') }}</span>
-              </el-menu-item>
+                <span slot="title" class="write">{{ $t("Create") }}</span>
+              </el-menu-item> -->
+
               <!-- 账户管理 -->
               <el-submenu index="account">
                 <template slot="title">
                   <i class="el-icon-menu"></i>
-                  <span class="write">{{ $t('Account') }}</span>
+                  <span class="write">{{ $t("Account") }}</span>
                 </template>
                 <!-- 个人信息 -->
                 <el-menu-item index="/bill">{{
-                  $t('information')
+                  $t("information")
                 }}</el-menu-item>
                 <!-- 授权码 -->
                 <el-menu-item index="/code">{{
-                  $t('Authorization')
+                  $t("Authorization")
                 }}</el-menu-item>
                 <!-- 服务订单 -->
                 <el-menu-item index="/order">{{
-                  $t('Serviceorder')
+                  $t("Serviceorder")
                 }}</el-menu-item>
               </el-submenu>
             </el-menu>
           </div>
           <!--主体区域二级路由组件渲染的地方-->
           <div class="content">
-            <router-view></router-view>
+            <router-view
+              @handleCreateProjectDialog="handleCreateProjectDialog"
+            ></router-view>
           </div>
         </div>
       </div>
@@ -367,48 +372,67 @@
         </div>
       </div>
     </el-footer>
+    <!-- 上传项目对话框 -->
+    <el-dialog
+      :visible.sync="createPeojectDialogVisible"
+      width="50%"
+      center
+    >
+    <create-project @handleCreateProjectDialog="handleCreateProjectDialog" />
+      <!-- <span slot="footer" class="dialog-footer">
+        <el-button @click="createPeojectDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="createPeojectDialogVisible = false"
+          >确 定</el-button
+        >
+      </span> -->
+    </el-dialog>
   </el-container>
 </template>
 
 <script>
-import { showDetail } from '@/api/my.js'
-import { Getuserid } from '@/store/index.js'
-import { Deluserid } from '@/store/index.js'
+import { showDetail } from "@/api/my.js";
+import { Getuserid } from "@/store/index.js";
+import { Deluserid } from "@/store/index.js";
 
+import createProject from "../found/index copy.vue"
 export default {
-  name: 'myHeader',
-  data () {
+  name: "myHeader",
+  components:{
+    createProject
+  },
+  data() {
     return {
       time: null, //定时器
-      customColor: '#00AAF0',
-      note: '', //签名
-      name: '', //用户名
-      sex: '0', //性别
-      isPay: '0', // 免费用户
-      imgUrl: '', //用户头像
-      email: '', //邮箱
-      mobile: '', //手机号
-      countStartTime: '', //账户生效开始时间
-      countendTime: '', //账户生效结束时间
+      customColor: "#00AAF0",
+      note: "", //签名
+      name: "", //用户名
+      sex: "0", //性别
+      isPay: "0", // 免费用户
+      imgUrl: "", //用户头像
+      email: "", //邮箱
+      mobile: "", //手机号
+      countStartTime: "", //账户生效开始时间
+      countendTime: "", //账户生效结束时间
       spacePer: 0, //空间使用率，第一个进度条
       bfPer: 0, //并发使用率，第二个进度条
-      countSpace: '', //当前用户的存储量最大值
-      currentCountSpace: '', //当前用户已使用的存储率
-      countBF: '', //当前用户的并发总数最大值
-      currentCountBF: '' //当前用户的并发数
-    }
+      countSpace: "", //当前用户的存储量最大值
+      currentCountSpace: "", //当前用户已使用的存储率
+      countBF: "", //当前用户的并发总数最大值
+      currentCountBF: "", //当前用户的并发数
+      createPeojectDialogVisible: false,
+    };
   },
-  created () {
+  created() {
     // console.log(this.$route.path)
     //加载信息数据
-    this.showData()
+    this.showData();
     //阻止回车键发送请求
-    document.onkeydown = e => {
-      let keyCode = window.event.keyCode
-      if (keyCode == 'Enter' || keyCode == 32) {
-        return false
+    document.onkeydown = (e) => {
+      let keyCode = window.event.keyCode;
+      if (keyCode == "Enter" || keyCode == 32) {
+        return false;
       }
-    }
+    };
     // 页面缩放
     // window.onload = function () {
     //   // 获取浏览器页面最大宽度
@@ -422,118 +446,122 @@ export default {
     // }
   },
   methods: {
-    English () {
-      this.$i18n.locale = 'en'
-      this.classify = 'whole'
+    English() {
+      this.$i18n.locale = "en";
+      this.classify = "whole";
       // this.isCut = 2
     },
-    Chinese () {
-      this.$i18n.locale = 'zh'
-      this.classify = '全部'
+    Chinese() {
+      this.$i18n.locale = "zh";
+      this.classify = "全部";
       // this.isCut = 1
     },
 
     // 项目中心按钮
-    toManage () {
-      this.$router.push('../manage')
+    toManage() {
+      this.$router.push("../manage");
     },
 
     // 延长有效期按钮
-    toOrder () {
-      this.$router.push('../order')
+    toOrder() {
+      this.$router.push("../order");
     },
 
     // 退出按钮
-    toLogin () {
-      this.$router.push('../login')
+    toLogin() {
+      this.$router.push("../login");
       // 刷新登陆页
-      location.reload()
-      if (sessionStorage.getItem('userInfo')) {
-        sessionStorage.removeItem('userInfo')
+      location.reload();
+      if (sessionStorage.getItem("userInfo")) {
+        sessionStorage.removeItem("userInfo");
       }
       // deluserid()
-      Deluserid()
-      clearInterval(this.time)
+      Deluserid();
+      clearInterval(this.time);
     },
 
     //展示当前用户信息
-    showData () {
+    showData() {
       showDetail({
-        userid: Getuserid()
+        userid: Getuserid(),
       })
-        .then(res => {
+        .then((res) => {
           // console.log(res)
           // console.log(res.data.data.imgUrl)
-          this.name = res.data.data.name
-          this.sex = res.data.data.sex
-          this.note = res.data.data.note
-          this.email = res.data.data.email
-          this.mobile = res.data.data.mobile
-          this.imgUrl = res.data.data.imgUrl
-          this.countStartTime = res.data.data.countStartTime
-          this.countendTime = res.data.data.countendTime
-          this.countSpace = res.data.data.countSpace
-          this.spacePer = res.data.data.spacePer
-          this.bfPer = res.data.data.bfPer
-          this.currentCountSpace = res.data.data.currentCountSpace
-          this.countBF = res.data.data.countBF
-          this.currentCountBF = res.data.data.currentCountBF
-          this.isPay = res.data.data.isPay
+          this.name = res.data.data.name;
+          this.sex = res.data.data.sex;
+          this.note = res.data.data.note;
+          this.email = res.data.data.email;
+          this.mobile = res.data.data.mobile;
+          this.imgUrl = res.data.data.imgUrl;
+          this.countStartTime = res.data.data.countStartTime;
+          this.countendTime = res.data.data.countendTime;
+          this.countSpace = res.data.data.countSpace;
+          this.spacePer = res.data.data.spacePer;
+          this.bfPer = res.data.data.bfPer;
+          this.currentCountSpace = res.data.data.currentCountSpace;
+          this.countBF = res.data.data.countBF;
+          this.currentCountBF = res.data.data.currentCountBF;
+          this.isPay = res.data.data.isPay;
         })
-        .catch(err => {
+        .catch((err) => {
           // this.$message.error('信息展示失败')
           // this.imgUrl = this.imgUrl
-        })
+        });
     },
 
     // 去往创建应用
-    toFound () {
-      this.$router.push('../found')
+    toFound() {
+      this.$router.push("../found");
     },
 
     // 去往账户管理
-    toBill () {
-      this.$router.push('../bill')
-    }
+    toBill() {
+      this.$router.push("../bill");
+    },
+
+    handleCreateProjectDialog(e) {
+      this.createPeojectDialogVisible = e;
+    },
   },
   computed: {
     /*使用计算属性来获取到当前点击的菜单的路由路径
       然后设置default-active中的值
       使得菜单在载入时就能对应高亮
     */
-    activeMenu () {
-      const route = this.$route
-      const { meta, path } = route
+    activeMenu() {
+      const route = this.$route;
+      const { meta, path } = route;
       /*
        可以在路由配置文件中设置自定义的路由路径到
        meta.activeMenu属性中，来控制菜单自定义高亮显示
       */
       if (meta.activeMenu) {
-        return meta.activeMenu
+        return meta.activeMenu;
       }
-      return path
-    }
+      return path;
+    },
   },
   watch: {
     // 监听路由变化
-    $route (to, from) {
-      this.showData()
-    }
+    $route(to, from) {
+      this.showData();
+    },
   },
   /* 把定时器放在activated事件里，当清除定时后，
   下次再次进入当前路由的话，可以再次唤起定时器 */
-  activated () {
+  activated() {
     this.time = setInterval(() => {
-      this.showData()
+      this.showData();
       // console.log('个人信息')
-    }, 5000)
+    }, 5000);
   },
   //页面实例销毁后清除定时
-  destroyed () {
+  destroyed() {
     // 清除定时器
-    clearInterval(this.time)
-  }
-}
+    clearInterval(this.time);
+  },
+};
 </script>
 
 <style lang="less">
@@ -943,7 +971,7 @@ export default {
       .wenzi {
         color: #fff;
         text-align: center;
-        font-family: 'microsoft yahei';
+        font-family: "microsoft yahei";
         font-size: 14px;
         .first {
           height: 19px;

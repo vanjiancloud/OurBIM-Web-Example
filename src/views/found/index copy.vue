@@ -2,23 +2,15 @@
   <!-- 创建应用-->
   <div class="box">
     <!-- 步骤条 -->
-    <!-- <div class="buzhou">
+    <!--    <div class="buzhou">
       <el-steps :active="active">
+        注释第一步
         <el-step :title="$t('Step')" :description="$t('setUP')"> </el-step>
-        <el-step
-          :title="$t('twoStep')"
-          :description="$t('shangchuan')"
-        ></el-step>
-        <el-step :title="$t('threeStep')" :description="$t('finsh')"></el-step>
-      </el-steps>
-    </div> -->
-    <div class="buzhou">
-      <el-steps :active="active">
-        <!-- <el-step :title="$t('Step')" :description="$t('setUP')"> </el-step> -->
         <el-step :title="$t('Step')" :description="$t('shangchuan')"></el-step>
         <el-step :title="$t('twoStep')" :description="$t('finsh')"></el-step>
       </el-steps>
-    </div>
+    </div> -->
+
     <!-- 第一步 创建应用项目信息-->
     <div class="first" v-show="isShow == 1">
       <!-- 图片 -->
@@ -226,7 +218,8 @@ export default {
     },
     // 开始转换
     update() {
-      this.isLoading = true;
+      this.disabl = true;
+      this.$emit('handleCreateProjectDialog',false)
       // 上传bim模型
       this.$refs.bimupload.submit();
     },
@@ -284,7 +277,6 @@ export default {
     },
     // 上传模型成功
     upLoadModel(response, file, fileList) {
-      console.log("上传成功", response, file, fileList);
       this.isLoading = false;
       this.appModel.push(response.data);
       // response等同于后端返回的res，根据response里的code判断状态
@@ -293,8 +285,9 @@ export default {
         this.$message.success(response.message);
         if (this.bimupNumber === this.appModel.length) {
           this.$common.closeLoading();
+          this.disabl = false;
           if (this.active++ > 3) this.active = 0;
-          this.isShow = 3;
+          // this.isShow = 3;
           this.disabl = !this.disabl;
         }
       } else if (response.code === 1) {
@@ -302,7 +295,7 @@ export default {
         if (this.bimupNumber === this.appModel.length) {
           this.$common.closeLoading();
           if (this.active++ > 3) this.active = 0;
-          this.isShow = 4;
+          // this.isShow = 4;
           this.disabl = !this.disabl;
         }
       }
@@ -351,7 +344,8 @@ export default {
         this.$message.error("请上传支持的文件格式!");
       } else {
         extension = true;
-        this.$common.openLoading("上传模型中");
+        this.$message.warning("正在上传，请勿关闭窗口或手动刷新页面!");
+        // this.$common.openLoading("上传模型中");
       }
       return extension;
     },
@@ -374,7 +368,7 @@ export default {
 
 <style lang="less" scoped>
 .box {
-  padding-top: 38px;
+  // padding-top: 38px;
   // 隐藏上传
   /deep/.hide .el-upload--picture-card {
     display: none;
