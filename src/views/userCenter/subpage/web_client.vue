@@ -19,7 +19,7 @@
     <div
       class="hidden-bim"
       :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
-      v-if="isFade && isScene === false"
+      v-if="isFade"
     >
       <div class="hidden-bim">
         <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
@@ -217,8 +217,7 @@
       <todo-footer
         v-if="
           controllerInfo.singleList.length !== 13 &&
-          controllerInfo.uiBar &&
-          isScene === false
+          controllerInfo.uiBar
         "
         v-show="controllerInfo.tagUiBar"
         ref="getFooter"
@@ -229,9 +228,10 @@
         @updataModle="updataModle"
         :setProps="propsFooter"
         :singleList="controllerInfo.singleList"
+        :appId="appId"
       ></todo-footer>
       <view-cube
-        v-if="controllerInfo.viewCube && isScene === false"
+        v-if="controllerInfo.viewCube"
         v-show="controllerInfo.tagViewCube"
         @handleOrder="handleOrder"
         @goFront="goFront"
@@ -249,9 +249,6 @@
         ref="tagTree"
       ></tag-tree>
     </div>
-    <div v-if="sceneName === 'underground'">
-      <underground-scene />
-    </div>
   </div>
 </template>
 
@@ -265,8 +262,6 @@ import tagTree from "@/components/web_client/tag_tree";
 import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
 
-import undergroundScene from "@/components/scene/wisdom-underground/WisdomUndergroundItem";
-
 export default {
   name: "look_app",
   layout: "reset",
@@ -276,7 +271,6 @@ export default {
     tagTree,
     progressBar,
     qrcodePart,
-    undergroundScene,
   },
   data() {
     return {
@@ -875,12 +869,12 @@ export default {
           } else if (this.listenTodoInfo.data === 3) {
             // 设置单位
             params.action = "changePrecisionOrUnit";
-  
+
             params.unit = this.listenTodoInfo.set;
             params.precision = this.gaugeInfo.accuracy;
           } else if (this.listenTodoInfo.data === 4) {
             // 设置精度
-        
+
             params.action = "changePrecisionOrUnit";
             params.precision = this.listenTodoInfo.set;
             params.unit = this.gaugeInfo.unit;
@@ -927,7 +921,7 @@ export default {
         case 11:
           // 剖切
           if (this.listenTodoInfo.state === 0) {
-            console.log('end');
+            console.log("end");
             params.action = "end";
           }
           if (
@@ -991,6 +985,8 @@ export default {
           // 渲染环境
           params.action = "Weather";
           params.weahterId = this.listenTodoInfo.data.id;
+          // params.action = "switchWeather ";
+          // params.weahterId = this.listenTodoInfo.data.id;
           break;
         case 16:
           // 渲染环境

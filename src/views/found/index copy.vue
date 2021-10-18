@@ -219,9 +219,10 @@ export default {
     // 开始转换
     update() {
       this.disabl = true;
-      this.$emit('handleCreateProjectDialog',false)
+      // this.$emit('handleCreateProjectDialog',false)
       // 上传bim模型
       this.$refs.bimupload.submit();
+      this.$message.warning("正在上传，上传过程请勿关闭或刷新页面!");
     },
     submit(status) {},
     //去往应用管理
@@ -344,7 +345,7 @@ export default {
         this.$message.error("请上传支持的文件格式!");
       } else {
         extension = true;
-        this.$message.warning("正在上传，请勿关闭窗口或手动刷新页面!");
+
         // this.$common.openLoading("上传模型中");
       }
       return extension;

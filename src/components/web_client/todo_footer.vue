@@ -554,6 +554,10 @@ export default {
         return [];
       },
     },
+    appId: {
+      type: String,
+      default: "",
+    },
   },
   data() {
     return {
@@ -850,16 +854,11 @@ export default {
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
       deep: true,
     },
-    imgList: {
-      // 监听的对象数组
-      handler(newValue, oldValue) {
-        // console.log(newValue==oldValue);
-      },
-      deep: true,
-    },
   },
   created() {
-    this.ListWeather();
+    if (this.appId) {
+      this.getWeatherList();
+    }
     this.uiList = this.singleList;
     if (this.setProps.taskId) {
       this.getProps = this.setProps;
@@ -928,13 +927,15 @@ export default {
         data: activeInfo,
       });
     },
-    ListWeather() {
+    getWeatherList() {
       /**
        * @Author: zk
        * @Date: 2021-06-05 14:57:55
        * @description: 获取环境列表
        */
-      MODELAPI.LISTWEATHER().then((res) => {
+      MODELAPI.LISTWEATHER({
+        appId: this.appId,
+      }).then((res) => {
         if (res.data.code === 0) {
           this.setForm.weather = res.data.data[0].id;
           this.weatherData = res.data.data;
@@ -983,7 +984,6 @@ export default {
       this.isMask = true;
     },
     changeSlice(e, indexes) {
-      console.log(25555);
       /**
        * @Author: zk
        * @Date: 2021-04-08 17:55:39
@@ -1439,7 +1439,7 @@ export default {
 
       let { iconSelectList } = this;
       let selectData = iconSelectList.find((item) => {
-        if (item.select === true && item.index !==index) {
+        if (item.select === true && item.index !== index) {
           return item;
         }
       });
@@ -1459,7 +1459,7 @@ export default {
     handleOrder(e) {
       console.log("handleOrder", e);
       this.footerIconChange(e);
-      // 功能未开放
+      // 功能未开放 模型动画与构件库
       if (e === 7 || e === 14) {
         return;
       }
@@ -1577,7 +1577,6 @@ export default {
         this.oldState = e;
       }
       if ((e === 10 || e === 11) && this.imgList[2].state === 1) {
-      
         this.imgList[2].state = 0;
         let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[2].name}`);
         this.imgList[2].url = oldUrl;

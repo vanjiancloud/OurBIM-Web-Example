@@ -70,7 +70,11 @@
               :show-text="true"
               :stroke-width="13"
               :color="customColor"
-              v-if="scope.row.applidStatus === '1'||scope.row.applidStatus === '6' ? true : false"
+              v-if="
+                scope.row.applidStatus === '1' || scope.row.applidStatus === '6'
+                  ? true
+                  : false
+              "
             >
             </el-progress>
           </template>
@@ -83,10 +87,20 @@
               <el-button
                 @click="upgrade(scope.row)"
                 type="text"
-                v-if="scope.row.currVersion !== 'V5' && scope.row.applidStatus === '2'"
+                v-if="
+                  scope.row.currVersion !== 'V5' &&
+                  scope.row.applidStatus === '2' &&
+                  scope.row.appType === '0'
+                "
                 class="blue"
               >
-                {{ scope.row.currVersion !== 'V5' && scope.row.applidStatus ==='2' ? "升级" : "" }}
+                {{
+                  scope.row.currVersion !== "V5" &&
+                  scope.row.applidStatus === "2" &&
+                  scope.row.appType === "0"
+                    ? "升级"
+                    : ""
+                }}
               </el-button>
               <!-- 分享 -->
               <el-button
@@ -96,7 +110,7 @@
                 :class="scope.row.applidStatus === '2' ? 'blue' : 'gray'"
                 :disabled="scope.row.applidStatus === '2' ? false : true"
               >
-                {{scope.row.applidStatus ==='2' ? "分享" : "" }}
+                {{ scope.row.applidStatus === "2" ? "分享" : "" }}
               </el-button>
               <!-- 编辑 -->
               <el-button
@@ -432,7 +446,7 @@ export default {
         isHandle: 1,
         appType: 0,
       }).then((res) => {
-        console.log(111,res);
+        console.log(111, res);
         if (res.data.code === 0) {
           this.ListLinkModel = res.data.data;
         } else {
@@ -707,6 +721,11 @@ export default {
 
     //进入应用
     GoApp(e) {
+      // console.log(222, e.currVersion);
+      // let currVersion = "";
+      // if (e.currVersion === "V5") {
+      //   currVersion = "V5";
+      // }
       let isiPad =
         navigator.userAgent.match(/(iPad)/) ||
         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -733,6 +752,9 @@ export default {
                 token: res.data.data.token,
                 // isScene:true
               },
+              // params: {
+              //   currVersion,
+              // },
             });
             window.open(href, "_blank");
           }
