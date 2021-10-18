@@ -983,10 +983,10 @@ export default {
           break;
         case 15:
           // 渲染环境
-          params.action = "Weather";
-          params.weahterId = this.listenTodoInfo.data.id;
-          // params.action = "switchWeather ";
+          // params.action = "Weather";
           // params.weahterId = this.listenTodoInfo.data.id;
+          params.action = "switchWeather ";
+          params.weahterId = this.listenTodoInfo.data.id;
           break;
         case 16:
           // 渲染环境
