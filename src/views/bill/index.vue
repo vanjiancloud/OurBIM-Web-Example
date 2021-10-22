@@ -2,10 +2,10 @@
   <!-- 账户管理，个人信息 -->
   <div class="neirong">
     <div class="title">
-      {{ $t('information') }}
+      {{ $t("information") }}
     </div>
     <!-- 姓名 -->
-    <div class="message" style="margin-top: 30px;">
+    <div class="message" style="margin-top: 30px">
       <div class="one">姓名：</div>
       <div class="input">
         <el-input
@@ -18,7 +18,7 @@
     </div>
     <!-- 签名 -->
     <div class="message">
-      <div class="one">{{ $t('autograph') }}</div>
+      <div class="one">{{ $t("autograph") }}</div>
       <div class="input">
         <el-input
           v-model="note"
@@ -31,12 +31,9 @@
     </div>
     <!-- 邮箱 -->
     <div class="message">
-      <div class="one">{{ $t('email') }}</div>
+      <div class="one">{{ $t("email") }}</div>
       <div class="input">
-        <el-input
-          v-model="email"
-          placeholder="请输入邮箱"
-        ></el-input>
+        <el-input v-model="email" placeholder="请输入邮箱"></el-input>
       </div>
     </div>
     <!-- 手机号 -->
@@ -52,14 +49,14 @@
     </div>
     <!-- 公司 -->
     <div class="message">
-      <div class="one">{{ $t('company') }}</div>
+      <div class="one">{{ $t("company") }}</div>
       <div class="input">
         <el-input v-model="company" placeholder="请输入公司"></el-input>
       </div>
     </div>
     <!-- 职位 -->
     <div class="message">
-      <div class="one">{{ $t('position') }}</div>
+      <div class="one">{{ $t("position") }}</div>
       <div class="input">
         <el-input v-model="position" placeholder="请输入职位"></el-input>
       </div>
@@ -80,144 +77,145 @@
         accept=".png,.jpg,.jpeg"
       >
         <el-button type="primary" icon="el-icon-upload2">
-          {{ $t('UploadAvatar') }}
+          {{ $t("UploadAvatar") }}
         </el-button>
         <div slot="tip" class="el-upload__tip">
-          {{ $t('extensions') }}：.png .jpg .jpeg
+          {{ $t("extensions") }}：.png .jpg .jpeg
         </div>
       </el-upload>
     </div>
     <div class="btn">
       <el-button type="primary" @click="changeUserInfo">
-        {{ $t('modify') }}
+        {{ $t("modify") }}
       </el-button>
     </div>
   </div>
 </template>
 
 <script>
-import { getUserInfo, modifyUserInfo } from '@/api/my.js'
-import { Getuserid } from '@/store/index.js'
-import axios from '@/utils/request'
+import { getUserInfo, modifyUserInfo } from "@/api/my.js";
+import { Getuserid } from "@/store/index.js";
+import axios from "@/utils/request";
 
 export default {
-  name: 'bill',
-  data () {
+  name: "bill",
+  data() {
     return {
-      name: '', //姓名
-      note: '', //签名
-      email: '', //邮箱
-      mobile: '', //手机号
-      company: '', //公司
-      position: '', //职位
-      imgUrl: '', //用户头像
-      imgUrlDefault: '', //用户头像为空,时的变量
+      name: "", //姓名
+      note: "", //签名
+      email: "", //邮箱
+      mobile: "", //手机号
+      company: "", //公司
+      position: "", //职位
+      imgUrl: "", //用户头像
+      imgUrlDefault: "", //用户头像为空,时的变量
       fileList: [], //上传图片列表显示
-      baseURL: axios.defaults.baseURL
-    }
+      baseURL: axios.defaults.baseURL,
+    };
   },
-  created () {
-    this.getData()
+  created() {
+    this.getData();
   },
   methods: {
     // 获取用户信息
-    getData () {
+    getData() {
       getUserInfo({
-        userid: Getuserid()
+        userid: Getuserid(),
       })
-        .then(res => {
-          console.log('axios-获取用户信息', res.data.data)
+        .then((res) => {
+          console.log("axios-获取用户信息", res.data.data);
           // //更新cookie里的信息
           if (res.data && res.data.data) {
-            sessionStorage.setItem('userInfo', JSON.stringify(res.data.data))
+            sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
           }
-          this.note = res.data.data.note
-          this.name = res.data.data.name
-          this.email = res.data.data.email
-          this.mobile = res.data.data.mobile
-          this.company = res.data.data.company
-          this.position = res.data.data.position
+          this.note = res.data.data.note;
+          this.name = res.data.data.name;
+          this.email = res.data.data.email;
+          this.mobile = res.data.data.mobile;
+          this.company = res.data.data.company;
+          this.position = res.data.data.position;
           if (this.$common.isAssetTypeAnImage(res.data.data.imgUrl)) {
-            this.imgUrl = res.data.data.imgUrl
-            this.imgUrlDefault = res.data.data.imgUrl
+            this.imgUrl = res.data.data.imgUrl;
+            this.imgUrlDefault = res.data.data.imgUrl;
           } else {
-            this.imgUrl = ''
+            this.imgUrl = "";
           }
         })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('请求失败')
-        })
+        .catch((err) => {
+          console.log(err);
+          this.$message.error("请求失败");
+        });
     },
     //修改用户信息
-    changeUserInfo () {
-      this.$common.openLoading('信息修改中')
+    changeUserInfo() {
+      this.$common.openLoading("信息修改中");
       // 赋值头像
       modifyUserInfo({
         userid: Getuserid(),
         note: this.note,
         name: this.name,
-        imgUrl: this.imgUrl === '' ? this.imgUrlDefault : this.imgUrl,
+        imgUrl: this.imgUrl === "" ? this.imgUrlDefault : this.imgUrl,
         company: this.company,
-        position: this.position
+        position: this.position,
+        email: this.email,
       })
-        .then(res => {
+        .then((res) => {
           if (res.data.code === 0) {
-            this.getData()
-            this.$common.closeLoading()
-            this.$refs.photoUpload.clearFiles()
-            this.$message.success(res.data.message)
+            this.getData();
+            this.$common.closeLoading();
+            this.$refs.photoUpload.clearFiles();
+            this.$message.success(res.data.message);
           } else if (res.data.code === 1) {
-            console.log(res)
-            this.$message.error(res.data.message)
-            this.$common.closeLoading()
+            console.log(res);
+            this.$message.error(res.data.message);
+            this.$common.closeLoading();
           }
         })
-        .catch(err => {
-          console.log(err)
-          this.$message.error('修改信息失败,请重新修改')
-        })
+        .catch((err) => {
+          console.log(err);
+          this.$message.error("修改信息失败,请重新修改");
+        });
     },
     // 存cookie
     setCookie: function (cName, value, expiredays) {
-      var exdate = new Date()
-      exdate.setDate(exdate.getDate() + expiredays)
+      var exdate = new Date();
+      exdate.setDate(exdate.getDate() + expiredays);
       document.cookie =
         cName +
-        '=' +
+        "=" +
         decodeURIComponent(value) +
-        (expiredays == null ? '' : ';expires=' + exdate.toGMTString())
+        (expiredays == null ? "" : ";expires=" + exdate.toGMTString());
     },
     // 删除文件
-    onremove (file) {
-      this.imgUrl = ''
+    onremove(file) {
+      this.imgUrl = "";
     },
     // 上传头像成功
-    upLoadImg (response, file, fileList) {
-      this.imgUrl = response.data
+    upLoadImg(response, file, fileList) {
+      this.imgUrl = response.data;
     },
 
     // 上传头像失败
-    errorImg (err, file, fileList) {
-      console.log(err)
+    errorImg(err, file, fileList) {
+      console.log(err);
     },
     // 限制上传头像格式
-    beforeUpload (file) {
-      var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
-      const one = testmsg === 'jpg'
-      const two = testmsg === 'jpeg'
-      const three = testmsg === 'png'
+    beforeUpload(file) {
+      var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
+      const one = testmsg === "jpg";
+      const two = testmsg === "jpeg";
+      const three = testmsg === "png";
       if (!one && !two && !three) {
-        this.$message.error('头像格式只能是.jpg .jpeg .png格式!')
+        this.$message.error("头像格式只能是.jpg .jpeg .png格式!");
       }
-      return one || two || three
+      return one || two || three;
     },
     // 限制上传图片张数
-    handleExceed () {
-      this.$message.warning(`亲，只能上传一张图片哦！`)
-    }
-  }
-}
+    handleExceed() {
+      this.$message.warning(`亲，只能上传一张图片哦！`);
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
