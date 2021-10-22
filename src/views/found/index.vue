@@ -2,16 +2,15 @@
   <!-- 创建应用-->
   <div class="box">
     <!-- 步骤条 -->
-    <div class="buzhou">
+    <!--    <div class="buzhou">
       <el-steps :active="active">
+        注释第一步
         <el-step :title="$t('Step')" :description="$t('setUP')"> </el-step>
-        <el-step
-          :title="$t('twoStep')"
-          :description="$t('shangchuan')"
-        ></el-step>
-        <el-step :title="$t('threeStep')" :description="$t('finsh')"></el-step>
+        <el-step :title="$t('Step')" :description="$t('shangchuan')"></el-step>
+        <el-step :title="$t('twoStep')" :description="$t('finsh')"></el-step>
       </el-steps>
-    </div>
+    </div> -->
+
     <!-- 第一步 创建应用项目信息-->
     <div class="first" v-show="isShow == 1">
       <!-- 图片 -->
@@ -19,77 +18,19 @@
         <img src="./icon.png" alt="" />
       </div>
       <div class="text">
-        {{ $t('toCreate') }}
+        {{ $t("toCreate") }}
       </div>
       <!-- input框 -->
       <div class="input">
-        <span style="color:red;margin-right:5px;font-size: 16px;">*</span>
-        <span style="margin-right:5px;">{{ $t('application') }}</span>
+        <span style="color: red; margin-right: 5px; font-size: 16px">*</span>
+        <span style="margin-right: 5px">{{ $t("application") }}</span>
         <el-input v-model="appName"></el-input>
       </div>
       <!-- 上传图片 -->
-      <div class="picture">
-        <!-- <div class="news">
-          <span style="color:red;margin-right:5px;font-size: 16px;">*</span>
-          <span style="margin-right:5px; font-size: 16px;  ">{{
-            $t('Uploadc')
-          }}</span>
-        </div> -->
-        <!-- 上传封面 -->
-        <!-- <div class="cover">
-          <el-upload
-            :class="{ hide: hideUpload }"
-            :action="baseURL + '/appli/postScreenImg'"
-            :on-success="upLoadImg"
-            name="fileUpload"
-            :on-error="errorImg"
-            list-type="picture-card"
-            :limit="imglimit"
-            :on-exceed="handleExceed"
-            :before-upload="beforeUpload"
-            accept=".png,.jpg,.jpeg"
-            ref="upload"
-          >
-            <i slot="default" class="el-icon-plus"></i>
-            <div slot="file" slot-scope="{ file }">
-              <img
-                class="el-upload-list__item-thumbnail"
-                :src="file.url"
-                alt=""
-              />
-              <span class="el-upload-list__item-actions">
-                <span
-                  class="el-upload-list__item-preview"
-                  @click="handlePictureCardPreview(file)"
-                >
-                  <i class="el-icon-zoom-in"></i>
-                </span>
-                <span
-                  v-if="!disabled"
-                  class="el-upload-list__item-delete"
-                  @click="handleRemove(file)"
-                >
-                  <i class="el-icon-delete"></i>
-                </span>
-              </span>
-            </div>
-          </el-upload>
-          <el-dialog :visible.sync="dialogVisible">
-            <img width="100%" :src="dialogImageUrl" alt="" />
-          </el-dialog>
-        </div> -->
-        <!-- <el-dialog :visible.sync="dialogVisible">
-          <img width="100%" :src="dialogImageUrl" alt="" />
-        </el-dialog> -->
-      </div>
-      <!-- <div class="xiaoxi">
-        <span style="color:red;margin-right:5px;font-size: 16px;">*</span>
-        {{ $t('extensions') }}：.png .jpg .jpeg
-      </div> -->
-      <!-- 按钮 -->
+      <div class="picture"></div>
       <div class="anNiu">
         <el-button @click="next" :loading="isLoading" type="primary">
-          {{ $t('nextstep') }}
+          {{ $t("nextstep") }}
         </el-button>
       </div>
     </div>
@@ -101,12 +42,12 @@
       </div>
       <!-- 提示 -->
       <div class="text">
-        {{ $t('Upload') }}
+        {{ $t("Upload") }}
       </div>
       <!-- 单选框 -->
-      <el-radio v-model="radio" label="1">{{ $t('UploadBIM') }}</el-radio>
+      <el-radio v-model="radio" label="1">{{ $t("UploadBIM") }}</el-radio>
       <el-radio disabled v-model="radio" label="2">
-        {{ $t('Uploadto') }}
+        {{ $t("Uploadto") }}
       </el-radio>
       <!-- 上传BIM模型 -->
       <div class="cover">
@@ -114,12 +55,11 @@
           :on-success="upLoadModel"
           :on-error="errorModel"
           drag
-          :action="baseURL + '/appli/postProjectModel'"
+          :action="baseURL + '/appli/addProject'"
           name="fileUpload"
           :data="{
-            appliId: appInfo.appid
+            userId: userId,
           }"
-          :limit="limit"
           multiple
           :on-change="onchange"
           :on-exceed="exceed"
@@ -129,11 +69,11 @@
           ref="bimupload"
           :auto-upload="false"
         >
-          <img src="./file.png" style="margin-top:70px" />
+          <img src="./file.png" style="margin-top: 70px" />
           <div class="el-upload__text">
-            {{ $t('methods') }}<br />
-            {{ $t('uploadLimit') }}<br />
-            {{ $t('uploadGoBeyond') }}<br />
+            {{ $t("methods") }}<br />
+            {{ $t("uploadLimit") }}<br />
+            {{ $t("uploadGoBeyond") }}<br />
             <!-- {{ $t('xianzhi') }}<br />
             {{ $t('limit') }}<br /> -->
           </div>
@@ -141,9 +81,14 @@
       </div>
 
       <div
-        style="margin:10px 40px;margin-top:-20px;text-align:left; font-size: 14px; "
+        style="
+          margin: 10px 40px;
+          margin-top: -20px;
+          text-align: left;
+          font-size: 14px;
+        "
       >
-        <span style="color:red">*</span>
+        <span style="color: red">*</span>
         文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
       </div>
       <div class="btn">
@@ -153,7 +98,7 @@
           :loading="isLoading"
           :disabled="disabl"
         >
-          {{ $t('Render') }}
+          {{ $t("Render") }}
         </el-button>
       </div>
     </div>
@@ -165,7 +110,7 @@
       <span class="news">提交完成</span>
       <div class="button">
         <el-button @click="toManage" type="primary">
-          {{ $t('manage') }}
+          {{ $t("manage") }}
         </el-button>
       </div>
     </div>
@@ -177,7 +122,7 @@
       <span class="news">上传模型失败</span>
       <div class="button">
         <el-button @click="toManage" type="primary">
-          {{ $t('manage') }}
+          {{ $t("manage") }}
         </el-button>
       </div>
     </div>
@@ -185,249 +130,254 @@
 </template>
 
 <script>
-import { addProject, ProjectModel } from '@/api/my.js'
-import { Getuserid } from '@/store/index.js'
-import axios from '@/utils/request'
+import { addProject, ProjectModel } from "@/api/my.js";
+import { Getuserid } from "@/store/index.js";
+import axios from "@/utils/request";
 
 export default {
-  name: 'found',
-  data () {
+  name: "found",
+  data() {
     return {
-      radio: '1', //单选框
+      radio: "1", //单选框
       active: 1,
-      isShow: 1,
+      isShow: 2,
       disabl: true, //按钮禁用
       // 上传图片
-      dialogImageUrl: '',
+      dialogImageUrl: "",
       dialogVisible: false,
       disabled: false,
-      appName: '',
+      appName: "",
       baseURL: axios.defaults.baseURL,
       appImgSrc: [], // 封面图
       hideUpload: false, // 封面图添加按钮隐藏
-      appInfo: '',
+      appInfo: "",
       appModel: [], // 上传模型
       imglimit: 1, // 上传封面图限制数量
       // limt: 1, // 限制模型数量
       bimupNumber: 0, // 监听
-      appliId: '',
-      fileUpload: '',
-      limit:1,
-      isLoading: false
-    }
+      appliId: "",
+      fileUpload: "",
+      // limit:1,
+      isLoading: false,
+    };
   },
-  created(){
-    console.log(666);
+  created() {
+    this.userId = Getuserid();
   },
   methods: {
     // 上传封面图
-    upLoadImg (response, file, fileList) {
-      this.appImgSrc.push(response.data)
+    upLoadImg(response, file, fileList) {
+      this.appImgSrc.push(response.data);
     },
     // 上传封面图失败
-    errorImg (err, file, fileList) {
-      console.log(err)
+    errorImg(err, file, fileList) {
+      console.log(err);
     },
     // 上传模型失败
-    errorModel (err, file, fileList) {
-      this.isLoading = false
-      console.log(err)
-      this.isShow = 4
-      this.$common.closeLoading()
+    errorModel(err, file, fileList) {
+      this.isLoading = false;
+      console.log(err);
+      this.isShow = 4;
+      this.$common.closeLoading();
     },
     // 下一步
-    next () {
-      if (this.appName !== '') {
-        this.isLoading = true
-        this.$common.openLoading('正在加载请稍后')
+    next() {
+      if (this.appName !== "") {
+        this.isLoading = true;
+        this.$common.openLoading("正在加载请稍后");
         // if (this.active++ > 3) this.active = 0
         addProject({
           userId: Getuserid(),
           appName: this.appName,
-          screenImg: this.appImgSrc.toString()
+          screenImg: this.appImgSrc.toString(),
         })
-          .then(res => {
-            this.isLoading = false
+          .then((res) => {
+            this.isLoading = false;
             if (res.data.code === 0) {
-              this.appInfo = res.data.data
-              this.appliId = res.data.data.appid
+              this.appInfo = res.data.data;
+              this.appliId = res.data.data.appid;
               // console.log(this.appInfo)
-              this.$message.success('创建项目成功')
-              this.$common.closeLoading()
-              if (this.active++ > 3) this.active = 0
-              this.isShow = 2
+              this.$message.success("创建项目成功");
+              this.$common.closeLoading();
+              if (this.active++ > 3) this.active = 0;
+              this.isShow = 2;
             } else if (res.data.code === 1) {
-              this.$message.error('创建项目失败')
-              this.$common.closeLoading()
+              this.$message.error("创建项目失败");
+              this.$common.closeLoading();
             }
           })
-          .catch(err => {
-            this.isLoading = false
-            console.log(err)
-            this.$common.closeLoading()
-            this.$message.error('创建失败，请稍后重试')
-          })
+          .catch((err) => {
+            this.isLoading = false;
+            console.log(err);
+            this.$common.closeLoading();
+            this.$message.error("创建失败，请稍后重试");
+          });
       } else {
-        this.$message.warning('请先创建项目名称')
+        this.$message.warning("请先创建项目名称");
       }
     },
     // 开始转换
-    update () {
-      this.isLoading = true
+    update() {
+      this.disabl = true;
+      // this.$emit('handleCreateProjectDialog',false)
       // 上传bim模型
-      this.$refs.bimupload.submit()
+      this.$message("正在上传，上传过程请勿关闭或刷新页面!");
+      let uploadTimeout = setTimeout(() => {
+        this.$refs.bimupload.submit();
+        clearTimeout(uploadTimeout);
+      }, 500);
     },
-    submit (status) {},
+    submit(status) {},
     //去往应用管理
-    toManage () {
-      this.$router.push('../manage')
-      this.isShow = 1
+    toManage() {
+      this.$router.push("../manage");
+      this.isShow = 2;
     },
 
     // 预览图片
-    handlePictureCardPreview (file) {
-      this.dialogImageUrl = file.url
-      this.dialogVisible = true
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
     },
     // 删除图片
-    handleRemove (file) {
-      this.$confirm('此操作将删除该图片, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+    handleRemove(file) {
+      this.$confirm("此操作将删除该图片, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
       })
         .then(() => {
-          let newarr = this.$common.deOneArr(this.appImgSrc, file.response.data)
-          this.appImgSrc = newarr
-          this.$refs.upload.handleRemove(file)
-          this.hideUpload = false
-          console.log(this.hideUpload)
+          let newarr = this.$common.deOneArr(
+            this.appImgSrc,
+            file.response.data
+          );
+          this.appImgSrc = newarr;
+          this.$refs.upload.handleRemove(file);
+          this.hideUpload = false;
+          console.log(this.hideUpload);
           this.$message({
-            type: 'success',
-            message: '删除成功'
-          })
+            type: "success",
+            message: "删除成功",
+          });
         })
         .catch(() => {
           this.$message({
-            type: 'info',
-            message: '已取消删除'
-          })
-        })
+            type: "info",
+            message: "已取消删除",
+          });
+        });
     },
     // 删除模型事件
-    onremove (file, fileList) {
-      console.log('onremove');
-      this.bimupNumber--
-      this.disabl = !this.disabl
+    onremove(file, fileList) {
+      this.bimupNumber--;
+      // this.disabl = !this.disabl;
     },
     // 添加模型文件
-    onchange (file, fileList) {
-      console.log(333,file, fileList);
+    onchange(file, fileList) {
       if (!file.response) {
-        this.bimupNumber++
-        console.log('this.bimupNumber',this.bimupNumber);
-        this.disabl = !this.disabl
-        console.log('this.disabl',this.disabl);
+        this.bimupNumber++;
+        // this.disabl = !this.disabl;
       }
     },
     // 上传模型成功
-    upLoadModel (response, file, fileList) {
-      this.isLoading = false
-      this.appModel.push(response.data)
+    upLoadModel(response, file, fileList) {
+      this.isLoading = false;
+      this.appModel.push(response.data);
       // response等同于后端返回的res，根据response里的code判断状态
       // console.log(response)
       if (response.code === 0) {
-        this.$message.success(response.message)
+        this.$message.success(response.message);
         if (this.bimupNumber === this.appModel.length) {
-          this.$common.closeLoading()
-          if (this.active++ > 3) this.active = 0
-          this.isShow = 3
-          this.disabl = !this.disabl
+          this.$common.closeLoading();
+          this.disabl = false;
+          if (this.active++ > 3) this.active = 0;
+          // this.isShow = 3;
+          this.disabl = !this.disabl;
         }
       } else if (response.code === 1) {
-        this.$message.error(response.message)
+        this.$message.error(response.message);
         if (this.bimupNumber === this.appModel.length) {
-          this.$common.closeLoading()
-          if (this.active++ > 3) this.active = 0
-          this.isShow = 4
-          this.disabl = !this.disabl
+          this.$common.closeLoading();
+          if (this.active++ > 3) this.active = 0;
+          // this.isShow = 4;
+          this.disabl = !this.disabl;
         }
       }
     },
     // 限制上传封面次数
-    handleExceed () {
-      this.$message.warning(`亲，只能上传一张图片哦！`)
+    handleExceed() {
+      this.$message.warning(`亲，只能上传一张图片哦！`);
     },
     // 限制上传封面格式
-    beforeUpload (file) {
-      var testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
-      const one = testmsg === 'jpg'
-      const two = testmsg === 'jpeg'
-      const three = testmsg === 'png'
+    beforeUpload(file) {
+      var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
+      const one = testmsg === "jpg";
+      const two = testmsg === "jpeg";
+      const three = testmsg === "png";
       if (!one && !two && !three) {
-        this.$message.error('上传封面只能是.jpg .jpeg .png格式!')
-        this.hideUpload = false
+        this.$message.error("上传封面只能是.jpg .jpeg .png格式!");
+        this.hideUpload = false;
       } else {
-        this.hideUpload = true
+        this.hideUpload = true;
       }
-      return one || two || three
+      return one || two || three;
     },
     // 限制上传模型次数
-    exceed () {
-      this.$message.warning(`上传模型数量超过限制`)
+    exceed() {
+      this.$message.warning(`上传模型数量超过限制`);
     },
     // 上传bim模型前
-    beforeModelUpload (file) {
-      let testmsg = file.name.substring(file.name.lastIndexOf('.') + 1)
-      let listModel = ['rvt', 'ifc', 'fbx']
-      const isLt = file.size / 1024 / 1024 < 200
-       if(!isLt) {
+    beforeModelUpload(file) {
+      let testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
+      let listModel = ["rvt", "ifc", "fbx"];
+      // const isLt = file.size / 1024 / 1024 < 200;
+      // if (!isLt) {
+      //   this.$message({
+      //     message: "上传文件大小不能超过200MB!",
+      //     type: "warning",
+      //   });
+      //   return false;
+      // }
 
-          this.$message({
-
-            message: '上传文件大小不能超过200MB!',
-
-            type: 'warning'
-
-          });
-
-          return false;
-
-        }
-       
-      let extension = false
+      let extension = false;
       if (listModel.indexOf(testmsg) === -1) {
-        extension = false
-        this.isLoading = false
-        this.$message.error('请上传支持的文件格式!')
+        extension = false;
+        this.isLoading = false;
+        this.$message.error("请上传支持的文件格式!");
       } else {
-        extension = true
-        this.$common.openLoading('上传模型中')
+        extension = true;
+
+        // this.$common.openLoading("上传模型中");
       }
-      return extension
-    }
+      console.log("extension", extension);
+      return extension;
+    },
   },
   watch: {
     // 监听路由变化，当路由发生变化的时候，重新加载组件
-    $route (to, from) {
-      window.location.reload()
+    $route(to, from) {
+      window.location.reload();
     },
-    disabl(){
-      console.log(111);
-    }
-  }
-}
+    bimupNumber(num) {
+      if (num) {
+        this.disabl = false;
+      } else {
+        this.disabl = true;
+      }
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
 .box {
-  padding-top: 38px;
+  // padding-top: 38px;
   // 隐藏上传
   /deep/.hide .el-upload--picture-card {
     display: none;
   }
   .buzhou {
-    width: 800px;
+    width: 500px;
     margin: 0 auto;
     margin-top: 50px;
     /deep/ .el-step__description {

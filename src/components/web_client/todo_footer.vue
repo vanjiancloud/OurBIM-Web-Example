@@ -1068,6 +1068,8 @@ export default {
               this.cuttingList[i].name +
               ".png");
           }
+          // this.setForm.unit = 0;
+          // this.setForm.accuracy = 2;
           this.$emit("listenTodo", {
             state: 0,
             type: 3,
@@ -1490,10 +1492,10 @@ export default {
         }
       }
       //点了测量图标
-      if (e === 3) {
-        this.setForm.unit = 0;
-        this.setForm.accuracy = 2;
-      }
+      // if (e === 3) {
+      //   this.setForm.unit = 0;
+      //   this.setForm.accuracy = 2;
+      // }
       this.imgList[e].url = realImg;
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
       // 关闭剖切和测量

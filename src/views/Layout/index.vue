@@ -394,7 +394,7 @@ import { showDetail } from "@/api/my.js";
 import { Getuserid } from "@/store/index.js";
 import { Deluserid } from "@/store/index.js";
 
-import createProject from "../found/index copy.vue"
+import createProject from "../found/index.vue"
 export default {
   name: "myHeader",
   components:{

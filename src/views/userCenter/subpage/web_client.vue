@@ -102,7 +102,6 @@
                 highlight-current
                 node-key="uuid"
                 lazy
-                accordion
               >
                 <span
                   class="custom-tree-node"
@@ -118,6 +117,7 @@
                 >
                   <span class="label-span">{{ node.label }}</span>
                   <span v-if="node.data.typeId !== 'comp'">
+                    <!-- 显示状态 -->
                     <i class="iconfont icon-xianshi2" v-if="!node.checked"></i>
                     <i v-else class="iconfont icon-yincang1"></i>
                   </span>
@@ -215,10 +215,7 @@
         ></progress-bar>
       </transition>
       <todo-footer
-        v-if="
-          controllerInfo.singleList.length !== 13 &&
-          controllerInfo.uiBar
-        "
+        v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar"
         v-show="controllerInfo.tagUiBar"
         ref="getFooter"
         @listenTodo="listenTodo"
@@ -522,6 +519,7 @@ export default {
         }
       });
     },
+
     ExpandNode(e, data) {
       /**
        * @Author: zk
@@ -580,10 +578,12 @@ export default {
       this.LisetMemberPage(this.openNode).then((res) => {
         this.TreePageNo++;
         if (res.length > 0) {
+          console.log(88888);
           res.forEach((item) => {
             let noneNode = this.$refs.setTree.getNode(item);
             if (!noneNode) {
               this.$refs.setTree.append(item, this.openNode.key);
+              this.$refs.setTree.setChecked(item, this.openNode.checked);
             }
           });
         } else {
@@ -606,7 +606,6 @@ export default {
       }
     },
     listenFollow(e) {
-      console.log("listenFollow", e);
       /**
        * @Author: zk
        * @Date: 2021-04-08 15:30:38
@@ -615,7 +614,6 @@ export default {
       this.isFollow = e;
     },
     listenMode(e) {
-      console.log("listenMode");
       /**
        * @Author: zk
        * @Date: 2021-03-17 16:01:54
@@ -921,7 +919,6 @@ export default {
         case 11:
           // 剖切
           if (this.listenTodoInfo.state === 0) {
-            console.log("end");
             params.action = "end";
           }
           if (
@@ -1094,6 +1091,7 @@ export default {
           return [];
         }
       });
+
       return realMember;
     },
     loadNode(node, resolve) {
@@ -1104,6 +1102,7 @@ export default {
               item.activeState = 0;
               item.activeSelect = 0;
             });
+
             return resolve(res);
           } else {
             this.treeEmpty = this.$t("webClient.browser.tips[1]");
@@ -1115,7 +1114,7 @@ export default {
           if (res.length > 0) {
             res.forEach((item) => {
               item.activeState = 0;
-              item.activeSelect = 0;
+              item.activeSelect = 1;
             });
             return resolve(res);
           } else {
@@ -1203,7 +1202,6 @@ export default {
       }
     },
     listenPerson(e) {
-      console.log("listenPerson");
       /**
        * @Author: zk
        * @Date: 2021-03-16 18:06:24
@@ -1245,7 +1243,6 @@ export default {
       }
       // 移动速度
       if (e.type === 1 && e.data) {
-        console.log(888);
         this.handleState = 3;
         this.listenTodoInfo = e;
         this.updateOrder();
@@ -1426,6 +1423,7 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "8") {
+            console.log(888,realData);
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10003,
@@ -1523,6 +1521,7 @@ export default {
               }
             }
           }
+          // 13cube返回数据
         }
       };
       this.websock.onopen = (e) => {

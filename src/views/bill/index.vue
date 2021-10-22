@@ -36,7 +36,6 @@
         <el-input
           v-model="email"
           placeholder="请输入邮箱"
-          :disabled="true"
         ></el-input>
       </div>
     </div>

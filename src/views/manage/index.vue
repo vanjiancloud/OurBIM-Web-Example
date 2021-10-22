@@ -52,6 +52,7 @@
             <span v-if="scope.row.appType === '0'">普通模型</span>
             <span v-else-if="scope.row.appType === '1'">漫游模型</span>
             <span v-else-if="scope.row.appType === '3'">链接模型</span>
+            <span v-else-if="scope.row.appType === '4'">示例模型</span>
             <span v-else>其他模型</span>
           </template>
         </el-table-column>
@@ -446,9 +447,14 @@ export default {
         isHandle: 1,
         appType: 0,
       }).then((res) => {
-        console.log(111, res);
         if (res.data.code === 0) {
-          this.ListLinkModel = res.data.data;
+          let resData = res.data.data.filter((item) => {
+            if (item.appType !== "4") {
+              return item;
+            } else {
+            }
+          });
+          this.ListLinkModel = resData;
         } else {
           this.ListLinkModel = [];
         }
@@ -721,11 +727,6 @@ export default {
 
     //进入应用
     GoApp(e) {
-      // console.log(222, e.currVersion);
-      // let currVersion = "";
-      // if (e.currVersion === "V5") {
-      //   currVersion = "V5";
-      // }
       let isiPad =
         navigator.userAgent.match(/(iPad)/) ||
         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
