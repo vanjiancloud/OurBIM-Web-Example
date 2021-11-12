@@ -490,8 +490,6 @@ const i18n = new VueI18n({
 // 把echarts放到原型上
 Vue.prototype.$echarts = echarts
 
-console.log("当前请求的地址", process.env);
-
 
 new Vue({
   router,

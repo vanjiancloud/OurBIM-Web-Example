@@ -221,7 +221,7 @@ export default {
       this.disabl = true;
       // this.$emit('handleCreateProjectDialog',false)
       // 上传bim模型
-      this.$message("正在上传，上传过程请勿关闭或刷新页面!");
+     
       let uploadTimeout = setTimeout(() => {
         this.$refs.bimupload.submit();
         clearTimeout(uploadTimeout);
@@ -330,14 +330,14 @@ export default {
     beforeModelUpload(file) {
       let testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
       let listModel = ["rvt", "ifc", "fbx"];
-      // const isLt = file.size / 1024 / 1024 < 200;
-      // if (!isLt) {
-      //   this.$message({
-      //     message: "上传文件大小不能超过200MB!",
-      //     type: "warning",
-      //   });
-      //   return false;
-      // }
+      const isLt = file.size / 1024 / 1024 < 200;
+      if (!isLt) {
+        this.$message({
+          message: "上传文件大小不能超过200MB!",
+          type: "warning",
+        });
+        return false;
+      }
 
       let extension = false;
       if (listModel.indexOf(testmsg) === -1) {
@@ -346,7 +346,7 @@ export default {
         this.$message.error("请上传支持的文件格式!");
       } else {
         extension = true;
-
+         this.$message("正在上传，上传过程请勿关闭或刷新页面!");
         // this.$common.openLoading("上传模型中");
       }
       console.log("extension", extension);

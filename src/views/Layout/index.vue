@@ -53,7 +53,7 @@
                       最新资讯</a
                     ></el-menu-item
                   >
-                  <el-submenu index="">
+                  <el-submenu index="" popper-class="popper-class">
                     <template slot="title">开发者</template>
                     <el-menu-item index="/"
                       ><a
@@ -62,6 +62,8 @@
                           text-decoration: none;
                           color: #999;
                           font-size: 16px;
+                          display: block;
+                          width: 100%;
                         "
                       >
                         开发指南
@@ -74,6 +76,8 @@
                           text-decoration: none;
                           color: #999;
                           font-size: 16px;
+                          display: block;
+                          width: 100%;
                         "
                       >
                         {{ $t("APIdov") }}
@@ -86,6 +90,8 @@
                           text-decoration: none;
                           color: #999;
                           font-size: 16px;
+                          display: block;
+                          width: 100%;
                         "
                         >{{ $t("log") }}</a
                       ></el-menu-item
@@ -316,7 +322,7 @@
               </el-menu-item>
 
               <!-- 创建项目 -->
-             <!--  <el-menu-item index="/found">
+              <!--  <el-menu-item index="/found">
                 <i class="el-icon-folder-add"></i>
                 <span slot="title" class="write">{{ $t("Create") }}</span>
               </el-menu-item> -->
@@ -373,12 +379,8 @@
       </div>
     </el-footer>
     <!-- 上传项目对话框 -->
-    <el-dialog
-      :visible.sync="createPeojectDialogVisible"
-      width="50%"
-      center
-    >
-    <create-project @handleCreateProjectDialog="handleCreateProjectDialog" />
+    <el-dialog :visible.sync="createPeojectDialogVisible" width="50%" center>
+      <create-project @handleCreateProjectDialog="handleCreateProjectDialog" />
       <!-- <span slot="footer" class="dialog-footer">
         <el-button @click="createPeojectDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="createPeojectDialogVisible = false"
@@ -394,11 +396,11 @@ import { showDetail } from "@/api/my.js";
 import { Getuserid } from "@/store/index.js";
 import { Deluserid } from "@/store/index.js";
 
-import createProject from "../found/index.vue"
+import createProject from "../found/index.vue";
 export default {
   name: "myHeader",
-  components:{
-    createProject
+  components: {
+    createProject,
   },
   data() {
     return {
@@ -734,6 +736,7 @@ export default {
           font-family: PingFang SC;
           font-size: 16px;
           color: #999;
+        
         }
         a:hover {
           color: #ff6600;
@@ -815,13 +818,14 @@ export default {
       .middle {
         height: 100%;
         margin-right: 30px;
-        min-width: 270px;
+        // min-width: 270px;
         // background-color: blue;
         h3 {
           margin-top: 5px;
         }
         .tiao {
           .tu {
+            
             margin-top: 10px;
             display: flex;
             .icon {
@@ -837,8 +841,9 @@ export default {
           }
         }
       }
+
       .jindu {
-        min-width: 270px;
+        // min-width: 270px;
         height: 80px;
         // margin-top: 35px;
         // background-color: pink;
@@ -994,3 +999,5 @@ export default {
   }
 }
 </style>
+
+

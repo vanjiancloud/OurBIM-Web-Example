@@ -168,6 +168,17 @@
           </div>
         </div>
         <!-- 构件库 -->
+        <!-- <div
+          class="bim-info"
+          @click.stop=""
+          v-show="
+            controllerInfo.tagUiBar &&
+            ((listenTodoInfo &&
+              listenTodoInfo.type === 14 &&
+              listenTodoInfo.state === 1) ||
+              controllerInfo.componentLibrary)
+          "
+        > -->
         <div
           class="bim-info"
           @click.stop=""
@@ -259,6 +270,7 @@ import tagTree from "@/components/web_client/tag_tree";
 import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
 
+
 export default {
   name: "look_app",
   layout: "reset",
@@ -283,7 +295,7 @@ export default {
         data: 0,
         loadData: 0,
       },
-      isScene: false,
+
       isProgress: true,
       propsMember: {
         label: "name",
@@ -349,15 +361,13 @@ export default {
       TreePageNo: 2,
       ScrollDistance: 0,
       isQrcode: false,
+      iTime:{},
     };
   },
 
   watch: {},
   created() {
-    // 判断是不是应用场景
-    let { sceneName } = this.$route.query;
-    this.sceneName = sceneName || "";
-    this.isScene = !!sceneName;
+
 
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
@@ -455,13 +465,16 @@ export default {
     listenWindowSize() {
       // 监听窗口大小变化 id=14 height
       window.onresize = () => {
-        let params = {
-          taskid: this.taskId,
-          action: "platform",
-          height: document.body.clientHeight,
-          width: document.body.clientWidth,
-        };
-        MODELAPI.UPDATEORDER(params);
+        clearTimeout(this.iTime);
+        this.iTime = setTimeout(() => {
+          let params = {
+            taskid: this.taskId,
+            action: "platform",
+            height: document.body.clientHeight,
+            width: document.body.clientWidth,
+          };
+          MODELAPI.UPDATEORDER(params);
+        }, 150);
         return;
         if (this.windowChangeFlag) {
           this.windowChangeFlag = false;
@@ -503,6 +516,7 @@ export default {
        */
       this.$refs.setTree.filter(this.modelBrowser);
     },
+
     AddQrCode() {
       /**
        * @Author: zk
@@ -578,7 +592,6 @@ export default {
       this.LisetMemberPage(this.openNode).then((res) => {
         this.TreePageNo++;
         if (res.length > 0) {
-          console.log(88888);
           res.forEach((item) => {
             let noneNode = this.$refs.setTree.getNode(item);
             if (!noneNode) {
@@ -1423,7 +1436,6 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "8") {
-            console.log(888,realData);
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10003,
@@ -2299,5 +2311,11 @@ export default {
       margin-left: auto;
     }
   }
+}
+
+.dasdasdsad {
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 </style>

@@ -9,31 +9,40 @@ import request from '../utils/request'
 import qsStringify from "qs-stringify"
 
 const COMPONENTLIBRARY = {
-      // 新增构件
-      ADDCOMPONENT: params =>{
-          return request({
-              url: '/cpControl/addCp',
-              method: 'POST',
-              data: qsStringify(params)
-            })
-      },
-      // 初始化构件
-      INITCOMPONENT: params => {
-          return request({
-              url: '/cpControl/initComp',
-              method: 'GET',
-              params
-            })
-      },
-      // 构件定位
-      FOCUSCOMPONENT: params => {
-        return request({
-            url: '/cpControl/cpFoucs',
-            method: 'POST',
-            params
-          })
-    },
-      
+
+  // 获取构件列表
+  GETTCOMLIST() {
+    return request({
+      url: '/cpControl/getComList',
+      method: 'post',
+      params
+    })
+  },
+  // 新增构件
+  ADDCOMPONENT: params => {
+    return request({
+      url: '/cpControl/addCom',
+      method: 'POST',
+      data: qsStringify(params)
+    })
+  },
+  // 初始化构件
+  INITCOMPONENT: params => {
+    return request({
+      url: '/cpControl/initComp',
+      method: 'GET',
+      params
+    })
+  },
+  // 构件定位
+  FOCUSCOMPONENT: params => {
+    return request({
+      url: '/cpControl/comFocus',
+      method: 'POST',
+      params
+    })
+  },
+
 }
 
 export default COMPONENTLIBRARY

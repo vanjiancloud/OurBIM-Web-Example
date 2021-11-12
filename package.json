@@ -22,7 +22,7 @@
     "lib-flexible": "^0.3.2",
     "postcss-px2rem": "^0.3.0",
     "qrcodejs2": "0.0.2",
-    "qs": "^6.9.6",
+    "qs": "^6.10.1",
     "qs-stringify": "^1.2.1",
     "vue": "^2.6.11",
     "vue-cli": "^2.9.6",

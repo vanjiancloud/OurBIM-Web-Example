@@ -5,13 +5,28 @@
  * @LastEditTime: 2021-06-09 11:10:08
  * @description: 
  */
+import qs from "qs"
 import {
   BASE
 } from "../utils/socket_request"
 import request from '../utils/request'
 import qsStringify from "qs-stringify"
 
+import axios from 'axios'
 const MODELAPI = {
+
+  DOWNLOADFILE: (params, callback) => {
+    console.log(qs.stringify(params));
+    return axios({
+      url: '/FileStorge/downloadModelFile',
+      method: 'get',
+      params,
+      responseType: 'blob',
+      onDownloadProgress(progress) {
+        callback(progress)
+      }
+    })
+  },
   GETMODELINFO: params => {
     return request({
       url: '/OurBim/requestOurBim',
@@ -31,9 +46,10 @@ const MODELAPI = {
       params
     })
   },
-  
+
   // 指令下发
   UPDATEORDER: params => {
+   
     return request({
       url: '/OurBim/doAction',
       method: 'get',

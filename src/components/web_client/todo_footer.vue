@@ -464,6 +464,8 @@
               mode=""
             />
           </el-tooltip>
+
+          
         </div>
         <!-- 浏览器 -->
         <div class="image-main" v-if="showBar(imgList[10].id)">

@@ -101,6 +101,7 @@ export default {
   name: "bill",
   data() {
     return {
+      loaddialogVisible: true,
       name: "", //姓名
       note: "", //签名
       email: "", //邮箱

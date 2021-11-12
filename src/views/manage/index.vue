@@ -20,7 +20,7 @@
     <!-- 表格 -->
     <div class="table">
       <el-table :data="itemList" style="width: 100%" class="sheet">
-        <el-table-column prop="appName" :label="$t('applyname')" width="150">
+        <el-table-column prop="appName" :label="$t('applyname')">
           <template slot-scope="scope">
             <el-tooltip
               popper-class="app-name-tip"
@@ -34,9 +34,9 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="appid" :label="$t('applicationid')" width="130">
+        <el-table-column prop="appid" :label="$t('applicationid')" width="120">
         </el-table-column>
-        <el-table-column :label="$t('uploaddate')" width="120">
+        <el-table-column :label="$t('uploaddate')" width="110">
           <template slot-scope="scope">
             <div v-text="scope.row.createTime"></div>
             <!-- <div v-text="scope.row.createTime.slice(0, 10)"></div> -->
@@ -51,7 +51,17 @@
           <template slot-scope="scope">
             <span v-if="scope.row.appType === '0'">普通模型</span>
             <span v-else-if="scope.row.appType === '1'">漫游模型</span>
-            <span v-else-if="scope.row.appType === '3'">链接模型</span>
+
+            <el-tooltip
+              effect="dark"
+              :content="scope.row.combineId"
+              placement="top"
+              v-else-if="scope.row.appType === '3'"
+            >
+              <div>链接模型</div>
+            </el-tooltip>
+
+            <!-- <span v-else-if="scope.row.appType === '3'">链接模型</span> -->
             <span v-else-if="scope.row.appType === '4'">示例模型</span>
             <span v-else>其他模型</span>
           </template>
@@ -61,10 +71,32 @@
             {{ scope.row.currentInstance }}/{{ scope.row.maxInstance }}
           </template>
         </el-table-column> -->
+
         <el-table-column :label="$t('state')">
           <template slot-scope="scope">
             <!-- 做自定义操作 需要改成template的形式,scope.row代表的是表格数据itemList中的每一项 -->
-            {{ formatStatus(scope.row.applidStatus) }}
+
+            <el-tooltip
+              effect="dark"
+              placement="top"
+              v-if="scope.row.applidStatus === '3'"
+            >
+              <div slot="content" class="dasdasd">{{ scope.row.errMsg }}</div>
+              <!-- 项目状态 -->
+              <!-- 转化失败 -->
+              <div
+                style="
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                "
+              >
+                <span>{{ formatStatus(scope.row.applidStatus) }}</span>
+                <div class="err-icon"><img src="./err.png" alt="" /></div>
+              </div>
+            </el-tooltip>
+            <div v-else>{{ formatStatus(scope.row.applidStatus) }}</div>
+
             <el-progress
               :text-inside="true"
               :percentage="scope.row.progress"
@@ -81,7 +113,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('operation')" width="190" align="canter">
+        <el-table-column :label="$t('operation')" width="220" align="canter">
           <template slot-scope="scope">
             <div class="handle-btn">
               <!-- 升级 -->
@@ -95,14 +127,20 @@
                 "
                 class="blue"
               >
-                {{
-                  scope.row.currVersion !== "V5" &&
-                  scope.row.applidStatus === "2" &&
-                  scope.row.appType === "0"
-                    ? "升级"
-                    : ""
-                }}
+                升级
               </el-button>
+
+              <!-- 下载 -->
+              <el-button
+                @click="downloadFile(scope.row)"
+                type="text"
+                v-if="
+                  scope.row.applidStatus === '2' && scope.row.appType !== '3'
+                "
+              >
+                下载
+              </el-button>
+
               <!-- 分享 -->
               <el-button
                 @click="share(scope.row), (dialogFormVisibleOne = true)"
@@ -111,7 +149,7 @@
                 :class="scope.row.applidStatus === '2' ? 'blue' : 'gray'"
                 :disabled="scope.row.applidStatus === '2' ? false : true"
               >
-                {{ scope.row.applidStatus === "2" ? "分享" : "" }}
+                分享
               </el-button>
               <!-- 编辑 -->
               <el-button
@@ -123,6 +161,14 @@
               >
                 {{ $t("edit") }}
               </el-button>
+              <!-- 报错 -->
+              <!-- <el-button
+                @click="reportErr(scope.row), (reportErrDialogVisible = true)"
+                type="text"
+                class="btn-one"
+              >
+                报错
+              </el-button> -->
               <!-- 删除 -->
               <el-button
                 @click="remove(scope.row)"
@@ -292,6 +338,46 @@
         <el-button type="primary" @click="SubmitIntegrate">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 报错dialog -->
+    <el-dialog title="提示" :visible.sync="reportErrDialogVisible" width="30%">
+      <el-form
+        :model="reportErrForm"
+        :rules="reportErrRules"
+        ref="reportErrFormRef"
+        label-width="100px"
+      >
+        <el-form-item label="标题" prop="title">
+          <el-input
+            v-model="reportErrForm.title"
+            maxlength="20"
+            show-word-limit
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="问题类别" prop="type">
+          <el-select v-model="reportErrForm.type" placeholder="请选择问题类别">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="问题描述" prop="detail">
+          <el-input
+            type="textarea"
+            :autosize="{ minRows: 9 }"
+            v-model="reportErrForm.detail"
+            maxlength="200"
+            show-word-limit
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <!-- 提交项目报错 -->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="reportErrDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="reportErrDialogVisible = false"
+          >确 定</el-button
+        >
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -306,8 +392,11 @@ import {
 import MODELAPI from "@/api/model_api";
 import { Getuserid } from "@/store/index.js";
 import axios from "@/utils/request";
+import createId from "@/utils/createId.js";
+import qs from "qs";
 export default {
   name: "manage",
+  components: {},
   data() {
     return {
       FormIntegrate: {
@@ -318,6 +407,7 @@ export default {
           { required: true, message: "请输入链接模型名称", trigger: "blur" },
         ],
       },
+      reportErrDialogVisible: false,
       ActiveLinkModel: [],
       ListLinkModel: [],
       IsIntegrate: false,
@@ -392,14 +482,68 @@ export default {
           },
         ],
       },
+      // 报错表单
+      reportErrForm: {
+        title: "",
+        type: "",
+        detail: "",
+      },
+      // 报错表单验证规则
+      reportErrRules: {
+        title: [
+          { required: true, message: "请输入标题!", trigger: "blur" },
+          { min: 1, max: 20, message: "字数不能超过20!", trigger: "blur" },
+        ],
+        type: [
+          { required: true, message: "请选择活动区域", trigger: "change" },
+        ],
+        detail: [
+          { required: true, message: "请输入问题描述!", trigger: "blur" },
+          { min: 1, max: 200, message: "字数不能超过200!", trigger: "blur" },
+        ],
+      },
     };
   },
   created() {
     this.GetList();
     this.setGetdataIn();
-    // this.showTips()
   },
   methods: {
+    reportErr(row) {
+      console.log(11, row);
+    },
+    async downloadFile(row) {
+      
+      this.$confirm("即将下载此源文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$message({
+            type: "warning",
+            message: "开始下载",
+          });
+          let params = {
+            userId: Getuserid(),
+            appId: row.appid,
+          };
+          let urllll =
+            process.env.VUE_APP_REQUEST_URL +
+            "/FileStorge/downloadModelFile?" +
+            qs.stringify(params);
+            window.location.href=urllll
+          // window.open(urllll);
+          return;
+          this.startDownLoad(row);
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消下载",
+          });
+        });
+    },
     handleCreateProjectDialog() {
       this.$emit("handleCreateProjectDialog", true);
     },
@@ -492,7 +636,6 @@ export default {
     setGetdataIn() {
       this.timer = setInterval(() => {
         this.GetList();
-        // console.log('每隔5秒更新应用管理')
       }, 5000);
     },
     // 获取应用数据列表
@@ -501,7 +644,6 @@ export default {
         userid: Getuserid(),
       })
         .then((res) => {
-          // console.log(res, '应用数据列表')
           if (res.data.code == "0") {
             this.itemList = res.data.data;
             this.reverse();
@@ -518,7 +660,6 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(err);
           // this.$message.error('请求失败')
         });
     },
@@ -560,7 +701,6 @@ export default {
     },
     // 分享按钮
     share(e) {
-      // console.log(e)
       this.formShare.appid = e.appid;
     },
     // 关闭分享dialog
@@ -582,7 +722,6 @@ export default {
         userid: Getuserid(),
       })
         .then((res) => {
-          // console.log(res)
           if (res.data.code === 0) {
             this.isShow = 2;
             this.formShare.qrurl = res.data.data.qrurl;
@@ -592,7 +731,6 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(err);
           this.$message.error("分享失败,请重新选择");
           this.$common.closeLoading();
           this.dialogFormVisibleOne = false;
@@ -610,7 +748,6 @@ export default {
     copyImg(e) {
       //nextTick,当前dom渲染完毕的回调
       this.$nextTick(function () {
-        // console.log('foo', this.$refs.foo) //打印获取的dom
         const selection = window.getSelection();
         const range = document.createRange();
         //复制前先清除粘贴板上的缓存
@@ -625,7 +762,6 @@ export default {
     },
     // 编辑按钮
     edit(e) {
-      console.log(e);
       this.form.name = e.appName;
       this.form.appid = e.appid;
       this.form.displayWindow = e.displayWindow;
@@ -645,7 +781,6 @@ export default {
         name: "项目名称",
         maxInstance: "最大并发数",
       };
-      console.log(param);
       for (const k in verify) {
         const val = Array.isArray(param[k]) ? param[k][0] : param[k];
         if (!this.$common.noNull(val)) {
@@ -666,20 +801,17 @@ export default {
           })
             .then((res) => {
               if (res.data.code === 0) {
-                console.log(res);
                 this.$message.success(res.data.message);
                 this.$common.closeLoading();
                 this.GetList();
                 this.dialogFormVisible = false;
               } else if (res.data.code === 1) {
-                // console.log(res)
                 this.$message.error("修改失败，" + res.data.message);
                 this.$common.closeLoading();
                 this.dialogFormVisible = false;
               }
             })
             .catch((err) => {
-              console.log(err);
               this.$message.error("修改信息失败,请重新修改");
               this.$common.closeLoading();
             });
@@ -688,8 +820,6 @@ export default {
     },
     // 删除按钮
     remove(e) {
-      // console.log(e)
-      // console.log(e.progress)
       this.$confirm("此操作将删除该应用, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -720,7 +850,6 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(err);
           this.$message.error("删除失败");
         });
     },
@@ -773,15 +902,12 @@ export default {
     },
     // 上传模型
     upLoadModel(response, file, fileList) {
-      console.log("模型上传成功");
       this.$message.success("模型上传成功");
       this.form.appModel = response.data;
       this.disabl = false;
     },
     // 上传封面图失败
-    errorImg(err, file, fileList) {
-      console.log(err);
-    },
+    errorImg(err, file, fileList) {},
     // 删除图片
     handleRemove(file) {
       this.$confirm("此操作将删除该图片, 是否继续?", "提示", {
@@ -858,7 +984,6 @@ export default {
   // activated () {
   //   this.timer = setInterval(() => {
   //     this.GetList()
-  //     // console.log('每隔5秒更新应用管理')
   //   }, 5000)
   // },
   // ===== 页面实例销毁 =====
@@ -932,7 +1057,7 @@ export default {
     //   color: #00aaf0;
     // }
     .btn-one {
-      font-size: 16px;
+      font-size: 14px;
       color: #00aaf0;
     }
     .bbb {
@@ -948,12 +1073,12 @@ export default {
       color: #ff6600;
     }
     .gray {
-      font-size: 16px;
+      font-size: 14px;
       color: gray;
     }
     .blue {
       color: #00aaf0;
-      font-size: 16px;
+      font-size: 14px;
     }
   }
   .el-dialog {
@@ -1094,5 +1219,49 @@ export default {
     width: 100% !important;
     table-layout: auto;
   }
+}
+
+.dasdasd {
+  // color: #ff3333;
+  font-size: 14px;
+  // background-color: #ffe8e8;
+  width: 100%;
+  height: 100%;
+}
+
+.err-icon {
+  margin-top: 7px;
+}
+
+.aaaaaaaa {
+  width: 100%;
+  background-color: #ddd;
+  box-sizing: border-box;
+}
+
+/deep/ .el-notification__group {
+  width: 100%;
+  background-color: red;
+}
+.skills {
+  text-align: right;
+  padding-right: 20px;
+  line-height: 40px;
+  color: white;
+  box-sizing: border-box;
+}
+
+/deep/ .el-notification__content {
+  background-color: pink;
+  width: 100px;
+  p {
+    display: block;
+  }
+}
+
+.bbbbbbbbbbbbbb {
+  width: 90%;
+  background-color: #4caf50;
+  box-sizing: border-box;
 }
 </style>
