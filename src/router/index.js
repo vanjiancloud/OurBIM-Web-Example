@@ -145,15 +145,6 @@ const routes = [
       title: '应用详情'
     }
   },
-  // test
-  {
-    path: '/test',
-    name: 'test',
-    component: () => import('../views/test.vue'),
-    meta: {
-      title: '应用详情'
-    }
-  }
 ]
 
 const router = new VueRouter({

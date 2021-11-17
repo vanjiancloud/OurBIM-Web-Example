@@ -12,7 +12,7 @@
         // 获取标签列表
         LISTTAG: params =>{
             return request({
-                url: '/TagControl/getTagList',
+                url: '/tagControl/getTagList',
                 method: 'get',
                 params
               })
@@ -20,7 +20,7 @@
         // 添加标签集
         SAVETAGGATHER: params => {
             return request({
-                url: '/TagControl/addTagGroup',
+                url: '/tagControl/addTagGroup',
                 method: 'POST',
                 data: qsStringify(params)
               })
@@ -28,7 +28,7 @@
         // 添加标签
         SAVETAG: params => {
             return request({
-                url: '/TagControl/addTag',
+                url: '/tagControl/addTag',
                 method: 'POST',
                 data: qsStringify(params)
               })
@@ -36,7 +36,7 @@
         // 修改标签
         UPDATETAG: params => {
             return request({
-                url: '/TagControl/updateTag',
+                url: '/tagControl/updateTag',
                 method: 'POST',
                 data: qsStringify(params)
               })
@@ -44,7 +44,7 @@
         // 删除
         REMOVERTAG: params => {
             return request({
-                url: '/TagControl/deleteTag',
+                url: '/tagControl/deleteTag',
                 method: 'POST',
                 data: qsStringify(params)
               })
@@ -52,7 +52,7 @@
         // 显示隐藏
         UPDATASHOWTAG: params => {
             return request({
-                url: '/TagControl/controlTagShow',
+                url: '/tagControl/controlTagShow',
                 method: 'POST',
                 data: qsStringify(params)
               })
@@ -60,7 +60,7 @@
         // focus
         UPDATAFOCUSTAG: params => {
           return request({
-              url: '/TagControl/clickTag',
+              url: '/tagControl/clickTag',
               method: 'POST',
               data: qsStringify(params)
             })

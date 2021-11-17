@@ -200,15 +200,38 @@
             </div>
           </div>
           <div class="detail-main detail-collapse">
-            <el-collapse v-model="componentCollapse" accordion>
-              <el-collapse-item title="二维码" name="1">
-                <div class="collapse-main">
-                  <el-button size="mini" type="primary" @click="AddQrCode"
-                    >新增</el-button
-                  >
-                </div>
-              </el-collapse-item>
-            </el-collapse>
+            <scroll-container>
+              <el-collapse v-model="componentCollapse" accordion>
+                <el-collapse-item title="二维码" name="1">
+                  <div class="collapse-main">
+                    <el-button size="mini" type="primary" @click="AddQrCode"
+                      >新增</el-button
+                    >
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
+
+              <el-collapse
+                accordion
+                v-for="(item, index) in publicComList"
+                :key="item.title"
+              >
+                <el-collapse-item :title="item.group" :name="index">
+                  <div class="collapse-main">
+                    <div
+                      class="publicComListItem"
+                      v-for="listItem in item.rsComponent"
+                      :key="listItem.id"
+                    >
+                      <div class="img"><img src="" alt="" /></div>
+                      <div class="name">{{ listItem.comName }}</div>
+                    </div>
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
+
+              <!-- <div v-for="item in 100" :key="item">1111</div> -->
+            </scroll-container>
           </div>
         </div>
         <!-- 二维码 -->
@@ -269,7 +292,7 @@ import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
 import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
-
+import scrollContainer from "@/components/web_client/scrollContainer.vue";
 
 export default {
   name: "look_app",
@@ -280,6 +303,7 @@ export default {
     tagTree,
     progressBar,
     qrcodePart,
+    scrollContainer,
   },
   data() {
     return {
@@ -361,14 +385,13 @@ export default {
       TreePageNo: 2,
       ScrollDistance: 0,
       isQrcode: false,
-      iTime:{},
+      iTime: {},
+      publicComList: [],
     };
   },
 
   watch: {},
   created() {
-
-
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -390,7 +413,6 @@ export default {
     }
   },
   mounted() {
-    this.listenWindowSize();
     document
       .querySelector("#tree-content")
       .addEventListener("scroll", this.throttle(this.handleScroll));
@@ -406,7 +428,7 @@ export default {
     } else {
       this.runTimeCode = 0;
     }
-    this.getSceneUrl();
+    this.getModelUrl();
     //判断是否使用的是ipad
     let isiPad =
       navigator.userAgent.match(/(iPad)/) ||
@@ -462,8 +484,31 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    getComList() {
+      COMPONENTLIBRARY.getPublicComList({
+        taskId: this.taskId,
+      }).then((res) => {
+        console.log(777,res);
+        // let Res = res.data.data;
+        // Res.forEach((item) => {
+        //   for (var i in item) {
+        //     item.title = i;
+        //     item.list = item[i];
+        //   }
+        // });
+        // console.log(777, Res);
+        this.publicComList = res.data.data
+      });
+    },
     listenWindowSize() {
       // 监听窗口大小变化 id=14 height
+      let params = {
+        taskid: this.taskId,
+        action: "platform",
+        height: document.body.clientHeight,
+        width: document.body.clientWidth,
+      };
+      MODELAPI.UPDATEORDER(params);
       window.onresize = () => {
         clearTimeout(this.iTime);
         this.iTime = setTimeout(() => {
@@ -475,15 +520,6 @@ export default {
           };
           MODELAPI.UPDATEORDER(params);
         }, 150);
-        return;
-        if (this.windowChangeFlag) {
-          this.windowChangeFlag = false;
-          const windowTimeout = setTimeout(() => {
-            this.windowChangeFlag = true;
-            clearTimeout(windowTimeout);
-          }, 0);
-        } else {
-        }
       };
     },
     async updataModle(params) {
@@ -524,9 +560,10 @@ export default {
        * @description: 新增二维码
        */
       let params = {
-        taskid: this.taskId,
+        taskId: this.taskId,
       };
-      COMPONENTLIBRARY.ADDCOMPONENT(params).then(() => {
+      COMPONENTLIBRARY.ADDCOMPONENT(params).then((res) => {
+        console.log(999, res);
         if (this.controllerInfo.uiBar) {
           this.controllerInfo.tagUiBar = false;
           this.controllerInfo.tagViewCube = false;
@@ -758,7 +795,7 @@ export default {
        * @description: 定位二维码
        */
       let params = {
-        taskid: this.taskId,
+        taskId: this.taskId,
         uuid: e.compData.id,
       };
       COMPONENTLIBRARY.FOCUSCOMPONENT(params)
@@ -1230,7 +1267,7 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
-
+      console.log(111, e);
       this.$refs.getCube.closeView();
       if (e.type === 14 || e.type === 11) {
         this.isQrcode = false;
@@ -1362,7 +1399,7 @@ export default {
        * @description: 标签显示/隐藏
        */
       let params = {
-        taskid: this.taskId,
+        taskId: this.taskId,
         lableVisibility: this.listenTodoInfo.state === 0 ? false : true,
       };
       TAGTREE.UPDATASHOWTAG(params)
@@ -1392,7 +1429,7 @@ export default {
        * 5 多选构件
        * 6 启动事件
        * 7 点击空白
-       * 8 初始化成功
+       * 8 初始化成功 加载进度
        */
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
@@ -1436,6 +1473,8 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "8") {
+            // 加载完成
+            this.listenWindowSize();
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10003,
@@ -1455,7 +1494,7 @@ export default {
               );
               if (Number(this.propsProgress.data) === 100) {
                 let params = {
-                  taskid: this.taskId,
+                  taskId: this.taskId,
                 };
                 COMPONENTLIBRARY.INITCOMPONENT(params);
               }
@@ -1556,7 +1595,7 @@ export default {
         clearTimeout(loadTimer);
       }, e);
     },
-    getSceneUrl() {
+    getModelUrl() {
       let appId = this.$route.query.appid;
       MODELAPI.GETMODELINFO({
         appliId: appId,
@@ -1576,6 +1615,7 @@ export default {
               },
               message: "",
             };
+            this.getComList();
             this.sentParentIframe(messageInfo);
             this.initWebSocket();
             if (res.data.data.appliType !== "1") {
@@ -1605,6 +1645,7 @@ export default {
           }
         })
         .catch((err) => {
+          console.log(777, err);
           this.$message({
             type: "error",
             message: this.$t("webClient.loadBox.message[4]"),
@@ -2317,5 +2358,30 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
+}
+
+.publicComListItem {
+  display: inline-block;
+  width: 150px;
+  height: 120px;
+  margin-left: 10px;
+  // background-color: pink;
+  .img {
+    margin: 0 auto;
+    height: 30px;
+    width: 30px;
+    img{
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .name {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    text-align: center;
+  }
 }
 </style>

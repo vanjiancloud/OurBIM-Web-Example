@@ -20,6 +20,7 @@
     <!-- 表格 -->
     <div class="table">
       <el-table :data="itemList" style="width: 100%" class="sheet">
+
         <el-table-column prop="appName" :label="$t('applyname')">
           <template slot-scope="scope">
             <el-tooltip
@@ -34,14 +35,17 @@
             </el-tooltip>
           </template>
         </el-table-column>
+
         <el-table-column prop="appid" :label="$t('applicationid')" width="120">
         </el-table-column>
+
         <el-table-column :label="$t('uploaddate')" width="110">
           <template slot-scope="scope">
             <div v-text="scope.row.createTime"></div>
             <!-- <div v-text="scope.row.createTime.slice(0, 10)"></div> -->
           </template>
         </el-table-column>
+
         <el-table-column prop="fileSize" label="模型大小">
           <template slot-scope="scope">
             {{ scope.row.fileSize !== "0" ? scope.row.fileSize : "-" }}
@@ -54,7 +58,7 @@
 
             <el-tooltip
               effect="dark"
-              :content="scope.row.combineId"
+              :content="JSON.stringify(scope.row.sonAppMap)"
               placement="top"
               v-else-if="scope.row.appType === '3'"
             >
@@ -79,9 +83,10 @@
             <el-tooltip
               effect="dark"
               placement="top"
+              popper-class="trans-tooplip"
               v-if="scope.row.applidStatus === '3'"
             >
-              <div slot="content" class="dasdasd">{{ scope.row.errMsg }}</div>
+              <div slot="content" class="trans-tooplip-content">{{ scope.row.errMsg }}</div>
               <!-- 项目状态 -->
               <!-- 转化失败 -->
               <div
@@ -553,6 +558,7 @@ export default {
        * @Date: 2021-06-05 11:20:15
        * @description: 确认集成
        */
+      
       if (this.ActiveLinkModel.length === 0) {
         this.$message({
           message: "请选择模型",
@@ -1200,6 +1206,27 @@ export default {
     border-top-color: #00aaf0 !important;
   }
 }
+
+/* 转换失败 */
+.trans-tooplip {
+  background-color: #ffe8e8 !important;
+  /* 箭头 */
+  &[x-placement^="top"] .popper__arrow:after {
+    border-top-color: #ffe8e8 !important;
+  }
+  &[x-placement^="bottom"] .popper__arrow:after {
+    border-bottom-color: #ffe8e8 !important;
+  }
+  /* 箭头边框 */
+  &[x-placement^="bottom"] .popper__arrow {
+    border-bottom-color: #ffe8e8 !important;
+  }
+  &[x-placement^="top"] .popper__arrow {
+    border-top-color: #ffe8e8 !important;
+  }
+}
+
+
 .integrate-transfer {
   .el-transfer-panel {
     width: 300px;
@@ -1221,12 +1248,13 @@ export default {
   }
 }
 
-.dasdasd {
+.trans-tooplip-content {
   // color: #ff3333;
   font-size: 14px;
   // background-color: #ffe8e8;
   width: 100%;
   height: 100%;
+  color: #ff3333;
 }
 
 .err-icon {

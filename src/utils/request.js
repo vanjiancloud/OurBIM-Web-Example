@@ -17,7 +17,7 @@ import {
 // axios.defaults.baseURL = 'http://192.168.3.151:11011/vjapi'
 // axios.defaults.baseURL = 'http://192.168.3.235:11011/vjapi'
 
-// axios.defaults.baseURL = 'http://192.168.1.33:11011/vjapi'//范 本地
+// axios.defaults.baseURL = 'http://192.168.100.56:11011/vjapi'//范 本地
 
 
 // axios.defaults.baseURL = 'http://cloud.ourbim.com:11011/vjapi' // 测试服务器

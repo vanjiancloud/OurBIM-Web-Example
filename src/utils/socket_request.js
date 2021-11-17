@@ -11,7 +11,7 @@
 // let WSPRO = "ws://192.168.3.151:11011/vjapi/";
 // let WSPRO = "ws://192.168.3.235:11011/vjapi/";
 
-// let WSPRO = "ws://192.168.1.33:11011/vjapi/";
+ //let WSPRO = "ws://192.168.100.56:11011/vjapi/";
 
 // let WSPRO = "ws://cloud.ourbim.com:11011/vjapi/";
 

@@ -11,17 +11,17 @@ import qsStringify from "qs-stringify"
 const COMPONENTLIBRARY = {
 
   // 获取构件列表
-  GETTCOMLIST() {
+  getPublicComList: params => {
     return request({
-      url: '/cpControl/getComList',
-      method: 'post',
+      url: '/comControl/getPublicComList',
+      method: 'get',
       params
     })
   },
   // 新增构件
   ADDCOMPONENT: params => {
     return request({
-      url: '/cpControl/addCom',
+      url: '/comControl/addCom',
       method: 'POST',
       data: qsStringify(params)
     })
@@ -29,7 +29,7 @@ const COMPONENTLIBRARY = {
   // 初始化构件
   INITCOMPONENT: params => {
     return request({
-      url: '/cpControl/initComp',
+      url: '/comControl/initComp',
       method: 'GET',
       params
     })
@@ -37,7 +37,7 @@ const COMPONENTLIBRARY = {
   // 构件定位
   FOCUSCOMPONENT: params => {
     return request({
-      url: '/cpControl/comFocus',
+      url: '/comControl/comFocus',
       method: 'POST',
       params
     })

@@ -224,7 +224,7 @@ export default {
       },
       isColseBar: true,
       uploadInfo: {
-        action: BASE.defaults.baseURL + "/TagControl/postTagImg",
+        action: BASE.defaults.baseURL + "/tagControl/postTagImg",
       },
       cropperOption: {
         img: null, // 裁剪图片的地址
@@ -483,7 +483,7 @@ export default {
       this.$refs["rulesTag"].validate((valid) => {
         if (valid) {
           let params = {
-            taskid: this.getProps.taskId,
+            taskId: this.getProps.taskId,
             tagId: this.tagInfo.id,
             tagName: this.tagInfo.fileName,
             lableVisibility: true,
@@ -516,7 +516,7 @@ export default {
        * @description: 定位标签
        */
       let params = {
-        taskid: this.getProps.taskId,
+        taskId: this.getProps.taskId,
         tagId: e.key,
       };
       TAGTREE.UPDATAFOCUSTAG(params)
@@ -550,7 +550,7 @@ export default {
           this.activeTree = null;
           this.$emit("setListenClick", true);
           let params = {
-            taskid: this.getProps.taskId,
+            taskId: this.getProps.taskId,
             tagId: node.key,
           };
           TAGTREE.REMOVERTAG(params)
@@ -600,7 +600,7 @@ export default {
       }
 
       let params = {
-        taskid: this.getProps.taskId,
+        taskId: this.getProps.taskId,
       };
       this.activeLeaf ? (params.tagId = this.activeTree.id) : "";
       if (e === 0) {
@@ -701,7 +701,7 @@ export default {
        * @description: 获取标签树
        */
       let params = {
-        taskid: this.getProps.taskId,
+        taskId: this.getProps.taskId,
       };
       e ? (params.tagId = e) : "";
       let realTag = await TAGTREE.LISTTAG(params)

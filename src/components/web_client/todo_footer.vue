@@ -112,7 +112,7 @@
           </el-collapse-transition>
         </div>
         <!-- <div class="cut-apart"></div> -->
-        <!-- 剖切 -->
+        <!-- 模型剖切 -->
         <div class="image-main" v-if="showBar(imgList[2].id)">
           <el-tooltip
             class="item"
@@ -448,6 +448,7 @@
           <!-- </el-collapse-transition> -->
         </div>
         <!-- <div class="cut-apart"></div> -->
+
         <!-- 构件库 -->
         <div class="image-main" v-if="showBar(imgList[14].id)">
           <el-tooltip
@@ -465,7 +466,28 @@
             />
           </el-tooltip>
 
-          
+          <el-collapse-transition>
+            <div class="show-slice show-com" v-if="imgList[14].state === 1">
+              <el-tooltip
+                v-for="(item, index) in comIconList"
+                :key="index"
+                class="item"
+                :enterable="false"
+                effect="dark"
+                :content="item.content"
+                placement="left"
+              >
+                <div>
+                  <img
+                    class="slice-img com-img"
+                    @click.stop="comItemClick(item)"
+                    :src="item.active ? item.activeImg : item.img"
+                    mode=""
+                  />
+                </div>
+              </el-tooltip>
+            </div>
+          </el-collapse-transition>
         </div>
         <!-- 浏览器 -->
         <div class="image-main" v-if="showBar(imgList[10].id)">
@@ -598,6 +620,26 @@ export default {
           content: null,
           img: require("@/assets/images/todo/unchecked/slice/reset.png"),
           activeImg: require("@/assets/images/todo/check/slice/reset.png"),
+        },
+      ],
+      comIconList: [
+        {
+          content: "旋转",
+          img: require("@/assets/images/todo/unchecked/com/rotate.png"),
+          activeImg: require("@/assets/images/todo/check/com/rotate.png"),
+          active: false,
+        },
+        {
+          content: "移动",
+          img: require("@/assets/images/todo/unchecked/com/move.png"),
+          activeImg: require("@/assets/images/todo/check/com/move.png"),
+          active: false,
+        },
+        {
+          content: "缩放",
+          img: require("@/assets/images/todo/unchecked/com/zoom.png"),
+          activeImg: require("@/assets/images/todo/check/com/zoom.png"),
+          active: false,
         },
       ],
       cuttingList: [
@@ -856,6 +898,17 @@ export default {
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
       deep: true,
     },
+    imgList: {
+      handler(val) {
+        // 构件库颜色变灰
+        if (val[14].state == 0) {
+          this.comIconList.forEach((item) => {
+            item.active = false;
+          });
+        }
+      },
+      deep: true,
+    },
   },
   created() {
     if (this.appId) {
@@ -906,6 +959,15 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    comItemClick(item) {
+      this.comIconList.forEach((row) => {
+        if (item.content === row.content) {
+          row.active = true;
+        } else {
+          row.active = false;
+        }
+      });
+    },
     SetWeather(e) {
       /**
        * @Author: zk
@@ -1461,10 +1523,10 @@ export default {
       this.$emit("updataModle", selectData.params);
     },
     handleOrder(e) {
-      console.log("handleOrder", e);
+      console.log("点了底部图标", e);
       this.footerIconChange(e);
-      // 功能未开放 模型动画与构件库
-      if (e === 7 || e === 14) {
+      // 功能未开放 模型动画
+      if (e === 7) {
         return;
       }
       if (e === 12 && this.activePerson === 0) {
@@ -1632,6 +1694,7 @@ export default {
       }
       // 打开构件库 关闭属性
       if (e === 14 && this.imgList[11].state === 1) {
+        console.log(88888888);
         this.imgList[11].url = require(`@/assets/images/todo/unchecked/${this.imgList[11].name}`);
         this.imgList[11].state = 0;
         this.$emit("listenTodo", {
@@ -1641,6 +1704,7 @@ export default {
       }
       // 打开属性 关闭构件库
       if (e === 11 && this.imgList[14].state === 1) {
+        console.log(77777);
         this.imgList[14].url = require(`@/assets/images/todo/unchecked/${this.imgList[14].name}`);
         this.imgList[14].state = 0;
         this.$emit("listenTodo", {
@@ -1779,6 +1843,13 @@ export default {
         // width: 20px;
         // height: 20px;
       }
+      .com-img {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    .show-com {
+      top: -117px;
     }
     .show-weather {
       position: absolute;
