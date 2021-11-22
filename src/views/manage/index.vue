@@ -136,7 +136,7 @@
               </el-button>
 
               <!-- 下载 -->
-              <el-button
+              <!-- <el-button
                 @click="downloadFile(scope.row)"
                 type="text"
                 v-if="
@@ -144,7 +144,7 @@
                 "
               >
                 下载
-              </el-button>
+              </el-button> -->
 
               <!-- 分享 -->
               <el-button
@@ -537,8 +537,8 @@ export default {
             process.env.VUE_APP_REQUEST_URL +
             "/FileStorge/downloadModelFile?" +
             qs.stringify(params);
-            window.location.href=urllll
-          // window.open(urllll);
+            // window.location.href=urllll
+          window.open(urllll);
           return;
           this.startDownLoad(row);
         })

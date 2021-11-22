@@ -564,7 +564,7 @@
 
 <script>
 import MODELAPI from "@/api/model_api";
-
+import COMPONENTLIBRARY from "@/api/component-library";
 export default {
   components: {},
   props: {
@@ -582,6 +582,8 @@ export default {
       type: String,
       default: "",
     },
+    taskId: {},
+    socketData: {},
   },
   data() {
     return {
@@ -967,6 +969,32 @@ export default {
           row.active = false;
         }
       });
+      let action = "";
+      switch (item.content) {
+        case "旋转":
+          action = "rotate";
+          break;
+        case "移动":
+          action = "translate";
+          break;
+        case "缩放":
+          action = "scale";
+          break;
+        default:
+          break;
+      }
+      const params = {
+        comId: this.socketData.mN,
+        taskId: this.taskId,
+        action, //translate、rotate、scale
+      };
+      COMPONENTLIBRARY.operateCom(params)
+        .then((res) => {
+          console.log(555, res.data);
+        })
+        .catch((res) => {
+          console.log(5855, res.data);
+        });
     },
     SetWeather(e) {
       /**
@@ -1523,10 +1551,9 @@ export default {
       this.$emit("updataModle", selectData.params);
     },
     handleOrder(e) {
-      console.log("点了底部图标", e);
       this.footerIconChange(e);
       // 功能未开放 模型动画
-      if (e === 7) {
+      if (e === 7 || e === 14) {
         return;
       }
       if (e === 12 && this.activePerson === 0) {
@@ -1694,7 +1721,6 @@ export default {
       }
       // 打开构件库 关闭属性
       if (e === 14 && this.imgList[11].state === 1) {
-        console.log(88888888);
         this.imgList[11].url = require(`@/assets/images/todo/unchecked/${this.imgList[11].name}`);
         this.imgList[11].state = 0;
         this.$emit("listenTodo", {
@@ -1704,7 +1730,6 @@ export default {
       }
       // 打开属性 关闭构件库
       if (e === 11 && this.imgList[14].state === 1) {
-        console.log(77777);
         this.imgList[14].url = require(`@/assets/images/todo/unchecked/${this.imgList[14].name}`);
         this.imgList[14].state = 0;
         this.$emit("listenTodo", {

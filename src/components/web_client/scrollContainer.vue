@@ -31,6 +31,7 @@ export default {
       force: false, // 滚动条是否被鼠标光标按住
       hover: false, // 鼠标光标是否悬停在盒子上
       show: false, // 是否显示滚动条
+      timer: {},
     };
   },
   mounted() {
@@ -39,8 +40,18 @@ export default {
     // 滚动条全局可拖动
     document.addEventListener("mouseup", this.handleMouseUp);
     document.addEventListener("mousemove", this.handleMouseMove);
+    this.timerInit()
+  },
+  destroyed() {
+    clearInterval(this.timer);
   },
   methods: {
+    timerInit() {
+      this.timer = setInterval(() => {
+        this.handleMouseLeave();
+        this.handleMouseEnter();
+      }, 500);
+    },
     /**
      * 鼠标滚轮事件
      * @param {object} e 事件
@@ -72,6 +83,7 @@ export default {
         this.show = false;
       }
     },
+
     /**
      * 鼠标移动
      * @param {object} e 事件
@@ -134,15 +146,15 @@ export default {
 .scrollbar {
   width: 8px;
   height: 100%;
-  background-color: #0D4881;
+  background-color: #0d4881;
   position: absolute;
   right: 0;
   border-radius: 8px / 2;
   &:hover {
-    background-color: #0D4881;
+    background-color: #0d4881;
   }
   &.force {
-    background-color: #0D4881;
+    background-color: #0d4881;
   }
 }
 

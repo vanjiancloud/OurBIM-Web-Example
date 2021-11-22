@@ -211,20 +211,25 @@
                 </el-collapse-item>
               </el-collapse>
 
+              <!-- 公共构件库列表 -->
               <el-collapse
                 accordion
                 v-for="(item, index) in publicComList"
                 :key="item.title"
+                class=""
               >
                 <el-collapse-item :title="item.group" :name="index">
                   <div class="collapse-main">
-                    <div
-                      class="publicComListItem"
-                      v-for="listItem in item.rsComponent"
-                      :key="listItem.id"
-                    >
-                      <div class="img"><img src="" alt="" /></div>
-                      <div class="name">{{ listItem.comName }}</div>
+                    <div class="oooooooo">
+                      <div
+                        class="publicComListItem"
+                        v-for="listItem in item.rsComponent"
+                        :key="listItem.id"
+                        @click="addCom(listItem)"
+                      >
+                        <div class="img"><img src="" alt="" /></div>
+                        <div class="name">{{ listItem.comName }}</div>
+                      </div>
                     </div>
                   </div>
                 </el-collapse-item>
@@ -242,12 +247,14 @@
           @setListenClick="setListenClick"
         ></qrcode-part>
       </div>
+
       <transition name="el-fade-in-linear">
         <progress-bar
           v-if="isProgress"
           :propsProgress="propsProgress"
         ></progress-bar>
       </transition>
+
       <todo-footer
         v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar"
         v-show="controllerInfo.tagUiBar"
@@ -260,6 +267,8 @@
         :setProps="propsFooter"
         :singleList="controllerInfo.singleList"
         :appId="appId"
+        :taskId="taskId"
+        :socketData="socketData"
       ></todo-footer>
       <view-cube
         v-if="controllerInfo.viewCube"
@@ -307,6 +316,7 @@ export default {
   },
   data() {
     return {
+      socketData: {},
       windowChangeFlag: true,
       componentCollapse: "1",
       modelBrowser: null,
@@ -488,16 +498,7 @@ export default {
       COMPONENTLIBRARY.getPublicComList({
         taskId: this.taskId,
       }).then((res) => {
-        console.log(777,res);
-        // let Res = res.data.data;
-        // Res.forEach((item) => {
-        //   for (var i in item) {
-        //     item.title = i;
-        //     item.list = item[i];
-        //   }
-        // });
-        // console.log(777, Res);
-        this.publicComList = res.data.data
+        this.publicComList = res.data.data;
       });
     },
     listenWindowSize() {
@@ -559,11 +560,11 @@ export default {
        * @Date: 2021-07-30 14:25:42
        * @description: 新增二维码
        */
+      return;
       let params = {
         taskId: this.taskId,
       };
       COMPONENTLIBRARY.ADDCOMPONENT(params).then((res) => {
-        console.log(999, res);
         if (this.controllerInfo.uiBar) {
           this.controllerInfo.tagUiBar = false;
           this.controllerInfo.tagViewCube = false;
@@ -1267,7 +1268,7 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
-      console.log(111, e);
+
       this.$refs.getCube.closeView();
       if (e.type === 14 || e.type === 11) {
         this.isQrcode = false;
@@ -1392,6 +1393,23 @@ export default {
         });
       });
     },
+    /* 添加构件  */
+    addCom(item) {
+      // parentId
+      let params = {
+        // comGroupId: item.parentId,
+        comName: item.comName,
+        taskId: this.taskId,
+        comId: item.id,
+      };
+      COMPONENTLIBRARY.addCom(params)
+        .then((res) => {
+          this.$message.success(res.data.message);
+        })
+        .catch((res) => {
+          this.$message.error(res.data.message);
+        });
+    },
     handleTagShow() {
       /**
        * @Author: zk
@@ -1436,6 +1454,7 @@ export default {
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
+          this.socketData = realData;
           if (realData.id === "1") {
             this.memberInfo = {
               type: 1,
@@ -1496,7 +1515,13 @@ export default {
                 let params = {
                   taskId: this.taskId,
                 };
-                COMPONENTLIBRARY.INITCOMPONENT(params);
+                COMPONENTLIBRARY.initComponent(params)
+                  .then((res) => {
+                    this.$message.success(res.data.message);
+                  })
+                  .catch((res) => {
+                    this.$message.error(res.data.message);
+                  });
               }
             }
             if (Number(realData.progress) === 1) {
@@ -1645,7 +1670,6 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(777, err);
           this.$message({
             type: "error",
             message: this.$t("webClient.loadBox.message[4]"),
@@ -2172,6 +2196,7 @@ export default {
         overflow-y: auto;
         margin-top: 1vh;
         height: 40vh;
+
         &::-webkit-scrollbar {
           /*滚动条整体样式*/
           width: 6px;
@@ -2195,6 +2220,7 @@ export default {
         padding: 0 10px;
         .el-collapse {
           border-bottom: none;
+          border-top: none;
           /deep/ .el-collapse-item__header {
             background: none;
             color: #fff;
@@ -2360,17 +2386,28 @@ export default {
   left: 0;
 }
 
+.oooooooo {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
 .publicComListItem {
-  display: inline-block;
-  width: 150px;
-  height: 120px;
+  // display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100px;
+  height: 100px;
   margin-left: 10px;
+  margin-top: 10px;
+  cursor: pointer;
   // background-color: pink;
   .img {
-    margin: 0 auto;
-    height: 30px;
-    width: 30px;
-    img{
+    // margin: 0 auto;
+    height: 60px;
+    width: 60px;
+    img {
       width: 100%;
       height: 100%;
     }

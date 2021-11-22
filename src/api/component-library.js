@@ -10,6 +10,15 @@ import qsStringify from "qs-stringify"
 
 const COMPONENTLIBRARY = {
 
+  // 添加构件
+  addCom: params => {
+    return request({
+      url: '/comControl/addCom',
+      method: 'POST',
+      data: qsStringify(params)
+    })
+  },
+
   // 获取构件列表
   getPublicComList: params => {
     return request({
@@ -18,18 +27,11 @@ const COMPONENTLIBRARY = {
       params
     })
   },
-  // 新增构件
-  ADDCOMPONENT: params => {
-    return request({
-      url: '/comControl/addCom',
-      method: 'POST',
-      data: qsStringify(params)
-    })
-  },
+
   // 初始化构件
-  INITCOMPONENT: params => {
+  initComponent: params => {
     return request({
-      url: '/comControl/initComp',
+      url: '/comControl/initCom',
       method: 'GET',
       params
     })
@@ -43,6 +45,21 @@ const COMPONENTLIBRARY = {
     })
   },
 
+  /* 
+ 构件操作 
+  params:{
+    comId:'',
+    taskId:'',
+    action:'',//translate、rotate、scale
+  }
+  */
+  operateCom: params => {
+    return request({
+      url: '/comControl/operateCom',
+      method: 'POST',
+      params
+    })
+  }
 }
 
 export default COMPONENTLIBRARY
