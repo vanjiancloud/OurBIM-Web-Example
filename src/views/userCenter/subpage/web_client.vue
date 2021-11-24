@@ -16,6 +16,7 @@
       frameborder="0"
       id="show-bim"
     ></iframe>
+    <!-- 遮罩层 -->
     <div
       class="hidden-bim"
       :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
@@ -51,7 +52,9 @@
         ></div>
       </div>
     </div>
+    <!-- runTimeCode 1:mobile  0 ：PC  -->
     <div v-if="runTimeCode === 0">
+      <!-- 模型浏览器 -->
       <div class="mutual-bim">
         <div
           class="tree-main"
@@ -63,7 +66,6 @@
               controllerInfo.modelClient)
           "
         >
-          <!-- 模型浏览器 -->
           <div class="tree-title">
             <div class="" v-text="$t('webClient.browser.title')"></div>
             <div class="close-part">
@@ -168,17 +170,6 @@
           </div>
         </div>
         <!-- 构件库 -->
-        <!-- <div
-          class="bim-info"
-          @click.stop=""
-          v-show="
-            controllerInfo.tagUiBar &&
-            ((listenTodoInfo &&
-              listenTodoInfo.type === 14 &&
-              listenTodoInfo.state === 1) ||
-              controllerInfo.componentLibrary)
-          "
-        > -->
         <div
           class="bim-info"
           @click.stop=""
@@ -227,7 +218,9 @@
                         :key="listItem.id"
                         @click="addCom(listItem)"
                       >
-                        <div class="img"><img src="" alt="" /></div>
+                        <div class="img">
+                          <img :src="listItem.comUrl" alt="" />
+                        </div>
                         <div class="name">{{ listItem.comName }}</div>
                       </div>
                     </div>
@@ -269,6 +262,7 @@
         :appId="appId"
         :taskId="taskId"
         :socketData="socketData"
+        :showTodoIconObj="showTodoIconObj"
       ></todo-footer>
       <view-cube
         v-if="controllerInfo.viewCube"
@@ -316,6 +310,7 @@ export default {
   },
   data() {
     return {
+      showTodoIconObj: {},
       socketData: {},
       windowChangeFlag: true,
       componentCollapse: "1",
@@ -410,6 +405,8 @@ export default {
       this.$route.query.uibar === undefined || this.$route.query.uibar === true
         ? true
         : false;
+
+    this.handleTodoIcon(this.$route.query);
     if (this.$route.query.width && this.$route.query.height) {
       this.pageSizeInfo = {
         width: this.$route.query.width,
@@ -494,7 +491,36 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    handleTodoIcon(query) {
+      const arr = [
+        "show",
+        "select",
+        "view",
+        "speed",
+        "slice",
+        "measure",
+        "tag",
+        "map",
+        "camera",
+        "animation",
+        "decompose",
+        "weather",
+        "componentList",
+        "componentTree",
+        "attribute",
+      ];
+      let obj = {};
+      arr.map((v) => {
+        if (query[v] == "false") {
+          obj[v] = false;
+        } else {
+          obj[v] = true;
+        }
+      });
+      this.showTodoIconObj = obj;
+    },
     getComList() {
+      return
       COMPONENTLIBRARY.getPublicComList({
         taskId: this.taskId,
       }).then((res) => {
@@ -503,25 +529,36 @@ export default {
     },
     listenWindowSize() {
       // 监听窗口大小变化 id=14 height
-      let params = {
-        taskid: this.taskId,
-        action: "platform",
-        height: document.body.clientHeight,
-        width: document.body.clientWidth,
-      };
-      MODELAPI.UPDATEORDER(params);
+
+      this.handleWindowSize();
       window.onresize = () => {
         clearTimeout(this.iTime);
         this.iTime = setTimeout(() => {
-          let params = {
-            taskid: this.taskId,
-            action: "platform",
-            height: document.body.clientHeight,
-            width: document.body.clientWidth,
-          };
-          MODELAPI.UPDATEORDER(params);
+          this.handleWindowSize();
         }, 150);
       };
+    },
+    handleWindowSize() {
+      const viewWidth = window.innerWidth; //获取可视区域宽度
+      const viewHeight = window.innerHeight; //获取可视区域高度
+      let height = "";
+      let width = "";
+      if (viewWidth > viewHeight) {
+        // 宽大于高 横屏
+        height = document.body.clientHeight;
+        width = document.body.clientWidth;
+      } else {
+        height = document.body.clientWidth;
+        width = document.body.clientHeight;
+      }
+      let params = {
+        taskid: this.taskId,
+        action: "platform",
+        plateType: this.isMobile() ? 1 : 0,
+        height: height,
+        width: width,
+      };
+      MODELAPI.UPDATEORDER(params);
     },
     async updataModle(params) {
       params.taskid = this.taskId;
@@ -1021,8 +1058,8 @@ export default {
           // 启动应用
           params.action = "platform";
           params.plateType = this.isMobile() ? 1 : 0;
-          params.width = this.pageSizeInfo.width;
-          params.height = this.pageSizeInfo.height;
+          params.width = document.body.clientWidth;
+          params.height = document.body.clientHeight;
           break;
         case 14:
           // 框选
@@ -1404,6 +1441,11 @@ export default {
       };
       COMPONENTLIBRARY.addCom(params)
         .then((res) => {
+          if (res.data.code === 0) {
+            this.controllerInfo.tagUiBar = false;
+            this.controllerInfo.tagViewCube = false;
+          }
+
           this.$message.success(res.data.message);
         })
         .catch((res) => {
@@ -1453,6 +1495,7 @@ export default {
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
+  
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {
@@ -1543,6 +1586,8 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "10") {
+            // 构件新建完成事件
+            // 构件添加完成
             if (this.listenTodoInfo.type !== 14) {
               this.$refs.tagTree.closePart(true);
             }

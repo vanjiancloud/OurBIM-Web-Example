@@ -19,9 +19,11 @@
         },
         // 添加标签集
         SAVETAGGATHER: params => {
+          console.log(888,params);
             return request({
                 url: '/tagControl/addTagGroup',
                 method: 'POST',
+                // params
                 data: qsStringify(params)
               })
         },

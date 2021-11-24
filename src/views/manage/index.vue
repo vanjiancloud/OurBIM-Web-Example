@@ -1259,6 +1259,7 @@ export default {
 
 .err-icon {
   margin-top: 7px;
+  margin-left: 2px;
 }
 
 .aaaaaaaa {

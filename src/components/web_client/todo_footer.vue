@@ -11,7 +11,10 @@
     <div class="todo-footer">
       <div class="todo-main">
         <!-- 构件显示隐藏 -->
-        <div class="image-main" v-if="showBar(imgList[13].id)">
+        <div
+          class="image-main"
+          v-show="showBar(imgList[13].id) && showTodoIconObj.show"
+        >
           <el-tooltip
             class="item"
             effect="dark"
@@ -29,7 +32,10 @@
         </div>
         <!-- 跟随视角改为第三人称 -->
         <!-- 框选 -->
-        <div class="image-main" v-if="showBar(imgList[12].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[12].id) && showTodoIconObj.select"
+        >
           <el-tooltip
             class="item"
             effect="dark"
@@ -46,7 +52,10 @@
           </el-tooltip>
         </div>
         <!-- 视角 -->
-        <div class="image-main" v-if="showBar(imgList[0].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[0].id) && showTodoIconObj.view"
+        >
           <el-tooltip
             placement="top"
             v-model="personTool"
@@ -83,7 +92,10 @@
           </el-tooltip>
         </div>
         <!-- 移动速度 -->
-        <div class="image-main" v-if="showBar(imgList[1].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[1].id) && showTodoIconObj.speed"
+        >
           <el-tooltip
             class="item"
             :enterable="false"
@@ -113,7 +125,10 @@
         </div>
         <!-- <div class="cut-apart"></div> -->
         <!-- 模型剖切 -->
-        <div class="image-main" v-if="showBar(imgList[2].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[2].id) && showTodoIconObj.slice"
+        >
           <el-tooltip
             class="item"
             effect="dark"
@@ -156,7 +171,10 @@
           </el-collapse-transition>
         </div>
         <!-- 测量 -->
-        <div class="image-main" v-if="showBar(imgList[3].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[3].id) && showTodoIconObj.measure"
+        >
           <el-tooltip
             class="item"
             effect="dark"
@@ -261,7 +279,10 @@
           </el-collapse-transition>
         </div>
         <!-- 标签 -->
-        <div class="image-main" v-if="showBar(imgList[4].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[4].id) && showTodoIconObj.tag"
+        >
           <el-tooltip
             class="item"
             effect="dark"
@@ -278,7 +299,10 @@
           </el-tooltip>
         </div>
         <!-- 小地图 -->
-        <div class="image-main" v-if="showBar(imgList[5].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[5].id) && showTodoIconObj.map"
+        >
           <el-tooltip
             class="item"
             effect="dark"
@@ -295,7 +319,10 @@
           </el-tooltip>
         </div>
         <!-- 关注视点 -->
-        <div class="image-main" v-if="showBar(imgList[6].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[6].id) && showTodoIconObj.camera"
+        >
           <el-tooltip
             popper-class="follow-bgi"
             placement="top"
@@ -343,7 +370,10 @@
           </el-tooltip>
         </div>
         <!-- 模型动画 -->
-        <div class="image-main" v-if="showBar(imgList[7].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[7].id) && showTodoIconObj.animation"
+        >
           <el-tooltip
             class="item"
             effect="dark"
@@ -360,7 +390,10 @@
           </el-tooltip>
         </div>
         <!-- 分解模型 -->
-        <div class="image-main" v-if="showBar(imgList[8].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[8].id) && showTodoIconObj.decompose"
+        >
           <el-tooltip
             class="item"
             effect="dark"
@@ -390,7 +423,10 @@
           </el-collapse-transition>
         </div>
         <!-- 渲染环境 -->
-        <div class="image-main" v-if="showBar(imgList[9].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[9].id) && showTodoIconObj.weather"
+        >
           <el-tooltip
             class="item"
             effect="dark"
@@ -450,7 +486,10 @@
         <!-- <div class="cut-apart"></div> -->
 
         <!-- 构件库 -->
-        <div class="image-main" v-if="showBar(imgList[14].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[14].id) && showTodoIconObj.componentList"
+        >
           <el-tooltip
             class="item"
             effect="dark"
@@ -490,7 +529,10 @@
           </el-collapse-transition>
         </div>
         <!-- 浏览器 -->
-        <div class="image-main" v-if="showBar(imgList[10].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[10].id) && showTodoIconObj.componentTree"
+        >
           <el-tooltip
             class="item"
             effect="dark"
@@ -507,7 +549,10 @@
           </el-tooltip>
         </div>
         <!-- 属性 -->
-        <div class="image-main" v-if="showBar(imgList[11].id)">
+        <div
+          class="image-main"
+          v-if="showBar(imgList[11].id) && showTodoIconObj.attribute"
+        >
           <el-tooltip
             class="item"
             effect="dark"
@@ -584,6 +629,10 @@ export default {
     },
     taskId: {},
     socketData: {},
+    showTodoIconObj: {
+      type: Object,
+      value: {},
+    },
   },
   data() {
     return {
@@ -984,10 +1033,11 @@ export default {
           break;
       }
       const params = {
-        comId: this.socketData.mN,
+        comId: this.socketData.mN || null,
         taskId: this.taskId,
         action, //translate、rotate、scale
       };
+      console.log("translate", params);
       COMPONENTLIBRARY.operateCom(params)
         .then((res) => {
           console.log(555, res.data);
@@ -1553,6 +1603,7 @@ export default {
     handleOrder(e) {
       this.footerIconChange(e);
       // 功能未开放 模型动画
+      // || e === 14
       if (e === 7 || e === 14) {
         return;
       }

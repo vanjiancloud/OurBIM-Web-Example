@@ -33,7 +33,7 @@
     <div class="message">
       <div class="one">{{ $t("email") }}</div>
       <div class="input">
-        <el-input v-model="email" placeholder="请输入邮箱"></el-input>
+        <el-input v-model="email" placeholder="请输入邮箱" :disabled="true"></el-input>
       </div>
     </div>
     <!-- 手机号 -->

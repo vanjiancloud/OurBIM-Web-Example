@@ -585,6 +585,7 @@ export default {
         });
     },
     saveTag(e) {
+      
       /**
        * @Author: zk
        * @Date: 2021-05-06 18:07:38
@@ -602,7 +603,7 @@ export default {
       let params = {
         taskId: this.getProps.taskId,
       };
-      this.activeLeaf ? (params.tagId = this.activeTree.id) : "";
+      this.activeLeaf ? (params.tagGroupId = this.activeTree.id) : "";
       if (e === 0) {
         TAGTREE.SAVETAG(params)
           .then(() => {
