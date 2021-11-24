@@ -16,7 +16,6 @@ import axios from 'axios'
 const MODELAPI = {
 
   DOWNLOADFILE: (params, callback) => {
-    console.log(qs.stringify(params));
     return axios({
       url: '/FileStorge/downloadModelFile',
       method: 'get',

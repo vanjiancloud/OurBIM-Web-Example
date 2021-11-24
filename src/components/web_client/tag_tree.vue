@@ -585,7 +585,6 @@ export default {
         });
     },
     saveTag(e) {
-      
       /**
        * @Author: zk
        * @Date: 2021-05-06 18:07:38
@@ -706,9 +705,10 @@ export default {
       };
       e ? (params.tagId = e) : "";
       let realTag = await TAGTREE.LISTTAG(params)
+
         .then((res) => {
           if (res.data.code === 0) {
-            return res.data.data;
+            return res.data.data||[];
           } else {
             return [];
           }
@@ -716,6 +716,10 @@ export default {
         .catch((err) => {
           return [];
         });
+
+      // if(realTag === undefined){
+      //   return []
+      // }
       return realTag;
     },
     loadTag(node, resolve) {
@@ -724,6 +728,7 @@ export default {
        * @Date: 2021-05-06 13:12:53
        * @description: 加载数据
        */
+
       if (node.level === 0) {
         this.listTag(node.key).then((res) => {
           if (res.length > 0) {

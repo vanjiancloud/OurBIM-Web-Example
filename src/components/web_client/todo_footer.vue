@@ -1037,13 +1037,12 @@ export default {
         taskId: this.taskId,
         action, //translate、rotate、scale
       };
-      console.log("translate", params);
       COMPONENTLIBRARY.operateCom(params)
         .then((res) => {
-          console.log(555, res.data);
+      
         })
         .catch((res) => {
-          console.log(5855, res.data);
+  
         });
     },
     SetWeather(e) {
@@ -1456,6 +1455,7 @@ export default {
         .then(() => {
           let params = {
             tid: this.followInfo.tid,
+            taskId:this.taskId
           };
           MODELAPI.DElETEFOLLOWPOINT(params)
             .then((res) => {
