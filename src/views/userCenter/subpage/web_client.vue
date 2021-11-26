@@ -192,7 +192,7 @@
           </div>
           <div class="detail-main detail-collapse">
             <scroll-container>
-              <el-collapse v-model="componentCollapse" accordion>
+              <!-- <el-collapse v-model="componentCollapse" accordion>
                 <el-collapse-item title="二维码" name="1">
                   <div class="collapse-main">
                     <el-button size="mini" type="primary" @click="AddQrCode"
@@ -200,7 +200,7 @@
                     >
                   </div>
                 </el-collapse-item>
-              </el-collapse>
+              </el-collapse> -->
 
               <!-- 公共构件库列表 -->
               <el-collapse
@@ -1446,7 +1446,7 @@ export default {
           }
 
           this.$message.success(res.data.message);
-          this.$refs.getFooter.initTranslate()
+          this.$refs.getFooter.initTranslate();
         })
         .catch((res) => {
           this.$message.error(res.data.message);
@@ -1495,7 +1495,7 @@ export default {
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
-  console.log(85555,e.data);
+          console.log(85555, e.data);
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {

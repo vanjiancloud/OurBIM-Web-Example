@@ -1613,7 +1613,7 @@ export default {
       this.footerIconChange(e);
       // 功能未开放 模型动画
       // || e === 14
-      if (e === 7) {
+      if (e === 7 || e === 14) {
         return;
       }
       if (e === 12 && this.activePerson === 0) {
