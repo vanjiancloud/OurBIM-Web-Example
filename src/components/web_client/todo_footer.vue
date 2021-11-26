@@ -1010,6 +1010,15 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    initTranslate() {
+      this.comIconList.forEach((item) => {
+        if (item.content === "移动") {
+          item.active = true;
+        } else {
+          item.active = false;
+        }
+      });
+    },
     comItemClick(item) {
       this.comIconList.forEach((row) => {
         if (item.content === row.content) {
@@ -1039,10 +1048,10 @@ export default {
       };
       COMPONENTLIBRARY.operateCom(params)
         .then((res) => {
-      
+          console.log(111, res);
         })
         .catch((res) => {
-  
+          console.log(555, res);
         });
     },
     SetWeather(e) {
@@ -1455,7 +1464,7 @@ export default {
         .then(() => {
           let params = {
             tid: this.followInfo.tid,
-            taskId:this.taskId
+            taskId: this.taskId,
           };
           MODELAPI.DElETEFOLLOWPOINT(params)
             .then((res) => {
@@ -1604,7 +1613,7 @@ export default {
       this.footerIconChange(e);
       // 功能未开放 模型动画
       // || e === 14
-      if (e === 7 || e === 14) {
+      if (e === 7) {
         return;
       }
       if (e === 12 && this.activePerson === 0) {

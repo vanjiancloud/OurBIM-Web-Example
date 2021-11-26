@@ -520,7 +520,6 @@ export default {
       this.showTodoIconObj = obj;
     },
     getComList() {
-      return
       COMPONENTLIBRARY.getPublicComList({
         taskId: this.taskId,
       }).then((res) => {
@@ -1447,6 +1446,7 @@ export default {
           }
 
           this.$message.success(res.data.message);
+          this.$refs.getFooter.initTranslate()
         })
         .catch((res) => {
           this.$message.error(res.data.message);
@@ -1495,7 +1495,7 @@ export default {
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
-  
+  console.log(85555,e.data);
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {

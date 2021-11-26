@@ -304,7 +304,7 @@ export default {
         this.cropperOption.imgName
       );
       formData.append("tagId", this.tagIconInfo.id);
-      formData.append("taskid", this.getProps.taskId);
+      formData.append("taskId", this.getProps.taskId);
       formData.append("lableVisibility", true);
       const config = {
         headers: {

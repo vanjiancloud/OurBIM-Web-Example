@@ -886,11 +886,7 @@ export default {
                 appid: e.appid,
                 locale: this.$i18n.locale,
                 token: res.data.data.token,
-                // isScene:true
               },
-              // params: {
-              //   currVersion,
-              // },
             });
             window.open(href, "_blank");
           }
