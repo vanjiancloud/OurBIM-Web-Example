@@ -833,7 +833,7 @@ export default {
        */
       let params = {
         taskId: this.taskId,
-        uuid: e.compData.id,
+        comId: e.compData.id,
       };
       COMPONENTLIBRARY.FOCUSCOMPONENT(params)
         .then((res) => {
