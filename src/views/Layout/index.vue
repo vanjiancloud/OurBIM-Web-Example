@@ -28,11 +28,11 @@
                       功能介绍</a
                     ></el-menu-item
                   >
-                  <el-menu-item index=""
+                  <!-- <el-menu-item index=""
                     ><a href="http://www.ourbim.com/solution">
                       解决方案</a
                     ></el-menu-item
-                  >
+                  > -->
                   <el-menu-item index=""
                     ><a href="http://www.ourbim.com/sample_project">
                       示例项目</a
