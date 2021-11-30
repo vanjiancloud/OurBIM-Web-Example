@@ -949,17 +949,18 @@ export default {
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
       deep: true,
     },
-    imgList: {
-      handler(val) {
-        // 构件库颜色变灰
-        if (val[14].state == 0) {
-          this.comIconList.forEach((item) => {
-            item.active = false;
-          });
-        }
-      },
-      deep: true,
-    },
+    // imgList: {
+    //   handler(val) {
+    //     // 构件库颜色变灰
+    //     if (val[14].state == 0) {
+    //       // 关闭构件编辑指令
+    //       this.comIconList.forEach((item) => {
+    //         item.active = false;
+    //       });
+    //     }
+    //   },
+    //   deep: true,
+    // },
   },
   created() {
     if (this.appId) {
@@ -1010,6 +1011,26 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    comSwitch() {
+      const status = this.imgList[14].state;
+      let flag = false;
+      status === 1 ? (flag = false) : (flag = true);
+      COMPONENTLIBRARY.comSwitch({
+        taskId: this.taskId,
+        flag,
+      })
+        .then((res) => {
+          console.log(555,res);
+          if (res.data.code === 0) {
+            this.$message.success(res.data.message);
+          } else {
+            this.$message.error(res.data.message);
+          }
+        })
+        .catch((res) => {
+          this.$message.error(res.data.message);
+        });
+    },
     initTranslate() {
       this.comIconList.forEach((item) => {
         if (item.content === "移动") {
@@ -1048,10 +1069,14 @@ export default {
       };
       COMPONENTLIBRARY.operateCom(params)
         .then((res) => {
-          console.log(111, res);
+          if(res.data.code===0){
+            this.$message.success(res.data.message)
+          }else{
+            this.$message.error(res.data.message)
+          }
         })
         .catch((res) => {
-          console.log(555, res);
+          this.$message.error(res.data.message)
         });
     },
     SetWeather(e) {
@@ -1612,9 +1637,12 @@ export default {
     handleOrder(e) {
       this.footerIconChange(e);
       // 功能未开放 模型动画
-      // || 
-      if (e === 7 || e === 14 ) {
+      // || || e === 14
+      if (e === 7) {
         return;
+      }
+      if (e === 14) {
+        this.comSwitch();
       }
       if (e === 12 && this.activePerson === 0) {
         this.$message({

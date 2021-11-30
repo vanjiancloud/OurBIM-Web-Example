@@ -90,6 +90,7 @@
           </div>
           <div class="tree-part">
             <div class="tree-content" id="tree-content">
+              <!-- 构件树开始 -->
               <el-tree
                 class="set-tree"
                 ref="setTree"
@@ -118,13 +119,15 @@
                   @click="handleTree(node, 0)"
                 >
                   <span class="label-span">{{ node.label }}</span>
-                  <span v-if="node.data.typeId !== 'comp'">
+                  <span>
+                    <!-- <span v-if="node.data.typeId !== 'comp'"> -->
                     <!-- 显示状态 -->
                     <i class="iconfont icon-xianshi2" v-if="!node.checked"></i>
                     <i v-else class="iconfont icon-yincang1"></i>
                   </span>
                 </span>
               </el-tree>
+              <!-- 构件树结束 -->
             </div>
           </div>
         </div>
@@ -763,6 +766,7 @@ export default {
       this.updateOrder();
     },
     checkTree(data, e) {
+      console.log(888,data,e);
       /**
        * @Author: zk
        * @Date: 2021-04-16 11:56:27
@@ -780,16 +784,62 @@ export default {
       }
     },
     handleTree(e, index) {
+      console.log(555, e, index);
       /**
        * @Author: zk
        * @Date: 2021-03-08 14:39:51
        * @description: 构件树的指令
        */
+
+      let messageInfo = {
+        prex: "ourbimMessage",
+        type: 20001,
+        data: e.data,
+        message: "",
+      };
+      this.sentParentIframe(messageInfo);
+      if (this.activeTree && this.activeTree.uuid === e.data.uuid) {
+        if (e.data.activeSelect === 1) {
+          this.activeLeaf = false;
+        } else {
+          this.activeLeaf = true;
+        }
+        e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
+        this.leafInfo = e;
+      } else {
+        this.activeLeaf = true;
+        this.leafInfo = e;
+        e.data.activeSelect = 1;
+      }
+      this.memberInfo = {
+        type: e.data.haveChild === "0" ? 1 : 5,
+        data: e.data,
+      };
+      this.leafInfo = e;
+      this.handleState = 9;
+
+      this.activeTree = e.data;
+
       if (e.data.typeId === "comp") {
+        // 如果是构件库
         if (e.data.haveChild === "0") {
           this.leafInfo = e;
           this.isQrCodeClick = true;
-          this.handleQrcode(true);
+          // this.handleQrcode(true);
+          this.handleFocusTag(e.data);
+        } else {
+          return;
+        }
+      } else {
+        this.updateOrder();
+      }
+      return;
+      if (e.data.typeId === "comp") {
+        // 如果是构件库
+        if (e.data.haveChild === "0") {
+          this.leafInfo = e;
+          this.isQrCodeClick = true;
+          // this.handleQrcode(true);
           this.handleFocusTag(e.data);
         } else {
           return;
@@ -833,18 +883,25 @@ export default {
        */
       let params = {
         taskId: this.taskId,
-        comId: e.compData.id,
+        comId: e.uuid,
       };
-      COMPONENTLIBRARY.FOCUSCOMPONENT(params)
+      COMPONENTLIBRARY.focusComponent(params)
         .then((res) => {
-          this.$message({
-            message: this.$t("webClient.loadBox.message[2]"),
-            type: "success",
-          });
+          if (res.data.code === 0) {
+            this.$message({
+              message: res.data.message,
+              type: "success",
+            });
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: "error",
+            });
+          }
         })
-        .catch((err) => {
+        .catch((res) => {
           this.$message({
-            message: this.$t("webClient.loadBox.message[3]"),
+            message: res.data.message,
             type: "error",
           });
         });
@@ -1639,6 +1696,12 @@ export default {
               } else {
                 this.delMaskTimer(1000 * 5);
               }
+            }
+          } else if (realData.id === "14") {
+            // 添加构件，但是按了esc
+            if (this.controllerInfo.uiBar) {
+              this.controllerInfo.tagUiBar = true;
+              this.controllerInfo.tagViewCube = true;
             }
           }
           // 13cube返回数据
