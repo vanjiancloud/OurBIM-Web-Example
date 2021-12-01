@@ -119,6 +119,11 @@
                   @click="handleTree(node, 0)"
                 >
                   <span class="label-span">{{ node.label }}</span>
+                  <img
+                    src="@/assets/images/tag/6.png"
+                    @click.stop="delectCom(node)"
+                    class="delect-com-icon"
+                  />
                   <span>
                     <!-- <span v-if="node.data.typeId !== 'comp'"> -->
                     <!-- 显示状态 -->
@@ -300,6 +305,7 @@ import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
 import scrollContainer from "@/components/web_client/scrollContainer.vue";
 
+import resMessage from "../../../utils/message";
 export default {
   name: "look_app",
   layout: "reset",
@@ -395,11 +401,14 @@ export default {
       isQrcode: false,
       iTime: {},
       publicComList: [],
+      appType: null,
+      comSaveNode: null, //待确认
     };
   },
 
   watch: {},
   created() {
+    this.appType = this.$route.params.appType;
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -619,6 +628,12 @@ export default {
        */
       this.TreePageNo = 2;
       this.openNode = data;
+      console.log('this.openNode,',this.openNode);
+      // 保存自定义构件信息
+      if (data.data.name === "自定义构件") {
+        this.comSaveNode = data || {};
+      }
+      console.log("自定义构件", this.comSaveNode);
     },
     throttle(fn, delay = 500) {
       /**
@@ -660,6 +675,26 @@ export default {
         this.ListScrollTree();
       }
     },
+    updateComTree() {
+      this.getMyComList(this.comSaveNode).then((res) => {
+        console.log(9999, this.comSaveNode);
+        console.log(8888888, res);
+        this.$refs.setTree.updateKeyChildren(this.comSaveNode.data.uuid,res)
+        // this.$refs.setTree.append(item, this.comNode.key);
+        // if (res.length > 0) {
+        //   res.forEach((item) => {
+        //     let noneNode = this.$refs.setTree.getNode(item);
+        //     console.log(111111111111, noneNode);
+        //     return
+        //     if (!noneNode) {
+        //       console.log(6666666666666666666);
+        //       this.$refs.setTree.append(item, this.comNode.key);
+        //       this.$refs.setTree.setChecked(item, this.comNode.checked);
+        //     }
+        //   });
+        // }
+      });
+    },
     ListScrollTree() {
       /**
        * @Author: zk
@@ -671,7 +706,9 @@ export default {
         if (res.length > 0) {
           res.forEach((item) => {
             let noneNode = this.$refs.setTree.getNode(item);
+            console.log(3333, noneNode);
             if (!noneNode) {
+              console.log(98888888888, noneNode);
               this.$refs.setTree.append(item, this.openNode.key);
               this.$refs.setTree.setChecked(item, this.openNode.checked);
             }
@@ -765,26 +802,71 @@ export default {
       this.handleState = 10;
       this.updateOrder();
     },
+    delectCom(node) {
+      const { name, uuid } = node.data;
+      this.$confirm("此操作删除此构件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          COMPONENTLIBRARY.deleteCom({
+            taskId: this.taskId,
+            comId: uuid,
+          }).then((res) => {
+            resMessage(res.data);
+            this.updateComTree();
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    },
+    componentShowHide(uuid) {
+      /* 
+        自定义构件显示隐藏
+      */
+      const lableVisibility = this.leafInfo.activeState == 1 ? false : true;
+      COMPONENTLIBRARY.controlComShowOrHide({
+        comId: uuid,
+        taskId: this.taskId,
+        lableVisibility,
+      }).then(({ data: res }) => {
+        resMessage(res);
+      });
+    },
     checkTree(data, e) {
-      console.log(888,data,e);
       /**
        * @Author: zk
        * @Date: 2021-04-16 11:56:27
        * @description: 显示隐藏
        */
       this.leafInfo = data;
+
       if (e.checkedKeys.includes(data.uuid)) {
         this.handleState = 8;
         data.activeState = 1;
+        // 如果是自定义构件
+        if (data.typeId === "comp") {
+          this.componentShowHide(data.uuid);
+          return;
+        }
         this.updateOrder();
       } else {
         this.handleState = 8;
         data.activeState = 0;
+        // 如果是自定义构件
+        if (data.typeId === "comp") {
+          this.componentShowHide(data.uuid);
+          return;
+        }
         this.updateOrder();
       }
     },
     handleTree(e, index) {
-      console.log(555, e, index);
       /**
        * @Author: zk
        * @Date: 2021-03-08 14:39:51
@@ -1203,6 +1285,25 @@ export default {
         this.$refs.getFooter.resetSection();
       }
     },
+
+    async getMyComList(node) {
+      let params = {
+        appliId:
+          node.data && node.data.projectId ? node.data.projectId : this.appId,
+        pageNo: 1,
+        pageSize: 20,
+      };
+      node.key ? (params.uuid = node.key) : "";
+      let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
+        if (res.data.code === 0) {
+          return res.data.data;
+        } else {
+          return [];
+        }
+      });
+      return realMember;
+    },
+
     async LisetMemberPage(node) {
       let params = {
         appliId:
@@ -1260,6 +1361,7 @@ export default {
               item.activeState = 0;
               item.activeSelect = 1;
             });
+
             return resolve(res);
           } else {
             this.treeEmpty = this.$t("webClient.browser.tips[1]");
@@ -1501,7 +1603,7 @@ export default {
             this.controllerInfo.tagUiBar = false;
             this.controllerInfo.tagViewCube = false;
           }
-
+          this.updateComTree();
           this.$message.success(res.data.message);
           this.$refs.getFooter.initTranslate();
         })
@@ -1919,7 +2021,6 @@ export default {
           "*"
         );
       } else {
-        console.warn("content window not find.");
       }
     },
   },
@@ -2527,5 +2628,11 @@ export default {
     color: #fff;
     text-align: center;
   }
+}
+
+.delect-com-icon {
+  padding: 0 10px;
+  width: 15px;
+  height: 15px;
 }
 </style>

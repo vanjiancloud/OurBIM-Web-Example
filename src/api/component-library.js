@@ -62,13 +62,31 @@ const COMPONENTLIBRARY = {
     action:'',//translate、rotate、scale
   }
   */
+
   operateCom: params => {
     return request({
       url: '/comControl/operateCom',
       method: 'POST',
       params
     })
-  }
+  },
+  // 自定义构件显示隐藏
+  controlComShowOrHide: params => {
+    return request({
+      url: '/comControl/controlComShowOrHide',
+      method: 'POST',
+      params
+    })
+  },
+  // 删除自定义构件
+  // /comControl/deleteCom
+  deleteCom: params => {
+    return request({
+      url: '/comControl/deleteCom',
+      method: 'POST',
+      params
+    })
+  },
 }
 
 export default COMPONENTLIBRARY
