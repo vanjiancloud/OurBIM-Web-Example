@@ -404,6 +404,7 @@ export default {
       publicComList: [],
       appType: null,
       comSaveNode: null, //待确认
+      godNode: null,
     };
   },
 
@@ -629,12 +630,20 @@ export default {
        */
       this.TreePageNo = 2;
       this.openNode = data;
-      console.log('this.openNode,',this.openNode);
+      console.log("this.openNode,", this.openNode);
+      console.log("this.openNode,", this.openNode.data.name);
+
+      // 展开根节点，但是根节点的子节点没有自定义构件时，保存根节点信息
+      if (data.level === 1) {
+        // const res = data.childNodes.some((item) => {
+        //   return item.data.name === "自定义构件";
+        // });
+        this.godNode = data || {};
+      }
       // 保存自定义构件信息
       if (data.data.name === "自定义构件") {
         this.comSaveNode = data || {};
       }
-      console.log("自定义构件", this.comSaveNode);
     },
     throttle(fn, delay = 500) {
       /**
@@ -676,24 +685,23 @@ export default {
         this.ListScrollTree();
       }
     },
+    // 更新添加的自定义构件库
     updateComTree() {
+      if (!this.comSaveNode) {
+        return;
+      }
       this.getMyComList(this.comSaveNode).then((res) => {
-        console.log(9999, this.comSaveNode);
-        console.log(8888888, res);
-        this.$refs.setTree.updateKeyChildren(this.comSaveNode.data.uuid,res)
-        // this.$refs.setTree.append(item, this.comNode.key);
-        // if (res.length > 0) {
-        //   res.forEach((item) => {
-        //     let noneNode = this.$refs.setTree.getNode(item);
-        //     console.log(111111111111, noneNode);
-        //     return
-        //     if (!noneNode) {
-        //       console.log(6666666666666666666);
-        //       this.$refs.setTree.append(item, this.comNode.key);
-        //       this.$refs.setTree.setChecked(item, this.comNode.checked);
-        //     }
-        //   });
-        // }
+        console.log("updateComTree", res);
+        this.$refs.setTree.updateKeyChildren(this.comSaveNode.data.uuid, res);
+      });
+    },
+    updateGodChildNode() {
+      if (!this.godNode) {
+        return;
+      }
+      this.getMyComList(this.godNode).then((res) => {
+        console.log("updateGodChildNode", res);
+        this.$refs.setTree.updateKeyChildren(this.godNode.data.uuid, res);
       });
     },
     ListScrollTree() {
@@ -707,9 +715,7 @@ export default {
         if (res.length > 0) {
           res.forEach((item) => {
             let noneNode = this.$refs.setTree.getNode(item);
-            console.log(3333, noneNode);
             if (!noneNode) {
-              console.log(98888888888, noneNode);
               this.$refs.setTree.append(item, this.openNode.key);
               this.$refs.setTree.setChecked(item, this.openNode.checked);
             }
@@ -816,6 +822,13 @@ export default {
             comId: uuid,
           }).then((res) => {
             resMessage(res.data);
+            if (res.data.code === 0) {
+              this.$refs.setTree.remove(node);
+              setTimeout(() => {
+                console.log(87777,this.$refs.setTree.data);
+              }, 2000);
+            }
+            return;
             this.updateComTree();
           });
         })
@@ -1748,7 +1761,10 @@ export default {
             // 构件添加完成
 
             // 更新构件库列表
-             this.updateComTree();
+            this.updateComTree();
+            // 更新第二层树
+            this.updateGodChildNode();
+
             if (this.listenTodoInfo.type !== 14) {
               this.$refs.tagTree.closePart(true);
             }
