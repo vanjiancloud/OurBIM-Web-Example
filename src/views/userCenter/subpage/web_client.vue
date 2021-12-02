@@ -123,6 +123,7 @@
                     src="@/assets/images/tag/6.png"
                     @click.stop="delectCom(node)"
                     class="delect-com-icon"
+                    v-if="node.data.typeId === 'comp'"
                   />
                   <span>
                     <!-- <span v-if="node.data.typeId !== 'comp'"> -->
@@ -1603,7 +1604,6 @@ export default {
             this.controllerInfo.tagUiBar = false;
             this.controllerInfo.tagViewCube = false;
           }
-          this.updateComTree();
           this.$message.success(res.data.message);
           this.$refs.getFooter.initTranslate();
         })
@@ -1746,6 +1746,9 @@ export default {
           } else if (realData.id === "10") {
             // 构件新建完成事件
             // 构件添加完成
+
+            // 更新构件库列表
+             this.updateComTree();
             if (this.listenTodoInfo.type !== 14) {
               this.$refs.tagTree.closePart(true);
             }
