@@ -633,13 +633,14 @@ export default {
       console.log("this.openNode,", this.openNode);
       console.log("this.openNode,", this.openNode.data.name);
 
-      // 展开根节点，但是根节点的子节点没有自定义构件时，保存根节点信息
+      // 展开根节点，保存根节点信息
       if (data.level === 1) {
         // const res = data.childNodes.some((item) => {
         //   return item.data.name === "自定义构件";
         // });
         this.godNode = data || {};
       }
+      console.log(888, this.godNode);
       // 保存自定义构件信息
       if (data.data.name === "自定义构件") {
         this.comSaveNode = data || {};
@@ -691,18 +692,38 @@ export default {
         return;
       }
       this.getMyComList(this.comSaveNode).then((res) => {
-        console.log("updateComTree", res);
         this.$refs.setTree.updateKeyChildren(this.comSaveNode.data.uuid, res);
       });
     },
     updateGodChildNode() {
+      // 没有根节点，返回
       if (!this.godNode) {
         return;
       }
-      this.getMyComList(this.godNode).then((res) => {
-        console.log("updateGodChildNode", res);
-        this.$refs.setTree.updateKeyChildren(this.godNode.data.uuid, res);
+      // 根节点没有展开,返回
+      // if(!this.godNode.expanded){
+      //   return
+      // }
+      // 检查第二层有无自定义构件
+      const flag = this.godNode.childNodes.some((item) => {
+        return item.data.name === "自定义构件";
       });
+      // 如果有
+      if (flag) {
+        this.updateComTree();
+      } else {
+        let node = this.$refs.setTree.getNode(this.godNode);
+        console.log(222, node);
+        // 如果没有，添加自定义构件组
+        this.getMyComList(this.godNode).then((res) => {
+          console.log(666,res);
+          console.log(666,res.length);
+          const data = res[res.length-1];
+          console.log(666,data);
+          this.$refs.setTree.append(data, node);
+          // this.$refs.setTree.updateKeyChildren(this.godNode.data.uuid, res);
+        });
+      }
     },
     ListScrollTree() {
       /**
@@ -824,12 +845,7 @@ export default {
             resMessage(res.data);
             if (res.data.code === 0) {
               this.$refs.setTree.remove(node);
-              setTimeout(() => {
-                console.log(87777,this.$refs.setTree.data);
-              }, 2000);
             }
-            return;
-            this.updateComTree();
           });
         })
         .catch(() => {
@@ -1760,9 +1776,7 @@ export default {
             // 构件新建完成事件
             // 构件添加完成
 
-            // 更新构件库列表
-            this.updateComTree();
-            // 更新第二层树
+            // 更新自定义构件列表
             this.updateGodChildNode();
 
             if (this.listenTodoInfo.type !== 14) {
