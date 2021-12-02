@@ -1068,14 +1068,13 @@ export default {
       };
       COMPONENTLIBRARY.operateCom(params)
         .then((res) => {
-          if(res.data.code===0){
-            this.$message.success(res.data.message)
-          }else{
-            this.$message.error(res.data.message)
+          if (res.data.code === 0) {
+            this.$message.success(res.data.message);
+          } else {
+            this.$message.error(res.data.message);
           }
         })
-        .catch((res) => {
-        });
+        .catch((res) => {});
     },
     SetWeather(e) {
       /**
@@ -1597,6 +1596,15 @@ export default {
         }
       });
     },
+    initComIcon() {
+      // 构件库图片置灰,关闭
+      this.imgList[14].state = 0;
+      this.imgList[14].url = require(`@/assets/images/todo/unchecked/${this.imgList[14].name}`);
+      //  三个图标置灰
+      this.comIconList.forEach((item) => {
+        item.active = false;
+      });
+    },
     // 图片点击事件
     footerIconChange(index) {
       if (
@@ -1612,7 +1620,7 @@ export default {
 
       let params = {};
       // 8 2 3 0 12
-
+      this.initComIcon();
       let { iconSelectList } = this;
       let selectData = iconSelectList.find((item) => {
         if (item.select === true && item.index !== index) {
@@ -1629,7 +1637,6 @@ export default {
       });
       // 原本没有选中，返回
       if (!selectData || !selectData.params.action) return;
-      // if (!selectData || !selectData.params.action) return;
       this.$emit("updataModle", selectData.params);
     },
     handleOrder(e) {
