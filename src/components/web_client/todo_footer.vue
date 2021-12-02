@@ -928,6 +928,14 @@ export default {
           },
           select: false,
         },
+        {
+          name: "构件库",
+          index: 14,
+          params: {
+          
+          },
+          select: false,
+        },
       ],
     };
   },
@@ -1606,14 +1614,14 @@ export default {
         index === 2 ||
         index === 3 ||
         index === 0 ||
-        index === 12
+        index === 12 
       ) {
       } else {
         return;
       }
-
       let params = {};
       // 8 2 3 0 12
+      // 如果是14，构件库，关闭构件库
 
       let { iconSelectList } = this;
       let selectData = iconSelectList.find((item) => {
@@ -1629,6 +1637,7 @@ export default {
         }
         return item;
       });
+      return
       // 原本没有选中，返回
       if (!selectData || !selectData.params.action) return;
       // if (!selectData || !selectData.params.action) return;

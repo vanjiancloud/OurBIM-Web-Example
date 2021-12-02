@@ -408,7 +408,11 @@ export default {
     };
   },
 
-  watch: {},
+  watch: {
+    listenTodoInfo(val){
+      
+    }
+  },
   created() {
     this.appType = this.$route.params.appType;
     this.uaInfo = navigator.userAgent.toLowerCase();
