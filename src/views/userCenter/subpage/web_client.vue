@@ -179,29 +179,33 @@
           </div>
         </div>
         <!-- 构件库 -->
-        <div
-          class="bim-info"
-          @click.stop=""
-          v-show="
-            controllerInfo.tagUiBar &&
-            ((listenTodoInfo &&
-              listenTodoInfo.type === 14 &&
-              listenTodoInfo.state === 1) ||
-              controllerInfo.componentLibrary)
-          "
-        >
-          <div class="bim-title">
-            <div class="" v-text="$t('webClient.componentLibrary.title')"></div>
-            <div class="close-part">
-              <i
-                class="el-icon-close"
-                @click.stop="closePart(listenTodoInfo.type)"
-              ></i>
+        <div v-show="comVisible">
+          <div
+            class="bim-info"
+            @click.stop=""
+            v-show="
+              controllerInfo.tagUiBar &&
+              ((listenTodoInfo &&
+                listenTodoInfo.type === 14 &&
+                listenTodoInfo.state === 1) ||
+                controllerInfo.componentLibrary)
+            "
+          >
+            <div class="bim-title">
+              <div
+                class=""
+                v-text="$t('webClient.componentLibrary.title')"
+              ></div>
+              <div class="close-part">
+                <i
+                  class="el-icon-close"
+                  @click.stop="closePart(listenTodoInfo.type)"
+                ></i>
+              </div>
             </div>
-          </div>
-          <div class="detail-main detail-collapse">
-            <scroll-container>
-              <!-- <el-collapse v-model="componentCollapse" accordion>
+            <div class="detail-main detail-collapse">
+              <scroll-container>
+                <!-- <el-collapse v-model="componentCollapse" accordion>
                 <el-collapse-item title="二维码" name="1">
                   <div class="collapse-main">
                     <el-button size="mini" type="primary" @click="AddQrCode"
@@ -211,34 +215,35 @@
                 </el-collapse-item>
               </el-collapse> -->
 
-              <!-- 公共构件库列表 -->
-              <el-collapse
-                accordion
-                v-for="(item, index) in publicComList"
-                :key="item.title"
-                class=""
-              >
-                <el-collapse-item :title="item.group" :name="index">
-                  <div class="collapse-main">
-                    <div class="oooooooo">
-                      <div
-                        class="publicComListItem"
-                        v-for="listItem in item.rsComponent"
-                        :key="listItem.id"
-                        @click="addCom(listItem)"
-                      >
-                        <div class="img">
-                          <img :src="listItem.comUrl" alt="" />
+                <!-- 公共构件库列表 -->
+                <el-collapse
+                  accordion
+                  v-for="(item, index) in publicComList"
+                  :key="item.title"
+                  class=""
+                >
+                  <el-collapse-item :title="item.group" :name="index">
+                    <div class="collapse-main">
+                      <div class="oooooooo">
+                        <div
+                          class="publicComListItem"
+                          v-for="listItem in item.rsComponent"
+                          :key="listItem.id"
+                          @click="addCom(listItem)"
+                        >
+                          <div class="img">
+                            <img :src="listItem.comUrl" alt="" />
+                          </div>
+                          <div class="name">{{ listItem.comName }}</div>
                         </div>
-                        <div class="name">{{ listItem.comName }}</div>
                       </div>
                     </div>
-                  </div>
-                </el-collapse-item>
-              </el-collapse>
+                  </el-collapse-item>
+                </el-collapse>
 
-              <!-- <div v-for="item in 100" :key="item">1111</div> -->
-            </scroll-container>
+                <!-- <div v-for="item in 100" :key="item">1111</div> -->
+              </scroll-container>
+            </div>
           </div>
         </div>
         <!-- 二维码 -->
@@ -266,6 +271,7 @@
         @listenMode="listenMode"
         @listenFollow="listenFollow"
         @updataModle="updataModle"
+        @comIconChang="comIconChang"
         :setProps="propsFooter"
         :singleList="controllerInfo.singleList"
         :appId="appId"
@@ -405,13 +411,14 @@ export default {
       appType: null,
       comSaveNode: null, //待确认
       godNode: null,
+      comVisible: false,
     };
   },
 
   watch: {
-    listenTodoInfo(val){
-      
-    }
+    listenTodoInfo(val) {
+      console.log("listenTodoInfo", val.type, val.state);
+    },
   },
   created() {
     this.appType = this.$route.params.appType;
@@ -509,6 +516,10 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    comIconChang(val) {
+      console.log(111, val);
+      this.comVisible = val;
+    },
     handleTodoIcon(query) {
       const arr = [
         "show",
@@ -720,10 +731,10 @@ export default {
         console.log(222, node);
         // 如果没有，添加自定义构件组
         this.getMyComList(this.godNode).then((res) => {
-          console.log(666,res);
-          console.log(666,res.length);
-          const data = res[res.length-1];
-          console.log(666,data);
+          console.log(666, res);
+          console.log(666, res.length);
+          const data = res[res.length - 1];
+          console.log(666, data);
           this.$refs.setTree.append(data, node);
           // this.$refs.setTree.updateKeyChildren(this.godNode.data.uuid, res);
         });
@@ -1536,11 +1547,13 @@ export default {
       } else {
         if (this.isTag && e.type !== 11) {
           this.$refs.tagTree.closePart(false);
-          this.listenTodoInfo = {
-            type: 4,
-            state: 0,
-          };
-          this.handleTagShow();
+          // 如果不是标签并且标签已经开启
+          // this.listenTodoInfo = {
+          //   type: 4,
+          //   state: 0,
+          // };
+          this.handleTagShow(false);
+
           this.isTag = false;
         }
       }
@@ -1644,7 +1657,7 @@ export default {
           this.$message.error(res.data.message);
         });
     },
-    handleTagShow() {
+    handleTagShow(flag) {
       /**
        * @Author: zk
        * @Date: 2021-05-12 16:05:22
@@ -1654,6 +1667,9 @@ export default {
         taskId: this.taskId,
         lableVisibility: this.listenTodoInfo.state === 0 ? false : true,
       };
+      if (flag !== undefined) {
+        params.lableVisibility = flag;
+      }
       TAGTREE.UPDATASHOWTAG(params)
         .then(() => {
           this.$message({
@@ -1687,6 +1703,7 @@ export default {
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
+          console.log(55555,e.data);
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {

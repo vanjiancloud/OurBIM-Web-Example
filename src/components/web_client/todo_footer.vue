@@ -684,7 +684,7 @@ export default {
           content: "移动",
           img: require("@/assets/images/todo/unchecked/com/move.png"),
           activeImg: require("@/assets/images/todo/check/com/move.png"),
-          active: false,
+          active: true,
         },
         {
           content: "缩放",
@@ -931,7 +931,24 @@ export default {
       ],
     };
   },
+  computed: {
+    watchImgList() {
+      return this.imgList[14].state;
+    },
+  },
   watch: {
+    watchImgList(val, old) {
+      if (val !== old) {
+        this.comSwitch();
+        let flag = null;
+        if (val === 1) {
+          flag = true;
+        } else {
+          flag = false;
+        }
+        this.$emit("comIconChang", flag);
+      }
+    },
     setProps: {
       handler() {
         if (this.setProps.taskId) {
@@ -949,18 +966,6 @@ export default {
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
       deep: true,
     },
-    // imgList: {
-    //   handler(val) {
-    //     // 构件库颜色变灰
-    //     if (val[14].state == 0) {
-    //       // 关闭构件编辑指令
-    //       this.comIconList.forEach((item) => {
-    //         item.active = false;
-    //       });
-    //     }
-    //   },
-    //   deep: true,
-    // },
   },
   created() {
     if (this.appId) {
@@ -1013,8 +1018,12 @@ export default {
   methods: {
     comSwitch() {
       const status = this.imgList[14].state;
+      if (!this.taskId) {
+        return;
+      }
+      console.log(111, status);
       let flag = false;
-      status === 1 ? (flag = false) : (flag = true);
+      status === 1 ? (flag = true) : (flag = false);
       COMPONENTLIBRARY.comSwitch({
         taskId: this.taskId,
         flag,
@@ -1620,7 +1629,7 @@ export default {
 
       let params = {};
       // 8 2 3 0 12
-      this.initComIcon();
+      // this.initComIcon();
       let { iconSelectList } = this;
       let selectData = iconSelectList.find((item) => {
         if (item.select === true && item.index !== index) {
@@ -1640,6 +1649,7 @@ export default {
       this.$emit("updataModle", selectData.params);
     },
     handleOrder(e) {
+      console.log("handleOrder", e);
       this.footerIconChange(e);
       // 功能未开放 模型动画
       // || || e === 14
@@ -1647,7 +1657,9 @@ export default {
         return;
       }
       if (e === 14) {
-        this.comSwitch();
+        setTimeout(() => {
+          this.comSwitch();
+        }, 1000);
       }
       if (e === 12 && this.activePerson === 0) {
         this.$message({
@@ -1743,7 +1755,7 @@ export default {
         });
       }
       // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11 && e !== 13 && e !== 14) {
+      if (e !== this.oldState && e !== 10 && e !== 11 && e !== 13) {
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;
