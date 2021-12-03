@@ -1651,7 +1651,6 @@ export default {
             this.controllerInfo.tagViewCube = false;
           }
           this.$message.success(res.data.message);
-          this.$refs.getFooter.initTranslate();
         })
         .catch((res) => {
           this.$message.error(res.data.message);

@@ -1042,15 +1042,6 @@ export default {
           this.$message.error(res.data.message);
         });
     },
-    initTranslate() {
-      this.comIconList.forEach((item) => {
-        if (item.content === "移动") {
-          item.active = true;
-        } else {
-          item.active = false;
-        }
-      });
-    },
     comItemClick(item) {
       this.comIconList.forEach((row) => {
         if (item.content === row.content) {
@@ -1608,15 +1599,6 @@ export default {
         }
       });
     },
-    initComIcon() {
-      // 构件库图片置灰,关闭
-      this.imgList[14].state = 0;
-      this.imgList[14].url = require(`@/assets/images/todo/unchecked/${this.imgList[14].name}`);
-      //  三个图标置灰
-      this.comIconList.forEach((item) => {
-        item.active = false;
-      });
-    },
     // 图片点击事件
     footerIconChange(index) {
       if (
@@ -1632,7 +1614,6 @@ export default {
 
       let params = {};
       // 8 2 3 0 12
-      // this.initComIcon();
       let { iconSelectList } = this;
       let selectData = iconSelectList.find((item) => {
         if (item.select === true && item.index !== index) {
