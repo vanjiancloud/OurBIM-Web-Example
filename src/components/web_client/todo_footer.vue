@@ -676,18 +676,21 @@ export default {
       comIconList: [
         {
           content: "旋转",
+          name:"rotate",
           img: require("@/assets/images/todo/unchecked/com/rotate.png"),
           activeImg: require("@/assets/images/todo/check/com/rotate.png"),
           active: false,
         },
         {
           content: "移动",
+          name:"translate",
           img: require("@/assets/images/todo/unchecked/com/move.png"),
           activeImg: require("@/assets/images/todo/check/com/move.png"),
-          active: true,
+          active: false,
         },
         {
           content: "缩放",
+          name:"scale",
           img: require("@/assets/images/todo/unchecked/com/zoom.png"),
           activeImg: require("@/assets/images/todo/check/com/zoom.png"),
           active: false,
@@ -1647,6 +1650,18 @@ export default {
       // 原本没有选中，返回
       if (!selectData || !selectData.params.action) return;
       this.$emit("updataModle", selectData.params);
+    },
+
+    handleComOperateIcon(res){
+      // socket信息处理构件库操作图标
+      console.log(222,res);
+      this.comIconList.forEach(item=>{
+        if(item.name===res.gizmoMode){
+          item.active=true
+        }else{
+          item.active=false
+        }
+      })
     },
     handleOrder(e) {
       console.log("handleOrder", e);

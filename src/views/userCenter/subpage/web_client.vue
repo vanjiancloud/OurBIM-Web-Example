@@ -1859,6 +1859,9 @@ export default {
               this.controllerInfo.tagUiBar = true;
               this.controllerInfo.tagViewCube = true;
             }
+          }else if(realData.id==="15"){
+            console.log('realData',realData);
+            this.$refs.getFooter.handleComOperateIcon(realData)
           }
           // 13cube返回数据
         }
