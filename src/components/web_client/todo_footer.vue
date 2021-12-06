@@ -1653,9 +1653,9 @@ export default {
         return;
       }
       if (e === 14) {
-        setTimeout(() => {
-          this.comSwitch();
-        }, 1000);
+        // setTimeout(() => {
+        //   this.comSwitch();
+        // }, 1000);
       }
       if (e === 12 && this.activePerson === 0) {
         this.$message({
