@@ -10,6 +10,15 @@ import qsStringify from "qs-stringify"
 
 const COMPONENTLIBRARY = {
 
+  // 开启/关闭构件库操作
+  // /comControl/comAction
+  comSwitch: (params) => {
+    return request({
+      url: '/comControl/comAction',
+      method: 'POST',
+      data: qsStringify(params)
+    })
+  },
   // 添加构件
   addCom: params => {
     return request({
@@ -37,7 +46,7 @@ const COMPONENTLIBRARY = {
     })
   },
   // 构件定位
-  FOCUSCOMPONENT: params => {
+  focusComponent: params => {
     return request({
       url: '/comControl/comFocus',
       method: 'POST',
@@ -53,13 +62,31 @@ const COMPONENTLIBRARY = {
     action:'',//translate、rotate、scale
   }
   */
+
   operateCom: params => {
     return request({
       url: '/comControl/operateCom',
       method: 'POST',
       params
     })
-  }
+  },
+  // 自定义构件显示隐藏
+  controlComShowOrHide: params => {
+    return request({
+      url: '/comControl/controlComShowOrHide',
+      method: 'POST',
+      params
+    })
+  },
+  // 删除自定义构件
+  // /comControl/deleteCom
+  deleteCom: params => {
+    return request({
+      url: '/comControl/deleteCom',
+      method: 'POST',
+      params
+    })
+  },
 }
 
 export default COMPONENTLIBRARY

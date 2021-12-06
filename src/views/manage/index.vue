@@ -20,7 +20,6 @@
     <!-- 表格 -->
     <div class="table">
       <el-table :data="itemList" style="width: 100%" class="sheet">
-
         <el-table-column prop="appName" :label="$t('applyname')">
           <template slot-scope="scope">
             <el-tooltip
@@ -86,7 +85,9 @@
               popper-class="trans-tooplip"
               v-if="scope.row.applidStatus === '3'"
             >
-              <div slot="content" class="trans-tooplip-content">{{ scope.row.errMsg }}</div>
+              <div slot="content" class="trans-tooplip-content">
+                {{ scope.row.errMsg }}
+              </div>
               <!-- 项目状态 -->
               <!-- 转化失败 -->
               <div
@@ -518,7 +519,6 @@ export default {
       console.log(11, row);
     },
     async downloadFile(row) {
-      
       this.$confirm("即将下载此源文件, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -537,7 +537,7 @@ export default {
             process.env.VUE_APP_REQUEST_URL +
             "/FileStorge/downloadModelFile?" +
             qs.stringify(params);
-            // window.location.href=urllll
+          // window.location.href=urllll
           window.open(urllll);
           return;
           this.startDownLoad(row);
@@ -558,7 +558,7 @@ export default {
        * @Date: 2021-06-05 11:20:15
        * @description: 确认集成
        */
-      
+
       if (this.ActiveLinkModel.length === 0) {
         this.$message({
           message: "请选择模型",
@@ -733,8 +733,10 @@ export default {
             this.formShare.qrurl = res.data.data.qrurl;
             this.formShare.webShareUrl = res.data.data.webShareUrl;
             this.$message.success(res.data.message);
-            this.$common.closeLoading();
+          } else {
+            this.$message.error(res.data.message);
           }
+          this.$common.closeLoading();
         })
         .catch((err) => {
           this.$message.error("分享失败,请重新选择");
@@ -862,6 +864,7 @@ export default {
 
     //进入应用
     GoApp(e) {
+      console.log(555, e);
       let isiPad =
         navigator.userAgent.match(/(iPad)/) ||
         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -871,12 +874,16 @@ export default {
       }).then((res) => {
         if (res.data.code === 0) {
           if (isiPad !== false || isMac !== false) {
+            console.log(888888, e.appType);
             this.$router.push({
               name: "web_client",
               query: {
                 appid: e.appid,
                 locale: this.$i18n.locale,
                 token: res.data.data.token,
+              },
+              params: {
+                appType: e.appType,
               },
             });
           } else {
@@ -886,6 +893,9 @@ export default {
                 appid: e.appid,
                 locale: this.$i18n.locale,
                 token: res.data.data.token,
+              },
+              params: {
+                appType: e.appType,
               },
             });
             window.open(href, "_blank");
@@ -1221,7 +1231,6 @@ export default {
     border-top-color: #ffe8e8 !important;
   }
 }
-
 
 .integrate-transfer {
   .el-transfer-panel {

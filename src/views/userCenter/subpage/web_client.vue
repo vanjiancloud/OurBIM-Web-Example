@@ -90,6 +90,7 @@
           </div>
           <div class="tree-part">
             <div class="tree-content" id="tree-content">
+              <!-- 构件树开始 -->
               <el-tree
                 class="set-tree"
                 ref="setTree"
@@ -118,13 +119,21 @@
                   @click="handleTree(node, 0)"
                 >
                   <span class="label-span">{{ node.label }}</span>
-                  <span v-if="node.data.typeId !== 'comp'">
+                  <img
+                    src="@/assets/images/tag/6.png"
+                    @click.stop="delectCom(node)"
+                    class="delect-com-icon"
+                    v-if="node.data.typeId === 'comp'"
+                  />
+                  <span>
+                    <!-- <span v-if="node.data.typeId !== 'comp'"> -->
                     <!-- 显示状态 -->
                     <i class="iconfont icon-xianshi2" v-if="!node.checked"></i>
                     <i v-else class="iconfont icon-yincang1"></i>
                   </span>
                 </span>
               </el-tree>
+              <!-- 构件树结束 -->
             </div>
           </div>
         </div>
@@ -170,29 +179,33 @@
           </div>
         </div>
         <!-- 构件库 -->
-        <div
-          class="bim-info"
-          @click.stop=""
-          v-show="
-            controllerInfo.tagUiBar &&
-            ((listenTodoInfo &&
-              listenTodoInfo.type === 14 &&
-              listenTodoInfo.state === 1) ||
-              controllerInfo.componentLibrary)
-          "
-        >
-          <div class="bim-title">
-            <div class="" v-text="$t('webClient.componentLibrary.title')"></div>
-            <div class="close-part">
-              <i
-                class="el-icon-close"
-                @click.stop="closePart(listenTodoInfo.type)"
-              ></i>
+        <div v-show="comVisible">
+          <div
+            class="bim-info"
+            @click.stop=""
+            v-show="
+              controllerInfo.tagUiBar &&
+              ((listenTodoInfo &&
+                listenTodoInfo.type === 14 &&
+                listenTodoInfo.state === 1) ||
+                controllerInfo.componentLibrary)
+            "
+          >
+            <div class="bim-title">
+              <div
+                class=""
+                v-text="$t('webClient.componentLibrary.title')"
+              ></div>
+              <div class="close-part">
+                <i
+                  class="el-icon-close"
+                  @click.stop="closePart(listenTodoInfo.type)"
+                ></i>
+              </div>
             </div>
-          </div>
-          <div class="detail-main detail-collapse">
-            <scroll-container>
-              <!-- <el-collapse v-model="componentCollapse" accordion>
+            <div class="detail-main detail-collapse">
+              <scroll-container>
+                <!-- <el-collapse v-model="componentCollapse" accordion>
                 <el-collapse-item title="二维码" name="1">
                   <div class="collapse-main">
                     <el-button size="mini" type="primary" @click="AddQrCode"
@@ -202,34 +215,35 @@
                 </el-collapse-item>
               </el-collapse> -->
 
-              <!-- 公共构件库列表 -->
-              <el-collapse
-                accordion
-                v-for="(item, index) in publicComList"
-                :key="item.title"
-                class=""
-              >
-                <el-collapse-item :title="item.group" :name="index">
-                  <div class="collapse-main">
-                    <div class="oooooooo">
-                      <div
-                        class="publicComListItem"
-                        v-for="listItem in item.rsComponent"
-                        :key="listItem.id"
-                        @click="addCom(listItem)"
-                      >
-                        <div class="img">
-                          <img :src="listItem.comUrl" alt="" />
+                <!-- 公共构件库列表 -->
+                <el-collapse
+                  accordion
+                  v-for="(item, index) in publicComList"
+                  :key="item.title"
+                  class=""
+                >
+                  <el-collapse-item :title="item.group" :name="index">
+                    <div class="collapse-main">
+                      <div class="oooooooo">
+                        <div
+                          class="publicComListItem"
+                          v-for="listItem in item.rsComponent"
+                          :key="listItem.id"
+                          @click="addCom(listItem)"
+                        >
+                          <div class="img">
+                            <img :src="listItem.comUrl" alt="" />
+                          </div>
+                          <div class="name">{{ listItem.comName }}</div>
                         </div>
-                        <div class="name">{{ listItem.comName }}</div>
                       </div>
                     </div>
-                  </div>
-                </el-collapse-item>
-              </el-collapse>
+                  </el-collapse-item>
+                </el-collapse>
 
-              <!-- <div v-for="item in 100" :key="item">1111</div> -->
-            </scroll-container>
+                <!-- <div v-for="item in 100" :key="item">1111</div> -->
+              </scroll-container>
+            </div>
           </div>
         </div>
         <!-- 二维码 -->
@@ -257,6 +271,7 @@
         @listenMode="listenMode"
         @listenFollow="listenFollow"
         @updataModle="updataModle"
+        @comIconChang="comIconChang"
         :setProps="propsFooter"
         :singleList="controllerInfo.singleList"
         :appId="appId"
@@ -297,6 +312,7 @@ import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
 import scrollContainer from "@/components/web_client/scrollContainer.vue";
 
+import resMessage from "../../../utils/message";
 export default {
   name: "look_app",
   layout: "reset",
@@ -392,11 +408,20 @@ export default {
       isQrcode: false,
       iTime: {},
       publicComList: [],
+      appType: null,
+      comSaveNode: null, //待确认
+      godNode: null,
+      comVisible: false,
     };
   },
 
-  watch: {},
+  watch: {
+    listenTodoInfo(val) {
+      console.log("listenTodoInfo", val.type, val.state);
+    },
+  },
   created() {
+    this.appType = this.$route.params.appType;
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -491,6 +516,10 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    comIconChang(val) {
+      console.log(111, val);
+      this.comVisible = val;
+    },
     handleTodoIcon(query) {
       const arr = [
         "show",
@@ -616,6 +645,21 @@ export default {
        */
       this.TreePageNo = 2;
       this.openNode = data;
+      console.log("this.openNode,", this.openNode);
+      console.log("this.openNode,", this.openNode.data.name);
+
+      // 展开根节点，保存根节点信息
+      if (data.level === 1) {
+        // const res = data.childNodes.some((item) => {
+        //   return item.data.name === "自定义构件";
+        // });
+        this.godNode = data || {};
+      }
+      console.log(888, this.godNode);
+      // 保存自定义构件信息
+      if (data.data.name === "自定义构件") {
+        this.comSaveNode = data || {};
+      }
     },
     throttle(fn, delay = 500) {
       /**
@@ -655,6 +699,45 @@ export default {
       this.ScrollDistance = scrollTop;
       if (ScrollDistance > 0) {
         this.ListScrollTree();
+      }
+    },
+    // 更新添加的自定义构件库
+    updateComTree() {
+      if (!this.comSaveNode) {
+        return;
+      }
+      this.getMyComList(this.comSaveNode).then((res) => {
+        this.$refs.setTree.updateKeyChildren(this.comSaveNode.data.uuid, res);
+      });
+    },
+    updateGodChildNode() {
+      // 没有根节点，返回
+      if (!this.godNode) {
+        return;
+      }
+      // 根节点没有展开,返回
+      // if(!this.godNode.expanded){
+      //   return
+      // }
+      // 检查第二层有无自定义构件
+      const flag = this.godNode.childNodes.some((item) => {
+        return item.data.name === "自定义构件";
+      });
+      // 如果有
+      if (flag) {
+        this.updateComTree();
+      } else {
+        let node = this.$refs.setTree.getNode(this.godNode);
+        console.log(222, node);
+        // 如果没有，添加自定义构件组
+        this.getMyComList(this.godNode).then((res) => {
+          console.log(666, res);
+          console.log(666, res.length);
+          const data = res[res.length - 1];
+          console.log(666, data);
+          this.$refs.setTree.append(data, node);
+          // this.$refs.setTree.updateKeyChildren(this.godNode.data.uuid, res);
+        });
       }
     },
     ListScrollTree() {
@@ -762,6 +845,44 @@ export default {
       this.handleState = 10;
       this.updateOrder();
     },
+    delectCom(node) {
+      const { name, uuid } = node.data;
+      this.$confirm("此操作删除此构件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          COMPONENTLIBRARY.deleteCom({
+            taskId: this.taskId,
+            comId: uuid,
+          }).then((res) => {
+            resMessage(res.data);
+            if (res.data.code === 0) {
+              this.$refs.setTree.remove(node);
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    },
+    componentShowHide(uuid) {
+      /* 
+        自定义构件显示隐藏
+      */
+      const lableVisibility = this.leafInfo.activeState == 1 ? false : true;
+      COMPONENTLIBRARY.controlComShowOrHide({
+        comId: uuid,
+        taskId: this.taskId,
+        lableVisibility,
+      }).then(({ data: res }) => {
+        resMessage(res);
+      });
+    },
     checkTree(data, e) {
       /**
        * @Author: zk
@@ -769,13 +890,24 @@ export default {
        * @description: 显示隐藏
        */
       this.leafInfo = data;
+
       if (e.checkedKeys.includes(data.uuid)) {
         this.handleState = 8;
         data.activeState = 1;
+        // 如果是自定义构件
+        if (data.typeId === "comp") {
+          this.componentShowHide(data.uuid);
+          return;
+        }
         this.updateOrder();
       } else {
         this.handleState = 8;
         data.activeState = 0;
+        // 如果是自定义构件
+        if (data.typeId === "comp") {
+          this.componentShowHide(data.uuid);
+          return;
+        }
         this.updateOrder();
       }
     },
@@ -785,11 +917,56 @@ export default {
        * @Date: 2021-03-08 14:39:51
        * @description: 构件树的指令
        */
+
+      let messageInfo = {
+        prex: "ourbimMessage",
+        type: 20001,
+        data: e.data,
+        message: "",
+      };
+      this.sentParentIframe(messageInfo);
+      if (this.activeTree && this.activeTree.uuid === e.data.uuid) {
+        if (e.data.activeSelect === 1) {
+          this.activeLeaf = false;
+        } else {
+          this.activeLeaf = true;
+        }
+        e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
+        this.leafInfo = e;
+      } else {
+        this.activeLeaf = true;
+        this.leafInfo = e;
+        e.data.activeSelect = 1;
+      }
+      this.memberInfo = {
+        type: e.data.haveChild === "0" ? 1 : 5,
+        data: e.data,
+      };
+      this.leafInfo = e;
+      this.handleState = 9;
+
+      this.activeTree = e.data;
+
       if (e.data.typeId === "comp") {
+        // 如果是构件库
         if (e.data.haveChild === "0") {
           this.leafInfo = e;
           this.isQrCodeClick = true;
-          this.handleQrcode(true);
+          // this.handleQrcode(true);
+          this.handleFocusTag(e.data);
+        } else {
+          return;
+        }
+      } else {
+        this.updateOrder();
+      }
+      return;
+      if (e.data.typeId === "comp") {
+        // 如果是构件库
+        if (e.data.haveChild === "0") {
+          this.leafInfo = e;
+          this.isQrCodeClick = true;
+          // this.handleQrcode(true);
           this.handleFocusTag(e.data);
         } else {
           return;
@@ -833,18 +1010,25 @@ export default {
        */
       let params = {
         taskId: this.taskId,
-        comId: e.compData.id,
+        comId: e.uuid,
       };
-      COMPONENTLIBRARY.FOCUSCOMPONENT(params)
+      COMPONENTLIBRARY.focusComponent(params)
         .then((res) => {
-          this.$message({
-            message: this.$t("webClient.loadBox.message[2]"),
-            type: "success",
-          });
+          if (res.data.code === 0) {
+            this.$message({
+              message: res.data.message,
+              type: "success",
+            });
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: "error",
+            });
+          }
         })
-        .catch((err) => {
+        .catch((res) => {
           this.$message({
-            message: this.$t("webClient.loadBox.message[3]"),
+            message: res.data.message,
             type: "error",
           });
         });
@@ -1146,6 +1330,25 @@ export default {
         this.$refs.getFooter.resetSection();
       }
     },
+
+    async getMyComList(node) {
+      let params = {
+        appliId:
+          node.data && node.data.projectId ? node.data.projectId : this.appId,
+        pageNo: 1,
+        pageSize: 20,
+      };
+      node.key ? (params.uuid = node.key) : "";
+      let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
+        if (res.data.code === 0) {
+          return res.data.data;
+        } else {
+          return [];
+        }
+      });
+      return realMember;
+    },
+
     async LisetMemberPage(node) {
       let params = {
         appliId:
@@ -1203,6 +1406,7 @@ export default {
               item.activeState = 0;
               item.activeSelect = 1;
             });
+
             return resolve(res);
           } else {
             this.treeEmpty = this.$t("webClient.browser.tips[1]");
@@ -1343,11 +1547,13 @@ export default {
       } else {
         if (this.isTag && e.type !== 11) {
           this.$refs.tagTree.closePart(false);
-          this.listenTodoInfo = {
-            type: 4,
-            state: 0,
-          };
-          this.handleTagShow();
+          // 如果不是标签并且标签已经开启
+          // this.listenTodoInfo = {
+          //   type: 4,
+          //   state: 0,
+          // };
+          this.handleTagShow(false);
+
           this.isTag = false;
         }
       }
@@ -1444,15 +1650,13 @@ export default {
             this.controllerInfo.tagUiBar = false;
             this.controllerInfo.tagViewCube = false;
           }
-
           this.$message.success(res.data.message);
-          this.$refs.getFooter.initTranslate();
         })
         .catch((res) => {
           this.$message.error(res.data.message);
         });
     },
-    handleTagShow() {
+    handleTagShow(flag) {
       /**
        * @Author: zk
        * @Date: 2021-05-12 16:05:22
@@ -1462,6 +1666,9 @@ export default {
         taskId: this.taskId,
         lableVisibility: this.listenTodoInfo.state === 0 ? false : true,
       };
+      if (flag !== undefined) {
+        params.lableVisibility = flag;
+      }
       TAGTREE.UPDATASHOWTAG(params)
         .then(() => {
           this.$message({
@@ -1495,6 +1702,7 @@ export default {
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
+          console.log(55555,e.data);
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {
@@ -1587,6 +1795,10 @@ export default {
           } else if (realData.id === "10") {
             // 构件新建完成事件
             // 构件添加完成
+
+            // 更新自定义构件列表
+            this.updateGodChildNode();
+
             if (this.listenTodoInfo.type !== 14) {
               this.$refs.tagTree.closePart(true);
             }
@@ -1640,6 +1852,15 @@ export default {
                 this.delMaskTimer(1000 * 5);
               }
             }
+          } else if (realData.id === "14") {
+            // 添加构件，但是按了esc
+            if (this.controllerInfo.uiBar) {
+              this.controllerInfo.tagUiBar = true;
+              this.controllerInfo.tagViewCube = true;
+            }
+          }else if(realData.id==="15"){
+            console.log('realData',realData);
+            this.$refs.getFooter.handleComOperateIcon(realData)
           }
           // 13cube返回数据
         }
@@ -1856,7 +2077,6 @@ export default {
           "*"
         );
       } else {
-        console.warn("content window not find.");
       }
     },
   },
@@ -2464,5 +2684,11 @@ export default {
     color: #fff;
     text-align: center;
   }
+}
+
+.delect-com-icon {
+  padding: 0 10px;
+  width: 15px;
+  height: 15px;
 }
 </style>

@@ -676,18 +676,21 @@ export default {
       comIconList: [
         {
           content: "旋转",
+          name:"rotate",
           img: require("@/assets/images/todo/unchecked/com/rotate.png"),
           activeImg: require("@/assets/images/todo/check/com/rotate.png"),
           active: false,
         },
         {
           content: "移动",
+          name:"translate",
           img: require("@/assets/images/todo/unchecked/com/move.png"),
           activeImg: require("@/assets/images/todo/check/com/move.png"),
           active: false,
         },
         {
           content: "缩放",
+          name:"scale",
           img: require("@/assets/images/todo/unchecked/com/zoom.png"),
           activeImg: require("@/assets/images/todo/check/com/zoom.png"),
           active: false,
@@ -931,7 +934,24 @@ export default {
       ],
     };
   },
+  computed: {
+    watchImgList() {
+      return this.imgList[14].state;
+    },
+  },
   watch: {
+    watchImgList(val, old) {
+      if (val !== old) {
+        this.comSwitch();
+        let flag = null;
+        if (val === 1) {
+          flag = true;
+        } else {
+          flag = false;
+        }
+        this.$emit("comIconChang", flag);
+      }
+    },
     setProps: {
       handler() {
         if (this.setProps.taskId) {
@@ -947,17 +967,6 @@ export default {
         this.uiList = this.singleList;
       },
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
-      deep: true,
-    },
-    imgList: {
-      handler(val) {
-        // 构件库颜色变灰
-        if (val[14].state == 0) {
-          this.comIconList.forEach((item) => {
-            item.active = false;
-          });
-        }
-      },
       deep: true,
     },
   },
@@ -1010,14 +1019,28 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
-    initTranslate() {
-      this.comIconList.forEach((item) => {
-        if (item.content === "移动") {
-          item.active = true;
-        } else {
-          item.active = false;
-        }
-      });
+    comSwitch() {
+      const status = this.imgList[14].state;
+      if (!this.taskId) {
+        return;
+      }
+      console.log(111, status);
+      let flag = false;
+      status === 1 ? (flag = true) : (flag = false);
+      COMPONENTLIBRARY.comSwitch({
+        taskId: this.taskId,
+        flag,
+      })
+        .then((res) => {
+          if (res.data.code === 0) {
+            this.$message.success(res.data.message);
+          } else {
+            this.$message.error(res.data.message);
+          }
+        })
+        .catch((res) => {
+          this.$message.error(res.data.message);
+        });
     },
     comItemClick(item) {
       this.comIconList.forEach((row) => {
@@ -1048,11 +1071,13 @@ export default {
       };
       COMPONENTLIBRARY.operateCom(params)
         .then((res) => {
-          console.log(111, res);
+          if (res.data.code === 0) {
+            this.$message.success(res.data.message);
+          } else {
+            this.$message.error(res.data.message);
+          }
         })
-        .catch((res) => {
-          console.log(555, res);
-        });
+        .catch((res) => {});
     },
     SetWeather(e) {
       /**
@@ -1589,7 +1614,6 @@ export default {
 
       let params = {};
       // 8 2 3 0 12
-
       let { iconSelectList } = this;
       let selectData = iconSelectList.find((item) => {
         if (item.select === true && item.index !== index) {
@@ -1606,15 +1630,32 @@ export default {
       });
       // 原本没有选中，返回
       if (!selectData || !selectData.params.action) return;
-      // if (!selectData || !selectData.params.action) return;
       this.$emit("updataModle", selectData.params);
     },
+
+    handleComOperateIcon(res){
+      // socket信息处理构件库操作图标
+      console.log(222,res);
+      this.comIconList.forEach(item=>{
+        if(item.name===res.gizmoMode){
+          item.active=true
+        }else{
+          item.active=false
+        }
+      })
+    },
     handleOrder(e) {
+      console.log("handleOrder", e);
       this.footerIconChange(e);
       // 功能未开放 模型动画
-      // || 
-      if (e === 7 || e === 14 ) {
+      // || || e === 14
+      if (e === 7) {
         return;
+      }
+      if (e === 14) {
+        // setTimeout(() => {
+        //   this.comSwitch();
+        // }, 1000);
       }
       if (e === 12 && this.activePerson === 0) {
         this.$message({
@@ -1710,7 +1751,7 @@ export default {
         });
       }
       // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11 && e !== 13 && e !== 14) {
+      if (e !== this.oldState && e !== 10 && e !== 11 && e !== 13) {
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;
