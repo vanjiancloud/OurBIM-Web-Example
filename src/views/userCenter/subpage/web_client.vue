@@ -409,7 +409,7 @@ export default {
       iTime: {},
       publicComList: [],
       appType: null,
-      comSaveNode: null, //待确认
+      comSaveNode: null, 
       godNode: null,
       comVisible: false,
     };
@@ -517,7 +517,6 @@ export default {
   },
   methods: {
     comIconChang(val) {
-      console.log(111, val);
       this.comVisible = val;
     },
     handleTodoIcon(query) {
@@ -645,8 +644,6 @@ export default {
        */
       this.TreePageNo = 2;
       this.openNode = data;
-      console.log("this.openNode,", this.openNode);
-      console.log("this.openNode,", this.openNode.data.name);
 
       // 展开根节点，保存根节点信息
       if (data.level === 1) {
@@ -655,7 +652,7 @@ export default {
         // });
         this.godNode = data || {};
       }
-      console.log(888, this.godNode);
+
       // 保存自定义构件信息
       if (data.data.name === "自定义构件") {
         this.comSaveNode = data || {};
@@ -728,13 +725,11 @@ export default {
         this.updateComTree();
       } else {
         let node = this.$refs.setTree.getNode(this.godNode);
-        console.log(222, node);
+
         // 如果没有，添加自定义构件组
         this.getMyComList(this.godNode).then((res) => {
-          console.log(666, res);
-          console.log(666, res.length);
           const data = res[res.length - 1];
-          console.log(666, data);
+
           this.$refs.setTree.append(data, node);
           // this.$refs.setTree.updateKeyChildren(this.godNode.data.uuid, res);
         });
@@ -1702,7 +1697,6 @@ export default {
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
-          console.log(55555,e.data);
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {
@@ -1754,14 +1748,14 @@ export default {
             };
             this.sentParentIframe(messageInfo);
             this.hiddenState = 0;
-            if (
-              Number(this.propsProgress.data) >= 0 &&
-              Number(this.propsProgress.data) <= 100
-            ) {
-              this.propsProgress.data = Number(
-                String(Number(realData.progress) * 100).substring(0, 3)
-              );
-              if (Number(this.propsProgress.data) === 100) {
+            const progress = Number(
+              String(Number(realData.progress) * 100).substring(0, 3)
+            );
+            console.log(6666, progress);
+
+            if (progress >= 0 && progress <= 100 && this.propsProgress.data<100) {
+              this.propsProgress.data = progress;
+              if (progress === 100) {
                 let params = {
                   taskId: this.taskId,
                 };
@@ -1858,9 +1852,8 @@ export default {
               this.controllerInfo.tagUiBar = true;
               this.controllerInfo.tagViewCube = true;
             }
-          }else if(realData.id==="15"){
-            console.log('realData',realData);
-            this.$refs.getFooter.handleComOperateIcon(realData)
+          } else if (realData.id === "15") {
+            this.$refs.getFooter.handleComOperateIcon(realData);
           }
           // 13cube返回数据
         }
