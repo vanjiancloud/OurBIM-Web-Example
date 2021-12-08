@@ -1850,8 +1850,6 @@ export default {
             if (this.controllerInfo.uiBar) {
               this.controllerInfo.tagUiBar = true;
               this.controllerInfo.tagViewCube = true;
-              // 关闭构件编辑轴
-              COMPONENTLIBRARY.closeComEdit(this.taskId);
             }
             let messageInfo = {
               prex: "ourbimMessage",
