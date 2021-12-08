@@ -864,7 +864,6 @@ export default {
 
     //进入应用
     GoApp(e) {
-      console.log(555, e);
       let isiPad =
         navigator.userAgent.match(/(iPad)/) ||
         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -874,7 +873,7 @@ export default {
       }).then((res) => {
         if (res.data.code === 0) {
           if (isiPad !== false || isMac !== false) {
-            console.log(888888, e.appType);
+           
             this.$router.push({
               name: "web_client",
               query: {
@@ -887,17 +886,16 @@ export default {
               },
             });
           } else {
+             console.log(888888, e.appType);
             const { href } = this.$router.resolve({
               name: "web_client",
               query: {
                 appid: e.appid,
                 locale: this.$i18n.locale,
                 token: res.data.data.token,
-              },
-              params: {
-                appType: e.appType,
-              },
+              }
             });
+            localStorage.setItem('appType',e.appType)
             window.open(href, "_blank");
           }
         } else {

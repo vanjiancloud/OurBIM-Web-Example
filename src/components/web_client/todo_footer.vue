@@ -676,21 +676,21 @@ export default {
       comIconList: [
         {
           content: "旋转",
-          name:"rotate",
+          name: "rotate",
           img: require("@/assets/images/todo/unchecked/com/rotate.png"),
           activeImg: require("@/assets/images/todo/check/com/rotate.png"),
           active: false,
         },
         {
           content: "移动",
-          name:"translate",
+          name: "translate",
           img: require("@/assets/images/todo/unchecked/com/move.png"),
           activeImg: require("@/assets/images/todo/check/com/move.png"),
           active: false,
         },
         {
           content: "缩放",
-          name:"scale",
+          name: "scale",
           img: require("@/assets/images/todo/unchecked/com/zoom.png"),
           activeImg: require("@/assets/images/todo/check/com/zoom.png"),
           active: false,
@@ -1024,7 +1024,6 @@ export default {
       if (!this.taskId) {
         return;
       }
-      console.log(111, status);
       let flag = false;
       status === 1 ? (flag = true) : (flag = false);
       COMPONENTLIBRARY.comSwitch({
@@ -1043,13 +1042,28 @@ export default {
         });
     },
     comItemClick(item) {
+      let isSame = false;
       this.comIconList.forEach((row) => {
         if (item.content === row.content) {
+          if (row.active) {
+            // 如果图标原本就是亮着，灭掉它
+            // 发关闭轴的指令
+            isSame = true;
+            COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
+              this.$resMsg(res.data);
+              if (res.data.code === 0) {
+                row.active = false;
+              }
+            });
+          }
           row.active = true;
         } else {
           row.active = false;
         }
       });
+      if (isSame) {
+        return;
+      }
       let action = "";
       switch (item.content) {
         case "旋转":
@@ -1633,19 +1647,17 @@ export default {
       this.$emit("updataModle", selectData.params);
     },
 
-    handleComOperateIcon(res){
+    handleComOperateIcon(res) {
       // socket信息处理构件库操作图标
-      console.log(222,res);
-      this.comIconList.forEach(item=>{
-        if(item.name===res.gizmoMode){
-          item.active=true
-        }else{
-          item.active=false
+      this.comIconList.forEach((item) => {
+        if (item.name === res.gizmoMode) {
+          item.active = true;
+        } else {
+          item.active = false;
         }
-      })
+      });
     },
     handleOrder(e) {
-      console.log("handleOrder", e);
       this.footerIconChange(e);
       // 功能未开放 模型动画
       // || || e === 14

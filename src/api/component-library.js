@@ -87,6 +87,14 @@ const COMPONENTLIBRARY = {
       params
     })
   },
+  // 关闭构件库轴
+  closeComEdit: id => {
+    return request({
+      url: '/comControl/comEditorAction',
+      method: 'POST',
+      data:qsStringify({taskId:id})
+    })
+  },
 }
 
 export default COMPONENTLIBRARY
