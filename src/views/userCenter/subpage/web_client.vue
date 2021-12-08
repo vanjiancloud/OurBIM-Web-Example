@@ -312,7 +312,7 @@ import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
 import scrollContainer from "@/components/web_client/scrollContainer.vue";
 
-import resMessage from "../../../utils/message";
+import resMessage from "../../../utils/res-message";
 export default {
   name: "look_app",
   layout: "reset",
@@ -408,20 +408,24 @@ export default {
       isQrcode: false,
       iTime: {},
       publicComList: [],
-      appType: null,
-      comSaveNode: null, //待确认
+      comSaveNode: null,
       godNode: null,
       comVisible: false,
+      appType: null,
+      multUuid: null,
     };
   },
 
   watch: {
     listenTodoInfo(val) {
-      console.log("listenTodoInfo", val.type, val.state);
+      console.log("listenTodoInfo", val);
     },
   },
   created() {
-    this.appType = this.$route.params.appType;
+    if (localStorage.getItem("appType")) {
+      this.appType = localStorage.getItem("appType");
+      localStorage.removeItem("appType");
+    }
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -517,7 +521,6 @@ export default {
   },
   methods: {
     comIconChang(val) {
-      console.log(111, val);
       this.comVisible = val;
     },
     handleTodoIcon(query) {
@@ -645,20 +648,20 @@ export default {
        */
       this.TreePageNo = 2;
       this.openNode = data;
-      console.log("this.openNode,", this.openNode);
-      console.log("this.openNode,", this.openNode.data.name);
 
-      // 展开根节点，保存根节点信息
-      if (data.level === 1) {
-        // const res = data.childNodes.some((item) => {
-        //   return item.data.name === "自定义构件";
-        // });
-        this.godNode = data || {};
-      }
-      console.log(888, this.godNode);
-      // 保存自定义构件信息
-      if (data.data.name === "自定义构件") {
-        this.comSaveNode = data || {};
+      if (this.appType === "3") {
+        // 合模
+      } else {
+        // 不是合模
+        // 展开根节点，保存根节点信息
+        if (data.level === 1) {
+          this.godNode = data || {};
+        }
+
+        // 保存自定义构件信息（普通模型）
+        if (data.data.name === "自定义构件") {
+          this.comSaveNode = data || {};
+        }
       }
     },
     throttle(fn, delay = 500) {
@@ -715,10 +718,6 @@ export default {
       if (!this.godNode) {
         return;
       }
-      // 根节点没有展开,返回
-      // if(!this.godNode.expanded){
-      //   return
-      // }
       // 检查第二层有无自定义构件
       const flag = this.godNode.childNodes.some((item) => {
         return item.data.name === "自定义构件";
@@ -728,15 +727,11 @@ export default {
         this.updateComTree();
       } else {
         let node = this.$refs.setTree.getNode(this.godNode);
-        console.log(222, node);
+
         // 如果没有，添加自定义构件组
         this.getMyComList(this.godNode).then((res) => {
-          console.log(666, res);
-          console.log(666, res.length);
           const data = res[res.length - 1];
-          console.log(666, data);
           this.$refs.setTree.append(data, node);
-          // this.$refs.setTree.updateKeyChildren(this.godNode.data.uuid, res);
         });
       }
     },
@@ -949,14 +944,14 @@ export default {
 
       if (e.data.typeId === "comp") {
         // 如果是构件库
-        if (e.data.haveChild === "0") {
+        // if (e.data.haveChild === "0") {
           this.leafInfo = e;
           this.isQrCodeClick = true;
           // this.handleQrcode(true);
           this.handleFocusTag(e.data);
-        } else {
-          return;
-        }
+        // } else {
+        //   return;
+        // }
       } else {
         this.updateOrder();
       }
@@ -1008,10 +1003,16 @@ export default {
        * @Date: 2021-08-17 16:00:55
        * @description: 定位二维码
        */
+      let flag=null
+      console.log(9999,this.leafInfo.data.activeSelect);
+      flag=this.leafInfo.data.activeSelect?true:false
+      console.log(44,flag);
       let params = {
         taskId: this.taskId,
         comId: e.uuid,
+        flag
       };
+
       COMPONENTLIBRARY.focusComponent(params)
         .then((res) => {
           if (res.data.code === 0) {
@@ -1336,7 +1337,7 @@ export default {
         appliId:
           node.data && node.data.projectId ? node.data.projectId : this.appId,
         pageNo: 1,
-        pageSize: 20,
+        pageSize: 999,
       };
       node.key ? (params.uuid = node.key) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
@@ -1392,7 +1393,6 @@ export default {
               item.activeState = 0;
               item.activeSelect = 0;
             });
-
             return resolve(res);
           } else {
             this.treeEmpty = this.$t("webClient.browser.tips[1]");
@@ -1538,6 +1538,7 @@ export default {
         this.listenTodoInfo = e;
         this.updateOrder();
       }
+      console.log(555,e);
       // 标签
       if (e.type === 4) {
         this.isTag = e.state === 0 ? false : true;
@@ -1683,6 +1684,48 @@ export default {
           });
         });
     },
+    async handleMultModle() {
+      // 查看有没有合模的自定义构件
+      // 合模必然有 uuid vanjian1
+      const godNodeList = this.$refs.setTree.getNode("vanjian1").parent.childNodes
+
+      const mult = godNodeList.find((item) => {
+        return item.data.name === "自定义构件";
+      });
+
+     this.multUuid = mult ? mult.data.uuid : null;
+      // 如果没有自定义构件，保存最后一个节点，用来insertAfter节点
+      if (!this.multUuid) {
+        this.multBeforeUuid = godNodeList[godNodeList.length - 1].data.uuid;
+      }
+      
+      // 处理合模添加构件后更新列表
+      if (this.multUuid) {
+        // 如果有了自定义构件列表
+        let params = {
+          appliId: this.appId,
+          pageNo: 1,
+          pageSize: 999,
+          uuid: this.multUuid,
+        };
+        MODELAPI.LISTMEMBERTREE(params).then((res) => {
+          this.$refs.setTree.updateKeyChildren(this.multUuid, res.data.data);
+        });
+      } else {
+        // 合模如果没有自定义构件列表
+        // 请求根节点
+        // insertAfter自定义构件列表
+        let params = {
+          appliId: this.appId,
+          pageNo: 1,
+          pageSize: 999,
+        };
+        MODELAPI.LISTMEMBERTREE(params).then((res) => {
+          const list = res.data.data;
+          this.$refs.setTree.insertAfter(list[list.length - 1], this.multBeforeUuid);
+        });
+      }
+    },
     initWebSocket() {
       //初始化weosocket
       /**
@@ -1702,7 +1745,6 @@ export default {
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
-          console.log(55555,e.data);
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {
@@ -1754,14 +1796,16 @@ export default {
             };
             this.sentParentIframe(messageInfo);
             this.hiddenState = 0;
+            const progress = Number(
+              String(Number(realData.progress) * 100).substring(0, 3)
+            );
             if (
-              Number(this.propsProgress.data) >= 0 &&
-              Number(this.propsProgress.data) <= 100
+              progress >= 0 &&
+              progress <= 100 &&
+              this.propsProgress.data < 100
             ) {
-              this.propsProgress.data = Number(
-                String(Number(realData.progress) * 100).substring(0, 3)
-              );
-              if (Number(this.propsProgress.data) === 100) {
+              this.propsProgress.data = progress;
+              if (progress === 100) {
                 let params = {
                   taskId: this.taskId,
                 };
@@ -1797,10 +1841,11 @@ export default {
             // 构件添加完成
 
             // 更新自定义构件列表
-            this.updateGodChildNode();
-
-            if (this.listenTodoInfo.type !== 14) {
-              this.$refs.tagTree.closePart(true);
+            if (this.appType === "3") {
+              // 合模
+              this.handleMultModle();
+            } else {
+              this.updateGodChildNode();
             }
             if (this.controllerInfo.uiBar) {
               this.controllerInfo.tagUiBar = true;
@@ -1858,9 +1903,8 @@ export default {
               this.controllerInfo.tagUiBar = true;
               this.controllerInfo.tagViewCube = true;
             }
-          }else if(realData.id==="15"){
-            console.log('realData',realData);
-            this.$refs.getFooter.handleComOperateIcon(realData)
+          } else if (realData.id === "15") {
+            this.$refs.getFooter.handleComOperateIcon(realData);
           }
           // 13cube返回数据
         }

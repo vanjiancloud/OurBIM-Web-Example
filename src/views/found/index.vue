@@ -72,8 +72,8 @@
           <img src="./file.png" style="margin-top: 70px" />
           <div class="el-upload__text">
             {{ $t("methods") }}<br />
-            {{ $t("uploadLimit") }}<br />
-            {{ $t("uploadGoBeyond") }}<br />
+            <!-- {{ $t("uploadLimit") }}<br />
+            {{ $t("uploadGoBeyond") }}<br /> -->
             <!-- {{ $t('xianzhi') }}<br />
             {{ $t('limit') }}<br /> -->
           </div>

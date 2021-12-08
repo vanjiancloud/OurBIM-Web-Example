@@ -31,6 +31,10 @@ Vue.use(VueClipboard)
 ElementUI.Dialog.props.lockScroll.default = false
 Vue.use(ElementUI)
 
+// 引入后端响应数据提示方法
+import resMessage from "./utils/res-message"
+
+Vue.prototype.$resMsg=resMessage
 // 把axiox放到原型上
 Vue.prototype.$axios = axios
 // 把$EventBus放到原型上
