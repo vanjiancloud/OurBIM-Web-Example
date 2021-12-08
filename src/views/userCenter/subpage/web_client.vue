@@ -418,7 +418,7 @@ export default {
 
   watch: {
     listenTodoInfo(val) {
-      console.log("listenTodoInfo", val.type, val.state);
+      console.log("listenTodoInfo", val);
     },
   },
   created() {
@@ -944,14 +944,14 @@ export default {
 
       if (e.data.typeId === "comp") {
         // 如果是构件库
-        if (e.data.haveChild === "0") {
+        // if (e.data.haveChild === "0") {
           this.leafInfo = e;
           this.isQrCodeClick = true;
           // this.handleQrcode(true);
           this.handleFocusTag(e.data);
-        } else {
-          return;
-        }
+        // } else {
+        //   return;
+        // }
       } else {
         this.updateOrder();
       }
@@ -1003,10 +1003,16 @@ export default {
        * @Date: 2021-08-17 16:00:55
        * @description: 定位二维码
        */
+      let flag=null
+      console.log(9999,this.leafInfo.data.activeSelect);
+      flag=this.leafInfo.data.activeSelect?true:false
+      console.log(44,flag);
       let params = {
         taskId: this.taskId,
         comId: e.uuid,
+        flag
       };
+
       COMPONENTLIBRARY.focusComponent(params)
         .then((res) => {
           if (res.data.code === 0) {
@@ -1379,30 +1385,6 @@ export default {
 
       return realMember;
     },
-    // checkedMultNode() {
-    //   // 检查合模有无自定义构件库列表
-    //   let params = {
-    //     appliId: this.appId,
-    //     pageNo: 1,
-    //     pageSize: 999,
-    //   };
-    //   MODELAPI.LISTMEMBERTREE(params).then((result) => {
-    //     let res = result.data.data;
-    //     console.log(222, res);
-    //     if (res.length > 1) {
-    //       // 是合模
-    //       const mult = res.find((item) => {
-    //         return item.name === "自定义构件";
-    //       });
-    //       this.multUuid = mult ? mult.uuid : null;
-    //       // 如果没有自定义构件，保存最后一个节点，用来insertAfter节点
-    //       if (!this.multUuid) {
-    //         this.multBeforeUuid = res[res.length - 1];
-    //       }
-    //     }
-    //   });
-    // },
-
     loadNode(node, resolve) {
       if (node.level === 0) {
         this.getMemberList(node).then((res) => {
@@ -1556,6 +1538,7 @@ export default {
         this.listenTodoInfo = e;
         this.updateOrder();
       }
+      console.log(555,e);
       // 标签
       if (e.type === 4) {
         this.isTag = e.state === 0 ? false : true;
@@ -1705,18 +1688,17 @@ export default {
       // 查看有没有合模的自定义构件
       // 合模必然有 uuid vanjian1
       const godNodeList = this.$refs.setTree.getNode("vanjian1").parent.childNodes
-      console.log(444,godNodeList);
+
       const mult = godNodeList.find((item) => {
         return item.data.name === "自定义构件";
       });
-      console.log(5555,mult);
+
      this.multUuid = mult ? mult.data.uuid : null;
       // 如果没有自定义构件，保存最后一个节点，用来insertAfter节点
       if (!this.multUuid) {
         this.multBeforeUuid = godNodeList[godNodeList.length - 1].data.uuid;
       }
       
-      console.log(444,this.multUuid,this.multBeforeUuid);
       // 处理合模添加构件后更新列表
       if (this.multUuid) {
         // 如果有了自定义构件列表
@@ -1727,7 +1709,6 @@ export default {
           uuid: this.multUuid,
         };
         MODELAPI.LISTMEMBERTREE(params).then((res) => {
-          console.log(777, res);
           this.$refs.setTree.updateKeyChildren(this.multUuid, res.data.data);
         });
       } else {
@@ -1740,7 +1721,6 @@ export default {
           pageSize: 999,
         };
         MODELAPI.LISTMEMBERTREE(params).then((res) => {
-          console.log(88888, res);
           const list = res.data.data;
           this.$refs.setTree.insertAfter(list[list.length - 1], this.multBeforeUuid);
         });
@@ -1863,15 +1843,9 @@ export default {
             // 更新自定义构件列表
             if (this.appType === "3") {
               // 合模
-              console.log('handleMultModle');
               this.handleMultModle();
             } else {
-              console.log('updateGodChildNode');
               this.updateGodChildNode();
-            }
-
-            if (this.listenTodoInfo.type !== 14) {
-              this.$refs.tagTree.closePart(true);
             }
             if (this.controllerInfo.uiBar) {
               this.controllerInfo.tagUiBar = true;
