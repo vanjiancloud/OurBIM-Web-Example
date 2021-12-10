@@ -852,9 +852,10 @@ export default {
             comId: uuid,
           }).then((res) => {
             resMessage(res.data);
-            console.log(444,node);
-           const node2= this.$refs.setTree.getNode(node.data.uuid).parent.childNodes
-           console.log(node2);
+            console.log(444, node);
+            const node2 = this.$refs.setTree.getNode(node.data.uuid).parent
+              .childNodes;
+            console.log(node2);
             if (res.data.code === 0) {
               this.$refs.setTree.remove(node);
             }
@@ -1810,6 +1811,13 @@ export default {
             ) {
               this.propsProgress.data = progress;
               if (progress === 100) {
+                // 定位主视图
+                setTimeout(() => {
+                  MODELAPI.UPDATEORDER({
+                    taskid: this.taskId,
+                    action: "cameraPosAll",
+                  });
+                }, 1000);
                 let params = {
                   taskId: this.taskId,
                 };
