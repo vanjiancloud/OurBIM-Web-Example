@@ -964,11 +964,11 @@ export default {
     // 限制上传模型格式
     beforeModelUpload(file) {
       var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
-      const extension = testmsg === "rvt";
-      if (!extension) {
-        this.$message.error("上传模型只能是.rvt格式!");
-      }
-      return extension;
+      // const extension = testmsg === "rvt";
+      // if (!extension) {
+      //   this.$message.error("上传模型只能是.rvt格式!");
+      // }
+      // return extension;
     },
   },
   mounted() {

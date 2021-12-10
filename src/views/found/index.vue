@@ -65,7 +65,7 @@
           :on-exceed="exceed"
           :on-remove="onremove"
           :before-upload="beforeModelUpload"
-          accept=".rvt,.ifc,.zip"
+          accept=".rvt,.ifc,.zip,.rar"
           ref="bimupload"
           :auto-upload="false"
         >
@@ -221,7 +221,7 @@ export default {
       this.disabl = true;
       // this.$emit('handleCreateProjectDialog',false)
       // 上传bim模型
-     
+
       let uploadTimeout = setTimeout(() => {
         this.$refs.bimupload.submit();
         clearTimeout(uploadTimeout);
@@ -329,7 +329,7 @@ export default {
     // 上传bim模型前
     beforeModelUpload(file) {
       let testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
-      let listModel = ["rvt", "ifc", "zip"];
+      let listModel = ["rvt", "ifc", "zip", "rar"];
       const isLt = file.size / 1024 / 1024 < 200;
       if (!isLt) {
         this.$message({
@@ -346,7 +346,7 @@ export default {
         this.$message.error("请上传支持的文件格式!");
       } else {
         extension = true;
-         this.$message("正在上传，上传过程请勿关闭或刷新页面!");
+        this.$message("正在上传，上传过程请勿关闭或刷新页面!");
         // this.$common.openLoading("上传模型中");
       }
       console.log("extension", extension);

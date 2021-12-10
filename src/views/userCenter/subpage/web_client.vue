@@ -424,7 +424,6 @@ export default {
   created() {
     if (localStorage.getItem("appType")) {
       this.appType = localStorage.getItem("appType");
-      localStorage.removeItem("appType");
     }
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
@@ -853,6 +852,10 @@ export default {
             comId: uuid,
           }).then((res) => {
             resMessage(res.data);
+            console.log(444, node);
+            const node2 = this.$refs.setTree.getNode(node.data.uuid).parent
+              .childNodes;
+            console.log(node2);
             if (res.data.code === 0) {
               this.$refs.setTree.remove(node);
             }
@@ -945,10 +948,10 @@ export default {
       if (e.data.typeId === "comp") {
         // 如果是构件库
         // if (e.data.haveChild === "0") {
-          this.leafInfo = e;
-          this.isQrCodeClick = true;
-          // this.handleQrcode(true);
-          this.handleFocusTag(e.data);
+        this.leafInfo = e;
+        this.isQrCodeClick = true;
+        // this.handleQrcode(true);
+        this.handleFocusTag(e.data);
         // } else {
         //   return;
         // }
@@ -1003,14 +1006,12 @@ export default {
        * @Date: 2021-08-17 16:00:55
        * @description: 定位二维码
        */
-      let flag=null
-      console.log(9999,this.leafInfo.data.activeSelect);
-      flag=this.leafInfo.data.activeSelect?true:false
-      console.log(44,flag);
+      let flag = null;
+      flag = this.leafInfo.data.activeSelect ? true : false;
       let params = {
         taskId: this.taskId,
         comId: e.uuid,
-        flag
+        flag,
       };
 
       COMPONENTLIBRARY.focusComponent(params)
@@ -1538,7 +1539,6 @@ export default {
         this.listenTodoInfo = e;
         this.updateOrder();
       }
-      console.log(555,e);
       // 标签
       if (e.type === 4) {
         this.isTag = e.state === 0 ? false : true;
@@ -1687,18 +1687,19 @@ export default {
     async handleMultModle() {
       // 查看有没有合模的自定义构件
       // 合模必然有 uuid vanjian1
-      const godNodeList = this.$refs.setTree.getNode("vanjian1").parent.childNodes
+      const godNodeList =
+        this.$refs.setTree.getNode("vanjian1").parent.childNodes;
 
       const mult = godNodeList.find((item) => {
         return item.data.name === "自定义构件";
       });
 
-     this.multUuid = mult ? mult.data.uuid : null;
+      this.multUuid = mult ? mult.data.uuid : null;
       // 如果没有自定义构件，保存最后一个节点，用来insertAfter节点
       if (!this.multUuid) {
         this.multBeforeUuid = godNodeList[godNodeList.length - 1].data.uuid;
       }
-      
+
       // 处理合模添加构件后更新列表
       if (this.multUuid) {
         // 如果有了自定义构件列表
@@ -1722,7 +1723,10 @@ export default {
         };
         MODELAPI.LISTMEMBERTREE(params).then((res) => {
           const list = res.data.data;
-          this.$refs.setTree.insertAfter(list[list.length - 1], this.multBeforeUuid);
+          this.$refs.setTree.insertAfter(
+            list[list.length - 1],
+            this.multBeforeUuid
+          );
         });
       }
     },
@@ -1747,6 +1751,7 @@ export default {
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
           this.socketData = realData;
+          console.log("realData", realData);
           if (realData.id === "1") {
             this.memberInfo = {
               type: 1,
@@ -1806,6 +1811,13 @@ export default {
             ) {
               this.propsProgress.data = progress;
               if (progress === 100) {
+                // 定位主视图
+                setTimeout(() => {
+                  MODELAPI.UPDATEORDER({
+                    taskid: this.taskId,
+                    action: "cameraPosAll",
+                  });
+                }, 1000);
                 let params = {
                   taskId: this.taskId,
                 };
@@ -1850,6 +1862,13 @@ export default {
             if (this.controllerInfo.uiBar) {
               this.controllerInfo.tagUiBar = true;
               this.controllerInfo.tagViewCube = true;
+            }
+            // 判断原本标签有没有开启
+            if (
+              this.listenTodoInfo.type === 4 &&
+              this.listenTodoInfo.state === 1
+            ) {
+              this.$refs.tagTree.closePart(true);
             }
             let messageInfo = {
               prex: "ourbimMessage",

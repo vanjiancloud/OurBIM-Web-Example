@@ -1466,6 +1466,7 @@ export default {
        * @Date: 2021-03-17 11:36:27
        * @description: 更新视点
        */
+      this.followInfo.taskId=this.taskId
       this.$refs["ruleFollow"].validate((valid) => {
         if (valid) {
           MODELAPI.UPDATEFOLLOWPOINT(this.followInfo)
