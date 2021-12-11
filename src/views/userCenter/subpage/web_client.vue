@@ -121,9 +121,9 @@
                   <span class="label-span">{{ node.label }}</span>
                   <img
                     src="@/assets/images/tag/6.png"
-                    @click.stop="delectCom(node)"
+                    @click.stop="deleteCom(node)"
                     class="delect-com-icon"
-                    v-if="node.data.typeId === 'comp'"
+                    v-if="node.data.typeId === 'comp' && checkedNodeVanjian(node)"
                   />
                   <span>
                     <!-- <span v-if="node.data.typeId !== 'comp'"> -->
@@ -839,7 +839,25 @@ export default {
       this.handleState = 10;
       this.updateOrder();
     },
-    delectCom(node) {
+    // 判断父级或者父父级node名字有没有vanjian
+    checkedNodeVanjian(node) {
+      if (node.level === 1) {
+        return true;
+      } else if (node.level === 2) {
+        if (node.parent.data.uuid.indexOf("vanjian") !== -1) {
+          return false;
+        } else {
+          return true;
+        }
+      } else if (node.level === 3){
+        if (node.parent.parent.data.uuid.indexOf("vanjian") !== -1) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    },
+    deleteCom(node) {
       const { name, uuid } = node.data;
       this.$confirm("此操作删除此构件, 是否继续?", "提示", {
         confirmButtonText: "确定",
@@ -2500,7 +2518,7 @@ export default {
     .bim-info {
       pointer-events: auto;
       height: 50vh;
-      width: 400px;
+      min-width: 400px;
       position: absolute;
       top: 0;
       right: 0;
