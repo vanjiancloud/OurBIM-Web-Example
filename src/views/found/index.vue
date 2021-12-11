@@ -65,7 +65,7 @@
           :on-exceed="exceed"
           :on-remove="onremove"
           :before-upload="beforeModelUpload"
-          accept=".rvt,.ifc,.zip,.rar"
+          accept=".rvt,.ifc,.zip"
           ref="bimupload"
           :auto-upload="false"
         >
@@ -329,7 +329,7 @@ export default {
     // 上传bim模型前
     beforeModelUpload(file) {
       let testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
-      let listModel = ["rvt", "ifc", "zip", "rar"];
+      let listModel = ["rvt", "ifc", "zip"];
       const isLt = file.size / 1024 / 1024 < 200;
       if (!isLt) {
         this.$message({

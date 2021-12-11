@@ -120,7 +120,7 @@ const i18n = new VueI18n({
       uploadLimit: '文件上传限制200MB',
       uploadGoBeyond: '超出200MB请联系我们',
       xianzhi: '每次只能上传一个模型',
-      limit: '支持上传扩展名：.rvt, .ifc,.zip,.rar',
+      limit: '支持上传扩展名：.rvt, .ifc,.zip',
       Render: '开始上传',
       application: '项目名称：',
       Required: '必填项',
