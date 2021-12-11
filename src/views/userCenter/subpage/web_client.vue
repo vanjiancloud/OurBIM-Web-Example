@@ -852,12 +852,15 @@ export default {
             comId: uuid,
           }).then((res) => {
             resMessage(res.data);
-            console.log(444, node);
-            const node2 = this.$refs.setTree.getNode(node.data.uuid).parent
-              .childNodes;
-            console.log(node2);
+            // 获取自定义构件父级node
+            const nodeParent = this.$refs.setTree.getNode(
+              node.data.uuid
+            ).parent;
             if (res.data.code === 0) {
               this.$refs.setTree.remove(node);
+              if (nodeParent.childNodes.length === 0) {
+                this.$refs.setTree.remove(nodeParent.data.uuid);
+              }
             }
           });
         })
@@ -1751,7 +1754,6 @@ export default {
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
           this.socketData = realData;
-          console.log("realData", realData);
           if (realData.id === "1") {
             this.memberInfo = {
               type: 1,
