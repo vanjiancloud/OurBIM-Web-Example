@@ -45,10 +45,10 @@
         {{ $t("Upload") }}
       </div>
       <!-- 单选框 -->
-      <el-radio v-model="radio" label="1">{{ $t("UploadBIM") }}</el-radio>
+      <!-- <el-radio v-model="radio" label="1">{{ $t("UploadBIM") }}</el-radio>
       <el-radio disabled v-model="radio" label="2">
         {{ $t("Uploadto") }}
-      </el-radio>
+      </el-radio> -->
       <!-- 上传BIM模型 -->
       <div class="cover">
         <el-upload
