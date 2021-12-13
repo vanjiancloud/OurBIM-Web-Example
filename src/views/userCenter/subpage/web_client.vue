@@ -123,7 +123,9 @@
                     src="@/assets/images/tag/6.png"
                     @click.stop="deleteCom(node)"
                     class="delect-com-icon"
-                    v-if="node.data.typeId === 'comp' && checkedNodeVanjian(node)"
+                    v-if="
+                      node.data.typeId === 'comp' && checkedNodeVanjian(node)
+                    "
                   />
                   <span>
                     <!-- <span v-if="node.data.typeId !== 'comp'"> -->
@@ -313,6 +315,8 @@ import qrcodePart from "@/components/web_client/qrcode-part.vue";
 import scrollContainer from "@/components/web_client/scrollContainer.vue";
 
 import resMessage from "../../../utils/res-message";
+
+// import "https://res.wx.qq.com/open/js/jweixin-1.3.2.js";
 export default {
   name: "look_app",
   layout: "reset",
@@ -849,7 +853,7 @@ export default {
         } else {
           return true;
         }
-      } else if (node.level === 3){
+      } else if (node.level === 3) {
         if (node.parent.parent.data.uuid.indexOf("vanjian") !== -1) {
           return false;
         } else {
@@ -1935,7 +1939,7 @@ export default {
               } else {
                 this.delMaskTimer(1000 * 5);
               }
-            }
+            } // 13cube返回数据
           } else if (realData.id === "14") {
             // 添加构件，但是按了esc
             if (this.controllerInfo.uiBar) {
@@ -1944,8 +1948,10 @@ export default {
             }
           } else if (realData.id === "15") {
             this.$refs.getFooter.handleComOperateIcon(realData);
+          } else if (realData.id === "16") {
+            // 距离上一次操作时长
+            this.exitMiniprogram(realData.lastOperationTime);
           }
-          // 13cube返回数据
         }
       };
       this.websock.onopen = (e) => {
@@ -1955,6 +1961,14 @@ export default {
         }, 1000 * 60);
       };
       this.websock.onerror = (e) => {};
+    },
+    exitMiniprogram(time) {
+      if (time > 60 * 2) {
+        wx.miniProgram.navigateBack({ delta: 1 });
+         wx.miniProgram.postMessage({ data: this.taskId });
+        wx.miniProgram.redirectTo({ url: "/pages/home/home" });
+       
+      }
     },
     delMaskTimer(e) {
       /**
@@ -1980,6 +1994,7 @@ export default {
             this.taskId = res.data.data.taskId;
             this.ourbimInfo = res.data.data;
             this.propsFooter.taskId = res.data.data.taskId;
+
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10001,
