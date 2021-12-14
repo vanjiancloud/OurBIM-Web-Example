@@ -195,13 +195,13 @@
             >
               {{ $t("into") }}
             </el-button>
-            <!-- <el-button
-              @click="teamWorkBtnClick"
+            <el-button
+              @click="teamWorkBtnClick(scope.row)"
               :disabled="scope.row.applidStatus === '2' ? false : true"
               :class="scope.row.applidStatus === '2' ? 'ff' : 'bbb'"
             >
               协同模式
-            </el-button> -->
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -393,7 +393,31 @@
     </el-dialog>
 
     <!-- 协同模式弹窗 -->
-    <TeamworkDialog ref="teamworkDialogRef" />
+    <!-- <teamwork-dialog ref="teamworkDialogRef" @goApp="goApp"></teamwork-dialog> -->
+    <el-dialog title="协同模式" :visible.sync="teamDialogVisible" width="30%">
+      <div class="nick-row">
+        <div class="nick">昵称</div>
+        <div class="nick-input">
+          <el-input v-model="teamNickName" placeholder="请输入内容"></el-input>
+        </div>
+      </div>
+
+      <!-- <div class="nick-row" v-show="status === 2">
+        <div class="nick">链接</div>
+        <div class="nick-input">
+          <el-input placeholder="请输入内容" v-model="teamUrl" disabled>
+            <template slot="append">复制</template>
+          </el-input>
+        </div>
+      </div> -->
+
+      <span slot="footer" class="dialog-footer">
+        <!-- <el-button type="primary" @click="addUrl" v-show="status === 1"
+          >生成链接</el-button
+        > -->
+        <el-button type="primary" @click="GoApp">进入项目</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -414,10 +438,12 @@ import TeamworkDialog from "./TeamworkDialog.vue";
 export default {
   name: "manage",
   components: {
-    TeamworkDialog,
+    // TeamworkDialog,
   },
   data() {
     return {
+      teamNickName:'',
+      teamDialogVisible: false,
       FormIntegrate: {
         appName: null,
       },
@@ -604,8 +630,10 @@ export default {
         }
       });
     },
-    teamWorkBtnClick() {
-      this.$refs.teamworkDialogRef.visible(true);
+    teamWorkBtnClick(e) {
+      // this.$refs.teamworkDialogRef.openDialog(e);
+      this.appInfo = e;
+      this.teamDialogVisible = true;
     },
     GetIntegrate() {
       getProjectList({
@@ -880,6 +908,12 @@ export default {
 
     //进入应用
     GoApp(e) {
+      let userType = null;
+      if (!e.appid) {
+        e = this.appInfo;
+        userType = 1;
+      }
+
       let isiPad =
         navigator.userAgent.match(/(iPad)/) ||
         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -888,14 +922,19 @@ export default {
         appid: e.appid,
       }).then((res) => {
         if (res.data.code === 0) {
+          let query = {
+            appid: e.appid,
+            locale: this.$i18n.locale,
+            token: res.data.data.token,
+          };
+          if(userType){
+            query.userType=userType
+            query.teamNickName=this.teamNickName
+          }
           if (isiPad !== false || isMac !== false) {
             this.$router.push({
               name: "web_client",
-              query: {
-                appid: e.appid,
-                locale: this.$i18n.locale,
-                token: res.data.data.token,
-              },
+              query: query,
               params: {
                 appType: e.appType,
               },
@@ -903,11 +942,7 @@ export default {
           } else {
             const { href } = this.$router.resolve({
               name: "web_client",
-              query: {
-                appid: e.appid,
-                locale: this.$i18n.locale,
-                token: res.data.data.token,
-              },
+              query: query,
             });
             localStorage.setItem("appType", e.appType);
             window.open(href, "_blank");

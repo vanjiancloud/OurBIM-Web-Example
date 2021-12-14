@@ -429,7 +429,7 @@ export default {
     if (localStorage.getItem("appType")) {
       this.appType = localStorage.getItem("appType");
     }
-    console.log('appType',this.appType);
+    console.log("appType", this.appType);
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -1989,10 +1989,16 @@ export default {
     },
     getModelUrl() {
       let appId = this.$route.query.appid;
-      MODELAPI.GETMODELINFO({
+
+      let params = {
         appliId: appId,
         token: this.appToken,
-      })
+      };
+      if (this.$route.query.userType) {
+        params.userType = this.$route.query.userType;
+        params.nickName = this.$route.query.teamNickName;
+      }
+      MODELAPI.GETMODELINFO(params)
         .then((res) => {
           if (res.data.code === 0 && res.data.data) {
             this.webUrl = res.data.data.url;
