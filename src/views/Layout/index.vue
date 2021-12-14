@@ -505,6 +505,7 @@ export default {
           this.countBF = res.data.data.countBF;
           this.currentCountBF = res.data.data.currentCountBF;
           this.isPay = res.data.data.isPay;
+          console.log(555, this.currentCountBF, this.countBF);
         })
         .catch((err) => {
           // this.$message.error('信息展示失败')
@@ -736,7 +737,6 @@ export default {
           font-family: PingFang SC;
           font-size: 16px;
           color: #999;
-        
         }
         a:hover {
           color: #ff6600;
@@ -825,7 +825,6 @@ export default {
         }
         .tiao {
           .tu {
-            
             margin-top: 10px;
             display: flex;
             .icon {

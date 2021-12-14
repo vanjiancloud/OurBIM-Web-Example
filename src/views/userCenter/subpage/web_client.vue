@@ -429,6 +429,7 @@ export default {
     if (localStorage.getItem("appType")) {
       this.appType = localStorage.getItem("appType");
     }
+    console.log('appType',this.appType);
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -1963,11 +1964,15 @@ export default {
       this.websock.onerror = (e) => {};
     },
     exitMiniprogram(time) {
-      if (time > 60 * 2) {
-        wx.miniProgram.navigateBack({ delta: 1 });
-         wx.miniProgram.postMessage({ data: this.taskId });
-        wx.miniProgram.redirectTo({ url: "/pages/home/home" });
-       
+      // 微信小程序长时间未操作，返回项目列表页
+      if (time > 1) {
+        wx.miniProgram.getEnv((res) => {
+          if (res.miniprogram) {
+            this.hiddenState = 1;
+            this.destroyed();
+            wx.miniProgram.redirectTo({ url: "/pages/home/home" });
+          }
+        });
       }
     },
     delMaskTimer(e) {

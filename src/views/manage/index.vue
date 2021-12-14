@@ -195,6 +195,13 @@
             >
               {{ $t("into") }}
             </el-button>
+            <!-- <el-button
+              @click="teamWorkBtnClick"
+              :disabled="scope.row.applidStatus === '2' ? false : true"
+              :class="scope.row.applidStatus === '2' ? 'ff' : 'bbb'"
+            >
+              协同模式
+            </el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -384,6 +391,9 @@
         >
       </span>
     </el-dialog>
+
+    <!-- 协同模式弹窗 -->
+    <TeamworkDialog ref="teamworkDialogRef" />
   </div>
 </template>
 
@@ -398,11 +408,14 @@ import {
 import MODELAPI from "@/api/model_api";
 import { Getuserid } from "@/store/index.js";
 import axios from "@/utils/request";
-import createId from "@/utils/createId.js";
 import qs from "qs";
+
+import TeamworkDialog from "./TeamworkDialog.vue";
 export default {
   name: "manage",
-  components: {},
+  components: {
+    TeamworkDialog,
+  },
   data() {
     return {
       FormIntegrate: {
@@ -590,6 +603,9 @@ export default {
           return false;
         }
       });
+    },
+    teamWorkBtnClick() {
+      this.$refs.teamworkDialogRef.visible(true);
     },
     GetIntegrate() {
       getProjectList({
@@ -873,7 +889,6 @@ export default {
       }).then((res) => {
         if (res.data.code === 0) {
           if (isiPad !== false || isMac !== false) {
-           
             this.$router.push({
               name: "web_client",
               query: {
@@ -886,16 +901,15 @@ export default {
               },
             });
           } else {
-             console.log(888888, e.appType);
             const { href } = this.$router.resolve({
               name: "web_client",
               query: {
                 appid: e.appid,
                 locale: this.$i18n.locale,
                 token: res.data.data.token,
-              }
+              },
             });
-            localStorage.setItem('appType',e.appType)
+            localStorage.setItem("appType", e.appType);
             window.open(href, "_blank");
           }
         } else {
