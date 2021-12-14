@@ -1965,7 +1965,7 @@ export default {
     },
     exitMiniprogram(time) {
       // 微信小程序长时间未操作，返回项目列表页
-      if (time > 1) {
+      if (time > 60*2) {
         wx.miniProgram.getEnv((res) => {
           if (res.miniprogram) {
             this.hiddenState = 1;
