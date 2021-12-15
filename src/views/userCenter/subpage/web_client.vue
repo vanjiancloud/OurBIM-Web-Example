@@ -242,8 +242,6 @@
                     </div>
                   </el-collapse-item>
                 </el-collapse>
-
-                <!-- <div v-for="item in 100" :key="item">1111</div> -->
               </scroll-container>
             </div>
           </div>
@@ -429,7 +427,6 @@ export default {
     if (localStorage.getItem("appType")) {
       this.appType = localStorage.getItem("appType");
     }
-    console.log("appType", this.appType);
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -484,6 +481,7 @@ export default {
           this.getError(e.data);
         }
         if (e.data.prex === "ourbimMessage") {
+          
           // 控制栏显示隐藏
           if (e.data.type === 1001) {
             this.controllerInfo.uiBar = e.data.data;
@@ -1790,6 +1788,7 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
+            
             if (this.$refs.getFooter) {
               this.$refs.getFooter.resetPointList(realData.object);
             }
@@ -1994,9 +1993,15 @@ export default {
         appliId: appId,
         token: this.appToken,
       };
-      if (this.$route.query.userType) {
-        params.userType = this.$route.query.userType;
-        params.nickName = this.$route.query.teamNickName;
+      const { userType, nickName, code } = this.$route.query;
+      if (userType) {
+        params.userType = userType;
+      }
+      if (nickName) {
+        params.nickName = nickName;
+      }
+      if (code) {
+        params.code = code;
       }
       MODELAPI.GETMODELINFO(params)
         .then((res) => {

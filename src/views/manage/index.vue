@@ -119,7 +119,13 @@
           </template>
         </el-table-column>
 
-        <el-table-column :label="$t('operation')" width="220" align="canter">
+        <!-- 操作 -->
+        <el-table-column
+          :label="$t('operation')"
+          width="220"
+          align="canter"
+          v-if="false"
+        >
           <template slot-scope="scope">
             <div class="handle-btn">
               <!-- 升级 -->
@@ -186,8 +192,9 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="进入项目" width="120">
-          <template slot-scope="scope">
+
+        <el-table-column label="进入项目" width="300">
+          <template slot-scope="scope" class="goapp-row">
             <el-button
               @click="GoApp(scope.row)"
               :disabled="scope.row.applidStatus === '2' ? false : true"
@@ -202,6 +209,45 @@
             >
               协同模式
             </el-button>
+            <!-- 点点点 -->
+            <el-dropdown
+              @command="handleCommand"
+              @visible-change="visibleChange(scope.row)"
+              trigger="hover"
+              placement="bottom"
+            >
+              <div class="ellipsis">
+                <div class="ellipsis-item"></div>
+                <div class="ellipsis-item"></div>
+                <div class="ellipsis-item"></div>
+              </div>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  command="upgrade"
+                  v-if="
+                    scope.row.currVersion !== 'V5' &&
+                    scope.row.applidStatus === '2' &&
+                    scope.row.appType === '0'
+                  "
+                  >升级</el-dropdown-item
+                >
+                <el-dropdown-item
+                  command="share"
+                  v-if="scope.row.applidStatus === '2'"
+                  >分享</el-dropdown-item
+                >
+                <el-dropdown-item
+                  command="edit"
+                  v-if="scope.row.applidStatus !== '5'"
+                  >编辑</el-dropdown-item
+                >
+                <el-dropdown-item
+                  command="delete"
+                  v-if="scope.row.applidStatus !== '5'"
+                  >删除</el-dropdown-item
+                >
+              </el-dropdown-menu>
+            </el-dropdown>
           </template>
         </el-table-column>
       </el-table>
@@ -418,6 +464,7 @@ export default {
   },
   data() {
     return {
+      selectOprationItem: {},
       FormIntegrate: {
         appName: null,
       },
@@ -782,6 +829,30 @@ export default {
       });
       this.$message.success("二维码复制成功！");
     },
+    visibleChange(e) {
+      this.selectOprationItem = e;
+    },
+    handleCommand(command) {
+      const item = this.selectOprationItem;
+      switch (command) {
+        case "upgrade":
+          this.upgrade(item);
+          break;
+        case "share":
+          this.dialogFormVisibleOne = true;
+          this.share(item);
+          break;
+        case "edit":
+          this.dialogFormVisible = true;
+          this.edit(item);
+          break;
+        case "delete":
+          this.remove(item);
+          break;
+        default:
+          break;
+      }
+    },
     // 编辑按钮
     edit(e) {
       this.form.name = e.appName;
@@ -893,7 +964,7 @@ export default {
           };
           if (teamInfo) {
             query.userType = teamInfo.userType;
-            query.teamNickName = teamInfo.teamNickName;
+            query.nickName = teamInfo.nickName;
           }
           if (isiPad !== false || isMac !== false) {
             this.$router.push({
@@ -1304,16 +1375,18 @@ export default {
   }
 }
 
-.nick-row {
+.ellipsis {
+  cursor: pointer;
   display: flex;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 30px;
-  .nick {
-    margin-right: 20px;
-  }
-  .nick-input {
-    width: 80%;
+  display: inline-block;
+  margin-left: 10px;
+  .ellipsis-item {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: #999;
+    margin: 0 3px;
   }
 }
 </style>

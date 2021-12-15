@@ -3,7 +3,7 @@
     title="协同模式"
     :visible.sync="dialogVisible"
     :before-close="closeDialog"
-    width="30%"
+    width="35%"
   >
     <div class="nick-row">
       <div class="nick">昵称</div>
@@ -17,7 +17,7 @@
         ></el-input>
       </div>
     </div>
-    <div class="nick-row" v-show="status === 2">
+    <div class="nick-row margin-row" v-show="status === 2">
       <div class="nick">链接</div>
       <div class="nick-input">
         <el-input placeholder="请输入内容" v-model="teamUrl" readonly>
@@ -34,8 +34,8 @@
         </el-input>
       </div>
     </div>
-    <div v-show="status===2">二维码：</div>
-    <div class="code-img-row" v-show="status===2">
+    <div v-show="status === 2">二维码：</div>
+    <div class="code-img-row" v-show="status === 2">
       <div><img :src="codeImg" alt="" class="codeImg" /></div>
       <div class="code-row-text">
         <div>将二维码分享给好友，对方微信、</div>
@@ -53,7 +53,11 @@
       </div>
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="addUrl" v-show="status === 1"
+      <el-button
+        type="primary"
+        @click="addUrl"
+        v-show="status === 1"
+        :loading="loading"
         >生成链接</el-button
       >
       <el-button type="primary" @click="goApp">进入项目</el-button>
@@ -74,6 +78,7 @@ export default {
       status: 1,
       nickNameReadonly: false,
       codeImg: "",
+      loading: false,
     };
   },
   methods: {
@@ -84,21 +89,25 @@ export default {
     closeDialog() {
       this.dialogVisible = false;
 
-      (this.nickName = ""),
-        (this.teamUrl = ""),
-        (this.appInfo = {}),
-        (this.status = 1),
-        (this.nickNameReadonly = false);
+      this.nickName = "";
+      this.teamUrl = "";
+      this.appInfo = {};
+      this.status = 1;
+      this.nickNameReadonly = false;
+      this.codeImg = "";
+      this.loading = false;
     },
     addUrl() {
       if (this.nickName === "") {
         return this.$message.error("昵称不能为空！");
       }
+      this.loading = true;
       MODELAPI.GETBIMTOKEN({
         appid: this.appInfo.appid,
       }).then((res) => {
         if (res.data.code !== 0) {
           this.$message.error(res.data.message);
+          this.loading = false;
           return;
         }
         MODELAPI.GETMODELINFO({
@@ -109,6 +118,7 @@ export default {
         }).then((res2) => {
           if (res2.data.code !== 0) {
             this.$message.error(res2.data.message);
+            this.loading = false;
             return;
           }
           TeamModeApi.getTeamUrl({
@@ -116,6 +126,7 @@ export default {
             code: res2.data.data.code,
             userId: JSON.parse(sessionStorage.getItem("userid")),
           }).then((res3) => {
+            this.loading = false;
             if (res3.data.code !== 0) {
               this.$message.error(res3.data.message);
               return;
@@ -137,7 +148,7 @@ export default {
       }
       this.$emit("goApp", this.appInfo, {
         userType: 1,
-        teamNickName: this.nickName,
+        nickName: this.nickName,
       });
     },
     //复制链接成功
@@ -178,9 +189,13 @@ export default {
     height: 150px;
     margin: 0 60px;
   }
-  .code-row-text >div{
+  .code-row-text > div {
     margin-top: 10px;
     margin-bottom: 20px;
   }
+}
+
+.margin-row {
+  margin: 30px 0;
 }
 </style>
