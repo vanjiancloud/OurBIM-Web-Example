@@ -1790,6 +1790,7 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
+            this.sendToIframe(2005, realData, "关注视点列表");
             if (this.$refs.getFooter) {
               this.$refs.getFooter.resetPointList(realData.object);
             }
