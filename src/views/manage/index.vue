@@ -393,31 +393,7 @@
     </el-dialog>
 
     <!-- 协同模式弹窗 -->
-    <!-- <teamwork-dialog ref="teamworkDialogRef" @goApp="goApp"></teamwork-dialog> -->
-    <el-dialog title="协同模式" :visible.sync="teamDialogVisible" width="30%">
-      <div class="nick-row">
-        <div class="nick">昵称</div>
-        <div class="nick-input">
-          <el-input v-model="teamNickName" placeholder="请输入内容"></el-input>
-        </div>
-      </div>
-
-      <!-- <div class="nick-row" v-show="status === 2">
-        <div class="nick">链接</div>
-        <div class="nick-input">
-          <el-input placeholder="请输入内容" v-model="teamUrl" disabled>
-            <template slot="append">复制</template>
-          </el-input>
-        </div>
-      </div> -->
-
-      <span slot="footer" class="dialog-footer">
-        <!-- <el-button type="primary" @click="addUrl" v-show="status === 1"
-          >生成链接</el-button
-        > -->
-        <el-button type="primary" @click="GoApp">进入项目</el-button>
-      </span>
-    </el-dialog>
+    <teamwork-dialog ref="teamworkDialogRef" @goApp="GoApp"></teamwork-dialog>
   </div>
 </template>
 
@@ -438,12 +414,10 @@ import TeamworkDialog from "./TeamworkDialog.vue";
 export default {
   name: "manage",
   components: {
-    // TeamworkDialog,
+    TeamworkDialog,
   },
   data() {
     return {
-      teamNickName:'',
-      teamDialogVisible: false,
       FormIntegrate: {
         appName: null,
       },
@@ -469,7 +443,6 @@ export default {
       display: false, //转换进度条默认隐藏
       customColor: "#00AAF0", //进度条颜色
       baseURL: axios.defaults.baseURL,
-      appInfo: "",
       appliId: "",
       fileUpload: "",
       fileList: [{ url: "" }], //上传图片列表显示
@@ -631,9 +604,7 @@ export default {
       });
     },
     teamWorkBtnClick(e) {
-      // this.$refs.teamworkDialogRef.openDialog(e);
-      this.appInfo = e;
-      this.teamDialogVisible = true;
+      this.$refs.teamworkDialogRef.openDialog(e);
     },
     GetIntegrate() {
       getProjectList({
@@ -755,13 +726,12 @@ export default {
     },
     // 关闭分享dialog
     handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then((_) => {
-          done();
-          this.isShow = 1;
-          this.formShare.days = "999";
-        })
-        .catch((_) => {});
+      done();
+      this.isShow = 1;
+      this.formShare.days = "999";
+      // this.$confirm("确认关闭？")
+      //   .then((_) => {})
+      //   .catch((_) => {});
     },
     //确定分享
     confirm() {
@@ -907,13 +877,7 @@ export default {
     },
 
     //进入应用
-    GoApp(e) {
-      let userType = null;
-      if (!e.appid) {
-        e = this.appInfo;
-        userType = 1;
-      }
-
+    GoApp(e, teamInfo) {
       let isiPad =
         navigator.userAgent.match(/(iPad)/) ||
         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -927,9 +891,9 @@ export default {
             locale: this.$i18n.locale,
             token: res.data.data.token,
           };
-          if(userType){
-            query.userType=userType
-            query.teamNickName=this.teamNickName
+          if (teamInfo) {
+            query.userType = teamInfo.userType;
+            query.teamNickName = teamInfo.teamNickName;
           }
           if (isiPad !== false || isMac !== false) {
             this.$router.push({
@@ -1340,9 +1304,16 @@ export default {
   }
 }
 
-.bbbbbbbbbbbbbb {
-  width: 90%;
-  background-color: #4caf50;
-  box-sizing: border-box;
+.nick-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 30px;
+  .nick {
+    margin-right: 20px;
+  }
+  .nick-input {
+    width: 80%;
+  }
 }
 </style>

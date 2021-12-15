@@ -1,21 +1,57 @@
 <template>
-  <el-dialog title="协同模式" :visible.sync="dialogVisible" width="30%">
+  <el-dialog
+    title="协同模式"
+    :visible.sync="dialogVisible"
+    :before-close="closeDialog"
+    width="30%"
+  >
     <div class="nick-row">
       <div class="nick">昵称</div>
       <div class="nick-input">
-        <el-input v-model="nickName" placeholder="请输入内容"></el-input>
+        <el-input
+          v-model="nickName"
+          placeholder="请输入内容"
+          minlength="1"
+          clearable
+          :readonly="nickNameReadonly"
+        ></el-input>
       </div>
     </div>
-
     <div class="nick-row" v-show="status === 2">
       <div class="nick">链接</div>
       <div class="nick-input">
-        <el-input placeholder="请输入内容" v-model="teamUrl" disabled>
-          <template slot="append">复制</template>
+        <el-input placeholder="请输入内容" v-model="teamUrl" readonly>
+          <template slot="append">
+            <el-button
+              type="info"
+              class="btn"
+              v-clipboard:copy="teamUrl"
+              v-clipboard:success="onCopyUrl"
+              v-clipboard:error="onErrorUrl"
+              >复制链接</el-button
+            >
+          </template>
         </el-input>
       </div>
     </div>
-
+    <div v-show="status===2">二维码：</div>
+    <div class="code-img-row" v-show="status===2">
+      <div><img :src="codeImg" alt="" class="codeImg" /></div>
+      <div class="code-row-text">
+        <div>将二维码分享给好友，对方微信、</div>
+        <div>钉钉等扫一扫即可访问BIM场景</div>
+        <div>
+          <el-button
+            type="primary"
+            class="btn"
+            v-clipboard:copy="teamUrl"
+            v-clipboard:success="onCopyUrl"
+            v-clipboard:error="onErrorUrl"
+            >复制二维码</el-button
+          >
+        </div>
+      </div>
+    </div>
     <span slot="footer" class="dialog-footer">
       <el-button type="primary" @click="addUrl" v-show="status === 1"
         >生成链接</el-button
@@ -27,6 +63,7 @@
 
 <script>
 import MODELAPI from "../../api/model_api";
+import TeamModeApi from "../../api/team_mode";
 export default {
   data() {
     return {
@@ -35,6 +72,8 @@ export default {
       teamUrl: "",
       appInfo: {},
       status: 1,
+      nickNameReadonly: false,
+      codeImg: "",
     };
   },
   methods: {
@@ -44,10 +83,17 @@ export default {
     },
     closeDialog() {
       this.dialogVisible = false;
-      this.nickName = "";
-      this.appInfo = {};
+
+      (this.nickName = ""),
+        (this.teamUrl = ""),
+        (this.appInfo = {}),
+        (this.status = 1),
+        (this.nickNameReadonly = false);
     },
     addUrl() {
+      if (this.nickName === "") {
+        return this.$message.error("昵称不能为空！");
+      }
       MODELAPI.GETBIMTOKEN({
         appid: this.appInfo.appid,
       }).then((res) => {
@@ -56,8 +102,8 @@ export default {
           return;
         }
         MODELAPI.GETMODELINFO({
-          token: res.data.data.token,
           appliId: this.appInfo.appid,
+          token: res.data.data.token,
           userType: 1,
           nickName: this.nickName,
         }).then((res2) => {
@@ -65,15 +111,42 @@ export default {
             this.$message.error(res2.data.message);
             return;
           }
-          this.teamUrl = res.data.data.url;
-          this.status = 2;
-          this.goAppInfo = res;
+          TeamModeApi.getTeamUrl({
+            appId: this.appInfo.appid,
+            code: res2.data.data.code,
+            userId: JSON.parse(sessionStorage.getItem("userid")),
+          }).then((res3) => {
+            if (res3.data.code !== 0) {
+              this.$message.error(res3.data.message);
+              return;
+            }
+            this.status = 2;
+            this.teamUrl = res3.data.data.webShareUrl;
+            this.codeImg = res3.data.data.qrurl;
+            this.nickNameReadonly = true;
+          });
         });
       });
     },
+    //     观察这
+    //     userType:0
+    // roomCode：
     goApp() {
-      console.log(55);
-      this.$emit("goApp", this.appInfo,1);
+      if (this.nickName === "") {
+        return this.$message.error("昵称不能为空！");
+      }
+      this.$emit("goApp", this.appInfo, {
+        userType: 1,
+        teamNickName: this.nickName,
+      });
+    },
+    //复制链接成功
+    onCopyUrl: function (e) {
+      this.$message.success("链接复制成功！");
+    },
+    //复制链接失败
+    onErrorUrl: function (e) {
+      this.$message.error("复制失败！");
     },
   },
 };
@@ -84,12 +157,30 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  margin-bottom: 30px;
+  // margin-bottom: 30px;
   .nick {
     margin-right: 20px;
   }
   .nick-input {
     width: 80%;
+  }
+}
+
+/deep/ .el-input-group__append {
+  cursor: pointer;
+}
+
+.code-img-row {
+  margin-top: 20px;
+  display: flex;
+  .codeImg {
+    width: 150px;
+    height: 150px;
+    margin: 0 60px;
+  }
+  .code-row-text >div{
+    margin-top: 10px;
+    margin-bottom: 20px;
   }
 }
 </style>
