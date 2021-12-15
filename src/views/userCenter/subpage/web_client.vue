@@ -1790,7 +1790,13 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
-            this.sendToIframe(2005, realData, "关注视点列表");
+             let messageInfo = {
+              prex: "ourbimMessage",
+              type: 20005,
+              data: realData,
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
             if (this.$refs.getFooter) {
               this.$refs.getFooter.resetPointList(realData.object);
             }
