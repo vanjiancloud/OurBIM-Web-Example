@@ -52,6 +52,7 @@
         ></div>
       </div>
     </div>
+
     <!-- runTimeCode 1:mobile  0 ：PC  -->
     <div v-if="runTimeCode === 0">
       <!-- 模型浏览器 -->
@@ -424,12 +425,15 @@ export default {
     listenTodoInfo(val) {
       console.log("listenTodoInfo", val);
     },
+    hiddenState(val) {
+      console.log("hiddenState", val);
+    },
   },
   created() {
     if (localStorage.getItem("appType")) {
       this.appType = localStorage.getItem("appType");
     }
-    console.log('appType',this.appType);
+    console.log("appType", this.appType);
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -1790,7 +1794,7 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
-             let messageInfo = {
+            let messageInfo = {
               prex: "ourbimMessage",
               type: 20005,
               data: realData,
@@ -1972,11 +1976,13 @@ export default {
     },
     exitMiniprogram(time) {
       // 微信小程序长时间未操作，返回项目列表页
-      if (time > 60*2) {
+      if (time > 60) {
         wx.miniProgram.getEnv((res) => {
           if (res.miniprogram) {
+            this.isFade = true;
             this.hiddenState = 1;
-            this.destroyed();
+            this.clearTimePass();
+            this.closeWebSocket();
             wx.miniProgram.redirectTo({ url: "/pages/home/home" });
           }
         });
