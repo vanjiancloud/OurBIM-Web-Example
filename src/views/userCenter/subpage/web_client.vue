@@ -120,13 +120,23 @@
                   @click="handleTree(node, 0)"
                 >
                   <span class="label-span">{{ node.label }}</span>
+                  <!-- 合模 -->
                   <img
                     src="@/assets/images/tag/6.png"
                     @click.stop="deleteCom(node)"
                     class="delect-com-icon"
                     v-if="
-                      node.data.typeId === 'comp' && checkedNodeVanjian(node)
+                      appType === '3' &&
+                      node.data.typeId === 'comp' &&
+                      checkedNodeVanjian(node)
                     "
+                  />
+                  <!-- 非合模 -->
+                  <img
+                    src="@/assets/images/tag/6.png"
+                    @click.stop="deleteCom(node)"
+                    class="delect-com-icon"
+                    v-if="appType !== '3' && node.data.typeId === 'comp'"
                   />
                   <span>
                     <!-- <span v-if="node.data.typeId !== 'comp'"> -->
@@ -1983,7 +1993,7 @@ export default {
             this.hiddenState = 1;
             this.clearTimePass();
             this.closeWebSocket();
-            wx.miniProgram.redirectTo({ url: "/pages/home/home" });
+            // wx.miniProgram.redirectTo({ url: "/pages/home/home" });
           }
         });
       }
