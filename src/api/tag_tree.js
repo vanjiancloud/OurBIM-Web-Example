@@ -31,6 +31,7 @@
             return request({
                 url: '/tagControl/addTag',
                 method: 'POST',
+                // params
                 data: qsStringify(params)
               })
         },

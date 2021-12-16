@@ -282,6 +282,7 @@
       <view-cube
         v-if="controllerInfo.viewCube"
         v-show="controllerInfo.tagViewCube"
+        :userType="userType"
         @handleOrder="handleOrder"
         @goFront="goFront"
         @handleType="handleType"
@@ -415,6 +416,7 @@ export default {
       comVisible: false,
       appType: null,
       multUuid: null,
+      userType:null
     };
   },
 
@@ -474,54 +476,57 @@ export default {
     if (isiPad !== false || isMac !== false) {
       this.hiddenState = 3;
     }
-    window.addEventListener(
-      "message",
-      (e) => {
-        if (e.data.prex === "pxymessage") {
-          this.getError(e.data);
-        }
-        if (e.data.prex === "ourbimMessage") {
-          
-          // 控制栏显示隐藏
-          if (e.data.type === 1001) {
-            this.controllerInfo.uiBar = e.data.data;
-            this.controllerInfo.viewCube = e.data.data;
-          } else if (e.data.type >= 1002 && e.data.type <= 1014) {
-            if (this.actionList.indexOf(e.data.type) > -1) {
-              if (e.data.data === false) {
-                this.controllerInfo.singleList.push(e.data.type);
-              } else {
-                this.controllerInfo.singleList.indexOf(e.data.type) > -1
-                  ? this.controllerInfo.singleList.splice(
-                      this.controllerInfo.singleList.indexOf(e.data.type),
-                      1
-                    )
-                  : "";
-              }
-            }
-          } else if (e.data.type === 1015) {
-            this.controllerInfo.viewCube = e.data.data;
-          } else if (e.data.type === 2001) {
-            // 构件树的显示隐藏
-            this.controllerInfo.modelClient = e.data.data;
-          } else if (e.data.type === 2002) {
-            this.controllerInfo.memberAvttribute = e.data.data;
-          } else if (e.data.type === 2003) {
-            this.$refs.tagTree.closePart(e.data.data);
-            this.$refs.tagTree.closeIcon();
-          } else if (e.data.type === 2004) {
-            this.controllerInfo.componentLibrary = e.data.data;
-          }
-        }
-      },
-      false
-    );
+    this.addMessageEvent();
   },
   destroyed() {
+    localStorage.removeItem("shareCode");
     this.clearTimePass();
     this.closeWebSocket();
   },
   methods: {
+    addMessageEvent() {
+      window.addEventListener(
+        "message",
+        (e) => {
+          if (e.data.prex === "pxymessage") {
+            this.getError(e.data);
+          }
+          if (e.data.prex === "ourbimMessage") {
+            // 控制栏显示隐藏
+            if (e.data.type === 1001) {
+              this.controllerInfo.uiBar = e.data.data;
+              this.controllerInfo.viewCube = e.data.data;
+            } else if (e.data.type >= 1002 && e.data.type <= 1014) {
+              if (this.actionList.indexOf(e.data.type) > -1) {
+                if (e.data.data === false) {
+                  this.controllerInfo.singleList.push(e.data.type);
+                } else {
+                  this.controllerInfo.singleList.indexOf(e.data.type) > -1
+                    ? this.controllerInfo.singleList.splice(
+                        this.controllerInfo.singleList.indexOf(e.data.type),
+                        1
+                      )
+                    : "";
+                }
+              }
+            } else if (e.data.type === 1015) {
+              this.controllerInfo.viewCube = e.data.data;
+            } else if (e.data.type === 2001) {
+              // 构件树的显示隐藏
+              this.controllerInfo.modelClient = e.data.data;
+            } else if (e.data.type === 2002) {
+              this.controllerInfo.memberAvttribute = e.data.data;
+            } else if (e.data.type === 2003) {
+              this.$refs.tagTree.closePart(e.data.data);
+              this.$refs.tagTree.closeIcon();
+            } else if (e.data.type === 2004) {
+              this.controllerInfo.componentLibrary = e.data.data;
+            }
+          }
+        },
+        false
+      );
+    },
     comIconChang(val) {
       this.comVisible = val;
     },
@@ -1773,6 +1778,7 @@ export default {
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
+          console.log(222, JSON.parse(e.data));
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {
@@ -1788,7 +1794,6 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
-            
             if (this.$refs.getFooter) {
               this.$refs.getFooter.resetPointList(realData.object);
             }
@@ -1995,7 +2000,15 @@ export default {
       };
       const { userType, nickName, code } = this.$route.query;
       if (userType) {
+        this.userType=1
         params.userType = userType;
+      }
+      if (userType == 0) {
+        this.runTimeCode=1
+        this.isFade = false;
+        // this.isProgress=false
+        // this.controllerInfo.tagUiBar = false;
+        // this.controllerInfo.tagViewCube = false;
       }
       if (nickName) {
         params.nickName = nickName;
@@ -2010,6 +2023,10 @@ export default {
             this.taskId = res.data.data.taskId;
             this.ourbimInfo = res.data.data;
             this.propsFooter.taskId = res.data.data.taskId;
+            // 保存code
+            if (res.data.data.code) {
+              localStorage.setItem("shareCode", res.data.data.code || null);
+            }
 
             let messageInfo = {
               prex: "ourbimMessage",

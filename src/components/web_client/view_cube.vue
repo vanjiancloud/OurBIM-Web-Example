@@ -6,7 +6,7 @@
  * @description: 
 -->
 <template>
-  <div class="box-main">
+  <div :class="userType == 1 ? 'box-main userType' : 'box-main'">
     <div
       id="box"
       :class="isAnimation ? 'box-transition' : ''"
@@ -21,38 +21,96 @@
         :class="[
           item.className,
           activeFace === item.value ? 'active-face' : '',
-          'face-' + index
+          'face-' + index,
         ]"
       >
         <span v-text="item.label"></span>
         <!-- 边 -->
-        <div class="edge-0" @click.stop="handleEdge(index, 0)" @mouseenter="setEdge(index, 0, true)" @mouseleave="setEdge(index, 0, false)"></div>
-        <div class="edge-1" @click.stop="handleEdge(index, 1)" @mouseenter="setEdge(index, 1, true)" @mouseleave="setEdge(index, 1, false)"></div>
-        <div class="edge-2" @click.stop="handleEdge(index, 2)" @mouseenter="setEdge(index, 2, true)" @mouseleave="setEdge(index, 2, false)"></div>
-        <div class="edge-3" @click.stop="handleEdge(index, 3)" @mouseenter="setEdge(index, 3, true)" @mouseleave="setEdge(index, 3, false)"></div>
+        <div
+          class="edge-0"
+          @click.stop="handleEdge(index, 0)"
+          @mouseenter="setEdge(index, 0, true)"
+          @mouseleave="setEdge(index, 0, false)"
+        ></div>
+        <div
+          class="edge-1"
+          @click.stop="handleEdge(index, 1)"
+          @mouseenter="setEdge(index, 1, true)"
+          @mouseleave="setEdge(index, 1, false)"
+        ></div>
+        <div
+          class="edge-2"
+          @click.stop="handleEdge(index, 2)"
+          @mouseenter="setEdge(index, 2, true)"
+          @mouseleave="setEdge(index, 2, false)"
+        ></div>
+        <div
+          class="edge-3"
+          @click.stop="handleEdge(index, 3)"
+          @mouseenter="setEdge(index, 3, true)"
+          @mouseleave="setEdge(index, 3, false)"
+        ></div>
         <!-- 点 -->
-        <div class="spot-0" @click.stop="handleSpot(index, 0)" @mouseenter="setSpot(index, 0, true)" @mouseleave="setSpot(index, 0, false)"></div>
-        <div class="spot-1" @click.stop="handleSpot(index, 1)" @mouseenter="setSpot(index, 1, true)" @mouseleave="setSpot(index, 1, false)"></div>
-        <div class="spot-2" @click.stop="handleSpot(index, 2)" @mouseenter="setSpot(index, 2, true)" @mouseleave="setSpot(index, 2, false)"></div>
-        <div class="spot-3" @click.stop="handleSpot(index, 3)" @mouseenter="setSpot(index, 3, true)" @mouseleave="setSpot(index, 3, false)"></div>
+        <div
+          class="spot-0"
+          @click.stop="handleSpot(index, 0)"
+          @mouseenter="setSpot(index, 0, true)"
+          @mouseleave="setSpot(index, 0, false)"
+        ></div>
+        <div
+          class="spot-1"
+          @click.stop="handleSpot(index, 1)"
+          @mouseenter="setSpot(index, 1, true)"
+          @mouseleave="setSpot(index, 1, false)"
+        ></div>
+        <div
+          class="spot-2"
+          @click.stop="handleSpot(index, 2)"
+          @mouseenter="setSpot(index, 2, true)"
+          @mouseleave="setSpot(index, 2, false)"
+        ></div>
+        <div
+          class="spot-3"
+          @click.stop="handleSpot(index, 3)"
+          @mouseenter="setSpot(index, 3, true)"
+          @mouseleave="setSpot(index, 3, false)"
+        ></div>
       </div>
     </div>
-    <img class="go-front" @click.stop="goFront" src="../../assets/images/todo/home.png" mode="">
-      <div class="drop-down">
-        <img class="handle-down" @click.stop="changeView" src="../../assets/images/todo/drop_down.png" alt="">
-        <transition name="el-zoom-in-top">
-          <div class="cube-type" v-if="isCubeType">
-            <div v-for="(item, index) in handleList" :key="index">
-              <div :class="activeType === item.value ? 'active-type' : ''" v-text="item.label" class="select-type" @click.stop="changeType(item)"></div>
-            </div>
+    <img
+      class="go-front"
+      @click.stop="goFront"
+      src="../../assets/images/todo/home.png"
+      mode=""
+    />
+    <div class="drop-down">
+      <img
+        class="handle-down"
+        @click.stop="changeView"
+        src="../../assets/images/todo/drop_down.png"
+        alt=""
+      />
+      <transition name="el-zoom-in-top">
+        <div class="cube-type" v-if="isCubeType">
+          <div v-for="(item, index) in handleList" :key="index">
+            <div
+              :class="activeType === item.value ? 'active-type' : ''"
+              v-text="item.label"
+              class="select-type"
+              @click.stop="changeType(item)"
+            ></div>
           </div>
-        </transition>
-      </div>
+        </div>
+      </transition>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
+  props: {
+    userType: {},
+  },
   data() {
     return {
       faceList: [
@@ -1038,6 +1096,9 @@ export default {
       }
     }
   }
+}
+.userType {
+  right: 300px;
 }
 
 #box {
