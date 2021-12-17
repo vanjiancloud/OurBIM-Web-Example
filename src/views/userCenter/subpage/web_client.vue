@@ -26,7 +26,7 @@
         <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
         <div class="bim-progress" v-if="hiddenState === 0 || hiddenState === 3">
           <div class="load-tip">
-            基础环境加载中…
+            环境加载中…
             <div>{{ propsProgress.loadData }}%</div>
           </div>
           <el-progress
@@ -1868,9 +1868,7 @@ export default {
                   taskId: this.taskId,
                 };
                 COMPONENTLIBRARY.initComponent(params)
-                  .then((res) => {
-                    this.$message.success(res.data.message);
-                  })
+                  .then((res) => {})
                   .catch((res) => {
                     this.$message.error(res.data.message);
                   });

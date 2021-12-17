@@ -195,13 +195,6 @@
             >
               {{ $t("into") }}
             </el-button>
-            <!-- <el-button
-              @click="teamWorkBtnClick"
-              :disabled="scope.row.applidStatus === '2' ? false : true"
-              :class="scope.row.applidStatus === '2' ? 'ff' : 'bbb'"
-            >
-              协同模式
-            </el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -392,8 +385,6 @@
       </span>
     </el-dialog>
 
-    <!-- 协同模式弹窗 -->
-    <TeamworkDialog ref="teamworkDialogRef" />
   </div>
 </template>
 
@@ -410,11 +401,10 @@ import { Getuserid } from "@/store/index.js";
 import axios from "@/utils/request";
 import qs from "qs";
 
-import TeamworkDialog from "./TeamworkDialog.vue";
 export default {
   name: "manage",
   components: {
-    TeamworkDialog,
+
   },
   data() {
     return {
@@ -603,9 +593,6 @@ export default {
           return false;
         }
       });
-    },
-    teamWorkBtnClick() {
-      this.$refs.teamworkDialogRef.visible(true);
     },
     GetIntegrate() {
       getProjectList({
