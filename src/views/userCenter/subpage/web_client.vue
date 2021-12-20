@@ -1893,6 +1893,16 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "10") {
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 30002,
+              data: {
+                tagId: realData.tagId,
+              },
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
+
             // 构件新建完成事件
             // 构件添加完成
 
@@ -1915,15 +1925,6 @@ export default {
             ) {
               this.$refs.tagTree.closePart(true);
             }
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 30002,
-              data: {
-                tagId: realData.tagId,
-              },
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
           } else if (realData.id === "11") {
             let messageInfo = {
               prex: "ourbimMessage",
