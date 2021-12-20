@@ -416,7 +416,7 @@ export default {
       comVisible: false,
       appType: null,
       multUuid: null,
-      userType:null
+      userType: null,
     };
   },
 
@@ -1778,7 +1778,6 @@ export default {
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
-          console.log(222, JSON.parse(e.data));
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {
@@ -1894,11 +1893,13 @@ export default {
             }
             // 判断原本标签有没有开启
             if (
+              this.listenTodoInfo &&
               this.listenTodoInfo.type === 4 &&
               this.listenTodoInfo.state === 1
             ) {
               this.$refs.tagTree.closePart(true);
             }
+            console.log(111, realData);
             let messageInfo = {
               prex: "ourbimMessage",
               type: 30002,
@@ -2000,11 +2001,11 @@ export default {
       };
       const { userType, nickName, code } = this.$route.query;
       if (userType) {
-        this.userType=1
+        this.userType = 1;
         params.userType = userType;
       }
       if (userType == 0) {
-        this.runTimeCode=1
+        this.runTimeCode = 1;
         this.isFade = false;
         // this.isProgress=false
         // this.controllerInfo.tagUiBar = false;
