@@ -119,6 +119,28 @@ const MODELAPI = {
       params
     })
   },
+  // params:{
+  //   taskId:''
+  // }
+   // 显示全部构件
+   displayAllActor: params => {
+    return request({
+      url: '/OurBim/displayAllActor',
+      method: 'post',
+      data:qsStringify(params)
+    })
+  },
+   // params:{
+  //   taskId:''
+  // }
+   // 隔离构件
+   invertHidden: params => {
+    return request({
+      url: '/OurBim/invertHidden',
+      method: 'post',
+      data:qsStringify(params)
+    })
+  },
 }
 
 export default MODELAPI

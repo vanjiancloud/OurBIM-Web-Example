@@ -16,18 +16,37 @@
           v-show="showBar(imgList[13].id) && showTodoIconObj.show"
         >
           <el-tooltip
-            class="item"
-            effect="dark"
-            :enterable="false"
-            :content="imgList[13].title"
             placement="top"
+            v-model="showHideTool"
+            transition="el-fade-in-linear"
+            manual
           >
-            <img
-              class="footer-image"
-              :src="imgList[13].url"
-              @click.stop="handleOrder(13)"
-              mode=""
-            />
+            <div slot="content">
+              <div
+                class="person-list"
+                v-for="(item, index) in showHideList"
+                :key="index"
+              >
+                <div
+                  v-text="item.name"
+                  @click="showHideItemClick(item.value)"
+                ></div>
+              </div>
+            </div>
+            <el-tooltip
+              class="item"
+              effect="dark"
+              :enterable="false"
+              :content="imgList[13].title"
+              placement="top"
+            >
+              <img
+                class="footer-image"
+                :src="imgList[13].url"
+                @click.stop="handleOrder(13)"
+                mode=""
+              />
+            </el-tooltip>
           </el-tooltip>
         </div>
         <!-- 跟随视角改为第三人称 -->
@@ -738,6 +757,20 @@ export default {
           value: 2,
         },
       ],
+      showHideList: [
+        {
+          name: "隐藏图元",
+          value: 0,
+        },
+        {
+          name: "隔离图元",
+          value: 1,
+        },
+        {
+          name: "全部显示",
+          value: 2,
+        },
+      ],
       imgList: [
         {
           state: 0,
@@ -861,6 +894,8 @@ export default {
       angleTool: false,
       followTool: false,
       personTool: false,
+      showHideTool: false,
+
       setForm: {
         unit: 0,
         accuracy: 2,
@@ -1019,6 +1054,42 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    showHideItemClick(value) {
+      // 隐藏 隔离 显示
+      console.log(111, value);
+      switch (value) {
+        case 0:
+          MODELAPI.UPDATEMEMBER({
+            taskid: this.taskId,
+            visible: false,
+          }).then((res) => {
+            if (res.data.code !== 0) {
+              this.$message.success(res.data.message);
+            }
+          });
+          break;
+        case 1:
+          MODELAPI.invertHidden({
+            taskId: this.taskId,
+          }).then((res) => {
+            if (res.data.code !== 0) {
+              this.$message.success(res.data.message);
+            }
+          });
+          break;
+        case 2:
+          MODELAPI.displayAllActor({
+            taskId: this.taskId,
+          }).then((res) => {
+            if (res.data.code !== 0) {
+              this.$message.success(res.data.message);
+            }
+          });
+          break;
+        default:
+          break;
+      }
+    },
     comSwitch() {
       const status = this.imgList[14].state;
       if (!this.taskId) {
@@ -1466,7 +1537,7 @@ export default {
        * @Date: 2021-03-17 11:36:27
        * @description: 更新视点
        */
-      this.followInfo.taskId=this.taskId
+      this.followInfo.taskId = this.taskId;
       this.$refs["ruleFollow"].validate((valid) => {
         if (valid) {
           MODELAPI.UPDATEFOLLOWPOINT(this.followInfo)
@@ -1691,9 +1762,11 @@ export default {
       // 构件显示隐藏
       if (e === 13) {
         if (this.imgList[e].state === 0) {
-          this.imgList[e].title = "隐藏";
+          this.showHideTool = true;
+          // this.imgList[e].title = "隐藏";
         } else {
-          this.imgList[e].title = "显示";
+          this.showHideTool = false;
+          // this.imgList[e].title = "显示";
         }
       }
       //点了测量图标
@@ -1701,7 +1774,9 @@ export default {
       //   this.setForm.unit = 0;
       //   this.setForm.accuracy = 2;
       // }
-      this.imgList[e].url = realImg;
+      if (e !== 13) {
+        this.imgList[e].url = realImg;
+      }
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
       // 关闭剖切和测量
       if (this.oldState === 2 || this.oldState === 3) {
