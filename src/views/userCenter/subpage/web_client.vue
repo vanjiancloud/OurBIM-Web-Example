@@ -1911,6 +1911,7 @@ export default {
             }
             // 判断原本标签有没有开启
             if (
+              this.listenTodoInfo &&
               this.listenTodoInfo.type === 4 &&
               this.listenTodoInfo.state === 1
             ) {
