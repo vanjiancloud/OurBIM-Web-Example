@@ -440,10 +440,6 @@ export default {
     },
   },
   created() {
-    if (localStorage.getItem("appType")) {
-      this.appType = localStorage.getItem("appType");
-    }
-    console.log("appType", this.appType);
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -464,6 +460,9 @@ export default {
         width: 1920,
         height: 1080,
       };
+    }
+    if (this.$route.query.appType) {
+      this.appType = this.$route.query.appType;
     }
   },
   mounted() {

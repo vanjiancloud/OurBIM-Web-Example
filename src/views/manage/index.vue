@@ -384,7 +384,6 @@
         >
       </span>
     </el-dialog>
-
   </div>
 </template>
 
@@ -403,9 +402,7 @@ import qs from "qs";
 
 export default {
   name: "manage",
-  components: {
-
-  },
+  components: {},
   data() {
     return {
       FormIntegrate: {
@@ -714,13 +711,10 @@ export default {
     },
     // 关闭分享dialog
     handleClose(done) {
-      this.$confirm("确认关闭？")
-        .then((_) => {
-          done();
-          this.isShow = 1;
-          this.formShare.days = "999";
-        })
-        .catch((_) => {});
+      console.log(77,done);
+      done();
+      this.isShow = 1;
+      this.formShare.days = "999";
     },
     //确定分享
     confirm() {
@@ -880,6 +874,7 @@ export default {
               name: "web_client",
               query: {
                 appid: e.appid,
+                appType:e.appType,
                 locale: this.$i18n.locale,
                 token: res.data.data.token,
               },
@@ -892,11 +887,11 @@ export default {
               name: "web_client",
               query: {
                 appid: e.appid,
+                appType:e.appType,
                 locale: this.$i18n.locale,
                 token: res.data.data.token,
               },
             });
-            localStorage.setItem("appType", e.appType);
             window.open(href, "_blank");
           }
         } else {
