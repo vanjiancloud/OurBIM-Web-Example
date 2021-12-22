@@ -2786,17 +2786,19 @@ export default {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  width: 100px;
-  height: 100px;
-  margin-left: 10px;
-  margin-top: 10px;
+  margin-bottom: 10px;
+  // width: 90px;
+  // height: 120px;
+  // margin-left: 10px;
+  // margin-top: 10px;
   cursor: pointer;
   // background-color: pink;
   .img {
-    // margin: 0 auto;
-    height: 60px;
-    width: 60px;
+    margin: 0 10px;
+    height: 100px;
+    width: 100px;
     img {
+      border-radius: 5px;
       width: 100%;
       height: 100%;
     }
