@@ -317,9 +317,12 @@
       :status="2"
       :shareCode="shareCode"
     ></teamwork-dialog>
-    <div class="invite-team-friend" @click="openTeamDialog" v-if="userType==='1'">
-      <img src="./friend.png" alt="" />
-      邀请好友
+    <div
+      class="invite-team-friend"
+      @click="openTeamDialog"
+      v-if="userType === '1'"
+    >
+      <div class="invite-btn"><img src="./friend.png" alt="" /> 邀请成员</div>
     </div>
   </div>
 </template>
@@ -2859,6 +2862,15 @@ export default {
   height: 15px;
 }
 .invite-team-friend {
+  .invite-btn {
+    border: 2px solid #284dba; 
+    display: flex;
+    align-items: center;
+    background-color: rgba(41, 82, 199,0.5);
+    height: 60%;
+    cursor: pointer;
+    border-radius: 2px;
+  }
   position: fixed;
   top: 0;
   right: 0;
@@ -2869,12 +2881,12 @@ export default {
   color: #7184bb;
   // color: #fff;
   padding-left: 15px;
-  font-size: 16px;
+  font-size: 14px;
   box-sizing: border-box;
-  cursor: pointer;
-  img{
-    width: 24px;
-    height: 24px;
+  
+  img {
+    width: 20px;
+    height: 20px;
   }
 }
 </style>
