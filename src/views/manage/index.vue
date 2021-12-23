@@ -279,7 +279,11 @@
             <el-input v-model="form.name" autocomplete="off"></el-input>
           </el-form-item>
 
-          <el-form-item label="主程序路径：" v-if="form.appType === '5'" label-width="110px">
+          <el-form-item
+            label="主程序路径："
+            v-if="form.appType === '5'"
+            label-width="110px"
+          >
             <el-select v-model="form.startup" placeholder="请选择主程序路径">
               <el-option
                 label="EnscapeStandalone_c2jkomin.vlz/Bin64/EnscapeClient.exe"
@@ -891,6 +895,10 @@ export default {
       }).then((res) => {
         if (res.data.code === 0) {
           if (isiPad !== false || isMac !== false) {
+            if (process.env.NODE_ENV === "production") {
+              window.open(res.data.url);
+              return;
+            }
             this.$router.push({
               name: "web_client",
               query: {
@@ -903,6 +911,10 @@ export default {
               },
             });
           } else {
+            if (process.env.NODE_ENV === "production") {
+              window.open(res.data.url, "_blank");
+              return;
+            }
             const { href } = this.$router.resolve({
               name: "web_client",
               query: {
