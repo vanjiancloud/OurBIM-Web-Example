@@ -53,6 +53,11 @@
                       最新资讯</a
                     ></el-menu-item
                   >
+                  <el-menu-item index=""
+                    ><a href="https://www.ourbim.com/download">
+                      下载</a
+                    ></el-menu-item
+                  >
                   <el-submenu index="" popper-class="popper-class">
                     <template slot="title">开发者</template>
                     <el-menu-item index="/"

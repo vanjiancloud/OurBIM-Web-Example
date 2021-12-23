@@ -1,13 +1,13 @@
 <template>
   <el-dialog
-    title="协同模式"
+    :title="status===1?'协同模式':'邀请好友'"
     :visible.sync="dialogVisible"
     :before-close="closeDialog"
     :close-on-press-escape="false"
     width="35%"
   >
-    <div class="nick-row">
-      <div class="nick"><span class="xingxing">*</span>  昵称</div>
+    <div class="nick-row" v-show="status === 1">
+      <div class="nick"><span class="xingxing">*</span> 昵称</div>
       <div class="nick-input">
         <el-input
           v-model="nickName"
@@ -35,7 +35,6 @@
         </el-input>
       </div>
     </div>
-    <div v-show="status === 1" class="notice">注意：先进入项目才能生成分享链接</div>
     <div v-show="status === 2">二维码：</div>
     <div class="code-img-row" v-show="status === 2">
       <div><img :src="codeImg" alt="" class="codeImg" /></div>
@@ -55,15 +54,10 @@
       </div>
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button
-        type="primary"
-        @click="addUrl"
-        v-show="status === 1"
-        :loading="loading"
-        :disabled="showCreateBtn"
-        >生成链接</el-button
+      <!-- 项目列表显示进入项目 -->
+      <el-button type="primary" @click="goApp" v-show="status === 1"
+        >进入项目</el-button
       >
-      <el-button type="primary" @click="goApp">进入项目</el-button>
     </span>
   </el-dialog>
 </template>
@@ -72,66 +66,49 @@
 import MODELAPI from "../../api/model_api";
 import TeamModeApi from "../../api/team_mode";
 export default {
+  props: {
+    status: {
+      type: Number,
+      default: 1,
+    },
+    shareCode: {
+      type: String,
+    },
+  },
   data() {
     return {
       nickName: "",
       dialogVisible: false,
       teamUrl: "",
       appInfo: {},
-      status: 1,
       nickNameReadonly: false,
       codeImg: "",
       loading: false,
-      shareCode: null,
-      showCreateBtn: true,
     };
   },
-  created() {
-    window.addEventListener("storage", (e) => {
-      console.log("storage值发生变化后触发:", e.newValue);
-      if (e.key === "shareCode") {
-        this.shareCode = e.newValue;
-      }
-    });
-  },
-
-  watch: {
-    shareCode(val) {
-      console.log(555, val);
-      if (val) {
-        this.showCreateBtn = false;
-      } else {
-        this.showCreateBtn = true;
-      }
-    },
-    dialogVisible(val) {
-      console.log(777,val);
-      if (val == false) {
-        this.initData();
-        localStorage.removeItem("shareCode");
-      }
-    },
-  },
+  created() {},
   methods: {
     openDialog(info) {
       this.dialogVisible = true;
       this.appInfo = info;
+      if (!this.teamUrl && this.status === 2) {
+        this.addUrl();
+      }
     },
     initData() {
       this.nickName = "";
       this.dialogVisible = false;
       this.teamUrl = "";
-      this.appInfo = {};
-      this.status = 1;
+
       this.nickNameReadonly = false;
       this.codeImg = "";
       this.loading = false;
       this.shareCode = null;
-      this.showCreateBtn = true;
     },
     closeDialog() {
+      this.nickName = "";
+      this.appInfo = {};
       this.dialogVisible = false;
-      this.initData();
     },
     addUrl() {
       TeamModeApi.getTeamUrl({
@@ -144,7 +121,7 @@ export default {
           this.$message.error(res3.data.message);
           return;
         }
-        this.status = 2;
+        this.dialogVisible = true;
         this.teamUrl = res3.data.data.webShareUrl;
         this.codeImg = res3.data.data.qrurl;
         this.nickNameReadonly = true;
@@ -184,7 +161,6 @@ export default {
               this.$message.error(res3.data.message);
               return;
             }
-            this.status = 2;
             this.teamUrl = res3.data.data.webShareUrl;
             this.codeImg = res3.data.data.qrurl;
             this.nickNameReadonly = true;
@@ -252,12 +228,12 @@ export default {
   margin: 30px 0;
 }
 
-.notice{
+.notice {
   color: red;
   margin-top: 30px;
 }
 
-.xingxing{
+.xingxing {
   color: red;
 }
 </style>

@@ -26,7 +26,7 @@
         <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
         <div class="bim-progress" v-if="hiddenState === 0 || hiddenState === 3">
           <div class="load-tip">
-            基础环境加载中…
+            环境加载中…
             <div>{{ propsProgress.loadData }}%</div>
           </div>
           <el-progress
@@ -52,6 +52,7 @@
         ></div>
       </div>
     </div>
+
     <!-- runTimeCode 1:mobile  0 ：PC  -->
     <div v-if="runTimeCode === 0">
       <!-- 模型浏览器 -->
@@ -119,13 +120,23 @@
                   @click="handleTree(node, 0)"
                 >
                   <span class="label-span">{{ node.label }}</span>
+                  <!-- 合模 -->
                   <img
                     src="@/assets/images/tag/6.png"
                     @click.stop="deleteCom(node)"
                     class="delect-com-icon"
                     v-if="
-                      node.data.typeId === 'comp' && checkedNodeVanjian(node)
+                      appType === '3' &&
+                      node.data.typeId === 'comp' &&
+                      checkedNodeVanjian(node)
                     "
+                  />
+                  <!-- 非合模 -->
+                  <img
+                    src="@/assets/images/tag/6.png"
+                    @click.stop="deleteCom(node)"
+                    class="delect-com-icon"
+                    v-if="appType !== '3' && node.data.typeId === 'comp'"
                   />
                   <span>
                     <!-- <span v-if="node.data.typeId !== 'comp'"> -->
@@ -301,7 +312,15 @@
     </div>
 
     <!-- 协同模式弹窗 -->
-    <teamwork-dialog ref="teamworkDialogRef" @goApp="GoApp"></teamwork-dialog>
+    <teamwork-dialog
+      ref="teamworkDialogRef"
+      :status="2"
+      :shareCode="shareCode"
+    ></teamwork-dialog>
+    <div class="invite-team-friend" @click="openTeamDialog" v-if="userType==='1'">
+      <img src="./friend.png" alt="" />
+      邀请好友
+    </div>
   </div>
 </template>
 
@@ -319,7 +338,7 @@ import scrollContainer from "@/components/web_client/scrollContainer.vue";
 import resMessage from "../../../utils/res-message";
 
 import TeamworkDialog from "../../manage/TeamworkDialog.vue";
-// import "https://res.wx.qq.com/open/js/jweixin-1.3.2.js";
+
 export default {
   name: "look_app",
   layout: "reset",
@@ -330,10 +349,11 @@ export default {
     progressBar,
     qrcodePart,
     scrollContainer,
-    TeamworkDialog
+    TeamworkDialog,
   },
   data() {
     return {
+      shareCode: null,
       showTodoIconObj: {},
       socketData: {},
       windowChangeFlag: true,
@@ -429,11 +449,11 @@ export default {
     listenTodoInfo(val) {
       console.log("listenTodoInfo", val);
     },
+    hiddenState(val) {
+      console.log("hiddenState", val);
+    },
   },
   created() {
-    if (localStorage.getItem("appType")) {
-      this.appType = localStorage.getItem("appType");
-    }
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -454,6 +474,9 @@ export default {
         width: 1920,
         height: 1080,
       };
+    }
+    if (this.$route.query.appType) {
+      this.appType = this.$route.query.appType;
     }
   },
   mounted() {
@@ -484,7 +507,6 @@ export default {
     this.addMessageEvent();
   },
   destroyed() {
-    localStorage.removeItem("shareCode");
     this.clearTimePass();
     this.closeWebSocket();
   },
@@ -901,6 +923,11 @@ export default {
             message: "已取消删除",
           });
         });
+    },
+    openTeamDialog() {
+      this.$refs.teamworkDialogRef.openDialog({
+        appid: this.appId,
+      });
     },
     componentShowHide(uuid) {
       /* 
@@ -1798,6 +1825,13 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 20005,
+              data: realData,
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
             if (this.$refs.getFooter) {
               this.$refs.getFooter.resetPointList(realData.object);
             }
@@ -1851,16 +1885,14 @@ export default {
                     action: "cameraPosAll",
                   });
                 }, 1000);
-                let params = {
-                  taskId: this.taskId,
-                };
-                COMPONENTLIBRARY.initComponent(params)
-                  .then((res) => {
-                    this.$message.success(res.data.message);
-                  })
-                  .catch((res) => {
-                    this.$message.error(res.data.message);
-                  });
+                // let params = {
+                //   taskId: this.taskId,
+                // };
+                // COMPONENTLIBRARY.initComponent(params)
+                //   .then((res) => {})
+                //   .catch((res) => {
+                //     this.$message.error(res.data.message);
+                //   });
               }
             }
             if (Number(realData.progress) === 1) {
@@ -1882,6 +1914,16 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "10") {
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 30002,
+              data: {
+                tagId: realData.tagId,
+              },
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
+
             // 构件新建完成事件
             // 构件添加完成
 
@@ -1904,16 +1946,6 @@ export default {
             ) {
               this.$refs.tagTree.closePart(true);
             }
-            console.log(111, realData);
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 30002,
-              data: {
-                tagId: realData.tagId,
-              },
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
           } else if (realData.id === "11") {
             let messageInfo = {
               prex: "ourbimMessage",
@@ -1975,12 +2007,14 @@ export default {
     },
     exitMiniprogram(time) {
       // 微信小程序长时间未操作，返回项目列表页
-      if (time > 1) {
+      if (time > 60) {
         wx.miniProgram.getEnv((res) => {
           if (res.miniprogram) {
+            this.isFade = true;
             this.hiddenState = 1;
-            this.destroyed();
-            wx.miniProgram.redirectTo({ url: "/pages/home/home" });
+            this.clearTimePass();
+            this.closeWebSocket();
+            // wx.miniProgram.redirectTo({ url: "/pages/home/home" });
           }
         });
       }
@@ -2006,7 +2040,7 @@ export default {
       };
       const { userType, nickName, code } = this.$route.query;
       if (userType) {
-        this.userType = 1;
+        this.userType = userType;
         params.userType = userType;
       }
       if (userType == 0) {
@@ -2031,7 +2065,7 @@ export default {
             this.propsFooter.taskId = res.data.data.taskId;
             // 保存code
             if (res.data.data.code) {
-              localStorage.setItem("shareCode", res.data.data.code || null);
+              this.shareCode = res.data.data.code;
             }
 
             let messageInfo = {
@@ -2793,22 +2827,18 @@ export default {
   flex-wrap: wrap;
 }
 .publicComListItem {
-  // display: inline-block;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  width: 100px;
-  height: 100px;
-  margin-left: 10px;
-  margin-top: 10px;
+  margin-bottom: 10px;
   cursor: pointer;
-  // background-color: pink;
   .img {
-    // margin: 0 auto;
-    height: 60px;
-    width: 60px;
+    margin: 0 2px;
+    height: 115px;
+    width: 115px;
     img {
+      border-radius: 5px;
       width: 100%;
       height: 100%;
     }
@@ -2827,5 +2857,24 @@ export default {
   padding: 0 10px;
   width: 15px;
   height: 15px;
+}
+.invite-team-friend {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 228px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  color: #7184bb;
+  // color: #fff;
+  padding-left: 15px;
+  font-size: 16px;
+  box-sizing: border-box;
+  cursor: pointer;
+  img{
+    width: 24px;
+    height: 24px;
+  }
 }
 </style>
