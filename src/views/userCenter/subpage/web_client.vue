@@ -2781,22 +2781,16 @@ export default {
   flex-wrap: wrap;
 }
 .publicComListItem {
-  // display: inline-block;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   margin-bottom: 10px;
-  // width: 90px;
-  // height: 120px;
-  // margin-left: 10px;
-  // margin-top: 10px;
   cursor: pointer;
-  // background-color: pink;
   .img {
-    margin: 0 10px;
-    height: 100px;
-    width: 100px;
+    margin: 0 2px;
+    height: 115px;
+    width: 115px;
     img {
       border-radius: 5px;
       width: 100%;
