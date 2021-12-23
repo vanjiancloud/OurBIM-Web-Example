@@ -299,6 +299,9 @@
         ref="tagTree"
       ></tag-tree>
     </div>
+
+    <!-- 协同模式弹窗 -->
+    <teamwork-dialog ref="teamworkDialogRef" @goApp="GoApp"></teamwork-dialog>
   </div>
 </template>
 
@@ -315,6 +318,7 @@ import scrollContainer from "@/components/web_client/scrollContainer.vue";
 
 import resMessage from "../../../utils/res-message";
 
+import TeamworkDialog from "../../manage/TeamworkDialog.vue";
 // import "https://res.wx.qq.com/open/js/jweixin-1.3.2.js";
 export default {
   name: "look_app",
@@ -326,6 +330,7 @@ export default {
     progressBar,
     qrcodePart,
     scrollContainer,
+    TeamworkDialog
   },
   data() {
     return {

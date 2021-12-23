@@ -193,7 +193,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="进入项目" width="300">
+        <el-table-column label="操作" width="300">
           <template slot-scope="scope" class="goapp-row">
             <el-button
               @click="GoApp(scope.row)"
