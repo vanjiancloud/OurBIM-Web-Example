@@ -1867,11 +1867,11 @@ export default {
                 let params = {
                   taskId: this.taskId,
                 };
-                COMPONENTLIBRARY.initComponent(params)
-                  .then((res) => {})
-                  .catch((res) => {
-                    this.$message.error(res.data.message);
-                  });
+                // COMPONENTLIBRARY.initComponent(params)
+                //   .then((res) => {})
+                //   .catch((res) => {
+                //     this.$message.error(res.data.message);
+                //   });
               }
             }
             if (Number(realData.progress) === 1) {

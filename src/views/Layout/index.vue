@@ -505,7 +505,6 @@ export default {
           this.countBF = res.data.data.countBF;
           this.currentCountBF = res.data.data.currentCountBF;
           this.isPay = res.data.data.isPay;
-          console.log(555, this.currentCountBF, this.countBF);
         })
         .catch((err) => {
           // this.$message.error('信息展示失败')

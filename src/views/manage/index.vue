@@ -50,7 +50,7 @@
             {{ scope.row.fileSize !== "0" ? scope.row.fileSize : "-" }}
           </template>
         </el-table-column>
-        <el-table-column prop="" label="项目类型" width="60">
+        <el-table-column prop="" label="项目类型" width="100">
           <template slot-scope="scope">
             <span v-if="scope.row.appType === '0'">普通模型</span>
             <span v-else-if="scope.row.appType === '1'">漫游模型</span>
@@ -66,6 +66,7 @@
 
             <!-- <span v-else-if="scope.row.appType === '3'">链接模型</span> -->
             <span v-else-if="scope.row.appType === '4'">示例模型</span>
+            <span v-else-if="scope.row.appType === '5'">云应用</span>
             <span v-else>其他模型</span>
           </template>
         </el-table-column>
@@ -277,6 +278,20 @@
           <el-form-item label="项目名称：" label-width="110px">
             <el-input v-model="form.name" autocomplete="off"></el-input>
           </el-form-item>
+
+          <el-form-item label="主程序路径：" v-if="form.appType === '5'" label-width="110px">
+            <el-select v-model="form.startup" placeholder="请选择主程序路径">
+              <el-option
+                label="EnscapeStandalone_c2jkomin.vlz/Bin64/EnscapeClient.exe"
+                value="EnscapeStandalone_c2jkomin.vlz/Bin64/EnscapeClient.exe"
+              ></el-option>
+              <el-option
+                label="EnscapeStandalone_c2jkomin.vlz/Bin64/Enscape.Standalone.ErrorHandler.exe,EnscapeStandalone_c2jkomin.vlz/Bin64/EnscapeClient.exe"
+                value="EnscapeStandalone_c2jkomin.vlz/Bin64/Enscape.Standalone.ErrorHandler.exe,EnscapeStandalone_c2jkomin.vlz/Bin64/EnscapeClient.exe"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
           <el-form-item
             label="最大并发数："
             label-width="110px"
@@ -384,7 +399,6 @@
         >
       </span>
     </el-dialog>
-
   </div>
 </template>
 
@@ -403,9 +417,7 @@ import qs from "qs";
 
 export default {
   name: "manage",
-  components: {
-
-  },
+  components: {},
   data() {
     return {
       FormIntegrate: {
@@ -773,6 +785,7 @@ export default {
     },
     // 编辑按钮
     edit(e) {
+      this.form.appType = e.appType;
       this.form.name = e.appName;
       this.form.appid = e.appid;
       this.form.displayWindow = e.displayWindow;
@@ -780,6 +793,7 @@ export default {
       this.form.maxInstance = e.maxInstance;
       this.form.applidStatus = e.applidStatus;
       this.form.screenImg = e.screenImg;
+      this.form.startup = e.startup;
       for (let index = 0; index < this.fileList.length; index++) {
         this.fileList[index].url = e.screenImg;
       }
@@ -809,6 +823,7 @@ export default {
             displayWindow: this.form.displayWindow,
             screenImg: this.form.screenImg,
             maxInstance: this.form.maxInstance,
+            startup: this.form.startup,
           })
             .then((res) => {
               if (res.data.code === 0) {
