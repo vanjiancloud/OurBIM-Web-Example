@@ -50,6 +50,11 @@
           v-if="hiddenState === 4"
           v-text="$t('webClient.loadBox.message[6]')"
         ></div>
+        <div
+          class="hidden-text learn-text"
+          v-if="hiddenState === 5 && userType == '0'"
+          v-text="$t('webClient.loadBox.message[7]')"
+        ></div>
       </div>
     </div>
 
@@ -449,12 +454,6 @@ export default {
   },
 
   watch: {
-    listenTodoInfo(val) {
-      console.log("listenTodoInfo", val);
-    },
-    hiddenState(val) {
-      console.log("hiddenState", val);
-    },
   },
   created() {
     this.uaInfo = navigator.userAgent.toLowerCase();
@@ -597,13 +596,12 @@ export default {
     },
     listenWindowSize() {
       // 监听窗口大小变化 id=14 height
-
       this.handleWindowSize();
       window.onresize = () => {
         clearTimeout(this.iTime);
         this.iTime = setTimeout(() => {
           this.handleWindowSize();
-        }, 150);
+        }, 200);
       };
     },
     handleWindowSize() {
@@ -838,14 +836,20 @@ export default {
         this.getMonitor();
       }
       if (errorList.indexOf(e.type) !== -1) {
-        this.hiddenState = 4;
-        this.isFade = true;
-        this.closeWebSocket();
-        this.$message({
-          message: this.$t("webClient.loadBox.message[6]"),
-          type: "warning",
-          customClass: "set-index-message",
-        });
+        if (this.userType == "0") {
+          this.hiddenState = 5;
+          this.isFade = true;
+          this.closeWebSocket();
+        } else {
+          this.hiddenState = 4;
+          this.isFade = true;
+          this.closeWebSocket();
+          this.$message({
+            message: this.$t("webClient.loadBox.message[6]"),
+            type: "warning",
+            customClass: "set-index-message",
+          });
+        }
       }
     },
     handleType(e) {
@@ -1303,13 +1307,13 @@ export default {
           params.action = "splitModel";
           params.splitValue = this.listenTodoInfo.data;
           break;
-        case 13:
-          // 启动应用
-          params.action = "platform";
-          params.plateType = this.isMobile() ? 1 : 0;
-          params.width = document.body.clientWidth;
-          params.height = document.body.clientHeight;
-          break;
+        // case 13:
+        //   // 启动应用
+        //   params.action = "platform";
+        //   params.plateType = this.isMobile() ? 1 : 0;
+        //   params.width = document.body.clientWidth;
+        //   params.height = document.body.clientHeight;
+        //   break;
         case 14:
           // 框选
           params.action = "componentBoxSelection";
@@ -1340,6 +1344,9 @@ export default {
           taskid: this.taskId,
           id: 20,
         };
+      }
+      if (this.handleState == 13) {
+        return;
       }
       //模型操作
       await MODELAPI.UPDATEORDER(params)
@@ -1859,8 +1866,7 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "8") {
-            // 加载完成
-            this.listenWindowSize();
+            // 加载过程
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10003,
@@ -1899,6 +1905,8 @@ export default {
               }
             }
             if (Number(realData.progress) === 1) {
+              // 加载完成
+              this.listenWindowSize();
               let noneTimer = setTimeout(() => {
                 this.isProgress = false;
                 clearTimeout(noneTimer);
@@ -2042,7 +2050,7 @@ export default {
         token: this.appToken,
       };
       const { userType, nickName, code } = this.$route.query;
-      if (userType) {
+      if (userType !== undefined && userType !== null) {
         this.userType = userType;
         params.userType = userType;
       }
@@ -2863,10 +2871,10 @@ export default {
 }
 .invite-team-friend {
   .invite-btn {
-    border: 2px solid #284dba; 
+    border: 2px solid #284dba;
     display: flex;
     align-items: center;
-    background-color: rgba(41, 82, 199,0.5);
+    background-color: rgba(41, 82, 199, 0.5);
     height: 60%;
     cursor: pointer;
     border-radius: 2px;
@@ -2883,7 +2891,7 @@ export default {
   padding-left: 15px;
   font-size: 14px;
   box-sizing: border-box;
-  
+
   img {
     width: 20px;
     height: 20px;

@@ -130,7 +130,6 @@ export const delmobile = () => {
 // 1. 存用户id
 const keys = 'userid' // 作为存值和取值的key
 export const Setuserid = (info) => {
-  console.log(111,info);
   // try语法块中如果有错误，会被catch捕获，执行catch语法块中的代码，不会导致整个应用奔溃
   let userid
   try {
@@ -138,7 +137,6 @@ export const Setuserid = (info) => {
   } catch (error) {
     userid = ''
   }
-  console.log(8888,userid);
   return window.sessionStorage.setItem(keys, userid)
 }
 

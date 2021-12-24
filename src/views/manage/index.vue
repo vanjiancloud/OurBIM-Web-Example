@@ -439,7 +439,11 @@
     </el-dialog>
 
     <!-- 协同模式弹窗 -->
-    <teamwork-dialog ref="teamworkDialogRef" @goApp="GoApp" :status="1"></teamwork-dialog>
+    <teamwork-dialog
+      ref="teamworkDialogRef"
+      @goApp="GoApp"
+      :status="1"
+    ></teamwork-dialog>
   </div>
 </template>
 
@@ -456,11 +460,11 @@ import { Getuserid } from "@/store/index.js";
 import axios from "@/utils/request";
 import qs from "qs";
 
-import TeamworkDialog from "./TeamworkDialog.vue"
+import TeamworkDialog from "./TeamworkDialog.vue";
 export default {
   name: "manage",
   components: {
-    TeamworkDialog
+    TeamworkDialog,
   },
   data() {
     return {
@@ -651,7 +655,12 @@ export default {
       });
     },
     teamWorkBtnClick(e) {
-      this.$refs.teamworkDialogRef.openDialog(e);
+      const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
+      this.GoApp(e, {
+        userType: 1,
+        nickName: userInfo.name || "默认昵称",
+      });
+      // this.$refs.teamworkDialogRef.openDialog(e);
     },
     GetIntegrate() {
       getProjectList({

@@ -1,69 +1,74 @@
 <template>
   <el-dialog
-    :title="status===1?'协同模式':'邀请好友'"
+    :title="status === 1 ? '协同模式' : '邀请好友'"
     :visible.sync="dialogVisible"
     :before-close="closeDialog"
     :close-on-press-escape="false"
     width="35%"
   >
-    <div class="nick-row" v-show="status === 1">
-      <div class="nick"><span class="xingxing">*</span> 昵称</div>
-      <div class="nick-input">
-        <el-input
-          v-model="nickName"
-          placeholder="请输入内容"
-          minlength="1"
-          clearable
-          :readonly="nickNameReadonly"
-        ></el-input>
+    <el-row
+      v-loading="loading"
+      element-loading-text="拼命加载中"
+      element-loading-spinner="el-icon-loading"
+    >
+      <div class="nick-row" v-show="status === 1">
+        <div class="nick"><span class="xingxing">*</span> 昵称</div>
+        <div class="nick-input">
+          <el-input
+            v-model="nickName"
+            placeholder="请输入内容"
+            minlength="1"
+            clearable
+            :readonly="nickNameReadonly"
+          ></el-input>
+        </div>
       </div>
-    </div>
-    <div class="nick-row margin-row" v-show="status === 2">
-      <div class="nick">链接</div>
-      <div class="nick-input">
-        <el-input placeholder="请输入内容" v-model="teamUrl" readonly>
-          <template slot="append">
+      <div class="nick-row margin-row" v-show="status === 2">
+        <div class="nick">链接</div>
+        <div class="nick-input">
+          <el-input placeholder="请输入内容" v-model="teamUrl" readonly>
+            <template slot="append">
+              <el-button
+                type="info"
+                class="btn"
+                v-clipboard:copy="teamUrl"
+                v-clipboard:success="onCopyUrl"
+                v-clipboard:error="onErrorUrl"
+                >复制链接</el-button
+              >
+            </template>
+          </el-input>
+        </div>
+      </div>
+      <div v-show="status === 2">二维码：</div>
+      <div class="code-img-row" v-show="status === 2">
+        <div><img :src="codeImg" alt="" class="codeImg" /></div>
+        <div class="code-row-text">
+          <div>将二维码分享给好友，对方微信、</div>
+          <div>钉钉等扫一扫即可访问BIM场景</div>
+          <div>
             <el-button
-              type="info"
+              type="primary"
               class="btn"
               v-clipboard:copy="teamUrl"
               v-clipboard:success="onCopyUrl"
               v-clipboard:error="onErrorUrl"
-              >复制链接</el-button
+              >复制二维码</el-button
             >
-          </template>
-        </el-input>
-      </div>
-    </div>
-    <div v-show="status === 2">二维码：</div>
-    <div class="code-img-row" v-show="status === 2">
-      <div><img :src="codeImg" alt="" class="codeImg" /></div>
-      <div class="code-row-text">
-        <div>将二维码分享给好友，对方微信、</div>
-        <div>钉钉等扫一扫即可访问BIM场景</div>
-        <div>
-          <el-button
-            type="primary"
-            class="btn"
-            v-clipboard:copy="teamUrl"
-            v-clipboard:success="onCopyUrl"
-            v-clipboard:error="onErrorUrl"
-            >复制二维码</el-button
-          >
+          </div>
         </div>
       </div>
-    </div>
-    <span slot="footer" class="dialog-footer">
-      <!-- 项目列表显示进入项目 -->
-      <el-button type="primary" @click="goApp" v-show="status === 1"
-        >进入项目</el-button
-      >
-    </span>
+      <span slot="footer" class="dialog-footer">
+        <!-- 项目列表显示进入项目 -->
+        <el-button type="primary" @click="goApp" v-show="status === 1"
+          >进入项目</el-button
+        >
+      </span>
+    </el-row>
   </el-dialog>
 </template>
 
 <script>
-import MODELAPI from "../../api/model_api";
 import TeamModeApi from "../../api/team_mode";
 export default {
   props: {
@@ -95,22 +100,13 @@ export default {
         this.addUrl();
       }
     },
-    initData() {
-      this.nickName = "";
-      this.dialogVisible = false;
-      this.teamUrl = "";
-
-      this.nickNameReadonly = false;
-      this.codeImg = "";
-      this.loading = false;
-      this.shareCode = null;
-    },
     closeDialog() {
       this.nickName = "";
       this.appInfo = {};
       this.dialogVisible = false;
     },
     addUrl() {
+      this.loading = true;
       TeamModeApi.getTeamUrl({
         appId: this.appInfo.appid,
         code: this.shareCode,
@@ -125,47 +121,6 @@ export default {
         this.teamUrl = res3.data.data.webShareUrl;
         this.codeImg = res3.data.data.qrurl;
         this.nickNameReadonly = true;
-      });
-    },
-    dasda() {
-      if (this.nickName === "") {
-        return this.$message.error("昵称不能为空！");
-      }
-      this.loading = true;
-      MODELAPI.GETBIMTOKEN({
-        appid: this.appInfo.appid,
-      }).then((res) => {
-        if (res.data.code !== 0) {
-          this.$message.error(res.data.message);
-          this.loading = false;
-          return;
-        }
-        MODELAPI.GETMODELINFO({
-          appliId: this.appInfo.appid,
-          token: res.data.data.token,
-          userType: 1,
-          nickName: this.nickName,
-        }).then((res2) => {
-          if (res2.data.code !== 0) {
-            this.$message.error(res2.data.message);
-            this.loading = false;
-            return;
-          }
-          TeamModeApi.getTeamUrl({
-            appId: this.appInfo.appid,
-            code: res2.data.data.code,
-            userId: JSON.parse(sessionStorage.getItem("userid")),
-          }).then((res3) => {
-            this.loading = false;
-            if (res3.data.code !== 0) {
-              this.$message.error(res3.data.message);
-              return;
-            }
-            this.teamUrl = res3.data.data.webShareUrl;
-            this.codeImg = res3.data.data.qrurl;
-            this.nickNameReadonly = true;
-          });
-        });
       });
     },
     //     观察这
