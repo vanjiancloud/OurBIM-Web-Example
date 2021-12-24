@@ -574,6 +574,7 @@ export default {
     };
   },
   created() {
+    console.log(5555);
     this.GetList();
     this.setGetdataIn();
   },
