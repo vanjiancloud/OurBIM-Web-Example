@@ -659,7 +659,8 @@ export default {
       const userInfo = JSON.parse(sessionStorage.getItem("userInfo"));
       this.GoApp(e, {
         userType: 1,
-        nickName: userInfo.name || "默认昵称",
+        nickName:
+          userInfo.name || userInfo.mobile || userInfo.email || "默认昵称",
       });
       // this.$refs.teamworkDialogRef.openDialog(e);
     },
