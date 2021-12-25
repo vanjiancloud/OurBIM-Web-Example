@@ -322,12 +322,10 @@
       :status="2"
       :shareCode="shareCode"
     ></teamwork-dialog>
-    <div
-      class="invite-team-friend"
-      @click="openTeamDialog"
-      v-if="userType === '1'"
-    >
-      <div class="invite-btn"><img src="./friend.png" alt="" /> 邀请成员</div>
+    <div class="invite-team-friend" v-if="userType === '1'">
+      <div class="invite-btn" @click="openTeamDialog">
+        <img src="./friend.png" alt="" /> 邀请成员
+      </div>
     </div>
   </div>
 </template>
@@ -453,8 +451,7 @@ export default {
     };
   },
 
-  watch: {
-  },
+  watch: {},
   created() {
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
@@ -899,6 +896,14 @@ export default {
         }
       }
     },
+    updateComTreeAfterDeleteByUuid(uuid) {
+      // 获取自定义构件父级node
+      const nodeParent = this.$refs.setTree.getNode(uuid).parent;
+      this.$refs.setTree.remove(uuid);
+      if (nodeParent.childNodes.length === 0) {
+        this.$refs.setTree.remove(nodeParent.data.uuid);
+      }
+    },
     deleteCom(node) {
       const { name, uuid } = node.data;
       this.$confirm("此操作删除此构件, 是否继续?", "提示", {
@@ -913,11 +918,15 @@ export default {
           }).then((res) => {
             resMessage(res.data);
             // 获取自定义构件父级node
+            if (res.data.code === 0) {
+              this.updateComTreeAfterDeleteByUuid(node.data.uuid);
+            }
+            return;
             const nodeParent = this.$refs.setTree.getNode(
               node.data.uuid
             ).parent;
             if (res.data.code === 0) {
-              this.$refs.setTree.remove(node);
+              this.$refs.setTree.remove(node.data.uuid);
               if (nodeParent.childNodes.length === 0) {
                 this.$refs.setTree.remove(nodeParent.data.uuid);
               }
@@ -1949,6 +1958,10 @@ export default {
               this.controllerInfo.tagUiBar = true;
               this.controllerInfo.tagViewCube = true;
             }
+            // 判断添加构建失败
+            if (realData.name == "构件新建失败") {
+              this.$message.error(realData.name);
+            }
             // 判断原本标签有没有开启
             if (
               this.listenTodoInfo &&
@@ -1995,7 +2008,7 @@ export default {
               }
             } // 13cube返回数据
           } else if (realData.id === "14") {
-            // 添加构件，但是按了esc
+            // 添加构件，但是按了 esc
             if (this.controllerInfo.uiBar) {
               this.controllerInfo.tagUiBar = true;
               this.controllerInfo.tagViewCube = true;
@@ -2005,6 +2018,8 @@ export default {
           } else if (realData.id === "16") {
             // 距离上一次操作时长
             this.exitMiniprogram(realData.lastOperationTime);
+          } else if (realData.id === "17") {
+            this.updateComTreeAfterDeleteByUuid(realData.uuids[0]);
           }
         }
       };

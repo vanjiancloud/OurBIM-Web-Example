@@ -574,7 +574,6 @@ export default {
     };
   },
   created() {
-    console.log(5555);
     this.GetList();
     this.setGetdataIn();
   },
@@ -967,12 +966,15 @@ export default {
       MODELAPI.GETBIMTOKEN({
         appid: e.appid,
       }).then((res) => {
+        // return console.log(333, res);
         if (res.data.code === 0) {
           let query = {
             appid: e.appid,
             locale: this.$i18n.locale,
+            appType:e.appType,
             token: res.data.data.token,
           };
+          console.log(22,query);
           if (teamInfo) {
             query.userType = teamInfo.userType;
             query.nickName = teamInfo.nickName;
@@ -981,15 +983,13 @@ export default {
             this.$router.push({
               name: "web_client",
               query: query,
-              params: {
-                appType: e.appType,
-              },
             });
           } else {
             const { href } = this.$router.resolve({
               name: "web_client",
               query: query,
             });
+            console.log(href);
             window.open(href, "_blank");
           }
         } else {

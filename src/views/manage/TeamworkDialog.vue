@@ -96,7 +96,7 @@ export default {
     openDialog(info) {
       this.dialogVisible = true;
       this.appInfo = info;
-      if (!this.teamUrl && this.status === 2) {
+      if (this.status === 2) {
         this.addUrl();
       }
     },
