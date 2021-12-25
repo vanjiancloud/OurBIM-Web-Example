@@ -2019,7 +2019,9 @@ export default {
             // 距离上一次操作时长
             this.exitMiniprogram(realData.lastOperationTime);
           } else if (realData.id === "17") {
-            this.updateComTreeAfterDeleteByUuid(realData.uuids[0]);
+            realData.uuids.map((v) => {
+              this.updateComTreeAfterDeleteByUuid(v);
+            });
           }
         }
       };
