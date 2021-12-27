@@ -344,6 +344,7 @@ import scrollContainer from "@/components/web_client/scrollContainer.vue";
 import resMessage from "../../../utils/res-message";
 
 import TeamworkDialog from "../../manage/TeamworkDialog.vue";
+import { login } from "../../../api/my";
 
 export default {
   name: "look_app",
@@ -1830,6 +1831,7 @@ export default {
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
+          console.log(5555,realData);
           this.socketData = realData;
           if (realData.id === "1") {
             this.memberInfo = {
@@ -1934,6 +1936,7 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "10") {
+            this.showUiBar()
             let messageInfo = {
               prex: "ourbimMessage",
               type: 30002,
@@ -1943,25 +1946,6 @@ export default {
               message: "",
             };
             this.sentParentIframe(messageInfo);
-
-            // 构件新建完成事件
-            // 构件添加完成
-
-            // 更新自定义构件列表
-            if (this.appType === "3") {
-              // 合模
-              this.handleMultModle();
-            } else {
-              this.updateGodChildNode();
-            }
-            if (this.controllerInfo.uiBar) {
-              this.controllerInfo.tagUiBar = true;
-              this.controllerInfo.tagViewCube = true;
-            }
-            // 判断添加构建失败
-            if (realData.name == "构件新建失败") {
-              this.$message.error(realData.name);
-            }
             // 判断原本标签有没有开启
             if (
               this.listenTodoInfo &&
@@ -2022,6 +2006,22 @@ export default {
             realData.uuids.map((v) => {
               this.updateComTreeAfterDeleteByUuid(v);
             });
+          } else if (realData.id === "18") {
+            // 构件创建成功
+            // 更新自定义构件列表
+            if (this.appType === "3") {
+              // 合模
+              this.handleMultModle();
+            } else {
+              this.updateGodChildNode();
+            }
+            // 显示面板
+            this.showUiBar()
+          } else if (realData.id === "19") {
+            // 构件新建失败
+            this.showUiBar()
+            // 提示判断添加构建失败
+            this.$message.error(realData.name);
           }
         }
       };
@@ -2032,6 +2032,13 @@ export default {
         }, 1000 * 60);
       };
       this.websock.onerror = (e) => {};
+    },
+    showUiBar() {
+      // 显示面板
+      if (this.controllerInfo.uiBar) {
+        this.controllerInfo.tagUiBar = true;
+        this.controllerInfo.tagViewCube = true;
+      }
     },
     exitMiniprogram(time) {
       // 微信小程序长时间未操作，返回项目列表页
