@@ -973,6 +973,9 @@ export default {
     watchImgList() {
       return this.imgList[14].state;
     },
+    imgList13state(){
+      return this.imgList[13].state;
+    }
   },
   watch: {
     watchImgList(val, old) {
@@ -986,6 +989,11 @@ export default {
         }
         this.$emit("comIconChang", flag);
       }
+    },
+    imgList13state(val){
+      console.log(44,val);
+      this.showHideTool=val?true:false
+      console.log(666,this.showHideTool);
     },
     setProps: {
       handler() {
@@ -1102,7 +1110,6 @@ export default {
       })
         .then((res) => {
           if (res.data.code === 0) {
-            this.$message.success(res.data.message);
           } else {
             this.$message.error(res.data.message);
           }
@@ -1735,11 +1742,6 @@ export default {
       if (e === 7) {
         return;
       }
-      if (e === 14) {
-        // setTimeout(() => {
-        //   this.comSwitch();
-        // }, 1000);
-      }
       if (e === 12 && this.activePerson === 0) {
         this.$message({
           message: "请在上帝视角下使用框选功能",
@@ -1758,7 +1760,6 @@ export default {
       } else {
         realImg = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
       }
-      console.log(e,this.imgList[e].state);
       // 构件显示隐藏
       if (e === 13) {
         if (this.imgList[e].state === 0) {
