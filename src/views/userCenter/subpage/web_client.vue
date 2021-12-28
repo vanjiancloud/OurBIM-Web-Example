@@ -1790,7 +1790,6 @@ export default {
           pageSize: 888,
           uuid: multUuid,
         };
-        console.log(55555,multUuid);
         MODELAPI.LISTMEMBERTREE(params).then((res) => {
           this.$refs.setTree.updateKeyChildren(multUuid, res.data.data);
         });
@@ -1803,10 +1802,8 @@ export default {
           pageNo: 1,
           pageSize: 999,
         };
-        console.log(111,multBeforeUuid);
         MODELAPI.LISTMEMBERTREE(params).then((res) => {
           const list = res.data.data;
-          console.log(list);
           this.$refs.setTree.insertAfter(list[list.length - 1], multBeforeUuid);
         });
       }
@@ -1831,7 +1828,6 @@ export default {
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
-          console.log(333, realData);
           this.socketData = realData;
           if (realData.id === "1") {
             this.memberInfo = {

@@ -1056,7 +1056,6 @@ export default {
   methods: {
     showHideItemClick(value) {
       // 隐藏 隔离 显示
-      console.log(111, value);
       switch (value) {
         case 0:
           MODELAPI.UPDATEMEMBER({
@@ -1759,6 +1758,7 @@ export default {
       } else {
         realImg = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
       }
+      console.log(e,this.imgList[e].state);
       // 构件显示隐藏
       if (e === 13) {
         if (this.imgList[e].state === 0) {

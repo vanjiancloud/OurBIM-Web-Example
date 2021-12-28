@@ -166,7 +166,7 @@
               </el-button>
               <!-- 编辑 -->
               <el-button
-                @click="edit(scope.row), (dialogFormVisible = true)"
+                @click="edit(scope.row)"
                 type="text"
                 class="btn-one"
                 :disabled="scope.row.applidStatus === '4' ? true : false"
@@ -199,14 +199,22 @@
             <el-button
               @click="GoApp(scope.row)"
               :disabled="scope.row.applidStatus === '2' ? false : true"
-              :class="scope.row.applidStatus === '2' ? 'ff' : 'bbb'"
+              :class="scope.row.applidStatus === '2' ? 'blue-btn' : 'gray-btn'"
             >
               {{ $t("into") }}
             </el-button>
             <el-button
               @click="teamWorkBtnClick(scope.row)"
-              :disabled="scope.row.applidStatus === '2' ? false : true"
-              :class="scope.row.applidStatus === '2' ? 'ff' : 'bbb'"
+              :disabled="
+                scope.row.applidStatus === '2' && scope.row.appType !== '5'
+                  ? false
+                  : true
+              "
+              :class="
+                scope.row.applidStatus === '2' && scope.row.appType !== '5'
+                  ? 'blue-btn'
+                  : 'gray-btn'
+              "
             >
               协同模式
             </el-button>
@@ -320,7 +328,7 @@
     <!-- 编辑dialog框 -->
     <el-dialog
       title="编辑项目"
-      :visible.sync="dialogFormVisible"
+      :visible.sync="editDialogFormVisible"
       center
       :destroy-on-close="true"
       :close-on-click-modal="false"
@@ -339,12 +347,10 @@
           >
             <el-select v-model="form.startup" placeholder="请选择主程序路径">
               <el-option
-                label="EnscapeStandalone_c2jkomin.vlz/Bin64/EnscapeClient.exe"
-                value="EnscapeStandalone_c2jkomin.vlz/Bin64/EnscapeClient.exe"
-              ></el-option>
-              <el-option
-                label="EnscapeStandalone_c2jkomin.vlz/Bin64/Enscape.Standalone.ErrorHandler.exe,EnscapeStandalone_c2jkomin.vlz/Bin64/EnscapeClient.exe"
-                value="EnscapeStandalone_c2jkomin.vlz/Bin64/Enscape.Standalone.ErrorHandler.exe,EnscapeStandalone_c2jkomin.vlz/Bin64/EnscapeClient.exe"
+                :label="item"
+                :value="item"
+                v-for="item in selectStartups"
+                :key="item"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -375,7 +381,7 @@
         </el-form>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="editDialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="amend()">确 定</el-button>
       </div>
     </el-dialog>
@@ -506,7 +512,7 @@ export default {
       appliId: "",
       fileUpload: "",
       fileList: [{ url: "" }], //上传图片列表显示
-      dialogFormVisible: false,
+      editDialogFormVisible: false,
       dialogFormVisibleOne: false,
       isShow: "1",
       //分享应用表单
@@ -580,6 +586,7 @@ export default {
           { min: 1, max: 200, message: "字数不能超过200!", trigger: "blur" },
         ],
       },
+      selectStartups: null,
     };
   },
   created() {
@@ -861,7 +868,6 @@ export default {
           this.share(item);
           break;
         case "edit":
-          this.dialogFormVisible = true;
           this.edit(item);
           break;
         case "delete":
@@ -882,9 +888,13 @@ export default {
       this.form.applidStatus = e.applidStatus;
       this.form.screenImg = e.screenImg;
       this.form.startup = e.startup;
+      console.log(11,e.startup);
+      this.selectStartups = e.startups.split(",");
+      console.log(111, this.selectStartups);
       for (let index = 0; index < this.fileList.length; index++) {
         this.fileList[index].url = e.screenImg;
       }
+      this.editDialogFormVisible = true;
     },
     //确定修改
     amend() {
@@ -918,11 +928,11 @@ export default {
                 this.$message.success(res.data.message);
                 this.$common.closeLoading();
                 this.GetList();
-                this.dialogFormVisible = false;
+                this.editDialogFormVisible = false;
               } else if (res.data.code === 1) {
                 this.$message.error("修改失败，" + res.data.message);
                 this.$common.closeLoading();
-                this.dialogFormVisible = false;
+                this.editDialogFormVisible = false;
               }
             })
             .catch((err) => {
@@ -979,7 +989,7 @@ export default {
       }).then((res) => {
         // return console.log(333, res);
         if (res.data.code === 0) {
-          console.log(1111111111,res);
+          console.log(1111111111, res);
           let query = {
             appid: e.appid,
             locale: this.$i18n.locale,
@@ -1184,11 +1194,11 @@ export default {
       font-size: 14px;
       color: #00aaf0;
     }
-    .bbb {
+    .gray-btn {
       background-color: #bbb;
       color: #fff;
     }
-    .ff {
+    .blue-btn {
       background-color: #00aaf0;
       color: #fff;
     }
