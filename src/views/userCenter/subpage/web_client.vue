@@ -447,7 +447,6 @@ export default {
       godNode: null,
       comVisible: false,
       appType: null,
-      multUuid: null,
       userType: null,
     };
   },
@@ -1775,23 +1774,25 @@ export default {
         return item.data.name === "自定义构件";
       });
 
-      this.multUuid = mult ? mult.data.uuid : null;
+      let multUuid = mult ? mult.data.uuid : null;
+      let multBeforeUuid = null;
       // 如果没有自定义构件，保存最后一个节点，用来insertAfter节点
-      if (!this.multUuid) {
-        this.multBeforeUuid = godNodeList[godNodeList.length - 1].data.uuid;
+      if (!multUuid) {
+        multBeforeUuid = godNodeList[godNodeList.length - 1].data.uuid;
       }
 
       // 处理合模添加构件后更新列表
-      if (this.multUuid) {
+      if (multUuid) {
         // 如果有了自定义构件列表
         let params = {
           appliId: this.appId,
           pageNo: 1,
-          pageSize: 999,
-          uuid: this.multUuid,
+          pageSize: 888,
+          uuid: multUuid,
         };
+        console.log(55555,multUuid);
         MODELAPI.LISTMEMBERTREE(params).then((res) => {
-          this.$refs.setTree.updateKeyChildren(this.multUuid, res.data.data);
+          this.$refs.setTree.updateKeyChildren(multUuid, res.data.data);
         });
       } else {
         // 合模如果没有自定义构件列表
@@ -1802,12 +1803,11 @@ export default {
           pageNo: 1,
           pageSize: 999,
         };
+        console.log(111,multBeforeUuid);
         MODELAPI.LISTMEMBERTREE(params).then((res) => {
           const list = res.data.data;
-          this.$refs.setTree.insertAfter(
-            list[list.length - 1],
-            this.multBeforeUuid
-          );
+          console.log(list);
+          this.$refs.setTree.insertAfter(list[list.length - 1], multBeforeUuid);
         });
       }
     },
@@ -1831,7 +1831,7 @@ export default {
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
-          console.log(5555,realData);
+          console.log(333, realData);
           this.socketData = realData;
           if (realData.id === "1") {
             this.memberInfo = {
@@ -1936,7 +1936,7 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "10") {
-            this.showUiBar()
+            this.showUiBar();
             let messageInfo = {
               prex: "ourbimMessage",
               type: 30002,
@@ -2016,10 +2016,10 @@ export default {
               this.updateGodChildNode();
             }
             // 显示面板
-            this.showUiBar()
+            this.showUiBar();
           } else if (realData.id === "19") {
             // 构件新建失败
-            this.showUiBar()
+            this.showUiBar();
             // 提示判断添加构建失败
             this.$message.error(realData.name);
           }
