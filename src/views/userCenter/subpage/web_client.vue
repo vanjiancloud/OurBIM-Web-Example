@@ -1689,7 +1689,7 @@ export default {
       // 渲染环境
       if (e.type === 13) {
         this.listenTodoInfo = e;
-        this.UpdateMemeberState();
+        // this.UpdateMemeberState();
       }
       // 渲染环境修改时间
       if (e.type === 15) {

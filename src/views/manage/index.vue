@@ -50,7 +50,7 @@
             {{ scope.row.fileSize !== "0" ? scope.row.fileSize : "-" }}
           </template>
         </el-table-column>
-        <el-table-column prop="" label="项目类型" width="60">
+        <el-table-column prop="" label="项目类型" width="100">
           <template slot-scope="scope">
             <span v-if="scope.row.appType === '0'">普通模型</span>
             <span v-else-if="scope.row.appType === '1'">漫游模型</span>
@@ -66,6 +66,7 @@
 
             <!-- <span v-else-if="scope.row.appType === '3'">链接模型</span> -->
             <span v-else-if="scope.row.appType === '4'">示例模型</span>
+            <span v-else-if="scope.row.appType === '5'">云应用</span>
             <span v-else>其他模型</span>
           </template>
         </el-table-column>
@@ -330,6 +331,24 @@
           <el-form-item label="项目名称：" label-width="110px">
             <el-input v-model="form.name" autocomplete="off"></el-input>
           </el-form-item>
+
+          <el-form-item
+            label="主程序路径："
+            v-if="form.appType === '5'"
+            label-width="110px"
+          >
+            <el-select v-model="form.startup" placeholder="请选择主程序路径">
+              <el-option
+                label="EnscapeStandalone_c2jkomin.vlz/Bin64/EnscapeClient.exe"
+                value="EnscapeStandalone_c2jkomin.vlz/Bin64/EnscapeClient.exe"
+              ></el-option>
+              <el-option
+                label="EnscapeStandalone_c2jkomin.vlz/Bin64/Enscape.Standalone.ErrorHandler.exe,EnscapeStandalone_c2jkomin.vlz/Bin64/EnscapeClient.exe"
+                value="EnscapeStandalone_c2jkomin.vlz/Bin64/Enscape.Standalone.ErrorHandler.exe,EnscapeStandalone_c2jkomin.vlz/Bin64/EnscapeClient.exe"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
           <el-form-item
             label="最大并发数："
             label-width="110px"
@@ -437,13 +456,6 @@
         >
       </span>
     </el-dialog>
-
-    <!-- 协同模式弹窗 -->
-    <teamwork-dialog
-      ref="teamworkDialogRef"
-      @goApp="GoApp"
-      :status="1"
-    ></teamwork-dialog>
   </div>
 </template>
 
@@ -460,12 +472,9 @@ import { Getuserid } from "@/store/index.js";
 import axios from "@/utils/request";
 import qs from "qs";
 
-import TeamworkDialog from "./TeamworkDialog.vue";
 export default {
   name: "manage",
-  components: {
-    TeamworkDialog,
-  },
+  components: {},
   data() {
     return {
       selectOprationItem: {},
@@ -661,7 +670,6 @@ export default {
         nickName:
           userInfo.name || userInfo.mobile || userInfo.email || "默认昵称",
       });
-      // this.$refs.teamworkDialogRef.openDialog(e);
     },
     GetIntegrate() {
       getProjectList({
@@ -865,6 +873,7 @@ export default {
     },
     // 编辑按钮
     edit(e) {
+      this.form.appType = e.appType;
       this.form.name = e.appName;
       this.form.appid = e.appid;
       this.form.displayWindow = e.displayWindow;
@@ -872,6 +881,7 @@ export default {
       this.form.maxInstance = e.maxInstance;
       this.form.applidStatus = e.applidStatus;
       this.form.screenImg = e.screenImg;
+      this.form.startup = e.startup;
       for (let index = 0; index < this.fileList.length; index++) {
         this.fileList[index].url = e.screenImg;
       }
@@ -901,6 +911,7 @@ export default {
             displayWindow: this.form.displayWindow,
             screenImg: this.form.screenImg,
             maxInstance: this.form.maxInstance,
+            startup: this.form.startup,
           })
             .then((res) => {
               if (res.data.code === 0) {
@@ -968,23 +979,32 @@ export default {
       }).then((res) => {
         // return console.log(333, res);
         if (res.data.code === 0) {
+          console.log(1111111111,res);
           let query = {
             appid: e.appid,
             locale: this.$i18n.locale,
-            appType:e.appType,
+            appType: e.appType,
             token: res.data.data.token,
           };
-          console.log(22,query);
+          console.log(22, query);
           if (teamInfo) {
             query.userType = teamInfo.userType;
             query.nickName = teamInfo.nickName;
           }
           if (isiPad !== false || isMac !== false) {
+            // if (process.env.NODE_ENV === "production") {
+            window.open(res.data.data.url);
+            return;
+            // }
             this.$router.push({
               name: "web_client",
               query: query,
             });
           } else {
+            // if (process.env.NODE_ENV === "production") {
+            window.open(res.data.data.url, "_blank");
+            return;
+            // }
             const { href } = this.$router.resolve({
               name: "web_client",
               query: query,

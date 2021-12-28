@@ -510,7 +510,6 @@ export default {
           this.countBF = res.data.data.countBF;
           this.currentCountBF = res.data.data.currentCountBF;
           this.isPay = res.data.data.isPay;
-          this.userInfo=res.data.data
         })
         .catch((err) => {
           // this.$message.error('信息展示失败')
