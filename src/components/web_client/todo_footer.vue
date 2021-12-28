@@ -1769,14 +1769,16 @@ export default {
           // this.imgList[e].title = "显示";
         }
       }
+      if (e !== 13) {
+        // 隔离图元
+        this.imgList[e].url = realImg;
+      }
       //点了测量图标
       // if (e === 3) {
       //   this.setForm.unit = 0;
       //   this.setForm.accuracy = 2;
       // }
-      if (e !== 13) {
-        this.imgList[e].url = realImg;
-      }
+      
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
       // 关闭剖切和测量
       if (this.oldState === 2 || this.oldState === 3) {
@@ -1839,7 +1841,7 @@ export default {
         });
       }
       // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11 && e !== 13) {
+      if (e !== this.oldState && e !== 10 && e !== 11 ) {
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;

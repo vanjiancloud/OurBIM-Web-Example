@@ -888,9 +888,9 @@ export default {
       this.form.applidStatus = e.applidStatus;
       this.form.screenImg = e.screenImg;
       this.form.startup = e.startup;
-      console.log(11,e.startup);
-      this.selectStartups = e.startups.split(",");
-      console.log(111, this.selectStartups);
+      if (e.startups) {
+        this.selectStartups = e.startups.split(",");
+      }
       for (let index = 0; index < this.fileList.length; index++) {
         this.fileList[index].url = e.screenImg;
       }
@@ -987,39 +987,37 @@ export default {
       MODELAPI.GETBIMTOKEN({
         appid: e.appid,
       }).then((res) => {
-        // return console.log(333, res);
         if (res.data.code === 0) {
-          console.log(1111111111, res);
           let query = {
             appid: e.appid,
             locale: this.$i18n.locale,
             appType: e.appType,
             token: res.data.data.token,
           };
-          console.log(22, query);
           if (teamInfo) {
             query.userType = teamInfo.userType;
             query.nickName = teamInfo.nickName;
           }
           if (isiPad !== false || isMac !== false) {
-            // if (process.env.NODE_ENV === "production") {
-            window.open(res.data.data.url);
-            return;
-            // }
+            // 移动端
+            if (e.appType == "5") {
+              window.open(res.data.data.url);
+              return;
+            }
             this.$router.push({
               name: "web_client",
               query: query,
             });
           } else {
-            // if (process.env.NODE_ENV === "production") {
-            window.open(res.data.data.url, "_blank");
-            return;
-            // }
+            // PC端
+            if (e.appType == "5") {
+              window.open(res.data.data.url, "_blank");
+              return;
+            }
             const { href } = this.$router.resolve({
               name: "web_client",
               query: query,
             });
-            console.log(href);
             window.open(href, "_blank");
           }
         } else {
