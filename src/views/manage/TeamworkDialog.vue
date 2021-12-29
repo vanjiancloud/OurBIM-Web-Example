@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    :title="status === 1 ? '协同模式' : '邀请好友'"
+    title="协同模式"
     :visible.sync="dialogVisible"
     :before-close="closeDialog"
     :close-on-press-escape="false"
@@ -11,19 +11,7 @@
       element-loading-text="拼命加载中"
       element-loading-spinner="el-icon-loading"
     >
-      <div class="nick-row" v-show="status === 1">
-        <div class="nick"><span class="xingxing">*</span> 昵称</div>
-        <div class="nick-input">
-          <el-input
-            v-model="nickName"
-            placeholder="请输入内容"
-            minlength="1"
-            clearable
-            :readonly="nickNameReadonly"
-          ></el-input>
-        </div>
-      </div>
-      <div class="nick-row margin-row" v-show="status === 2">
+      <div class="nick-row margin-row">
         <div class="nick">链接</div>
         <div class="nick-input">
           <el-input placeholder="请输入内容" v-model="teamUrl" readonly>
@@ -40,8 +28,8 @@
           </el-input>
         </div>
       </div>
-      <div v-show="status === 2">二维码：</div>
-      <div class="code-img-row" v-show="status === 2">
+      <div>二维码：</div>
+      <div class="code-img-row">
         <div><img :src="codeImg" alt="" class="codeImg" /></div>
         <div class="code-row-text">
           <div>将二维码分享给好友，对方微信、</div>
@@ -58,12 +46,6 @@
           </div>
         </div>
       </div>
-      <span slot="footer" class="dialog-footer">
-        <!-- 项目列表显示进入项目 -->
-        <el-button type="primary" @click="goApp" v-show="status === 1"
-          >进入项目</el-button
-        >
-      </span>
     </el-row>
   </el-dialog>
 </template>
@@ -72,9 +54,8 @@
 import TeamModeApi from "../../api/team_mode";
 export default {
   props: {
-    status: {
-      type: Number,
-      default: 1,
+    appId: {
+      type: String,
     },
     shareCode: {
       type: String,
@@ -85,33 +66,33 @@ export default {
       nickName: "",
       dialogVisible: false,
       teamUrl: "",
-      appInfo: {},
       nickNameReadonly: false,
       codeImg: "",
       loading: false,
     };
   },
-  created() {},
+  created() {
+
+  },
   methods: {
-    openDialog(info) {
+    openDialog() {
       this.dialogVisible = true;
-      this.appInfo = info;
-      if (this.status === 2) {
-        this.addUrl();
-      }
+      this.addUrl();
     },
     closeDialog() {
-      this.nickName = "";
-      this.appInfo = {};
       this.dialogVisible = false;
     },
     addUrl() {
-      this.loading = true;
-      TeamModeApi.getTeamUrl({
-        appId: this.appInfo.appid,
+      let params = {
+        appId: this.appId,
         code: this.shareCode,
         userId: JSON.parse(sessionStorage.getItem("userid")),
-      }).then((res3) => {
+      };
+      if (this.$route.query.user) {
+        params.userId = this.$route.query.user;
+      }
+      this.loading = true;
+      TeamModeApi.getTeamUrl(params).then((res3) => {
         this.loading = false;
         if (res3.data.code !== 0) {
           this.$message.error(res3.data.message);
@@ -121,18 +102,6 @@ export default {
         this.teamUrl = res3.data.data.webShareUrl;
         this.codeImg = res3.data.data.qrurl;
         this.nickNameReadonly = true;
-      });
-    },
-    //     观察这
-    //     userType:0
-    // roomCode：
-    goApp() {
-      if (this.nickName === "") {
-        return this.$message.error("昵称不能为空！");
-      }
-      this.$emit("goApp", this.appInfo, {
-        userType: 1,
-        nickName: this.nickName,
       });
     },
     //复制链接成功

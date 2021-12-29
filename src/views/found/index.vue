@@ -196,7 +196,6 @@ export default {
             if (res.data.code === 0) {
               this.appInfo = res.data.data;
               this.appliId = res.data.data.appid;
-              // console.log(this.appInfo)
               this.$message.success("创建项目成功");
               this.$common.closeLoading();
               if (this.active++ > 3) this.active = 0;
@@ -284,7 +283,6 @@ export default {
       this.isLoading = false;
       this.appModel.push(response.data);
       // response等同于后端返回的res，根据response里的code判断状态
-      // console.log(response)
       if (response.code === 0) {
         this.$message.success(response.message);
         if (this.bimupNumber === this.appModel.length) {
@@ -359,6 +357,7 @@ export default {
       window.location.reload();
     },
     bimupNumber(num) {
+      console.log(88888,num);
       if (num) {
         this.disabl = false;
       } else {

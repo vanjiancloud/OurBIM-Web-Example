@@ -319,8 +319,8 @@
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
       ref="teamworkDialogRef"
-      :status="2"
       :shareCode="shareCode"
+      :appId="appId"
     ></teamwork-dialog>
     <div class="invite-team-friend" v-if="userType === '1'">
       <div class="invite-btn" @click="openTeamDialog">
@@ -2097,6 +2097,13 @@ export default {
             // 保存code
             if (res.data.data.code) {
               this.shareCode = res.data.data.code;
+              let messageInfo = {
+                prex: "ourbimMessage",
+                type: 'shareCode',
+                data: this.shareCode,
+                message: "",
+              };
+              this.sentParentIframe(messageInfo);
             }
 
             let messageInfo = {

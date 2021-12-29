@@ -763,7 +763,7 @@ export default {
     // 根据传入的status做适配
     formatStatus(status) {
       const statusObj = {
-        0: "未上传",
+        0: "正在转换",
         1: "转换中",
         2: "转换完成",
         3: "转换失败",
