@@ -11,9 +11,13 @@
       </div>
       <!-- 按钮 -->
       <div class="right">
-        <el-button type="primary" @click="handleCreateProjectDialog"
-          >上传模型</el-button
-        >
+        <el-button
+          type="primary"
+          @click="handleCreateProjectDialog"
+          class="upload-btn"
+          >上传模型
+          <div class="uploadingNum" v-show="uploadingNum">{{uploadingNum}}</div>
+        </el-button>
         <el-button type="primary" @click="AddIntegrate">链接模型</el-button>
       </div>
     </div>
@@ -588,6 +592,11 @@ export default {
       },
       selectStartups: null,
     };
+  },
+  computed:{
+    uploadingNum(){
+      return this.$store.state.uploadingNum
+    }
   },
   created() {
     this.GetList();
@@ -1425,6 +1434,27 @@ export default {
     border-radius: 50%;
     background-color: #999;
     margin: 0 3px;
+  }
+}
+</style>
+
+<style lang="less" scoped>
+.upload-btn {
+  position: relative;
+  .uploadingNum {
+    position: absolute;
+    top: -13px;
+    right: -10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid red;
+    font-size: 16px;
+    color: red;
+    font-weight: 500;
   }
 }
 </style>

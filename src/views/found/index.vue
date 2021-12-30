@@ -161,6 +161,11 @@ export default {
       isLoading: false,
     };
   },
+  computed: {
+    uploadingNum() {
+      return this.$store.state.uploadingNum;
+    },
+  },
   created() {
     this.userId = Getuserid();
   },
@@ -173,8 +178,15 @@ export default {
     errorImg(err, file, fileList) {
       console.log(err);
     },
+    changeUploadingNum(num) {
+      this.$store.commit("changeState", {
+        key: "uploadingNum",
+        value: this.uploadingNum + num,
+      });
+    },
     // 上传模型失败
     errorModel(err, file, fileList) {
+      this.changeUploadingNum(-1)
       this.isLoading = false;
       console.log(err);
       this.isShow = 4;
@@ -218,7 +230,6 @@ export default {
     // 开始转换
     update() {
       this.disabl = true;
-      // this.$emit('handleCreateProjectDialog',false)
       // 上传bim模型
 
       let uploadTimeout = setTimeout(() => {
@@ -280,6 +291,7 @@ export default {
     },
     // 上传模型成功
     upLoadModel(response, file, fileList) {
+      this.changeUploadingNum(-1)
       this.isLoading = false;
       this.appModel.push(response.data);
       // response等同于后端返回的res，根据response里的code判断状态
@@ -344,10 +356,10 @@ export default {
         this.$message.error("请上传支持的文件格式!");
       } else {
         extension = true;
+        this.changeUploadingNum(1)
         this.$message("正在上传，上传过程请勿关闭或刷新页面!");
         // this.$common.openLoading("上传模型中");
       }
-      console.log("extension", extension);
       return extension;
     },
   },
@@ -357,7 +369,6 @@ export default {
       window.location.reload();
     },
     bimupNumber(num) {
-      console.log(88888,num);
       if (num) {
         this.disabl = false;
       } else {
