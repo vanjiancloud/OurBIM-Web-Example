@@ -27,10 +27,32 @@
                 v-for="(item, index) in showHideList"
                 :key="index"
               >
-                <div
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :enterable="false"
+                  :content="item.name"
+                  placement="left"
+                >
+                  <div class="hide-icon-wrap">
+                    <!-- 灭 -->
+                    <img
+                      :src="item.img"
+                      @click="showHideItemClick(item.value)"
+                      class="hide-icon-item"
+                    />
+                    <!-- 亮 -->
+                    <img
+                      :src="item.activeImg"
+                      @click="showHideItemClick(item.value)"
+                      class="hide-icon-item hide-icon-item-absolute"
+                    />
+                  </div>
+                </el-tooltip>
+                <!-- <div
                   v-text="item.name"
                   @click="showHideItemClick(item.value)"
-                ></div>
+                ></div> -->
               </div>
             </div>
             <el-tooltip
@@ -761,14 +783,20 @@ export default {
         {
           name: "隐藏图元",
           value: 0,
+          img: require("@/assets/images/hide/hide.png"),
+          activeImg: require("@/assets/images/hide/hide-ac.png"),
         },
         {
           name: "隔离图元",
           value: 1,
+          img: require("@/assets/images/hide/split.png"),
+          activeImg: require("@/assets/images/hide/split-ac.png"),
         },
         {
           name: "全部显示",
           value: 2,
+          img: require("@/assets/images/hide/show-all.png"),
+          activeImg: require("@/assets/images/hide/show-all-ac.png"),
         },
       ],
       imgList: [
@@ -973,9 +1001,9 @@ export default {
     watchImgList() {
       return this.imgList[14].state;
     },
-    imgList13state(){
+    imgList13state() {
       return this.imgList[13].state;
-    }
+    },
   },
   watch: {
     watchImgList(val, old) {
@@ -990,10 +1018,10 @@ export default {
         this.$emit("comIconChang", flag);
       }
     },
-    imgList13state(val){
-      console.log(44,val);
-      this.showHideTool=val?true:false
-      console.log(666,this.showHideTool);
+    imgList13state(val) {
+      console.log(44, val);
+      this.showHideTool = val ? true : false;
+      console.log(666, this.showHideTool);
     },
     setProps: {
       handler() {
@@ -1070,8 +1098,10 @@ export default {
             taskid: this.taskId,
             visible: false,
           }).then((res) => {
-            if (res.data.code !== 0) {
+            if (res.data.code === 0) {
               this.$message.success(res.data.message);
+            } else {
+              this.$message.error(res.data.message);
             }
           });
           break;
@@ -1079,8 +1109,10 @@ export default {
           MODELAPI.invertHidden({
             taskId: this.taskId,
           }).then((res) => {
-            if (res.data.code !== 0) {
+            if (res.data.code === 0) {
               this.$message.success(res.data.message);
+            } else {
+              this.$message.error(res.data.message);
             }
           });
           break;
@@ -1088,8 +1120,10 @@ export default {
           MODELAPI.displayAllActor({
             taskId: this.taskId,
           }).then((res) => {
-            if (res.data.code !== 0) {
+            if (res.data.code === 0) {
               this.$message.success(res.data.message);
+            } else {
+              this.$message.error(res.data.message);
             }
           });
           break;
@@ -1779,7 +1813,7 @@ export default {
       //   this.setForm.unit = 0;
       //   this.setForm.accuracy = 2;
       // }
-      
+
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
       // 关闭剖切和测量
       if (this.oldState === 2 || this.oldState === 3) {
@@ -1842,7 +1876,7 @@ export default {
         });
       }
       // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11 ) {
+      if (e !== this.oldState && e !== 10 && e !== 11) {
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;
@@ -2242,5 +2276,25 @@ export default {
       border-top-color: rgba(0, 0, 0, 0.6) !important;
     }
   }
+}
+</style>
+
+
+<style lang="less" scoped>
+.hide-icon-wrap {
+  position: relative;
+  .hide-icon-item {
+    padding: 3px;
+  }
+  .hide-icon-item-absolute {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: none;
+  }
+}
+
+.hide-icon-wrap:hover .hide-icon-item-absolute {
+  display: block;
 }
 </style>
