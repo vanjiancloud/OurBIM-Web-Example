@@ -279,11 +279,16 @@ export default {
     },
     // 删除模型事件
     onremove(file, fileList) {
+      console.log('onremove',file, fileList);
+      if(file.status==="uploading"){
+        this.changeUploadingNum(-1)
+      }
       this.bimupNumber--;
       // this.disabl = !this.disabl;
     },
     // 添加模型文件
     onchange(file, fileList) {
+      console.log('onchange',file, fileList);
       if (!file.response) {
         this.bimupNumber++;
         // this.disabl = !this.disabl;

@@ -1019,9 +1019,7 @@ export default {
       }
     },
     imgList13state(val) {
-      console.log(44, val);
       this.showHideTool = val ? true : false;
-      console.log(666, this.showHideTool);
     },
     setProps: {
       handler() {
