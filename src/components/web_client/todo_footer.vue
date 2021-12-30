@@ -10,66 +10,52 @@
     <div class="handle-mask" @click.stop="" v-if="isMask"></div>
     <div class="todo-footer">
       <div class="todo-main">
-        <!-- 构件显示隐藏 -->
+        <!-- 新显示隐藏 -->
         <div
           class="image-main"
-          v-show="showBar(imgList[13].id) && showTodoIconObj.show"
+          v-if="showBar(imgList[13].id) && showTodoIconObj.show"
         >
           <el-tooltip
+            class="item"
+            effect="dark"
+            :enterable="false"
+            :content="imgList[13].title"
             placement="top"
-            v-model="showHideTool"
-            transition="el-fade-in-linear"
-            manual
           >
-            <div slot="content">
-              <div
-                class="person-list"
+            <img
+              @click.stop="handleOrder(13)"
+              class="footer-image"
+              :src="imgList[13].url"
+              mode=""
+            />
+          </el-tooltip>
+
+          <el-collapse-transition>
+            <div class="show-icon-list" v-if="imgList[13].state === 1">
+              <el-tooltip
                 v-for="(item, index) in showHideList"
                 :key="index"
+                class="item"
+                :enterable="false"
+                effect="dark"
+                :content="item.name"
+                placement="left"
               >
-                <el-tooltip
-                  class="item"
-                  effect="dark"
-                  :enterable="false"
-                  :content="item.name"
-                  placement="left"
-                >
-                  <div class="hide-icon-wrap">
-                    <!-- 灭 -->
-                    <img
-                      :src="item.img"
-                      @click="showHideItemClick(item.value)"
-                      class="hide-icon-item"
-                    />
-                    <!-- 亮 -->
-                    <img
-                      :src="item.activeImg"
-                      @click="showHideItemClick(item.value)"
-                      class="hide-icon-item hide-icon-item-absolute"
-                    />
-                  </div>
-                </el-tooltip>
-                <!-- <div
-                  v-text="item.name"
-                  @click="showHideItemClick(item.value)"
-                ></div> -->
-              </div>
+                <div class="hide-icon-wrap">
+                  <img
+                    :src="item.img"
+                    @click="showHideItemClick(item.value)"
+                    class="hide-icon-item"
+                  />
+                  <img
+                    :src="item.activeImg"
+                    @click="showHideItemClick(item.value)"
+                    class="hide-icon-item hide-icon-item-absolute"
+                  />
+                </div>
+              </el-tooltip>
             </div>
-            <el-tooltip
-              class="item"
-              effect="dark"
-              :enterable="false"
-              :content="imgList[13].title"
-              placement="top"
-            >
-              <img
-                class="footer-image"
-                :src="imgList[13].url"
-                @click.stop="handleOrder(13)"
-                mode=""
-              />
-            </el-tooltip>
-          </el-tooltip>
+          </el-collapse-transition>
         </div>
         <!-- 跟随视角改为第三人称 -->
         <!-- 框选 -->
@@ -610,6 +596,7 @@
           </el-tooltip>
         </div>
       </div>
+
       <!-- 编辑关注视点 -->
       <el-dialog
         :title="dialogPointData.title"
@@ -674,6 +661,7 @@ export default {
       type: Object,
       value: {},
     },
+    uibar: {},
   },
   data() {
     return {
@@ -1019,9 +1007,7 @@ export default {
       }
     },
     imgList13state(val) {
-      console.log(44, val);
       this.showHideTool = val ? true : false;
-      console.log(666, this.showHideTool);
     },
     setProps: {
       handler() {
@@ -1876,7 +1862,7 @@ export default {
         });
       }
       // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11) {
+      if (e !== this.oldState && e !== 10 && e !== 11 && e !== 13) {
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;
@@ -2281,10 +2267,20 @@ export default {
 
 
 <style lang="less" scoped>
+// 显示隐藏图标样式
+
+.show-icon-list {
+  background-color: rgba(0, 0, 0, 0.6);
+  position: absolute;
+  left: 4px;
+  top: -142px;
+  border-radius: 10px 10px 0 0;
+}
+
 .hide-icon-wrap {
   position: relative;
   .hide-icon-item {
-    padding: 3px;
+    padding: 10px;
   }
   .hide-icon-item-absolute {
     position: absolute;
