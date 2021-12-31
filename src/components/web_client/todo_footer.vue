@@ -1852,6 +1852,12 @@ export default {
           data: 0,
         });
       }
+      if (e === 13 || e === 12 || e === 5 || e === 10 || e === 11) {
+        // 在出现显示隐藏图标的情况下，除了框选、小地图、浏览器、属性，点了下边其他图标，都得关闭显示隐藏图标
+      } else {
+        console.log('隐藏隔离');
+        this.imgList[13].state = 0;
+      }
       // 重置状态
       if (e !== this.oldState && e !== 10 && e !== 11) {
         if (e == 13 && this.oldState == 12) {
