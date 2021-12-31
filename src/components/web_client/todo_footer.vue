@@ -23,7 +23,7 @@
             placement="top"
           >
             <img
-              @click.stop="changeShowHideVisible()"
+              @click.stop="handleOrder(13)"
               class="footer-image"
               :src="imgList[13].url"
               mode=""
@@ -31,7 +31,7 @@
           </el-tooltip>
 
           <el-collapse-transition>
-            <div class="show-icon-list" v-show="showHideVisible">
+            <div class="show-icon-list" v-show="this.imgList[13].state">
               <el-tooltip
                 v-for="(item, index) in showHideList"
                 :key="index"
@@ -44,12 +44,12 @@
                 <div class="hide-icon-wrap">
                   <img
                     :src="item.img"
-                    @click="showHideItemClick(item.value)"
+                    @click.stop="showHideItemClick(item.value)"
                     class="hide-icon-item"
                   />
                   <img
                     :src="item.activeImg"
-                    @click="showHideItemClick(item.value)"
+                    @click.stop="showHideItemClick(item.value)"
                     class="hide-icon-item hide-icon-item-absolute"
                   />
                 </div>
@@ -986,15 +986,21 @@ export default {
     };
   },
   computed: {
-    watchImgList() {
+    watchComIcon() {
       return this.imgList[14].state;
     },
-    imgList13state() {
-      return this.imgList[13].state;
+    watchMultSelectIcon() {
+      // 监听框选图标变化
+      return this.imgList[12].state;
     },
   },
   watch: {
-    watchImgList(val, old) {
+    watchMultSelectIcon(val, old) {
+      if (val == 0) {
+        this.closeMultSelectAction();
+      }
+    },
+    watchComIcon(val, old) {
       if (val !== old) {
         this.comSwitch();
         let flag = null;
@@ -1005,9 +1011,6 @@ export default {
         }
         this.$emit("comIconChang", flag);
       }
-    },
-    imgList13state(val) {
-      this.showHideTool = val ? true : false;
     },
     setProps: {
       handler() {
@@ -1076,6 +1079,15 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    closeMultSelectAction() {
+      // 关闭框选指令
+      let params = {
+        taskid: this.taskId,
+        action: "componentBoxSelection",
+        Switch: "off",
+      };
+      MODELAPI.UPDATEORDER(params);
+    },
     changeShowHideVisible() {
       this.showHideVisible = !this.showHideVisible;
     },
@@ -1450,7 +1462,7 @@ export default {
       let oldUrl = require(`@/assets/images/todo/unchecked/${
         this.imgList[this.oldState].name
       }`);
-      console.log(555,this.oldState);
+      console.log("clickOther", this.oldState);
       this.imgList[this.oldState].url = oldUrl;
       this.imgList[this.oldState].state = 0;
       // 分解模型
@@ -1760,7 +1772,12 @@ export default {
       });
     },
     handleOrder(e) {
-      console.log("handleOrder", e);
+      console.log(
+        "handleOrder",
+        e,
+        this.imgList[e].title,
+        this.imgList[e].state
+      );
       this.footerIconChange(e);
       // 功能未开放 模型动画
       // || || e === 14
@@ -1787,11 +1804,9 @@ export default {
       }
       // 构件显示隐藏
       if (e === 13) {
-        if (this.imgList[e].state === 0) {
-          this.showHideTool = true;
+        if (this.imgList[13].state === 0) {
           // this.imgList[e].title = "隐藏";
         } else {
-          this.showHideTool = false;
           // this.imgList[e].title = "显示";
         }
       }
@@ -1868,6 +1883,7 @@ export default {
       }
       // 重置状态
       if (e !== this.oldState && e !== 10 && e !== 11) {
+        console.log("重置状态", e, this.oldState);
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;
