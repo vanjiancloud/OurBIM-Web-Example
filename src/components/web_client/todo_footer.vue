@@ -596,7 +596,6 @@
           </el-tooltip>
         </div>
       </div>
-
       <!-- 编辑关注视点 -->
       <el-dialog
         :title="dialogPointData.title"
@@ -661,7 +660,6 @@ export default {
       type: Object,
       value: {},
     },
-    uibar: {},
   },
   data() {
     return {
@@ -911,7 +909,7 @@ export default {
       followTool: false,
       personTool: false,
       showHideTool: false,
-      showHideVisible: false,
+
       setForm: {
         unit: 0,
         accuracy: 2,
@@ -986,21 +984,12 @@ export default {
     };
   },
   computed: {
-    watchComIcon() {
+    watchImgList() {
       return this.imgList[14].state;
-    },
-    watchMultSelectIcon() {
-      // 监听框选图标变化
-      return this.imgList[12].state;
     },
   },
   watch: {
-    watchMultSelectIcon(val, old) {
-      if (val == 0) {
-        this.closeMultSelectAction();
-      }
-    },
-    watchComIcon(val, old) {
+    watchImgList(val, old) {
       if (val !== old) {
         this.comSwitch();
         let flag = null;
@@ -1079,18 +1068,6 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
-    closeMultSelectAction() {
-      // 关闭框选指令
-      let params = {
-        taskid: this.taskId,
-        action: "componentBoxSelection",
-        Switch: "off",
-      };
-      MODELAPI.UPDATEORDER(params);
-    },
-    changeShowHideVisible() {
-      this.showHideVisible = !this.showHideVisible;
-    },
     showHideItemClick(value) {
       // 隐藏 隔离 显示
       switch (value) {
@@ -1462,7 +1439,6 @@ export default {
       let oldUrl = require(`@/assets/images/todo/unchecked/${
         this.imgList[this.oldState].name
       }`);
-      console.log("clickOther", this.oldState);
       this.imgList[this.oldState].url = oldUrl;
       this.imgList[this.oldState].state = 0;
       // 分解模型
@@ -1772,14 +1748,7 @@ export default {
       });
     },
     handleOrder(e) {
-      console.log(
-        "e=",
-        e,
-        this.imgList[e].title,
-        this.imgList[e].state,
-        "oldSate",
-        this.oldState
-      );
+      console.log("e=", e, "oldState=", this.oldState);
       this.footerIconChange(e);
       // 功能未开放 模型动画
       // || || e === 14
@@ -1797,33 +1766,32 @@ export default {
       if (e === 2 || e === 8) {
         this.activePerson = 1;
       }
-
       // 选中状态
       let realImg = null;
-      // 底部图标反选开始
       if (this.imgList[e].state === 0) {
         realImg = require(`@/assets/images/todo/check/${this.imgList[e].name}`);
       } else {
         realImg = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
       }
-      if (e !== 13) {
-        // 隔离图元
-        this.imgList[e].url = realImg;
-      }
-      // 底部图标反选结束
-
       // 构件显示隐藏
       if (e === 13) {
-        if (this.imgList[13].state === 0) {
+        if (this.imgList[e].state === 0) {
           // this.imgList[e].title = "隐藏";
         } else {
           // this.imgList[e].title = "显示";
         }
       }
+      if (e !== 13) {
+        // 隔离图元
+        this.imgList[e].url = realImg;
+      }
+      //点了测量图标
+      // if (e === 3) {
+      //   this.setForm.unit = 0;
+      //   this.setForm.accuracy = 2;
+      // }
 
-      // 状态反选
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
-
       // 关闭剖切和测量
       if (this.oldState === 2 || this.oldState === 3) {
         this.activeSlice = [];
@@ -1887,10 +1855,10 @@ export default {
       // 重置状态
       if (e !== this.oldState && e !== 10 && e !== 11) {
         if (e == 13 && this.oldState == 12) {
-          // 点了重置状态，再点显示图标，不重置
+          // 点了框选，再点显示，不重置状态
           return;
         }
-        console.log("重置状态", e, this.oldState);
+        console.log("重置状态");
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;
@@ -2292,7 +2260,6 @@ export default {
   }
 }
 </style>
-
 
 <style lang="less" scoped>
 // 显示隐藏图标样式
