@@ -727,9 +727,10 @@ export default {
     },
     // 定时器每隔五秒获取数据
     setGetdataIn() {
+      
       this.timer = setInterval(() => {
         this.GetList();
-      }, 5000);
+      }, 3000);
     },
     // 获取应用数据列表
     GetList() {
