@@ -23,7 +23,7 @@
             placement="top"
           >
             <img
-              @click.stop="handleOrder(13)"
+              @click.stop="changeShowHideVisible()"
               class="footer-image"
               :src="imgList[13].url"
               mode=""
@@ -31,7 +31,7 @@
           </el-tooltip>
 
           <el-collapse-transition>
-            <div class="show-icon-list" v-if="imgList[13].state === 1">
+            <div class="show-icon-list" v-show="showHideVisible">
               <el-tooltip
                 v-for="(item, index) in showHideList"
                 :key="index"
@@ -911,7 +911,7 @@ export default {
       followTool: false,
       personTool: false,
       showHideTool: false,
-
+      showHideVisible: false,
       setForm: {
         unit: 0,
         accuracy: 2,
@@ -1076,6 +1076,9 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    changeShowHideVisible() {
+      this.showHideVisible = !this.showHideVisible;
+    },
     showHideItemClick(value) {
       // 隐藏 隔离 显示
       switch (value) {
@@ -1447,6 +1450,7 @@ export default {
       let oldUrl = require(`@/assets/images/todo/unchecked/${
         this.imgList[this.oldState].name
       }`);
+      console.log(555,this.oldState);
       this.imgList[this.oldState].url = oldUrl;
       this.imgList[this.oldState].state = 0;
       // 分解模型
@@ -1756,6 +1760,7 @@ export default {
       });
     },
     handleOrder(e) {
+      console.log("handleOrder", e);
       this.footerIconChange(e);
       // 功能未开放 模型动画
       // || || e === 14
@@ -1862,7 +1867,7 @@ export default {
         });
       }
       // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11 && e !== 13) {
+      if (e !== this.oldState && e !== 10 && e !== 11) {
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;

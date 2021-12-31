@@ -1313,6 +1313,7 @@ export default {
           break;
         case 12:
           // 分解模型
+          console.log(222);
           params.action = "splitModel";
           params.splitValue = this.listenTodoInfo.data;
           break;
