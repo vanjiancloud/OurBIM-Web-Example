@@ -182,7 +182,7 @@
                   <div class="box-p">
                     <div class="one">
                       <div class="one-c">
-                        <img src="../Layout/img/cao.png" alt="" />
+                        <img src="../Layout/img/wan.png" alt="" />
                       </div>
                     </div>
                     <div class="two">华东区</div>
@@ -191,13 +191,13 @@
                         <span class="first">
                           <img src="../Layout/img/user.png" alt="" />
                         </span>
-                        <span class="second">曹经理</span>
+                        <span class="second">小万</span>
                       </div>
                       <div>
                         <span class="first">
                           <img src="../Layout/img/phone.png" alt="" />
                         </span>
-                        <span class="second">139&emsp;6266&nbsp;2352</span>
+                        <span class="second">182&emsp;2229&nbsp;5737</span>
                       </div>
                     </div>
                   </div>
