@@ -1773,10 +1773,12 @@ export default {
     },
     handleOrder(e) {
       console.log(
-        "handleOrder",
+        "e=",
         e,
         this.imgList[e].title,
-        this.imgList[e].state
+        this.imgList[e].state,
+        "oldSate",
+        this.oldState
       );
       this.footerIconChange(e);
       // 功能未开放 模型动画
@@ -1795,13 +1797,21 @@ export default {
       if (e === 2 || e === 8) {
         this.activePerson = 1;
       }
+
       // 选中状态
       let realImg = null;
+      // 底部图标反选开始
       if (this.imgList[e].state === 0) {
         realImg = require(`@/assets/images/todo/check/${this.imgList[e].name}`);
       } else {
         realImg = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
       }
+      if (e !== 13) {
+        // 隔离图元
+        this.imgList[e].url = realImg;
+      }
+      // 底部图标反选结束
+
       // 构件显示隐藏
       if (e === 13) {
         if (this.imgList[13].state === 0) {
@@ -1810,17 +1820,10 @@ export default {
           // this.imgList[e].title = "显示";
         }
       }
-      if (e !== 13) {
-        // 隔离图元
-        this.imgList[e].url = realImg;
-      }
-      //点了测量图标
-      // if (e === 3) {
-      //   this.setForm.unit = 0;
-      //   this.setForm.accuracy = 2;
-      // }
 
+      // 状态反选
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
+
       // 关闭剖切和测量
       if (this.oldState === 2 || this.oldState === 3) {
         this.activeSlice = [];
@@ -1883,6 +1886,10 @@ export default {
       }
       // 重置状态
       if (e !== this.oldState && e !== 10 && e !== 11) {
+        if (e == 13 && this.oldState == 12) {
+          // 点了重置状态，再点显示图标，不重置
+          return;
+        }
         console.log("重置状态", e, this.oldState);
         this.angleTool = false;
         this.followTool = false;
