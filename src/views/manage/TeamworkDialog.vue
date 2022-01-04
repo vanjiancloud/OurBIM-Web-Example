@@ -86,8 +86,8 @@ export default {
       let params = {
         appId: this.appId,
         code: this.shareCode,
-        userId: '5165161616161',
-        // userId: JSON.parse(sessionStorage.getItem("userid")),
+        // userId: '5165161616161',
+        userId: JSON.parse(sessionStorage.getItem("userid")),
       };
       if (this.$route.query.user) {
         params.userId = this.$route.query.user;
