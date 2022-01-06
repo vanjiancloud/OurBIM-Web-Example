@@ -344,7 +344,6 @@ import scrollContainer from "@/components/web_client/scrollContainer.vue";
 import resMessage from "../../../utils/res-message";
 
 import TeamworkDialog from "../../manage/TeamworkDialog.vue";
-import { login } from "../../../api/my";
 
 export default {
   name: "look_app",
@@ -2078,9 +2077,6 @@ export default {
       if (userType == 0) {
         this.runTimeCode = 1;
         this.isFade = false;
-        // this.isProgress=false
-        // this.controllerInfo.tagUiBar = false;
-        // this.controllerInfo.tagViewCube = false;
       }
       if (nickName) {
         params.nickName = nickName;

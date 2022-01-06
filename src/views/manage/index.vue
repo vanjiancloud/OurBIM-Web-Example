@@ -1449,13 +1449,14 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
-    border: 2px solid red;
-    font-size: 16px;
-    color: red;
+    background-color: red;
+    font-size: 14px;
+    color: #fff;
     font-weight: 500;
+    padding: 6px;
   }
 }
 </style>
