@@ -1312,7 +1312,6 @@ export default {
           break;
         case 12:
           // 分解模型
-          console.log(222);
           params.action = "splitModel";
           params.splitValue = this.listenTodoInfo.data;
           break;
@@ -1764,6 +1763,22 @@ export default {
           });
         });
     },
+    updateComTreeAfterAddComs() {
+      if (this.appType === "3") {
+        // 合模
+        this.handleMultModle();
+      } else {
+        let params = {
+          appliId: this.appId,
+          pageNo: 1,
+          pageSize: 99,
+          uuid:'vanjian'
+        };
+        MODELAPI.LISTMEMBERTREE(params).then((res) => {
+          this.$refs.setTree.updateKeyChildren(params.uuid, res.data.data);
+        });
+      }
+    },
     async handleMultModle() {
       // 查看有没有合模的自定义构件
       // 合模必然有 uuid vanjian1
@@ -1988,8 +2003,9 @@ export default {
               }
             } // 13cube返回数据
           } else if (realData.id === "14") {
-            // 添加构件，但是按了 esc
+            // 添加构件，但是按了 ESC
             if (this.controllerInfo.uiBar) {
+              this.updateComTreeAfterAddComs();
               this.controllerInfo.tagUiBar = true;
               this.controllerInfo.tagViewCube = true;
             }
@@ -2096,7 +2112,7 @@ export default {
               this.shareCode = res.data.data.code;
               let messageInfo = {
                 prex: "ourbimMessage",
-                type: 'shareCode',
+                type: "shareCode",
                 data: this.shareCode,
                 message: "",
               };
