@@ -65,7 +65,7 @@
           :on-exceed="exceed"
           :on-remove="onremove"
           :before-upload="beforeModelUpload"
-          accept=".rvt,.ifc,.zip,rfa"
+          accept=".rvt,.ifc,.zip,.rfa"
           ref="bimupload"
           :auto-upload="false"
         >
