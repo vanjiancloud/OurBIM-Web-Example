@@ -327,6 +327,7 @@
         <img src="./friend.png" alt="" /> 邀请成员
       </div>
     </div>
+    <EscDialogItem ref="EscDialogItem" />
   </div>
 </template>
 
@@ -345,6 +346,8 @@ import resMessage from "../../../utils/res-message";
 
 import TeamworkDialog from "../../manage/TeamworkDialog.vue";
 
+import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
+
 export default {
   name: "look_app",
   layout: "reset",
@@ -356,6 +359,7 @@ export default {
     qrcodePart,
     scrollContainer,
     TeamworkDialog,
+    EscDialogItem,
   },
   data() {
     return {
@@ -1727,6 +1731,7 @@ export default {
       COMPONENTLIBRARY.addCom(params)
         .then((res) => {
           if (res.data.code === 0) {
+            this.$refs.EscDialogItem.changeVisible(true);
             this.controllerInfo.tagUiBar = false;
             this.controllerInfo.tagViewCube = false;
           }
@@ -1772,7 +1777,7 @@ export default {
           appliId: this.appId,
           pageNo: 1,
           pageSize: 99,
-          uuid:'vanjian'
+          uuid: "vanjian",
         };
         MODELAPI.LISTMEMBERTREE(params).then((res) => {
           this.$refs.setTree.updateKeyChildren(params.uuid, res.data.data);
@@ -2008,6 +2013,7 @@ export default {
               this.updateComTreeAfterAddComs();
               this.controllerInfo.tagUiBar = true;
               this.controllerInfo.tagViewCube = true;
+              this.$refs.EscDialogItem.changeVisible(false)
             }
           } else if (realData.id === "15") {
             this.$refs.getFooter.handleComOperateIcon(realData);
@@ -2019,6 +2025,8 @@ export default {
               this.updateComTreeAfterDeleteByUuid(v);
             });
           } else if (realData.id === "18") {
+            // 显示面板
+            this.showUiBar();
             // 构件创建成功
             // 更新自定义构件列表
             if (this.appType === "3") {
@@ -2027,11 +2035,8 @@ export default {
             } else {
               this.updateGodChildNode();
             }
-            // 显示面板
-            this.showUiBar();
           } else if (realData.id === "19") {
             // 构件新建失败
-            this.showUiBar();
             // 提示判断添加构建失败
             this.$message.error(realData.name);
           }
