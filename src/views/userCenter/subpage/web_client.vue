@@ -2038,6 +2038,7 @@ export default {
           } else if (realData.id === "19") {
             // 构件新建失败
             // 提示判断添加构建失败
+            this.showUiBar();
             this.$message.error(realData.name);
           }
         }
@@ -2052,6 +2053,7 @@ export default {
     },
     showUiBar() {
       // 显示面板
+      this.$refs.EscDialogItem.changeVisible(false)
       if (this.controllerInfo.uiBar) {
         this.controllerInfo.tagUiBar = true;
         this.controllerInfo.tagViewCube = true;
