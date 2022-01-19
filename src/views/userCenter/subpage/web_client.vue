@@ -199,7 +199,7 @@
         <!-- 构件库 -->
         <div v-show="comVisible">
           <div
-            class="bim-info"
+            class="bim-info com-box"
             @click.stop=""
             v-show="
               controllerInfo.tagUiBar &&
@@ -2096,7 +2096,7 @@ export default {
               this.shareCode = res.data.data.code;
               let messageInfo = {
                 prex: "ourbimMessage",
-                type: 'shareCode',
+                type: "shareCode",
                 data: this.shareCode,
                 message: "",
               };
@@ -2637,7 +2637,9 @@ export default {
         }
       }
     }
-
+    .com-box{
+      width: 400px;
+    }
     .bim-info {
       pointer-events: auto;
       height: 50vh;
@@ -2647,7 +2649,6 @@ export default {
       right: 0;
       margin: 2vh 20px 0 0;
       border-radius: 10px;
-      width: 400px;
       overflow-x: hidden;
       overflow-y: auto;
       background: rgba(0, 0, 0, 0.5);
