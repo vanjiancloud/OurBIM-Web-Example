@@ -327,6 +327,7 @@
         <img src="./friend.png" alt="" /> 邀请成员
       </div>
     </div>
+    <EscDialogItem ref="EscDialogItem" />
   </div>
 </template>
 
@@ -345,6 +346,8 @@ import resMessage from "../../../utils/res-message";
 
 import TeamworkDialog from "../../manage/TeamworkDialog.vue";
 
+import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
+
 export default {
   name: "look_app",
   layout: "reset",
@@ -356,6 +359,7 @@ export default {
     qrcodePart,
     scrollContainer,
     TeamworkDialog,
+    EscDialogItem,
   },
   data() {
     return {
@@ -1312,7 +1316,6 @@ export default {
           break;
         case 12:
           // 分解模型
-          console.log(222);
           params.action = "splitModel";
           params.splitValue = this.listenTodoInfo.data;
           break;
@@ -1728,6 +1731,7 @@ export default {
       COMPONENTLIBRARY.addCom(params)
         .then((res) => {
           if (res.data.code === 0) {
+            this.$refs.EscDialogItem.changeVisible(true);
             this.controllerInfo.tagUiBar = false;
             this.controllerInfo.tagViewCube = false;
           }
@@ -1763,6 +1767,22 @@ export default {
             type: "error",
           });
         });
+    },
+    updateComTreeAfterAddComs() {
+      if (this.appType === "3") {
+        // 合模
+        this.handleMultModle();
+      } else {
+        let params = {
+          appliId: this.appId,
+          pageNo: 1,
+          pageSize: 99,
+          uuid: "vanjian",
+        };
+        MODELAPI.LISTMEMBERTREE(params).then((res) => {
+          this.$refs.setTree.updateKeyChildren(params.uuid, res.data.data);
+        });
+      }
     },
     async handleMultModle() {
       // 查看有没有合模的自定义构件
@@ -1988,10 +2008,12 @@ export default {
               }
             } // 13cube返回数据
           } else if (realData.id === "14") {
-            // 添加构件，但是按了 esc
+            // 添加构件，但是按了 ESC
             if (this.controllerInfo.uiBar) {
+              this.updateComTreeAfterAddComs();
               this.controllerInfo.tagUiBar = true;
               this.controllerInfo.tagViewCube = true;
+              this.$refs.EscDialogItem.changeVisible(false)
             }
           } else if (realData.id === "15") {
             this.$refs.getFooter.handleComOperateIcon(realData);
@@ -2003,6 +2025,8 @@ export default {
               this.updateComTreeAfterDeleteByUuid(v);
             });
           } else if (realData.id === "18") {
+            // 显示面板
+            this.showUiBar();
             // 构件创建成功
             // 更新自定义构件列表
             if (this.appType === "3") {
@@ -2011,12 +2035,10 @@ export default {
             } else {
               this.updateGodChildNode();
             }
-            // 显示面板
-            this.showUiBar();
           } else if (realData.id === "19") {
             // 构件新建失败
-            this.showUiBar();
             // 提示判断添加构建失败
+            this.showUiBar();
             this.$message.error(realData.name);
           }
         }
@@ -2031,6 +2053,7 @@ export default {
     },
     showUiBar() {
       // 显示面板
+      this.$refs.EscDialogItem.changeVisible(false)
       if (this.controllerInfo.uiBar) {
         this.controllerInfo.tagUiBar = true;
         this.controllerInfo.tagViewCube = true;
