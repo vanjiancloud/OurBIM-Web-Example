@@ -88,6 +88,21 @@
                         {{ $t("APIdov") }}
                       </a></el-menu-item
                     >
+                    <el-menu-item index="/"
+                      ><a
+                        href="https://www.ourbim.com/developer/demo/index.html"
+                        style="
+                          text-decoration: none;
+                          color: #999;
+                          font-size: 16px;
+                          display: block;
+                          width: 100%;
+                        "
+                      >
+                        示例DEMO
+                      </a></el-menu-item
+                    >
+
                     <el-menu-item index="/">
                       <a
                         href="http://www.ourbim.com/developer/update_log"
