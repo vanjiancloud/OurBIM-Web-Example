@@ -804,7 +804,7 @@ export default {
   width: 400px;
   margin: 2vh 0 0 20px;
   border-radius: 10px;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(17,17,17,0.88);
   .tree-title {
     display: flex;
     padding: 20px 15px 0 15px;

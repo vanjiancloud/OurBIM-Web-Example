@@ -1997,7 +1997,7 @@ export default {
   .todo-main {
     // max-width: 800px;
     padding: 10px;
-    background: rgba(0, 0, 0, 0.6);
+    background-color: rgba(17,17,17,0.88);
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -2246,7 +2246,7 @@ export default {
   }
 }
 .popper-bgi {
-  background: rgba(0, 0, 0, 0.6);
+  background-color: rgba(17,17,17,0.88);
   border: transparent;
   .el-select-dropdown__item {
     color: #ffffff !important;

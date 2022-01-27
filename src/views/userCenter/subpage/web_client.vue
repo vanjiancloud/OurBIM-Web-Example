@@ -2601,7 +2601,7 @@ export default {
       width: 400px;
       margin: 2vh 0 0 20px;
       border-radius: 10px;
-      background: rgba(0, 0, 0, 0.5);
+      background-color: rgba(17,17,17,0.88);
 
       .tree-title {
         display: flex;
@@ -2660,13 +2660,13 @@ export default {
         }
       }
     }
-    .com-box{
+    .com-box {
       width: 400px;
     }
     .bim-info {
       pointer-events: auto;
       height: 50vh;
-      min-width: 400px;
+      width: 400px;
       position: absolute;
       top: 0;
       right: 0;
@@ -2674,7 +2674,7 @@ export default {
       border-radius: 10px;
       overflow-x: hidden;
       overflow-y: auto;
-      background: rgba(0, 0, 0, 0.5);
+      background-color: rgba(17,17,17,0.88);
       color: #ffffff;
       .bim-title {
         display: flex;
@@ -2689,8 +2689,8 @@ export default {
         overflow-x: hidden;
         overflow-y: auto;
         margin-top: 1vh;
-        height: 40vh;
-
+        height: calc(100% - 56px);
+        
         &::-webkit-scrollbar {
           /*滚动条整体样式*/
           width: 6px;
@@ -2731,17 +2731,33 @@ export default {
       }
       .detail-table {
         width: 100%;
-        line-height: 35px;
-        text-align: center;
-
+        // line-height: 35px;
+        text-align: left;
+        border-collapse: collapse;
+        tr {
+          border-bottom: 1px solid #3f3f3f;
+          &:first-child{
+            border-top: 1px solid #3f3f3f;
+          }
+        }
+        tr td {
+          word-wrap: break-word;
+          word-break: break-all;
+          font-size: 14px;
+          padding: 10px;
+          font-size: 12px;
+        }
         tr td {
           &:first-child {
-            width: 30%;
+            color: #999;
+            width: 40%;
+            border-right: 1px solid #3f3f3f;
           }
 
           &:last-child {
-            width: 70%;
-            word-break: break-all;
+            color: #ccc;
+            width: 60%;
+         
           }
         }
       }
