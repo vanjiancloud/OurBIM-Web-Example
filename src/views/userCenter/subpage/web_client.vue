@@ -54,7 +54,7 @@
     </div>
     <!-- runTimeCode 1:mobile  0 ：PC  -->
     <div v-if="runTimeCode === 0">
-      <!-- 模型浏览器 -->
+      <!-- 模型构件树 -->
       <div class="mutual-bim">
         <div
           class="tree-main"
@@ -572,7 +572,7 @@ export default {
       /**
        * @Author: zk
        * @Date: 2021-09-01 10:49:56
-       * @description: 筛选模型浏览器
+       * @description: 筛选模型构件树
        */
       if (!value) return true;
       const reamVal = data.name.indexOf(value) !== -1;
@@ -1313,7 +1313,7 @@ export default {
       if (e.type === 14) {
         this.listenTodoInfo = e;
       }
-      // 浏览器
+      // 构件树
       if (e.type === 10) {
         this.browserInfo = e;
       }

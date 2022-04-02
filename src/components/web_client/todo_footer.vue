@@ -528,7 +528,7 @@
             </div>
           </el-collapse-transition>
         </div>
-        <!-- 浏览器 -->
+        <!-- 构件树 -->
         <div
           class="image-main"
           v-if="showBar(imgList[10].id) && showTodoIconObj.componentTree"
@@ -820,7 +820,7 @@ export default {
           state: 0,
           url: require("@/assets/images/todo/unchecked/tree.png"),
           name: "tree.png",
-          title: "浏览器",
+          title: "构件树",
           id: 1013,
         },
         {
@@ -1737,7 +1737,7 @@ export default {
       if (e === 0) {
         this.personTool = this.imgList[e].state === 1 ? true : false;
       }
-      // 标签 重置模型浏览器
+      // 标签 重置模型构件树
       if (e === 4) {
         if (this.imgList[10].state === 1) {
           this.imgList[10].state = 0;
@@ -1755,7 +1755,7 @@ export default {
           this.imgList[4].url = oldUrl;
         }
       }
-      // 模型浏览器 重置标签
+      // 模型构件树 重置标签
       if (this.oldState === 4 && this.oldState !== e) {
         if (e === 10) {
           if (this.imgList[4].state === 1) {

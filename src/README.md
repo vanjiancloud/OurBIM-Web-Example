@@ -11,7 +11,7 @@
 
 ## 监听消息
 
-OurBIM平台在iframe内部通过浏览器 postMessage方法向外部抛出事件。
+OurBIM平台在iframe内部通过构件树 postMessage方法向外部抛出事件。
 
 可以通过以下方法监听：
 
@@ -113,7 +113,7 @@ function sendToIframe(type, data, message) {
 // 渲染环境显示/隐藏
     type = 1012
     data = true/false
-// 浏览器显示/隐藏
+// 构件树显示/隐藏
     type = 1013
     data = ture/false
 // 属性显示/隐藏

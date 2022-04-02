@@ -437,7 +437,7 @@ export default {
     };
     // 页面缩放
     // window.onload = function () {
-    //   // 获取浏览器页面最大宽度
+    //   // 获取构件树页面最大宽度
     //   var maxWidth = document.documentElement.offsetWidth
     //   document.documentElement.style.fontSize =
     //     document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
