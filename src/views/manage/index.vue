@@ -316,7 +316,7 @@
         <el-transfer
           class="integrate-transfer"
           filterable
-          :titles="['模型', '模型']"
+          :titles="['模型', '模型2']"
           v-model="ActiveLinkModel"
           :data="ListLinkModel"
           :props="{
