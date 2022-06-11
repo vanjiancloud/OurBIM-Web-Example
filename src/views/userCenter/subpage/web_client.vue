@@ -143,6 +143,19 @@
                     class="delect-com-icon"
                     v-if="appType !== '3' && node.data.typeId === 'comp'"
                   />
+                  <span v-if="node.level === 1 && appType==='3' && lockView==='false'">
+                      <!-- 开锁和闭锁 -->
+                     <!-- <i class="el-icon-unlock lockLock" v-if="data[`lockView${+ data.uuid.slice(-1) - 1}`]" @click.stop="handleToggleLock(data.uuid.slice(-1) - 1)"></i>
+                     <i v-else class="el-icon-lock lockL.stopock" @click.stop="handleToggleLock(data.uuid.slice(-1) - 1)"></i> -->
+                     <!-- 开锁和闭锁 -->
+            <!-- <i class="el-icon-unlock lockLock" v-if="true" @click.stop="handleToggleLock(node, data)"></i>
+            <i v-else class="el-icon-lock lockLock" @click.stop="handleToggleLock(node, data)"></i> -->
+                    
+            <!-- 开锁和闭锁 -->
+            <!-- <i class="el-icon-lock" v-if="data[`lockView${+data.uuid.slice(-1) - 1}`]" @click.stop="handleToggleLock(node, data, data.uuid.slice(-1) - 1)"></i>
+            <i v-else class="el-icon-unlock" @click.stop="handleToggleLock(node, data, data.uuid.slice(-1) - 1)"></i> -->
+          
+                  </span>
                   <span>
                     <!-- <span v-if="node.data.typeId !== 'comp'"> -->
                     <!-- 显示状态 -->
@@ -176,7 +189,9 @@
           <div class="detail-main">
             <table
               class="detail-table"
-              v-if="memberInfo && memberInfo.type === 1"
+              v-if="
+                memberInfo && (memberInfo.type === 1 || memberInfo.type === 5)
+              "
             >
               <tr
                 v-for="(item, index) in memberInfo.data.dynamicData"
@@ -186,14 +201,14 @@
                 <td v-text="item.value"></td>
               </tr>
             </table>
-            <table
+            <!-- <table
               class="detail-table"
               v-else-if="memberInfo && memberInfo.type === 5"
             >
               <tr>
                 <td>请选择唯一构件以查看属性</td>
               </tr>
-            </table>
+            </table> -->
           </div>
         </div>
         <!-- 构件库 -->
@@ -222,8 +237,7 @@
               </div>
             </div>
             <div class="detail-main detail-collapse">
-              <scroll-container>
-                <!-- <el-collapse v-model="componentCollapse" accordion>
+              <!-- <el-collapse v-model="componentCollapse" accordion>
                 <el-collapse-item title="二维码" name="1">
                   <div class="collapse-main">
                     <el-button size="mini" type="primary" @click="AddQrCode"
@@ -233,32 +247,31 @@
                 </el-collapse-item>
               </el-collapse> -->
 
-                <!-- 公共构件库列表 -->
-                <el-collapse
-                  accordion
-                  v-for="(item, index) in publicComList"
-                  :key="item.title"
-                  class=""
-                >
-                  <el-collapse-item :title="item.group" :name="index">
-                    <div class="collapse-main">
-                      <div class="oooooooo">
-                        <div
-                          class="publicComListItem"
-                          v-for="listItem in item.rsComponent"
-                          :key="listItem.id"
-                          @click="addCom(listItem)"
-                        >
-                          <div class="img">
-                            <img :src="listItem.comUrl" alt="" />
-                          </div>
-                          <div class="name">{{ listItem.comName }}</div>
+              <!-- 公共构件库列表 -->
+              <el-collapse
+                accordion
+                v-for="(item, index) in publicComList"
+                :key="item.title"
+                class=""
+              >
+                <el-collapse-item :title="item.group" :name="index">
+                  <div class="collapse-main">
+                    <div class="oooooooo">
+                      <div
+                        class="publicComListItem"
+                        v-for="listItem in item.rsComponent"
+                        :key="listItem.id"
+                        @click="addCom(listItem)"
+                      >
+                        <div class="img">
+                          <img :src="listItem.comUrl" alt="" />
                         </div>
+                        <div class="name">{{ listItem.comName }}</div>
                       </div>
                     </div>
-                  </el-collapse-item>
-                </el-collapse>
-              </scroll-container>
+                  </div>
+                </el-collapse-item>
+              </el-collapse>
             </div>
           </div>
         </div>
@@ -294,6 +307,7 @@
         :taskId="taskId"
         :socketData="socketData"
         :showTodoIconObj="showTodoIconObj"
+        :threeLogo="threeLogo"
       ></todo-footer>
       <view-cube
         v-if="controllerInfo.viewCube"
@@ -340,7 +354,6 @@ import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
 import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
-import scrollContainer from "@/components/web_client/scrollContainer.vue";
 
 import resMessage from "../../../utils/res-message";
 
@@ -357,12 +370,16 @@ export default {
     tagTree,
     progressBar,
     qrcodePart,
-    scrollContainer,
     TeamworkDialog,
     EscDialogItem,
   },
   data() {
     return {
+      threeLogo:false,
+      // myProjectId:'',
+      // modeData:[], // 树形结构数据
+      // lockLogo:false, // 锁的打开和关闭
+      lockView:'', // 锁的显示
       shareCode: null,
       showTodoIconObj: {},
       socketData: {},
@@ -456,6 +473,7 @@ export default {
 
   watch: {},
   created() {
+    this.lockView = this.$route.query.weatherBin; 
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -513,6 +531,59 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    // 点击锁
+      // handleToggleLock(node, data){
+      //   // this.threeLogo = !this.threeLogo
+      //   // if(this.threeLogo===true){
+      //   // let flagOrder = 'on'
+      //   // } else{
+      // //    let flagOrder = 'off'
+      //   // }
+       
+      //   // 在这里写调用接口
+      //   console.log(111, data);
+      //   const params = {
+      //     taskId: this.taskId,
+      //     flag: data[`lockView${i}`] ? "off" : "on"
+      //   }
+      //   MODELAPI.LOCKOPENORCLOSE(params).then((res) => {
+      //     console.log(666, res);
+      //     if(res.data.code == 0) {
+      //       const infoParam = {
+      //         taskId: this.taskId,
+      //         actorOrAppId: data.projectId
+      //       }
+      //       MODELAPI.LOCKAFTERINFO(infoParam).then((res) => {
+      //         console.log(888, res);
+      //       });
+      //     }
+      //   });        
+      // },
+      // handleToggleLock(node, data, i){
+      //   this.threeLogo = !this.threeLogo
+      //   // 在这里写调用接口
+      //   data[`lockView${i}`] = !data[`lockView${i}`]
+      //   // data.uuid = `vanjian${i}`
+      //   // this.$refs.setTree.setCurrentKey(data.uuid)
+      //   const params = {
+      //     taskId: this.taskId,
+      //     flag: data[`lockView${i}`] ? "on" : "off"
+      //   }
+      //   console.log(111, params);
+
+      //   MODELAPI.LOCKOPENORCLOSE(params).then((res) => {
+      //     console.log(666, res);
+      //     if(res.data.code == 0) {
+      //       const infoParam = {
+      //         taskId: this.taskId,
+      //         actorOrAppId: data.projectId
+      //       }
+      //       MODELAPI.LOCKAFTERINFO(infoParam).then((res) => {
+      //         console.log(888, res);
+      //       });
+      //     }
+      //   });        
+      // },
     addMessageEvent() {
       window.addEventListener(
         "message",
@@ -560,6 +631,10 @@ export default {
       this.comVisible = val;
     },
     handleTodoIcon(query) {
+      // this.$EventBus.$on('passWeather', (value)=>{
+      //     this.weatherClose = value;
+      //     console.log('99999',this.weatherClose);
+      // });
       const arr = [
         "show",
         "select",
@@ -579,12 +654,20 @@ export default {
       ];
       let obj = {};
       arr.map((v) => {
-        if (query[v] == "false") {
+        if (query[v] == "false") {  
           obj[v] = false;
         } else {
           obj[v] = true;
         }
       });
+      // gis要隐藏天气渲染
+      if(this.$route.query.weatherBin === 'true'){
+        obj.weather = false;
+      }
+      // 分享 也要隐藏天气渲染
+      if(this.$route.query.appType === '0'){
+          obj.weather = false;
+      }
       this.showTodoIconObj = obj;
     },
     getComList() {
@@ -779,6 +862,12 @@ export default {
       this.LisetMemberPage(this.openNode).then((res) => {
         this.TreePageNo++;
         if (res.length > 0) {
+          // ----锁
+          // res = res.map((item,i) =>{
+          //     const currentLockView = "lockView" + i;
+          //     return Object.assign(item,{[currentLockView]:true})
+          // });
+         // ----锁
           res.forEach((item) => {
             let noneNode = this.$refs.setTree.getNode(item);
             if (!noneNode) {
@@ -995,7 +1084,7 @@ export default {
        * @Date: 2021-03-08 14:39:51
        * @description: 构件树的指令
        */
-
+      console.log('5656',e);
       let messageInfo = {
         prex: "ourbimMessage",
         type: 20001,
@@ -1435,6 +1524,7 @@ export default {
     },
 
     async LisetMemberPage(node) {
+      console.log(55555);
       let params = {
         appliId:
           node.data && node.data.projectId ? node.data.projectId : this.appId,
@@ -1444,6 +1534,8 @@ export default {
       node.key ? (params.uuid = node.key) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
         if (res.data.code === 0) {
+          // 锁---
+          // this.myProjectId = res.data.data.projectId;
           return res.data.data;
         } else {
           return [];
@@ -1452,6 +1544,7 @@ export default {
       return realMember;
     },
     async getMemberList(node) {
+      console.log(666666,node);
       let params = {
         appliId:
           node.data && node.data.projectId ? node.data.projectId : this.appId,
@@ -1460,7 +1553,7 @@ export default {
       };
       node.key ? (params.uuid = node.key) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
-        if (res.data.code === 0) {
+        if (res.data.code === 0) { 
           return res.data.data;
         } else {
           return [];
@@ -1785,6 +1878,7 @@ export default {
       }
     },
     async handleMultModle() {
+      console.log(3333,this.$refs.setTree.getNode("vanjian1"));
       // 查看有没有合模的自定义构件
       // 合模必然有 uuid vanjian1
       const godNodeList =
@@ -1827,6 +1921,13 @@ export default {
           this.$refs.setTree.insertAfter(list[list.length - 1], multBeforeUuid);
         });
       }
+    },
+
+    flatten(arr) {
+      // 数组扁平化
+      return !Array.isArray(arr)
+        ? arr
+        : [].concat.apply([], arr.map(this.flatten));
     },
     initWebSocket() {
       //初始化weosocket
@@ -1881,6 +1982,18 @@ export default {
               type: 20002,
               message: "",
             };
+            let mm = realData.multipleDataList.map((item) => {
+              return JSON.parse(item[2].value);
+            });
+
+            let nn = this.flatten(mm);
+            console.log(888, nn);
+            this.memberInfo = {
+              type: 5,
+              data: {
+                dynamicData: nn,
+              },
+            };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "7") {
             this.memberInfo = null;
@@ -1932,6 +2045,7 @@ export default {
               }
             }
             if (Number(realData.progress) === 1) {
+              this.limitZoomSpeed();
               // 加载完成
               this.listenWindowSize();
               let noneTimer = setTimeout(() => {
@@ -2013,7 +2127,7 @@ export default {
               this.updateComTreeAfterAddComs();
               this.controllerInfo.tagUiBar = true;
               this.controllerInfo.tagViewCube = true;
-              this.$refs.EscDialogItem.changeVisible(false)
+              this.$refs.EscDialogItem.changeVisible(false);
             }
           } else if (realData.id === "15") {
             this.$refs.getFooter.handleComOperateIcon(realData);
@@ -2051,9 +2165,20 @@ export default {
       };
       this.websock.onerror = (e) => {};
     },
+    limitZoomSpeed() {
+      // 限制缩放速度
+      if (this.runTimeCode) {
+        let params = {
+          taskid: this.taskId,
+          action: "initWorldParam",
+          zoomSpeed: "0.02",
+        };
+        MODELAPI.UPDATEORDER(params);
+      }
+    },
     showUiBar() {
       // 显示面板
-      this.$refs.EscDialogItem.changeVisible(false)
+      this.$refs.EscDialogItem.changeVisible(false);
       if (this.controllerInfo.uiBar) {
         this.controllerInfo.tagUiBar = true;
         this.controllerInfo.tagViewCube = true;
@@ -2601,7 +2726,7 @@ export default {
       width: 400px;
       margin: 2vh 0 0 20px;
       border-radius: 10px;
-      background-color: rgba(17,17,17,0.88);
+      background-color: rgba(17, 17, 17, 0.88);
 
       .tree-title {
         display: flex;
@@ -2674,7 +2799,7 @@ export default {
       border-radius: 10px;
       overflow-x: hidden;
       overflow-y: auto;
-      background-color: rgba(17,17,17,0.88);
+      background-color: rgba(17, 17, 17, 0.88);
       color: #ffffff;
       .bim-title {
         display: flex;
@@ -2690,7 +2815,7 @@ export default {
         overflow-y: auto;
         margin-top: 1vh;
         height: calc(100% - 56px);
-        
+
         &::-webkit-scrollbar {
           /*滚动条整体样式*/
           width: 6px;
@@ -2725,7 +2850,7 @@ export default {
             border-bottom: none;
           }
           .collapse-main {
-            padding: 0 10px;
+            padding: 0 5px;
           }
         }
       }
@@ -2736,7 +2861,7 @@ export default {
         border-collapse: collapse;
         tr {
           border-bottom: 1px solid #3f3f3f;
-          &:first-child{
+          &:first-child {
             border-top: 1px solid #3f3f3f;
           }
         }
@@ -2757,7 +2882,6 @@ export default {
           &:last-child {
             color: #ccc;
             width: 60%;
-         
           }
         }
       }
@@ -2960,5 +3084,8 @@ export default {
     width: 20px;
     height: 20px;
   }
+}
+.lockLock{
+  margin-right: 5px;
 }
 </style>

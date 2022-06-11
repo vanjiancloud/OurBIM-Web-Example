@@ -531,7 +531,7 @@
               mode=""
             />
           </el-tooltip>
-
+          <!-- 构件库的  移动旋转  原来有的 -->
           <el-collapse-transition>
             <div class="show-slice show-com" v-if="imgList[14].state === 1">
               <el-tooltip
@@ -574,6 +574,31 @@
               mode=""
             />
           </el-tooltip>
+
+           <!-- 浏览器的 移动旋转 自己 加的 -->
+           <el-collapse-transition>
+            <div class="show-slice show-com" v-if="imgList[10].state === 1 && this.threeLogo === true">
+              <el-tooltip
+                v-for="(item, index) in comIconList"
+                :key="index"
+                class="item"
+                :enterable="false"
+                effect="dark"
+                :content="item.content"
+                placement="left"
+              >
+                <div>
+                  <img
+                    class="slice-img com-img"
+                    @click.stop="browerClick(item)"
+                    :src="item.active ? item.activeImg : item.img"
+                    mode=""
+                  />
+                </div>
+              </el-tooltip>
+            </div>
+          </el-collapse-transition>
+
         </div>
         <!-- 属性 -->
         <div
@@ -660,6 +685,10 @@ export default {
       type: Object,
       value: {},
     },
+    threeLogo:{
+        type: Boolean,
+        default: false,
+    }
   },
   data() {
     return {
@@ -1130,6 +1159,7 @@ export default {
           this.$message.error(res.data.message);
         });
     },
+     // 移动 旋转 (原有的  构件库的)
     comItemClick(item) {
       let isSame = false;
       this.comIconList.forEach((row) => {
@@ -1182,6 +1212,61 @@ export default {
         })
         .catch((res) => {});
     },
+    // 移动 旋转 (我自己模仿新加的 浏览器的)
+    browerClick(item) {
+      let isSame = false;
+      this.comIconList.forEach((row) => {
+        if (item.content === row.content) {
+          if (row.active) {
+            // 如果图标原本就是亮着，灭掉它
+            // 发关闭轴的指令
+            isSame = true;
+            COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
+              this.$resMsg(res.data);
+              if (res.data.code === 0) {
+                row.active = false;
+              }
+            });
+          }
+          row.active = true;
+        } else {
+          row.active = false;
+        }
+      });
+      if (isSame) {
+        return;
+      }
+      let mode = "";
+      switch (item.content) {
+        case "旋转":
+          mode = "rotate";
+          break;
+        case "移动":
+          mode = "translate";
+          break;
+        case "缩放":
+          mode = "scale";
+          break;
+        default:
+          break;
+      }
+      const params = {
+        // comId: this.socketData.mN || null,
+        taskId: this.taskId,
+        mode, //translate、rotate、scale
+      };
+      MODELAPI.BROWSERBUTTON(params)
+        .then((res) => {
+          if (res.data.code === 0) {
+            console.log('777');
+            this.$message.success(res.data.message);
+          } else {
+            this.$message.error(res.data.message);
+          }
+        })
+        .catch((res) => {});
+    },
+    //  移动 旋转
     SetWeather(e) {
       /**
        * @Author: zk
@@ -1630,13 +1715,14 @@ export default {
         action: "moveToViewPoint",
         camerashotId: e.tid,
       };
-      if (this.followInfo.available === "0") {
-        this.$message({
-          type: "warning",
-          message: this.actionData.addLoadMessage,
-        });
-        return;
-      } else {
+      // if (this.followInfo.available === "0") {
+      //   this.$message({
+      //     type: "warning",
+      //     message: this.actionData.addLoadMessage,
+      //   });
+      //   return;
+      // } else {
+        
         this.UpdateOrder(params);
         if (e.viewMode) {
           this.activePerson = e.viewMode === "1" ? 0 : 1;
@@ -1645,7 +1731,7 @@ export default {
           // this.activePerson = e.viewMode === "1" ? 0 : 1
           this.$emit("listenMode", Number(e.projectionMode));
         }
-      }
+      // }
     },
     resetPointList(e) {
       /**
@@ -1669,17 +1755,19 @@ export default {
        * @Date: 2021-03-17 10:30:51
        * @description: 获取视点列表
        */
-      let params = {
-        taskid: this.getProps.taskId,
-      };
-      this.pointList = [];
-      MODELAPI.LISTFOLLOWPOINT(params)
-        .then((res) => {
-          if (res.data.code === 0) {
-            this.pointList = res.data.data;
-          }
-        })
-        .catch((err) => {});
+      setTimeout(() => {
+        let params = {
+          taskid: this.getProps.taskId,
+        };
+        this.pointList = [];
+        MODELAPI.LISTFOLLOWPOINT(params)
+          .then((res) => {
+            if (res.data.code === 0) {
+              this.pointList = res.data.data;
+            }
+          })
+          .catch((err) => {});
+      }, 1000);
     },
     resetState() {
       /**
@@ -1855,7 +1943,7 @@ export default {
       if (e === 13 || e === 12 || e === 5 || e === 10 || e === 11) {
         // 在出现显示隐藏图标的情况下，除了框选、小地图、浏览器、属性，点了下边其他图标，都得关闭显示隐藏图标
       } else {
-        console.log('隐藏隔离');
+        console.log("隐藏隔离");
         this.imgList[13].state = 0;
       }
       // 重置状态
@@ -1997,7 +2085,7 @@ export default {
   .todo-main {
     // max-width: 800px;
     padding: 10px;
-    background-color: rgba(17,17,17,0.88);
+    background-color: rgba(17, 17, 17, 0.88);
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -2246,7 +2334,7 @@ export default {
   }
 }
 .popper-bgi {
-  background-color: rgba(17,17,17,0.88);
+  background-color: rgba(17, 17, 17, 0.88);
   border: transparent;
   .el-select-dropdown__item {
     color: #ffffff !important;
