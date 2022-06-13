@@ -1019,7 +1019,7 @@ export default {
         if (this.timerFlag) {
           this.GetList();
         }
-      }, 600);
+      }, 2500);
     },
     // 获取应用数据列表
     GetList() {
