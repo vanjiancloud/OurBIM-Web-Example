@@ -121,7 +121,7 @@
                       ? 'tree-select'
                       : ''
                   "
-                  slot-scope="{ node }"
+                  slot-scope="{ node}"
                   @click="handleTree(node, 0)"
                 >
                   <span class="label-span">{{ node.label }}</span>
@@ -143,19 +143,11 @@
                     class="delect-com-icon"
                     v-if="appType !== '3' && node.data.typeId === 'comp'"
                   />
-                  <span v-if="node.level === 1 && appType==='3' && lockView==='false'">
-                      <!-- 开锁和闭锁 -->
-                     <!-- <i class="el-icon-unlock lockLock" v-if="data[`lockView${+ data.uuid.slice(-1) - 1}`]" @click.stop="handleToggleLock(data.uuid.slice(-1) - 1)"></i>
-                     <i v-else class="el-icon-lock lockL.stopock" @click.stop="handleToggleLock(data.uuid.slice(-1) - 1)"></i> -->
-                     <!-- 开锁和闭锁 -->
-            <!-- <i class="el-icon-unlock lockLock" v-if="true" @click.stop="handleToggleLock(node, data)"></i>
-            <i v-else class="el-icon-lock lockLock" @click.stop="handleToggleLock(node, data)"></i> -->
-                    
-            <!-- 开锁和闭锁 -->
-            <!-- <i class="el-icon-lock" v-if="data[`lockView${+data.uuid.slice(-1) - 1}`]" @click.stop="handleToggleLock(node, data, data.uuid.slice(-1) - 1)"></i>
-            <i v-else class="el-icon-unlock" @click.stop="handleToggleLock(node, data, data.uuid.slice(-1) - 1)"></i> -->
-          
-                  </span>
+                  <!-- <span v-if="(node.level === 1 && (appType==='3' || appType==='0') && node.name != '自定义构件') || (node.parent.data.name === '自定义构件' && node.level != 1)"> -->
+                    <!-- 开锁和闭锁 -->
+                    <!-- <i class="iconfont icon-24gl-lock2 lockLock" v-if="!data[`lockView${+node.id}`]" @click.stop="handleToggleLock(node, data, node.id)"></i>
+                    <i v-else class="iconfont icon-24gl-unlock4 lockLock" @click.stop="handleToggleLock(node, data, node.id)"></i>  -->
+                  <!-- </span> -->
                   <span>
                     <!-- <span v-if="node.data.typeId !== 'comp'"> -->
                     <!-- 显示状态 -->
@@ -515,6 +507,7 @@ export default {
     } else {
       this.runTimeCode = 0;
     }
+    console.log('555',this.isMobile(), this.runTimeCode);
     this.getModelUrl();
     //判断是否使用的是ipad
     let isiPad =
@@ -532,58 +525,52 @@ export default {
   },
   methods: {
     // 点击锁
-      // handleToggleLock(node, data){
-      //   // this.threeLogo = !this.threeLogo
-      //   // if(this.threeLogo===true){
-      //   // let flagOrder = 'on'
-      //   // } else{
-      // //    let flagOrder = 'off'
-      //   // }
-       
-      //   // 在这里写调用接口
-      //   console.log(111, data);
-      //   const params = {
-      //     taskId: this.taskId,
-      //     flag: data[`lockView${i}`] ? "off" : "on"
-      //   }
-      //   MODELAPI.LOCKOPENORCLOSE(params).then((res) => {
-      //     console.log(666, res);
-      //     if(res.data.code == 0) {
-      //       const infoParam = {
-      //         taskId: this.taskId,
-      //         actorOrAppId: data.projectId
-      //       }
-      //       MODELAPI.LOCKAFTERINFO(infoParam).then((res) => {
-      //         console.log(888, res);
-      //       });
-      //     }
-      //   });        
-      // },
-      // handleToggleLock(node, data, i){
-      //   this.threeLogo = !this.threeLogo
-      //   // 在这里写调用接口
-      //   data[`lockView${i}`] = !data[`lockView${i}`]
-      //   // data.uuid = `vanjian${i}`
-      //   // this.$refs.setTree.setCurrentKey(data.uuid)
-      //   const params = {
-      //     taskId: this.taskId,
-      //     flag: data[`lockView${i}`] ? "on" : "off"
-      //   }
-      //   console.log(111, params);
-
-      //   MODELAPI.LOCKOPENORCLOSE(params).then((res) => {
-      //     console.log(666, res);
-      //     if(res.data.code == 0) {
-      //       const infoParam = {
-      //         taskId: this.taskId,
-      //         actorOrAppId: data.projectId
-      //       }
-      //       MODELAPI.LOCKAFTERINFO(infoParam).then((res) => {
-      //         console.log(888, res);
-      //       });
-      //     }
-      //   });        
-      // },
+    // handleToggleLock(node, data, i){
+    //     // 最多只开一把锁的，打开某一个锁，其他锁要关闭
+    //     const result = node.parent.childNodes;
+    //     if(result){
+    //       for (let index = 0; index < result.length; index++) {
+    //         if(result[index].data.uuid !== data.uuid) {
+    //           this.$set(result[index].data, `lockView${result[index].data.uuid.slice(-1)}`, false)
+    //         }else {
+    //           this.$set(data, [`lockView${i}`], !data[`lockView${i}`])
+    //         }
+    //       }
+    //     }
+    //     const params = {
+    //       taskId: this.taskId,
+    //       flag: data[`lockView${i}`] ? "on" : "off"
+    //     }
+    //     if(params.flag === 'on'){
+    //       this.threeLogo = true
+    //     }
+    //     if(params.flag === 'off'){
+    //         this.threeLogo = false
+    //     }
+    //     MODELAPI.LOCKOPENORCLOSE(params).then((res) => {
+    //       if(res.data.code == 0) {
+    //         const infoParam = {
+    //           taskId: this.taskId,
+    //           actorOrAppId: data.projectId
+    //         }
+    //         if(params.flag === 'on'){
+    //            MODELAPI.LOCKAFTERINFO(infoParam).then((res) => {
+    //              if(res.data.code === 0){
+    //               this.$message({
+    //                 message: this.$t("webClient.loadBox.message[2]"),
+    //                 type: "success",
+    //               });
+    //              }
+    //           });
+    //         }
+    //       }else{
+    //         this.$message({
+    //           message: res.data.message,
+    //           type: "error",
+    //        });
+    //       }
+    //     });        
+    //   },
     addMessageEvent() {
       window.addEventListener(
         "message",
@@ -631,10 +618,6 @@ export default {
       this.comVisible = val;
     },
     handleTodoIcon(query) {
-      // this.$EventBus.$on('passWeather', (value)=>{
-      //     this.weatherClose = value;
-      //     console.log('99999',this.weatherClose);
-      // });
       const arr = [
         "show",
         "select",
@@ -862,12 +845,6 @@ export default {
       this.LisetMemberPage(this.openNode).then((res) => {
         this.TreePageNo++;
         if (res.length > 0) {
-          // ----锁
-          // res = res.map((item,i) =>{
-          //     const currentLockView = "lockView" + i;
-          //     return Object.assign(item,{[currentLockView]:true})
-          // });
-         // ----锁
           res.forEach((item) => {
             let noneNode = this.$refs.setTree.getNode(item);
             if (!noneNode) {
@@ -1079,12 +1056,12 @@ export default {
       }
     },
     handleTree(e, index) {
+      console.log('111',e);
       /**
        * @Author: zk
        * @Date: 2021-03-08 14:39:51
        * @description: 构件树的指令
        */
-      console.log('5656',e);
       let messageInfo = {
         prex: "ourbimMessage",
         type: 20001,
@@ -1524,7 +1501,6 @@ export default {
     },
 
     async LisetMemberPage(node) {
-      console.log(55555);
       let params = {
         appliId:
           node.data && node.data.projectId ? node.data.projectId : this.appId,
@@ -1544,7 +1520,6 @@ export default {
       return realMember;
     },
     async getMemberList(node) {
-      console.log(666666,node);
       let params = {
         appliId:
           node.data && node.data.projectId ? node.data.projectId : this.appId,
@@ -1878,7 +1853,6 @@ export default {
       }
     },
     async handleMultModle() {
-      console.log(3333,this.$refs.setTree.getNode("vanjian1"));
       // 查看有没有合模的自定义构件
       // 合模必然有 uuid vanjian1
       const godNodeList =
@@ -1987,7 +1961,6 @@ export default {
             });
 
             let nn = this.flatten(mm);
-            console.log(888, nn);
             this.memberInfo = {
               type: 5,
               data: {

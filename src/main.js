@@ -22,6 +22,8 @@ import VueCropper from 'vue-cropper'
 // 引入echart
 import * as echarts from "echarts"
 import 'echarts-liquidfill'
+// 引入 iconfont
+import './assets/iconLock/iconfont.css'
 
 Vue.use(VueI18n)
 Vue.use(VueCropper)
