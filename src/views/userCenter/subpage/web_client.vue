@@ -121,7 +121,7 @@
                       ? 'tree-select'
                       : ''
                   "
-                  slot-scope="{ node}"
+                  slot-scope="{ node,data}"
                   @click="handleTree(node, 0)"
                 >
                   <span class="label-span">{{ node.label }}</span>
@@ -143,11 +143,11 @@
                     class="delect-com-icon"
                     v-if="appType !== '3' && node.data.typeId === 'comp'"
                   />
-                  <!-- <span v-if="(node.level === 1 && (appType==='3' || appType==='0') && node.name != '自定义构件') || (node.parent.data.name === '自定义构件' && node.level != 1)"> -->
+                  <span v-if="node.level === 1 && (appType==='3' || appType==='0') && node.data.name != '自定义构件'">
                     <!-- 开锁和闭锁 -->
-                    <!-- <i class="iconfont icon-24gl-lock2 lockLock" v-if="!data[`lockView${+node.id}`]" @click.stop="handleToggleLock(node, data, node.id)"></i>
-                    <i v-else class="iconfont icon-24gl-unlock4 lockLock" @click.stop="handleToggleLock(node, data, node.id)"></i>  -->
-                  <!-- </span> -->
+                    <i class="iconfont icon-24gl-lock2 lockLock" v-if="!data[`lockView${+node.id}`]" @click.stop="handleToggleLock(node, data, node.id)"></i>
+                    <i v-else class="iconfont icon-24gl-unlock4 lockLock" @click.stop="handleToggleLock(node, data, node.id)"></i> 
+                  </span>
                   <span>
                     <!-- <span v-if="node.data.typeId !== 'comp'"> -->
                     <!-- 显示状态 -->
@@ -525,52 +525,52 @@ export default {
   },
   methods: {
     // 点击锁
-    // handleToggleLock(node, data, i){
-    //     // 最多只开一把锁的，打开某一个锁，其他锁要关闭
-    //     const result = node.parent.childNodes;
-    //     if(result){
-    //       for (let index = 0; index < result.length; index++) {
-    //         if(result[index].data.uuid !== data.uuid) {
-    //           this.$set(result[index].data, `lockView${result[index].data.uuid.slice(-1)}`, false)
-    //         }else {
-    //           this.$set(data, [`lockView${i}`], !data[`lockView${i}`])
-    //         }
-    //       }
-    //     }
-    //     const params = {
-    //       taskId: this.taskId,
-    //       flag: data[`lockView${i}`] ? "on" : "off"
-    //     }
-    //     if(params.flag === 'on'){
-    //       this.threeLogo = true
-    //     }
-    //     if(params.flag === 'off'){
-    //         this.threeLogo = false
-    //     }
-    //     MODELAPI.LOCKOPENORCLOSE(params).then((res) => {
-    //       if(res.data.code == 0) {
-    //         const infoParam = {
-    //           taskId: this.taskId,
-    //           actorOrAppId: data.projectId
-    //         }
-    //         if(params.flag === 'on'){
-    //            MODELAPI.LOCKAFTERINFO(infoParam).then((res) => {
-    //              if(res.data.code === 0){
-    //               this.$message({
-    //                 message: this.$t("webClient.loadBox.message[2]"),
-    //                 type: "success",
-    //               });
-    //              }
-    //           });
-    //         }
-    //       }else{
-    //         this.$message({
-    //           message: res.data.message,
-    //           type: "error",
-    //        });
-    //       }
-    //     });        
-    //   },
+    handleToggleLock(node, data, i){
+        // 最多只开一把锁的，打开某一个锁，其他锁要关闭
+        const result = node.parent.childNodes;
+        if(result){
+          for (let index = 0; index < result.length; index++) {
+            if(result[index].data.uuid !== data.uuid) {
+              this.$set(result[index].data, `lockView${result[index].data.uuid.slice(-1)}`, false)
+            }else {
+              this.$set(data, [`lockView${i}`], !data[`lockView${i}`])
+            }
+          }
+        }
+        const params = {
+          taskId: this.taskId,
+          flag: data[`lockView${i}`] ? "on" : "off"
+        }
+        if(params.flag === 'on'){
+          this.threeLogo = true
+        }
+        if(params.flag === 'off'){
+            this.threeLogo = false
+        }
+        MODELAPI.LOCKOPENORCLOSE(params).then((res) => {
+          if(res.data.code == 0) {
+            const infoParam = {
+              taskId: this.taskId,
+              actorOrAppId: data.projectId
+            }
+            if(params.flag === 'on'){
+               MODELAPI.LOCKAFTERINFO(infoParam).then((res) => {
+                 if(res.data.code === 0){
+                  this.$message({
+                    message: this.$t("webClient.loadBox.message[2]"),
+                    type: "success",
+                  });
+                 }
+              });
+            }
+          }else{
+            this.$message({
+              message: res.data.message,
+              type: "error",
+           });
+          }
+        });        
+      },
     addMessageEvent() {
       window.addEventListener(
         "message",
