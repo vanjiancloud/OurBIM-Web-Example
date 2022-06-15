@@ -533,7 +533,9 @@
           </el-tooltip>
           <!-- 构件库的  移动旋转  原来有的 -->
           <el-collapse-transition>
-            <div class="show-slice show-com" v-if="imgList[14].state === 1">
+            <!-- <div class="show-slice show-com" v-if="imgList[14].state === 1"> -->
+            <!-- 此处的移动旋转和缩放按钮与浏览器的重复了 要隐藏掉 -->
+            <div class="show-slice show-com" v-if="false">
               <el-tooltip
                 v-for="(item, index) in comIconList"
                 :key="index"
@@ -574,8 +576,7 @@
               mode=""
             />
           </el-tooltip>
-
-           <!-- 浏览器的 移动旋转 自己 加的 -->
+           <!-- 浏览器的 移动旋转缩放 -->
            <el-collapse-transition>
             <div class="show-slice show-com" v-if="imgList[10].state === 1 && this.threeLogo === true">
               <el-tooltip
@@ -598,7 +599,6 @@
               </el-tooltip>
             </div>
           </el-collapse-transition>
-
         </div>
         <!-- 属性 -->
         <div
@@ -1035,11 +1035,11 @@ export default {
         if (this.setProps.taskId) {
           this.getProps = this.setProps;
           this.ListPoint();
-        }
-      },
+          }
+        },
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
-      deep: true,
-    },
+         deep: true,
+        },
     singleList: {
       handler() {
         this.uiList = this.singleList;
@@ -1212,7 +1212,7 @@ export default {
         })
         .catch((res) => {});
     },
-    // 移动 旋转 (我自己模仿新加的 浏览器的)
+    // 移动 旋转  浏览器的
     browerClick(item) {
       let isSame = false;
       this.comIconList.forEach((row) => {
@@ -1221,12 +1221,12 @@ export default {
             // 如果图标原本就是亮着，灭掉它
             // 发关闭轴的指令
             isSame = true;
-            COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
-              this.$resMsg(res.data);
-              if (res.data.code === 0) {
-                row.active = false;
-              }
-            });
+            // COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
+            //   this.$resMsg(res.data);
+            //   if (res.data.code === 0) {
+            //     row.active = false;
+            //   }
+            // });
           }
           row.active = true;
         } else {
@@ -1258,7 +1258,6 @@ export default {
       MODELAPI.BROWSERBUTTON(params)
         .then((res) => {
           if (res.data.code === 0) {
-            console.log('777');
             this.$message.success(res.data.message);
           } else {
             this.$message.error(res.data.message);
@@ -1878,7 +1877,6 @@ export default {
       //   this.setForm.unit = 0;
       //   this.setForm.accuracy = 2;
       // }
-
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
       // 关闭剖切和测量
       if (this.oldState === 2 || this.oldState === 3) {

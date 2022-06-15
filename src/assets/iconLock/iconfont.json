@@ -1,0 +1,23 @@
+{
+  "id": "3464235",
+  "name": "Lock",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "7577415",
+      "name": "24gl-lock2",
+      "font_class": "24gl-lock2",
+      "unicode": "e9d4",
+      "unicode_decimal": 59860
+    },
+    {
+      "icon_id": "7577422",
+      "name": "24gl-unlock4",
+      "font_class": "24gl-unlock4",
+      "unicode": "e9d6",
+      "unicode_decimal": 59862
+    }
+  ]
+}

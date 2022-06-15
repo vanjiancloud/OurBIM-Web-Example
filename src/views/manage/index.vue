@@ -41,10 +41,8 @@
             </el-tooltip>
           </template>
         </el-table-column>
-
         <el-table-column prop="appid" :label="$t('applicationid')" width="120">
         </el-table-column>
-
         <el-table-column :label="$t('uploaddate')" width="110">
           <template slot-scope="scope">
             <div v-text="scope.row.createTime"></div>
@@ -61,7 +59,6 @@
           <template slot-scope="scope">
             <span v-if="scope.row.appType === '0' && scope.row.isGis ==='false'">普通模型</span>
             <span v-else-if="scope.row.appType === '1'">漫游模型</span>
-
             <el-tooltip
               effect="dark"
               :content="JSON.stringify(scope.row.sonAppMap)"
@@ -92,11 +89,9 @@
             {{ scope.row.currentInstance }}/{{ scope.row.maxInstance }}
           </template>
         </el-table-column> -->
-
         <el-table-column :label="$t('state')">
           <template slot-scope="scope">
             <!-- 做自定义操作 需要改成template的形式,scope.row代表的是表格数据itemList中的每一项 -->
-
             <el-tooltip
               effect="dark"
               placement="top"
@@ -389,17 +384,15 @@
           </el-form-item>
 
           <el-form-item
-            :label="this.value2==='GIS' ? 'gis信息:' : '子模型列表:'"
+            :label="this.value2==='GIS' ? 'GIS信息:' : '子模型列表:'"
             v-if="form.appType === '3' && form.isGis==='true' ||form.appType === '3' && form.isGis==='false' || form.appType === '0' && this.value2==='GIS'"
-            label-width="110px"
+            label-width="100px"
             :style="value2 == 'BIM' ? 'width:300px' : ''"
           >
             <el-card class="box-card">
                 <div v-for="(itemm,i) in sonAppValue" :key="i" class="text item clearfix">
                   <td class="wordEllipsis">{{itemm}}</td>
-                  <!-- <td :class="sonAppValue.length <= 2 ? 'td yinc bind' : 'td yinc'" @click="delRow(sonAppKey[i])" >移除</td> -->
-                  <td class="td yinc bind" @click="delRow(sonAppKey[i])" >移除</td>
-                  <!-- <td class="td yinc" @click="delRow(form.gisinfo[i-1].appId)" >移除</td> -->
+                  <td :class="sonAppValue.length <= 2 ? 'td yinc bind' : 'td yinc'" @click="delRow(sonAppKey[i])" >移除</td>
                   <td class="td"><span style="float:right;">m</span></td>
                   <td class="td"><el-input class="elinput" v-model="altitude[i]" type=number placeholder="海拔高度"></el-input></td>
                   <td class="td"><span style="float:right;">°</span></td>
@@ -581,11 +574,11 @@ export default {
       options: [
         {
           value: "GIS",
-          label: "OurGIS",
+          label: "OurGISEngine.exe",
         },
         {
           value: "BIM",
-          label: "OurBIM",
+          label: "OurBIMEngine.exe",
         },
       ],
       optionss: [
@@ -726,7 +719,6 @@ export default {
     this.setGetdataIn();
   },
   methods: {
-    
     // 关闭 编辑弹框
     closeEdit(){
       this.editDialogFormVisible = false;
@@ -759,49 +751,11 @@ export default {
                 newArr.push(k);
             }
           }
-          this.form.modelIds=newArr.join(','); 
-          if(this.form.gisinfo ===''){
-            this.form.gisinfo = [];
-          }else{
-            this.form.gisinfo = this.form.gisinfo.filter(item => {
-              return newArr.includes(item.appId)
-            })
-          }
-            let delGisinfoList = JSON.stringify(this.form.gisinfo);
-          updateProject({
-            appid: this.form.appid,
-            appName: this.form.name,
-            doMouse: this.form.doMouse,
-            displayWindow: this.form.displayWindow,
-            appType:this.form.appType,
-            screenImg: this.form.screenImg,
-            maxInstance: this.form.maxInstance,
-            startup: this.form.startup,
-            gisInfo:delGisinfoList,
-            isGis:this.form.isGis,
-            combineId:this.form.modelIds
-            
-          })
-            .then((res) => {
-              if(res.data.code == 0){
-                this.$message.success(res.data.message);
-              }
-            })
-            .catch((err) => {
-            });
-          
+          this.sonAppKey = newArr;
+          this.form.modelIds=newArr.join(',');         
          })
         .catch(() => {
         })
-
-      // let index = this.form.gisinfo.findIndex((ele) => {
-      //   return ele.appId === id;
-      // });
-      
-      // this.form.gisinfo.splice(index,1);
-      // this.altitude.splice(index,1);
-      // this.longitude.splice(index,1);
-      // this.latitude.splice(index,1);
     },
     reportErr(row) {
       console.log(11, row);
@@ -910,19 +864,6 @@ export default {
              this.isGis = false;
              gisinfoList = '';
           }
-          // -----555-------
-          // var gisinfoList = [];
-          // var userId = Getuserid();
-          // var appName= this.FormIntegrate.appName;
-          // for (var i = 1; i <= this.chang; i++) {
-          //     gisinfoList[i-1] = {
-          //       appId: this.ActiveLinkModel[i-1],
-          //       altitude:document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zzwinput:nth-of-type(1)").value,
-          //       latitude:document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zzwinput:nth-of-type(2)").value,
-          //       longitude:document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zzwinput:nth-of-type(3)").value
-          //     };
-          // }
-          // ------------555------
           var params = {
             userId,
             appName,
@@ -1220,10 +1161,6 @@ export default {
           this.latitude = this.form.gisinfo.latitude
           this.altitude = this.form.gisinfo.altitude
       }else{
-        // this.form.gisinfo = JSON.parse(e.gisInfo);
-        //  for (let i = 0; i < this.form.gisinfo.length; i++) {
-        //   this.form.applid[i] = this.form.gisinfo[i]
-        // }
         this.value2 = "BIM"
         this.form.gisinfo = JSON.parse(e.gisInfo);
         this.longitude = [];
@@ -1272,11 +1209,12 @@ export default {
           return;
         }
       }
+     
       // 验证 gis信息 不能为空555
       if(this.value2 === 'GIS'){
          let onBlackNum = 0;
          let onBlackNumber = 0;
-         let noBlack = this.sonAppKey.length == 0 ? 1 : this.sonAppKey.length;
+         let noBlack = this.sonAppValue.length == 0 ? 1 : this.sonAppValue.length;
          for(var i = 1; i <= noBlack; i++){
            for(let k = 4; k <= 8; k+=2){
              let inputValue = document.querySelector('.saveAsDialog .el-dialog__body .el-form .el-form-item:nth-of-type(3) .text:nth-of-type('+i+') .td:nth-of-type('+k+') .el-input__inner');
@@ -1290,7 +1228,6 @@ export default {
              return;
            }
       }
-      
       this.$refs.form.validate((valid) => {
         if (valid) {
           this.$common.openLoading("正在加载中....");
@@ -1317,7 +1254,6 @@ export default {
            }
           }
          }
-          
           var gisinfoList = JSON.stringify(gisinfoLis)
           updateProject({
             appid: this.form.appid,
@@ -1331,7 +1267,6 @@ export default {
             gisInfo:gisinfoList,
             isGis:this.form.isGis,
             combineId:this.form.modelIds
-            
           })
             .then((res) => {
               if (res.data.code === 0) {
@@ -1518,9 +1453,8 @@ export default {
                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zinput:nth-of-type(" +j +")").style.display="none";
              }
            }
+          }
          }
-         }
-        
        }else if(this.value == "GIS"){
         //  this.isGis = true;
          document.querySelector(".el-transfer-panel:nth-of-type(3)").style.width = "700px";
@@ -1553,26 +1487,7 @@ export default {
            }
          }
        }else{
-         console.log("gei");
-        //  切换成gis时 做回显
-            // let e = this.selectOprationItem;
-          //  if(e.appType == "3" && e.isGis=='false'){
-           
-          //   this.form.gisinfo = JSON.parse(e.gisInfo);
-          //    for (let i = 0; i < this.form.gisinfo.length; i++) {
-          //     this.form.applid[i] = this.form.gisinfo[i]
-          //     this.longitude[i] = this.form.gisinfo[i].longitude
-          //     this.latitude[i] = this.form.gisinfo[i].latitude
-          //     this.altitude[i] = this.form.gisinfo[i].altitude
-          //    }
-            //  if(e.appType == "0" && e.isGis=='false'){
-          
-            //     this.form.gisinfo = JSON.parse(e.gisInfo);
-            //     this.longitude = this.form.gisinfo.longitude
-            //     this.latitude = this.form.gisinfo.latitude
-            //     this.altitude = this.form.gisinfo.altitude
-            // }
-           
+         console.log("gei");  
             for (var i = 1; i <= this.sonAppKey.length; i++) {
               for (let j = 3; j <= 8; j++) {
                if(
@@ -1584,8 +1499,7 @@ export default {
             }
             
           }
-        
-    },
+       },
     rendercontent(h,option){
       return <span label="option.appName" class="appna"><em class="optionName">{option.appName}</em>
         <span class="zspan" style="display:none;float:right;">m</span>
@@ -1597,98 +1511,91 @@ export default {
         </span>
     },
     handleChange(value, direction, movedKeys) {
-      // console.log('handleChange执行');
       if(this.value == "BIM"){
          var goLang = value.length;
-        this.chang =goLang;
-        // console.log('999990');
+         this.chang =goLang;
          // 为了解决 链接模型时，右侧的选框使用搜索后 不能输入 gis信息的问题
-        let gisBind = document.querySelector(".el-transfer .el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-input__inner")
-         gisBind.addEventListener('input',function(){
+         let gisBind = document.querySelector(".el-transfer .el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-input__inner")
+          gisBind.addEventListener('input',function(){
            if(gisBind.value===''){
-            //  console.log('rtr',goLang);
-          for (var i = 1; i <= goLang; i++) {
-           for (let j = 1; j <= 3; j++) {
-             if(
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
-             ){
-              //  console.log('98po');
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
-             }
-           }
-         }
-        }
+              for (var i = 1; i <= goLang; i++) {
+               for (let j = 1; j <= 3; j++) {
+                if(
+                  document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
+                ){
+                  console.log('98po');
+                  document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
+                  document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
+                }
+               }
+              }
+            }
         });
         let gisClear = document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-icon-search" )
           gisClear.addEventListener('click',function(){
-         if(gisBind.value===''){
+          if(gisBind.value===''){
               for (var i = 1; i <= goLang; i++) {
            for (let j = 1; j <= 3; j++) {
              if(
                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
              ){
-              //  console.log('98po');
+               console.log('98po');
                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
              }
            }
+          }
          }
-        }
         });
       }
       if (direction == "right" && this.value == "GIS") {
-          //  console.log('handleChange执行，gisgis');
         var leng = value.length;
         this.chang = leng;
-      
         // 为了解决 链接模型时，右侧的选框使用搜索后 不能输入 gis信息的问题
         let gisBind = document.querySelector(".el-transfer .el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-input__inner")
          gisBind.addEventListener('input',function(){
            if(gisBind.value===''){
-            //  console.log('rtr',leng);
-          for (var i = 1; i <= leng; i++) {
-           for (let j = 1; j <= 3; j++) {
-             if(
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
-             ){
-              //  console.log('98po');
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
-             }
-           }
-         }
+            for (var i = 1; i <= leng; i++) {
+            for (let j = 1; j <= 3; j++) {
+              if(
+                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
+              ){
+                console.log('98po');
+                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
+                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
+              }
+            }
+          }
         }
         });
         let gisClear = document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-icon-search" )
           gisClear.addEventListener('click',function(){
          if(gisBind.value===''){
               for (var i = 1; i <= leng; i++) {
-           for (let j = 1; j <= 3; j++) {
-             if(
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
-             ){
-              //  console.log('------800');
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
-             }
+                for (let j = 1; j <= 3; j++) {
+                  if(
+                    document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
+                  ){
+                    console.log('------800');
+                    document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
+                    document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
+                  }
+                }
+            }
            }
-         }
-        }
         });
-      this.$nextTick(() => {
-        for (var i = 1; i <= leng; i++) {
+        this.$nextTick(() => {
+         for (var i = 1; i <= leng; i++) {
            for (let j = 1; j <= 3; j++) {
              if(
                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
              ){
-              //  console.log('----80100');
+               console.log('----80100');
                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
              }
            }
          }
-
         });
       }
     },
@@ -1759,8 +1666,8 @@ export default {
       },
       deep:true,
       immediate: true,
-    }
-  },
+     }
+    },
   // ===== 页面实例销毁 =====
   beforeDestroy() {
     // 清除定时器
@@ -2092,7 +1999,7 @@ export default {
   width: 700px !important;
 }
 .wordEllipsis{
-  width: 50px;
+  width: 100px;
   white-space: nowrap; //强制在一行显示
   overflow: hidden; //溢出隐藏
   text-overflow: ellipsis; //显示省略号
@@ -2163,6 +2070,9 @@ export default {
   white-space: nowrap; //强制在一行显示
   overflow: hidden; //溢出隐藏
   text-overflow: ellipsis; //显示省略号
+}
+.box-card{
+  margin-left: 9px;
 }
 
 </style>
