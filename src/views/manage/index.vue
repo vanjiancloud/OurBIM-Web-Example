@@ -591,7 +591,7 @@ export default {
           label: "OurBIMEngine.exe",
         },
       ],
-      value: "GIS",
+      value: "BIM",
       value2: "",
       timerFlag: true, //是否开启定时器轮询
       selectOprationItem: {}, //表格 点击的当前行的数据
@@ -1904,7 +1904,7 @@ export default {
 
 .integrate-transfer {
   .el-transfer-panel:nth-of-type(3) {
-    width: 700px;
+    width: 300px;
     .el-checkbox__label{
       width: 629px;
     }
