@@ -1523,7 +1523,6 @@ export default {
                 if(
                   document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
                 ){
-                  console.log('98po');
                   document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
                   document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
                 }
@@ -1539,7 +1538,6 @@ export default {
              if(
                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
              ){
-               console.log('98po');
                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
              }
@@ -1560,7 +1558,6 @@ export default {
               if(
                 document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
               ){
-                console.log('98po');
                 document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
                 document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
               }
@@ -1576,7 +1573,6 @@ export default {
                   if(
                     document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
                   ){
-                    console.log('------800');
                     document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
                     document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
                   }
@@ -1590,7 +1586,6 @@ export default {
              if(
                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
              ){
-               console.log('----80100');
                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
              }

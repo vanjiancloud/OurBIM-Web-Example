@@ -147,7 +147,7 @@
                     <!-- 开锁和闭锁 -->
                     <i class="iconfont icon-24gl-lock2 lockLock" v-if="!data[`lockView${+node.id}`]" @click.stop="handleToggleLock(node, data, node.id)"></i>
                     <i v-else class="iconfont icon-24gl-unlock4 lockLock" @click.stop="handleToggleLock(node, data, node.id)"></i> 
-                  </span>
+                  </span> 
                   <span>
                     <!-- <span v-if="node.data.typeId !== 'comp'"> -->
                     <!-- 显示状态 -->
@@ -507,7 +507,6 @@ export default {
     } else {
       this.runTimeCode = 0;
     }
-    console.log('555',this.isMobile(), this.runTimeCode);
     this.getModelUrl();
     //判断是否使用的是ipad
     let isiPad =
@@ -643,14 +642,10 @@ export default {
           obj[v] = true;
         }
       });
-      // gis要隐藏天气渲染
-      if(this.lockView === 'true'){
+      // gis 和 分享 要隐藏天气渲染
+      if(this.lockView === 'true' || this.lockView === undefined){
         obj.weather = false;
       }
-      // 分享 也要隐藏天气渲染
-      // if(this.$route.query.appType === '0'){
-      //     obj.weather = false;
-      // }
       this.showTodoIconObj = obj;
     },
     getComList() {
@@ -1056,7 +1051,6 @@ export default {
       }
     },
     handleTree(e, index) {
-      console.log('111',e);
       /**
        * @Author: zk
        * @Date: 2021-03-08 14:39:51
