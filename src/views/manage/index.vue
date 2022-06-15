@@ -794,7 +794,7 @@ export default {
     handleCreateProjectDialog() {
       this.$emit("handleCreateProjectDialog", true);
     },
-    SubmitIntegrate() {
+   SubmitIntegrate() {
       /**
        * @Author: zk
        * @Date: 2021-06-05 11:20:15
@@ -858,7 +858,7 @@ export default {
                 latitude:document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zzwinput:nth-of-type(2)").value,
                 longitude:document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zzwinput:nth-of-type(3)").value
               };
-          }
+           }
           }else{
             this.type = "bim";
              this.isGis = false;
@@ -869,10 +869,10 @@ export default {
             appName,
             type : this.type,
             bimList:this.ActiveLinkModel.join(),
-            gisinfoList:gisinfoList,
-            isGis2:this.isGis
+            gisInfo:JSON.stringify(gisinfoList),
+            isGis:this.isGis
           }
-          MODELAPI.ADDINTEGRARE(params,gisinfoList).then((res) => {
+          MODELAPI.ADDINTEGRARE(params).then((res) => {
             if (res.data.code === 0) {
               this.GetList();
               this.ActiveLinkModel = [];
