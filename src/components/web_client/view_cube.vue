@@ -1114,7 +1114,7 @@ export default {
 }
 
 #box div {
-  overflow: hidden;
+  // overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
