@@ -665,9 +665,9 @@ export default {
         obj.weather = false;
       }
       // 分享 也要隐藏天气渲染
-      if(this.$route.query.appType === '0'){
-          obj.weather = false;
-      }
+      // if(this.$route.query.appType === '0'){
+      //     obj.weather = false;
+      // }
       this.showTodoIconObj = obj;
     },
     getComList() {

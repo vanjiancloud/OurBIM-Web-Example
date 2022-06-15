@@ -467,7 +467,7 @@ export default {
               y: -180,
               z: 0,
             };
-            this.activeOrder = 13;
+            this.activeOrder = 13;       
           } else if (e === 1) {
             // 右
             this.downInfo = {
