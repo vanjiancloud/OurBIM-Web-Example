@@ -644,13 +644,13 @@ export default {
         }
       });
       // gis要隐藏天气渲染
-      if(this.$route.query.weatherBin === 'true'){
+      if(this.lockView === 'true'){
         obj.weather = false;
       }
       // 分享 也要隐藏天气渲染
-      if(this.$route.query.appType === '0'){
-          obj.weather = false;
-      }
+      // if(this.$route.query.appType === '0'){
+      //     obj.weather = false;
+      // }
       this.showTodoIconObj = obj;
     },
     getComList() {
