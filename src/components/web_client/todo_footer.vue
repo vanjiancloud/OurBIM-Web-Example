@@ -578,7 +578,8 @@
           </el-tooltip>
            <!-- 浏览器的 移动旋转缩放 -->
            <el-collapse-transition>
-            <div class="show-slice show-com" v-if="imgList[10].state === 1 && this.threeLogo === true">
+            <!-- <div class="show-slice show-com" v-if="imgList[10].state === 1 && totalLogo === true"> ---555 -->
+            <div class="show-slice show-com" v-if="totalLogo">  
               <el-tooltip
                 v-for="(item, index) in comIconList"
                 :key="index"
@@ -665,6 +666,11 @@ import COMPONENTLIBRARY from "@/api/component-library";
 export default {
   components: {},
   props: {
+    // 父页面点击锁 那一项的信息
+    // lockObj:{
+    //   type: Object,
+    //   default: () => {},
+    // },
     setProps: {
       type: Object,
       default: () => {},
@@ -684,14 +690,18 @@ export default {
     showTodoIconObj: {
       type: Object,
       value: {},
-    },
-    threeLogo:{
-        type: Boolean,
-        default: false,
     }
+    // threeLogo:{
+    //     type: Boolean,
+    //     default: false,
+    // }
   },
   data() {
     return {
+      totalLogo:false,
+      browerLogo:false,
+      contentLogo:false,
+      // apiFlag:true, // 是否可以调用移动旋转缩放接口
       rulesFollow: {
         name: [
           {
@@ -1939,6 +1949,15 @@ export default {
         });
       }
       if (e === 13 || e === 12 || e === 5 || e === 10 || e === 11) {
+        if(e === 10){  //---555
+          this.browerLogo = !this.browerLogo
+           if(this.contentLogo===false && this.browerLogo === false){
+              this.totalLogo = false
+            }else{
+              this.totalLogo = true
+           }
+          this.$emit('passBrowerLogo',this.browerLogo)
+        }
         // 在出现显示隐藏图标的情况下，除了框选、小地图、浏览器、属性，点了下边其他图标，都得关闭显示隐藏图标
       } else {
         console.log("隐藏隔离");
@@ -2018,6 +2037,15 @@ export default {
             });
           }
         }
+      }
+      if(e===14){   // ---555
+        this.contentLogo = !this.contentLogo;  
+        if(this.contentLogo===false && this.browerLogo === false){
+          this.totalLogo = false
+        }else{
+           this.totalLogo = true
+        }
+        this.$emit('passContentLogo',this.contentLogo)
       }
       // 打开构件库 关闭属性
       if (e === 14 && this.imgList[11].state === 1) {

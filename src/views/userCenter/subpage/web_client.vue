@@ -299,8 +299,10 @@
         :taskId="taskId"
         :socketData="socketData"
         :showTodoIconObj="showTodoIconObj"
-        :threeLogo="threeLogo"
+        @passContentLogo="passContentLogo"
+        @passBrowerLogo="passBrowerLogo"
       ></todo-footer>
+        <!-- :threeLogo="threeLogo" -->
       <view-cube
         v-if="controllerInfo.viewCube"
         v-show="controllerInfo.tagViewCube"
@@ -367,10 +369,13 @@ export default {
   },
   data() {
     return {
-      threeLogo:false,
+      // threeLogo:false,
       // myProjectId:'',
       // modeData:[], // 树形结构数据
       // lockLogo:false, // 锁的打开和关闭
+      browerLogo:false,  // 浏览器亮 true
+      contentLogo:false, // 构件库亮 true
+      lockObj:{},   // 锁开那一项的信息
       lockView:'', // 锁的显示
       shareCode: null,
       showTodoIconObj: {},
@@ -463,7 +468,37 @@ export default {
     };
   },
 
-  watch: {},
+  watch: {
+    // 监听 浏览器 是否处于关闭状态 是 就将小锁关闭 并 关闭轴
+    browerLogo:{
+      handler(newVal,oldVal){
+        if(newVal === false && this.lockObj.num !== undefined){
+           const params = {
+              taskId: this.taskId,
+              flag: "off"
+            }
+           MODELAPI.LOCKOPENORCLOSE(params).then((res)=>{
+            if(res.data.code === 0){
+              console.log('res');
+            }
+           })
+        }
+        if(this.lockObj.num !== undefined){
+          if(newVal === false){
+            this.$set(this.lockObj.data, [`lockView${this.lockObj.num}`], false);
+          }
+        }
+      }
+    },
+    // 监听 构件库关闭 关闭小锁
+    contentLogo:{
+       handler(newVal,oldVal){
+         if(newVal === false && this.lockObj.num !== undefined){
+            this.$set(this.lockObj.data, [`lockView${this.lockObj.num}`], false);
+         }
+       }
+    },
+  },
   created() {
     this.lockView = this.$route.query.weatherBin; 
     this.uaInfo = navigator.userAgent.toLowerCase();
@@ -525,6 +560,10 @@ export default {
   methods: {
     // 点击锁
     handleToggleLock(node, data, i){
+        this.lockObj.node = node;
+        this.lockObj.data = data;
+        this.lockObj.num = i;
+        console.log('ppp',this.lockObj);
         // 最多只开一把锁的，打开某一个锁，其他锁要关闭
         const result = node.parent.childNodes;
         if(result){
@@ -540,12 +579,12 @@ export default {
           taskId: this.taskId,
           flag: data[`lockView${i}`] ? "on" : "off"
         }
-        if(params.flag === 'on'){
-          this.threeLogo = true
-        }
-        if(params.flag === 'off'){
-            this.threeLogo = false
-        }
+        // if(params.flag === 'on'){
+        //   this.threeLogo = true
+        // }
+        // if(params.flag === 'off'){
+        //     this.threeLogo = false
+        // }
         MODELAPI.LOCKOPENORCLOSE(params).then((res) => {
           if(res.data.code == 0) {
             const infoParam = {
@@ -570,7 +609,15 @@ export default {
           }
         });        
       },
-    addMessageEvent() {
+      // 构件库 明 暗
+      passContentLogo(val){
+        this.contentLogo = val;
+      },
+      // 浏览器 明 暗
+      passBrowerLogo(val){
+        this.browerLogo = val;
+      },
+     addMessageEvent() {
       window.addEventListener(
         "message",
         (e) => {
