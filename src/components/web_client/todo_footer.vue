@@ -2185,7 +2185,7 @@ export default {
     .show-slice {
       position: absolute;
       width: 60%;
-      left: 20%;
+      left: -27%;
       border-radius: 10px 10px 0 0;
       top: -195px;
       padding-bottom: 5px;
