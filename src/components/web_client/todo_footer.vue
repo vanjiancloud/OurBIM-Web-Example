@@ -671,6 +671,11 @@ export default {
     //   type: Object,
     //   default: () => {},
     // },
+    // 最后点击的小锁的状态
+    lockState:{
+      type: Boolean,
+      default: false
+    },
     setProps: {
       type: Object,
       default: () => {},
@@ -1028,6 +1033,34 @@ export default {
     },
   },
   watch: {
+    // 监听最后点击的小锁的状态
+    lockState:{
+      handler(val,oldVal){
+        if(val === false){
+          this.comIconList.forEach((item)=>{
+            item.active = false
+          })
+        }else{
+          const params = {
+             taskId: this.taskId,
+             mode:'translate'
+          }
+          MODELAPI.BROWSERBUTTON(params)
+          .then((res) => {
+            if (res.data.code === 0) {
+              this.$message.success(res.data.message);
+              // 移动 图标高亮 其他的灭
+               this.comIconList.forEach((item)=>{
+                  item.content === '移动' ? item.active = true : item.active = false;
+                 })
+            } else {
+              this.$message.error(res.data.message);
+            }
+          })
+          .catch((res) => {});
+        }
+      }
+    },
     watchImgList(val, old) {
       if (val !== old) {
         this.comSwitch();
@@ -1101,6 +1134,20 @@ export default {
   },
   mounted() {
     window.addEventListener("click", this.clickOther);
+  },
+  updated(){
+      // 构件库状态变化 决定contentLogo的值
+      if(this.imgList[14].state === 0){   // ---555
+           this.contentLogo = false;  
+        }else{
+           this.contentLogo = true
+        }
+      if(this.contentLogo===false && this.browerLogo === false){
+          this.totalLogo = false
+        }else{
+          this.totalLogo = true
+        }
+      this.$emit('passContentLogo',this.contentLogo)
   },
   beforeDestroy() {
     // 实例销毁之前对点击事件进行解绑
@@ -2037,15 +2084,6 @@ export default {
             });
           }
         }
-      }
-      if(e===14){   // ---555
-        this.contentLogo = !this.contentLogo;  
-        if(this.contentLogo===false && this.browerLogo === false){
-          this.totalLogo = false
-        }else{
-           this.totalLogo = true
-        }
-        this.$emit('passContentLogo',this.contentLogo)
       }
       // 打开构件库 关闭属性
       if (e === 14 && this.imgList[11].state === 1) {

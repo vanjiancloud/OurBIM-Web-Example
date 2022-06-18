@@ -301,6 +301,7 @@
         :showTodoIconObj="showTodoIconObj"
         @passContentLogo="passContentLogo"
         @passBrowerLogo="passBrowerLogo"
+        :lockState="lockState"
       ></todo-footer>
         <!-- :threeLogo="threeLogo" -->
       <view-cube
@@ -373,6 +374,7 @@ export default {
       // myProjectId:'',
       // modeData:[], // 树形结构数据
       // lockLogo:false, // 锁的打开和关闭
+      lockState:false,   // 最后点击的小锁的状态
       browerLogo:false,  // 浏览器亮 true
       contentLogo:false, // 构件库亮 true
       lockObj:{},   // 锁开那一项的信息
@@ -486,6 +488,8 @@ export default {
         if(this.lockObj.num !== undefined){
           if(newVal === false){
             this.$set(this.lockObj.data, [`lockView${this.lockObj.num}`], false);
+             // 锁的状态(false)
+            this.lockState = false;
           }
         }
       }
@@ -495,9 +499,11 @@ export default {
        handler(newVal,oldVal){
          if(newVal === false && this.lockObj.num !== undefined){
             this.$set(this.lockObj.data, [`lockView${this.lockObj.num}`], false);
+            // 锁的状态(false)
+            this.lockState = false;
          }
        }
-    },
+    }
   },
   created() {
     this.lockView = this.$route.query.weatherBin; 
@@ -560,10 +566,6 @@ export default {
   methods: {
     // 点击锁
     handleToggleLock(node, data, i){
-        this.lockObj.node = node;
-        this.lockObj.data = data;
-        this.lockObj.num = i;
-        console.log('ppp',this.lockObj);
         // 最多只开一把锁的，打开某一个锁，其他锁要关闭
         const result = node.parent.childNodes;
         if(result){
@@ -575,6 +577,12 @@ export default {
             }
           }
         }
+        // 将点击锁的那一项的信息赋予 lockObj
+        this.lockObj.node = node;
+        this.lockObj.data = data;
+        this.lockObj.num = i;
+        // 锁的状态
+        this.lockState = data[`lockView${i}`];
         const params = {
           taskId: this.taskId,
           flag: data[`lockView${i}`] ? "on" : "off"
