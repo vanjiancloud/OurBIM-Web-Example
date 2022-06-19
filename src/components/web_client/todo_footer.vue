@@ -1048,7 +1048,7 @@ export default {
           MODELAPI.BROWSERBUTTON(params)
           .then((res) => {
             if (res.data.code === 0) {
-              this.$message.success(res.data.message);
+              // this.$message.success(res.data.message);
               // 移动 图标高亮 其他的灭
                this.comIconList.forEach((item)=>{
                   item.content === '移动' ? item.active = true : item.active = false;
