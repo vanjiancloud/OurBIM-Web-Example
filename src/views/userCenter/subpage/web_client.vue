@@ -324,7 +324,9 @@
         ref="tagTree"
       ></tag-tree>
     </div>
-
+    <!-- 漫游导航 -->
+    <roamNavigate></roamNavigate>
+    
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
       ref="teamworkDialogRef"
@@ -347,6 +349,7 @@ import COMPONENTLIBRARY from "@/api/component-library";
 import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
+import roamNavigate from "@/components/web_client/roam_navigate";
 import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
 
@@ -367,6 +370,7 @@ export default {
     qrcodePart,
     TeamworkDialog,
     EscDialogItem,
+    roamNavigate
   },
   data() {
     return {
