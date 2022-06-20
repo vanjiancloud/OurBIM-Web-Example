@@ -374,6 +374,7 @@ export default {
       // myProjectId:'',
       // modeData:[], // 树形结构数据
       // lockLogo:false, // 锁的打开和关闭
+      maxNodes:false,
       envProgress:0,   // 环境加载
       lockState:false,   // 最后点击的小锁的状态
       browerLogo:false,  // 浏览器亮 true
@@ -511,8 +512,12 @@ export default {
     let timerTime = null;
     timerTime = setInterval(()=>{
       this.propsProgress.loadData += 5
-      if(this.propsProgress.loadData === 90 || this.envProgress === 100){
+      if(this.propsProgress.loadData >= 90 || this.envProgress === 100 || this.maxNodes === true){
          clearInterval(timerTime);
+        //  若该用户节点已达到最大 就不加载进度条
+         if(this.maxNodes === true){
+           this.propsProgress.loadData = 0;
+         }
       }
      },200);                
     this.lockView = this.$route.query.weatherBin; 
@@ -596,12 +601,6 @@ export default {
           taskId: this.taskId,
           flag: data[`lockView${i}`] ? "on" : "off"
         }
-        // if(params.flag === 'on'){
-        //   this.threeLogo = true
-        // }
-        // if(params.flag === 'off'){
-        //     this.threeLogo = false
-        // }
         MODELAPI.LOCKOPENORCLOSE(params).then((res) => {
           if(res.data.code == 0) {
             const infoParam = {
@@ -2318,6 +2317,8 @@ export default {
               message: res.data.message,
               customClass: "set-index-message",
             });
+            // 最大节点已达到上限时
+            this.maxNodes = true;
           }
         })
         .catch((err) => {
