@@ -374,6 +374,7 @@ export default {
       // myProjectId:'',
       // modeData:[], // 树形结构数据
       // lockLogo:false, // 锁的打开和关闭
+      envProgress:0,   // 环境加载
       lockState:false,   // 最后点击的小锁的状态
       browerLogo:false,  // 浏览器亮 true
       contentLogo:false, // 构件库亮 true
@@ -506,6 +507,14 @@ export default {
     }
   },
   created() {
+    // 用定时器给 环境加载中进度条 赋假值 让其(不再只有0和100)
+    let timerTime = null;
+    timerTime = setInterval(()=>{
+      this.propsProgress.loadData += 5
+      if(this.propsProgress.loadData === 90 || this.envProgress === 100){
+         clearInterval(timerTime);
+      }
+     },200);                
     this.lockView = this.$route.query.weatherBin; 
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
@@ -2121,6 +2130,7 @@ export default {
               Number(this.propsProgress.loadData) >= 0 &&
               Number(this.propsProgress.loadData) <= 100
             ) {
+              this.envProgress = Number(realData.progress) * 100;
               this.propsProgress.loadData = Number(
                 String(Number(realData.progress) * 100).substring(0, 3)
               );
