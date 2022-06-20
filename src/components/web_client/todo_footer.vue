@@ -1142,11 +1142,7 @@ export default {
         }else{
            this.contentLogo = true
         }
-      if(this.contentLogo===false && this.browerLogo === false){
-          this.totalLogo = false
-        }else{
-          this.totalLogo = true
-        }
+      this.noneBlock();
       this.$emit('passContentLogo',this.contentLogo)
   },
   beforeDestroy() {
@@ -1891,6 +1887,14 @@ export default {
         }
       });
     },
+    // 移动 旋转 缩放 显示隐藏
+    noneBlock(){
+      if(this.contentLogo===false && this.browerLogo === false){
+        this.totalLogo = false
+      }else{
+        this.totalLogo = true
+       }
+    },
     handleOrder(e) {
       console.log("e=", e, "oldState=", this.oldState);
       this.footerIconChange(e);
@@ -1998,11 +2002,7 @@ export default {
       if (e === 13 || e === 12 || e === 5 || e === 10 || e === 11) {
         if(e === 10){  //---555
           this.browerLogo = !this.browerLogo
-           if(this.contentLogo===false && this.browerLogo === false){
-              this.totalLogo = false
-            }else{
-              this.totalLogo = true
-           }
+          this.noneBlock();
           this.$emit('passBrowerLogo',this.browerLogo)
         }
         // 在出现显示隐藏图标的情况下，除了框选、小地图、浏览器、属性，点了下边其他图标，都得关闭显示隐藏图标
@@ -2053,8 +2053,12 @@ export default {
             state: this.imgList[10].state,
             type: 10,
           });
-        }
-      } else {
+          // 做和浏览器关闭时一样的操作
+          this.browerLogo = false
+          this.noneBlock();
+          this.$emit('passBrowerLogo',this.browerLogo)
+         }
+       } else {
         if (e !== 11 && this.oldState !== 4) {
           this.imgList[4].state = 0;
           let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);

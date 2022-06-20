@@ -324,7 +324,9 @@
         ref="tagTree"
       ></tag-tree>
     </div>
-
+    <!-- 漫游导航 -->
+    <roamNavigate></roamNavigate>
+    
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
       ref="teamworkDialogRef"
@@ -347,6 +349,7 @@ import COMPONENTLIBRARY from "@/api/component-library";
 import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
+import roamNavigate from "@/components/web_client/roam_navigate";
 import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
 
@@ -367,6 +370,7 @@ export default {
     qrcodePart,
     TeamworkDialog,
     EscDialogItem,
+    roamNavigate
   },
   data() {
     return {
@@ -374,6 +378,8 @@ export default {
       // myProjectId:'',
       // modeData:[], // 树形结构数据
       // lockLogo:false, // 锁的打开和关闭
+      maxNodes:false,
+      envProgress:0,   // 环境加载
       lockState:false,   // 最后点击的小锁的状态
       browerLogo:false,  // 浏览器亮 true
       contentLogo:false, // 构件库亮 true
@@ -506,6 +512,18 @@ export default {
     }
   },
   created() {
+    // 用定时器给 环境加载中进度条 赋假值 让其(不再只有0和100)
+    let timerTime = null;
+    timerTime = setInterval(()=>{
+      this.propsProgress.loadData += 5
+      if(this.propsProgress.loadData >= 90 || this.envProgress === 100 || this.maxNodes === true){
+         clearInterval(timerTime);
+        //  若该用户节点已达到最大 就不加载进度条
+         if(this.maxNodes === true){
+           this.propsProgress.loadData = 0;
+         }
+      }
+     },200);                
     this.lockView = this.$route.query.weatherBin; 
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
@@ -587,12 +605,6 @@ export default {
           taskId: this.taskId,
           flag: data[`lockView${i}`] ? "on" : "off"
         }
-        // if(params.flag === 'on'){
-        //   this.threeLogo = true
-        // }
-        // if(params.flag === 'off'){
-        //     this.threeLogo = false
-        // }
         MODELAPI.LOCKOPENORCLOSE(params).then((res) => {
           if(res.data.code == 0) {
             const infoParam = {
@@ -2121,6 +2133,7 @@ export default {
               Number(this.propsProgress.loadData) >= 0 &&
               Number(this.propsProgress.loadData) <= 100
             ) {
+              this.envProgress = Number(realData.progress) * 100;
               this.propsProgress.loadData = Number(
                 String(Number(realData.progress) * 100).substring(0, 3)
               );
@@ -2308,6 +2321,8 @@ export default {
               message: res.data.message,
               customClass: "set-index-message",
             });
+            // 最大节点已达到上限时
+            this.maxNodes = true;
           }
         })
         .catch((err) => {
