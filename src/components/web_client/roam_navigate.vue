@@ -1,29 +1,29 @@
 <template>
-    <div class="roam_navigate" v-show="false">
+    <div class="roam_navigate" v-show="true">
         <div class="romaHead">
             <span class="title">漫游导航</span>
             <span class="el-icon-close closeIcon"></span>
         </div>
         <div class="middle">
             <el-radio-group v-model="radio" class="singleSelect">
-                <el-radio :label="0" class="needBlock"><span class="viewModel">{{personView[0].name}}</span></el-radio>
+                <el-radio :label="2" class="needBlock"><span class="viewModel">{{personView[0].name}}</span></el-radio>
                 <el-radio :label="1" class="needBlock"><span class="viewModel">{{personView[1].name}}</span></el-radio>
                 <el-radio class="needNone selfView">
                     <div>
                         <el-checkbox-group v-model="checkList">
-                            <el-checkbox :label="checkListArr[0].name" class="firstSelect"></el-checkbox>
-                            <el-checkbox :label="checkListArr[1].name"></el-checkbox>
+                            <el-checkbox :disabled="radio===1 ? false : true" :label="checkListArr[0].name" class="firstSelect"></el-checkbox>
+                            <el-checkbox :disabled="radio===1 ? false : true" :label="checkListArr[1].name"></el-checkbox>
                         </el-checkbox-group>
                     </div>
                     <div class="turnHeight">
                         <span>{{words[0]}}</span>
-                        <input type="number"  placeholder="m">
+                        <input type="number"  placeholder="m" :disabled="radio===1 ? false : true">
                     </div>
                 </el-radio>
-                <el-radio :label="2" class="needBlock"><span class="viewModel">{{personView[2].name}}</span></el-radio>
+                <el-radio :label="3" class="needBlock"><span class="viewModel">{{personView[2].name}}</span></el-radio>
                 <el-radio class="needNone followView">
                     <div class="upTwo">
-                        <el-select v-model="value" placeholder="请选择对象" size="mini">
+                        <el-select :disabled="radio===3 ? false : true" v-model="value" placeholder="请选择对象" size="mini">
                             <el-option
                                 v-for="item in options"
                                 :key="item.value"
@@ -33,30 +33,45 @@
                         </el-select>
                         <div class="turnHeight">
                             <span>{{words[0]}}</span>
-                            <input type="number" placeholder="m">
+                            <input type="number" placeholder="m" :disabled="radio===3 ? false : true">
                         </div>
                     </div>
-                    <div class="startTest"><el-checkbox v-model="checkTest">{{words[1]}}</el-checkbox></div>
-                    <div class="putDown"><el-button type="primary" size="small">{{words[2]}}</el-button></div>
+                    <div class="startTest"><el-checkbox :disabled="radio===3 ? false : true" v-model="checkTest">{{words[1]}}</el-checkbox></div>
+                    <div class="putDown"><el-button :disabled="radio===3 ? false : true" type="primary" size="small">{{words[2]}}</el-button></div>
                     <div class="show-speed">
                        <span>{{words[3]}}</span>
                         <el-slider class="speedView"
                             v-model="speedValue"
                             :min="1"
                             :max="8"
+                            :disabled = "radio === 2 ? true : false"
                         ></el-slider>
                     </div>
                 </el-radio>
             </el-radio-group>
         </div>
+        <div class="bottom">
+            <el-checkbox-group v-model="checkListBottom">
+                <el-checkbox label="导航地图"></el-checkbox>
+                <el-checkbox label="ViewCurb"></el-checkbox>
+            </el-checkbox-group>
+        </div>
     </div>
 </template>
 
 <script>
+import MODELAPI from '../../api/model_api';
+
 export default {
+    props:{
+        taskId:{
+          type: String,
+          default: ""
+        }
+    },
     data(){
         return {
-            radio:0, //三种模式默认选中
+            radio:2, //三种模式默认选中
             personView: [
                 {
                 name: "第三人称模式",
@@ -94,8 +109,27 @@ export default {
             ],
             checkTest:false, // 碰撞检测
             words:['高度','开启碰撞检测','放置对象','速度'],
-            speedValue:2
+            speedValue:2,  // 速度
+            checkListBottom:[] //底部的两个选框
         }
+    },
+    created(){
+        
+    },
+    mounted(){
+    },
+    watch:{
+        radio:{
+            handler(val,oldVal){
+                if(val === undefined){
+                    this.radio = oldVal
+                }
+            },
+            immediate:true
+        }
+    },
+    methods:{
+
     }
 }
 </script>
@@ -177,21 +211,18 @@ export default {
             .putDown{
                 margin-left: 120px;
             }
-            ::v-deep .el-radio__label .show-speed{
-                height: 50px;
-                display: flex;
-                justify-content: space-around;
-                margin: 10px 0 14px 0;
-                span{
-                  display: inline; 
-                  line-height: 40px;
-                }
-               .speedView{
-                display: inline;
-               }
+            .show-speed{
+                margin-bottom: 10px;
             }
         }
     }
+  }
+  .bottom{
+    height: 50px;
+    width: 90%;
+    margin: 0 auto;
+    padding-top: 20px;
+    border-top: 1px rgb(79, 79, 79) solid;
   }
 }
 </style>

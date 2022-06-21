@@ -325,7 +325,9 @@
       ></tag-tree>
     </div>
     <!-- 漫游导航 -->
-    <roamNavigate></roamNavigate>
+    <roamNavigate
+    :taskId="taskId"
+    ></roamNavigate>
     
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
@@ -1721,7 +1723,6 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
-
       this.$refs.getCube.closeView();
       if (e.type === 14 || e.type === 11) {
         this.isQrcode = false;
