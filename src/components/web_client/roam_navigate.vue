@@ -6,34 +6,46 @@
         </div>
         <div class="middle">
             <el-radio-group v-model="radio" class="singleSelect">
-                <el-radio :label="0"><span class="viewModel">{{personView[0].name}}</span></el-radio>
-                <el-radio :label="1"><span class="viewModel">{{personView[1].name}}</span></el-radio>
-                <el-radio class="needNone">
-                    <el-checkbox-group v-model="checkList">
-                        <el-checkbox :label="checkListArr[0].name"></el-checkbox>
-                        <el-checkbox :label="checkListArr[1].name"></el-checkbox>
-                    </el-checkbox-group>
+                <el-radio :label="0" class="needBlock"><span class="viewModel">{{personView[0].name}}</span></el-radio>
+                <el-radio :label="1" class="needBlock"><span class="viewModel">{{personView[1].name}}</span></el-radio>
+                <el-radio class="needNone selfView">
+                    <div>
+                        <el-checkbox-group v-model="checkList">
+                            <el-checkbox :label="checkListArr[0].name" class="firstSelect"></el-checkbox>
+                            <el-checkbox :label="checkListArr[1].name"></el-checkbox>
+                        </el-checkbox-group>
+                    </div>
                     <div class="turnHeight">
                         <span>{{words[0]}}</span>
-                        <input type="number">
+                        <input type="number"  placeholder="m">
                     </div>
                 </el-radio>
-                <el-radio :label="2"><span class="viewModel">{{personView[2].name}}</span></el-radio>
-                <el-radio class="needNone">
-                    <el-select v-model="value" placeholder="请选择">
-                        <el-option
-                        v-for="item in options"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                        </el-option>
-                    </el-select>
-                    <div class="turnHeight">
-                        <span>{{words[0]}}</span>
-                        <input type="number">
+                <el-radio :label="2" class="needBlock"><span class="viewModel">{{personView[2].name}}</span></el-radio>
+                <el-radio class="needNone followView">
+                    <div class="upTwo">
+                        <el-select v-model="value" placeholder="请选择对象" size="mini">
+                            <el-option
+                                v-for="item in options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                            </el-option>
+                        </el-select>
+                        <div class="turnHeight">
+                            <span>{{words[0]}}</span>
+                            <input type="number" placeholder="m">
+                        </div>
                     </div>
-                    <el-checkbox v-model="checkTest">{{words[1]}}</el-checkbox>
-                    <el-button type="primary">{{words[2]}}</el-button>
+                    <div class="startTest"><el-checkbox v-model="checkTest">{{words[1]}}</el-checkbox></div>
+                    <div class="putDown"><el-button type="primary" size="small">{{words[2]}}</el-button></div>
+                    <div class="show-speed">
+                       <span>{{words[3]}}</span>
+                        <el-slider class="speedView"
+                            v-model="speedValue"
+                            :min="1"
+                            :max="8"
+                        ></el-slider>
+                    </div>
                 </el-radio>
             </el-radio-group>
         </div>
@@ -81,7 +93,8 @@ export default {
                 }
             ],
             checkTest:false, // 碰撞检测
-            words:['高度','开启碰撞检测','放置对象']
+            words:['高度','开启碰撞检测','放置对象','速度'],
+            speedValue:2
         }
     }
 }
@@ -115,12 +128,68 @@ export default {
   }
   // 中间
   .middle{
-    padding: 16px 0 0 23px;
+    padding: 16px 23px 0 23px;
     .singleSelect{
         display: flex;
         flex-direction: column;
        ::v-deep .needNone .el-radio__input{
             display: none;
+        }
+        .needBlock{
+            color: #fff;
+            margin-bottom: 16px;
+        }
+        ::v-deep .selfView .el-radio__label{
+            display: flex;
+            flex-direction: row;
+            justify-content: space-around;
+            margin-bottom: 16px;
+            .turnHeight input{
+                width: 70px;
+                height: 17px;
+                margin-left: 9px;
+            }
+             .turnHeight span{
+                    margin-left: 10px;
+                }
+            .firstSelect{
+                margin: 0 6px 0 16px;
+            }
+        }
+        .followView {
+            .upTwo {
+                display: flex;
+                justify-content: space-around;
+                margin: -12px 0 14px 0;
+                ::v-deep .el-select .el-input .el-input__inner{
+                    height: 22px !important;
+                    width: 160px;
+                }
+                .turnHeight input{
+                    width: 70px;
+                    height: 17px;
+                    margin-left: 9px;
+                }
+            }
+            ::v-deep .startTest .el-checkbox{
+                    margin: 0 0 14px 20px;
+                }
+            .putDown{
+                margin-left: 120px;
+            }
+            ::v-deep .el-radio__label .show-speed{
+                height: 50px;
+                display: flex;
+                justify-content: space-around;
+                margin: 10px 0 14px 0;
+                span{
+                  display: inline; 
+                  line-height: 40px;
+                }
+               .speedView{
+                display: inline;
+               }
+            }
         }
     }
   }
