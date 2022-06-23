@@ -78,7 +78,7 @@
             />
           </el-tooltip>
         </div>
-        <!-- 视角 -->
+        <!-- 漫游导航（视角） -->
         <div
           class="image-main"
           v-if="showBar(imgList[0].id) && showTodoIconObj.view"
@@ -1136,14 +1136,20 @@ export default {
     window.addEventListener("click", this.clickOther);
   },
   updated(){
-      // 构件库状态变化 决定contentLogo的值
+      // 构件库 和 浏览器 状态变化 决定contentLogo和browerLogo的值
       if(this.imgList[14].state === 0){   // ---555
-           this.contentLogo = false;  
-        }else{
-           this.contentLogo = true
-        }
+        this.contentLogo = false;  
+      }else{
+        this.contentLogo = true
+      }
+      if(this.imgList[10].state === 0){   // ---555
+        this.browerLogo = false;  
+      }else{
+        this.browerLogo = true;
+      }
       this.noneBlock();
-      this.$emit('passContentLogo',this.contentLogo)
+      this.$emit('passContentLogo',this.contentLogo);
+      this.$emit('passBrowerLogo',this.browerLogo);
   },
   beforeDestroy() {
     // 实例销毁之前对点击事件进行解绑
@@ -2000,11 +2006,6 @@ export default {
         });
       }
       if (e === 13 || e === 12 || e === 5 || e === 10 || e === 11) {
-        if(e === 10){  //---555
-          this.browerLogo = !this.browerLogo
-          this.noneBlock();
-          this.$emit('passBrowerLogo',this.browerLogo)
-        }
         // 在出现显示隐藏图标的情况下，除了框选、小地图、浏览器、属性，点了下边其他图标，都得关闭显示隐藏图标
       } else {
         console.log("隐藏隔离");
@@ -2042,6 +2043,11 @@ export default {
       }
       if (e === 0) {
         this.personTool = this.imgList[e].state === 1 ? true : false;
+        // 漫游导航---
+        this.$emit("listenTodo", {
+            state: this.imgList[0].state,
+            type: 0,
+          });
       }
       // 标签 重置模型浏览器
       if (e === 4) {
@@ -2053,10 +2059,6 @@ export default {
             state: this.imgList[10].state,
             type: 10,
           });
-          // 做和浏览器关闭时一样的操作
-          this.browerLogo = false
-          this.noneBlock();
-          this.$emit('passBrowerLogo',this.browerLogo)
          }
        } else {
         if (e !== 11 && this.oldState !== 4) {

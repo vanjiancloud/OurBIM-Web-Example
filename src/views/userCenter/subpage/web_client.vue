@@ -327,6 +327,10 @@
     <!-- 漫游导航 -->
     <roamNavigate
     :taskId="taskId"
+    @listenTodo="listenTodo"
+    v-if="viewAngle &&
+              viewAngle.type === 0 &&
+              viewAngle.state === 1"
     ></roamNavigate>
     
     <!-- 协同模式弹窗 -->
@@ -450,7 +454,8 @@ export default {
       websock: null,
       isSocket: false,
       socketTimer: null,
-      browserInfo: null,
+      browserInfo: null, //模型浏览器
+      viewAngle:null,  // 漫游导航
       natureInfo: null,
       shadowType: null,
       listenTodoInfo: null,
@@ -1723,6 +1728,12 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
+      console.log('eee',e);
+      // 漫游导航内 控制 viewCube ---
+      if(e.name==='viewCube'){
+        console.log('kkk',e.flag);
+        this.controllerInfo.viewCube = e.flag;
+      }
       this.$refs.getCube.closeView();
       if (e.type === 14 || e.type === 11) {
         this.isQrcode = false;
@@ -1830,6 +1841,10 @@ export default {
         this.listenTodoInfo = e;
         this.updateOrder();
       }
+      //漫游导航---
+       if (e.type === 0) {
+         this.viewAngle = e
+       }
     },
     UpdateMemeberState() {
       /**
