@@ -65,7 +65,7 @@
           :on-exceed="exceed"
           :on-remove="onremove"
           :before-upload="beforeModelUpload"
-          accept=".rvt,.ifc,.zip,.rfa"
+          accept=".rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.c4d,.fbx,.obj,.stp,.xyz,.txt,.pts,.las"
           ref="bimupload"
           :auto-upload="false"
         >
@@ -344,7 +344,7 @@ export default {
     // 上传bim模型前
     beforeModelUpload(file) {
       let testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
-      let listModel = ["rvt", "ifc", "zip","rfa"];
+      let listModel = ["rvt", "ifc", "zip","rfa","ipt","dgn","dwg","step","c4d","fbx","obj","stp","xyz","txt","pts","las"];
       // const isLt = file.size / 1024 / 1024 < 200;
       // if (!isLt) {
       //   this.$message({
@@ -353,9 +353,8 @@ export default {
       //   });
       //   return false;
       // }
-
       let extension = false;
-      if (listModel.indexOf(testmsg) === -1) {
+      if (listModel.indexOf(testmsg.toLowerCase()) === -1) {
         extension = false;
         this.isLoading = false;
         this.$message.error("请上传支持的文件格式!");
