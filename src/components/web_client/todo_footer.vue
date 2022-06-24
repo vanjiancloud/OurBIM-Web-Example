@@ -83,7 +83,7 @@
           class="image-main"
           v-if="showBar(imgList[0].id) && showTodoIconObj.view"
         >
-          <el-tooltip
+          <!-- <el-tooltip
             placement="top"
             v-model="personTool"
             transition="el-fade-in-linear"
@@ -101,7 +101,7 @@
                   v-text="item.name"
                 ></div>
               </div>
-            </div>
+            </div> -->
             <el-tooltip
               class="item"
               effect="dark"
@@ -116,12 +116,13 @@
                 mode=""
               />
             </el-tooltip>
-          </el-tooltip>
+          <!-- </el-tooltip> -->
         </div>
         <!-- 移动速度 -->
+          <!-- v-if="showBar(imgList[1].id) && showTodoIconObj.speed" -->
         <div
           class="image-main"
-          v-if="showBar(imgList[1].id) && showTodoIconObj.speed"
+          v-if="false"
         >
           <el-tooltip
             class="item"
@@ -326,9 +327,10 @@
           </el-tooltip>
         </div>
         <!-- 小地图 -->
+          <!-- v-if="showBar(imgList[5].id) && showTodoIconObj.map" -->
         <div
           class="image-main"
-          v-if="showBar(imgList[5].id) && showTodoIconObj.map"
+          v-if="false"
         >
           <el-tooltip
             class="item"
@@ -1150,6 +1152,7 @@ export default {
       this.noneBlock();
       this.$emit('passContentLogo',this.contentLogo);
       this.$emit('passBrowerLogo',this.browerLogo);
+     
   },
   beforeDestroy() {
     // 实例销毁之前对点击事件进行解绑
@@ -1641,6 +1644,19 @@ export default {
         });
         this.oldState = 0;
       }
+       // 漫游导航---
+      if(this.imgList[0].url === require(`@/assets/images/todo/check/${this.imgList[0].name}`)){
+        console.log('000');
+          // this.imgList[0].state = 1;
+          // let oldUrl = require(`@/assets/images/todo/check/${this.imgList[0].name}`);
+          // this.imgList[0].url = oldUrl;
+      }
+      console.log('ggg',this.imgList[0].state);
+      // if(this.imgList[0].state === 1){
+      //     this.imgList[0].state = 0;
+      //     let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[0].name}`);
+      //     this.imgList[0].url = oldUrl;
+      //   }
     },
     editTool(e) {
       let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
@@ -1902,6 +1918,23 @@ export default {
        }
     },
     handleOrder(e) {
+      // 除了漫游 属性, 点击其他图标时 关闭漫游弹框---
+      if(e != 0 && e != 11 ){ 
+        if(this.imgList[0].state === 1){
+           this.$emit("listenTodo", {
+            state: 0,
+            type: 0,
+          });
+        };
+      }
+      // 点击浏览器时 关闭漫游高亮---
+      if(e === 10){  
+        if(this.imgList[0].state === 1){
+          this.imgList[0].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[0].name}`);
+          this.imgList[0].url = oldUrl;
+        }
+      }
       console.log("e=", e, "oldState=", this.oldState);
       this.footerIconChange(e);
       // 功能未开放 模型动画
@@ -2048,6 +2081,16 @@ export default {
             state: this.imgList[0].state,
             type: 0,
           });
+        // 打开漫游导航时 关闭浏览器---
+        if (this.imgList[10].state === 1) {
+          this.imgList[10].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[10].name}`);
+          this.imgList[10].url = oldUrl;
+          this.$emit("listenTodo", {
+            state: this.imgList[10].state,
+            type: 10,
+          });
+         }
       }
       // 标签 重置模型浏览器
       if (e === 4) {

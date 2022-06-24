@@ -2,7 +2,7 @@
     <div class="roam_navigate">
         <div class="romaHead">
             <span class="title">漫游导航</span>
-            <span class="el-icon-close closeIcon"></span>
+            <span @click="closeRoam(0)" class="el-icon-close closeIcon"></span>
         </div>
         <div class="middle">
             <el-radio-group v-model="radio" class="singleSelect" @change="changeRadio">
@@ -32,7 +32,7 @@
                         </el-select>
                         <div class="turnHeight">
                             <span>{{words[0]}}</span>
-                            <input class="twoHeight" type="number" :disabled="radio===3 ? false : true" value="1.72">
+                            <input @blur="normalHeight" class="twoHeight" type="number" :disabled="radio===3 ? false : true" value="1.72">
                             <span>m</span>
                         </div>
                     </div>
@@ -221,7 +221,7 @@ export default {
                 viewMode:'2',
                 projectionMode:'1',
                 enableGravity:'true', // 重力
-                enableAllCollision:'true', // 碰撞
+                enableAllCollision:'', // 碰撞
                 speedLevel:'',  // 速度
                 characterHeight:'',  // 视角高度
                 dollName:'', // 人物/车辆名
@@ -230,7 +230,19 @@ export default {
         }
     },
     created(){
-        console.log('idid',this.taskId);
+       let par = {
+            taskid: this.taskId,
+            action: 'switchViewMode',
+            viewMode: 2,
+            projectionMode: 1
+       }
+        MODELAPI.UPDATEORDER(par).then((res)=>{
+                if(res.data.code === 0){
+                    this.$message.success(res.data.message);
+                }else{
+                    this.$message.error(res.data.message);
+                }
+        }).catch(()=>{})
     },
     mounted(){
     },
@@ -245,6 +257,9 @@ export default {
         }
     },
     methods:{
+        closeRoam(val){
+            this.$emit('closePart',val);
+        },
         requestFun(){
             MODELAPI.UPDATEORDER(this.params).then((res)=>{
                 if(res.data.code === 0){
@@ -263,7 +278,10 @@ export default {
                 // 默认开启 重力 和 碰撞
                 this.checkWeight = true;
                 this.checkBroken = true;
+                // 赋初值 调用接口
                 this.params.viewMode = val;
+                this.params.enableGravity = true;
+                this.params.enableAllCollision = true;
                 this.params.characterHeight = document.querySelector('.oneHeight').value * 100;
                 this.params.speedLevel = this.speedValue;
                 this.requestFun();
@@ -272,12 +290,21 @@ export default {
             if(val === 3){
                 // 默认开启碰撞
                 this.checkTest = true;
+                // 赋初值 调用接口
                 let targetIn =  this.options.find((item)=>{
                   return item.value === this.value;
                 })
-                this.params.dollName === targetIn.English;
-                this.params.dollHeight === document.querySelector('.twoHeight').value * 100;
+                this.params.dollName = targetIn.English;
+                this.params.viewMode = val;
+                this.params.dollHeight = document.querySelector('.twoHeight').value * 100;
+                this.params.enableAllCollision = true;
                 this.params.speedLevel = this.speedValue;
+                this.requestFun();
+            }
+            // 第三人称
+            if(val === 2){
+                this.params.viewMode = val;
+                this.requestFun();
             }
         },
         // 第一人称中的多选
@@ -295,19 +322,20 @@ export default {
              this.params.enableAllCollision = value;
              this.requestFun();
         },
-        // 第一人称中的高度
+        // 第一人称中的视角高度
         adjustHeight(){
             this.params.characterHeight = document.querySelector('.oneHeight').value * 100;
             this.requestFun();
         },
-        // 第三人称
+        // 跟随对象 碰撞 
         threeBroke(val){
-             console.log('threeBroke',val);
+             this.params.enableAllCollision = val;
+             this.requestFun();
         },
         // 跟随对象模式
         // 下拉选框变化时触发
         changeSelect(val){
-            console.log('fff',val);
+            // 下拉框改变时改变高度和速度
            let selectIn =  this.options.find((item)=>{
                return item.value === val
             })
@@ -317,6 +345,16 @@ export default {
                 this.speedValue = 4
             }
             document.querySelector('.twoHeight').value = selectIn.tall;
+            // 赋值 调接口
+            this.params.dollName === selectIn.English;
+            this.params.dollHeight = selectIn.tall * 100;
+            this.params.speedLevel = this.speedValue;
+            this.requestFun();
+        },
+        // 第三人称height
+        normalHeight(){
+            this.params.dollHeight = document.querySelector('.twoHeight').value * 100;
+            this.requestFun();
         },
         // 速度
         speedChange(val){

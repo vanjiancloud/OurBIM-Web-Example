@@ -328,6 +328,7 @@
     <roamNavigate
     :taskId="taskId"
     @listenTodo="listenTodo"
+    @closePart="closePart"
     v-if="viewAngle &&
               viewAngle.type === 0 &&
               viewAngle.state === 1"
@@ -1646,6 +1647,10 @@ export default {
       if (e === 14) {
         this.listenTodoInfo = null;
       }
+      // 漫游导航---
+      if(e === 0){
+        this.viewAngle = null;
+      }
       if (this.$refs.getFooter) {
         this.$refs.getFooter.editTool(e);
       }
@@ -1777,8 +1782,7 @@ export default {
           //   type: 4,
           //   state: 0,
           // };
-          this.handleTagShow(false);
-
+          this.handleTagShow(false);   
           this.isTag = false;
         }
       }
