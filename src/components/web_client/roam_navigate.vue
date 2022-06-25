@@ -32,12 +32,12 @@
                         </el-select>
                         <div class="turnHeight">
                             <span>{{words[0]}}</span>
-                            <input @blur="normalHeight" class="twoHeight" type="number" :disabled="radio===3 ? false : true" value="1.72">
+                            <input  class="twoHeight" type="number" :disabled="radio===3 ? false : true" value="1.72">
                             <span>m</span>
                         </div>
                     </div>
                     <div class="startTest"><el-checkbox :disabled="radio===3 ? false : true" @change="threeBroke" v-model="checkTest">{{words[1]}}</el-checkbox></div>
-                    <div class="putDown"><el-button :disabled="radio===3 ? false : true" type="primary" size="small">{{words[2]}}</el-button></div>
+                    <div class="putDown" @click="putDown"><el-button :disabled="radio===3 ? false : true" type="primary" size="small">{{words[2]}}</el-button></div>
                     <div class="show-speed">
                        <span>{{words[3]}}</span>
                         <el-slider class="speedView"
@@ -72,6 +72,7 @@ export default {
     },
     data(){
         return {
+            putObj:0,
             radio:2, //三种模式默认选中
             personView: [
                 {
@@ -230,19 +231,7 @@ export default {
         }
     },
     created(){
-       let par = {
-            taskid: this.taskId,
-            action: 'switchViewMode',
-            viewMode: 2,
-            projectionMode: 1
-       }
-        MODELAPI.UPDATEORDER(par).then((res)=>{
-                if(res.data.code === 0){
-                    this.$message.success(res.data.message);
-                }else{
-                    this.$message.error(res.data.message);
-                }
-        }).catch(()=>{})
+      this.threeView();
     },
     mounted(){
     },
@@ -257,6 +246,21 @@ export default {
         }
     },
     methods:{
+        threeView(){
+          let par = {
+            taskid: this.taskId,
+            action: 'switchViewMode',
+            viewMode: 2,
+            projectionMode: 1
+           }
+           MODELAPI.UPDATEORDER(par).then((res)=>{
+                if(res.data.code === 0){
+                    this.$message.success(res.data.message);
+                }else{
+                    this.$message.error(res.data.message);
+                }
+           }).catch(()=>{})
+        },
         closeRoam(val){
             this.$emit('closePart',val);
         },
@@ -291,20 +295,18 @@ export default {
                 // 默认开启碰撞
                 this.checkTest = true;
                 // 赋初值 调用接口
-                let targetIn =  this.options.find((item)=>{
-                  return item.value === this.value;
-                })
-                this.params.dollName = targetIn.English;
+                // let targetIn =  this.options.find((item)=>{
+                //   return item.value === this.value;
+                // })
+                // this.params.dollName = targetIn.English;
                 this.params.viewMode = val;
-                this.params.dollHeight = document.querySelector('.twoHeight').value * 100;
+                // this.params.dollHeight = document.querySelector('.twoHeight').value * 100;
                 this.params.enableAllCollision = true;
-                this.params.speedLevel = this.speedValue;
                 this.requestFun();
             }
             // 第三人称
             if(val === 2){
-                this.params.viewMode = val;
-                this.requestFun();
+                 this.threeView();
             }
         },
         // 第一人称中的多选
@@ -345,15 +347,29 @@ export default {
                 this.speedValue = 4
             }
             document.querySelector('.twoHeight').value = selectIn.tall;
-            // 赋值 调接口
-            this.params.dollName === selectIn.English;
-            this.params.dollHeight = selectIn.tall * 100;
-            this.params.speedLevel = this.speedValue;
-            this.requestFun();
+            // 下拉赋值 调接口
+            if(this.putObj === 1){
+                this.params.dollName === selectIn.English;
+                this.params.dollHeight = selectIn.tall * 100;
+                this.params.speedLevel = this.speedValue;
+                this.requestFun();
+            }
         },
-        // 第三人称height
-        normalHeight(){
+        // 跟随对象 height
+        /*normalHeight(){
             this.params.dollHeight = document.querySelector('.twoHeight').value * 100;
+            this.requestFun();
+        },*/
+        // 放置对象
+        putDown(){
+            this.putObj = 1;
+            // 赋初值 调用接口
+            let targetIn =  this.options.find((item)=>{
+              return item.value === this.value;
+            })
+            this.params.dollName = targetIn.English;
+            this.params.dollHeight = document.querySelector('.twoHeight').value * 100;
+             this.params.speedLevel = this.speedValue;
             this.requestFun();
         },
         // 速度
