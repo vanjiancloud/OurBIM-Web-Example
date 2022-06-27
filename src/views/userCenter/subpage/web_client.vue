@@ -523,15 +523,14 @@ export default {
     // 用定时器给 环境加载中进度条 赋假值 让其(不再只有0和100)
     let timerTime = null;
     timerTime = setInterval(()=>{
-      this.propsProgress.loadData += 5
-      if(this.propsProgress.loadData >= 90 || this.envProgress === 100 || this.maxNodes === true){
+      // 大于85 和 节点已达到最大时 就停止定时器---
+      if(this.propsProgress.loadData > 85 || this.maxNodes === true){
          clearInterval(timerTime);
-        //  若该用户节点已达到最大 就不加载进度条
-         if(this.maxNodes === true){
-           this.propsProgress.loadData = 0;
-         }
       }
-     },200);                
+      if(this.propsProgress.loadData <= 85 && this.maxNodes === false){
+        this.propsProgress.loadData += 5;
+      }
+     },300);                
     this.lockView = this.$route.query.weatherBin; 
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
