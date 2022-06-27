@@ -275,7 +275,8 @@ export default {
         },
         // 单选框的radio的值变化时触发
         changeRadio(val){
-            console.log('999',this.taskId,val);
+            this.params.dollName = '';
+            this.params.dollHeight = '';
             this.params.taskid = this.taskId;
             // 第一人称
             if(val === 1){
@@ -348,12 +349,12 @@ export default {
             }
             document.querySelector('.twoHeight').value = selectIn.tall;
             // 下拉赋值 调接口
-            if(this.putObj === 1){
-                this.params.dollName === selectIn.English;
-                this.params.dollHeight = selectIn.tall * 100;
-                this.params.speedLevel = this.speedValue;
-                this.requestFun();
-            }
+            // if(this.putObj === 1){
+            //     this.params.dollName === selectIn.English;
+            //     this.params.dollHeight = selectIn.tall * 100;
+            //     this.params.speedLevel = this.speedValue;
+            //     this.requestFun();
+            // }
         },
         // 跟随对象 height
         /*normalHeight(){
