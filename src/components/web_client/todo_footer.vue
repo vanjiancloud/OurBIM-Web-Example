@@ -1317,7 +1317,9 @@ export default {
         taskId: this.taskId,
         mode, //translate、rotate、scale
       };
-      MODELAPI.BROWSERBUTTON(params)
+      // 当 构件库亮 或者 某个所打开时 点击移动旋转才发请求
+      if(this.contentLogo === true || this.lockState === true){
+        MODELAPI.BROWSERBUTTON(params)
         .then((res) => {
           if (res.data.code === 0) {
             this.$message.success(res.data.message);
@@ -1326,6 +1328,7 @@ export default {
           }
         })
         .catch((res) => {});
+      }
     },
     //  移动 旋转
     SetWeather(e) {
