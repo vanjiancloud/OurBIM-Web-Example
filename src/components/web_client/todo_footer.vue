@@ -1042,7 +1042,9 @@ export default {
           this.comIconList.forEach((item)=>{
             item.active = false
           })
+          this.noneBlock();
         }else{
+          this.noneBlock();
           const params = {
              taskId: this.taskId,
              mode:'translate'
@@ -1914,11 +1916,11 @@ export default {
     },
     // 移动 旋转 缩放 显示隐藏
     noneBlock(){
-      if(this.contentLogo===false && this.browerLogo === false){
+     if(this.contentLogo===false && this.lockState === false){
         this.totalLogo = false
-      }else{
+      }else if(this.contentLogo===true || this.lockState === true){
         this.totalLogo = true
-       }
+     }
     },
     handleOrder(e) {
       // 除了漫游 属性, 点击其他图标时 关闭漫游弹框---
