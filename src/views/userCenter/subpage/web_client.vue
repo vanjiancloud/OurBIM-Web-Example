@@ -333,6 +333,8 @@
               viewAngle.type === 0 &&
               viewAngle.state === 1"
     ></roamNavigate>
+    <!-- 视图 -->
+    <viewPhoto></viewPhoto>
     
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
@@ -357,6 +359,7 @@ import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
 import roamNavigate from "@/components/web_client/roam_navigate";
+import viewPhoto from "@/components/web_client/view_photo"
 import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
 
@@ -377,7 +380,8 @@ export default {
     qrcodePart,
     TeamworkDialog,
     EscDialogItem,
-    roamNavigate
+    roamNavigate,
+    viewPhoto
   },
   data() {
     return {
@@ -1735,7 +1739,6 @@ export default {
       console.log('eee',e);
       // 漫游导航内 控制 viewCube ---
       if(e.name==='viewCube'){
-        console.log('kkk',e.flag);
         this.controllerInfo.viewCube = e.flag;
       }
       this.$refs.getCube.closeView();

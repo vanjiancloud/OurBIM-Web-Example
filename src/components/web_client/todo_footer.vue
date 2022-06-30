@@ -1649,19 +1649,6 @@ export default {
         });
         this.oldState = 0;
       }
-       // 漫游导航---
-      if(this.imgList[0].url === require(`@/assets/images/todo/check/${this.imgList[0].name}`)){
-        console.log('000');
-          // this.imgList[0].state = 1;
-          // let oldUrl = require(`@/assets/images/todo/check/${this.imgList[0].name}`);
-          // this.imgList[0].url = oldUrl;
-      }
-      console.log('ggg',this.imgList[0].state);
-      // if(this.imgList[0].state === 1){
-      //     this.imgList[0].state = 0;
-      //     let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[0].name}`);
-      //     this.imgList[0].url = oldUrl;
-      //   }
     },
     editTool(e) {
       let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
@@ -1923,7 +1910,7 @@ export default {
      }
     },
     handleOrder(e) {
-      // 除了漫游 属性, 点击其他图标时 关闭漫游弹框---
+      // 除了漫游 以及 属性, 点击其他图标时 关闭漫游弹框---
       if(e != 0 && e != 11 ){ 
         if(this.imgList[0].state === 1){
            this.$emit("listenTodo", {
