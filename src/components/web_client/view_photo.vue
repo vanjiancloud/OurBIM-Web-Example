@@ -19,13 +19,13 @@
             </div>
         </div>
         <div class="pictures">
-            <div class="picBox">
+            <div class="picBox" v-for="(item,index) in 15" :key="index">
                 <div class="boxPhoto">
-                    <!-- <img :src="require(assets/images/view/view1.png)" alt=""> -->
+                    <img :src="require('@/assets/logo.png')" alt="">
                 </div>
                 <div class="picInfo">
-                    <!-- <span>view-2022/06/29</span>
-                    <span>11:28:34</span> -->
+                    <span>view-2022/06/29</span>
+                    <span>11:28:34</span>
                 </div>
             </div>
         </div>
@@ -135,29 +135,61 @@
     }
   }
 }
-//  .pictures{
-//     height: 484px;
-//     width: 100%;
-//     padding-left: 16px;
-//      .picBox{
-//         width: 120px;
-//         height: 138px;
-//         margin: 16px 10px 0 0;
-//         .boxPhoto{
-//             width: 120px;
-//             height: 96px;
-//             img{
-//                 width: 100%;
-//                 height: 100%;
-//             }
-//         }
-//         .picInfo{
-//             height: 34px;
-//             width: 120px;
-//             display: flex;
-//             flex-direction: column;
-//             align-items: center;
-//         }
-//     }
-//   }
+
+ .pictures{
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    height: 484px;
+    width: 100%;
+    padding-left: 16px;
+    overflow: hidden;
+    overflow-y:auto;
+    .picBox{
+         width: 120px;
+         height: 138px;
+         margin: 16px 10px 0 0;
+        .boxPhoto{
+            width: 120px;
+            height: 96px;
+            border-radius: 4px;
+            img{
+                width: 100%;
+                height: 100%;
+                border-radius: 4px;
+            }
+        }
+        .picInfo{
+            height: 34px;
+            width: 120px;
+            margin-top: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            span{
+                font-size: 12px;
+            }
+        }
+    }
+  }
+   ::-webkit-scrollbar {
+    /* 对应纵向滚动条的宽度 */
+    width: 10px;
+    /* 对应横向滚动条的宽度 */
+    height: 10px;
+    }
+
+    /* 滚动条上的滚动滑块 */
+    ::-webkit-scrollbar-thumb {
+        background-color: #515560;
+        border-radius: 5px;
+    }
+
+    /* 滚动条轨道 */
+    ::-webkit-scrollbar-track {
+        background-color: #16191f;
+        border: 1px solid #41444D;
+        border-radius:2px;
+    }
+
 </style>
