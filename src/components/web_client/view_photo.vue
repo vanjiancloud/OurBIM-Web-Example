@@ -19,9 +19,14 @@
             </div>
         </div>
         <div class="pictures">
-            <div class="picBox" v-for="(item,index) in 15" :key="index">
-                <div class="boxPhoto">
+            <div class="picBox"  v-for="(item,index) in 15" :key="index">
+                <div class="boxPhoto" :class="{'borderWhite': index === active}" @click="selected(index)">
                     <img :src="require('@/assets/logo.png')" alt="">
+                    <div class="bottom" :style="{'display':index === active ? 'block' : 'none'}">
+                        <img :src="require('@/assets/images/view/view4.png')" alt="">
+                        <img :src="require('@/assets/images/view/view5.png')" alt="">
+                    </div>
+                    <i class="el-icon-close err" :style="{'display':index === active ? 'block' : 'none'}"></i>
                 </div>
                 <div class="picInfo">
                     <span>view-2022/06/29</span>
@@ -36,7 +41,9 @@
   export default {
         data() {
             return {
-              input: '',
+              input:'',  // 搜索绑定
+              active:-1,
+              num:0,    // 是否重复点击图片
               topLogos: [
                 {
                     name: "更新视图",
@@ -55,6 +62,37 @@
                 },
               ],
           }
+        },
+        created(){
+            // document.addEventListener("click", function(e) {
+            //     console.log('666 在');
+            //     var event = e || window.event;
+            //     var target = event.target || event.srcElement;
+            //     let flag = false;
+            //     let imgLength = document.querySelectorAll(".boxPhoto img");
+            //     for(let i =1;i<=imgLength.length;i++){
+            //         if(document.querySelector(".pictures .picBox:nth-of-type("+i+") .boxPhoto").contains(target)) {
+            //             flag = true;
+            //         }
+            //     }
+            //     if(flag===false){
+            //       this.active = -1;
+            //     }
+            // }) 
+        },
+        methods:{
+            // 点击选中
+            selected(ind){
+                if(this.active === ind){
+                    this.num+=1;
+                    if(this.num%2 === 1){
+                        this.active = -1;   
+                    }
+                }else{
+                    this.num = 0;
+                    this.active = ind;                  
+                }
+            }
         }
     }
 </script>
@@ -150,13 +188,46 @@
          height: 138px;
          margin: 16px 10px 0 0;
         .boxPhoto{
+            position: relative;
             width: 120px;
             height: 96px;
             border-radius: 4px;
+            // &:hover .bottom,&:hover .err{
+            //     display: block;
+            // }
             img{
-                width: 100%;
-                height: 100%;
+                width: 118px;
+                height: 94px;
                 border-radius: 4px;
+            }
+            .bottom{
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 118px;
+                height: 28px;
+                background-color: rgba(0,0,0,.3);
+                display: none;
+                img{
+                    float: right;
+                    width: 18px;
+                    height: 18px;
+                    margin: 5px 8px 0 0;
+                    cursor: pointer;
+                }
+            }
+            
+            .err{
+                position: absolute;
+                top: 5px;
+                right: 8px;
+                font-size: 12px;
+                width: 12px;
+                height: 12px;
+                background-color: rgba(0,0,0,.3);
+                border-radius: 8px;
+                display: none;
+                cursor: pointer;
             }
         }
         .picInfo{
@@ -171,6 +242,9 @@
             }
         }
     }
+  }
+  .borderWhite{
+    border: 1px solid red;
   }
    ::-webkit-scrollbar {
     /* 对应纵向滚动条的宽度 */
