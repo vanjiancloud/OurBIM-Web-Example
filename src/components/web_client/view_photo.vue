@@ -9,12 +9,25 @@
               class="searchInput"
               type="text"
               v-model="input" 
-              placeholder="请输入您要搜索的内容"
-              prefix-icon="el-icon-search"
-            ></el-input>
+              placeholder="请输入您要搜索的内容"  
+            >
+                <div slot="prefix"><i class="el-icon-search"></i></div>
+            </el-input>
             <div class="threeLogo">
-                <span v-for="(item,index) in topLogos" :key="index">
-                  <img :src="item.img" alt="">
+                <span>
+                    <el-tooltip class="item" effect="light" content="更新视图" placement="top">
+                      <i class="iconfont icon-a-gengxinshitu3" :style="{'font-size':'24px' }"></i>
+                    </el-tooltip>
+                </span>
+                <span>
+                    <el-tooltip class="item" effect="light" content="创建视图" placement="top">
+                      <i class="iconfont icon-a-gengxinshitu2" :style="{'font-size':'23px' }"></i>
+                    </el-tooltip>
+                </span>
+                <span>
+                    <el-tooltip class="item" effect="light" content="导出截图" placement="top">
+                      <i class="iconfont icon-a-gengxinshitu1" :style="{'font-size':'22px' }"></i>
+                    </el-tooltip>
                 </span>
             </div>
         </div>
@@ -44,23 +57,6 @@
               input:'',  // 搜索绑定
               active:-1,
               num:0,    // 是否重复点击图片
-              topLogos: [
-                {
-                    name: "更新视图",
-                    value: 0,
-                    img: require("@/assets/images/view/view1.png"),
-                },
-                {
-                    name: "导出截图",
-                    value: 1,
-                    img: require("@/assets/images/view/view2.png"),
-                },
-                {
-                    name: "创建视图",
-                    value: 2,
-                    img: require("@/assets/images/view/view3.png"),
-                },
-              ],
           }
         },
         created(){
@@ -149,9 +145,9 @@
         font-size: 12px;
         color: #fff;
     }
-    ::v-deep .el-input__icon{
+    .el-icon-search{
         font-size: 20px;
-         color: #fff;
+        color: #fff;
         line-height: 30px !important;
         margin-left: 8px;
         cursor: pointer;
@@ -159,16 +155,13 @@
     .threeLogo{
         display: flex;
         justify-content: space-between;
+        align-items: center;
         width: 120px;
         height: 24px;
         span{
             width: 24px;
             height: 24px;
             cursor: pointer;
-            img{
-                width: 100%;
-                height: 100%;
-            }
         }
     }
   }
