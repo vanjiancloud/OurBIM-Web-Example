@@ -241,6 +241,7 @@ export default {
        * @description: 边 鼠标移入移出
        */
       // 上
+      console.log(888);
       if ((node === 0 && e === 0) || (node === 2 && e === 2)) {
         this.setActiveEdge(0, 0, isShow, "edge");
         this.setActiveEdge(2, 2, isShow, "edge");
@@ -846,6 +847,7 @@ export default {
        * @Date: 2020-09-21 09:44:35
        * @description: 旋转确认 前 0 后 1 上 2 下 3 左 4 右 5
        */
+      console.log('111',this.isAnimation);
       if (!this.isAnimation) {
         return;
       }
@@ -912,7 +914,6 @@ export default {
        * @Date: 2021-04-01 17:56:46
        * @description: 重置角度
        */
-      console.log(666);
       this.closeView();
       // if (this.activeType === 2) {
       // this.activeType = 1;
@@ -1113,8 +1114,8 @@ export default {
   transition: all 1s;
 }
 
-#box div {
-  // overflow: hidden;
+#box div{
+  overflow: hidden;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1127,6 +1128,18 @@ export default {
   left: 0;
   background-size: cover;
   color: #a5a5a4;
+}
+#box .top.active-face{
+  overflow: inherit;
+}
+#box .bottom.active-face{
+  overflow: inherit;
+}
+#box .left.active-face{
+  overflow: inherit;
+}
+#box .right.active-face{
+  overflow: inherit;
 }
 .active-face {
   color: #ff6600 !important;

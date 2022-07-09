@@ -1,5 +1,5 @@
 <template>
-    <div class="view_photo" v-if="true">
+    <div class="view_photo" v-if="false">
         <div class="romaHead">
             <span class="title">视图列表</span>
             <span class="el-icon-close closeIcon"></span>
@@ -20,12 +20,12 @@
                     </el-tooltip>
                 </span>
                 <span>
-                    <el-tooltip class="item" effect="light" content="创建视图" placement="top">
+                    <el-tooltip class="item" effect="light" content="导出截图" placement="top">
                       <i class="iconfont icon-a-gengxinshitu2" :style="{'font-size':'23px' }"></i>
                     </el-tooltip>
                 </span>
                 <span>
-                    <el-tooltip class="item" effect="light" content="导出截图" placement="top">
+                    <el-tooltip class="item" effect="light" content="创建视图" placement="top">
                       <i class="iconfont icon-a-gengxinshitu1" :style="{'font-size':'22px' }"></i>
                     </el-tooltip>
                 </span>
