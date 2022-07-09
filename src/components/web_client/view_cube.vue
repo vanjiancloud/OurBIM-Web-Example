@@ -1129,18 +1129,12 @@ export default {
   background-size: cover;
   color: #a5a5a4;
 }
-#box .top.active-face{
+// 解决 #box div 加上 overflow: hidden;后  viewcube某些角度无法点击问题
+#box>div{
   overflow: inherit;
 }
-#box .bottom.active-face{
-  overflow: inherit;
-}
-#box .left.active-face{
-  overflow: inherit;
-}
-#box .right.active-face{
-  overflow: inherit;
-}
+
+
 .active-face {
   color: #ff6600 !important;
 }
