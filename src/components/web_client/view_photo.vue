@@ -1,5 +1,5 @@
 <template>
-    <div class="view_photo" v-if="false">
+    <div class="view_photo" v-if="true">
         <div class="romaHead">
             <span class="title">视图列表</span>
             <span class="el-icon-close closeIcon"></span>
@@ -16,17 +16,17 @@
             <div class="threeLogo">
                 <span>
                     <el-tooltip class="item" effect="light" content="更新视图" placement="top">
-                      <i class="iconfont icon-a-gengxinshitu3" :style="{'font-size':'24px' }"></i>
+                      <i class="iconfont icon-a-gengxinshitu3" :class="{bind:active === -1}" :style="{'font-size':'24px' }"></i>
                     </el-tooltip>
                 </span>
-                <span>
+                <span :style="{'margin-bottom':'1px'}">
                     <el-tooltip class="item" effect="light" content="导出截图" placement="top">
-                      <i class="iconfont icon-a-gengxinshitu2" :style="{'font-size':'23px' }"></i>
+                      <i class="iconfont icon-a-gengxinshitu2" :class="{bind:active === -1}"  :style="{'font-size':'24px'}"></i>
                     </el-tooltip>
                 </span>
-                <span>
+                <span :style="{'margin-top':'2px'}">
                     <el-tooltip class="item" effect="light" content="创建视图" placement="top">
-                      <i class="iconfont icon-a-gengxinshitu1" :style="{'font-size':'22px' }"></i>
+                      <i class="iconfont icon-a-gengxinshitu1" :class="{bind:active !== -1}" :style="{'font-size':'22px' }"></i>
                     </el-tooltip>
                 </span>
             </div>
@@ -88,6 +88,7 @@
                     this.num = 0;
                     this.active = ind;                  
                 }
+                console.log('000',this.active);
             }
         }
     }
@@ -238,6 +239,10 @@
   }
   .borderWhite{
     border: 1px solid red;
+  }
+  .bind{
+    color: #a4a5a6;
+    cursor: not-allowed;
   }
    ::-webkit-scrollbar {
     /* 对应纵向滚动条的宽度 */
