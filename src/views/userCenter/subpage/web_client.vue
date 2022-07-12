@@ -2004,6 +2004,10 @@ export default {
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
+        // 没有遮罩或者加载进度的时候 发指令去掉toll
+        if(this.isFade === false || this.isProgress === false){
+          this.sendToIframe(10200,'false',"");
+        }
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
           this.socketData = realData;
@@ -2159,6 +2163,8 @@ export default {
               this.propsProgress.loadData = Number(
                 String(Number(realData.progress) * 100).substring(0, 3)
               );
+              // 加载完再发 10200---
+              this.sendToIframe(10200,'false',"");
             }
             let messageInfo = {
               prex: "ourbimMessage",
