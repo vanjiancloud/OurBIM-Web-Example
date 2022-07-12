@@ -559,6 +559,11 @@ export default {
     }
     if (this.$route.query.appType) {
       this.appType = this.$route.query.appType;
+      // 如果是云应用就去掉遮罩层和操作栏以及加载进度---
+      if(this.$route.query.appType === '5'){
+        this.isFade = false;
+        this.isProgress =false;
+      }
     }
   },
   mounted() {
