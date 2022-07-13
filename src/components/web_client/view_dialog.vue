@@ -1,6 +1,6 @@
 <template>
-    <div class="viewDialog" v-if="item">
-        <div>
+    <div>
+       <div class="viewDialog" v-if="item">
           <div class="title">
               <span class="import">导出截图</span>
             <span class="el-icon-close closeIcon" :style="{'cursor':'pointer','color':'#A4A4A4'}" @click="closeDialog"></span>
@@ -26,6 +26,7 @@
             </el-form>
             <el-button class="btn" type="primary">导出</el-button>
           </div>
+          <el-progress class="progress" :percentage="100" status="success"></el-progress>
         </div>
     </div>
 </template>
@@ -61,7 +62,6 @@ export default {
         }
     },
     created(){
-
     },
     mounted(){
        
@@ -128,4 +128,18 @@ export default {
     line-height: 0;
     margin: 20px 0 0 205px ;
  }
+  ::v-deep .el-progress{
+    top: -178px;
+    display: block;
+ }
+ ::v-deep .el-progress .el-icon-circle-check{
+    display: none;
+ }
+ ::v-deep .el-progress .el-progress-bar__outer{
+    height: 3px !important;
+  }
+ 
+  ::v-deep .el-progress .el-progress-bar{
+    width: 460px;
+  }
 </style>

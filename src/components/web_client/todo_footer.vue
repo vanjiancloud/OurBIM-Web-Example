@@ -347,20 +347,20 @@
             />
           </el-tooltip>
         </div>
-        <!-- 关注视点 -->
-        <div
+        <!-- 关注视点 (视图) -->
+         <div
           class="image-main"
           v-if="showBar(imgList[6].id) && showTodoIconObj.camera"
         >
-          <el-tooltip
+          <!-- <el-tooltip
             popper-class="follow-bgi"
             placement="top"
             :enterable="false"
             v-model="followTool"
             transition="el-fade-in-linear"
             manual
-          >
-            <div slot="content" class="follow-main">
+          > -->
+            <!-- <div slot="content" class="follow-main">
               <div class="follow-list" v-if="pointList">
                 <div
                   class="follow-table"
@@ -381,7 +381,7 @@
               <div class="add-follow" @click="InsertFollow">
                 <i class="el-icon-plus"></i>
               </div>
-            </div>
+            </div> -->
             <el-tooltip
               class="item"
               effect="dark"
@@ -396,7 +396,31 @@
                 mode=""
               />
             </el-tooltip>
-          </el-tooltip>
+          <!-- </el-tooltip> -->
+          <el-collapse-transition>
+            <div class="show-slice show-com" v-if="imgList[6].state === 1" :style="{'left':'16%','top':'-83px'}">
+            <!-- <div class="show-slice show-com" v-if="false"> -->
+              <el-tooltip
+                v-for="(item, index) in angleList"
+                :key="index"
+                class="item"
+                :enterable="false"
+                effect="dark"
+                :content="item.content"
+                placement="left"
+              >
+                <div>
+                  <!-- @click.stop="comItemClick(item)" -->
+                  <img
+                    class="slice-img com-img"
+                    :src="item.active ? item.activeImg : item.img"
+                    @click.stop="angleListClick(item)"
+                    mode=""
+                  />
+                </div>
+              </el-tooltip>
+            </div>
+          </el-collapse-transition>
         </div>
         <!-- 模型动画 -->
         <div
@@ -768,6 +792,23 @@ export default {
           activeImg: require("@/assets/images/todo/check/com/zoom.png"),
           active: false,
         },
+      ],
+      // (视图)
+       angleList:[
+        {
+          content: "创建视图",
+          name: "translate",
+          img: require("@/assets/images/todo/unchecked/com/move.png"),
+          activeImg: require("@/assets/images/todo/check/com/move.png"),
+          active: false,
+        },
+        {
+          content: "视点动画",
+          name: "scale",
+          img: require("@/assets/images/todo/unchecked/com/zoom.png"),
+          activeImg: require("@/assets/images/todo/check/com/zoom.png"),
+          active: false,
+        }
       ],
       cuttingList: [
         {
@@ -1161,6 +1202,16 @@ export default {
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    // 点击视图上的两个按钮 (视图)
+     angleListClick(item) {
+      this.angleList.forEach((row) => {
+        if (item.content === row.content) {
+          row.active = true;
+        } else {
+          row.active = false;
+        }
+      });
+    },
     showHideItemClick(value) {
       // 隐藏 隔离 显示
       switch (value) {
