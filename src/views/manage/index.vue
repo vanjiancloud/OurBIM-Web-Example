@@ -1038,6 +1038,7 @@ export default {
     // 分享按钮
     share(e) {
       this.formShare.appid = e.appid;
+      this.form.isGis = e.isGis;
     },
     // 关闭分享dialog
     handleClose(done) {
@@ -1060,7 +1061,7 @@ export default {
           if (res.data.code === 0) {
             this.isShow = 2;
             this.formShare.qrurl = res.data.data.qrurl;
-            this.formShare.webShareUrl = res.data.data.webShareUrl;
+            this.formShare.webShareUrl = res.data.data.webShareUrl + '&weatherBin='+ this.form.isGis;
             this.$message.success(res.data.message);
           } else {
             this.$message.error(res.data.message);
