@@ -1,5 +1,6 @@
 <template>
-    <div class="view_photo" v-if="true">
+    <div>
+      <div class="view_photo" v-if="viewPic==='1'">
         <div class="romaHead">
             <span class="title">视图列表</span>
             <span class="el-icon-close closeIcon"></span>
@@ -49,6 +50,7 @@
         </div>
         <!-- 视图导出弹窗 -->
        <viewDialog :item="dialogFlag" @closeDia="dialogFlag=false"></viewDialog>
+      </div>
     </div>
 </template>
 
@@ -57,6 +59,12 @@
   export default {
         components: {
          viewDialog
+        },
+        props:{
+            viewPic:{
+                type: String,
+                default:''
+            }
         },
         data() {
             return {

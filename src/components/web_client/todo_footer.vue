@@ -1195,7 +1195,13 @@ export default {
       this.noneBlock();
       this.$emit('passContentLogo',this.contentLogo);
       this.$emit('passBrowerLogo',this.browerLogo);
-     
+    //  是否选中 视图 （视图）
+    if(this.imgList[6].state === 0){
+      this.angleList.forEach(item =>{
+        item.active = false
+      });
+      this.$emit('showViewPhoto',0);
+    }
   },
   beforeDestroy() {
     // 实例销毁之前对点击事件进行解绑
@@ -1211,6 +1217,18 @@ export default {
           row.active = false;
         }
       });
+      let mode = "";
+      switch (item.content) {
+        case "创建视图":
+          mode = "1";
+          break;
+        case "视点动画":
+          mode = "2";
+          break;
+        default:
+          break;
+      }
+      this.$emit('showViewPhoto',mode);
     },
     showHideItemClick(value) {
       // 隐藏 隔离 显示

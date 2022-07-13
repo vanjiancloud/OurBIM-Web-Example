@@ -301,8 +301,10 @@
         :showTodoIconObj="showTodoIconObj"
         @passContentLogo="passContentLogo"
         @passBrowerLogo="passBrowerLogo"
-        :lockState="lockState"
+        :lockState="lockState" 
+        @showViewPhoto="showViewPic"
       ></todo-footer>
+      <!-- (视图) @showViewPhoto="showViewPic" -->
         <!-- :threeLogo="threeLogo" -->
       <view-cube
         v-if="controllerInfo.viewCube"
@@ -333,8 +335,8 @@
               viewAngle.type === 0 &&
               viewAngle.state === 1"
     ></roamNavigate>
-    <!-- 视图 -->
-    <viewPhoto></viewPhoto>
+    <!-- (视图) -->
+    <viewPhoto :viewPic="showViewPicture"></viewPhoto>
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
       ref="teamworkDialogRef"
@@ -388,6 +390,7 @@ export default {
       // myProjectId:'',
       // modeData:[], // 树形结构数据
       // lockLogo:false, // 锁的打开和关闭
+      showViewPicture:'0', // 传递给 viewPhoto 控制视图列表的显示 (视图)
       maxNodes:false,
       envProgress:0,   // 环境加载
       lockState:false,   // 最后点击的小锁的状态
@@ -597,6 +600,10 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    // 用于给 viewphoto组件传值 （视图）
+    showViewPic(valModel){
+      this.showViewPicture = valModel;
+    },
     // 点击锁
     handleToggleLock(node, data, i){
         // 最多只开一把锁的，打开某一个锁，其他锁要关闭
