@@ -335,8 +335,6 @@
     ></roamNavigate>
     <!-- 视图 -->
     <viewPhoto></viewPhoto>
-    <!-- 视图导出弹窗 -->
-    <viewDialog></viewDialog>
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
       ref="teamworkDialogRef"
@@ -361,7 +359,6 @@ import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
 import roamNavigate from "@/components/web_client/roam_navigate";
 import viewPhoto from "@/components/web_client/view_photo";
-import viewDialog from "@/components/web_client/view_dialog";
 import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
 
@@ -384,7 +381,6 @@ export default {
     EscDialogItem,
     roamNavigate,
     viewPhoto,
-    viewDialog
   },
   data() {
     return {

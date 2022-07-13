@@ -21,7 +21,7 @@
                 </span>
                 <span :style="{'margin-bottom':'1px'}">
                     <el-tooltip class="item" effect="light" content="导出截图" placement="top">
-                      <i class="iconfont icon-a-gengxinshitu2" :class="{bind:active === -1}"  :style="{'font-size':'24px'}"></i>
+                      <i class="iconfont icon-a-gengxinshitu2" @click="exportPic" :class="{bind:active === -1}"  :style="{'font-size':'24px'}"></i>
                     </el-tooltip>
                 </span>
                 <span :style="{'margin-top':'2px'}">
@@ -47,16 +47,23 @@
                 </div>
             </div>
         </div>
+        <!-- 视图导出弹窗 -->
+       <viewDialog :item="dialogFlag" @closeDia="dialogFlag=false"></viewDialog>
     </div>
 </template>
 
 <script>
+  import viewDialog from "@/components/web_client/view_dialog";
   export default {
+        components: {
+         viewDialog
+        },
         data() {
             return {
               input:'',  // 搜索绑定
               active:-1,
               num:0,    // 是否重复点击图片
+              dialogFlag:false
           }
         },
         created(){
@@ -83,12 +90,15 @@
                     this.num+=1;
                     if(this.num%2 === 1){
                         this.active = -1;   
+                        this.dialogFlag = false; 
                     }
                 }else{
                     this.num = 0;
-                    this.active = ind;                  
+                    this.active = ind;                
                 }
-                console.log('000',this.active);
+            },
+            exportPic(){
+                this.dialogFlag = !this.dialogFlag;
             }
         }
     }
@@ -242,7 +252,7 @@
   }
   .bind{
     color: #a4a5a6;
-    cursor: not-allowed;
+    pointer-events: none;
   }
    ::-webkit-scrollbar {
     /* 对应纵向滚动条的宽度 */

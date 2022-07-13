@@ -1,18 +1,19 @@
 <template>
-    <div class="viewDialog">
-        <div class="title">
-            <span class="import">导出截图</span>
-            <span class="el-icon-close closeIcon" :style="{'cursor':'pointer'}"></span>
-        </div>
-        <div class="content">
+    <div class="viewDialog" v-if="item">
+        <div>
+          <div class="title">
+              <span class="import">导出截图</span>
+            <span class="el-icon-close closeIcon" :style="{'cursor':'pointer','color':'#A4A4A4'}" @click="closeDialog"></span>
+          </div>
+          <div class="content">
             <el-form>
-                <el-form-item label="选择截图类型">
+                <el-form-item label="选择截图类型" label-width="150px">
                     <el-radio-group v-model="radio">
                         <el-radio :label="1">图片</el-radio>
                         <el-radio :label="2">360全景图</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="分辨率">
+                <el-form-item label="分辨率" label-width="150px">
                      <el-select v-model="value" placeholder="请选择">
                         <el-option
                         v-for="item in options"
@@ -23,16 +24,24 @@
                     </el-select>
                 </el-form-item>
             </el-form>
+            <el-button class="btn" type="primary">导出</el-button>
+          </div>
         </div>
     </div>
 </template>
 
 <script>
 export default {
+    props:{
+        item:{
+            type: Boolean,
+            default: false
+        }
+    },
     data(){
         return{
             radio:1,
-            value:'',
+            value:'2',
             options: [{
                 value: '1',
                 label: '1280×720 (720p)'
@@ -50,6 +59,17 @@ export default {
                 label: '7680×4320 (8K)'
             }],
         }
+    },
+    created(){
+
+    },
+    mounted(){
+       
+    },
+    methods:{
+        closeDialog(){
+            this.$emit('closeDia',false)
+        }
     }
 }
 </script>
@@ -58,10 +78,11 @@ export default {
 *{
     box-sizing: border-box;
 }
+
 .viewDialog {
   position: absolute;
   top: 35%;
-  left: 40%;
+  left: 150%;
   width: 460px;
   height: 237px;
   background-color: #fff;
@@ -80,5 +101,31 @@ export default {
         font-size: 16px;
         color: #28292E;
     }
+ }
+ .content{
+    padding-top: 20px;
+ }
+ ::v-deep .el-form-item{
+    margin-bottom: 10px;
+ }
+ ::v-deep .el-form-item .el-form-item__label{
+    font-size: 16px;
+    font-family: PingFangSC-Regular, PingFa;
+    color: #28292E;
+    padding: 0 20px 0 0;
+ }
+ ::v-deep .el-radio-group .el-radio__label{
+    font-size: 16px;
+    font-family: PingFangSC-Regular, PingFa;
+    color: #28292E;
+ }
+ ::v-deep .el-select .el-input__inner{
+    height: 30px;
+ }
+ .btn{
+    width: 70px;
+    height: 28px;
+    line-height: 0;
+    margin: 20px 0 0 205px ;
  }
 </style>
