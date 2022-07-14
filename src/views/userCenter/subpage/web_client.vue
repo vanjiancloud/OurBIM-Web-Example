@@ -2022,6 +2022,7 @@ export default {
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
           this.socketData = realData;
+          console.log('666',e,realData);
           if (realData.id === "1") {
             this.memberInfo = {
               type: 1,

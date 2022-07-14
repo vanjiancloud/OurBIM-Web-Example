@@ -1650,6 +1650,10 @@ export default {
        * @Date: 2021-03-17 09:51:33
        * @description: 关闭tool
        */
+      // 如果视图被选中 就阻止点击其他地方关闭视图的功能 （视图）
+      if(this.imgList[0].state = 1){
+        return;
+      }
       if (this.isMask) {
         return;
       }
@@ -1751,12 +1755,12 @@ export default {
         action: "addViewPoint",
       };
       this.UpdateOrder(params).then(() => {
-        this.followTool = false;
+        // this.followTool = false;
         this.ListPoint();
-        this.dialogEdit = false;
-        let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
-        this.imgList[6].url = oldUrl;
-        this.imgList[6].state = 0;
+        // this.dialogEdit = false;  // 控制编辑视角名称的弹框
+        // let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+        // this.imgList[6].url = oldUrl;
+        // this.imgList[6].state = 0;
       });
     },
     EditFollow(e) {
