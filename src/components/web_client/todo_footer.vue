@@ -1200,7 +1200,7 @@ export default {
       this.angleList.forEach(item =>{
         item.active = false
       });
-      this.$emit('showViewPhoto',0);
+      this.$emit('showViewPhoto','0');
     }
   },
   beforeDestroy() {
@@ -1995,6 +1995,12 @@ export default {
           let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[0].name}`);
           this.imgList[0].url = oldUrl;
         }
+        // 点击浏览器时 关闭视图高亮（视图）
+        if(this.imgList[6].state === 1){
+           this.imgList[6].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+          this.imgList[6].url = oldUrl;
+        }
       }
       console.log("e=", e, "oldState=", this.oldState);
       this.footerIconChange(e);
@@ -2215,6 +2221,16 @@ export default {
       }
       if (e === 6) {
         this.followTool = this.imgList[e].state === 1 ? true : false;
+         // 打开视图时 关闭浏览器 （视图）
+        if (this.imgList[10].state === 1) {
+          this.imgList[10].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[10].name}`);
+          this.imgList[10].url = oldUrl;
+          this.$emit("listenTodo", {
+            state: this.imgList[10].state,
+            type: 10,
+          });
+         }
       }
       if (e !== 0) {
         this.$emit("listenTodo", {
