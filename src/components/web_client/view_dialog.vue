@@ -28,15 +28,41 @@
           </div>
           <el-progress class="progress" :percentage="100" status="success"></el-progress>
         </div>
+        <!-- 删除框 -->
+        <div class="delDialog" v-if="delItem">
+          <div class="title">
+              <span class="import">提示</span>
+              <span class="el-icon-close closeIcon" :style="{'cursor':'pointer','color':'#A4A4A4'}" @click.stop="closeDialog"></span>
+          </div>
+          <div class="contentDown">
+            <div class="description">
+                <img :style="{'width':'18px','height':'18px'}" :src="require('@/assets/images/view/waring.png')" alt="">
+                <span>&nbsp;将删除名为"*****"的数据，是否确认删除？</span>
+            </div>
+            <div class="bottomBtn">
+                <el-button class="btn1" type="primary" @click.stop="closeDialog">取消</el-button>
+                <el-button class="btn2" type="primary" @click="removeBtn">删除</el-button>
+            </div>
+          </div>
+        </div>
     </div>
 </template>
 
 <script>
+import MODELAPI from "@/api/model_api";
 export default {
     props:{
         item:{
             type: Boolean,
             default: false
+        },
+        delItem:{
+            type: Boolean,
+            default: false
+        },
+        delInfo:{   // 删除时用的字段
+            type: Object,
+            default: () => ({})
         }
     },
     data(){
@@ -54,11 +80,12 @@ export default {
                 label: '2560×1440 (2K)'
                 }, {
                 value: '4',
-                label: '4096×2160 (4K)'
+                label: '3840×2160 (4K)'
                 }, {
                 value: '5',
                 label: '7680×4320 (8K)'
             }],
+            pointList:[],
         }
     },
     created(){
@@ -68,8 +95,29 @@ export default {
     },
     methods:{
         closeDialog(){
-            this.$emit('closeDia',false)
-        }
+            this.$emit('closeDia',false); // 控制关闭 导出和删除弹框
+        },
+        removeBtn(){
+            /**
+             * @Author: zk
+             * @Date: 2021-03-17 10:35:16
+             * @description: 删除视点
+             */
+                let params = this.delInfo;
+                MODELAPI.DElETEFOLLOWPOINT(params)
+                    .then((res) => {
+                        if (res.data.code === 0) {
+                           this.$emit('runListPoint'); // 调用父级的ListPoint方法
+                            this.$message({
+                                type: "success",
+                                message: '删除成功',
+                            });
+                            this.$emit('noBorder',-1)
+                        }
+                    })
+                    .catch((err) => {});
+                   this.$emit('closeDia',false)
+        },
     }
 }
 </script>
@@ -79,7 +127,7 @@ export default {
     box-sizing: border-box;
 }
 
-.viewDialog {
+.viewDialog,.delDialog {
   position: absolute;
   top: 35%;
   left: 150%;
@@ -141,5 +189,43 @@ export default {
  
   ::v-deep .el-progress .el-progress-bar{
     width: 460px;
+  }
+  .delDialog{
+    height: 213px;
+    .contentDown{
+        width: 100%;
+        height: 167px;
+        padding-top: 40px;
+        .description{
+            margin-left: 65px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            img{
+                margin-top: 2px;
+            }
+            span{
+                font-size: 16px;
+                font-family: PingFangSC-Regular, PingFang SC;
+                color: #28292E;
+            }
+        }
+        .bottomBtn{
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+            .btn1,.btn2{
+                width: 70px;
+                height: 28px;
+                line-height: 0;
+            }
+            .btn1{
+                color: #28292E;
+                background-color: #fff;
+                border: 1px solid #E4E7EB;
+            }
+        }
+    }
   }
 </style>

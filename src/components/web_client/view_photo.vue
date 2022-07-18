@@ -1,9 +1,10 @@
 <template>
     <div>
+        <!-- 视图列表 -->
       <div class="view_photo" v-if="viewPic==='1'">
         <div class="romaHead">
             <span class="title">视图列表</span>
-            <span class="el-icon-close closeIcon"></span>
+            <span class="el-icon-close closeIcon" @click="viewClose"></span>
         </div>
         <div class="search">
             <el-input
@@ -27,43 +28,117 @@
                 </span>
                 <span :style="{'margin-top':'2px'}">
                     <el-tooltip class="item" effect="light" content="创建视图" placement="top">
-                      <i class="iconfont icon-a-gengxinshitu1" :class="{bind:active !== -1}" :style="{'font-size':'22px' }"></i>
+                      <i class="iconfont icon-a-gengxinshitu1" :class="{bind:active !== -1}" :style="{'font-size':'22px' }" @click="InsertFollow"></i>
                     </el-tooltip>
                 </span>
             </div>
         </div>
         <div class="pictures">
-            <div class="picBox"  v-for="(item,index) in 15" :key="index">
-                <div class="boxPhoto" :class="{'borderWhite': index === active}" @click="selected(index)">
-                    <img :src="require('@/assets/logo.png')" alt="">
+            <div class="picBox"  v-for="(item,index) in pointList" :key="index">
+                <div class="boxPhoto" :class="{'borderWhite': index === active}">
+                    <img :src="item.imagePath" alt="" @click="selected(index,item)">
                     <div class="bottom" :style="{'display':index === active ? 'block' : 'none'}">
                         <img :src="require('@/assets/images/view/view4.png')" alt="">
                         <img :src="require('@/assets/images/view/view5.png')" alt="">
                     </div>
-                    <i class="el-icon-close err" :style="{'display':index === active ? 'block' : 'none'}"></i>
+                    <i class="el-icon-close err" :style="{'display':index === active ? 'block' : 'none'}" @click="removeDialog(item)"></i>
                 </div>
-                <div class="picInfo">
-                    <span>view-2022/06/29</span>
-                    <span>11:28:34</span>
+                <div class="picInfo" @dblclick="dbTest(index,item)">
+                    {{item.name}}
                 </div>
+            </div>
+            <div class="nonePic" v-if="pointList.length === 0">
+                暂无视图 可创建
             </div>
         </div>
         <!-- 视图导出弹窗 -->
-       <viewDialog :item="dialogFlag" @closeDia="dialogFlag=false"></viewDialog>
+       <viewDialog :item="dialogFlag" @closeDia="closeDia2" @noBorder="noBorder" 
+        :delItem ="delFlag" :delInfo="delInfo" @pointListSon="pointListSon" 
+        @runListPoint = "runListPoint"
+        >
+        </viewDialog>
+        <!-- 编辑视点的名称 -->
+        <el-dialog
+            title="编辑"
+            :visible="dialogVisible"
+            @close="dialogVisibleClose"
+            width="25%"
+            :append-to-body="true"
+            >
+            <el-form :model="editForm" :rules="rules" ref="editForm">
+                <el-form-item label="名称:" label-width="80px" prop="inputName">
+                    <el-input v-model="editForm.inputName" placeholder="请输入内容"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisibleClose">取 消</el-button>
+                <el-button type="primary" @click="submitDialog">确 定</el-button>
+            </span>
+        </el-dialog>
+      </div>
+      <!-- 视点动画列表 -->
+       <div class="view_photo view_animation" v-if="viewPic==='2'">
+        <div class="romaHead romaHead2">
+            <span class="title">视点动画列表</span>
+            <span class="el-icon-close closeIcon" @click="viewClose"></span>
+        </div>
+        <div class="search">
+            <el-input
+              class="searchInput"
+              type="text"
+              v-model="input" 
+              placeholder="请输入您要搜索的内容"  
+            >
+                <div slot="prefix"><i class="el-icon-search"></i></div>
+            </el-input>
+            <div class="threeLogo">
+                <img :src="require('@/assets/images/view/plus.png')" alt="" :style="{'width':'24px','height':'24px','cursor':'pointer' }">
+            </div>
+        </div>
+        <div class="videos">
+            <div class="videosList"  v-for="(item,index) in 8" :key="index">
+                <div class="frontCover">
+                    <img :src="require('@/assets/logo.png')" alt="" :style="{'width':'100%','height':'100%','cursor':'pointer','border-radius':'4px' }">
+                </div>
+                <div class="videoDes">
+                    <div class="upWordes">
+                        <span>时&nbsp;&nbsp;&nbsp;长:&nbsp;&nbsp;</span>
+                        <span>59':59''</span>
+                    </div>
+                    <div class="downWordes">
+                        <span>Video:&nbsp;&nbsp;</span>
+                        <span>2022-7-18 11:25:36</span>
+                    </div>
+                </div>
+                <div class="videosEdit">
+                    <i class="el-icon-edit"></i>
+                    <i class="el-icon-delete"></i>
+                </div>
+            </div>
+        </div>
       </div>
     </div>
 </template>
 
 <script>
+  import MODELAPI from "@/api/model_api";
   import viewDialog from "@/components/web_client/view_dialog";
   export default {
         components: {
          viewDialog
         },
         props:{
-            viewPic:{
+            viewPic:{ // 控制视图列表和视点动画框的显示
                 type: String,
                 default:''
+            },
+            setProps: {
+                type: Object,
+                default: () => {},
+            },
+            taskId:{   
+                type: String,
+                default: ""
             }
         },
         data() {
@@ -71,10 +146,44 @@
               input:'',  // 搜索绑定
               active:-1,
               num:0,    // 是否重复点击图片
-              dialogFlag:false
+              dialogFlag:false, // 导出弹框
+              delFlag:false,  // 控制删除弹框
+              getProps:null,
+              pointList:[], // 视点图片
+              delInfo:{}, // 删除时用到的参数传给view_dialog
+              dialogVisible:false, // 编辑图片名字的弹框
+              editForm:{
+                inputName:'',
+                tid:''
+              },
+              rules:{
+                inputName: [
+                    {
+                        required: true,
+                        message: "请输入名称",
+                        trigger: "blur",
+                    },
+                ],
+              }
           }
         },
+        watch:{
+             setProps: {
+                handler() {
+                    if (this.setProps.taskId) {
+                        this.getProps = this.setProps;
+                        this.ListPoint();
+                    }
+                },
+                // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
+                deep: true,
+        },
+        },
         created(){
+            if (this.setProps.taskId) {
+                this.getProps = this.setProps;
+                this.ListPoint();
+            }
             // document.addEventListener("click", function(e) {
             //     console.log('666 在');
             //     var event = e || window.event;
@@ -91,9 +200,18 @@
             //     }
             // }) 
         },
+        mounted(){
+            console.log('222',this.pointList);
+        },
         methods:{
+            viewClose(){
+                this.$emit('closeClick','0');
+            },
+            runListPoint(){
+                this.ListPoint();
+            },
             // 点击选中
-            selected(ind){
+            selected(ind,e){
                 if(this.active === ind){
                     this.num+=1;
                     if(this.num%2 === 1){
@@ -104,9 +222,127 @@
                     this.num = 0;
                     this.active = ind;                
                 }
+                // 跳转视图
+                if(this.active !== -1){
+                    let params = {
+                    taskid: this.getProps.taskId,
+                    action: "moveToViewPoint",
+                    camerashotId: e.tid,
+                   };
+                   this.UpdateOrder(params);
+                }
             },
             exportPic(){
                 this.dialogFlag = !this.dialogFlag;
+                if(this.delFlag === true){
+                    this.delFlag = false;
+                }
+            },
+            removeDialog(e){
+                if(this.dialogFlag){
+                    this.dialogFlag = false;
+                }
+                this.delFlag = true;
+                // 以下是删除时用到的参数
+                this.delInfo.tid = e.tid;
+                this.delInfo.taskId = this.taskId;
+            },
+            closeDia2(){
+                this.dialogFlag = false;
+                this.delFlag = false;
+            },
+            noBorder(valNum){
+                this.active = valNum;
+            },
+            InsertFollow() {
+                /**
+                 * @Author: zk
+                 * @Date: 2021-03-17 10:46:58
+                 * @description: 添加视点
+                 */
+                let params = {
+                    taskid: this.getProps.taskId,
+                    action: "addViewPoint",
+                };
+                this.UpdateOrder(params).then(() => {
+                    this.ListPoint();
+                });
+            },
+            ListPoint() {
+                /**
+                 * @Author: zk
+                 * @Date: 2021-03-17 10:30:51
+                 * @description: 获取视点列表
+                 */
+                setTimeout(() => {
+                    let params = {
+                     taskid: this.getProps.taskId,
+                    };
+                    this.pointList = [];
+                    MODELAPI.LISTFOLLOWPOINT(params)  
+                    .then((res) => {
+                        if (res.data.code === 0) {
+                         this.pointList = res.data.data;
+                        }
+                    })
+                    .catch((err) => {});
+                }, 1000);
+            },
+            async UpdateOrder(e) {
+                await MODELAPI.UPDATEORDER(e)
+                    .then((res) => {
+                    if (res.data.code === 0) {
+                        this.$message({
+                        message: '指令下发成功',
+                        type: "success",
+                        });
+                    } else {
+                        this.$message({
+                        message: '指令下发失败',
+                        type: "error",
+                        });
+                    }
+                    })
+                    .catch(() => {});
+            },
+            pointListSon(eventArr){ // 删除框传递来的更新后的pointList
+                this.pointList = eventArr;
+            },
+            dbTest(ind,e){
+                //    document.querySelector('.pictures .picBox:nth-of-type('+(ind+1)+') .picInfo .up .upName').style.display="none";
+                //    document.querySelector('.pictures .picBox:nth-of-type('+(ind+1)+') .picInfo .up .edit').style.display="block";
+                this.dialogVisible = true;
+                this.editForm.inputName = e.name;
+                this.editForm.tid = e.tid;
+                console.log('333',this.editForm.inputName,this.editForm.tid,this.taskId);
+            },
+            submitDialog(){
+                this.$refs["editForm"].validate((valid)=>{
+                    if(valid){
+                        let params = {
+                            tid:this.editForm.tid,
+                            name:this.editForm.inputName,
+                            taskId:this.taskId
+                        }
+                        MODELAPI.UPDATEFOLLOWPOINT(params)
+                        .then((res) => {
+                            if (res.data.code === 0) {
+                                this.ListPoint();
+                                this.$message({
+                                    type: "success",
+                                    message: '修改成功',
+                                });
+                            }
+                            this.dialogVisible = false;
+                        })
+                        .catch((err) => {});
+                    }
+                })
+            },
+            dialogVisibleClose(){
+                this.$refs["editForm"].resetFields();
+                this.editForm.inputName = '';
+                this.dialogVisible = false;
             }
         }
     }
@@ -195,6 +431,11 @@
     padding-left: 16px;
     overflow: hidden;
     overflow-y:auto;
+    .nonePic{
+        font-size: 16px;
+        color: #7e7f7f;
+        margin: 50px auto;
+    }
     .picBox{
          width: 120px;
          height: 138px;
@@ -245,18 +486,17 @@
         .picInfo{
             height: 34px;
             width: 120px;
-            margin-top: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            span{
-                font-size: 12px;
-            }
+            margin-top: 6px;
+            font-size: 12px;  
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     }
   }
+ 
   .borderWhite{
-    border: 1px solid red;
+    border: 1px solid #fff;
   }
   .bind{
     color: #a4a5a6;
@@ -281,5 +521,54 @@
         border: 1px solid #41444D;
         border-radius:2px;
     }
-
+.view_animation{
+    height: 555px;
+    width: 400px;
+    .romaHead2{
+        width: 400px;
+    }
+    .threeLogo{
+        justify-content: right !important;
+    }
+    .videos{
+        height: 460px;
+        width: 100%;
+        // padding-left: 16px;
+        padding: 7px 0 0 16px;
+        overflow: hidden;
+        overflow-y:auto;
+        .videosList{
+            display: flex;
+            width: 372px;
+            height: 55px;
+            margin-top: 8px;
+            .frontCover{
+                width: 84px;
+                height: 55px;
+                margin-right: 16px;
+                border-radius: 4px;
+            }
+            .videoDes{
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                width: 187px;
+                height: 55px;
+                font-size: 14px;
+                color: rgba(255,255,255,0.7000);
+                margin-right: 15px;
+            }
+            .videosEdit{
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 44px;
+                height: 55px;
+                i{
+                    cursor:pointer;
+                }
+            }
+        }
+    }
+}
 </style>

@@ -336,7 +336,7 @@
               viewAngle.state === 1"
     ></roamNavigate>
     <!-- (视图) -->
-    <viewPhoto :viewPic="showViewPicture"></viewPhoto>
+    <viewPhoto :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
       ref="teamworkDialogRef"
@@ -2022,7 +2022,6 @@ export default {
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
           this.socketData = realData;
-          console.log('666',e,realData);
           if (realData.id === "1") {
             this.memberInfo = {
               type: 1,
@@ -2229,6 +2228,17 @@ export default {
             // 提示判断添加构建失败
             this.showUiBar();
             this.$message.error(realData.name);
+          }else if(realData.id === "21"){  // 坐标位置 (增)
+            let messageInfo = {
+              prex:"ourbimMessage",
+              type: 30004,
+              data:{
+                tagId:realData.tagId,
+                data:realData.data,
+              },
+              message:"",
+            };
+            this.sentParentIframe(messageInfo);
           }
         }
       };

@@ -172,7 +172,7 @@
             />
           </el-tooltip>
           <el-collapse-transition>
-            <div class="show-slice" v-if="imgList[2].state === 1">
+            <div class="show-slice show-split" v-if="imgList[2].state === 1">
               <el-tooltip
                 v-for="(item, index) in sliceList"
                 :key="index"
@@ -415,6 +415,7 @@
                     class="slice-img com-img"
                     :src="item.active ? item.activeImg : item.img"
                     @click.stop="angleListClick(item)"
+                    :style="{'cursor':'pointer'}"
                     mode=""
                   />
                 </div>
@@ -2368,6 +2369,9 @@ export default {
         width: 20px;
         height: 20px;
       }
+    }
+    .show-split{ // 刨切图标偏移修改---
+      left: 10px !important;
     }
     .show-com {
       top: -117px;
