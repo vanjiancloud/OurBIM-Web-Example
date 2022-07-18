@@ -35,8 +35,8 @@
         </div>
         <div class="pictures">
             <div class="picBox"  v-for="(item,index) in pointList" :key="index">
-                <div class="boxPhoto" :class="{'borderWhite': index === active}">
-                    <img :src="item.imagePath" alt="" @click="selected(index,item)">
+                <div class="boxPhoto">
+                    <img :src="item.imagePath" alt="" @click="selected(index,item)" :class="{'borderWhite': index === active}">
                     <div class="bottom" :style="{'display':index === active ? 'block' : 'none'}">
                         <img :src="require('@/assets/images/view/view4.png')" alt="">
                         <img :src="require('@/assets/images/view/view5.png')" alt="">
@@ -98,7 +98,7 @@
         <div class="videos">
             <div class="videosList"  v-for="(item,index) in 8" :key="index">
                 <div class="frontCover">
-                    <img :src="require('@/assets/logo.png')" alt="" :style="{'width':'100%','height':'100%','cursor':'pointer','border-radius':'4px' }">
+                    <img @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="require('@/assets/logo.png')" alt="" :style="{'width':'100%','height':'100%','cursor':'pointer','border-radius':'4px' }">
                 </div>
                 <div class="videoDes">
                     <div class="upWordes">
@@ -115,6 +115,12 @@
                     <i class="el-icon-delete"></i>
                 </div>
             </div>
+        </div>
+      </div>
+      <!-- 预览与编辑菜单栏 -->
+      <div class="proEdit" v-if="activeAnimation !== -1">
+        <div class="proEditMain">
+
         </div>
       </div>
     </div>
@@ -145,6 +151,7 @@
             return {
               input:'',  // 搜索绑定
               active:-1,
+              activeAnimation:-1,
               num:0,    // 是否重复点击图片
               dialogFlag:false, // 导出弹框
               delFlag:false,  // 控制删除弹框
@@ -164,7 +171,8 @@
                         trigger: "blur",
                     },
                 ],
-              }
+              },
+              proEditFlag:false, // 
           }
         },
         watch:{
@@ -339,10 +347,24 @@
                     }
                 })
             },
-            dialogVisibleClose(){
+            // 视图列表的×
+            dialogVisibleClose(){ 
                 this.$refs["editForm"].resetFields();
                 this.editForm.inputName = '';
                 this.dialogVisible = false;
+            },
+            // 点击视点动画图片
+            picAnimation(item,ind){
+                if(this.activeAnimation === ind){
+                    this.num+=1;
+                    if(this.num%2 === 1){
+                        this.activeAnimation = -1;   
+                        this.proEditFlag = false;
+                    }
+                }else{
+                    this.num = 0;
+                    this.activeAnimation = ind;                
+                }
             }
         }
     }
@@ -570,5 +592,23 @@
             }
         }
     }
+}
+.animationBorder{
+    border: 1px solid #B0FCFF;
+}
+.proEdit{
+    position: absolute;
+    bottom: 80px;
+    left: 0;
+    width: 100%;
+    height: 193px;
+}
+.proEditMain{
+    min-width: 1200px;
+    width: 70%;
+    height: 100%;
+    margin: 0 auto;
+    background-color:rgba(16,16,16,0.9);
+    border-radius: 6px;
 }
 </style>
