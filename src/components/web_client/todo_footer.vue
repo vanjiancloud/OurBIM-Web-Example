@@ -171,7 +171,7 @@
             />
           </el-tooltip>
           <el-collapse-transition>
-            <div class="show-slice" v-if="imgList[2].state === 1">
+            <div class="show-slice show-split" v-if="imgList[2].state === 1">
               <el-tooltip
                 v-for="(item, index) in sliceList"
                 :key="index"
@@ -1815,7 +1815,9 @@ export default {
         MODELAPI.LISTFOLLOWPOINT(params)
           .then((res) => {
             if (res.data.code === 0) {
-              this.pointList = res.data.data;
+              setTimeout(() => {
+                 this.pointList = res.data.data;
+              }, 800);
             }
           })
           .catch((err) => {});
@@ -2242,6 +2244,9 @@ export default {
         width: 20px;
         height: 20px;
       }
+    }
+    .show-split{
+      left: 20%;
     }
     .show-com {
       top: -117px;
