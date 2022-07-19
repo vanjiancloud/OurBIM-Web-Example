@@ -120,7 +120,70 @@
       <!-- 预览与编辑菜单栏 -->
       <div class="proEdit" v-if="activeAnimation !== -1">
         <div class="proEditMain">
-
+            <div class="proEditTop">
+                <div class="component">
+                    <img :style="{'width':'18px','height':'18px','margin-left':'10px'}" :src="require('@/assets/images/view/goujian.png')" alt="">
+                    <span>附加构件动画:</span>
+                    <el-select v-model="optionsComponents" placeholder="请选择">
+                        <el-option
+                             v-for="item in options"
+                             :key="item.value"
+                             :label="item.label"
+                              :value="item.value">
+                         </el-option>
+                    </el-select>
+                </div>
+                <div class="order">
+                    <img :style="{'width':'18px','height':'18px','margin-left':'10px'}" :src="require('@/assets/images/view/xulie.png')" alt="">
+                    <span>附加序列动画:</span>
+                    <el-select v-model="ordersValue" placeholder="请选择">
+                        <el-option
+                             v-for="item in  optionOrders"
+                             :key="item.value"
+                             :label="item.label"
+                              :value="item.value">
+                         </el-option>
+                    </el-select>
+                </div>
+                <div class="play">
+                    <div class="leftPlay" :style="{'cursor':'pointer'}">
+                         <i class="el-icon-caret-left" :style="{'font-size':'16px','color':'#76797D'}"></i>
+                         <i class="el-icon-caret-left" :style="{'color':'#76797D'}"></i>
+                    </div>
+                    <i v-if="true" class="el-icon-video-play" :style="{'cursor':'pointer'}"></i>
+                    <i v-else class="el-icon-video-pause" :style="{'cursor':'pointer'}"></i>
+                    <div class="rightPlay" :style="{'cursor':'pointer'}">
+                        <i class="el-icon-caret-right" :style="{'color':'#76797D'}"></i>
+                        <i class="el-icon-caret-right" :style="{'font-size':'16px','color':'#76797D'}"></i>
+                    </div>
+                </div>
+                <div class="getVideo">
+                    <el-select v-model="resolutionValue" placeholder="请选择">
+                        <el-option
+                             v-for="item in  resolution"
+                             :key="item.value"
+                             :label="item.label"
+                              :value="item.value">
+                         </el-option>
+                    </el-select>
+                    <el-button round class="button">渲染</el-button>
+                    <el-button round class="button">导出</el-button>
+                </div>
+                <i  class="el-icon-close closeProEdit"></i>
+                <!-- 渲染进度条 -->
+                <div class="progressDiv">
+                    <el-progress :percentage="100"  :color="customColor"></el-progress>
+                </div>
+            </div>
+            <div class="proEditDown">
+                <div class="viewMorePic" v-for="(item,index) in 15" :key="index">
+                    <img :src="require('@/assets/logo.png')" alt="" :style="{'width':'100%','height':'100%'}">
+                    <div class="videosPlus">
+                        <img :src="require('@/assets/images/view/jiahao.png')" :style="{'width':'100%','height':'100%'}" alt="">
+                    </div>
+                    <div class="videoWords">00':49''</div>
+                </div>
+            </div>
         </div>
       </div>
     </div>
@@ -172,7 +235,56 @@
                     },
                 ],
               },
-              proEditFlag:false, // 
+              proEditFlag:false, // 编辑和预览框
+               options: [{   // 构件动画
+                    value: '0',
+                    label: '全选'
+                }, {
+                    value: '1',
+                    label: '构件动画1'
+                }, {
+                    value: '2',
+                    label: '构件动画2'
+                }, {
+                    value: '3',
+                    label: '构件动画3'
+                }, {
+                    value: '4',
+                    label: '构件动画4'
+                }],
+               optionsComponents:'1',
+               optionOrders:[{   // 序列动画
+                        value: '0',
+                        label: '全选'
+                    }, {
+                        value: '1',
+                        label: '序列动画1'
+                    }, {
+                        value: '2',
+                        label: '序列动画2'
+                    }, {
+                        value: '3',
+                        label: '序列动画3'
+                    }, {
+                        value: '4',
+                        label: '序列动画4'
+                }],
+               ordersValue:'1',
+               resolution: [{
+                    value: '0',
+                    label: '1920×1080 (1080p)'
+                }, {
+                    value: '1',
+                    label: '2560×1440 (2K)'
+                }, {
+                    value: '2',
+                    label: '3840×2160 (4K)'
+                }, {
+                    value: '3',
+                    label: '7680×4320 (8K)'
+               }],
+               resolutionValue:'0',
+               customColor:'#5DBB57', // 渲染进度条颜色
           }
         },
         watch:{
@@ -183,9 +295,8 @@
                         this.ListPoint();
                     }
                 },
-                // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
                 deep: true,
-        },
+              },
         },
         created(){
             if (this.setProps.taskId) {
@@ -212,8 +323,13 @@
             console.log('222',this.pointList);
         },
         methods:{
+            // 关闭视点列表和视点动画列表时
             viewClose(){
                 this.$emit('closeClick','0');
+                this.active = -1;
+                this.activeAnimation= -1;
+                this.num= 0;
+                this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
             },
             runListPoint(){
                 this.ListPoint();
@@ -544,7 +660,7 @@
         border-radius:2px;
     }
 .view_animation{
-    height: 555px;
+    height: 500px;
     width: 400px;
     .romaHead2{
         width: 400px;
@@ -553,7 +669,7 @@
         justify-content: right !important;
     }
     .videos{
-        height: 460px;
+        height: 405px;
         width: 100%;
         // padding-left: 16px;
         padding: 7px 0 0 16px;
@@ -596,6 +712,7 @@
 .animationBorder{
     border: 1px solid #B0FCFF;
 }
+// 编辑预览框
 .proEdit{
     position: absolute;
     bottom: 80px;
@@ -610,5 +727,147 @@
     margin: 0 auto;
     background-color:rgba(16,16,16,0.9);
     border-radius: 6px;
+    .proEditTop{
+        position: relative;
+        display: flex;
+        align-items: center;
+        height: 50px;
+        width: 100%;
+    }
 }
+.component, .order{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 255px;
+    height: 30px;
+    margin-left: 1%;
+}
+    ::v-deep .el-input input{
+        height: 28px;
+        width: 125px;
+        color: #fff;
+        background-color: #24262B;
+        border: 1px solid #727272;
+    }
+    span{
+        font-size: 14px;
+        color: #fff;
+    }
+    ::v-deep .el-input .el-input__suffix{
+        top: 6px;
+    }
+    ::v-deep .el-input .el-select__caret.is-reverse{
+        margin-top: -10px;
+    }
+   .play{
+    width: 94px;
+    height: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+     margin-left: 5%;
+    i{
+        font-size: 24px;
+        color: #fff;
+    }
+    .leftPlay, .rightPlay{
+        position: relative;
+        width: 24px;
+        height: 24px;
+    }
+    .leftPlay i:nth-of-type(1){
+            position: absolute;
+            top: 4px;
+            left: -2px;
+        }
+    .rightPlay i:nth-of-type(2){
+        position: absolute;
+        top: 4px;
+        right: -2px;
+    }
+   }
+    .getVideo{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 412px;
+        height: 30px;
+         margin-left: 5%;
+        ::v-deep .el-input input{
+            width: 200px;
+        }
+        .button{
+            width: 90px;
+            height: 26px;
+            background-color: rgba(0,0,0,.5);
+            color: #fff;
+            border: 1px solid #fff;
+            padding-top: 6px;
+        }
+        .button:nth-of-type(1){
+            margin-left: 20px;
+        }
+    }
+    .closeProEdit{
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 18px;
+        cursor: pointer;
+        color: #fff;
+    }
+    .progressDiv{
+        width: 100%;
+        height: 6px;
+        position: absolute;
+        top: -8px;
+        left: 0;
+        ::v-deep .el-progress-bar__outer{
+            height: 3px;
+        }
+        ::v-deep .el-progress__text{
+            color:#5DBB57;
+        }
+    }
+//   预览下半部分
+    .proEditDown{
+        display: flex;
+        width: 100%;
+        height: 143px;
+        padding: 17px 0 0 6px;
+        transform: scaleY(-1); // 利用翻转 将滚动条放到上方
+        overflow-x: scroll;
+        .viewMorePic{
+            position: relative;
+            flex-shrink:0;
+            width: 120px;
+            height: 80px;
+            transform: scaleY(-1); // 父盒子翻转后 将子盒子再翻转回来
+            margin-right: 10px;
+            .videosPlus{
+                position: absolute;
+                top: 28px;
+                right: -18px;
+                width: 25px;
+                height: 25px;
+                cursor: pointer;
+           }
+           .videoWords{
+                position: absolute;
+                top: -25px;
+                right: -34px;
+                width: 62px;
+                height: 18px;
+                color: #C0C0C2;
+                font-size: 12px;
+                line-height: 18px;
+                text-align: center;
+                background: #181A1E;
+                border-radius: 2px;
+                border: 1px solid #727272;
+           }
+        }
+        
+    }
 </style>

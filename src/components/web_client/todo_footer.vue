@@ -1180,6 +1180,16 @@ export default {
   },
   mounted() {
     window.addEventListener("click", this.clickOther);
+    // view_photo传递来的 关闭视图高亮（视图）
+    this.$EventBus.$on('okok',(val)=>{
+      if(val === false){
+        if(this.imgList[6].state === 1){
+           this.imgList[6].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+          this.imgList[6].url = oldUrl;
+        }
+      }
+    })
   },
   updated(){
       // 构件库 和 浏览器 状态变化 决定contentLogo和browerLogo的值
