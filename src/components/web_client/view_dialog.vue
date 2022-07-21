@@ -26,7 +26,9 @@
             </el-form>
             <el-button class="btn" type="primary">导出</el-button>
           </div>
-          <el-progress class="progress" :percentage="100" status="success"></el-progress>
+          <div class="progress">
+              <el-progress :percentage="100" status="success"></el-progress>
+          </div>
         </div>
         <!-- 删除框 -->
         <div class="delDialog" v-if="delItem">
@@ -176,20 +178,27 @@ export default {
     line-height: 0;
     margin: 20px 0 0 205px ;
  }
-  ::v-deep .el-progress{
-    top: -178px;
-    display: block;
+ .progress{
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 6px;
  }
- ::v-deep .el-progress .el-icon-circle-check{
-    display: none;
- }
- ::v-deep .el-progress .el-progress-bar__outer{
-    height: 3px !important;
+   ::v-deep .el-progress .el-progress-bar{
+    width: 106%;
   }
- 
-  ::v-deep .el-progress .el-progress-bar{
-    width: 460px;
-  }
+//   ::v-deep .el-progress{
+//     top: -178px;
+//     display: block;
+//  }
+//  ::v-deep .el-progress .el-icon-circle-check{
+//     display: none;
+//  }
+//  ::v-deep .el-progress .el-progress-bar__outer{
+//     height: 3px !important;
+//   }
+
   .delDialog{
     height: 213px;
     .contentDown{

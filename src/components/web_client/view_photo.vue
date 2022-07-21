@@ -80,7 +80,7 @@
        <div class="view_photo view_animation" v-if="viewPic==='2'">
         <div class="romaHead romaHead2">
             <span class="title">视点动画列表</span>
-            <span class="el-icon-close closeIcon" @click="viewClose"></span>
+            <span class="el-icon-close closeIcon" @click="viewClose2"></span>
         </div>
         <div class="search">
             <el-input
@@ -92,7 +92,7 @@
                 <div slot="prefix"><i class="el-icon-search"></i></div>
             </el-input>
             <div class="threeLogo">
-                <img :src="require('@/assets/images/view/plus.png')" alt="" :style="{'width':'24px','height':'24px','cursor':'pointer' }">
+                <img :src="require('@/assets/images/view/plus.png')" @click="plusProEdit" alt="" :style="{'width':'24px','height':'24px','cursor':'pointer' }">
             </div>
         </div>
         <div class="videos">
@@ -118,7 +118,7 @@
         </div>
       </div>
       <!-- 预览与编辑菜单栏 -->
-      <div class="proEdit" v-if="activeAnimation !== -1">
+      <div class="proEdit" v-if="activeAnimation !== -1 || proEditFlag===true">
         <div class="proEditMain">
             <div class="proEditTop">
                 <div class="component">
@@ -147,14 +147,14 @@
                 </div>
                 <div class="play">
                     <div class="leftPlay" :style="{'cursor':'pointer'}">
-                         <i class="el-icon-caret-left" :style="{'font-size':'16px','color':'#76797D'}"></i>
-                         <i class="el-icon-caret-left" :style="{'color':'#76797D'}"></i>
+                         <i class="el-icon-caret-left" :style="{'font-size':'16px'}"></i>
+                         <i class="el-icon-caret-left" ></i>
                     </div>
                     <i v-if="true" class="el-icon-video-play" :style="{'cursor':'pointer'}"></i>
                     <i v-else class="el-icon-video-pause" :style="{'cursor':'pointer'}"></i>
                     <div class="rightPlay" :style="{'cursor':'pointer'}">
-                        <i class="el-icon-caret-right" :style="{'color':'#76797D'}"></i>
-                        <i class="el-icon-caret-right" :style="{'font-size':'16px','color':'#76797D'}"></i>
+                        <i class="el-icon-caret-right" ></i>
+                        <i class="el-icon-caret-right" :style="{'font-size':'16px',}"></i>
                     </div>
                 </div>
                 <div class="getVideo">
@@ -169,7 +169,8 @@
                     <el-button round class="button">渲染</el-button>
                     <el-button round class="button">导出</el-button>
                 </div>
-                <i  class="el-icon-close closeProEdit"></i>
+                <!-- 关闭按钮 -->
+                <i  class="el-icon-close closeProEdit" @click="proEditClose"></i>
                 <!-- 渲染进度条 -->
                 <div class="progressDiv">
                     <el-progress :percentage="100"  :color="customColor"></el-progress>
@@ -216,11 +217,12 @@
               active:-1,
               activeAnimation:-1,
               num:0,    // 是否重复点击图片
+              num2:0,
               dialogFlag:false, // 导出弹框
               delFlag:false,  // 控制删除弹框
               getProps:null,
               pointList:[], // 视点图片
-              delInfo:{}, // 删除时用到的参数传给view_dialog
+              delInfo:{}, // 删除或选中时用到的参数传给view_dialog
               dialogVisible:false, // 编辑图片名字的弹框
               editForm:{
                 inputName:'',
@@ -235,7 +237,7 @@
                     },
                 ],
               },
-              proEditFlag:false, // 编辑和预览框
+               proEditFlag:false, // 预览与编辑框(创建按钮相关)
                options: [{   // 构件动画
                     value: '0',
                     label: '全选'
@@ -297,6 +299,21 @@
                 },
                 deep: true,
               },
+             viewPic:{
+                handler(val,oldval){
+                    if(val === '2' || val === '0'){
+                        this.active = -1;
+                        this.num= 0;
+                        this.dialogFlag = false; 
+                        this.delFlag = false; 
+                    }
+                    if(val === '2' || val === '0'){
+                        this.activeAnimation=-1;
+                        this.num2 = 0;
+                        this.proEditFlag = false;
+                    }
+                }
+             }
         },
         created(){
             if (this.setProps.taskId) {
@@ -323,12 +340,19 @@
             console.log('222',this.pointList);
         },
         methods:{
-            // 关闭视点列表和视点动画列表时
+            // 关闭视点列表 和 视点动画列表 时
             viewClose(){
                 this.$emit('closeClick','0');
                 this.active = -1;
-                this.activeAnimation= -1;
                 this.num= 0;
+                this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
+                this.dialogFlag = false; 
+                this.delFlag = false; 
+            },
+            viewClose2(){
+                this.$emit('closeClick','0');
+                this.activeAnimation= -1;
+                this.num2= 0;
                 this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
             },
             runListPoint(){
@@ -336,15 +360,20 @@
             },
             // 点击选中
             selected(ind,e){
+                // 选中时将信息传递给view-dialog
+                this.delInfo = e;
                 if(this.active === ind){
                     this.num+=1;
                     if(this.num%2 === 1){
                         this.active = -1;   
                         this.dialogFlag = false; 
+                        this.delFlag = false;   
                     }
                 }else{
                     this.num = 0;
-                    this.active = ind;                
+                    this.active = ind; 
+                    this.dialogFlag = false;     
+                    this.delFlag = false; 
                 }
                 // 跳转视图
                 if(this.active !== -1){
@@ -356,6 +385,7 @@
                    this.UpdateOrder(params);
                 }
             },
+            // 点击导出
             exportPic(){
                 this.dialogFlag = !this.dialogFlag;
                 if(this.delFlag === true){
@@ -469,18 +499,31 @@
                 this.editForm.inputName = '';
                 this.dialogVisible = false;
             },
+            // 点击创建视点动画
+            plusProEdit(){
+                this.proEditFlag = true;
+                this.activeAnimation=-1;
+                this.num2 = 0;
+            },
             // 点击视点动画图片
             picAnimation(item,ind){
                 if(this.activeAnimation === ind){
-                    this.num+=1;
-                    if(this.num%2 === 1){
-                        this.activeAnimation = -1;   
-                        this.proEditFlag = false;
+                    this.num2 += 1;
+                    if(this.num2 % 2 === 1){
+                        this.activeAnimation = -1; 
+                        this.proEditFlag=false;  
                     }
                 }else{
-                    this.num = 0;
-                    this.activeAnimation = ind;                
+                    this.num2 = 0;
+                    this.activeAnimation = ind; 
+                     this.proEditFlag=false;                 
                 }
+            },
+            // 预览和编辑框的叉号
+            proEditClose(){
+                this.activeAnimation=-1;
+                this.num2 = 0;
+                this.proEditFlag=false; 
             }
         }
     }
@@ -743,6 +786,7 @@
     height: 30px;
     margin-left: 1%;
 }
+.component, .order, .getVideo{ // 不影响之前的选择框样式
     ::v-deep .el-input input{
         height: 28px;
         width: 125px;
@@ -760,6 +804,8 @@
     ::v-deep .el-input .el-select__caret.is-reverse{
         margin-top: -10px;
     }
+}
+    
    .play{
     width: 94px;
     height: 30px;

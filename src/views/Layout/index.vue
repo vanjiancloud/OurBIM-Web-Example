@@ -156,7 +156,7 @@
                         <img src="../Layout/img/sun.png" alt="" />
                       </div>
                     </div>
-                    <div class="two">华北区</div>
+                    <div class="two">华北区、东北区</div>
                     <div class="three">
                       <div>
                         <span class="first">
@@ -206,13 +206,13 @@
                         <span class="first">
                           <img src="../Layout/img/user.png" alt="" />
                         </span>
-                        <span class="second">小万</span>
+                        <span class="second">董经理</span>
                       </div>
                       <div>
                         <span class="first">
                           <img src="../Layout/img/phone.png" alt="" />
                         </span>
-                        <span class="second">182&emsp;2229&nbsp;5737</span>
+                        <span class="second">183&emsp;4515&nbsp;6332</span>
                       </div>
                     </div>
                   </div>
