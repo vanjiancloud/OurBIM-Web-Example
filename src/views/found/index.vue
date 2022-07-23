@@ -11,23 +11,13 @@
       </div>
       <!-- 按钮 -->
       <div class="right">
-        <el-button
-          :type="timerFlag ? 'primary' : 'info'"
-          @click="handleCreateProjectDialog"
-          class="upload-btn"
-          :disabled="!timerFlag"
-          >上传模型
-          <div class="uploadingNum" v-show="uploadingNum">
-            {{ uploadingNum }}
-          </div>
-        </el-button>
         <el-button type="primary" @click="AddIntegrate">链接模型</el-button>
       </div>
     </div>
     <!-- 表格 -->
     <div class="table">
       <el-table :data="itemList" style="width: 100%" class="sheet">
-        <el-table-column prop="appName" :label="$t('applyname')">
+        <el-table-column prop="appName" :label="$t('compApplyname')" width="150">
           <template slot-scope="scope">
             <el-tooltip
               popper-class="app-name-tip"
@@ -41,24 +31,17 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="appid" :label="$t('applicationid')" width="120">
+        <el-table-column prop="appid" :label="$t('componentId')" width="150">
         </el-table-column>
-        <el-table-column :label="$t('uploaddate')" width="110">
+        <el-table-column :label="$t('uploaddate')" width="150">
           <template slot-scope="scope">
             <div v-text="scope.row.createTime"></div>
             <!-- <div v-text="scope.row.createTime.slice(0, 10)"></div> -->
           </template>
         </el-table-column>
-
-        <el-table-column prop="fileSize" label="模型大小">
-          <template slot-scope="scope">
-            {{ scope.row.fileSize !== "0" ? scope.row.fileSize : "-" }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="" label="项目类型" width="110">
+        <el-table-column prop="" label="项目类型" width="150">
           <template slot-scope="scope">
             <span v-if="scope.row.appType === '0' && scope.row.isGis ==='false'">普通模型</span>
-            <span v-else-if="scope.row.appType === '1'">漫游模型</span>
             <el-tooltip
               effect="dark"
               :content="JSON.stringify(scope.row.sonAppMap)"
@@ -67,29 +50,11 @@
             >
               <div>链接模型</div>
             </el-tooltip>
-
-            <!-- <span v-else-if="scope.row.appType === '3'">链接模型</span> -->
-            <span v-else-if="scope.row.appType === '4'">示例模型</span>
-            <span v-else-if="scope.row.appType === '5'">云应用</span>
-            <span v-else-if="scope.row.appType === '0' && scope.row.isGis ==='true'">GIS模型</span>
-            <el-tooltip
-              effect="dark"
-              :content="JSON.stringify(scope.row.sonAppMap)"
-              placement="top"
-              v-else-if="scope.row.appType === '3' && scope.row.isGis ==='true'"
-            >
-              <div>GIS链接模型</div>
-            </el-tooltip>
-            <!-- <span v-else-if="scope.row.appType === '3' && scope.row.isGis ==='true'">GIS链接模型</span> -->
             <span v-else>其他模型</span>
           </template>
         </el-table-column>
-        <!-- <el-table-column prop="" label="并发节点">
-          <template slot-scope="scope">
-            {{ scope.row.currentInstance }}/{{ scope.row.maxInstance }}
-          </template>
-        </el-table-column> -->
-        <el-table-column :label="$t('state')">
+     
+        <el-table-column :label="$t('state')" width="150">
           <template slot-scope="scope">
             <!-- 做自定义操作 需要改成template的形式,scope.row代表的是表格数据itemList中的每一项 -->
             <el-tooltip
@@ -131,104 +96,9 @@
           </template>
         </el-table-column>
 
-        <!-- 操作 -->
-        <el-table-column
-          :label="$t('operation')"
-          width="220"
-          align="canter"
-          v-if="false"
-        >
-          <template slot-scope="scope">
-            <div class="handle-btn">
-              <!-- 升级 -->
-              <el-button
-                @click="upgrade(scope.row)"
-                type="text"
-                v-if="
-                  scope.row.currVersion !== 'V5' &&
-                  scope.row.applidStatus === '2' &&
-                  scope.row.appType === '0'
-                "
-                class="blue"
-              >
-                升级
-              </el-button>
-
-              <!-- 下载 -->
-              <!-- <el-button
-                @click="downloadFile(scope.row)"
-                type="text"
-                v-if="
-                  scope.row.applidStatus === '2' && scope.row.appType !== '3'
-                "
-              >
-                下载
-              </el-button> -->
-
-              <!-- 分享 -->
-              <el-button
-                @click="share(scope.row), (dialogFormVisibleOne = true)"
-                type="text"
-                v-if="scope.row.applidStatus === '2'"
-                :class="scope.row.applidStatus === '2' ? 'blue' : 'gray'"
-                :disabled="scope.row.applidStatus === '2' ? false : true"
-              >
-                分享
-              </el-button>
-              <!-- 编辑 -->
-              <el-button
-                @click="edit(scope.row);GetList()"
-                type="text"
-                class="btn-one"
-                :disabled="scope.row.applidStatus === '4' ? true : false"
-                v-if="scope.row.applidStatus === '5' ? false : true"
-              >
-                {{ $t("edit") }}
-              </el-button>
-              <!-- 报错 -->
-              <!-- <el-button
-                @click="reportErr(scope.row), (reportErrDialogVisible = true)"
-                type="text"
-                class="btn-one"
-              >
-                报错
-              </el-button> -->
-              <!-- 删除 -->
-              <el-button
-                @click="remove(scope.row)"
-                type="text"
-                v-if="scope.row.applidStatus === '5' ? false : true"
-              >
-                {{ $t("del") }}
-              </el-button>
-            </div>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="操作" width="300">
+        <el-table-column label="操作">
           <template slot-scope="scope" class="goapp-row">
-            <el-button
-              @click="GoApp(scope.row)"
-              :disabled="scope.row.applidStatus === '2' ? false : true"
-              :class="scope.row.applidStatus === '2' ? 'blue-btn' : 'gray-btn'"
-            >
-              {{ $t("into") }}
-            </el-button>
-            <el-button
-              @click="teamWorkBtnClick(scope.row)"
-              :disabled="
-                scope.row.applidStatus === '2' && scope.row.appType !== '5'
-                  ? false
-                  : true
-              "
-              :class="
-                scope.row.applidStatus === '2' && scope.row.appType !== '5'
-                  ? 'blue-btn'
-                  : 'gray-btn'
-              "
-            >
-              协同模式
-            </el-button>
+
             <!-- 点点点 -->
             <el-dropdown
               @command="handleCommand"
@@ -243,25 +113,6 @@
               </div>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
-                  command="upgrade"
-                  v-if="
-                    scope.row.currVersion !== 'V5' &&
-                    scope.row.applidStatus === '2' &&
-                    scope.row.appType === '0'
-                  "
-                  >升级</el-dropdown-item
-                >
-                <el-dropdown-item
-                  command="share"
-                  v-if="scope.row.applidStatus === '2'"
-                  >分享</el-dropdown-item
-                >
-                <el-dropdown-item
-                  command="edit"
-                  v-if="scope.row.applidStatus !== '5' || scope.row.applidStatus !== '6'"
-                  >编辑</el-dropdown-item
-                >
-                <el-dropdown-item
                   command="delete"
                   v-if="scope.row.applidStatus !== '5'"
                   >删除</el-dropdown-item
@@ -272,273 +123,6 @@
         </el-table-column>
       </el-table>
     </div>
-    <!-- 分享dialog框 -->
-    <el-dialog
-      title="分享项目链接"
-      :visible.sync="dialogFormVisibleOne"
-      center
-      :destroy-on-close="true"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      :before-close="handleClose"
-    >
-      <div class="box-one" v-show="isShow == 1">
-        <el-form :model="formShare">
-          <el-form-item label="有效期" label-width="110px">
-            <el-radio v-model="formShare.days" label="999">永久</el-radio>
-            <el-radio v-model="formShare.days" label="30">30天</el-radio>
-            <el-radio v-model="formShare.days" label="7">7天</el-radio>
-            <el-radio v-model="formShare.days" label="1">1天</el-radio>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisibleOne = false" class="btn-one"
-            >取 消</el-button
-          >
-          <el-button type="primary" @click="confirm()" class="btn-two"
-            >确 认</el-button
-          >
-        </div>
-      </div>
-      <div class="box-two" v-show="isShow == 2">
-        <div class="title">通过QQ、微信等分享给好友吧</div>
-        <el-form :model="formShare">
-          <el-form-item label="链接：">
-            <el-input
-              v-model="formShare.webShareUrl"
-              autocomplete="off"
-              :disabled="true"
-              class="input"
-            >
-            </el-input>
-            <el-button
-              type="primary"
-              class="btn"
-              v-clipboard:copy="formShare.webShareUrl"
-              v-clipboard:success="onCopyUrl"
-              v-clipboard:error="onErrorUrl"
-              >复制链接</el-button
-            >
-          </el-form-item>
-          <el-form-item label="二维码：">
-            <!-- 通过ref获取dom -->
-            <div class="share" ref="foo">
-              <img :src="formShare.qrurl" alt="" />
-            </div>
-            <div class="new">
-              将二维码分享给好友，对方微信、<br />
-              钉钉等扫一扫即可访问BIM场景
-            </div>
-            <el-button type="primary" class="botton" @click="copyImg">
-              复制二维码
-            </el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-    </el-dialog>
-    <!-- 编辑dialog框 -->
-    <el-dialog
-      title="编辑项目"
-      :visible="editDialogFormVisible"
-      center
-      :destroy-on-close="true"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      @close="closeEdit"
-      custom-class="saveAsDialog"
-    >
-      <div :class="form.appType == '3' && form.isGis =='true' || form.appType == '3'&&value2 == 'GIS' || form.appType == '0' && value2 == 'GIS' ? '' : 'content' " >
-        <el-form :model="form" :rules="rules" ref="form">
-          <el-form-item label="项目名称：" label-width="110px" >
-            <el-input v-model="form.name" autocomplete="off"></el-input>
-          </el-form-item>
-
-          <el-form-item
-            label="基础程序路径："
-            v-if="form.appType === '3' || form.appType === '0'"
-            label-width="110px"
-          >
-            <el-select v-model="value2" @change="xiala2">
-              <el-option
-                v-for="item in optionss"
-                :key="item.value2"
-                :label="item.label"
-                :value="item.value2">
-              </el-option>
-            </el-select>
-          </el-form-item>
-
-          <el-form-item
-            label="主程序路径："
-            v-if="form.appType === '5'"
-            label-width="110px"
-          >
-            <el-select v-model="form.startup" placeholder="请选择主程序路径">
-              <el-option
-                :label="item"
-                :value="item"
-                v-for="item in selectStartups"
-                :key="item"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-
-          <el-form-item
-            :label="this.value2==='GIS' ? 'GIS信息:' : '子模型列表:'"
-            v-if="form.appType === '3' && form.isGis==='true' ||form.appType === '3' && form.isGis==='false' || form.appType === '0' && this.value2==='GIS'"
-            label-width="100px"
-            :style="value2 == 'BIM' ? 'width:300px' : ''"
-          >
-            <el-card class="box-card">
-                <div v-for="(itemm,i) in sonAppValue" :key="i" class="text item clearfix">
-                  <td class="wordEllipsis">{{itemm}}</td>
-                  <td :class="sonAppValue.length <= 2 ? 'td yinc bind' : 'td yinc'" @click="delRow(sonAppKey[i])" >移除</td>
-                  <td class="td"><span style="float:right;">m</span></td>
-                  <td class="td"><el-input class="elinput" v-model="altitude[i]" type=number placeholder="海拔高度"></el-input></td>
-                  <td class="td"><span style="float:right;">°</span></td>
-                  <td class="td"><el-input class="elinput wei" @change="jin" v-model="latitude[i]" type=number :max="90" :min="-90" placeholder="纬度"></el-input></td>
-                  <td class="td"><span style="float:right;">°</span></td>
-                  <td class="td"><el-input class="elinput jing" @change="jin" v-model="longitude[i]" type=number :max="180" :min="-180" placeholder="经度"></el-input></td>
-                </div>
-                <div v-if="form.appType === '0' && form.isGis === 'true' || form.appType === '0' && value2 === 'GIS'" class="text item">
-                  <td class="wordEllipsis" >{{form.name}}</td>
-                  <td class="td yinc bind" >移除</td>
-                  <td class="td"><span style="float:right;">m</span></td>
-                  <td class="td"><el-input class="elinput" v-model="altitude" type=number placeholder="海拔高度"></el-input></td>
-                  <td class="td"><span style="float:right;">°</span></td>
-                  <td class="td"><el-input class="elinput wei" @change="jin" v-model="latitude" type=number :max="90" :min="-90" placeholder="纬度"></el-input></td>
-                  <td class="td"><span style="float:right;">°</span></td>
-                  <td class="td"><el-input class="elinput jing" @change="jin" v-model="longitude" type=number :max="180" :min="-180" placeholder="经度"></el-input></td>
-                </div>
-            </el-card>
-          </el-form-item>
-
-          <el-form-item
-            label="最大并发数："
-            label-width="110px"
-            prop="maxInstance"
-            
-          >
-            <el-input v-model="form.maxInstance" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="鼠标操作模式：">
-            <el-select v-model="form.doMouse" placeholder="请选择操作模式">
-              <el-option label="非锁定模式" value="0"></el-option>
-              <el-option label="锁定模式" value="1"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="窗口显示模式：">
-            <el-select
-              v-model="form.displayWindow"
-              placeholder="请选择显示模式"
-            >
-              <el-option label="完全填充" value="0"></el-option>
-              <el-option label="尽量填充" value="1"></el-option>
-              <el-option label="原始大小" value="2"></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="closeEdit">取 消</el-button>
-        <el-button type="primary" @click="amend()">确 定</el-button>
-      </div>
-    </el-dialog>
-    <!-- 链接模型 -->
-    <el-dialog
-      title="链接模型"
-      custom-class="integrate-dialog"
-      :visible="IsIntegrate"
-      :width="value == 'GIS' ? '1090px' : '690px'"
-      @close="closeLinkModel"
-    >
-      <div>
-        <template>
-          <el-select v-model="value" :placeholder="value" @change="xiala">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </template>
-      </div>
-      <br />
-      <div>
-        <el-transfer
-          class="integrate-transfer"
-          filterable
-          :titles="['模型', '模型']"
-          v-model="ActiveLinkModel"
-          :data="ListLinkModel"
-          :props="{
-            key: 'appid',
-            label: 'appName',
-          }"
-          @change="handleChange"
-          :render-content="rendercontent"
-        >
-          <span slot-scope="{ option }">{{ option.appName }}</span>
-        </el-transfer>
-        <el-form
-          :model="FormIntegrate"
-          class="form-integrate"
-          :rules="rulesIntegrate"
-          ref="FormIntegrate"
-          label-width="110px"
-        >
-          <el-form-item label="链接模型名称" prop="appName">
-            <el-input v-model="FormIntegrate.appName"></el-input>
-          </el-form-item>
-        </el-form>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="closeLinkModel">取 消</el-button>
-        <el-button type="primary" @click="SubmitIntegrate">确 定</el-button>
-      </span>
-    </el-dialog>
-
-    <!-- 报错dialog -->
-    <el-dialog title="提示" :visible.sync="reportErrDialogVisible" width="30%">
-      <el-form
-        :model="reportErrForm"
-        :rules="reportErrRules"
-        ref="reportErrFormRef"
-        label-width="100px"
-      >
-        <el-form-item label="标题" prop="title">
-          <el-input
-            v-model="reportErrForm.title"
-            maxlength="20"
-            show-word-limit
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="问题类别" prop="type">
-          <el-select v-model="reportErrForm.type" placeholder="请选择问题类别">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="问题描述" prop="detail">
-          <el-input
-            type="textarea"
-            :autosize="{ minRows: 9 }"
-            v-model="reportErrForm.detail"
-            maxlength="200"
-            show-word-limit
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <!-- 提交项目报错 -->
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="reportErrDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="reportErrDialogVisible = false"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -561,6 +145,11 @@ export default {
   components: {},
   data() {
     return {  
+      // ----------
+        componentsList:[], // 自定义构件列表
+      // ----------
+
+
 
       sonAppObj:{}, // 所有的链接模型 后台返回的都有 sonApp这个对象，里面是 { 模型ID:模型名，...}   sonAppObj就是这个对象里面的东西
       sonAppKey:[],  // 这个存放着 sonAppObj的 key
@@ -716,9 +305,17 @@ export default {
   },
   created() {
     this.GetList();
-    this.setGetdataIn();
   },
   methods: {
+    // ------------
+    // 获取自定义构件列表
+    getCompList(){
+      console.log('777');
+    },
+
+    // -----------
+
+
     // 关闭 编辑弹框
     closeEdit(){
       this.editDialogFormVisible = false;
