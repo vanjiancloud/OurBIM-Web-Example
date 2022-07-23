@@ -8,12 +8,14 @@
         </div>
         <div class="search">
             <el-input
+              @blur="inputBlur"
               class="searchInput"
               type="text"
               v-model="input" 
+              @keyup.enter.native="searchBtn"
               placeholder="请输入您要搜索的内容"  
             >
-                <div slot="prefix"><i class="el-icon-search"></i></div>
+                <div slot="prefix"><i class="el-icon-search" @click="searchBtn"></i></div>
             </el-input>
             <div class="threeLogo">
                 <span>
@@ -43,12 +45,12 @@
                     </div>
                     <i class="el-icon-close err" :style="{'display':index === active ? 'block' : 'none'}" @click="removeDialog(item)"></i>
                 </div>
-                <div class="picInfo" @dblclick="dbTest(index,item)">
+                <div class="picInfo" @dblclick="dbTest(item,'one')">
                     {{item.name}}
                 </div>
             </div>
             <div class="nonePic" v-if="pointList.length === 0">
-                暂无视图 可创建
+                暂无视图
             </div>
         </div>
         <!-- 视图导出弹窗 -->
@@ -57,7 +59,8 @@
         @runListPoint = "runListPoint"
         >
         </viewDialog>
-        <!-- 编辑视点的名称 -->
+      </div>
+       <!-- 编辑视点的名称 -->
         <el-dialog
             title="编辑"
             :visible="dialogVisible"
@@ -75,7 +78,6 @@
                 <el-button type="primary" @click="submitDialog">确 定</el-button>
             </span>
         </el-dialog>
-      </div>
       <!-- 视点动画列表 -->
        <div class="view_photo view_animation" v-if="viewPic==='2'">
         <div class="romaHead romaHead2">
@@ -86,7 +88,7 @@
             <el-input
               class="searchInput"
               type="text"
-              v-model="input" 
+              v-model="inputTwo" 
               placeholder="请输入您要搜索的内容"  
             >
                 <div slot="prefix"><i class="el-icon-search"></i></div>
@@ -96,29 +98,29 @@
             </div>
         </div>
         <div class="videos">
-            <div class="videosList"  v-for="(item,index) in 8" :key="index">
+            <div class="videosList"  v-for="(item,index) in viewPointLists" :key="index">
                 <div class="frontCover">
                     <img @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="require('@/assets/logo.png')" alt="" :style="{'width':'100%','height':'100%','cursor':'pointer','border-radius':'4px' }">
                 </div>
                 <div class="videoDes">
                     <div class="upWordes">
                         <span>时&nbsp;&nbsp;&nbsp;长:&nbsp;&nbsp;</span>
-                        <span>59':59''</span>
+                        <span>{{item.time}}</span>
                     </div>
                     <div class="downWordes">
                         <span>Video:&nbsp;&nbsp;</span>
-                        <span>2022-7-18 11:25:36</span>
+                        <span>{{item.name}}</span>
                     </div>
                 </div>
                 <div class="videosEdit">
-                    <i class="el-icon-edit"></i>
-                    <i class="el-icon-delete"></i>
+                    <i class="el-icon-edit" @click="editPro(item,'two')"></i>
+                    <i class="el-icon-delete" @click="delAnimation(item)"></i>
                 </div>
             </div>
         </div>
       </div>
       <!-- 预览与编辑菜单栏 -->
-      <div class="proEdit" v-if="activeAnimation !== -1 || proEditFlag===true">
+      <div class="proEdit" v-if="activeAnimation !== -1">
         <div class="proEditMain">
             <div class="proEditTop">
                 <div class="component">
@@ -177,16 +179,46 @@
                 </div>
             </div>
             <div class="proEditDown">
-                <div class="viewMorePic" v-for="(item,index) in 15" :key="index">
-                    <img :src="require('@/assets/logo.png')" alt="" :style="{'width':'100%','height':'100%'}">
+                <div class="viewMorePic" v-for="(item,index) in animaViewPointer" :key="index">
+                    <img :src="item.imagePath" alt="" @click="selectPoints(index)" :class="{'pointBor':activePoints === index}" :style="{'width':'100%','height':'100%'}">
+                    <i class="el-icon-close pointsClose" @click="delPoints(index,item)" v-if="activePoints === index"></i>
                     <div class="videosPlus">
-                        <img :src="require('@/assets/images/view/jiahao.png')" :style="{'width':'100%','height':'100%'}" alt="">
+                        <img :src="require('@/assets/images/view/jiahao.png')" @click="addView(index)" :style="{'width':'100%','height':'100%'}" alt="">
                     </div>
-                    <div class="videoWords">00':49''</div>
+                    <div class="videoWords" @click="changePointTime(item)">{{item.time===null ? "0.00" : item.time}}</div>
+                    <div class="firstAdd" v-if="index === 0">
+                        <img :src="require('@/assets/images/view/jiahao.png')" @click="addView('one')" :style="{'width':'100%','height':'100%'}" alt="">
+                    </div>
+                </div>
+                <div class="onlyPlus" v-if="animaViewPointer.length === 0">
+                    <img :src="require('@/assets/images/view/jiahao.png')" @click="addView('one')" :style="{'width':'100%','height':'100%'}" alt="">
                 </div>
             </div>
         </div>
       </div>
+      <!-- 新建空的视点动画的名称（或改变视点间的时间） -->
+        <el-dialog
+            title="编辑"
+            :visible="newBlockView"
+            @close="closeNewView"
+            width="25%"
+            :append-to-body="true"
+            >
+            <el-form v-if="flagTime === ''">
+                <el-form-item label="名称:" label-width="80px">
+                    <el-input v-model="newViewForm.name" placeholder="请输入内容"></el-input>
+                </el-form-item>
+            </el-form>
+            <el-form v-if="flagTime === '1'" :model="newTime" :rules="ruleTime" ref="newTime">
+                <el-form-item  label="时间:" label-width="80px" prop="time">
+                    <el-input type="number" v-model="newTime.time"  placeholder="秒"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="closeNewView">取 消</el-button>
+                <el-button type="primary" @click="sureNewView">确 定</el-button>
+            </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -213,20 +245,25 @@
         },
         data() {
             return {
-              input:'',  // 搜索绑定
+              input:'',  // 视点列表搜索绑定
+              inputTwo:'', // 视点动画搜索绑定
               active:-1,
               activeAnimation:-1,
               num:0,    // 是否重复点击图片
               num2:0,
+              activePoints:-1, // 视图动画里面的视点相关
+              num3:0,
               dialogFlag:false, // 导出弹框
               delFlag:false,  // 控制删除弹框
               getProps:null,
               pointList:[], // 视点图片
+              searchPoint:[], // 搜索完成后 将它的值赋予pointList
               delInfo:{}, // 删除或选中时用到的参数传给view_dialog
               dialogVisible:false, // 编辑图片名字的弹框
               editForm:{
                 inputName:'',
-                tid:''
+                tid:'',
+                flag:'', // 判断是视点列表还是动画列表
               },
               rules:{
                 inputName: [
@@ -237,7 +274,20 @@
                     },
                 ],
               },
-               proEditFlag:false, // 预览与编辑框(创建按钮相关)
+            //   视点间的时间
+              ruleTime:{
+                time: [
+                        {
+                            required: true,
+                            message: "请输入时间(秒)",
+                            trigger: "blur",
+                        },
+                        {
+                            pattern:/^((?!0)\d{1,3}|1000)$/, message: "请输入1~1000s之间的秒数", trigger: "blur",
+                        }
+                   ],
+              },
+            //    proEditFlag:false, // 预览与编辑框(创建按钮相关)
                options: [{   // 构件动画
                     value: '0',
                     label: '全选'
@@ -287,6 +337,19 @@
                }],
                resolutionValue:'0',
                customColor:'#5DBB57', // 渲染进度条颜色
+               viewPointLists:[],  // 视点动画列表
+               newBlockView:false, // 新创建的空视点动画名称弹框
+               // 新创建的空视点动画姓名
+               newViewForm:{
+                name:''
+               },
+               animaViewPointer:[], // 视点动画里的视点数据
+               // 视点间的时间
+               newTime:{  
+                 time:'',
+                 timeTid:''
+               },
+               flagTime:'', // 用于区分是点击的改变视点间的时间还是点击的新建空视图
           }
         },
         watch:{
@@ -310,7 +373,10 @@
                     if(val === '2' || val === '0'){
                         this.activeAnimation=-1;
                         this.num2 = 0;
-                        this.proEditFlag = false;
+                        // this.proEditFlag = false;
+                        if(val === '2'){
+                            this.getListsAnimations();
+                        }
                     }
                 }
              }
@@ -338,8 +404,27 @@
         },
         mounted(){
             console.log('222',this.pointList);
+            console.log('6767');
         },
         methods:{
+            // 视点列表搜索
+            searchBtn(){
+                console.log('9o0hh');
+                let newArrSear = this.pointList.filter((item)=>{
+                    if(this.input.trim() !== '' && item.name.indexOf(this.input.trim())>-1){
+                        return item;
+                    }
+                })
+                this.pointList = newArrSear;
+            },
+            // 视点列表搜索框失去焦点时
+            inputBlur(){
+                if(this.input === ''){
+                   this.pointList = this.searchPoint;
+                }
+                this.active = -1;
+                this.num = 0;
+            },
             // 关闭视点列表 和 视点动画列表 时
             viewClose(){
                 this.$emit('closeClick','0');
@@ -437,6 +522,7 @@
                     .then((res) => {
                         if (res.data.code === 0) {
                          this.pointList = res.data.data;
+                         this.searchPoint = res.data.data;
                         }
                     })
                     .catch((err) => {});
@@ -462,34 +548,53 @@
             pointListSon(eventArr){ // 删除框传递来的更新后的pointList
                 this.pointList = eventArr;
             },
-            dbTest(ind,e){
+            dbTest(e,flags){
                 //    document.querySelector('.pictures .picBox:nth-of-type('+(ind+1)+') .picInfo .up .upName').style.display="none";
                 //    document.querySelector('.pictures .picBox:nth-of-type('+(ind+1)+') .picInfo .up .edit').style.display="block";
                 this.dialogVisible = true;
                 this.editForm.inputName = e.name;
                 this.editForm.tid = e.tid;
+                this.editForm.flag = flags;
                 console.log('333',this.editForm.inputName,this.editForm.tid,this.taskId);
             },
+            // 点击编辑名称弹框时
             submitDialog(){
                 this.$refs["editForm"].validate((valid)=>{
                     if(valid){
-                        let params = {
-                            tid:this.editForm.tid,
-                            name:this.editForm.inputName,
-                            taskId:this.taskId
-                        }
-                        MODELAPI.UPDATEFOLLOWPOINT(params)
-                        .then((res) => {
-                            if (res.data.code === 0) {
-                                this.ListPoint();
-                                this.$message({
-                                    type: "success",
-                                    message: '修改成功',
-                                });
+                        if(this.editForm.flag === 'one'){
+                            let params = {
+                                tid:this.editForm.tid,
+                                name:this.editForm.inputName,
+                                taskId:this.taskId
                             }
-                            this.dialogVisible = false;
-                        })
-                        .catch((err) => {});
+                            MODELAPI.UPDATEFOLLOWPOINT(params)
+                            .then((res) => {
+                                if (res.data.code === 0) {
+                                    this.ListPoint();
+                                    this.$message({
+                                        type: "success",
+                                        message: '修改成功',
+                                    });
+                                }
+                                this.dialogVisible = false;
+                            })
+                            .catch((err) => {});
+                        }else{
+                            let params = {
+                                viewId:this.editForm.tid,
+                                newName:this.editForm.inputName,
+                            }
+                            MODELAPI.CHANGENAMEANIM(params).then((res)=>{
+                                if(res.data.code === 200){
+                                    this.getListsAnimations();
+                                    this.$message({
+                                        type: "success",
+                                        message: '修改成功',
+                                    });
+                                    this.dialogVisible = false;
+                                }
+                            }).catch(()=>{})
+                        }
                     }
                 })
             },
@@ -499,11 +604,29 @@
                 this.editForm.inputName = '';
                 this.dialogVisible = false;
             },
-            // 点击创建视点动画
+            // 查询视点动画列表
+            getListsAnimations(){
+                setTimeout(()=>{
+                    let params = {
+                      taskId:this.getProps.taskId
+                    }
+                    this.viewPointLists = [];
+                    MODELAPI.SERACHCIEWANIMATION(params)
+                    .then((res)=>{
+                        if(res.data.code === 200){
+                            this.viewPointLists = res.data.data;
+                        }
+                    }).catch(()=>{});
+                })
+            },
+            // 点击 创建视点动画
             plusProEdit(){
-                this.proEditFlag = true;
+                // this.proEditFlag = true;
                 this.activeAnimation=-1;
                 this.num2 = 0;
+                this.newBlockView = true;
+                this.newViewForm.name = '';
+                this.flagTime = ''; // 将flagTime置空表示点击的是新建空视图动画
             },
             // 点击视点动画图片
             picAnimation(item,ind){
@@ -511,19 +634,176 @@
                     this.num2 += 1;
                     if(this.num2 % 2 === 1){
                         this.activeAnimation = -1; 
-                        this.proEditFlag=false;  
+                        // this.proEditFlag=false;  
                     }
                 }else{
                     this.num2 = 0;
                     this.activeAnimation = ind; 
-                     this.proEditFlag=false;                 
+                    //  this.proEditFlag=false;     
+                    this.viewsPointesGet(item.viewId);            
                 }
+                this.editForm.tid = item.viewId;
             },
             // 预览和编辑框的叉号
             proEditClose(){
                 this.activeAnimation=-1;
                 this.num2 = 0;
-                this.proEditFlag=false; 
+                // this.proEditFlag=false; 
+            },
+            // 编辑视点动画的名称
+            editPro(e,flags){
+                this.dialogVisible = true;
+                // this.editForm.inputName = e.name;
+                this.editForm.flag = flags;
+                this.editForm.inputName = e.name;
+                this.editForm.tid = e.viewId;
+                console.log('vvv',e.viewId);
+            },
+            // 关闭新创建空视图列表弹框
+            closeNewView(){
+                this.newBlockView = false;
+                this.newTime.time = '';
+                this.$refs["newTime"].resetFields();
+                this.newTime.time = '';
+            },
+             // 新创建空视图列表弹框（或改变视点间的时间） 确定按钮
+            sureNewView(){
+                 if(this.flagTime === ''){
+                    let params = {
+                      taskId:this.getProps.taskId,
+                      name:this.newViewForm.name
+                    }
+                   MODELAPI.CREATEANIM(params).then((res)=>{
+                    if(res.data.code === 200){
+                        this.newBlockView = false;
+                         this.getListsAnimations();
+                         this.$message({
+                            type: "success",
+                            message: '创建成功',
+                         });
+                     }
+                   })
+                }else{
+                    this.$refs["newTime"].validate((valid)=>{
+                        if(valid){
+                            let params = {
+                                viewId:this.editForm.tid,
+                                tid:this.newTime.timeTid,
+                                time:this.newTime.time
+                            }
+                            MODELAPI.UPDATEPLAYTIME(params).then((res)=>{
+                                if(res.data.code === 200){
+                                    this.newBlockView = false;
+                                    this.viewsPointesGet(this.editForm.tid);
+                                    this.$message({
+                                        type: "success",
+                                        message: '修改成功',
+                                    });
+                                }
+                            }).catch(()=>{})
+                         }
+                    })
+                }
+            },
+            delAnimation(e){
+                this.$confirm('此操作将删除该视图动画, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        let params = {
+                            viewId:e.viewId
+                        }
+                        MODELAPI.DELETEANIM(params).then((res)=>{
+                            if(res.data.code === 200){
+                                this.$message({
+                                    type: 'success',
+                                    message: '删除成功!'
+                                });
+                                this.getListsAnimations();
+                            }
+                        })
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });          
+                });
+            },
+            // 根据视图动画id获取视图动画里的视点
+            viewsPointesGet(idView){
+                let params = {
+                    viewId:idView
+                }
+                this.animaViewPointer = [];
+                MODELAPI.GETANIMBYVIEW(params).then((res)=>{
+                    if(res.data.code===200){
+                        this.animaViewPointer = res.data.data;
+                    }
+                }).catch(()=>{})
+            },
+            // 点击编辑预览的视点的加号时
+            addView(flags){
+                let params = {
+                    viewId: this.editForm.tid,
+                    taskId: this.getProps.taskId,
+                    orderInfo: flags === 'one' ? 1 : (flags + 2)
+                }
+                console.log('bxbx',flags);
+                MODELAPI.ADDVIEWSTOANIM(params).then((res)=>{
+                    if(res.data.code === 200){
+                        this.viewsPointesGet(this.editForm.tid);
+                    }
+                }).catch(()=>{})
+            },
+            // 点击视图动画里面的视点图片
+            selectPoints(index){
+                if(this.activePoints === index){
+                    this.num3 += 1;
+                    if(this.num3 % 2 === 1){
+                        this.activePoints = -1;   
+                      
+                    }
+                }else{
+                    this.num3 = 0;
+                    this.activePoints = index; 
+                }
+            },
+            // 删除视图动画中的视点
+            delPoints(index,e){
+                this.$confirm('此操作将删除该视点, 是否继续?', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(() => {
+                        let params = {
+                            viewId:this.editForm.tid,
+                            taskId:this.getProps.taskId,
+                            tid:e.tid
+                        }
+                        MODELAPI.REMOVEANIMPOINTERS(params).then((res)=>{
+                            if(res.data.code === 200){
+                                this.$message({
+                                    type: 'success',
+                                    message: '删除成功!'
+                                });
+                                this.viewsPointesGet(this.editForm.tid);
+                                this.activePoints = -1;
+                                this.num3 = 0;
+                            }
+                        })
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '已取消删除'
+                        });          
+                });
+            },
+            // 改变视点间的动画时间
+            changePointTime(e){
+                this.flagTime = '1';
+                this.newBlockView = true;
+                this.newTime.timeTid = e.tid;
             }
         }
     }
@@ -672,6 +952,7 @@
             text-align: center;
             overflow: hidden;
             text-overflow: ellipsis;
+            cursor: pointer;
         }
     }
   }
@@ -738,6 +1019,11 @@
                 font-size: 14px;
                 color: rgba(255,255,255,0.7000);
                 margin-right: 15px;
+                .downWordes{
+                    overflow: hidden;
+                    text-overflow:ellipsis;
+                    white-space: nowrap;
+                }
             }
             .videosEdit{
                 display: flex;
@@ -878,12 +1164,20 @@
     }
 //   预览下半部分
     .proEditDown{
+        position: relative;
         display: flex;
         width: 100%;
         height: 143px;
-        padding: 17px 0 0 6px;
+        padding: 17px 0 0 12px;
         transform: scaleY(-1); // 利用翻转 将滚动条放到上方
         overflow-x: scroll;
+        .onlyPlus{
+            width: 26px;
+            height: 26px;
+            position: absolute;
+            top: 48%;
+            left: 48%;
+        }
         .viewMorePic{
             position: relative;
             flex-shrink:0;
@@ -891,13 +1185,29 @@
             height: 80px;
             transform: scaleY(-1); // 父盒子翻转后 将子盒子再翻转回来
             margin-right: 10px;
-            .videosPlus{
+            .pointBor{
+                border: 1px solid #fff;
+                cursor: pointer;
+            }
+            .pointsClose{
+                position: absolute;
+                top: 1px;
+                right: 1px;
+                font-size: 18px;
+                color: #fff;
+                cursor: pointer;
+            }
+            .videosPlus, .firstAdd{
                 position: absolute;
                 top: 28px;
                 right: -18px;
                 width: 25px;
                 height: 25px;
                 cursor: pointer;
+           }
+           .firstAdd{
+                top: 28px;
+                left: -13px;
            }
            .videoWords{
                 position: absolute;
@@ -912,6 +1222,7 @@
                 background: #181A1E;
                 border-radius: 2px;
                 border: 1px solid #727272;
+                cursor: pointer;
            }
         }
         

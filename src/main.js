@@ -89,6 +89,7 @@ const i18n = new VueI18n({
                 release: '我的发布',
                 management: '项目管理',
                 Create: '创建项目',
+                makeComponent: '自定义构件', //自定义构件
                 Account: '账户管理',
                 // 我的发布
                 wholes: '全部',
@@ -108,6 +109,9 @@ const i18n = new VueI18n({
                 operation: '操作',
                 edit: '编辑',
                 del: '删除',
+                // 自定义构件 应用管理
+                compApplyname: '构件名称',
+                componentId: '构件ID',
                 // 创建应用
                 Step: '步骤一',
                 twoStep: '步骤二',
@@ -303,6 +307,7 @@ const i18n = new VueI18n({
                 release: 'release',
                 management: 'Application',
                 Create: 'Create app',
+                makeComponent: 'Custom component', // 自定义构件
                 Account: 'Account',
                 // 我的发布
                 wholes: 'whole',
@@ -322,6 +327,9 @@ const i18n = new VueI18n({
                 operation: 'Operation',
                 edit: 'Edit',
                 del: 'Delete',
+                // 自定义构件 应用管理
+                compApplyname: 'Component name',
+                componentId: 'Component ID',
                 // 创建应用
                 Step: 'Step one',
                 twoStep: 'Step two',

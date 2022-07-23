@@ -39,7 +39,11 @@
           <div class="contentDown">
             <div class="description">
                 <img :style="{'width':'18px','height':'18px'}" :src="require('@/assets/images/view/waring.png')" alt="">
-                <span>&nbsp;将删除名为"*****"的数据，是否确认删除？</span>
+                <div class="sheng">
+                    <span>&nbsp;将删除名为"</span>
+                    <span>{{delInfo.name}}</span>
+                    <span>"的数据，是否确认删除？</span>
+                </div>
             </div>
             <div class="bottomBtn">
                 <el-button class="btn1" type="primary" @click.stop="closeDialog">取消</el-button>
@@ -206,17 +210,26 @@ export default {
         height: 167px;
         padding-top: 40px;
         .description{
-            margin-left: 65px;
+            margin-left: 45px;
             height: 30px;
             display: flex;
             align-items: center;
             img{
                 margin-top: 2px;
             }
-            span{
-                font-size: 16px;
-                font-family: PingFangSC-Regular, PingFang SC;
-                color: #28292E;
+            .sheng{
+                display: flex;
+                span:nth-of-type(2){
+                     width: 80px;
+                    overflow: hidden;
+                    text-overflow:ellipsis;
+                    white-space: nowrap;
+                }
+                span{
+                    font-size: 16px;
+                    font-family: PingFangSC-Regular, PingFang SC;
+                    color: #28292E;
+                }
             }
         }
         .bottomBtn{

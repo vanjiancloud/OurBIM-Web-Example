@@ -103,6 +103,74 @@ const MODELAPI = {
             params
         })
     },
+
+    // 查询 视点动画列表（视图）
+    SERACHCIEWANIMATION: params => {
+        return request({
+            url: '/ViewPoint/getViewAnimList',
+            method: 'post',
+            params
+        })
+    },
+    // 创建空的视点动画（视图）
+    CREATEANIM: params => {
+        return request({
+            url: '/ViewPoint/createViewAnim',
+            method: 'post',
+            params
+        })
+    },
+    // 修改视点动画的名称（视图）
+    CHANGENAMEANIM: params => {
+        return request({
+            url: '/ViewPoint/updateViewAnimName',
+            method: 'post',
+            params
+        })
+    },
+    // 删除视点动画（视图）
+    DELETEANIM: params => {
+        return request({
+            url: '/ViewPoint/delViewAnim',
+            method: 'post',
+            params
+        })
+    },
+    // 添加视点至视点动画序列中（视图）
+    ADDVIEWSTOANIM: params => {
+        return request({
+            url: '/ViewPoint/addViewImgToViewAnim',
+            method: 'post',
+            params
+        })
+    },
+    // 根据视图id获取视点（视图）
+    GETANIMBYVIEW: params => {
+        return request({
+            url: '/ViewPoint/getAnimByViewId',
+            method: 'get',
+            params
+        })
+    },
+    // 删除视图动画中的视点（视图）
+    REMOVEANIMPOINTERS: params => {
+        return request({
+            url: '/ViewPoint/delViewImgFromViewAnim',
+            method: 'post',
+            params
+        })
+    },
+    // 修改视图动画中的视点间的过渡时间（视图）
+    UPDATEPLAYTIME: params => {
+        return request({
+            url: '/ViewPoint/updatePlayTimeByEdit',
+            method: 'post',
+            params
+        })
+    },
+
+
+
     // 还原模型
     UPDATERESETANGLE: params => {
         return request({

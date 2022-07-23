@@ -341,11 +341,11 @@
                 <span slot="title" class="write">{{ $t("management") }}</span>
               </el-menu-item>
 
-              <!-- 创建项目 -->
-              <!--  <el-menu-item index="/found">
+              <!-- 自定义构件（创建项目） -->
+               <el-menu-item index="/found">
                 <i class="el-icon-folder-add"></i>
-                <span slot="title" class="write">{{ $t("Create") }}</span>
-              </el-menu-item> -->
+                <span slot="title" class="write">{{ $t("makeComponent") }}</span>
+              </el-menu-item>
 
               <!-- 账户管理 -->
               <el-submenu index="account">
@@ -416,7 +416,7 @@ import { showDetail } from "@/api/my.js";
 import { Getuserid } from "@/store/index.js";
 import { Deluserid } from "@/store/index.js";
 
-import createProject from "../found/index.vue";
+import createProject from "../found/createProj.vue";
 export default {
   name: "myHeader",
   components: {
