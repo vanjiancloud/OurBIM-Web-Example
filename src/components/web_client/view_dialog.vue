@@ -24,7 +24,7 @@
                     </el-select>
                 </el-form-item>
             </el-form>
-            <el-button class="btn" type="primary">导出</el-button>
+            <el-button class="btn" type="primary" @click="exportViewPhoto">导出</el-button>
           </div>
           <div class="progress">
               <el-progress :percentage="100" status="success"></el-progress>
@@ -66,7 +66,7 @@ export default {
             type: Boolean,
             default: false
         },
-        delInfo:{   // 删除时用的字段
+        delInfo:{   // 删除或者导出时用的字段
             type: Object,
             default: () => ({})
         }
@@ -124,6 +124,17 @@ export default {
                     .catch((err) => {});
                    this.$emit('closeDia',false)
         },
+        // 导出图片
+        exportViewPhoto(){
+            let params = {
+                fileName:this.delInfo.name
+            }
+            MODELAPI.EXPORTIMG(params).then((res)=>{
+                if(res.data.code === 200){
+                    console.log(res.data.message);
+                }
+            }).catch(()=>{})
+        }
     }
 }
 </script>

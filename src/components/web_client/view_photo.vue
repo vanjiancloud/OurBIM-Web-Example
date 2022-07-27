@@ -152,7 +152,7 @@
                          <i class="el-icon-caret-left" :style="{'font-size':'16px'}"></i>
                          <i class="el-icon-caret-left" ></i>
                     </div>
-                    <i v-if="true" class="el-icon-video-play" :style="{'cursor':'pointer'}"></i>
+                    <i v-if="playFlags===false" class="el-icon-video-play" @click="startPlay" :style="{'cursor':'pointer'}"></i>
                     <i v-else class="el-icon-video-pause" :style="{'cursor':'pointer'}"></i>
                     <div class="rightPlay" :style="{'cursor':'pointer'}">
                         <i class="el-icon-caret-right" ></i>
@@ -177,17 +177,25 @@
                 <div class="progressDiv">
                     <el-progress :percentage="100"  :color="customColor"></el-progress>
                 </div>
+                <div class="startPost" @mousedown="pushMouse" @mouseup="releaseMouse">
+                        <div class="bigCircle">
+                            <div class="smallCircle"></div>
+                        </div>
+                        <div class="postDown"></div>
+                </div>
             </div>
-            <div class="proEditDown">
-                <div class="viewMorePic" v-for="(item,index) in animaViewPointer" :key="index">
-                    <img :src="item.imagePath" alt="" @click="selectPoints(index)" :class="{'pointBor':activePoints === index}" :style="{'width':'100%','height':'100%'}">
-                    <i class="el-icon-close pointsClose" @click="delPoints(index,item)" v-if="activePoints === index"></i>
-                    <div class="videosPlus">
-                        <img :src="require('@/assets/images/view/jiahao.png')" @click="addView(index)" :style="{'width':'100%','height':'100%'}" alt="">
-                    </div>
-                    <div class="videoWords" @click="changePointTime(item)">{{item.time===null ? "0.00" : item.time}}</div>
-                    <div class="firstAdd" v-if="index === 0">
-                        <img :src="require('@/assets/images/view/jiahao.png')" @click="addView('one')" :style="{'width':'100%','height':'100%'}" alt="">
+            <div class="proEditDown" onselectstart="return false">
+                <div class="allWidth" :style="{'display':'flex'}">
+                    <div class="viewMorePic" v-for="(item,index) in animaViewPointer" :key="index">
+                        <img :src="item.imagePath" alt="" @click="selectPoints(index)" :class="{'pointBor':activePoints === index}" :style="{'width':'100%','height':'100%'}">
+                        <i class="el-icon-close pointsClose" @click="delPoints(index,item)" v-if="activePoints === index"></i>
+                        <div class="videosPlus">
+                            <img :src="require('@/assets/images/view/jiahao.png')" @click="addView(index)" :style="{'width':'100%','height':'100%'}" alt="">
+                        </div>
+                        <div class="videoWords" @click="changePointTime(item)">{{item.time===null ? "0.00" : item.time}}</div>
+                        <div class="firstAdd" v-if="index === 0">
+                            <img :src="require('@/assets/images/view/jiahao.png')" @click="addView('one')" :style="{'width':'100%','height':'100%'}" alt="">
+                        </div>
                     </div>
                 </div>
                 <div class="onlyPlus" v-if="animaViewPointer.length === 0">
@@ -350,6 +358,7 @@
                  timeTid:''
                },
                flagTime:'', // 用于区分是点击的改变视点间的时间还是点击的新建空视图
+               playFlags:false, // 控制播放按钮的切换
           }
         },
         watch:{
@@ -804,6 +813,69 @@
                 this.flagTime = '1';
                 this.newBlockView = true;
                 this.newTime.timeTid = e.tid;
+            },
+            // 点击播放按钮
+            startPlay(){
+                this.playFlags = !this.playFlags;
+                let params = {
+                    viewId:this.editForm.tid,
+                    taskId:this.getProps.taskId,
+                    time: 0
+                }
+                MODELAPI.VIEWANIMPREVIEW(params).then((res)=>{
+                    if(res.data.code === 200){
+                        console.log('bbb');
+                    }
+                })
+
+            },
+            // 按下播放条
+            pushMouse(e){
+                let proEditMain = document.querySelector('.proEditMain');
+                let startPost = document.querySelector('.startPost');
+                let proEditDown = document.querySelector('.proEditDown');
+                let allWidth = document.querySelector('.allWidth');
+                // 获取 鼠标在 播放条内的位置
+                let x = e.pageX - proEditMain.offsetLeft-startPost.offsetLeft;
+                // 计算赋值
+                startPost.style.left = e.pageX - proEditMain.offsetLeft - x +'px';
+                window.onmousemove = function(e){
+                    // 计算赋值
+                    startPost.style.left = e.pageX - proEditMain.offsetLeft - x +'px';
+                    // console.log('999',e.pageX,e.pageX - proEditMain.offsetLeft - 6);
+                    if(e.pageX - proEditMain.offsetLeft - x <= 6){
+                        startPost.style.left = 6 + 'px';
+                        window.onmousemove = null;
+                    }
+                    if(allWidth.offsetWidth < proEditMain.offsetWidth){
+                        if(e.pageX - proEditMain.offsetLeft - x >= allWidth.offsetWidth ){
+                            startPost.style.left = allWidth.offsetWidth - 6 +'px';
+                            window.onmousemove = null;
+                        }
+                    }
+                    if(allWidth.offsetWidth > proEditMain.offsetWidth){
+                        let dom = document.querySelector('.proEditDown');
+                        if((e.pageX - proEditMain.offsetLeft - x) >= proEditDown.offsetWidth - 25){
+                            startPost.style.left = proEditDown.offsetWidth-25 + 'px';
+                        }
+                    }
+                }
+                // 按下时监听鼠标移动区域
+                // document.addEventListener("mousemove", function(e) {
+                //     var event = e || window.event;
+                //     var target = event.target || event.srcElement;
+                //     // if(target.id == "name") {
+                //     if(document.querySelector('.proEditDown').contains(target)) {
+                //         console.log("in");
+                //     } else {
+                //         console.log("out");
+                //     }
+                // }) 
+
+            },
+            // 松开播放条
+            releaseMouse(){
+                window.onmousemove = null;
             }
         }
     }
@@ -1162,13 +1234,44 @@
             color:#5DBB57;
         }
     }
+     .startPost{
+            position: absolute;
+            left: 6px;
+            top: 60px;
+            width: 14px;
+            height: 133px;
+            cursor: move;
+            z-index: 9999;
+            .bigCircle{
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 14px;
+                height: 14px;
+                background-color: #E1790E;
+                border-radius: 7px;
+                .smallCircle{
+                    width: 7px;
+                    height: 7px;
+                    background-color: #FFD04F;
+                    border-radius: 3.5px;
+                    margin: 4px 0 0 3px;
+               }
+            }
+            .postDown{
+                width: 2px;
+                height: 100%;
+                background-color: #E1790E;
+                margin: 0 0 14px 6px;
+             }
+        }
 //   预览下半部分
     .proEditDown{
         position: relative;
         display: flex;
         width: 100%;
         height: 143px;
-        padding: 17px 0 0 12px;
+        padding: 0 0 0 12px;
         transform: scaleY(-1); // 利用翻转 将滚动条放到上方
         overflow-x: scroll;
         .onlyPlus{
@@ -1185,6 +1288,7 @@
             height: 80px;
             transform: scaleY(-1); // 父盒子翻转后 将子盒子再翻转回来
             margin-right: 10px;
+            margin-top: 17px;
             .pointBor{
                 border: 1px solid #fff;
                 cursor: pointer;
@@ -1212,8 +1316,8 @@
            .videoWords{
                 position: absolute;
                 top: -25px;
-                right: -34px;
-                width: 62px;
+                right: -15px;
+                width: 50px;
                 height: 18px;
                 color: #C0C0C2;
                 font-size: 12px;

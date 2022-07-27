@@ -168,8 +168,31 @@ const MODELAPI = {
             params
         })
     },
+    // 视点动画预览（视图）
+    VIEWANIMPREVIEW: params => {
+        return request({
+            url: '/ViewPoint/viewAnimPreview',
+            method: 'post',
+            params
+        })
+    },
+    // 视点导出图片（视图）
+    EXPORTIMG: params => {
+        return request({
+            url: '/OurBim/exportViewImg',
+            method: 'post',
+            params
+        })
+    },
 
-
+    // 获取自定义构件列表 （自定义构件）
+    GETCOMLISTBYPARENTID: params => {
+        return request({
+            url: '/comControl/getComListByParentId',
+            method: 'GET',
+            params
+        })
+    },
 
     // 还原模型
     UPDATERESETANGLE: params => {

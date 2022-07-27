@@ -6,7 +6,7 @@
       <!-- 消息提示 -->
       <div class="left">
         {{ $t("Youhave") }}&nbsp;
-        <span style="color: #00aaf0">{{ itemList.length }} </span>&nbsp;
+        <span style="color: #00aaf0">{{ componentsList.length }} </span>&nbsp;
         {{ $t("project") }}
       </div>
       <!-- 按钮 -->
@@ -16,78 +16,57 @@
     </div>
     <!-- 表格 -->
     <div class="table">
-      <el-table :data="itemList" style="width: 100%" class="sheet">
-        <el-table-column prop="appName" :label="$t('compApplyname')" width="150">
+      <el-table :data="componentsList" style="width: 100%" class="sheet">
+        <el-table-column prop="" :label="$t('compApplyname')" width="170">
           <template slot-scope="scope">
             <el-tooltip
               popper-class="app-name-tip"
               placement="top"
               effect="dark"
             >
-              <div slot="content">{{ scope.row.appName }}</div>
-              <div>
-                {{ scope.row.appName }}
+              <template slot="content">
+                <div v-if="scope.row.isGroup === '1'">{{ scope.row.groupName }}</div>
+                <div v-else>{{ scope.row.ourbimComponentInfo.comName }}</div>
+              </template>
+              <div v-if="scope.row.isGroup === '1'">
+                <i class="el-icon-folder-opened"></i>
+                <span>{{scope.row.groupName}}</span>
               </div>
+              <span v-else>{{ scope.row.ourbimComponentInfo.comName }}</span>
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="appid" :label="$t('componentId')" width="150">
+        <el-table-column prop="" :label="$t('componentId')" width="170">
+            <template slot-scope="scope">
+                <span v-if="scope.row.isGroup === '1'">{{scope.row.id}}</span>
+                <span v-else>{{ scope.row.ourbimComponentInfo.comId }}</span>
+            </template>
         </el-table-column>
-        <el-table-column :label="$t('uploaddate')" width="150">
+        <el-table-column :label="$t('uploaddate')" width="110">
           <template slot-scope="scope">
-            <div v-text="scope.row.createTime"></div>
-            <!-- <div v-text="scope.row.createTime.slice(0, 10)"></div> -->
+            <span v-if="scope.row.isGroup === '1'">--</span>
+            <span v-else>{{ scope.row.ourbimComponentInfo.createTime }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="" label="项目类型" width="150">
           <template slot-scope="scope">
-            <span v-if="scope.row.appType === '0' && scope.row.isGis ==='false'">普通模型</span>
-            <el-tooltip
-              effect="dark"
-              :content="JSON.stringify(scope.row.sonAppMap)"
-              placement="top"
-              v-else-if="scope.row.appType === '3'  && scope.row.isGis ==='false'"
-            >
-              <div>链接模型</div>
-            </el-tooltip>
-            <span v-else>其他模型</span>
+            <span v-if="scope.row.isGroup === '1'">{{$t('projectMore')}}</span>
+            <span v-else-if="scope.row.isGroup !== '1'">{{$t('componentSingle')}}</span>
           </template>
         </el-table-column>
      
         <el-table-column :label="$t('state')" width="150">
           <template slot-scope="scope">
-            <!-- 做自定义操作 需要改成template的形式,scope.row代表的是表格数据itemList中的每一项 -->
-            <el-tooltip
-              effect="dark"
-              placement="top"
-              popper-class="trans-tooplip"
-              v-if="scope.row.applidStatus === '3'"
-            >
-              <div slot="content" class="trans-tooplip-content">
-                {{ scope.row.errMsg }}
-              </div>
-              <!-- 转化失败 -->
-              <div
-                style="
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                "
-              >
-                <span>{{ formatStatus(scope.row.applidStatus) }}</span>
-                <div class="err-icon"><img src="../manage/err.png" alt="" /></div>
-              </div>
-            </el-tooltip>
-            <div v-else>{{ formatStatus(scope.row.applidStatus) }}</div>
-
-            <el-progress
+            <div v-if=" scope.row.isGroup=== '1'">--</div>
+            <div v-else-if="scope.row.isGroup !== '1'">{{ formatStatus(scope.row.ourbimComponentInfo.comStatus) }}</div>
+           <el-progress
               :text-inside="true"
-              :percentage="scope.row.progress"
+              :percentage="scope.row.ourbimComponentInfo.progress"
               :show-text="true"
               :stroke-width="13"
               :color="customColor"
               v-if="
-                scope.row.applidStatus === '1' || scope.row.applidStatus === '6'
+               scope.row.ourbimComponentInfo !== null && scope.row.ourbimComponentInfo.comStatus === '2'
                   ? true
                   : false
               "
@@ -98,7 +77,6 @@
 
         <el-table-column label="操作">
           <template slot-scope="scope" class="goapp-row">
-
             <!-- 点点点 -->
             <el-dropdown
               @command="handleCommand"
@@ -114,7 +92,6 @@
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
                   command="delete"
-                  v-if="scope.row.applidStatus !== '5'"
                   >删除</el-dropdown-item
                 >
               </el-dropdown-menu>
@@ -304,15 +281,30 @@ export default {
     },
   },
   created() {
-    this.GetList();
+    this.getCompList();
   },
   methods: {
     // ------------
     // 获取自定义构件列表
     getCompList(){
-      console.log('777');
+     let params = {
+        userId: Getuserid(),
+        parentId:'god'
+     }
+     MODELAPI.GETCOMLISTBYPARENTID(params).then((res)=>{
+        if(res.data.code === 0){
+          this.componentsList = res.data.data.ourbimComponentInfoList;
+        }
+     }).catch(()=>{})
     },
-
+    // 根据传入的status做适配
+    formatStatus(status) {
+      const statusObj = {
+        1: "转换完成",
+        2: "转换中",
+      };
+      return statusObj[status];
+    },
     // -----------
 
 
@@ -552,13 +544,13 @@ export default {
         : (row.showTooltip = true);
     },
     // 定时器每隔一秒获取数据
-    setGetdataIn() {
-      this.timer = setInterval(() => {
-        if (this.timerFlag) {
-          this.GetList();
-        }
-      }, 2500);
-    },
+    // setGetdataIn() {
+    //   this.timer = setInterval(() => {
+    //     if (this.timerFlag) {
+    //       this.GetList();
+    //     }
+    //   }, 2500);
+    // },
     // 获取应用数据列表
     GetList() {
       getProjectList({
@@ -599,19 +591,6 @@ export default {
     //翻转数组
     reverse() {
       this.itemList.reverse();
-    },
-    // 根据传入的status做适配
-    formatStatus(status) {
-      const statusObj = {
-        0: "正在同步",
-        1: "转换中",
-        2: "转换完成",
-        3: "转换失败",
-        4: "文件损坏",
-        5: "删除中",
-        6: "升级中",
-      };
-      return statusObj[status];
     },
     upgrade(row) {
       this.$confirm("此操作将升级该应用, 是否继续?", "提示", {
@@ -1667,5 +1646,13 @@ export default {
 .box-card{
   margin-left: 9px;
 }
-
+// --------
+.sheet ::v-deep .el-table__body-wrapper tbody tr td .el-tooltip{
+  display: flex;
+  align-items: center;
+    i{
+      margin: 0 20px 0 20px;
+    }
+}
+// --------
 </style>

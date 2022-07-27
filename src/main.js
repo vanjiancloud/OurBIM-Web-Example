@@ -112,6 +112,8 @@ const i18n = new VueI18n({
                 // 自定义构件 应用管理
                 compApplyname: '构件名称',
                 componentId: '构件ID',
+                componentSingle: '构件',
+                projectMore: '文件夹',
                 // 创建应用
                 Step: '步骤一',
                 twoStep: '步骤二',
@@ -330,6 +332,8 @@ const i18n = new VueI18n({
                 // 自定义构件 应用管理
                 compApplyname: 'Component name',
                 componentId: 'Component ID',
+                componentSingle: 'component',
+                projectMore: 'file',
                 // 创建应用
                 Step: 'Step one',
                 twoStep: 'Step two',
