@@ -100,7 +100,7 @@
         <div class="videos">
             <div class="videosList"  v-for="(item,index) in viewPointLists" :key="index">
                 <div class="frontCover">
-                    <img @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="require('@/assets/logo.png')" alt="" :style="{'width':'100%','height':'100%','cursor':'pointer','border-radius':'4px' }">
+                    <img @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="item.imagePath" alt="" :style="{'width':'100%','height':'100%','cursor':'pointer','border-radius':'4px' }">
                 </div>
                 <div class="videoDes">
                     <div class="upWordes">
@@ -148,12 +148,13 @@
                     </el-select>
                 </div>
                 <div class="play">
-                    <div class="leftPlay" :style="{'cursor':'pointer'}">
+                    <div class="leftPlay" @click="logoClick('stop')" :style="{'cursor':'pointer'}">
                          <i class="el-icon-caret-left" :style="{'font-size':'16px'}"></i>
                          <i class="el-icon-caret-left" ></i>
                     </div>
-                    <i v-if="playFlags===false" class="el-icon-video-play" @click="startPlay" :style="{'cursor':'pointer'}"></i>
-                    <i v-else class="el-icon-video-pause" :style="{'cursor':'pointer'}"></i>
+                    <i v-if="playFlags==='1'" class="el-icon-video-play" @click="startPlay" :style="{'cursor':'pointer'}"></i>
+                    <i v-if="playFlags==='2'" class="el-icon-video-pause" @click="logoClick('pause')" :style="{'cursor':'pointer'}"></i>
+                    <i v-if="playFlags==='3'" class="el-icon-remove-outline" @click="logoClick('replay')" :style="{'cursor':'pointer'}"></i>
                     <div class="rightPlay" :style="{'cursor':'pointer'}">
                         <i class="el-icon-caret-right" ></i>
                         <i class="el-icon-caret-right" :style="{'font-size':'16px',}"></i>
@@ -177,14 +178,14 @@
                 <div class="progressDiv">
                     <el-progress :percentage="100"  :color="customColor"></el-progress>
                 </div>
-                <div class="startPost" @mousedown="pushMouse" @mouseup="releaseMouse">
+                <div class="startPost" @mousedown="pushMouse" @mouseup="releaseMouse" style="left: 6px;">
                         <div class="bigCircle">
                             <div class="smallCircle"></div>
                         </div>
                         <div class="postDown"></div>
                 </div>
             </div>
-            <div class="proEditDown" onselectstart="return false">
+            <div class="proEditDown">
                 <div class="allWidth" :style="{'display':'flex'}">
                     <div class="viewMorePic" v-for="(item,index) in animaViewPointer" :key="index">
                         <img :src="item.imagePath" alt="" @click="selectPoints(index)" :class="{'pointBor':activePoints === index}" :style="{'width':'100%','height':'100%'}">
@@ -192,7 +193,7 @@
                         <div class="videosPlus">
                             <img :src="require('@/assets/images/view/jiahao.png')" @click="addView(index)" :style="{'width':'100%','height':'100%'}" alt="">
                         </div>
-                        <div class="videoWords" @click="changePointTime(item)">{{item.time===null ? "0.00" : item.time}}</div>
+                        <div class="videoWords" v-if="index<=animaViewPointer.length-2 && animaViewPointer.length>1" @click="changePointTime(item)">{{item.time }}</div>
                         <div class="firstAdd" v-if="index === 0">
                             <img :src="require('@/assets/images/view/jiahao.png')" @click="addView('one')" :style="{'width':'100%','height':'100%'}" alt="">
                         </div>
@@ -358,7 +359,12 @@
                  timeTid:''
                },
                flagTime:'', // 用于区分是点击的改变视点间的时间还是点击的新建空视图
-               playFlags:false, // 控制播放按钮的切换
+               playFlags:'1', // 控制播放按钮的切换
+               picTime:0,  // 当前视点动画的总时长
+               startLang:0, // 进度条距离左侧的距离
+               noTimer:null, // 点击播放 没有进度条时第一个定时器
+               twoTimer:null, // 点击播放 有进度条时第一个定时器
+               threeTimer:null, // 点击播放 有进度条时第二个定时器
           }
         },
         watch:{
@@ -649,7 +655,7 @@
                     this.num2 = 0;
                     this.activeAnimation = ind; 
                     //  this.proEditFlag=false;     
-                    this.viewsPointesGet(item.viewId);            
+                    this.viewsPointesGet(item.viewId);          
                 }
                 this.editForm.tid = item.viewId;
             },
@@ -672,7 +678,9 @@
             closeNewView(){
                 this.newBlockView = false;
                 this.newTime.time = '';
-                this.$refs["newTime"].resetFields();
+                if(this.flagTime==='1'){
+                    this.$refs["newTime"].resetFields();
+                }
                 this.newTime.time = '';
             },
              // 新创建空视图列表弹框（或改变视点间的时间） 确定按钮
@@ -730,6 +738,8 @@
                                     message: '删除成功!'
                                 });
                                 this.getListsAnimations();
+                                this.activeAnimation=-1;
+                                this.num2 = 0;
                             }
                         })
                     }).catch(() => {
@@ -748,6 +758,16 @@
                 MODELAPI.GETANIMBYVIEW(params).then((res)=>{
                     if(res.data.code===200){
                         this.animaViewPointer = res.data.data;
+                        if(res.data.data.length<=1){
+                            this.picTime = Number(0);
+                        }else{
+                            this.picTime = 0;
+                            res.data.data.forEach((item)=>{
+                                this.picTime = this.picTime + Number(item.time);
+                            })
+                           this.picTime = this.picTime - Number(res.data.data[res.data.data.length-1].time);
+                           console.log('时间',this.picTime);
+                        }
                     }
                 }).catch(()=>{})
             },
@@ -762,6 +782,7 @@
                 MODELAPI.ADDVIEWSTOANIM(params).then((res)=>{
                     if(res.data.code === 200){
                         this.viewsPointesGet(this.editForm.tid);
+                        this.getListsAnimations();
                     }
                 }).catch(()=>{})
             },
@@ -796,6 +817,7 @@
                                     type: 'success',
                                     message: '删除成功!'
                                 });
+                                this.getListsAnimations();
                                 this.viewsPointesGet(this.editForm.tid);
                                 this.activePoints = -1;
                                 this.num3 = 0;
@@ -813,10 +835,10 @@
                 this.flagTime = '1';
                 this.newBlockView = true;
                 this.newTime.timeTid = e.tid;
+                this.getListsAnimations();
             },
             // 点击播放按钮
             startPlay(){
-                this.playFlags = !this.playFlags;
                 let params = {
                     viewId:this.editForm.tid,
                     taskId:this.getProps.taskId,
@@ -824,10 +846,72 @@
                 }
                 MODELAPI.VIEWANIMPREVIEW(params).then((res)=>{
                     if(res.data.code === 200){
-                        console.log('bbb');
+                        console.log('开始播放了');
+                        this.playFlags = '2';
+                        this.moveStart();
                     }
                 })
-
+            },
+            moveStart(){
+                let proEditDown = document.querySelector('.proEditDown');
+                let allWidth = document.querySelector('.allWidth');
+                let startPost = document.querySelector('.startPost');
+                let proEditMain = document.querySelector('.proEditMain');
+                let stepTime = Number(( this.picTime * 1000 / allWidth.offsetWidth ).toFixed(2));
+                // 如果有进度条
+                if(allWidth.offsetWidth < proEditMain.offsetWidth){
+                     this.noTimer = setInterval(()=>{
+                        startPost.style.left = parseInt(startPost.style.left) + 1 + 'px';
+                        this.startLang = parseInt(startPost.style.left);
+                        // console.log('stepTime',startPost.style.left,allWidth.offsetWidth,stepTime);
+                        if(parseInt(startPost.style.left) >= allWidth.offsetWidth-6){
+                             startPost.style.left =  6 +'px';
+                            this.startLang = parseInt(startPost.style.left);
+                            this.playFlags = '1';
+                             clearInterval(this.noTimer);
+                        }
+                    },stepTime);
+                }else{
+                    let dom = document.querySelector('.proEditDown');
+                    this.twoTimer = setInterval(()=>{
+                        startPost.style.left = parseInt(startPost.style.left) + 1 + 'px';
+                        this.startLang = parseInt(startPost.style.left);
+                        // console.log('stepTime',startPost.style.left,allWidth.offsetWidth,stepTime);
+                        if(parseInt(startPost.style.left) >= proEditDown.offsetWidth - 25){
+                             startPost.style.left = proEditDown.offsetWidth - 25 + 'px'
+                             clearInterval(this.twoTimer);
+                             this.threeTimer = setInterval(()=>{
+                                console.log('sdsd',dom.scrollLeft,dom.clientWidth + dom.scrollLeft);
+                                dom.scrollLeft = dom.scrollLeft + 1;
+                                if(dom.scrollWidth === dom.clientWidth + dom.scrollLeft){
+                                    dom.scrollLeft = 0;
+                                    this.playFlags = '1';
+                                    startPost.style.left =  6 +'px';
+                                    clearInterval(this.threeTimer)
+                                }
+                             },stepTime);
+                        }
+                    },stepTime);
+                }
+            },
+            // 点击暂停、播放、停止时
+            logoClick(difLogo){
+                let params = {
+                   taskId:this.getProps.taskId,
+                   status:difLogo,
+                   viewId:this.editForm.tid,
+                }
+                MODELAPI.PLAYOPERATION(params).then((res)=>{
+                    if(res.data.code === 200){
+                        if(difLogo==='pause'){
+                            this.playFlags = '3';
+                        }else if(difLogo==='replay'){
+                            this.playFlags = '2';
+                        }else{
+                            this.playFlags = '1';
+                        }
+                    }
+                }).catch(()=>{})
             },
             // 按下播放条
             pushMouse(e){
@@ -835,47 +919,62 @@
                 let startPost = document.querySelector('.startPost');
                 let proEditDown = document.querySelector('.proEditDown');
                 let allWidth = document.querySelector('.allWidth');
+                console.log('iii',allWidth.offsetWidth,proEditMain.offsetWidth);
                 // 获取 鼠标在 播放条内的位置
                 let x = e.pageX - proEditMain.offsetLeft-startPost.offsetLeft;
                 // 计算赋值
                 startPost.style.left = e.pageX - proEditMain.offsetLeft - x +'px';
+                this.startLang = parseInt(startPost.style.left);
                 window.onmousemove = function(e){
                     // 计算赋值
                     startPost.style.left = e.pageX - proEditMain.offsetLeft - x +'px';
+                    this.startLang = parseInt(startPost.style.left);
                     // console.log('999',e.pageX,e.pageX - proEditMain.offsetLeft - 6);
+                    // 如果进度条的定位小于等于6px
                     if(e.pageX - proEditMain.offsetLeft - x <= 6){
                         startPost.style.left = 6 + 'px';
-                        window.onmousemove = null;
+                        this.startLang = parseInt(startPost.style.left);
                     }
+                    // 如果没有进度条
                     if(allWidth.offsetWidth < proEditMain.offsetWidth){
+                        // 如果进度条的定位超过图片总长度时
                         if(e.pageX - proEditMain.offsetLeft - x >= allWidth.offsetWidth ){
                             startPost.style.left = allWidth.offsetWidth - 6 +'px';
+                            this.startLang = parseInt(startPost.style.left);
                             window.onmousemove = null;
                         }
                     }
+                    // 如果有进度条时
                     if(allWidth.offsetWidth > proEditMain.offsetWidth){
                         let dom = document.querySelector('.proEditDown');
                         if((e.pageX - proEditMain.offsetLeft - x) >= proEditDown.offsetWidth - 25){
                             startPost.style.left = proEditDown.offsetWidth-25 + 'px';
+                            this.startLang = parseInt(startPost.style.left);
                         }
+                        // 将进度条的left值 赋值 给进度条
+                        dom.scrollLeft = e.pageX - proEditMain.offsetLeft - x - 6;
+                        console.log('zaza',startPost.style.left,dom.scrollLeft);
                     }
                 }
                 // 按下时监听鼠标移动区域
-                // document.addEventListener("mousemove", function(e) {
-                //     var event = e || window.event;
-                //     var target = event.target || event.srcElement;
-                //     // if(target.id == "name") {
-                //     if(document.querySelector('.proEditDown').contains(target)) {
-                //         console.log("in");
-                //     } else {
-                //         console.log("out");
-                //     }
-                // }) 
+                document.addEventListener("mousemove", this.moveEvent,false);
 
+            },
+            moveEvent(e){
+                    var event = e || window.event;
+                    var target = event.target || event.srcElement;
+                    // if(target.id == "name") {
+                    if(document.querySelector('.proEditDown').contains(target) || document.querySelector('.startPost').contains(target)) {
+                        console.log("in");
+                    } else {
+                        console.log("out");
+                        this.releaseMouse();
+                    }
             },
             // 松开播放条
             releaseMouse(){
                 window.onmousemove = null;
+                document.removeEventListener("mousemove",this.moveEvent,false);
             }
         }
     }
@@ -1236,7 +1335,7 @@
     }
      .startPost{
             position: absolute;
-            left: 6px;
+            // left: 6px;
             top: 60px;
             width: 14px;
             height: 133px;
@@ -1303,7 +1402,7 @@
             }
             .videosPlus, .firstAdd{
                 position: absolute;
-                top: 28px;
+                top: 20px;
                 right: -18px;
                 width: 25px;
                 height: 25px;
@@ -1316,7 +1415,7 @@
            .videoWords{
                 position: absolute;
                 top: -25px;
-                right: -15px;
+                right: -28px;
                 width: 50px;
                 height: 18px;
                 color: #C0C0C2;
@@ -1329,6 +1428,6 @@
                 cursor: pointer;
            }
         }
-        
     }
+    
 </style>

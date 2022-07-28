@@ -176,6 +176,14 @@ const MODELAPI = {
             params
         })
     },
+    // 点击暂停、播放、停止时（视图）
+    PLAYOPERATION: params => {
+        return request({
+            url: '/ViewPoint/playOperation',
+            method: 'post',
+            params
+        })
+    },
     // 视点导出图片（视图）
     EXPORTIMG: params => {
         return request({
