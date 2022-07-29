@@ -857,7 +857,7 @@
                 let allWidth = document.querySelector('.allWidth');
                 let startPost = document.querySelector('.startPost');
                 let proEditMain = document.querySelector('.proEditMain');
-                let stepTime = Number(( this.picTime * 1000 / allWidth.offsetWidth ).toFixed(2));
+                let stepTime = Number(( this.picTime * 1000 / allWidth.offsetWidth ).toFixed(5));
                 // 如果有进度条
                 if(allWidth.offsetWidth < proEditMain.offsetWidth){
                      this.noTimer = setInterval(()=>{
@@ -903,12 +903,28 @@
                 }
                 MODELAPI.PLAYOPERATION(params).then((res)=>{
                     if(res.data.code === 200){
+                        let proEditMain = document.querySelector('.proEditMain');
+                        let allWidth = document.querySelector('.allWidth');
+                        let startPost = document.querySelector('.startPost');
+                        let dom = document.querySelector('.proEditDown');
                         if(difLogo==='pause'){
                             this.playFlags = '3';
+                            if(allWidth.offsetWidth < proEditMain.offsetWidth){
+                                clearInterval(this.noTimer);
+                            }else{
+                                clearInterval(this.twoTimer);
+                                clearInterval(this.threeTimer);
+                            }
                         }else if(difLogo==='replay'){
                             this.playFlags = '2';
+                            this.moveStart();
                         }else{
                             this.playFlags = '1';
+                            clearInterval(this.noTimer);
+                            clearInterval(this.twoTimer);
+                            clearInterval(this.threeTimer);
+                            startPost.style.left = 6 + 'px';
+                            dom.scrollLeft=0;
                         }
                     }
                 }).catch(()=>{})
