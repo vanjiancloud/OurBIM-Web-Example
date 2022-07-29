@@ -365,6 +365,8 @@
                noTimer:null, // 点击播放 没有进度条时第一个定时器
                twoTimer:null, // 点击播放 有进度条时第一个定时器
                threeTimer:null, // 点击播放 有进度条时第二个定时器
+               clickPlayTime:null,  // 点击播放时 应该传递的时间
+               onlyOneLogo:'',  // 点击的是播放，暂停，还是 恢复播放
           }
         },
         watch:{
@@ -842,7 +844,7 @@
                 let params = {
                     viewId:this.editForm.tid,
                     taskId:this.getProps.taskId,
-                    time: 0
+                    time: this.clickPlayTime || 0
                 }
                 MODELAPI.VIEWANIMPREVIEW(params).then((res)=>{
                     if(res.data.code === 200){
