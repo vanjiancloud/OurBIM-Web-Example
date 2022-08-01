@@ -178,7 +178,7 @@
                 <div class="progressDiv">
                     <el-progress :percentage="100"  :color="customColor"></el-progress>
                 </div>
-                <div class="startPost" @mousedown="pushMouse" @mouseup="releaseMouse" style="left: 6px;">
+                <div class="startPost" :class="this.playFlags==='2' ? 'noAllowed' : ''" @mousedown="pushMouse" @mouseup="releaseMouse" style="left: 6px;">
                         <div class="bigCircle">
                             <div class="smallCircle"></div>
                         </div>
@@ -234,6 +234,7 @@
 <script>
   import MODELAPI from "@/api/model_api";
   import viewDialog from "@/components/web_client/view_dialog";
+import { kMaxLength } from "buffer";
   export default {
         components: {
          viewDialog
@@ -366,7 +367,6 @@
                twoTimer:null, // 点击播放 有进度条时第一个定时器
                threeTimer:null, // 点击播放 有进度条时第二个定时器
                clickPlayTime:null,  // 点击播放时 应该传递的时间
-               onlyOneLogo:'',  // 点击的是播放，暂停，还是 恢复播放
           }
         },
         watch:{
@@ -927,6 +927,7 @@
                             clearInterval(this.threeTimer);
                             startPost.style.left = 6 + 'px';
                             dom.scrollLeft=0;
+                            this.clickPlayTime = null;
                         }
                     }
                 }).catch(()=>{})
@@ -937,7 +938,6 @@
                 let startPost = document.querySelector('.startPost');
                 let proEditDown = document.querySelector('.proEditDown');
                 let allWidth = document.querySelector('.allWidth');
-                console.log('iii',allWidth.offsetWidth,proEditMain.offsetWidth);
                 // 获取 鼠标在 播放条内的位置
                 let x = e.pageX - proEditMain.offsetLeft-startPost.offsetLeft;
                 // 计算赋值
@@ -960,7 +960,12 @@
                             startPost.style.left = allWidth.offsetWidth - 6 +'px';
                             this.startLang = parseInt(startPost.style.left);
                             window.onmousemove = null;
+                        }else{
+                            startPost.style.left = allWidth.offsetWidth - 6+'px';
+                            this.startLang = parseInt(startPost.style.left);
+                            window.onmousemove = null;
                         }
+                        
                     }
                     // 如果有进度条时
                     if(allWidth.offsetWidth > proEditMain.offsetWidth){
@@ -993,6 +998,18 @@
             releaseMouse(){
                 window.onmousemove = null;
                 document.removeEventListener("mousemove",this.moveEvent,false);
+                let proEditMain = document.querySelector('.proEditMain');
+                let allWidth = document.querySelector('.allWidth');
+                let startPost = document.querySelector('.startPost');
+                let dom = document.querySelector('.proEditDown');
+                if(this.playFlags==='3'){
+                    this.playFlags === '1';
+                }
+                if(allWidth.offsetWidth < proEditMain.offsetWidth){
+                  this.clickPlayTime = ((parseInt(startPost.style.left) / allWidth.offsetWidth) / this.picTime).toFixed(2);
+                }else{
+                  this.clickPlayTime = (((parseInt(startPost.style.left) + dom.scrollLeft) / allWidth.offsetWidth) / this.picTime).toFixed(2);
+                }
             }
         }
     }
@@ -1382,6 +1399,9 @@
                 margin: 0 0 14px 6px;
              }
         }
+      .noAllowed{
+        cursor:not-allowed
+      }
 //   预览下半部分
     .proEditDown{
         position: relative;
