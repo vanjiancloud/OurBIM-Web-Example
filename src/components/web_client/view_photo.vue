@@ -13,7 +13,7 @@
               type="text"
               v-model="input" 
               @keyup.enter.native="searchBtn"
-              placeholder="请输入您要搜索的内容"  
+              placeholder="请输入视图名称"  
             >
                 <div slot="prefix"><i class="el-icon-search" @click="searchBtn"></i></div>
             </el-input>
@@ -89,9 +89,11 @@
               class="searchInput"
               type="text"
               v-model="inputTwo" 
-              placeholder="请输入您要搜索的内容"  
+              placeholder="请输入视点动画名称"
+              @blur="animBlur"
+              @keyup.enter.native="searchAnim"  
             >
-                <div slot="prefix"><i class="el-icon-search"></i></div>
+                <div slot="prefix"><i class="el-icon-search" @click="searchAnim"></i></div>
             </el-input>
             <div class="threeLogo">
                 <img :src="require('@/assets/images/view/plus.png')" @click="plusProEdit" alt="" :style="{'width':'24px','height':'24px','cursor':'pointer' }">
@@ -100,12 +102,13 @@
         <div class="videos">
             <div class="videosList"  v-for="(item,index) in viewPointLists" :key="index">
                 <div class="frontCover">
-                    <img @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="item.imagePath" alt="" :style="{'width':'100%','height':'100%','cursor':'pointer','border-radius':'4px' }">
+                    <img v-if="item.imagePath" @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="item.imagePath" alt="" :style="{'width':'100%','height':'100%','cursor':'pointer','border-radius':'4px' }">
+                    <img v-else @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="require('@/assets/images/view/picFirst.png')" alt="" :style="{'width':'100%','height':'100%','cursor':'pointer','border-radius':'4px','border':'1px #fff solid' }">
                 </div>
                 <div class="videoDes">
                     <div class="upWordes">
                         <span>时&nbsp;&nbsp;&nbsp;长:&nbsp;&nbsp;</span>
-                        <span>{{item.time}}</span>
+                        <span>{{item.time | timeChanger}}</span>
                     </div>
                     <div class="downWordes">
                         <span>Video:&nbsp;&nbsp;</span>
@@ -116,6 +119,9 @@
                     <i class="el-icon-edit" @click="editPro(item,'two')"></i>
                     <i class="el-icon-delete" @click="delAnimation(item)"></i>
                 </div>
+            </div>
+            <div class="nonePic" v-if="viewPointLists === undefined || viewPointLists.length === 0">
+                暂无视点动画
             </div>
         </div>
       </div>
@@ -131,7 +137,7 @@
                              v-for="item in options"
                              :key="item.value"
                              :label="item.label"
-                              :value="item.value">
+                             :value="item.value">
                          </el-option>
                     </el-select>
                 </div>
@@ -148,14 +154,14 @@
                     </el-select>
                 </div>
                 <div class="play">
-                    <div class="leftPlay" @click="logoClick('stop')" :style="{'cursor':'pointer'}">
+                    <div class="leftPlay" @click="logoClick('stop')" :style="{'cursor':'pointer'}" :class="animaViewPointer===undefined || animaViewPointer.length<2 ? 'noAllowed' : ''">
                          <i class="el-icon-caret-left" :style="{'font-size':'16px'}"></i>
                          <i class="el-icon-caret-left" ></i>
                     </div>
-                    <i v-if="playFlags==='1'" class="el-icon-video-play" @click="startPlay" :style="{'cursor':'pointer'}"></i>
+                    <i v-if="playFlags==='1'" class="el-icon-video-play" @click="startPlay" :style="{'cursor':'pointer'}" :class="animaViewPointer===undefined || animaViewPointer.length<2 ? 'noAllowed' : ''"></i>
                     <i v-if="playFlags==='2'" class="el-icon-video-pause" @click="logoClick('pause')" :style="{'cursor':'pointer'}"></i>
                     <i v-if="playFlags==='3'" class="el-icon-remove-outline" @click="logoClick('replay')" :style="{'cursor':'pointer'}"></i>
-                    <div class="rightPlay" :style="{'cursor':'pointer'}">
+                    <div class="rightPlay" @click="logoClick('stop')" :style="{'cursor':'pointer'}" :class="animaViewPointer===undefined || animaViewPointer.length<2 ? 'noAllowed' : ''">
                         <i class="el-icon-caret-right" ></i>
                         <i class="el-icon-caret-right" :style="{'font-size':'16px',}"></i>
                     </div>
@@ -176,28 +182,33 @@
                 <i  class="el-icon-close closeProEdit" @click="proEditClose"></i>
                 <!-- 渲染进度条 -->
                 <div class="progressDiv">
-                    <el-progress :percentage="100"  :color="customColor"></el-progress>
+                    <el-progress :percentage="90"  :color="customColor"></el-progress>
                 </div>
-                <div class="startPost" :class="this.playFlags==='2' ? 'noAllowed' : ''" @mousedown="pushMouse" @mouseup="releaseMouse" style="left: 6px;">
-                        <div class="bigCircle">
+                <!-- 播放条 -->
+                <div class="startPost" v-if="animaViewPointer.length>=2" :class="this.playFlags==='2' ? 'noAllowed' : ''" style="left: 6px;">
+                        <div class="bigCircle" @mousedown="pushMouse" @mouseup="releaseMouse">
                             <div class="smallCircle"></div>
                         </div>
                         <div class="postDown"></div>
                 </div>
             </div>
             <div class="proEditDown">
-                <div class="allWidth" :style="{'display':'flex'}">
-                    <div class="viewMorePic" v-for="(item,index) in animaViewPointer" :key="index">
-                        <img :src="item.imagePath" alt="" @click="selectPoints(index)" :class="{'pointBor':activePoints === index}" :style="{'width':'100%','height':'100%'}">
-                        <i class="el-icon-close pointsClose" @click="delPoints(index,item)" v-if="activePoints === index"></i>
-                        <div class="videosPlus">
-                            <img :src="require('@/assets/images/view/jiahao.png')" @click="addView(index)" :style="{'width':'100%','height':'100%'}" alt="">
+                <div class="allWidth" :style="{'display':'flex'}" onselectstart="return false;">
+                  <draggable v-model="animaViewPointer"  chosenClass="chosen" forceFallback="true" group="people" animation="1000" @start="onStart" @end="onEnd">
+                    <transition-group :style="{'display':'flex'}">
+                        <div class="viewMorePic" v-for="(item,index) in animaViewPointer" :key="item.tid">
+                            <img :src="item.imagePath" alt="" @click="selectPoints(index)" :class="{'pointBor':activePoints === index}" :style="{'width':'100%','height':'100%'}">
+                            <i class="el-icon-close pointsClose" @click="delPoints(index,item)" v-if="activePoints === index"></i>
+                            <div class="videosPlus">
+                                <img :src="require('@/assets/images/view/jiahao.png')" @click="addView(index)" :style="{'width':'100%','height':'100%'}" alt="">
+                            </div>
+                            <div class="videoWords" v-if="index<=animaViewPointer.length-2 && animaViewPointer.length>1" @click="changePointTime(item)">{{item.time | timeChanger}}</div>
+                            <div class="firstAdd" v-if="index === 0">
+                                <img :src="require('@/assets/images/view/jiahao.png')" @click="addView('one')" :style="{'width':'100%','height':'100%'}" alt="">
+                            </div>
                         </div>
-                        <div class="videoWords" v-if="index<=animaViewPointer.length-2 && animaViewPointer.length>1" @click="changePointTime(item)">{{item.time }}</div>
-                        <div class="firstAdd" v-if="index === 0">
-                            <img :src="require('@/assets/images/view/jiahao.png')" @click="addView('one')" :style="{'width':'100%','height':'100%'}" alt="">
-                        </div>
-                    </div>
+                    </transition-group>
+                  </draggable> 
                 </div>
                 <div class="onlyPlus" v-if="animaViewPointer.length === 0">
                     <img :src="require('@/assets/images/view/jiahao.png')" @click="addView('one')" :style="{'width':'100%','height':'100%'}" alt="">
@@ -232,12 +243,15 @@
 </template>
 
 <script>
+  import draggable from 'vuedraggable'
   import MODELAPI from "@/api/model_api";
   import viewDialog from "@/components/web_client/view_dialog";
-import { kMaxLength } from "buffer";
+  import { kMaxLength } from "buffer";
+import { log } from 'console';
   export default {
         components: {
-         viewDialog
+         viewDialog,
+         draggable,
         },
         props:{
             viewPic:{ // 控制视图列表和视点动画框的显示
@@ -255,6 +269,8 @@ import { kMaxLength } from "buffer";
         },
         data() {
             return {
+                 drag:false,
+
               input:'',  // 视点列表搜索绑定
               inputTwo:'', // 视点动画搜索绑定
               active:-1,
@@ -359,6 +375,7 @@ import { kMaxLength } from "buffer";
                  time:'',
                  timeTid:''
                },
+               animNewarr:[], // 搜索完成后 将它的值赋予viewPointLists
                flagTime:'', // 用于区分是点击的改变视点间的时间还是点击的新建空视图
                playFlags:'1', // 控制播放按钮的切换
                picTime:0,  // 当前视点动画的总时长
@@ -398,6 +415,13 @@ import { kMaxLength } from "buffer";
                 }
              }
         },
+        filters:{
+            timeChanger(value){
+                let sec = value % 60 <10 ? '0'+value % 60 + "″" : value % 60 + "″";
+                let minu = Math.floor(value / 60) < 10 ? '0' + Math.floor(value / 60) + '′' : Math.floor(value / 60) + '′';
+                return minu + sec;
+            }
+        },
         created(){
             if (this.setProps.taskId) {
                 this.getProps = this.setProps;
@@ -420,13 +444,32 @@ import { kMaxLength } from "buffer";
             // }) 
         },
         mounted(){
-            console.log('222',this.pointList);
-            console.log('6767');
+            
         },
         methods:{
+             //开始拖拽事件
+            onStart(e){
+                this.drag=true;
+            },
+            //拖拽结束事件
+            onEnd(e) {
+               this.drag=false;
+               let currentTid = this.animaViewPointer[e.newIndex].tid;
+               let newBefoTid = e.newIndex === 0 ? '0' : this.animaViewPointer[e.newIndex-1].tid;
+               let params = {
+                    tidMouse: currentTid,
+                    leftTidIndex: newBefoTid,
+                    viewId:this.editForm.tid
+               }
+               MODELAPI.UPDATEORDERBYMOUSE(params).then((res)=>{
+                    if(res.data.code === 200){
+                        this.viewsPointesGet(this.editForm.tid);
+                    }
+               }).catch(()=>{});
+            },
+
             // 视点列表搜索
             searchBtn(){
-                console.log('9o0hh');
                 let newArrSear = this.pointList.filter((item)=>{
                     if(this.input.trim() !== '' && item.name.indexOf(this.input.trim())>-1){
                         return item;
@@ -572,7 +615,6 @@ import { kMaxLength } from "buffer";
                 this.editForm.inputName = e.name;
                 this.editForm.tid = e.tid;
                 this.editForm.flag = flags;
-                console.log('333',this.editForm.inputName,this.editForm.tid,this.taskId);
             },
             // 点击编辑名称弹框时
             submitDialog(){
@@ -632,9 +674,28 @@ import { kMaxLength } from "buffer";
                     .then((res)=>{
                         if(res.data.code === 200){
                             this.viewPointLists = res.data.data;
+                            this.animNewarr = res.data.data;
+                            console.log('ccc',this.viewPointLists);
                         }
                     }).catch(()=>{});
                 })
+            },
+            // 视点动画列表搜索
+            searchAnim(){
+                let newArrSear = this.viewPointLists.filter((item)=>{
+                    if(this.inputTwo.trim() !== '' && item.name.indexOf(this.inputTwo.trim())>-1){
+                        return item;
+                    }
+                })
+                this.viewPointLists = newArrSear;
+            },
+            // 视点动画列表搜索框失去焦点
+            animBlur(){
+                if(this.inputTwo === ''){
+                   this.viewPointLists = this.animNewarr;
+                }
+                this.activeAnimation = -1;
+                this.num2 = 0;
             },
             // 点击 创建视点动画
             plusProEdit(){
@@ -674,7 +735,6 @@ import { kMaxLength } from "buffer";
                 this.editForm.flag = flags;
                 this.editForm.inputName = e.name;
                 this.editForm.tid = e.viewId;
-                console.log('vvv',e.viewId);
             },
             // 关闭新创建空视图列表弹框
             closeNewView(){
@@ -698,7 +758,7 @@ import { kMaxLength } from "buffer";
                          this.getListsAnimations();
                          this.$message({
                             type: "success",
-                            message: '创建成功',
+                            message: "res.data.message",
                          });
                      }
                    })
@@ -768,7 +828,6 @@ import { kMaxLength } from "buffer";
                                 this.picTime = this.picTime + Number(item.time);
                             })
                            this.picTime = this.picTime - Number(res.data.data[res.data.data.length-1].time);
-                           console.log('时间',this.picTime);
                         }
                     }
                 }).catch(()=>{})
@@ -780,11 +839,15 @@ import { kMaxLength } from "buffer";
                     taskId: this.getProps.taskId,
                     orderInfo: flags === 'one' ? 1 : (flags + 2)
                 }
-                console.log('bxbx',flags);
                 MODELAPI.ADDVIEWSTOANIM(params).then((res)=>{
                     if(res.data.code === 200){
                         this.viewsPointesGet(this.editForm.tid);
                         this.getListsAnimations();
+                    }else{
+                        this.$message({
+                            type: 'error',
+                            message: res.data.message
+                        });
                     }
                 }).catch(()=>{})
             },
@@ -841,6 +904,7 @@ import { kMaxLength } from "buffer";
             },
             // 点击播放按钮
             startPlay(){
+                console.log('vvvvvvvvv');
                 let params = {
                     viewId:this.editForm.tid,
                     taskId:this.getProps.taskId,
@@ -848,7 +912,6 @@ import { kMaxLength } from "buffer";
                 }
                 MODELAPI.VIEWANIMPREVIEW(params).then((res)=>{
                     if(res.data.code === 200){
-                        console.log('开始播放了');
                         this.playFlags = '2';
                         this.moveStart();
                     }
@@ -865,7 +928,6 @@ import { kMaxLength } from "buffer";
                      this.noTimer = setInterval(()=>{
                         startPost.style.left = parseInt(startPost.style.left) + 1 + 'px';
                         this.startLang = parseInt(startPost.style.left);
-                        // console.log('stepTime',startPost.style.left,allWidth.offsetWidth,stepTime);
                         if(parseInt(startPost.style.left) >= allWidth.offsetWidth-6){
                              startPost.style.left =  6 +'px';
                             this.startLang = parseInt(startPost.style.left);
@@ -878,12 +940,10 @@ import { kMaxLength } from "buffer";
                     this.twoTimer = setInterval(()=>{
                         startPost.style.left = parseInt(startPost.style.left) + 1 + 'px';
                         this.startLang = parseInt(startPost.style.left);
-                        // console.log('stepTime',startPost.style.left,allWidth.offsetWidth,stepTime);
                         if(parseInt(startPost.style.left) >= proEditDown.offsetWidth - 25){
                              startPost.style.left = proEditDown.offsetWidth - 25 + 'px'
                              clearInterval(this.twoTimer);
                              this.threeTimer = setInterval(()=>{
-                                console.log('sdsd',dom.scrollLeft,dom.clientWidth + dom.scrollLeft);
                                 dom.scrollLeft = dom.scrollLeft + 1;
                                 if(dom.scrollWidth === dom.clientWidth + dom.scrollLeft){
                                     dom.scrollLeft = 0;
@@ -929,6 +989,11 @@ import { kMaxLength } from "buffer";
                             dom.scrollLeft=0;
                             this.clickPlayTime = null;
                         }
+                    }else{
+                        clearInterval(this.noTimer);
+                        clearInterval(this.twoTimer);
+                        clearInterval(this.threeTimer);
+                        this.getPlayTime();
                     }
                 }).catch(()=>{})
             },
@@ -960,12 +1025,7 @@ import { kMaxLength } from "buffer";
                             startPost.style.left = allWidth.offsetWidth - 6 +'px';
                             this.startLang = parseInt(startPost.style.left);
                             window.onmousemove = null;
-                        }else{
-                            startPost.style.left = allWidth.offsetWidth - 6+'px';
-                            this.startLang = parseInt(startPost.style.left);
-                            window.onmousemove = null;
                         }
-                        
                     }
                     // 如果有进度条时
                     if(allWidth.offsetWidth > proEditMain.offsetWidth){
@@ -976,7 +1036,6 @@ import { kMaxLength } from "buffer";
                         }
                         // 将进度条的left值 赋值 给进度条
                         dom.scrollLeft = e.pageX - proEditMain.offsetLeft - x - 6;
-                        console.log('zaza',startPost.style.left,dom.scrollLeft);
                     }
                 }
                 // 按下时监听鼠标移动区域
@@ -998,17 +1057,19 @@ import { kMaxLength } from "buffer";
             releaseMouse(){
                 window.onmousemove = null;
                 document.removeEventListener("mousemove",this.moveEvent,false);
+                this.getPlayTime();
+            },
+            // 根据内容长度计算播放条所在位置的时间
+            getPlayTime(){
                 let proEditMain = document.querySelector('.proEditMain');
                 let allWidth = document.querySelector('.allWidth');
                 let startPost = document.querySelector('.startPost');
                 let dom = document.querySelector('.proEditDown');
-                if(this.playFlags==='3'){
-                    this.playFlags === '1';
-                }
+                this.playFlags = '1';
                 if(allWidth.offsetWidth < proEditMain.offsetWidth){
-                  this.clickPlayTime = ((parseInt(startPost.style.left) / allWidth.offsetWidth) / this.picTime).toFixed(2);
+                  this.clickPlayTime = ((parseInt(startPost.style.left) / allWidth.offsetWidth) * this.picTime).toFixed(2);
                 }else{
-                  this.clickPlayTime = (((parseInt(startPost.style.left) + dom.scrollLeft) / allWidth.offsetWidth) / this.picTime).toFixed(2);
+                  this.clickPlayTime = (((parseInt(startPost.style.left) + dom.scrollLeft) / allWidth.offsetWidth) * this.picTime).toFixed(2);
                 }
             }
         }
@@ -1098,11 +1159,6 @@ import { kMaxLength } from "buffer";
     padding-left: 16px;
     overflow: hidden;
     overflow-y:auto;
-    .nonePic{
-        font-size: 16px;
-        color: #7e7f7f;
-        margin: 50px auto;
-    }
     .picBox{
          width: 120px;
          height: 138px;
@@ -1162,7 +1218,12 @@ import { kMaxLength } from "buffer";
         }
     }
   }
- 
+ .nonePic{
+        font-size: 16px;
+        color: #7e7f7f;
+        margin: 50px auto;
+        text-align: center;
+  }
   .borderWhite{
     border: 1px solid #fff;
   }
@@ -1361,8 +1422,12 @@ import { kMaxLength } from "buffer";
         position: absolute;
         top: -8px;
         left: 0;
-        ::v-deep .el-progress-bar__outer{
-            height: 3px;
+        display: none;
+        ::v-deep .el-progress-bar .el-progress-bar__outer{
+            background-color: rgba(255,255,255,0);
+        }
+        ::v-deep .el-progress-bar__inner{
+            height: 50%;
         }
         ::v-deep .el-progress__text{
             color:#5DBB57;
@@ -1374,7 +1439,6 @@ import { kMaxLength } from "buffer";
             top: 60px;
             width: 14px;
             height: 133px;
-            cursor: move;
             z-index: 9999;
             .bigCircle{
                 position: absolute;
@@ -1384,6 +1448,7 @@ import { kMaxLength } from "buffer";
                 height: 14px;
                 background-color: #E1790E;
                 border-radius: 7px;
+                cursor: move;
                 .smallCircle{
                     width: 7px;
                     height: 7px;
@@ -1400,7 +1465,7 @@ import { kMaxLength } from "buffer";
              }
         }
       .noAllowed{
-        cursor:not-allowed
+        pointer-events: none;
       }
 //   预览下半部分
     .proEditDown{
@@ -1438,18 +1503,15 @@ import { kMaxLength } from "buffer";
                 color: #fff;
                 cursor: pointer;
             }
-            .videosPlus, .firstAdd{
+           .firstAdd{
                 position: absolute;
-                top: 20px;
-                right: -18px;
+                top: 28px;
+                left: -13px;
                 width: 25px;
                 height: 25px;
                 cursor: pointer;
            }
-           .firstAdd{
-                top: 28px;
-                left: -13px;
-           }
+           
            .videoWords{
                 position: absolute;
                 top: -25px;
@@ -1465,6 +1527,17 @@ import { kMaxLength } from "buffer";
                 border: 1px solid #727272;
                 cursor: pointer;
            }
+        }
+        .videosPlus{
+                position: absolute;
+                top: 28px;
+                right: -13px;
+                width: 25px;
+                height: 25px;
+                cursor: pointer;
+           }
+        .videosPlus:last-child{
+            right: -18px;
         }
     }
     

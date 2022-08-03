@@ -27,7 +27,7 @@
             <el-button class="btn" type="primary" @click="exportViewPhoto">导出</el-button>
           </div>
           <div class="progress">
-              <el-progress :percentage="100" status="success"></el-progress>
+              <el-progress :percentage="90" :color="customColor"></el-progress>
           </div>
         </div>
         <!-- 删除框 -->
@@ -92,6 +92,7 @@ export default {
                 label: '7680×4320 (8K)'
             }],
             pointList:[],
+            customColor:'#5DBB57', // 渲染进度条颜色
         }
     },
     created(){
@@ -195,14 +196,22 @@ export default {
  }
  .progress{
     position: absolute;
-    top: -10px;
+    top: -7px;
     left: 0;
-    width: 100%;
+    width: 102%;
     height: 6px;
+    display: none;
+    ::v-deep .el-progress__text{
+        color:#5DBB57;
+    }
+    ::v-deep .el-progress-bar__outer{
+       background-color: rgba(255,255,255,0.1);
+    }
+    ::v-deep .el-progress-bar__inner{
+        height: 50%;
+    }
  }
-   ::v-deep .el-progress .el-progress-bar{
-    width: 106%;
-  }
+   
 //   ::v-deep .el-progress{
 //     top: -178px;
 //     display: block;

@@ -799,15 +799,15 @@ export default {
         {
           content: "创建视图",
           name: "translate",
-          img: require("@/assets/images/todo/unchecked/com/move.png"),
-          activeImg: require("@/assets/images/todo/check/com/move.png"),
+          img: require("@/assets/images/todo/unchecked/viewList/create.png"),
+          activeImg: require("@/assets/images/todo/check/viewList/create.png"),
           active: false,
         },
         {
           content: "视点动画",
           name: "scale",
-          img: require("@/assets/images/todo/unchecked/com/zoom.png"),
-          activeImg: require("@/assets/images/todo/check/com/zoom.png"),
+          img: require("@/assets/images/todo/unchecked/viewList/animation.png"),
+          activeImg: require("@/assets/images/todo/check/viewList/animation.png"),
           active: false,
         }
       ],

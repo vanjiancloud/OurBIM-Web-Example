@@ -184,6 +184,14 @@ const MODELAPI = {
             params
         })
     },
+    // 拖拽视图里面的视点交换位置（视图）
+    UPDATEORDERBYMOUSE: params => {
+        return request({
+            url: '/ViewPoint/updateOrderByMouse',
+            method: 'post',
+            params
+        })
+    },
     // 视点导出图片（视图）
     EXPORTIMG: params => {
         return request({
