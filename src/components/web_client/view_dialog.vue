@@ -10,7 +10,7 @@
                 <el-form-item label="选择截图类型" label-width="150px">
                     <el-radio-group v-model="radio">
                         <el-radio :label="1">图片</el-radio>
-                        <el-radio :label="2">360全景图</el-radio>
+                        <el-radio :label="2">360°全景图</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item label="分辨率" label-width="150px">

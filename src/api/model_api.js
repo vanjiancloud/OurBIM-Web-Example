@@ -104,11 +104,19 @@ const MODELAPI = {
         })
     },
 
+    // 更新视点 (视图)
+    COVERVIEW: params => {
+        return request({
+            url: '/ViewPoint/coverView',
+            method: 'post',
+            params
+        })
+    },
     // 查询 视点动画列表（视图）
     SERACHCIEWANIMATION: params => {
         return request({
             url: '/ViewPoint/getViewAnimList',
-            method: 'post',
+            method: 'get',
             params
         })
     },

@@ -20,7 +20,7 @@
             <div class="threeLogo">
                 <span>
                     <el-tooltip class="item" effect="light" content="更新视图" placement="top">
-                      <i class="iconfont icon-a-gengxinshitu3" :class="{bind:active === -1}" :style="{'font-size':'24px' }"></i>
+                      <i class="iconfont icon-a-gengxinshitu3" @click="coverClick" :class="{bind:active === -1}" :style="{'font-size':'24px' }"></i>
                     </el-tooltip>
                 </span>
                 <span :style="{'margin-bottom':'1px'}">
@@ -35,13 +35,13 @@
                 </span>
             </div>
         </div>
-        <div class="pictures">
+        <div class="pictures" onselectstart="return false;">
             <div class="picBox"  v-for="(item,index) in pointList" :key="index">
                 <div class="boxPhoto">
                     <img :src="item.imagePath" alt="" @click="selected(index,item)" :class="{'borderWhite': index === active}">
                     <div class="bottom" :style="{'display':index === active ? 'block' : 'none'}">
-                        <img :src="require('@/assets/images/view/view4.png')" alt="">
-                        <img :src="require('@/assets/images/view/view5.png')" alt="">
+                        <img @click="normalPic('1')" :src="require('@/assets/images/view/view4.png')" alt="">
+                        <img @click="normalPic('2')" :src="require('@/assets/images/view/view5.png')" alt="">
                     </div>
                     <i class="el-icon-close err" :style="{'display':index === active ? 'block' : 'none'}" @click="removeDialog(item)"></i>
                 </div>
@@ -53,6 +53,10 @@
                 暂无视图
             </div>
         </div>
+        <!-- 图片预览弹框 -->
+        <el-dialog class="picProview" :title="namePicDif==='1' ? '图片预览' : '全景图预览'" :visible="proviewPic" @close="proviewPic=false" :append-to-body="true" width="70%">
+            <img :src="require('@/assets/logo.png')" alt="" :style="{'width':'100%','height':'100%'}">
+        </el-dialog>
         <!-- 视图导出弹窗 -->
        <viewDialog :item="dialogFlag" @closeDia="closeDia2" @noBorder="noBorder" 
         :delItem ="delFlag" :delInfo="delInfo" @pointListSon="pointListSon" 
@@ -128,7 +132,7 @@
       <!-- 预览与编辑菜单栏 -->
       <div class="proEdit" v-if="activeAnimation !== -1">
         <div class="proEditMain">
-            <div class="proEditTop">
+            <div class="proEditTop" onselectstart="return false;">
                 <div class="component">
                     <img :style="{'width':'18px','height':'18px','margin-left':'10px'}" :src="require('@/assets/images/view/goujian.png')" alt="">
                     <span>附加构件动画:</span>
@@ -138,7 +142,7 @@
                              :key="item.value"
                              :label="item.label"
                              :value="item.value">
-                         </el-option>
+                        </el-option>
                     </el-select>
                 </div>
                 <div class="order">
@@ -224,8 +228,8 @@
             width="25%"
             :append-to-body="true"
             >
-            <el-form v-if="flagTime === ''">
-                <el-form-item label="名称:" label-width="80px">
+            <el-form v-if="flagTime === ''" :model="newViewForm" :rules="ruleNewView" ref="newViewForm">
+                <el-form-item label="名称:" label-width="80px" prop="name">
                     <el-input v-model="newViewForm.name" placeholder="请输入内容"></el-input>
                 </el-form-item>
             </el-form>
@@ -269,8 +273,9 @@ import { log } from 'console';
         },
         data() {
             return {
-                 drag:false,
-
+              proviewPic:false, // 图片预览弹框
+              namePicDif:'', // 区分图片预览的名称
+              drag:false, // 拖拽视点相关
               input:'',  // 视点列表搜索绑定
               inputTwo:'', // 视点动画搜索绑定
               active:-1,
@@ -286,10 +291,13 @@ import { log } from 'console';
               searchPoint:[], // 搜索完成后 将它的值赋予pointList
               delInfo:{}, // 删除或选中时用到的参数传给view_dialog
               dialogVisible:false, // 编辑图片名字的弹框
+              animViewIdedit:'', // 点击视图动画列表的编辑时的 viewId
+              animViewId:'', // 点击视图动画列表的图片时的 viewId
               editForm:{
                 inputName:'',
                 tid:'',
                 flag:'', // 判断是视点列表还是动画列表
+                name2:'', // 用于修改名称表单验证时过滤掉自己
               },
               rules:{
                 inputName: [
@@ -297,6 +305,24 @@ import { log } from 'console';
                         required: true,
                         message: "请输入名称",
                         trigger: "blur",
+                    },
+                    {
+                      validator: (rules, value, callback) => {
+                        let newArr = [];
+                        // 当this.editForm.flag等于one 时，就是验证 修改视点的名字是否重复
+                        if (this.editForm.flag === 'one') {
+                            newArr = this.searchPoint;
+                        } else if(this.editForm.flag === 'two'){
+                            newArr = this.animNewarr;
+                        }
+                        const resBol = newArr.some((item) => {
+                            return item.name !== this.editForm.name2 && item.name === value;
+                        })
+                        resBol
+                        ? callback(new Error('名称重复'))
+                        : callback()
+                      },
+                      trigger: 'change'
                     },
                 ],
               },
@@ -313,6 +339,28 @@ import { log } from 'console';
                         }
                    ],
               },
+            //  新建新的视点动画时 名称不可重复
+            ruleNewView:{
+                name:[
+                    {
+                        required: true,
+                        message: "请输入名称",
+                        trigger: "blur",
+                    },
+                    {
+                      validator: (rules, value, callback) => {
+                        // 新增的视点动画的名字是否重复
+                        const resBol = this.animNewarr.some((item) => {
+                            return  item.name === value;
+                        })
+                        resBol
+                        ? callback(new Error('名称重复'))
+                        : callback()
+                      },
+                      trigger: 'change'
+                    }
+                ]
+            },
             //    proEditFlag:false, // 预览与编辑框(创建按钮相关)
                options: [{   // 构件动画
                     value: '0',
@@ -459,15 +507,19 @@ import { log } from 'console';
                let params = {
                     tidMouse: currentTid,
                     leftTidIndex: newBefoTid,
-                    viewId:this.editForm.tid
+                    viewId:this.animViewId
                }
                MODELAPI.UPDATEORDERBYMOUSE(params).then((res)=>{
                     if(res.data.code === 200){
-                        this.viewsPointesGet(this.editForm.tid);
+                        this.viewsPointesGet(this.animViewId);
                     }
                }).catch(()=>{});
             },
-
+            // 点击图片预览
+            normalPic(eName){
+                this.namePicDif = eName;
+                this.proviewPic = true;
+            },
             // 视点列表搜索
             searchBtn(){
                 let newArrSear = this.pointList.filter((item)=>{
@@ -529,6 +581,27 @@ import { log } from 'console';
                    };
                    this.UpdateOrder(params);
                 }
+            },
+            // 更新视图
+            coverClick(){
+                let params = {
+                    taskId:this.taskId,
+                    tid:this.delInfo.tid
+                }
+                MODELAPI.COVERVIEW(params).then((res)=>{
+                    if(res.data.code === 200){
+                        this.ListPoint();
+                        this.$message({
+                            message: '更新成功',
+                            type: "success",
+                        });
+                    }else{
+                        this.$message({
+                            message: res.data.message,
+                            type: "error",
+                        });
+                    }
+                }).catch(()=>{})
             },
             // 点击导出
             exportPic(){
@@ -593,13 +666,13 @@ import { log } from 'console';
                     .then((res) => {
                     if (res.data.code === 0) {
                         this.$message({
-                        message: '指令下发成功',
-                        type: "success",
+                            message: '指令下发成功',
+                            type: "success",
                         });
                     } else {
                         this.$message({
-                        message: '指令下发失败',
-                        type: "error",
+                            message: '指令下发失败',
+                            type: "error",
                         });
                     }
                     })
@@ -615,8 +688,9 @@ import { log } from 'console';
                 this.editForm.inputName = e.name;
                 this.editForm.tid = e.tid;
                 this.editForm.flag = flags;
+                this.editForm.name2 = e.name;
             },
-            // 点击编辑名称弹框时
+            // 点击确认 编辑 视图列表名称 或 视图动画名称
             submitDialog(){
                 this.$refs["editForm"].validate((valid)=>{
                     if(valid){
@@ -640,7 +714,7 @@ import { log } from 'console';
                             .catch((err) => {});
                         }else{
                             let params = {
-                                viewId:this.editForm.tid,
+                                viewId:this.animViewIdedit,
                                 newName:this.editForm.inputName,
                             }
                             MODELAPI.CHANGENAMEANIM(params).then((res)=>{
@@ -675,7 +749,6 @@ import { log } from 'console';
                         if(res.data.code === 200){
                             this.viewPointLists = res.data.data;
                             this.animNewarr = res.data.data;
-                            console.log('ccc',this.viewPointLists);
                         }
                     }).catch(()=>{});
                 })
@@ -718,9 +791,10 @@ import { log } from 'console';
                     this.num2 = 0;
                     this.activeAnimation = ind; 
                     //  this.proEditFlag=false;     
-                    this.viewsPointesGet(item.viewId);          
+                    this.viewsPointesGet(item.viewId);     
+                    this.logoClick('stop');     
                 }
-                this.editForm.tid = item.viewId;
+                this.animViewId = item.viewId;
             },
             // 预览和编辑框的叉号
             proEditClose(){
@@ -734,7 +808,8 @@ import { log } from 'console';
                 // this.editForm.inputName = e.name;
                 this.editForm.flag = flags;
                 this.editForm.inputName = e.name;
-                this.editForm.tid = e.viewId;
+                this.animViewIdedit = e.viewId;
+                this.editForm.name2 = e.name;
             },
             // 关闭新创建空视图列表弹框
             closeNewView(){
@@ -766,14 +841,14 @@ import { log } from 'console';
                     this.$refs["newTime"].validate((valid)=>{
                         if(valid){
                             let params = {
-                                viewId:this.editForm.tid,
+                                viewId:this.animViewId,
                                 tid:this.newTime.timeTid,
                                 time:this.newTime.time
                             }
                             MODELAPI.UPDATEPLAYTIME(params).then((res)=>{
                                 if(res.data.code === 200){
                                     this.newBlockView = false;
-                                    this.viewsPointesGet(this.editForm.tid);
+                                    this.viewsPointesGet(this.animViewId);
                                     this.$message({
                                         type: "success",
                                         message: '修改成功',
@@ -835,13 +910,13 @@ import { log } from 'console';
             // 点击编辑预览的视点的加号时
             addView(flags){
                 let params = {
-                    viewId: this.editForm.tid,
+                    viewId: this.animViewId,
                     taskId: this.getProps.taskId,
                     orderInfo: flags === 'one' ? 1 : (flags + 2)
                 }
                 MODELAPI.ADDVIEWSTOANIM(params).then((res)=>{
                     if(res.data.code === 200){
-                        this.viewsPointesGet(this.editForm.tid);
+                        this.viewsPointesGet(this.animViewId);
                         this.getListsAnimations();
                     }else{
                         this.$message({
@@ -872,7 +947,7 @@ import { log } from 'console';
                         type: 'warning'
                     }).then(() => {
                         let params = {
-                            viewId:this.editForm.tid,
+                            viewId:this.animViewId,
                             taskId:this.getProps.taskId,
                             tid:e.tid
                         }
@@ -883,7 +958,7 @@ import { log } from 'console';
                                     message: '删除成功!'
                                 });
                                 this.getListsAnimations();
-                                this.viewsPointesGet(this.editForm.tid);
+                                this.viewsPointesGet(this.animViewId);
                                 this.activePoints = -1;
                                 this.num3 = 0;
                             }
@@ -906,7 +981,7 @@ import { log } from 'console';
             startPlay(){
                 console.log('vvvvvvvvv');
                 let params = {
-                    viewId:this.editForm.tid,
+                    viewId:this.animViewId,
                     taskId:this.getProps.taskId,
                     time: this.clickPlayTime || 0
                 }
@@ -923,16 +998,19 @@ import { log } from 'console';
                 let startPost = document.querySelector('.startPost');
                 let proEditMain = document.querySelector('.proEditMain');
                 let stepTime = Number(( this.picTime * 1000 / allWidth.offsetWidth ).toFixed(5));
-                // 如果有进度条
+                // 如果没有进度条
                 if(allWidth.offsetWidth < proEditMain.offsetWidth){
                      this.noTimer = setInterval(()=>{
                         startPost.style.left = parseInt(startPost.style.left) + 1 + 'px';
                         this.startLang = parseInt(startPost.style.left);
                         if(parseInt(startPost.style.left) >= allWidth.offsetWidth-6){
-                             startPost.style.left =  6 +'px';
-                            this.startLang = parseInt(startPost.style.left);
-                            this.playFlags = '1';
-                             clearInterval(this.noTimer);
+                            startPost.style.left = allWidth.offsetWidth-6 + 'px';
+                             setTimeout(()=>{
+                                startPost.style.left =  6 +'px';
+                                this.startLang = parseInt(startPost.style.left);
+                                this.playFlags = '1';
+                                clearInterval(this.noTimer);
+                             },1000);
                         }
                     },stepTime);
                 }else{
@@ -946,10 +1024,13 @@ import { log } from 'console';
                              this.threeTimer = setInterval(()=>{
                                 dom.scrollLeft = dom.scrollLeft + 1;
                                 if(dom.scrollWidth === dom.clientWidth + dom.scrollLeft){
-                                    dom.scrollLeft = 0;
-                                    this.playFlags = '1';
-                                    startPost.style.left =  6 +'px';
-                                    clearInterval(this.threeTimer)
+                                        startPost.style.left = proEditDown.offsetWidth - 25 + 'px';
+                                        setTimeout(()=>{
+                                            dom.scrollLeft = 0;
+                                            this.playFlags = '1';
+                                            startPost.style.left =  6 +'px';
+                                            clearInterval(this.threeTimer);
+                                        },1000);
                                 }
                              },stepTime);
                         }
@@ -961,7 +1042,7 @@ import { log } from 'console';
                 let params = {
                    taskId:this.getProps.taskId,
                    status:difLogo,
-                   viewId:this.editForm.tid,
+                   viewId:this.animViewId,
                 }
                 MODELAPI.PLAYOPERATION(params).then((res)=>{
                     if(res.data.code === 200){
@@ -1045,7 +1126,6 @@ import { log } from 'console';
             moveEvent(e){
                     var event = e || window.event;
                     var target = event.target || event.srcElement;
-                    // if(target.id == "name") {
                     if(document.querySelector('.proEditDown').contains(target) || document.querySelector('.startPost').contains(target)) {
                         console.log("in");
                     } else {
@@ -1218,6 +1298,16 @@ import { log } from 'console';
         }
     }
   }
+  .picProview{
+    ::v-deep .el-dialog{
+        margin-top: 8vh !important;
+        height: 80%;
+    }
+    ::v-deep .el-dialog__body{
+        padding: 0 20px !important;
+        height: 90%;
+    }
+  } 
  .nonePic{
         font-size: 16px;
         color: #7e7f7f;

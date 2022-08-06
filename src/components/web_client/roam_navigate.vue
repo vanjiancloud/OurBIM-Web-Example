@@ -478,6 +478,9 @@ export default {
                     height: 22px !important;
                     width: 160px;
                 }
+                ::v-deep .el-input--mini .el-input__icon{
+                    line-height: 23px !important;
+                }
                 .turnHeight input{
                     width: 60px;
                     height: 17px;
