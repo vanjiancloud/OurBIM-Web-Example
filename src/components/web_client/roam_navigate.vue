@@ -208,12 +208,12 @@ export default {
             checkTest:false, // 碰撞检测
             words:['高度','开启碰撞检测','放置对象','速度'],
             speedValue:2,  // 速度
-            checkListBottom:['viewCurb'], //底部的两个选框
+            checkListBottom:['viewCube'], //底部的两个选框
             checkBottomWords:[{
                 name: "导航地图",
                 value: 1,
             },{
-                name: "viewCurb",
+                name: "viewCube",
                 value: 2,
             }],
             params:{
