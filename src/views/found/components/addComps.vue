@@ -55,17 +55,18 @@
           :on-success="upLoadModel"
           :on-error="errorModel"
           drag
-          :action="baseURL + '/comControl/addComGroup'"
+          :action="baseURL + '/comControl/uploadUserCom'"
           name="fileUpload"
           :data="{
             userId: userId,
+            groupId:pageParentID
           }"
           multiple
           :on-change="onchange"
           :on-exceed="exceed"
           :on-remove="onremove"
           :before-upload="beforeModelUpload"
-          accept=".rvt,.ifc,.zip,.rfa"
+          accept=".rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.c4d,.fbx,.obj,.stp,.xyz,.txt,.pts,.las"
           ref="bimupload"
           :auto-upload="false"
         >
@@ -136,6 +137,12 @@ import axios from "@/utils/request";
 
 export default {
   name: "found",
+  props:{
+    pageParentID: {
+      type: String,
+      default: ''
+    },
+  },
   data() {
     return {
       radio: "1", //单选框
@@ -344,7 +351,7 @@ export default {
     // 上传bim模型前
     beforeModelUpload(file) {
       let testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
-      let listModel = ["rvt", "ifc", "zip","rfa"];
+      let listModel = ["rvt", "ifc", "zip","rfa","ipt","dgn","dwg","step","c4d","fbx","obj","stp","xyz","txt","pts","las"];
       // const isLt = file.size / 1024 / 1024 < 200;
       // if (!isLt) {
       //   this.$message({

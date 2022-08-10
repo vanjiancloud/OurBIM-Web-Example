@@ -217,6 +217,22 @@ const MODELAPI = {
             params
         })
     },
+    // 删除自定义构件分组/构件 （自定义构件）
+    DELETEUSERCOM: params => {
+        return request({
+            url: '/comControl/deleteUserCom',
+            method: 'POST',
+            params
+        })
+    },
+    // 新建分组 （自定义构件）
+    ADDCOMGROUP: params => {
+        return request({
+            url: '/comControl/addComGroup',
+            method: 'POST',
+            params
+        })
+    },
 
     // 还原模型
     UPDATERESETANGLE: params => {

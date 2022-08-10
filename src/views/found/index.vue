@@ -15,10 +15,10 @@
         <el-button type="primary" @click="AddGroup">新建分组</el-button>
       </div>
     </div>
-    <!-- <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/found' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-    </el-breadcrumb> -->
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item  @click.native="clickBreadFirst">构件首页</el-breadcrumb-item>
+      <el-breadcrumb-item v-for="(item,index) in breadArr" :key="index" @click.native="clickBread(item,index)">{{item.groupName}}</el-breadcrumb-item>
+    </el-breadcrumb>
     <!-- 表格 -->
     <div class="table">
       <el-table :data="componentsList" style="width: 100%" class="sheet" @row-click="rowClick">
@@ -37,7 +37,7 @@
                 <i class="el-icon-folder-opened" :style="{'color':'#00aaf0'}"></i>
                 <span>{{scope.row.groupName}}</span>
               </div>
-              <span v-else>{{ scope.row.ourbimComponentInfo.comName }}</span>
+              <div v-else>{{ scope.row.ourbimComponentInfo.comName }}</div>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -113,7 +113,19 @@
     </div>
     <!-- 上传项目对话框 -->
     <el-dialog :visible.sync="addCompDialog" width="50%" center>
-      <addComps />
+      <addComps :pageParentID="pageParentId"></addComps>
+    </el-dialog>
+    <!-- 新建分组 -->
+     <el-dialog title="新建分组" :visible.sync="addNewGroupDialog" width="30%">
+      <el-form :style="{'width':'90%'}">
+        <el-form-item label="分组名称:" label-width="100px">
+          <el-input v-model="formInline.name"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addNewGroupDialog = false">取 消</el-button>
+        <el-button type="primary" @click="submitAddGroup">确 定</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -135,13 +147,19 @@ export default {
   },
   data() {
     return {  
-      // ----------
         componentsList:[], // 自定义构件列表
         customColor:'#00aaf0',
         pollingComps:true, // 是否开启轮询自定义构件
         timerComp:null, // 轮询自定义构建的定时器
         addCompDialog:false, // 添加构件弹框
-      // ----------
+        selectRowInfo:{}, // 鼠标点击当前行的数据
+        addNewGroupDialog:false, // 新建分组弹框
+        formInline:{  // 新建分组弹框绑定数据
+          name:'',
+        },
+        pageParentId:'god', // 当前页面的父id
+        currentId:'',  // 当前点击的那一个分组的id
+        breadArr:[], // 面包屑导航的数组
     };
   },
   computed: {
@@ -157,11 +175,13 @@ export default {
     getCompList(){
      let params = {
         userId: Getuserid(),
-        parentId:'god'
+        parentId:this.pageParentId
      }
      MODELAPI.GETCOMLISTBYPARENTID(params).then((res)=>{
+        this.componentsList = [];
         if(res.data.code === 0){
           this.componentsList = res.data.data.ourbimComponentInfoList;
+          this.pageParentId = res.data.data.ourbimComponentInfoList[0].parentId || this.currentId;
         }
      }).catch(()=>{})
     },
@@ -184,13 +204,50 @@ export default {
     },
     // 新建分组
     AddGroup(){
-      console.log('9090');
+      this.addNewGroupDialog = true;
     },
     handleCommand(command){
-      console.log('000',command);
+      const item = this.selectRowInfo;
+      switch (command) {
+        case "delete":
+          this.removeCom(item);
+          break;
+        default:
+          break;
+      }
     },
+    // 点点点下拉框的出现/隐藏时触发
     visibleChange(e){
-      console.log('5353',e);
+      this.selectRowInfo = e;
+    },
+    // 删除构件组
+    removeCom(e){
+      this.$confirm("此操作将删除该应用, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          let params = {
+            userId:Getuserid(),
+            comId: e.isGroup==='0' ? e.ourbimComponentInfo.comId : '',
+            groupId:e.isGroup==='1' ? e.id : ''
+          }
+          MODELAPI.DELETEUSERCOM(params).then((res)=>{
+            if(res.data.code === 0){
+              this.$message.success(res.data.message);
+              this.getCompList();
+            }else{
+              this.$message.warning(res.data.message);
+            }
+          }).catch((err)=>{this.$message.error("删除失败")});
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
     },
     // 轮询自定义构件
     setPollingComp(){
@@ -200,8 +257,49 @@ export default {
         },2500)
       }
     },
-    rowClick(){
-      console.log('bgbgb');
+    rowClick(e){
+      if(e.isGroup==='0'){
+        return;
+      }
+      this.currentId = e.id;
+      this.pageParentId = e.id;
+      this.getCompList();
+      this.breadArr.push(e);
+      console.log('bgbgb',e);
+    },
+    // 新建分组弹框确定
+    submitAddGroup(){
+      let params = {
+        userId:Getuserid(),
+        groupId:this.pageParentId,
+        groupName:this.formInline.name
+      }
+      MODELAPI.ADDCOMGROUP(params).then((res)=>{
+        if(res.data.code === 0){
+            this.getCompList();
+            this.$message.success(res.data.message);
+            this.addNewGroupDialog = false;
+        }else{
+            this.$message.warning(res.data.message);
+        }
+      }).catch(()=>{})
+    },
+    // 点击面包屑
+    clickBread(e,index){
+      if(index === this.breadArr.length -1){
+        return;
+      }
+      let arr = this.breadArr.slice(0,index+1);
+      this.breadArr = arr;
+      this.pageParentId = e.id;
+      this.getCompList();
+    },
+    // 点击面包屑导航的第一个
+    clickBreadFirst(){
+      this.breadArr = [];
+      // this.$router.push({path: '/found'});
+      this.pageParentId = 'god';
+      this.getCompList();
     }
     // -----------
 
@@ -239,9 +337,18 @@ export default {
       margin-left: auto;
     }
   }
+  ::v-deep .el-breadcrumb .el-breadcrumb__item .el-breadcrumb__inner{
+    cursor: pointer !important;
+  }
+  ::v-deep .el-breadcrumb .el-breadcrumb__item .el-breadcrumb__inner:hover{
+    color: #00aaf0;
+  }
   .table {
     margin-top: 20px;
     margin-bottom: 40px;
+    ::v-deep .el-table__body-wrapper .el-table__body .el-table__row{
+      cursor: pointer;
+    }
     .name-two {
       background-color: red !important;
     }
@@ -572,5 +679,6 @@ export default {
       margin: 0 20px 0 20px;
     }
 }
+
 // --------
 </style>
