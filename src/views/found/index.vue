@@ -102,9 +102,11 @@
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
                   command="delete"
-                  >删除</el-dropdown-item
-                >
-              </el-dropdown-menu>
+                  >删除</el-dropdown-item>
+                <el-dropdown-item
+                  command="edit"
+                  >编辑</el-dropdown-item>
+                </el-dropdown-menu>
             </el-dropdown>
           </template>
         </el-table-column>
@@ -116,7 +118,7 @@
       <addComps :pageParentID="pageParentId"></addComps>
     </el-dialog>
     <!-- 新建分组 -->
-     <el-dialog title="新建分组" :visible.sync="addNewGroupDialog" width="30%">
+     <el-dialog title="新建分组" :visible.sync="addNewGroupDialog" width="25%">
       <el-form :style="{'width':'90%'}">
         <el-form-item label="分组名称:" label-width="100px">
           <el-input v-model="formInline.name"></el-input>
@@ -125,6 +127,21 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="addNewGroupDialog = false">取 消</el-button>
         <el-button type="primary" @click="submitAddGroup">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!-- 编辑自定义构件 -->
+    <el-dialog title="编辑" :visible="editComDialog" @close="closeEditCom" width="25%">
+      <el-form :style="{'width':'90%'}">
+        <el-form-item label="名称:" label-width="100px">
+          <el-input v-model="editForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="换组:" label-width="100px">
+          <el-input v-model="editForm.groupDif" :suffix-icon="icon" placeholder="请选择切换的组"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="closeEditCom">取 消</el-button>
+        <el-button type="primary" @click="editSubmit">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -160,6 +177,12 @@ export default {
         pageParentId:'god', // 当前页面的父id
         currentId:'',  // 当前点击的那一个分组的id
         breadArr:[], // 面包屑导航的数组
+        editComDialog:false,   // 编辑自定义构件弹框
+        editForm:{  // 编辑弹框数据
+          name:'',
+          groupDif:''
+        },
+        icon:'el-icon-arrow-down'
     };
   },
   computed: {
@@ -212,6 +235,9 @@ export default {
         case "delete":
           this.removeCom(item);
           break;
+        case "edit":
+          this.editCom(item);
+          break;
         default:
           break;
       }
@@ -248,6 +274,19 @@ export default {
             message: "已取消删除",
           });
         });
+    },
+    // 编辑自定义构件
+    editCom(e){
+      console.log('edit',e);
+      this.editComDialog = true;
+    },
+    // 关闭自定义构件弹框
+    closeEditCom(){
+        this.editComDialog = false;
+    },
+    // 编辑自定义构件确定
+    editSubmit(){
+      console.log('确定',this.editForm);
     },
     // 轮询自定义构件
     setPollingComp(){
