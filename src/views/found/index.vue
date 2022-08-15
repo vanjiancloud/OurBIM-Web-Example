@@ -136,7 +136,24 @@
           <el-input v-model="editForm.name"></el-input>
         </el-form-item>
         <el-form-item label="换组:" label-width="100px">
-          <el-input v-model="editForm.groupDif" :suffix-icon="icon" placeholder="请选择切换的组"></el-input>
+          <el-select v-model="selectVal" placeholder="请选择分组" size="mini" ref="select" @clear="clearValue" clearable>
+             <el-option hidden key="id" :value="selectVal" :label="selectName"></el-option>
+             <el-tree
+              :data="treeData"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+              :expand-on-click-node="true"
+              :check-on-click-node="true"
+              :default-expand-all="true"
+              ref="tree"
+              node-key="id"
+            >
+              <span class="father" slot-scope="{ data,node }">  
+                <span>{{ data.label }}</span>
+                <el-button size="mini" class="btn"  @click.stop="moreSelect(data,node)">展开</el-button>
+              </span>
+            </el-tree>
+          </el-select>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -180,9 +197,63 @@ export default {
         editComDialog:false,   // 编辑自定义构件弹框
         editForm:{  // 编辑弹框数据
           name:'',
-          groupDif:''
         },
-        icon:'el-icon-arrow-down'
+        icon:'el-icon-arrow-down',
+        selectVal:'',  // select框的绑定值
+        selectName:'', // select框的显示的name
+        // 树形数据
+        treeData:[
+           {
+            value: "1",
+            label: "一级 1",
+            children: [
+              {
+                value: "1-1",
+                label: "二级 1-1",
+                children: [
+                  {
+                    value: "1-1-1",
+                    label: "三级 1-1-1",
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            label: "一级 2",
+            value: "2",
+            children: [
+              {
+                value: "2-1",
+                label: "二级 2-1",
+                children: [
+                  {
+                    value: "2-1-1",
+                    label: "三级 2-1-1",
+                  },
+                ],
+              },
+              {
+                value: "2-2",
+                label: "二级 2-2",
+                children: [
+                  {
+                    value: "2-2-1",
+                    label: "三级 2-2-1鸡腿",
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            value: "3",
+            label: "一级 3",
+          },
+        ],
+        defaultProps: {
+          children: "children",
+          label: "name",
+        },
     };
   },
   computed: {
@@ -339,6 +410,23 @@ export default {
       // this.$router.push({path: '/found'});
       this.pageParentId = 'god';
       this.getCompList();
+    },
+    // 点击选择框的叉
+    clearValue(){
+      console.log('888');
+      this.selectVal = ''; 
+      this.selectName = '';
+    },
+     // 树形结构 点击事件
+    handleNodeClick(data) {
+      this.selectVal = data.value; // select绑定值为点击的选项的value
+      this.selectName = data.label; // input中显示值为label
+      // this.treeFilter = ""; // 点击后搜索框清空
+      this.$refs.select.blur(); // 点击后关闭下拉框，因为点击树形控件后select不会自动折叠
+    },
+    // 点击展开
+    moreSelect(data,node){
+      console.log('000',data,node);
     }
     // -----------
 
