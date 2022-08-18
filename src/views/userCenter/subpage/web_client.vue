@@ -203,7 +203,7 @@
             </table> -->
           </div>
         </div>
-        <!-- 构件库 -->
+        <!-- 构件库 （自定义构件） -->
         <div v-show="comVisible">
           <div
             class="bim-info com-box"
@@ -228,43 +228,74 @@
                 ></i>
               </div>
             </div>
-            <div class="detail-main detail-collapse">
-              <!-- <el-collapse v-model="componentCollapse" accordion>
-                <el-collapse-item title="二维码" name="1">
-                  <div class="collapse-main">
-                    <el-button size="mini" type="primary" @click="AddQrCode"
-                      >新增</el-button
-                    >
-                  </div>
-                </el-collapse-item>
-              </el-collapse> -->
-
-              <!-- 公共构件库列表 -->
-              <el-collapse
-                accordion
-                v-for="(item, index) in publicComList"
-                :key="item.title"
-                class=""
-              >
-                <el-collapse-item :title="item.group" :name="index">
-                  <div class="collapse-main">
-                    <div class="oooooooo">
-                      <div
-                        class="publicComListItem"
-                        v-for="listItem in item.rsComponent"
-                        :key="listItem.id"
-                        @click="addCom(listItem)"
-                      >
-                        <div class="img">
-                          <img :src="listItem.comUrl" alt="" />
-                        </div>
-                        <div class="name">{{ listItem.comName }}</div>
+                <div class="detail-main detail-collapse">
+                  <!-- <el-collapse v-model="componentCollapse" accordion>
+                    <el-collapse-item title="二维码" name="1">
+                      <div class="collapse-main">
+                        <el-button size="mini" type="primary" @click="AddQrCode"
+                          >新增</el-button
+                        >
                       </div>
-                    </div>
-                  </div>
-                </el-collapse-item>
-              </el-collapse>
-            </div>
+                    </el-collapse-item>
+                  </el-collapse> -->
+
+                  <!-- 公共构件库列表 -->
+                <el-tabs v-model="activeName" @tab-click="changeTab">
+                  <el-tab-pane label="公共构件" name="first">
+                    <el-collapse
+                      accordion
+                      v-for="(item, index) in publicComList"
+                      :key="item.title"
+                      class=""
+                    >
+                      <el-collapse-item :title="item.group" :name="index">
+                        <div class="collapse-main">
+                          <div class="oooooooo">
+                            <div
+                              class="publicComListItem"
+                              v-for="listItem in item.rsComponent"
+                              :key="listItem.id"
+                              @click="addCom(listItem)"
+                            >
+                              <div class="img">
+                                <img :src="listItem.comUrl" alt="" />
+                              </div>
+                              <div class="name">{{ listItem.comName }}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </el-collapse-item>
+                    </el-collapse>
+                  </el-tab-pane>
+                  <el-tab-pane label="自定义构件" name="second">
+                    <el-collapse
+                      accordion
+                      v-for="(item, index) in selfComList"
+                      :key="item.id"
+                      class=""
+                    >
+                      <el-collapse-item :title="item.groupName" :name="index">
+                        <div class="collapse-main">
+                          <div class="oooooooo">
+                            <div
+                              class="publicComListItem"
+                              v-for="listItem in item.data"
+                              :key="listItem.ourbimComponentInfo.comId"
+                              @click="addCom(listItem)"
+                            >
+                              <div class="img">
+                                <img v-if="listItem.ourbimComponentInfo.comUrl === 'default.png'" :src="require('@/assets/logo.png')" alt="" />
+                                <img v-else :src="listItem.ourbimComponentInfo.comUrl" alt="" />
+                              </div>
+                              <div class="name">{{ listItem.ourbimComponentInfo.comName }}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </el-collapse-item>
+                    </el-collapse>
+                  </el-tab-pane>
+                </el-tabs>
+                </div>
           </div>
         </div>
         <!-- 二维码 -->
@@ -369,6 +400,8 @@ import resMessage from "../../../utils/res-message";
 import TeamworkDialog from "../../manage/TeamworkDialog.vue";
 
 import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
+
+import { Getuserid } from "@/store/index.js"; // (自定义构件)
 
 export default {
   name: "look_app",
@@ -487,6 +520,8 @@ export default {
       comVisible: false,
       appType: null,
       userType: null,
+      activeName:'first', // 构件库的Tabs 标签页 （自定义构件）
+      selfComList:[],  // 所有自定义构建  （自定义构件）
     };
   },
 
@@ -1883,12 +1918,23 @@ export default {
     },
     /* 添加构件  */
     addCom(item) {
+      let params = {};
       // parentId
-      let params = {
-        // comGroupId: item.parentId,
-        comName: item.comName,
-        taskId: this.taskId,
-        comId: item.id,
+      if(this.activeName === 'first'){
+        params = {
+          // comGroupId: item.parentId,
+          comName: item.comName,
+          taskId: this.taskId,
+          comId: item.id,
+        }
+      }else if(this.activeName === 'second'){  // (自定义构件)
+        params = {
+          // comGroupId: item.parentId,
+          comName: item.ourbimComponentInfo.comName,
+          taskId: this.taskId,
+          comId: item.ourbimComponentInfo.comId,
+          userId:item.ourbimComponentInfo.userId
+        }
       };
       COMPONENTLIBRARY.addCom(params)
         .then((res) => {
@@ -2520,6 +2566,19 @@ export default {
       } else {
       }
     },
+    // 构件库中点击 自定义构件 时触发  （自定义构件）
+    changeTab(e){
+      if(e._props.name === 'second'){
+         let params = {
+          userId:Getuserid()
+        }
+        MODELAPI.GETALLCOM(params).then((res)=>{
+          if(res.data.code === 0){
+            this.selfComList = res.data.data[0].data;
+          }
+        });
+      }
+    }
   },
 };
 </script>
@@ -2972,6 +3031,18 @@ export default {
           }
         }
       }
+      ::v-deep .el-tabs__nav{  // （自定义构件）
+        margin-left: 5px;
+      }
+      ::v-deep .el-tabs__nav-wrap::after{ // （自定义构件）
+        background-color: #6b6b6b;
+      }
+      ::v-deep .el-tabs__item{ // （自定义构件）
+        color:#fff;
+      }
+      ::v-deep .el-tabs__active-bar{ // （自定义构件）
+        background-color: #fff;
+      }
     }
 
     .handle-body {
@@ -3130,12 +3201,15 @@ export default {
     }
   }
   .name {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100px;
+    // display: flex;
+    // align-items: center;
+    // justify-content: center;
     color: #fff;
     text-align: center;
+    white-space: nowrap; //强制在一行显示
+    overflow: hidden; //溢出隐藏
+    text-overflow: ellipsis; //显示省略号
   }
 }
 

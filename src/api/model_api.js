@@ -233,6 +233,22 @@ const MODELAPI = {
             params
         })
     },
+    // 获取所有自定义构建 （自定义构件）
+    GETALLCOM: params => {
+        return request({
+            url: '/comControl/getAllCom',
+            method: 'get',
+            params
+        })
+    },
+    // 自定义构建换组、更名 （自定义构件）
+    UPDATECOMGROUP: params => {
+        return request({
+            url: '/comControl/updateComGroup',
+            method: 'post',
+            params
+        })
+    },
 
     // 还原模型
     UPDATERESETANGLE: params => {

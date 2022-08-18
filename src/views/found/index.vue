@@ -10,9 +10,9 @@
         {{ $t("project") }}
       </div>
       <!-- 按钮 -->
-      <div class="right">
-        <el-button type="primary" @click="AddIntegrate">上传构件</el-button>
-        <el-button type="primary" @click="AddGroup">新建分组</el-button>
+      <div class="right">   
+        <el-button type="primary" @click="AddIntegrate" :style="{'display': breadArr.length===0 ? 'none' : ''}">上传构件</el-button>
+        <el-button type="primary" @click="AddGroup" :style="{'display': breadArr.length===0 ? '' : 'none'}">新建分组</el-button>
       </div>
     </div>
     <el-breadcrumb separator-class="el-icon-arrow-right">
@@ -118,25 +118,26 @@
       <addComps :pageParentID="pageParentId"></addComps>
     </el-dialog>
     <!-- 新建分组 -->
-     <el-dialog title="新建分组" :visible.sync="addNewGroupDialog" width="25%">
-      <el-form :style="{'width':'90%'}">
-        <el-form-item label="分组名称:" label-width="100px">
+     <el-dialog title="新建分组" :visible="addNewGroupDialog" @close="closeNewBuild" width="25%">
+      <el-form :style="{'width':'90%'}" :model="formInline" :rules="rulesInline" ref="formInline">
+        <el-form-item label="分组名称:" label-width="100px" prop="name">
           <el-input v-model="formInline.name"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="addNewGroupDialog = false">取 消</el-button>
+        <el-button @click="closeNewBuild">取 消</el-button>
         <el-button type="primary" @click="submitAddGroup">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 编辑自定义构件 -->
-    <el-dialog title="编辑" :visible="editComDialog" @close="closeEditCom" width="25%">
-      <el-form :style="{'width':'90%'}">
-        <el-form-item label="名称:" label-width="100px">
+    <div class="selfDialog">
+      <el-dialog title="编辑" :visible="editComDialog" @close="closeEditCom" width="25%" class="editFirst">
+      <el-form :style="{'width':'90%'}" :model="editForm" :rules="rulesEditForm" ref="editForm">
+        <el-form-item label="名称:" label-width="100px" prop="name">
           <el-input v-model="editForm.name"></el-input>
         </el-form-item>
-        <el-form-item label="换组:" label-width="100px">
-          <el-select v-model="selectVal" placeholder="请选择分组" size="mini" ref="select" @clear="clearValue" clearable>
+        <el-form-item label="换组:" label-width="100px" class="btnMore">
+          <el-select v-model="selectVal" placeholder="请选择分组" size="mini" ref="select" @clear="clearValue"  @visible-change="canChange" clearable>
              <el-option hidden key="id" :value="selectVal" :label="selectName"></el-option>
              <el-tree
               :data="treeData"
@@ -144,13 +145,11 @@
               @node-click="handleNodeClick"
               :expand-on-click-node="true"
               :check-on-click-node="true"
-              :default-expand-all="true"
               ref="tree"
               node-key="id"
             >
-              <span class="father" slot-scope="{ data,node }">  
-                <span>{{ data.label }}</span>
-                <el-button size="mini" class="btn"  @click.stop="moreSelect(data,node)">展开</el-button>
+              <span class="father" slot-scope="{ data }">  
+                <span>{{ data.groupName }}</span>
               </span>
             </el-tree>
           </el-select>
@@ -161,6 +160,7 @@
         <el-button type="primary" @click="editSubmit">确 定</el-button>
       </div>
     </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -202,58 +202,50 @@ export default {
         selectVal:'',  // select框的绑定值
         selectName:'', // select框的显示的name
         // 树形数据
-        treeData:[
-           {
-            value: "1",
-            label: "一级 1",
-            children: [
-              {
-                value: "1-1",
-                label: "二级 1-1",
-                children: [
-                  {
-                    value: "1-1-1",
-                    label: "三级 1-1-1",
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            label: "一级 2",
-            value: "2",
-            children: [
-              {
-                value: "2-1",
-                label: "二级 2-1",
-                children: [
-                  {
-                    value: "2-1-1",
-                    label: "三级 2-1-1",
-                  },
-                ],
-              },
-              {
-                value: "2-2",
-                label: "二级 2-2",
-                children: [
-                  {
-                    value: "2-2-1",
-                    label: "三级 2-2-1鸡腿",
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            value: "3",
-            label: "一级 3",
-          },
-        ],
+        treeData:[],
         defaultProps: {
-          children: "children",
-          label: "name",
+          children: "data",
+          label: "groupName",
         },
+        rulesInline:{
+          name:[{
+            required:true,
+            message:'请输入名称',
+            trigger:'blur'
+          },{
+            validator:(rules,value,callback) =>{
+              const resBol = this.componentsList.some(item=>{
+                if(item.isGroup === '1'){
+                  return item.groupName === value
+                }else{
+                  return item.ourbimComponentInfo.comName === value;
+                }
+              })
+              resBol ? callback(new Error('名称重复')) : callback()
+            },
+            trigger:'change'
+          }]
+        },
+        rulesEditForm:{
+          name:[{
+            required:true,
+            message:'请输入名称',
+            trigger:'blur'
+          },{
+            validator:(rules,value,callback) =>{
+              const resBol = this.componentsList.some(item=>{
+                if(item.isGroup === '1'){
+                  return item.groupName === value && item.id !== this.selectRowInfo.id;
+                }else{
+                  return item.ourbimComponentInfo.comName === value && item.ourbimComponentInfo.comId !== this.selectRowInfo.comId;
+                }
+              })
+              resBol ? callback(new Error('名称重复')) : callback()
+            },
+            trigger:'change'
+          }]
+         },
+        
     };
   },
   computed: {
@@ -299,6 +291,7 @@ export default {
     // 新建分组
     AddGroup(){
       this.addNewGroupDialog = true;
+      this.formInline.name = '';
     },
     handleCommand(command){
       const item = this.selectRowInfo;
@@ -312,6 +305,12 @@ export default {
         default:
           break;
       }
+    },
+    // 关闭新建分组
+    closeNewBuild(){
+      this.addNewGroupDialog = false;
+      this.$refs["formInline"].resetFields();
+      this.formInline.name = '';
     },
     // 点点点下拉框的出现/隐藏时触发
     visibleChange(e){
@@ -350,14 +349,35 @@ export default {
     editCom(e){
       console.log('edit',e);
       this.editComDialog = true;
+      this.editForm.name = e.isGroup === '1' ? e.groupName : e.ourbimComponentInfo.comName;
     },
     // 关闭自定义构件弹框
     closeEditCom(){
         this.editComDialog = false;
+        this.editForm.name = '';
+        this.selectVal = '';
+        this.selectName='';
+        this.$refs["editForm"].resetFields();
     },
     // 编辑自定义构件确定
     editSubmit(){
       console.log('确定',this.editForm);
+      let params = {
+          userId:Getuserid(),
+          groupId: this.selectRowInfo.id,
+          groupName:this.editForm.name,
+          parentId:this.selectVal
+      }
+      MODELAPI.UPDATECOMGROUP(params).then((res)=>{
+        if(res.data.code === 0){
+           this.editComDialog = false;
+           this.$message({
+             type: "success",
+             message: res.data.message,
+           });
+            this.getCompList();
+        }
+      })
     },
     // 轮询自定义构件
     setPollingComp(){
@@ -419,15 +439,42 @@ export default {
     },
      // 树形结构 点击事件
     handleNodeClick(data) {
-      this.selectVal = data.value; // select绑定值为点击的选项的value
-      this.selectName = data.label; // input中显示值为label
+      this.selectVal = data.id; // select绑定值为点击的选项的value
+      this.selectName = data.groupName; // input中显示值为label
       // this.treeFilter = ""; // 点击后搜索框清空
       this.$refs.select.blur(); // 点击后关闭下拉框，因为点击树形控件后select不会自动折叠
     },
-    // 点击展开
-    moreSelect(data,node){
-      console.log('000',data,node);
-    }
+
+    canChange(e){
+      if(e === true){
+        let params = {
+          userId:Getuserid()
+        }
+        MODELAPI.GETALLCOM(params).then((res)=>{
+          if(res.data.code === 0){
+            this.treeData = this.delDataFn(res.data.data[0].data);
+          }
+        });
+      }
+    },
+    // 树形数据结构过滤函数
+    delDataFn(arr) {
+          if (Array.isArray(arr)) {
+            for (let i = 0; i < arr.length; i++) {
+              const item = arr[i];
+              if (item.isGroup === "0" || item.id === this.selectRowInfo.id) {
+                arr.splice(i, 1);
+                i--;
+              } else {
+                if (Array.isArray(item.data)) {
+                  this.delDataFn(item.data);
+                }
+              }
+            }
+          }
+        return arr;
+      },
+
     // -----------
 
   },
@@ -805,6 +852,27 @@ export default {
     i{
       margin: 0 20px 0 20px;
     }
+}
+.selfDialog{
+  ::v-deep .el-select {
+  width: 100%;
+}
+  ::v-deep .el-input__inner{
+    height: 40px !important;
+  }
+}
+.father{
+    width: 90%;
+     span{
+      font-size: 14px;
+      width:150px;
+      overflow:hidden;
+      white-space:nowrap;/*限制不换行*/
+      text-overflow:ellipsis;
+     }
+  }
+.band{
+  display: none !important;
 }
 
 // --------
