@@ -17,12 +17,12 @@
     </div>
     <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item  @click.native="clickBreadFirst">构件首页</el-breadcrumb-item>
-      <el-breadcrumb-item v-for="(item,index) in breadArr" :key="index" @click.native="clickBread(item,index)">{{item.groupName}}</el-breadcrumb-item>
+      <el-breadcrumb-item v-for="(item,index) in breadArr" :key="index">{{item.groupName}}</el-breadcrumb-item>
     </el-breadcrumb>
     <!-- 表格 -->
     <div class="table">
       <el-table :data="componentsList" style="width: 100%" class="sheet" @row-click="rowClick">
-          <el-table-column prop="" :label="$t('compApplyname')" width="170">
+          <el-table-column prop="" :label="breadArr.length === 0 ? '分组名称' : $t('compApplyname')" width="170">
           <template slot-scope="scope">
             <el-tooltip
               popper-class="app-name-tip"
@@ -41,13 +41,13 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="" :label="$t('componentId')" width="170">
+        <el-table-column prop="" :label="breadArr.length === 0 ? '分组ID' : $t('componentId')" width="190">
             <template slot-scope="scope">
                 <span v-if="scope.row.isGroup === '1'">{{scope.row.id}}</span>
                 <span v-else>{{ scope.row.ourbimComponentInfo.comId }}</span>
             </template>
         </el-table-column>
-        <el-table-column :label="$t('uploaddate')" width="110">
+        <el-table-column :label="$t('uploaddate')" width="130">
           <template slot-scope="scope">
             <span v-if="scope.row.isGroup === '1'">-</span>
             <span v-else>{{ scope.row.ourbimComponentInfo.createTime }}</span>
@@ -137,7 +137,7 @@
           <el-input v-model="editForm.name"></el-input>
         </el-form-item>
         <el-form-item label="换组:" label-width="100px" class="btnMore">
-          <el-select v-model="selectVal" placeholder="请选择分组" size="mini" ref="select" @clear="clearValue"  @visible-change="canChange" clearable>
+          <el-select v-model="selectVal" placeholder="请选择分组" size="mini" ref="select" @clear="clearValue"  @visible-change="canChange" clearable :disabled="breadArr.length === 0 ? true : false">
              <el-option hidden key="id" :value="selectVal" :label="selectName"></el-option>
              <el-tree
               :data="treeData"
@@ -245,7 +245,8 @@ export default {
             trigger:'change'
           }]
          },
-        
+         nextBread:'',   // 控制是否有下一级的面包屑 
+         nextBreadFlag:false,
     };
   },
   computed: {
@@ -266,10 +267,19 @@ export default {
      MODELAPI.GETCOMLISTBYPARENTID(params).then((res)=>{
         this.componentsList = [];
         if(res.data.code === 0){
-          this.componentsList = res.data.data.ourbimComponentInfoList;
-          this.pageParentId = res.data.data.ourbimComponentInfoList[0].parentId || this.currentId;
+          if(res.data.data === undefined){
+            this.componentsList =[];
+          }else{
+            this.componentsList = res.data.data.ourbimComponentInfoList;
+          }
+          if(this.nextBreadFlag === true){
+            this.breadArr.push(this.nextBread);
+          }
         }
-     }).catch(()=>{})
+        this.nextBreadFlag = false;
+     }).catch(()=>{
+        this.nextBreadFlag = false;
+     })
     },
     // 根据传入的status做适配
     formatStatus(status) {
@@ -391,11 +401,12 @@ export default {
       if(e.isGroup==='0'){
         return;
       }
+      this.nextBread = e;
+      this.nextBreadFlag = true;
       this.currentId = e.id;
       this.pageParentId = e.id;
       this.getCompList();
-      this.breadArr.push(e);
-      console.log('bgbgb',e);
+      console.log('bgbgb',this.nextBread,this.nextBreadFlag);
     },
     // 新建分组弹框确定
     submitAddGroup(){
@@ -415,21 +426,22 @@ export default {
       }).catch(()=>{})
     },
     // 点击面包屑
-    clickBread(e,index){
-      if(index === this.breadArr.length -1){
-        return;
-      }
-      let arr = this.breadArr.slice(0,index+1);
-      this.breadArr = arr;
-      this.pageParentId = e.id;
-      this.getCompList();
-    },
+    // clickBread(e,index){
+    //   if(index === this.breadArr.length -1){
+    //     return;
+    //   }
+    //   let arr = this.breadArr.slice(0,index+1);
+    //   this.breadArr = arr;
+    //   this.pageParentId = e.id;
+    //   this.getCompList();
+    // },
     // 点击面包屑导航的第一个
     clickBreadFirst(){
       this.breadArr = [];
       // this.$router.push({path: '/found'});
       this.pageParentId = 'god';
       this.getCompList();
+      console.log('999',this.breadArr);
     },
     // 点击选择框的叉
     clearValue(){

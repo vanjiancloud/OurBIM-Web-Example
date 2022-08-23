@@ -335,17 +335,37 @@
               router
               background-color="#fff"
             >
-              <!-- 项目管理 -->
+               <!-- 项目管理
               <el-menu-item index="/manage">
                 <i class="el-icon-setting"></i>
                 <span slot="title" class="write">{{ $t("management") }}</span>
               </el-menu-item>
 
-              <!-- 自定义构件（创建项目） -->
+               自定义构件（创建项目） 
                <el-menu-item index="/found">
                 <i class="el-icon-folder-add"></i>
                 <span slot="title" class="write">{{ $t("makeComponent") }}</span>
-              </el-menu-item>
+              </el-menu-item>  -->
+
+              <!-- (修改项目中心) -->
+              <el-submenu index="manage">
+                <template slot="title">
+                  <i class="el-icon-setting"></i>
+                  <span class="write">{{ $t("management") }}</span>
+                </template>
+                <!-- 模型管理 -->
+                <el-menu-item index="/manage">{{
+                  $t("modelmanage")
+                }}</el-menu-item>
+                <!-- 文档管理 -->
+                <el-menu-item index="/office">{{
+                  $t("docmanage")
+                }}</el-menu-item>
+                <!-- 自定义构件 -->
+                <el-menu-item index="/found">{{
+                  $t("makeComponent")
+                }}</el-menu-item>
+              </el-submenu>
 
               <!-- 账户管理 -->
               <el-submenu index="account">

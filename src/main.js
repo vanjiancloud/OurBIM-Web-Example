@@ -87,9 +87,11 @@ const i18n = new VueI18n({
                 node: '节点:',
                 into: '进入项目',
                 release: '我的发布',
-                management: '项目管理',
+                management: '文件管理',
+                modelmanage: '模型管理', // 模型管理 （修改项目中心）
+                docmanage: '文档管理', // (文档管理)
                 Create: '创建项目',
-                makeComponent: '自定义构件', //自定义构件
+                makeComponent: 'BIM构件库', //自定义构件
                 Account: '账户管理',
                 // 我的发布
                 wholes: '全部',
@@ -309,6 +311,8 @@ const i18n = new VueI18n({
                 into: 'Application',
                 release: 'release',
                 management: 'Application',
+                modelmanage: 'Model management', // 模型管理 （修改项目中心）
+                docmanage: 'Document management', // （文档管理）
                 Create: 'Create app',
                 makeComponent: 'Custom component', // 自定义构件
                 Account: 'Account',

@@ -159,7 +159,7 @@
                 @click="downloadFile(scope.row)"
                 type="text"
                 v-if="
-                  scope.row.applidStatus === '2' && scope.row.appType !== '3'
+                  scope.row.applidStatus === '2' && scope.row.appType === '3'
                 "
               >
                 下载
@@ -260,6 +260,11 @@
                   command="edit"
                   v-if="scope.row.applidStatus !== '5' || scope.row.applidStatus !== '6'"
                   >编辑</el-dropdown-item
+                >
+                <el-dropdown-item
+                  command="downloadModel"
+                  v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false')"
+                  >下载</el-dropdown-item
                 >
                 <el-dropdown-item
                   command="delete"
@@ -1114,12 +1119,46 @@ export default {
         case "edit":
           this.edit(item);
           break;
+        case "downloadModel":
+          this.downloadModel(item);
+          break;
         case "delete":
           this.remove(item);
           break;
         default:
           break;
       }
+    },
+    // 下载
+    downloadModel(row){
+      this.$confirm("即将下载此源文件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          this.$message({
+            type: "warning",
+            message: "开始下载",
+          });
+          let params = {
+            userId: Getuserid(),
+            appId: row.appid,
+          };
+          let urlDownload =
+            process.env.VUE_APP_REQUEST_URL +
+            "/FileStorge/downloadModelFile?" +
+            qs.stringify(params);
+          // window.location.href=urllll
+          window.open(urlDownload);
+          return;
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消下载",
+          });
+        });
     },
     // 编辑按钮 3334678
     edit(e) {
