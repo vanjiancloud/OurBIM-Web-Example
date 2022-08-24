@@ -315,9 +315,14 @@ import { log } from 'console';
                         } else if(this.editForm.flag === 'two'){
                             newArr = this.animNewarr;
                         }
-                        const resBol = newArr.some((item) => {
-                            return item.name !== this.editForm.name2 && item.name === value;
-                        })
+                        let resBol = null;
+                        if(newArr.length === 0){
+                            resBol = false
+                        }else{
+                            resBol = newArr.some((item) => {
+                                return item.name !== this.editForm.name2 && item.name === value;
+                            })
+                        }
                         resBol
                         ? callback(new Error('名称重复'))
                         : callback()
@@ -350,9 +355,15 @@ import { log } from 'console';
                     {
                       validator: (rules, value, callback) => {
                         // 新增的视点动画的名字是否重复
-                        const resBol = this.animNewarr.some((item) => {
-                            return  item.name === value;
-                        })
+                        let resBol = null;
+                        console.log('8787',this.animNewarr);
+                        if(this.animNewarr.length === 0){
+                            resBol = false;
+                        }else{
+                            resBol = this.animNewarr.some((item) => {
+                                return  item.name === value;
+                            })
+                        }
                         resBol
                         ? callback(new Error('名称重复'))
                         : callback()
@@ -747,8 +758,13 @@ import { log } from 'console';
                     MODELAPI.SERACHCIEWANIMATION(params)
                     .then((res)=>{
                         if(res.data.code === 200){
-                            this.viewPointLists = res.data.data;
-                            this.animNewarr = res.data.data;
+                            if(res.data.data === undefined){
+                                this.viewPointLists = [];
+                                this.animNewarr = [];
+                            }else{
+                                this.viewPointLists = res.data.data;
+                                this.animNewarr = res.data.data;
+                            }
                         }
                     }).catch(()=>{});
                 })
@@ -833,7 +849,7 @@ import { log } from 'console';
                          this.getListsAnimations();
                          this.$message({
                             type: "success",
-                            message: "res.data.message",
+                            message: "新建成功",
                          });
                      }
                    })

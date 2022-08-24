@@ -209,7 +209,11 @@ export default {
      MODELAPI.GETUSERALLCLOUDDOC(params).then((res)=>{
         this.docuList = [];
         if(res.data.code === 0){
-          this.docuList = res.data.data;
+            if(res.data.data === undefined){
+               this.docuList = []; 
+            }else{
+               this.docuList = res.data.data;
+            }
         }
      }).catch(()=>{})
     },

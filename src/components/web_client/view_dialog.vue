@@ -240,7 +240,7 @@ export default {
             .sheng{
                 display: flex;
                 span:nth-of-type(2){
-                     width: 80px;
+                    max-width: 80px;
                     overflow: hidden;
                     text-overflow:ellipsis;
                     white-space: nowrap;

@@ -247,6 +247,7 @@ export default {
          },
          nextBread:'',   // 控制是否有下一级的面包屑 
          nextBreadFlag:false,
+         idFirst:'',  // 新建分组要传递的父id
     };
   },
   computed: {
@@ -267,6 +268,9 @@ export default {
      MODELAPI.GETCOMLISTBYPARENTID(params).then((res)=>{
         this.componentsList = [];
         if(res.data.code === 0){
+          if(this.pageParentId === 'god'){
+            this.idFirst = res.data.data.parentId;
+          }
           if(res.data.data === undefined){
             this.componentsList =[];
           }else{
@@ -412,7 +416,7 @@ export default {
     submitAddGroup(){
       let params = {
         userId:Getuserid(),
-        groupId:this.pageParentId,
+        groupId:this.idFirst,
         groupName:this.formInline.name
       }
       MODELAPI.ADDCOMGROUP(params).then((res)=>{
