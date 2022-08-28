@@ -1040,7 +1040,9 @@ export default {
           this.comIconList.forEach((item)=>{
             item.active = false
           })
+          this.noneBlock();
         }else{
+          this.noneBlock();
           const params = {
              taskId: this.taskId,
              mode:'translate'
@@ -1315,7 +1317,9 @@ export default {
         taskId: this.taskId,
         mode, //translate、rotate、scale
       };
-      MODELAPI.BROWSERBUTTON(params)
+      // 当 构件库亮 或者 某个所打开时 点击移动旋转才发请求
+      if(this.contentLogo === true || this.lockState === true){
+        MODELAPI.BROWSERBUTTON(params)
         .then((res) => {
           if (res.data.code === 0) {
             this.$message.success(res.data.message);
@@ -1324,6 +1328,7 @@ export default {
           }
         })
         .catch((res) => {});
+      }
     },
     //  移动 旋转
     SetWeather(e) {
@@ -1898,9 +1903,9 @@ export default {
     },
     // 移动 旋转 缩放 显示隐藏
     noneBlock(){
-      if(this.contentLogo===false && this.browerLogo === false){
+      if(this.contentLogo===false && this.lockState === false){
         this.totalLogo = false
-      }else{
+      }else if(this.contentLogo===true || this.lockState === true){
         this.totalLogo = true
        }
     },
@@ -2012,7 +2017,7 @@ export default {
         if(e === 10){  //---555
           this.browerLogo = !this.browerLogo
           this.noneBlock();
-          this.$emit('passBrowerLogo',this.browerLogo)
+          // this.$emit('passBrowerLogo',this.browerLogo)
         }
         // 在出现显示隐藏图标的情况下，除了框选、小地图、浏览器、属性，点了下边其他图标，都得关闭显示隐藏图标
       } else {
@@ -2065,7 +2070,7 @@ export default {
           // 做和浏览器关闭时一样的操作
           this.browerLogo = false
           this.noneBlock();
-          this.$emit('passBrowerLogo',this.browerLogo)
+          // this.$emit('passBrowerLogo',this.browerLogo)
          }
        } else {
         if (e !== 11 && this.oldState !== 4) {
