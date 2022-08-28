@@ -1142,6 +1142,12 @@ export default {
         }else{
            this.contentLogo = true
         }
+      // 构件库状态变化 决定contentLogo的值
+      if(this.imgList[10].state === 0){   // ---555
+           this.browerLogo = false;  
+        }else{
+           this.browerLogo = true
+        }
       this.noneBlock();
       this.$emit('passContentLogo',this.contentLogo)
   },
