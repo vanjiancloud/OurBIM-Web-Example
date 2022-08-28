@@ -1149,7 +1149,8 @@ export default {
            this.browerLogo = true
         }
       this.noneBlock();
-      this.$emit('passContentLogo',this.contentLogo)
+      this.$emit('passContentLogo',this.contentLogo);
+      this.$emit('passBrowerLogo',this.browerLogo);
   },
   beforeDestroy() {
     // 实例销毁之前对点击事件进行解绑
