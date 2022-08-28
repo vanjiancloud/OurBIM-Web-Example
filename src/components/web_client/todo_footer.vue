@@ -1365,12 +1365,12 @@ export default {
             // 如果图标原本就是亮着，灭掉它
             // 发关闭轴的指令
             isSame = true;
-            // COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
-            //   this.$resMsg(res.data);
-            //   if (res.data.code === 0) {
-            //     row.active = false;
-            //   }
-            // });
+            COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
+              this.$resMsg(res.data);
+              if (res.data.code === 0) {
+                row.active = false;
+              }
+            });
           }
           row.active = true;
         } else {
@@ -2364,7 +2364,7 @@ export default {
     .show-slice {
       position: absolute;
       width: 60%;
-      left: -27%;
+      left: -80%;
       border-radius: 10px 10px 0 0;
       top: -195px;
       padding-bottom: 5px;
