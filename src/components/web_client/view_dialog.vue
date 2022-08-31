@@ -133,6 +133,8 @@ export default {
             MODELAPI.EXPORTIMG(params).then((res)=>{
                 if(res.data.code === 200){
                     console.log(res.data.message);
+                }else if(res.data.code === 400){
+                    this.$message.error(res.data.message);
                 }
             }).catch(()=>{})
         }

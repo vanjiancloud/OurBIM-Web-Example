@@ -670,7 +670,7 @@ import { log } from 'console';
                         }
                     })
                     .catch((err) => {});
-                }, 1000);
+                }, 1500);
             },
             async UpdateOrder(e) {
                 await MODELAPI.UPDATEORDER(e)
