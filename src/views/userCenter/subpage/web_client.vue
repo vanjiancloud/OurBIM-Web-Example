@@ -2165,7 +2165,11 @@ export default {
               this.$refs.EscDialogItem.changeVisible(false);
             }
           } else if (realData.id === "15") {
-            this.$refs.getFooter.handleComOperateIcon(realData);
+            if(this.$refs.getFooter){
+              this.$refs.getFooter.handleComOperateIcon(realData);
+            }else{
+              return false;
+            }
           } else if (realData.id === "16") {
             // 距离上一次操作时长
             this.exitMiniprogram(realData.lastOperationTime);
