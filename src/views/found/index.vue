@@ -11,7 +11,12 @@
       </div>
       <!-- 按钮 -->
       <div class="right">   
-        <el-button type="primary" @click="AddIntegrate" :style="{'display': breadArr.length===0 ? 'none' : ''}">上传构件</el-button>
+        <el-button type="primary" @click="AddIntegrate" :style="{'display': breadArr.length===0 ? 'none' : ''}" class="upload-btn">
+          上传构件
+          <div class="uploadCom" v-show="uploadCom">
+            {{ uploadCom }}
+          </div>
+        </el-button>
         <el-button type="primary" @click="AddGroup" :style="{'display': breadArr.length===0 ? '' : 'none'}">新建分组</el-button>
       </div>
     </div>
@@ -122,12 +127,12 @@
       <el-form :style="{'width':'90%'}" :model="formInline" :rules="rulesInline" ref="formInline">
         <el-form-item label="分组名称:" label-width="100px" prop="name">
           <el-input v-model="formInline.name"></el-input>
-        </el-form-item>
+        </el-form-item>    
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="closeNewBuild">取 消</el-button>
-        <el-button type="primary" @click="submitAddGroup">确 定</el-button>
-      </div>
+      <div slot="footer" class="dialog-footer" :style="{'text-align':'center'}">
+           <el-button @click="closeNewBuild" size="medium">取 消</el-button>
+           <el-button type="primary" @click="submitAddGroup" size="medium">确 定</el-button>
+      </div>   
     </el-dialog>
     <!-- 编辑自定义构件 -->
     <div class="selfDialog">
@@ -155,7 +160,7 @@
           </el-select>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer" :style="{'text-align':'center'}">
         <el-button @click="closeEditCom">取 消</el-button>
         <el-button type="primary" @click="editSubmit">确 定</el-button>
       </div>
@@ -208,23 +213,24 @@ export default {
           label: "groupName",
         },
         rulesInline:{
-          name:[{
-            required:true,
-            message:'请输入名称',
-            trigger:'blur'
-          },{
-            validator:(rules,value,callback) =>{
-              const resBol = this.componentsList.some(item=>{
-                if(item.isGroup === '1'){
-                  return item.groupName === value
-                }else{
-                  return item.ourbimComponentInfo.comName === value;
-                }
-              })
-              resBol ? callback(new Error('名称重复')) : callback()
+          name:[
+            {
+              required: true, message: '必填项', trigger: 'blur'
             },
-            trigger:'change'
-          }]
+            {
+              validator:(rules,value,callback) =>{
+                const resBol = this.componentsList.some(item=>{
+                  if(item.isGroup === '1'){
+                    return item.groupName === value
+                  }else{
+                    return item.ourbimComponentInfo.comName === value;
+                  }
+                })
+                resBol ? callback(new Error('名称重复')) : callback()
+              },
+              trigger:'change'            
+            }
+          ]
         },
         rulesEditForm:{
           name:[{
@@ -251,7 +257,9 @@ export default {
     };
   },
   computed: {
-  
+    uploadCom() {
+      return this.$store.state.uploadCom;
+    },
   },
   created() {
     this.getCompList();
@@ -829,7 +837,7 @@ export default {
 }
 .upload-btn {
   position: relative;
-  .uploadingNum {
+  .uploadCom {
     position: absolute;
     top: -13px;
     right: -10px;

@@ -38,10 +38,10 @@
         <div class="pictures" onselectstart="return false;">
             <div class="picBox"  v-for="(item,index) in pointList" :key="index">
                 <div class="boxPhoto">
-                    <img :src="item.imagePath" alt="" @click="selected(index,item)" :class="{'borderWhite': index === active}">
+                    <img :src="item.imagePath" alt="" @click="selected(index,item)" :class="{'borderWhite': index === active}" :style="{'cursor':'pointer'}">
                     <div class="bottom" :style="{'display':index === active ? 'block' : 'none'}">
-                        <img @click="normalPic('1')" :src="require('@/assets/images/view/view4.png')" alt="">
-                        <img @click="normalPic('2')" :src="require('@/assets/images/view/view5.png')" alt="">
+                        <img @click="normalPic('1',item.imagePath)" :src="require('@/assets/images/view/view4.png')" alt="">
+                        <!-- <img @click="normalPic('2',item.imagePath)" :src="require('@/assets/images/view/view5.png')" alt=""> -->
                     </div>
                     <i class="el-icon-close err" :style="{'display':index === active ? 'block' : 'none'}" @click="removeDialog(item)"></i>
                 </div>
@@ -55,7 +55,7 @@
         </div>
         <!-- 图片预览弹框 -->
         <el-dialog class="picProview" :title="namePicDif==='1' ? '图片预览' : '全景图预览'" :visible="proviewPic" @close="proviewPic=false" :append-to-body="true" width="70%">
-            <img :src="require('@/assets/logo.png')" alt="" :style="{'width':'100%','height':'100%'}">
+            <img :src="this.proLookPic" alt="" :style="{'width':'100%','height':'100%'}">
         </el-dialog>
         <!-- 视图导出弹窗 -->
        <viewDialog :item="dialogFlag" @closeDia="closeDia2" @noBorder="noBorder" 
@@ -443,6 +443,7 @@ import { log } from 'console';
                twoTimer:null, // 点击播放 有进度条时第一个定时器
                threeTimer:null, // 点击播放 有进度条时第二个定时器
                clickPlayTime:null,  // 点击播放时 应该传递的时间
+               proLookPic:'',  // 预览视点图片地址
           }
         },
         watch:{
@@ -527,9 +528,10 @@ import { log } from 'console';
                }).catch(()=>{});
             },
             // 点击图片预览
-            normalPic(eName){
+            normalPic(eName,photoLook){
                 this.namePicDif = eName;
                 this.proviewPic = true;
+                this.proLookPic = photoLook;
             },
             // 视点列表搜索
             searchBtn(){

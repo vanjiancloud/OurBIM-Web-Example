@@ -11,7 +11,12 @@
       </div>
       <!-- 按钮 -->
       <div class="right">   
-        <el-button type="primary" @click="addDoc">上传文档</el-button>
+        <el-button type="primary" @click="addDoc" class="upload-btn">
+          上传文档
+          <div class="uploadDoc" v-show="uploadDoc">
+            {{ uploadDoc }}
+          </div>
+        </el-button>
       </div>
     </div>
     <!-- 表格 -->
@@ -104,10 +109,12 @@
       <div class="box-one" v-show="isShow == 1">
         <el-form :model="formShare">
           <el-form-item label="有效期" label-width="110px">
-            <el-radio v-model="formShare.days" label="999">永久</el-radio>
-            <el-radio v-model="formShare.days" label="30">30天</el-radio>
-            <el-radio v-model="formShare.days" label="7">7天</el-radio>
-            <el-radio v-model="formShare.days" label="1">1天</el-radio>
+            <el-radio-group v-model="formShare.days">
+              <el-radio label="0">永久</el-radio>
+              <el-radio label="1">30天</el-radio>
+              <el-radio label="2">7天</el-radio>
+              <el-radio label="3">1天</el-radio>
+            </el-radio-group>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -193,7 +200,9 @@ export default {
     };
   },
   computed: {
-  
+    uploadDoc() {
+      return this.$store.state.uploadDoc;
+    },
   },
   created() {
     this.getCloudDocList();
@@ -736,7 +745,7 @@ export default {
 }
 .upload-btn {
   position: relative;
-  .uploadingNum {
+  .uploadDoc {
     position: absolute;
     top: -13px;
     right: -10px;

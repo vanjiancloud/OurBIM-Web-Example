@@ -56,6 +56,7 @@
 
 <script>
 import MODELAPI from "@/api/model_api";
+import { runInThisContext } from "vm";
 export default {
     props:{
         item:{
@@ -127,8 +128,11 @@ export default {
         },
         // 导出图片
         exportViewPhoto(){
+            let str = this.delInfo.imagePath;
+            let str2 = str.match(/view\/(\S*)\./)[1];
+            // console.log('pop',str2,this.delInfo);
             let params = {
-                fileName:this.delInfo.name
+                fileName:str2
             }
             MODELAPI.EXPORTIMG(params).then((res)=>{
                 if(res.data.code === 200){

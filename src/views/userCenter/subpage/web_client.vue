@@ -284,7 +284,7 @@
                               @click="addCom(listItem)"
                             >
                               <div class="img">
-                                <img v-if="listItem.ourbimComponentInfo.comUrl === 'default.png'" :src="require('@/assets/logo.png')" alt="" />
+                                <img v-if="listItem.ourbimComponentInfo.comUrl === 'default.png'" :src="require('@/assets/images/view/picFirst.png')" alt="" />
                                 <img v-else :src="listItem.ourbimComponentInfo.comUrl" alt="" />
                               </div>
                               <div class="name">{{ listItem.ourbimComponentInfo.comName }}</div>
@@ -2250,7 +2250,11 @@ export default {
               this.$refs.EscDialogItem.changeVisible(false);
             }
           } else if (realData.id === "15") {
-            this.$refs.getFooter.handleComOperateIcon(realData);
+            if(this.$refs.getFooter){
+              this.$refs.getFooter.handleComOperateIcon(realData);
+            }else{
+              return false;
+            }
           } else if (realData.id === "16") {
             // 距离上一次操作时长
             this.exitMiniprogram(realData.lastOperationTime);

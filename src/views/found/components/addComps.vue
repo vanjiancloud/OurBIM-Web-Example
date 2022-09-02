@@ -89,8 +89,8 @@
           font-size: 14px;
         "
       >
-        <span style="color: red">*</span>
-        文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
+        <!-- <span style="color: red">*</span>
+        文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。 -->
       </div>
       <div class="btn">
         <el-button
@@ -169,8 +169,8 @@ export default {
     };
   },
   computed: {
-    uploadingNum() {
-      return this.$store.state.uploadingNum;
+    uploadCom() {
+      return this.$store.state.uploadCom;
     },
   },
   created() {
@@ -187,8 +187,8 @@ export default {
     },
     changeUploadingNum(num) {
       this.$store.commit("changeState", {
-        key: "uploadingNum",
-        value: this.uploadingNum + num,
+        key: "uploadCom",
+        value: this.uploadCom + num,
       });
     },
     // 上传模型失败

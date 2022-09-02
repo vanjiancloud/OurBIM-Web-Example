@@ -9,6 +9,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
     state: {
         uploadingNum: 0,
+        uploadDoc: 0,
+        uploadCom: 0
     },
     mutations: {
         changeState(state, data) {
@@ -16,5 +18,3 @@ export default new Vuex.Store({
         }
     }
 })
-
-
