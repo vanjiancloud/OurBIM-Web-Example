@@ -131,7 +131,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer" :style="{'text-align':'center'}">
            <el-button @click="closeNewBuild" size="medium">取 消</el-button>
-           <el-button type="primary" @click="submitAddGroup" size="medium">确 定</el-button>
+           <el-button type="primary" @click="submitAddGroup('formInline')" size="medium">确 定</el-button>
       </div>   
     </el-dialog>
     <!-- 编辑自定义构件 -->
@@ -217,19 +217,19 @@ export default {
             {
               required: true, message: '必填项', trigger: 'blur'
             },
-            {
-              validator:(rules,value,callback) =>{
-                const resBol = this.componentsList.some(item=>{
-                  if(item.isGroup === '1'){
-                    return item.groupName === value
-                  }else{
-                    return item.ourbimComponentInfo.comName === value;
-                  }
-                })
-                resBol ? callback(new Error('名称重复')) : callback()
-              },
-              trigger:'change'            
-            }
+            // {
+            //   validator:(rules,value,callback) =>{
+            //     const resBol = this.componentsList.some(item=>{
+            //       if(item.isGroup === '1'){
+            //         return item.groupName === value
+            //       }else{
+            //         return item.ourbimComponentInfo.comName === value;
+            //       }
+            //     })
+            //     resBol ? callback(new Error('名称重复')) : callback()
+            //   },
+            //   trigger:'change'            
+            // }
           ]
         },
         rulesEditForm:{
@@ -421,21 +421,28 @@ export default {
       console.log('bgbgb',this.nextBread,this.nextBreadFlag);
     },
     // 新建分组弹框确定
-    submitAddGroup(){
-      let params = {
-        userId:Getuserid(),
-        groupId:this.idFirst,
-        groupName:this.formInline.name
-      }
-      MODELAPI.ADDCOMGROUP(params).then((res)=>{
-        if(res.data.code === 0){
-            this.getCompList();
-            this.$message.success(res.data.message);
-            this.addNewGroupDialog = false;
-        }else{
-            this.$message.warning(res.data.message);
-        }
-      }).catch(()=>{})
+    submitAddGroup(formName){
+      this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let params = {
+              userId:Getuserid(),
+              groupId:this.idFirst,
+              groupName:this.formInline.name
+            }
+            MODELAPI.ADDCOMGROUP(params).then((res)=>{
+              if(res.data.code === 0){
+                  this.getCompList();
+                  this.$message.success(res.data.message);
+                  this.addNewGroupDialog = false;
+              }else{
+                  this.$message.warning(res.data.message);
+              }
+            }).catch(()=>{})
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+      });
     },
     // 点击面包屑
     // clickBread(e,index){

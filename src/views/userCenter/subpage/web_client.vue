@@ -3043,6 +3043,7 @@ export default {
       }
       ::v-deep .el-tabs__item{ // （自定义构件）
         color:#fff;
+        padding: 0 60px;
       }
       ::v-deep .el-tabs__active-bar{ // （自定义构件）
         background-color: #fff;

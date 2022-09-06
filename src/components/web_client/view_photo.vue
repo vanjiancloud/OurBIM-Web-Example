@@ -340,7 +340,7 @@ import { log } from 'console';
                             trigger: "blur",
                         },
                         {
-                            pattern:/^((?!0)\d{1,3}|1000)$/, message: "请输入1~1000s之间的秒数", trigger: "blur",
+                            pattern:/^((?!0)\d{1,3}|1000)$/, message: "请输入1~1000s之间的秒数", trigger: "change",
                         }
                    ],
               },
@@ -352,24 +352,24 @@ import { log } from 'console';
                         message: "请输入名称",
                         trigger: "blur",
                     },
-                    {
-                      validator: (rules, value, callback) => {
-                        // 新增的视点动画的名字是否重复
-                        let resBol = null;
-                        console.log('8787',this.animNewarr);
-                        if(this.animNewarr.length === 0){
-                            resBol = false;
-                        }else{
-                            resBol = this.animNewarr.some((item) => {
-                                return  item.name === value;
-                            })
-                        }
-                        resBol
-                        ? callback(new Error('名称重复'))
-                        : callback()
-                      },
-                      trigger: 'change'
-                    }
+                    // {
+                    //   validator: (rules, value, callback) => {
+                    //     // 新增的视点动画的名字是否重复
+                    //     let resBol = null;
+                    //     console.log('8787',this.animNewarr);
+                    //     if(this.animNewarr.length === 0){
+                    //         resBol = false;
+                    //     }else{
+                    //         resBol = this.animNewarr.some((item) => {
+                    //             return  item.name === value;
+                    //         })
+                    //     }
+                    //     resBol
+                    //     ? callback(new Error('名称重复'))
+                    //     : callback()
+                    //   },
+                    //   trigger: 'change'
+                    // }
                 ]
             },
             //    proEditFlag:false, // 预览与编辑框(创建按钮相关)
@@ -841,20 +841,24 @@ import { log } from 'console';
              // 新创建空视图列表弹框（或改变视点间的时间） 确定按钮
             sureNewView(){
                  if(this.flagTime === ''){
-                    let params = {
-                      taskId:this.getProps.taskId,
-                      name:this.newViewForm.name
-                    }
-                   MODELAPI.CREATEANIM(params).then((res)=>{
-                    if(res.data.code === 200){
-                        this.newBlockView = false;
-                         this.getListsAnimations();
-                         this.$message({
-                            type: "success",
-                            message: "新建成功",
-                         });
-                     }
-                   })
+                    this.$refs["newViewForm"].validate((valid)=>{
+                        if(valid){
+                            let params = {
+                                taskId:this.getProps.taskId,
+                                name:this.newViewForm.name
+                            }
+                        MODELAPI.CREATEANIM(params).then((res)=>{
+                            if(res.data.code === 200){
+                                this.newBlockView = false;
+                                this.getListsAnimations();
+                                this.$message({
+                                    type: "success",
+                                    message: "新建成功",
+                                });
+                            }
+                        })
+                      }
+                    })
                 }else{
                     this.$refs["newTime"].validate((valid)=>{
                         if(valid){
