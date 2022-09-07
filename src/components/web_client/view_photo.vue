@@ -134,7 +134,7 @@
         <div class="proEditMain">
             <div class="proEditTop" onselectstart="return false;">
                 <div class="component">
-                    <img :style="{'width':'18px','height':'18px','margin-left':'10px'}" :src="require('@/assets/images/view/goujian.png')" alt="">
+                    <!-- <img :style="{'width':'18px','height':'18px','margin-left':'10px'}" :src="require('@/assets/images/view/goujian.png')" alt="">
                     <span>附加构件动画:</span>
                     <el-select v-model="optionsComponents" placeholder="请选择">
                         <el-option
@@ -143,10 +143,10 @@
                              :label="item.label"
                              :value="item.value">
                         </el-option>
-                    </el-select>
+                    </el-select> -->
                 </div>
                 <div class="order">
-                    <img :style="{'width':'18px','height':'18px','margin-left':'10px'}" :src="require('@/assets/images/view/xulie.png')" alt="">
+                    <!-- <img :style="{'width':'18px','height':'18px','margin-left':'10px'}" :src="require('@/assets/images/view/xulie.png')" alt="">
                     <span>附加序列动画:</span>
                     <el-select v-model="ordersValue" placeholder="请选择">
                         <el-option
@@ -155,7 +155,7 @@
                              :label="item.label"
                               :value="item.value">
                          </el-option>
-                    </el-select>
+                    </el-select> -->
                 </div>
                 <div class="play">
                     <div class="leftPlay" @click="logoClick('stop')" :style="{'cursor':'pointer'}" :class="animaViewPointer===undefined || animaViewPointer.length<2 ? 'noAllowed' : ''">
@@ -171,7 +171,7 @@
                     </div>
                 </div>
                 <div class="getVideo">
-                    <el-select v-model="resolutionValue" placeholder="请选择">
+                    <!-- <el-select v-model="resolutionValue" placeholder="请选择">
                         <el-option
                              v-for="item in  resolution"
                              :key="item.value"
@@ -180,7 +180,7 @@
                          </el-option>
                     </el-select>
                     <el-button round class="button">渲染</el-button>
-                    <el-button round class="button">导出</el-button>
+                    <el-button round class="button">导出</el-button> -->
                 </div>
                 <!-- 关闭按钮 -->
                 <i  class="el-icon-close closeProEdit" @click="proEditClose"></i>
@@ -535,12 +535,14 @@ import { log } from 'console';
             },
             // 视点列表搜索
             searchBtn(){
-                let newArrSear = this.pointList.filter((item)=>{
-                    if(this.input.trim() !== '' && item.name.indexOf(this.input.trim())>-1){
-                        return item;
-                    }
-                })
-                this.pointList = newArrSear;
+                if(this.input.trim() !== ''){
+                    let newArrSear = this.pointList.filter((item)=>{
+                        if(item.name.indexOf(this.input.trim())>-1){
+                            return item;
+                        }
+                    })
+                    this.pointList = newArrSear;
+                }
             },
             // 视点列表搜索框失去焦点时
             inputBlur(){
@@ -564,6 +566,7 @@ import { log } from 'console';
                 this.activeAnimation= -1;
                 this.num2= 0;
                 this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
+                this.logoClick('stop'); // 停止视图动画
             },
             runListPoint(){
                 this.ListPoint();
@@ -773,12 +776,14 @@ import { log } from 'console';
             },
             // 视点动画列表搜索
             searchAnim(){
-                let newArrSear = this.viewPointLists.filter((item)=>{
-                    if(this.inputTwo.trim() !== '' && item.name.indexOf(this.inputTwo.trim())>-1){
-                        return item;
-                    }
-                })
-                this.viewPointLists = newArrSear;
+                if(this.inputTwo.trim() !== ''){
+                    let newArrSear = this.viewPointLists.filter((item)=>{
+                        if(item.name.indexOf(this.inputTwo.trim())>-1){
+                            return item;
+                        }
+                    })
+                    this.viewPointLists = newArrSear;
+                }
             },
             // 视点动画列表搜索框失去焦点
             animBlur(){
@@ -810,7 +815,7 @@ import { log } from 'console';
                     this.activeAnimation = ind; 
                     //  this.proEditFlag=false;     
                     this.viewsPointesGet(item.viewId);     
-                    this.logoClick('stop');     
+                    this.logoClick('stop');   // 停止视图动画   
                 }
                 this.animViewId = item.viewId;
             },
@@ -819,6 +824,7 @@ import { log } from 'console';
                 this.activeAnimation=-1;
                 this.num2 = 0;
                 // this.proEditFlag=false; 
+                this.logoClick('stop');  // 停止视图动画
             },
             // 编辑视点动画的名称
             editPro(e,flags){
@@ -1594,6 +1600,7 @@ import { log } from 'console';
             position: absolute;
             top: 48%;
             left: 48%;
+            cursor: pointer;
         }
         .viewMorePic{
             position: relative;

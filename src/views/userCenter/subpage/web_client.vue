@@ -284,7 +284,7 @@
                               @click="addCom(listItem)"
                             >
                               <div class="img">
-                                <img v-if="listItem.ourbimComponentInfo.comUrl === 'default.png'" :src="require('@/assets/images/view/picFirst.png')" alt="" />
+                                <img v-if="listItem.ourbimComponentInfo.comUrl === 'default.png'" :src="require('@/views/manage/B.png')" alt="" />
                                 <img v-else :src="listItem.ourbimComponentInfo.comUrl" alt="" />
                               </div>
                               <div class="name">{{ listItem.ourbimComponentInfo.comName }}</div>

@@ -437,6 +437,7 @@ export default {
     }
     .closeIcon{
       margin-right: 16px;
+      cursor: pointer;
     }
   }
   // 中间
