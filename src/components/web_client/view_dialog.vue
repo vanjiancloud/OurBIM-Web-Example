@@ -13,7 +13,7 @@
                         <el-radio :label="2" disabled>360°全景图</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="分辨率" label-width="150px">
+                <!-- <el-form-item label="分辨率" label-width="150px">
                      <el-select v-model="value" placeholder="请选择">
                         <el-option
                         v-for="item in options"
@@ -22,7 +22,7 @@
                         :value="item.value">
                         </el-option>
                     </el-select>
-                </el-form-item>
+                </el-form-item> -->
             </el-form>
             <el-button class="btn" type="primary" @click="exportViewPhoto">导出</el-button>
           </div>
@@ -128,19 +128,51 @@ export default {
         },
         // 导出图片
         exportViewPhoto(){
-            let str = this.delInfo.imagePath;
-            let str2 = str.match(/view\/(\S*)\./)[1];
-            // console.log('pop',str2,this.delInfo);
-            let params = {
-                fileName:str2
+            let url = this.delInfo.imagePath;
+            this.outPic(url);
+            // let str = this.delInfo.imagePath;
+            // let str2 = str.match(/view\/(\S*)\./)[1];
+            // // console.log('pop',str2,this.delInfo);
+            // let params = {
+            //     fileName:str2
+            // }
+            // MODELAPI.EXPORTIMG(params).then((res)=>{
+            //     if(res.data.code === 200){
+            //         console.log(res.data.message);
+            //     }else if(res.data.code === 400){
+            //         this.$message.error(res.data.message);
+            //     }
+            // }).catch(()=>{})
+        },
+        outPic(url){
+            //实例化一个img对象
+            const img = new Image();
+            //设置img的图片路径
+            img.src = url;
+            //设置跨域解决
+            img.setAttribute('crossOrigin', 'Anonymous');
+            //img加载完后处理
+            img.onload = function() {
+                //创建一个canvas对象
+                const canvas = document.createElement('canvas')
+                //把图片的宽度设为canves的宽度
+                canvas.width = 1200
+                //把图片的高度设为canves的高度
+                canvas.height = 700
+                //创建一个2d画布
+                const ctx = canvas.getContext('2d')
+                // 将img中的内容画到画布上
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+                // 将画布内容转换为base64
+                let base64 = canvas.toDataURL()
+                // 创建a链接
+                const a = document.createElement('a')
+                a.href = base64
+                a.download = ''
+                // 触发a链接点击事件，浏览器开始下载文件
+                a.click()
             }
-            MODELAPI.EXPORTIMG(params).then((res)=>{
-                if(res.data.code === 200){
-                    console.log(res.data.message);
-                }else if(res.data.code === 400){
-                    this.$message.error(res.data.message);
-                }
-            }).catch(()=>{})
+
         }
     }
 }
