@@ -204,7 +204,7 @@ const MODELAPI = {
     EXPORTIMG: params => {
         return request({
             url: '/OurBim/exportViewImg',
-            method: 'post',
+            method: 'get',
             params
         })
     },

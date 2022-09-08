@@ -444,6 +444,7 @@ import { log } from 'console';
                threeTimer:null, // 点击播放 有进度条时第二个定时器
                clickPlayTime:null,  // 点击播放时 应该传递的时间
                proLookPic:'',  // 预览视点图片地址
+               addViewTimeFlage:true, // 防止连续点击视图动画加号
           }
         },
         watch:{
@@ -937,22 +938,34 @@ import { log } from 'console';
             },
             // 点击编辑预览的视点的加号时
             addView(flags){
-                let params = {
-                    viewId: this.animViewId,
-                    taskId: this.getProps.taskId,
-                    orderInfo: flags === 'one' ? 1 : (flags + 2)
-                }
-                MODELAPI.ADDVIEWSTOANIM(params).then((res)=>{
-                    if(res.data.code === 200){
-                        this.viewsPointesGet(this.animViewId);
-                        this.getListsAnimations();
-                    }else{
-                        this.$message({
-                            type: 'error',
-                            message: res.data.message
-                        });
+                if(this.addViewTimeFlage === true){
+                    this.addViewTimeFlage =false;
+                    let params = {
+                        viewId: this.animViewId,
+                        taskId: this.getProps.taskId,
+                        orderInfo: flags === 'one' ? 1 : (flags + 2)
                     }
-                }).catch(()=>{})
+                    MODELAPI.ADDVIEWSTOANIM(params).then((res)=>{
+                        if(res.data.code === 200){
+                            setTimeout(()=>{
+                                this.viewsPointesGet(this.animViewId);
+                                this.getListsAnimations();
+                            },1000)
+                        }else{
+                            this.$message({
+                                type: 'error',
+                                message: res.data.message
+                            });
+                        }
+                    }).catch(()=>{}).finally(()=>{
+                        setTimeout(()=>{
+                            this.addViewTimeFlage = true;
+                        },3000);
+                    });
+                }else{
+                    this.$message.warning('2秒后可操作做');
+                }
+                
             },
             // 点击视图动画里面的视点图片
             selectPoints(index){
