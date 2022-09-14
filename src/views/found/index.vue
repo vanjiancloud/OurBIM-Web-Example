@@ -162,7 +162,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer" :style="{'text-align':'center'}">
         <el-button @click="closeEditCom">取 消</el-button>
-        <el-button type="primary" @click="editSubmit">确 定</el-button>
+        <el-button type="primary" @click="editSubmit('editForm')">确 定</el-button>
       </div>
     </el-dialog>
     </div>
@@ -237,19 +237,21 @@ export default {
             required:true,
             message:'请输入名称',
             trigger:'blur'
-          },{
-            validator:(rules,value,callback) =>{
-              const resBol = this.componentsList.some(item=>{
-                if(item.isGroup === '1'){
-                  return item.groupName === value && item.id !== this.selectRowInfo.id;
-                }else{
-                  return item.ourbimComponentInfo.comName === value && item.ourbimComponentInfo.comId !== this.selectRowInfo.comId;
-                }
-              })
-              resBol ? callback(new Error('名称重复')) : callback()
-            },
-            trigger:'change'
-          }]
+          },
+          // {
+          //   validator:(rules,value,callback) =>{
+          //     const resBol = this.componentsList.some(item=>{
+          //       if(item.isGroup === '1'){
+          //         return item.groupName === value && item.id !== this.selectRowInfo.id;
+          //       }else{
+          //         return item.ourbimComponentInfo.comName === value && item.ourbimComponentInfo.comId !== this.selectRowInfo.comId;
+          //       }
+          //     })
+          //     resBol ? callback(new Error('名称重复')) : callback()
+          //   },
+          //   trigger:'change'
+          //  }
+          ]
          },
          nextBread:'',   // 控制是否有下一级的面包屑 
          nextBreadFlag:false,
@@ -382,24 +384,30 @@ export default {
         this.$refs["editForm"].resetFields();
     },
     // 编辑自定义构件确定
-    editSubmit(){
-      console.log('确定',this.editForm);
-      let params = {
-          userId:Getuserid(),
-          groupId: this.selectRowInfo.id,
-          groupName:this.editForm.name,
-          parentId:this.selectVal
-      }
-      MODELAPI.UPDATECOMGROUP(params).then((res)=>{
-        if(res.data.code === 0){
-           this.editComDialog = false;
-           this.$message({
-             type: "success",
-             message: res.data.message,
-           });
-            this.getCompList();
-        }
-      })
+    editSubmit(editForm){
+      // console.log('确定',this.editForm);
+        this.$refs[editForm].validate((valid) => {
+          if (valid) {
+            let params = {
+              userId:Getuserid(),
+              groupId: this.selectRowInfo.id,
+              groupName:this.editForm.name,
+              parentId:this.selectVal
+          }
+          MODELAPI.UPDATECOMGROUP(params).then((res)=>{
+            if(res.data.code === 0){
+              this.editComDialog = false;
+              this.$message({
+                type: "success",
+                message: res.data.message,
+              });
+                this.getCompList();
+            }
+          })
+         }else {
+            return false;
+          }
+        });
     },
     // 轮询自定义构件
     setPollingComp(){

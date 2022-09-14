@@ -203,7 +203,7 @@ const MODELAPI = {
     // 视点导出图片（视图）
     EXPORTIMG: params => {
         return request({
-            url: '/OurBim/exportViewImg',
+            url: '/viewOperation/exportImg',
             method: 'get',
             params
         })

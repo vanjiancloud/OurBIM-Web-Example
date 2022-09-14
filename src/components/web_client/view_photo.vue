@@ -59,7 +59,7 @@
         </el-dialog>
         <!-- 视图导出弹窗 -->
        <viewDialog :item="dialogFlag" @closeDia="closeDia2" @noBorder="noBorder" 
-        :delItem ="delFlag" :delInfo="delInfo" @pointListSon="pointListSon" 
+        :delItem ="delFlag" :delInfo="delInfo" @pointListSon="pointListSon" :taskid="taskId"
         @runListPoint = "runListPoint"
         >
         </viewDialog>

@@ -13,7 +13,7 @@
                         <el-radio :label="2" disabled>360°全景图</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <!-- <el-form-item label="分辨率" label-width="150px">
+                <el-form-item label="分辨率" label-width="150px">
                      <el-select v-model="value" placeholder="请选择">
                         <el-option
                         v-for="item in options"
@@ -22,12 +22,12 @@
                         :value="item.value">
                         </el-option>
                     </el-select>
-                </el-form-item> -->
+                </el-form-item>
             </el-form>
             <el-button class="btn" type="primary" @click="exportViewPhoto">导出</el-button>
           </div>
           <div class="progress">
-              <el-progress :percentage="90" :color="customColor"></el-progress>
+              <el-progress :percentage="100" :color="customColor"></el-progress>
           </div>
         </div>
         <!-- 删除框 -->
@@ -70,26 +70,30 @@ export default {
         delInfo:{   // 删除或者导出时用的字段
             type: Object,
             default: () => ({})
+        },
+        taskid:{
+            type: String,
+            default: ''
         }
     },
     data(){
         return{
             radio:1,
-            value:'2',
+            value:'720',
             options: [{
-                value: '1',
+                value: '720',
                 label: '1280×720 (720p)'
                 }, {
-                value: '2',
+                value: '1080',
                 label: '1920×1080 (1080p)'
                 }, {
-                value: '3',
+                value: '2k',
                 label: '2560×1440 (2K)'
                 }, {
-                value: '4',
+                value: '4k',
                 label: '3840×2160 (4K)'
                 }, {
-                value: '5',
+                value: '8k',
                 label: '7680×4320 (8K)'
             }],
             pointList:[],
@@ -128,21 +132,24 @@ export default {
         },
         // 导出图片
         exportViewPhoto(){
-            let url = this.delInfo.imagePath;
-            this.outPic(url);
+            // let url = this.delInfo.imagePath;
+            // this.outPic(url);
+            console.log('44',this.delInfo);
             // let str = this.delInfo.imagePath;
             // let str2 = str.match(/view\/(\S*)\./)[1];
             // // console.log('pop',str2,this.delInfo);
-            // let params = {
-            //     fileName:str2
-            // }
-            // MODELAPI.EXPORTIMG(params).then((res)=>{
-            //     if(res.data.code === 200){
-            //         console.log(res.data.message);
-            //     }else if(res.data.code === 400){
-            //         this.$message.error(res.data.message);
-            //     }
-            // }).catch(()=>{})
+            let params = {
+                taskId:this.taskid,
+                imgType:this.value,
+                tId:this.delInfo.tid
+            }
+            MODELAPI.EXPORTIMG(params).then((res)=>{
+                if(res.data.code === 0){
+                    this.$message.success('开始渲染');
+                }else{
+                    this.$message.error(res.data.message);
+                }
+            }).catch(()=>{})
         },
         outPic(url){
             //实例化一个img对象
