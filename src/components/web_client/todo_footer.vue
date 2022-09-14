@@ -78,12 +78,12 @@
             />
           </el-tooltip>
         </div>
-        <!-- 视角 -->
+        <!-- 漫游导航（视角） -->
         <div
           class="image-main"
           v-if="showBar(imgList[0].id) && showTodoIconObj.view"
         >
-          <el-tooltip
+          <!-- <el-tooltip
             placement="top"
             v-model="personTool"
             transition="el-fade-in-linear"
@@ -101,7 +101,7 @@
                   v-text="item.name"
                 ></div>
               </div>
-            </div>
+            </div> -->
             <el-tooltip
               class="item"
               effect="dark"
@@ -116,12 +116,13 @@
                 mode=""
               />
             </el-tooltip>
-          </el-tooltip>
+          <!-- </el-tooltip> -->
         </div>
         <!-- 移动速度 -->
+          <!-- v-if="showBar(imgList[1].id) && showTodoIconObj.speed" -->
         <div
           class="image-main"
-          v-if="showBar(imgList[1].id) && showTodoIconObj.speed"
+          v-if="false"
         >
           <el-tooltip
             class="item"
@@ -326,9 +327,10 @@
           </el-tooltip>
         </div>
         <!-- 小地图 -->
+          <!-- v-if="showBar(imgList[5].id) && showTodoIconObj.map" -->
         <div
           class="image-main"
-          v-if="showBar(imgList[5].id) && showTodoIconObj.map"
+          v-if="false"
         >
           <el-tooltip
             class="item"
@@ -345,20 +347,20 @@
             />
           </el-tooltip>
         </div>
-        <!-- 关注视点 -->
-        <div
+        <!-- 关注视点 (视图) -->
+         <div
           class="image-main"
           v-if="showBar(imgList[6].id) && showTodoIconObj.camera"
         >
-          <el-tooltip
+          <!-- <el-tooltip
             popper-class="follow-bgi"
             placement="top"
             :enterable="false"
             v-model="followTool"
             transition="el-fade-in-linear"
             manual
-          >
-            <div slot="content" class="follow-main">
+          > -->
+            <!-- <div slot="content" class="follow-main">
               <div class="follow-list" v-if="pointList">
                 <div
                   class="follow-table"
@@ -379,7 +381,7 @@
               <div class="add-follow" @click="InsertFollow">
                 <i class="el-icon-plus"></i>
               </div>
-            </div>
+            </div> -->
             <el-tooltip
               class="item"
               effect="dark"
@@ -394,7 +396,32 @@
                 mode=""
               />
             </el-tooltip>
-          </el-tooltip>
+          <!-- </el-tooltip> -->
+          <el-collapse-transition>
+            <div class="show-slice show-com" v-if="imgList[6].state === 1" :style="{'left':'16%','top':'-83px'}">
+            <!-- <div class="show-slice show-com" v-if="false"> -->
+              <el-tooltip
+                v-for="(item, index) in angleList"
+                :key="index"
+                class="item"
+                :enterable="false"
+                effect="dark"
+                :content="item.content"
+                placement="left"
+              >
+                <div>
+                  <!-- @click.stop="comItemClick(item)" -->
+                  <img
+                    class="slice-img com-img"
+                    :src="item.active ? item.activeImg : item.img"
+                    @click.stop="angleListClick(item)"
+                    :style="{'cursor':'pointer'}"
+                    mode=""
+                  />
+                </div>
+              </el-tooltip>
+            </div>
+          </el-collapse-transition>
         </div>
         <!-- 模型动画 -->
         <div
@@ -767,6 +794,23 @@ export default {
           active: false,
         },
       ],
+      // (视图)
+       angleList:[
+        {
+          content: "创建视图",
+          name: "translate",
+          img: require("@/assets/images/todo/unchecked/viewList/create.png"),
+          activeImg: require("@/assets/images/todo/check/viewList/create.png"),
+          active: false,
+        },
+        {
+          content: "视点动画",
+          name: "scale",
+          img: require("@/assets/images/todo/unchecked/viewList/animation.png"),
+          activeImg: require("@/assets/images/todo/check/viewList/animation.png"),
+          active: false,
+        }
+      ],
       cuttingList: [
         {
           content: null,
@@ -1136,29 +1180,67 @@ export default {
   },
   mounted() {
     window.addEventListener("click", this.clickOther);
+    // view_photo传递来的 关闭视图高亮（视图）
+    this.$EventBus.$on('okok',(val)=>{
+      if(val === false){
+        if(this.imgList[6].state === 1){
+           this.imgList[6].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+          this.imgList[6].url = oldUrl;
+        }
+      }
+    })
   },
   updated(){
-      // 构件库状态变化 决定contentLogo的值
+      // 构件库 和 浏览器 状态变化 决定contentLogo和browerLogo的值
       if(this.imgList[14].state === 0){   // ---555
-           this.contentLogo = false;  
-        }else{
-           this.contentLogo = true
-        }
-      // 构件库状态变化 决定contentLogo的值
+        this.contentLogo = false;  
+      }else{
+        this.contentLogo = true
+      }
       if(this.imgList[10].state === 0){   // ---555
-           this.browerLogo = false;  
-        }else{
-           this.browerLogo = true
-        }
+        this.browerLogo = false;  
+      }else{
+        this.browerLogo = true;
+      }
       this.noneBlock();
       this.$emit('passContentLogo',this.contentLogo);
       this.$emit('passBrowerLogo',this.browerLogo);
+    //  是否选中 视图 （视图）
+    if(this.imgList[6].state === 0){
+      this.angleList.forEach(item =>{
+        item.active = false
+      });
+      this.$emit('showViewPhoto','0');
+    }
   },
   beforeDestroy() {
     // 实例销毁之前对点击事件进行解绑
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
+    // 点击视图上的两个按钮 (视图)
+     angleListClick(item) {
+      this.angleList.forEach((row) => {
+        if (item.content === row.content) {
+          row.active = true;
+        } else {
+          row.active = false;
+        }
+      });
+      let mode = "";
+      switch (item.content) {
+        case "创建视图":
+          mode = "1";
+          break;
+        case "视点动画":
+          mode = "2";
+          break;
+        default:
+          break;
+      }
+      this.$emit('showViewPhoto',mode);
+    },
     showHideItemClick(value) {
       // 隐藏 隔离 显示
       switch (value) {
@@ -1579,6 +1661,10 @@ export default {
        * @Date: 2021-03-17 09:51:33
        * @description: 关闭tool
        */
+      // 如果视图被选中 就阻止点击其他地方关闭视图的功能 （视图）
+      if(this.imgList[0].state = 1){
+        return;
+      }
       if (this.isMask) {
         return;
       }
@@ -1680,12 +1766,12 @@ export default {
         action: "addViewPoint",
       };
       this.UpdateOrder(params).then(() => {
-        this.followTool = false;
+        // this.followTool = false;
         this.ListPoint();
-        this.dialogEdit = false;
-        let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
-        this.imgList[6].url = oldUrl;
-        this.imgList[6].state = 0;
+        // this.dialogEdit = false;  // 控制编辑视角名称的弹框
+        // let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+        // this.imgList[6].url = oldUrl;
+        // this.imgList[6].state = 0;
       });
     },
     EditFollow(e) {
@@ -1903,13 +1989,36 @@ export default {
     },
     // 移动 旋转 缩放 显示隐藏
     noneBlock(){
-      if(this.contentLogo===false && this.lockState === false){
+     if(this.contentLogo===false && this.lockState === false){
         this.totalLogo = false
       }else if(this.contentLogo===true || this.lockState === true){
         this.totalLogo = true
-       }
+     }
     },
     handleOrder(e) {
+      // 除了漫游 以及 属性, 点击其他图标时 关闭漫游弹框---
+      if(e != 0 && e != 11 ){ 
+        if(this.imgList[0].state === 1){
+           this.$emit("listenTodo", {
+            state: 0,
+            type: 0,
+          });
+        };
+      }
+      // 点击浏览器时 关闭漫游高亮---
+      if(e === 10){  
+        if(this.imgList[0].state === 1){
+          this.imgList[0].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[0].name}`);
+          this.imgList[0].url = oldUrl;
+        }
+        // 点击浏览器时 关闭视图高亮（视图）
+        if(this.imgList[6].state === 1){
+           this.imgList[6].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+          this.imgList[6].url = oldUrl;
+        }
+      }
       console.log("e=", e, "oldState=", this.oldState);
       this.footerIconChange(e);
       // 功能未开放 模型动画
@@ -2056,6 +2165,21 @@ export default {
       }
       if (e === 0) {
         this.personTool = this.imgList[e].state === 1 ? true : false;
+        // 漫游导航---
+        this.$emit("listenTodo", {
+            state: this.imgList[0].state,
+            type: 0,
+          });
+        // 打开漫游导航时 关闭浏览器---
+        if (this.imgList[10].state === 1) {
+          this.imgList[10].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[10].name}`);
+          this.imgList[10].url = oldUrl;
+          this.$emit("listenTodo", {
+            state: this.imgList[10].state,
+            type: 10,
+          });
+         }
       }
       // 标签 重置模型浏览器
       if (e === 4) {
@@ -2123,6 +2247,16 @@ export default {
       }
       if (e === 6) {
         this.followTool = this.imgList[e].state === 1 ? true : false;
+         // 打开视图时 关闭浏览器 （视图）
+        if (this.imgList[10].state === 1) {
+          this.imgList[10].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[10].name}`);
+          this.imgList[10].url = oldUrl;
+          this.$emit("listenTodo", {
+            state: this.imgList[10].state,
+            type: 10,
+          });
+         }
       }
       if (e !== 0) {
         this.$emit("listenTodo", {
@@ -2257,8 +2391,8 @@ export default {
         height: 20px;
       }
     }
-    .show-split{
-      left: 20%;
+    .show-split{ // 刨切图标偏移修改---
+      left: 10px !important;
     }
     .show-com {
       top: -117px;

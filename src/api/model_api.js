@@ -103,6 +103,193 @@ const MODELAPI = {
             params
         })
     },
+
+    // 更新视点 (视图)
+    COVERVIEW: params => {
+        return request({
+            url: '/ViewPoint/coverView',
+            method: 'post',
+            params
+        })
+    },
+    // 查询 视点动画列表（视图）
+    SERACHCIEWANIMATION: params => {
+        return request({
+            url: '/ViewPoint/getViewAnimList',
+            method: 'get',
+            params
+        })
+    },
+    // 创建空的视点动画（视图）
+    CREATEANIM: params => {
+        return request({
+            url: '/ViewPoint/createViewAnim',
+            method: 'post',
+            params
+        })
+    },
+    // 修改视点动画的名称（视图）
+    CHANGENAMEANIM: params => {
+        return request({
+            url: '/ViewPoint/updateViewAnimName',
+            method: 'post',
+            params
+        })
+    },
+    // 删除视点动画（视图）
+    DELETEANIM: params => {
+        return request({
+            url: '/ViewPoint/delViewAnim',
+            method: 'post',
+            params
+        })
+    },
+    // 添加视点至视点动画序列中（视图）
+    ADDVIEWSTOANIM: params => {
+        return request({
+            url: '/ViewPoint/addViewImgToViewAnim',
+            method: 'post',
+            params
+        })
+    },
+    // 根据视图id获取视点（视图）
+    GETANIMBYVIEW: params => {
+        return request({
+            url: '/ViewPoint/getAnimByViewId',
+            method: 'get',
+            params
+        })
+    },
+    // 删除视图动画中的视点（视图）
+    REMOVEANIMPOINTERS: params => {
+        return request({
+            url: '/ViewPoint/delViewImgFromViewAnim',
+            method: 'post',
+            params
+        })
+    },
+    // 修改视图动画中的视点间的过渡时间（视图）
+    UPDATEPLAYTIME: params => {
+        return request({
+            url: '/ViewPoint/updatePlayTimeByEdit',
+            method: 'post',
+            params
+        })
+    },
+    // 视点动画预览（视图）
+    VIEWANIMPREVIEW: params => {
+        return request({
+            url: '/ViewPoint/viewAnimPreview',
+            method: 'post',
+            params
+        })
+    },
+    // 点击暂停、播放、停止时（视图）
+    PLAYOPERATION: params => {
+        return request({
+            url: '/ViewPoint/playOperation',
+            method: 'post',
+            params
+        })
+    },
+    // 拖拽视图里面的视点交换位置（视图）
+    UPDATEORDERBYMOUSE: params => {
+        return request({
+            url: '/ViewPoint/updateOrderByMouse',
+            method: 'post',
+            params
+        })
+    },
+    // 视点导出图片（视图）
+    EXPORTIMG: params => {
+        return request({
+            url: '/viewOperation/exportImg',
+            method: 'get',
+            params
+        })
+    },
+
+    // 获取自定义构件列表 （自定义构件）
+    GETCOMLISTBYPARENTID: params => {
+        return request({
+            url: '/comControl/getComListByParentId',
+            method: 'GET',
+            params
+        })
+    },
+    // 删除自定义构件分组/构件 （自定义构件）
+    DELETEUSERCOM: params => {
+        return request({
+            url: '/comControl/deleteUserCom',
+            method: 'POST',
+            params
+        })
+    },
+    // 新建分组 （自定义构件）
+    ADDCOMGROUP: params => {
+        return request({
+            url: '/comControl/addComGroup',
+            method: 'POST',
+            params
+        })
+    },
+    // 获取所有自定义构建 （自定义构件）
+    GETALLCOM: params => {
+        return request({
+            url: '/comControl/getAllCom',
+            method: 'get',
+            params
+        })
+    },
+    // 自定义构建换组、更名 （自定义构件）
+    UPDATECOMGROUP: params => {
+        return request({
+            url: '/comControl/updateComGroup',
+            method: 'post',
+            params
+        })
+    },
+    // 获取所有文档信息（文档管理）
+    GETUSERALLCLOUDDOC: params => {
+        return request({
+            url: '/cloudDoc/getUserAllCloudDoc',
+            method: 'get',
+            params
+        })
+    },
+    // 获取文档预览 或 在线编辑链接（文档管理）
+    GETDOCURL: params => {
+        return request({
+            url: '/cloudDoc/getDocUrl',
+            method: 'get',
+            params
+        })
+    },
+    // 删除文档（文档管理）
+    DELETECLOUDDOC: params => {
+        return request({
+            url: '/cloudDoc/deleteCloudDoc',
+            method: 'post',
+            params
+        })
+    },
+    // 下载文档（文档管理）
+    GETCLOUDDOCDOWNLOADURL: params => {
+        return request({
+            url: '/cloudDoc/getCloudDocDownloadUrl',
+            method: 'get',
+            params
+        })
+    },
+    // 分享文档（文档管理）
+    GETDOCSHAREUEL: params => {
+        return request({
+            url: '/cloudDoc/getDocShareUrl',
+            method: 'get',
+            params
+        })
+    },
+
     // 还原模型
     UPDATERESETANGLE: params => {
         return request({

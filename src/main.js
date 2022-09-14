@@ -87,8 +87,11 @@ const i18n = new VueI18n({
                 node: '节点:',
                 into: '进入项目',
                 release: '我的发布',
-                management: '项目管理',
+                management: '文件管理',
+                modelmanage: '模型管理', // 模型管理 （修改项目中心）
+                docmanage: '文档管理', // (文档管理)
                 Create: '创建项目',
+                makeComponent: 'BIM构件库', //自定义构件
                 Account: '账户管理',
                 // 我的发布
                 wholes: '全部',
@@ -108,6 +111,12 @@ const i18n = new VueI18n({
                 operation: '操作',
                 edit: '编辑',
                 del: '删除',
+                // 自定义构件 应用管理
+                compApplyname: '构件名称',
+                componentId: '构件ID',
+                componentSingle: '构件',
+                projectMore: '分组',
+                uploadComp: '上传构件',
                 // 创建应用
                 Step: '步骤一',
                 twoStep: '步骤二',
@@ -242,7 +251,7 @@ const i18n = new VueI18n({
                     },
                     tooltipList: {
                         toolPerson: ["第一人称", "上帝视角", "第三人称"],
-                        tool: ["视角", "移动速度", "模型剖切", "测量", "标签", "小地图", "关注视点", "模型动画", "分解模型", "渲染环境", "浏览器", "属性"],
+                        tool: ["漫游导航", "移动速度", "模型剖切", "测量", "标签", "小地图", "视图", "模型动画", "分解模型", "渲染环境", "浏览器", "属性"],
                         subtool: ["坐标", "距离", "角度", "设置"],
                         sliceTool: ["移动", "旋转", "反选", "指定", "重置"],
                     },
@@ -302,7 +311,10 @@ const i18n = new VueI18n({
                 into: 'Application',
                 release: 'release',
                 management: 'Application',
+                modelmanage: 'Model management', // 模型管理 （修改项目中心）
+                docmanage: 'Document management', // （文档管理）
                 Create: 'Create app',
+                makeComponent: 'Custom component', // 自定义构件
                 Account: 'Account',
                 // 我的发布
                 wholes: 'whole',
@@ -322,6 +334,12 @@ const i18n = new VueI18n({
                 operation: 'Operation',
                 edit: 'Edit',
                 del: 'Delete',
+                // 自定义构件 应用管理
+                compApplyname: 'Component name',
+                componentId: 'Component ID',
+                componentSingle: 'Component',
+                projectMore: 'Groups',
+                uploadComp: 'Upload component',
                 // 创建应用
                 Step: 'Step one',
                 twoStep: 'Step two',

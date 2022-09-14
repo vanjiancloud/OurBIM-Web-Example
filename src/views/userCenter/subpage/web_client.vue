@@ -203,7 +203,7 @@
             </table> -->
           </div>
         </div>
-        <!-- 构件库 -->
+        <!-- 构件库 （自定义构件） -->
         <div v-show="comVisible">
           <div
             class="bim-info com-box"
@@ -228,43 +228,74 @@
                 ></i>
               </div>
             </div>
-            <div class="detail-main detail-collapse">
-              <!-- <el-collapse v-model="componentCollapse" accordion>
-                <el-collapse-item title="二维码" name="1">
-                  <div class="collapse-main">
-                    <el-button size="mini" type="primary" @click="AddQrCode"
-                      >新增</el-button
-                    >
-                  </div>
-                </el-collapse-item>
-              </el-collapse> -->
-
-              <!-- 公共构件库列表 -->
-              <el-collapse
-                accordion
-                v-for="(item, index) in publicComList"
-                :key="item.title"
-                class=""
-              >
-                <el-collapse-item :title="item.group" :name="index">
-                  <div class="collapse-main">
-                    <div class="oooooooo">
-                      <div
-                        class="publicComListItem"
-                        v-for="listItem in item.rsComponent"
-                        :key="listItem.id"
-                        @click="addCom(listItem)"
-                      >
-                        <div class="img">
-                          <img :src="listItem.comUrl" alt="" />
-                        </div>
-                        <div class="name">{{ listItem.comName }}</div>
+                <div class="detail-main detail-collapse">
+                  <!-- <el-collapse v-model="componentCollapse" accordion>
+                    <el-collapse-item title="二维码" name="1">
+                      <div class="collapse-main">
+                        <el-button size="mini" type="primary" @click="AddQrCode"
+                          >新增</el-button
+                        >
                       </div>
-                    </div>
-                  </div>
-                </el-collapse-item>
-              </el-collapse>
-            </div>
+                    </el-collapse-item>
+                  </el-collapse> -->
+
+                  <!-- 公共构件库列表 -->
+                <el-tabs v-model="activeName" @tab-click="changeTab">
+                  <el-tab-pane label="公共构件" name="first">
+                    <el-collapse
+                      accordion
+                      v-for="(item, index) in publicComList"
+                      :key="item.title"
+                      class=""
+                    >
+                      <el-collapse-item :title="item.group" :name="index">
+                        <div class="collapse-main">
+                          <div class="oooooooo">
+                            <div
+                              class="publicComListItem"
+                              v-for="listItem in item.rsComponent"
+                              :key="listItem.id"
+                              @click="addCom(listItem)"
+                            >
+                              <div class="img">
+                                <img :src="listItem.comUrl" alt="" />
+                              </div>
+                              <div class="name">{{ listItem.comName }}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </el-collapse-item>
+                    </el-collapse>
+                  </el-tab-pane>
+                  <el-tab-pane label="自定义构件" name="second">
+                    <el-collapse
+                      accordion
+                      v-for="(item, index) in selfComList"
+                      :key="item.id"
+                      class=""
+                    >
+                      <el-collapse-item :title="item.groupName" :name="index">
+                        <div class="collapse-main">
+                          <div class="oooooooo">
+                            <div
+                              class="publicComListItem"
+                              v-for="listItem in item.data"
+                              :key="listItem.ourbimComponentInfo.comId"
+                              @click="addCom(listItem)"
+                            >
+                              <div class="img">
+                                <img v-if="listItem.ourbimComponentInfo.comUrl === 'default.png'" :src="require('@/views/manage/B.png')" alt="" />
+                                <img v-else :src="listItem.ourbimComponentInfo.comUrl" alt="" />
+                              </div>
+                              <div class="name">{{ listItem.ourbimComponentInfo.comName }}</div>
+                            </div>
+                          </div>
+                        </div>
+                      </el-collapse-item>
+                    </el-collapse>
+                  </el-tab-pane>
+                </el-tabs>
+                </div>
           </div>
         </div>
         <!-- 二维码 -->
@@ -301,8 +332,10 @@
         :showTodoIconObj="showTodoIconObj"
         @passContentLogo="passContentLogo"
         @passBrowerLogo="passBrowerLogo"
-        :lockState="lockState"
+        :lockState="lockState" 
+        @showViewPhoto="showViewPic"
       ></todo-footer>
+      <!-- (视图) @showViewPhoto="showViewPic" -->
         <!-- :threeLogo="threeLogo" -->
       <view-cube
         v-if="controllerInfo.viewCube"
@@ -325,8 +358,16 @@
       ></tag-tree>
     </div>
     <!-- 漫游导航 -->
-    <roamNavigate></roamNavigate>
-    
+    <roamNavigate
+    :taskId="taskId"
+    @listenTodo="listenTodo"
+    @closePart="closePart"
+    v-if="viewAngle &&
+              viewAngle.type === 0 &&
+              viewAngle.state === 1"
+    ></roamNavigate>
+    <!-- (视图) -->
+    <viewPhoto :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
       ref="teamworkDialogRef"
@@ -350,6 +391,7 @@ import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
 import roamNavigate from "@/components/web_client/roam_navigate";
+import viewPhoto from "@/components/web_client/view_photo";
 import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
 
@@ -358,6 +400,8 @@ import resMessage from "../../../utils/res-message";
 import TeamworkDialog from "../../manage/TeamworkDialog.vue";
 
 import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
+
+import { Getuserid } from "@/store/index.js"; // (自定义构件)
 
 export default {
   name: "look_app",
@@ -370,7 +414,8 @@ export default {
     qrcodePart,
     TeamworkDialog,
     EscDialogItem,
-    roamNavigate
+    roamNavigate,
+    viewPhoto,
   },
   data() {
     return {
@@ -378,6 +423,7 @@ export default {
       // myProjectId:'',
       // modeData:[], // 树形结构数据
       // lockLogo:false, // 锁的打开和关闭
+      showViewPicture:'0', // 传递给 viewPhoto 控制视图列表的显示 (视图)
       maxNodes:false,
       envProgress:0,   // 环境加载
       lockState:false,   // 最后点击的小锁的状态
@@ -448,7 +494,8 @@ export default {
       websock: null,
       isSocket: false,
       socketTimer: null,
-      browserInfo: null,
+      browserInfo: null, //模型浏览器
+      viewAngle:null,  // 漫游导航
       natureInfo: null,
       shadowType: null,
       listenTodoInfo: null,
@@ -473,6 +520,8 @@ export default {
       comVisible: false,
       appType: null,
       userType: null,
+      activeName:'first', // 构件库的Tabs 标签页 （自定义构件）
+      selfComList:[],  // 所有自定义构建  （自定义构件）
     };
   },
 
@@ -515,15 +564,14 @@ export default {
     // 用定时器给 环境加载中进度条 赋假值 让其(不再只有0和100)
     let timerTime = null;
     timerTime = setInterval(()=>{
-      this.propsProgress.loadData += 5
-      if(this.propsProgress.loadData >= 90 || this.envProgress === 100 || this.maxNodes === true){
+      // 大于85 和 节点已达到最大时 就停止定时器---
+      if(this.propsProgress.loadData > 85 || this.maxNodes === true){
          clearInterval(timerTime);
-        //  若该用户节点已达到最大 就不加载进度条
-         if(this.maxNodes === true){
-           this.propsProgress.loadData = 0;
-         }
       }
-     },200);                
+      if(this.propsProgress.loadData <= 85 && this.maxNodes === false){
+        this.propsProgress.loadData += 5;
+      }
+     },300);                
     this.lockView = this.$route.query.weatherBin; 
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
@@ -548,6 +596,11 @@ export default {
     }
     if (this.$route.query.appType) {
       this.appType = this.$route.query.appType;
+      // 如果是云应用就去掉遮罩层和操作栏以及加载进度---
+      if(this.$route.query.appType === '5'){
+        this.isFade = false;
+        this.isProgress =false;
+      }
     }
   },
   mounted() {
@@ -582,6 +635,41 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    outPic(url){
+            //实例化一个img对象
+            const img = new Image();
+            //设置img的图片路径
+            img.src = url;
+            //设置跨域解决
+            img.setAttribute('crossOrigin', 'Anonymous');
+            //img加载完后处理
+            img.onload = function() {
+                //创建一个canvas对象
+                const canvas = document.createElement('canvas')
+                //把图片的宽度设为canves的宽度
+                canvas.width = 1200
+                //把图片的高度设为canves的高度
+                canvas.height = 700
+                //创建一个2d画布
+                const ctx = canvas.getContext('2d')
+                // 将img中的内容画到画布上
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+                // 将画布内容转换为base64
+                let base64 = canvas.toDataURL()
+                // 创建a链接
+                const a = document.createElement('a')
+                a.href = base64
+                a.download = ''
+                // 触发a链接点击事件，浏览器开始下载文件
+                a.click()
+            }
+
+        },
+
+    // 用于给 viewphoto组件传值 （视图）
+    showViewPic(valModel){
+      this.showViewPicture = valModel;
+    },
     // 点击锁
     handleToggleLock(node, data, i){
         // 最多只开一把锁的，打开某一个锁，其他锁要关闭
@@ -1639,6 +1727,10 @@ export default {
       if (e === 14) {
         this.listenTodoInfo = null;
       }
+      // 漫游导航---
+      if(e === 0){
+        this.viewAngle = null;
+      }
       if (this.$refs.getFooter) {
         this.$refs.getFooter.editTool(e);
       }
@@ -1721,7 +1813,11 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
-
+      console.log('eee',e);
+      // 漫游导航内 控制 viewCube ---
+      if(e.name==='viewCube'){
+        this.controllerInfo.viewCube = e.flag;
+      }
       this.$refs.getCube.closeView();
       if (e.type === 14 || e.type === 11) {
         this.isQrcode = false;
@@ -1765,8 +1861,7 @@ export default {
           //   type: 4,
           //   state: 0,
           // };
-          this.handleTagShow(false);
-
+          this.handleTagShow(false);   
           this.isTag = false;
         }
       }
@@ -1829,6 +1924,10 @@ export default {
         this.listenTodoInfo = e;
         this.updateOrder();
       }
+      //漫游导航---
+       if (e.type === 0) {
+         this.viewAngle = e
+       }
     },
     UpdateMemeberState() {
       /**
@@ -1850,12 +1949,23 @@ export default {
     },
     /* 添加构件  */
     addCom(item) {
+      let params = {};
       // parentId
-      let params = {
-        // comGroupId: item.parentId,
-        comName: item.comName,
-        taskId: this.taskId,
-        comId: item.id,
+      if(this.activeName === 'first'){
+        params = {
+          // comGroupId: item.parentId,
+          comName: item.comName,
+          taskId: this.taskId,
+          comId: item.id,
+        }
+      }else if(this.activeName === 'second'){  // (自定义构件)
+        params = {
+          // comGroupId: item.parentId,
+          comName: item.ourbimComponentInfo.comName,
+          taskId: this.taskId,
+          comId: item.ourbimComponentInfo.comId,
+          userId:item.ourbimComponentInfo.userId
+        }
       };
       COMPONENTLIBRARY.addCom(params)
         .then((res) => {
@@ -1982,6 +2092,10 @@ export default {
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
+        // 没有遮罩或者加载进度的时候 发指令去掉toll
+        if(this.isFade === false || this.isProgress === false){
+          this.sendToIframe(10200,'false',"");
+        }
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
           this.socketData = realData;
@@ -2137,6 +2251,8 @@ export default {
               this.propsProgress.loadData = Number(
                 String(Number(realData.progress) * 100).substring(0, 3)
               );
+              // 加载完再发 10200---
+              this.sendToIframe(10200,'false',"");
             }
             let messageInfo = {
               prex: "ourbimMessage",
@@ -2193,6 +2309,23 @@ export default {
             // 提示判断添加构建失败
             this.showUiBar();
             this.$message.error(realData.name);
+          }else if(realData.id === "21"){  // 坐标位置 (增)
+            let messageInfo = {
+              prex:"ourbimMessage",
+              type: 30004,
+              data:{
+                tagId:realData.tagId,
+                data:realData.data,
+              },
+              message:"",
+            };
+            this.sentParentIframe(messageInfo);
+          }else if(realData.id === "30"){
+              if(realData.object){
+                this.$message.success('开始下载');
+                let url = realData.object;
+                this.outPic(url);
+              }
           }
         }
       };
@@ -2474,6 +2607,19 @@ export default {
       } else {
       }
     },
+    // 构件库中点击 自定义构件 时触发  （自定义构件）
+    changeTab(e){
+      if(e._props.name === 'second'){
+         let params = {
+          userId:Getuserid()
+        }
+        MODELAPI.GETALLCOM(params).then((res)=>{
+          if(res.data.code === 0){
+            this.selfComList = res.data.data[0].data;
+          }
+        });
+      }
+    }
   },
 };
 </script>
@@ -2926,6 +3072,19 @@ export default {
           }
         }
       }
+      ::v-deep .el-tabs__nav{  // （自定义构件）
+        margin-left: 5px;
+      }
+      ::v-deep .el-tabs__nav-wrap::after{ // （自定义构件）
+        background-color: #6b6b6b;
+      }
+      ::v-deep .el-tabs__item{ // （自定义构件）
+        color:#fff;
+        padding: 0 60px;
+      }
+      ::v-deep .el-tabs__active-bar{ // （自定义构件）
+        background-color: #fff;
+      }
     }
 
     .handle-body {
@@ -3084,12 +3243,15 @@ export default {
     }
   }
   .name {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100px;
+    // display: flex;
+    // align-items: center;
+    // justify-content: center;
     color: #fff;
     text-align: center;
+    white-space: nowrap; //强制在一行显示
+    overflow: hidden; //溢出隐藏
+    text-overflow: ellipsis; //显示省略号
   }
 }
 

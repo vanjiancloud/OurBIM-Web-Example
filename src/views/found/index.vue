@@ -1,274 +1,366 @@
 <template>
-  <!-- 创建应用-->
+  <!-- 应用管理 -->
   <div class="box">
-    <!-- 步骤条 -->
-    <!--    <div class="buzhou">
-      <el-steps :active="active">
-        注释第一步
-        <el-step :title="$t('Step')" :description="$t('setUP')"> </el-step>
-        <el-step :title="$t('Step')" :description="$t('shangchuan')"></el-step>
-        <el-step :title="$t('twoStep')" :description="$t('finsh')"></el-step>
-      </el-steps>
-    </div> -->
-
-    <!-- 第一步 创建应用项目信息-->
-    <div class="first" v-show="isShow == 1">
-      <!-- 图片 -->
-      <div class="img">
-        <img src="./icon.png" alt="" />
+    <!-- 消息提示 -->
+    <div class="record">
+      <!-- 消息提示 -->
+      <div class="left">
+        {{ $t("Youhave") }}&nbsp;
+        <span style="color: #00aaf0">{{ componentsList.length }} </span>&nbsp;
+        {{ $t("project") }}
       </div>
-      <div class="text">
-        {{ $t("toCreate") }}
-      </div>
-      <!-- input框 -->
-      <div class="input">
-        <span style="color: red; margin-right: 5px; font-size: 16px">*</span>
-        <span style="margin-right: 5px">{{ $t("application") }}</span>
-        <el-input v-model="appName"></el-input>
-      </div>
-      <!-- 上传图片 -->
-      <div class="picture"></div>
-      <div class="anNiu">
-        <el-button @click="next" :loading="isLoading" type="primary">
-          {{ $t("nextstep") }}
-        </el-button>
-      </div>
-    </div>
-    <!-- 第二步 上传BIM模型-->
-    <div class="second" v-show="isShow == 2">
-      <!-- 图标 -->
-      <div class="img">
-        <img src="./icon.png" alt="" />
-      </div>
-      <!-- 提示 -->
-      <div class="text">
-        {{ $t("Upload") }}
-      </div>
-      <!-- 单选框 -->
-      <!-- <el-radio v-model="radio" label="1">{{ $t("UploadBIM") }}</el-radio>
-      <el-radio disabled v-model="radio" label="2">
-        {{ $t("Uploadto") }}
-      </el-radio> -->
-      <!-- 上传BIM模型 -->
-      <div class="cover">
-        <el-upload
-          :on-success="upLoadModel"
-          :on-error="errorModel"
-          drag
-          :action="baseURL + '/appli/addProject'"
-          name="fileUpload"
-          :data="{
-            userId: userId,
-          }"
-          multiple
-          :on-change="onchange"
-          :on-exceed="exceed"
-          :on-remove="onremove"
-          :before-upload="beforeModelUpload"
-          accept=".rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.c4d,.fbx,.obj,.stp,.xyz,.txt,.pts,.las"
-          ref="bimupload"
-          :auto-upload="false"
-        >
-          <img src="./file.png" style="margin-top: 70px" />
-          <div class="el-upload__text">
-            {{ $t("methods") }}<br />
-            <!-- {{ $t("uploadLimit") }}<br />
-            {{ $t("uploadGoBeyond") }}<br /> -->
-            <!-- {{ $t('xianzhi') }}<br />
-            {{ $t('limit') }}<br /> -->
+      <!-- 按钮 -->
+      <div class="right">   
+        <el-button type="primary" @click="AddIntegrate" :style="{'display': breadArr.length===0 ? 'none' : ''}" class="upload-btn">
+          上传构件
+          <div class="uploadCom" v-show="uploadCom">
+            {{ uploadCom }}
           </div>
-        </el-upload>
+        </el-button>
+        <el-button type="primary" @click="AddGroup" :style="{'display': breadArr.length===0 ? '' : 'none'}">新建分组</el-button>
       </div>
+    </div>
+    <el-breadcrumb separator-class="el-icon-arrow-right">
+      <el-breadcrumb-item  @click.native="clickBreadFirst">构件首页</el-breadcrumb-item>
+      <el-breadcrumb-item v-for="(item,index) in breadArr" :key="index">{{item.groupName}}</el-breadcrumb-item>
+    </el-breadcrumb>
+    <!-- 表格 -->
+    <div class="table">
+      <el-table :data="componentsList" style="width: 100%" class="sheet" @row-click="rowClick">
+          <el-table-column prop="" :label="breadArr.length === 0 ? '分组名称' : $t('compApplyname')" width="170">
+          <template slot-scope="scope">
+            <el-tooltip
+              popper-class="app-name-tip"
+              placement="top"
+              effect="dark"
+            >
+              <template slot="content">
+                <div v-if="scope.row.isGroup === '1'">{{ scope.row.groupName }}</div>
+                <div v-else>{{ scope.row.ourbimComponentInfo.comName }}</div>
+              </template>
+              <div v-if="scope.row.isGroup === '1'">
+                <i class="el-icon-folder-opened" :style="{'color':'#00aaf0'}"></i>
+                <span>{{scope.row.groupName}}</span>
+              </div>
+              <div v-else>{{ scope.row.ourbimComponentInfo.comName }}</div>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column prop="" :label="breadArr.length === 0 ? '分组ID' : $t('componentId')" width="190">
+            <template slot-scope="scope">
+                <span v-if="scope.row.isGroup === '1'">{{scope.row.id}}</span>
+                <span v-else>{{ scope.row.ourbimComponentInfo.comId }}</span>
+            </template>
+        </el-table-column>
+        <el-table-column :label="$t('uploaddate')" width="130">
+          <template slot-scope="scope">
+            <span v-if="scope.row.isGroup === '1'">-</span>
+            <span v-else>{{ scope.row.ourbimComponentInfo.createTime }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="" label="项目类型" width="150">
+          <template slot-scope="scope">
+            <span v-if="scope.row.isGroup === '1'">{{$t('projectMore')}}</span>
+            <span v-else-if="scope.row.isGroup !== '1'">{{$t('componentSingle')}}</span>
+          </template>
+        </el-table-column>
+     
+        <el-table-column :label="$t('state')" width="150">
+          <template slot-scope="scope">
+            <div v-if=" scope.row.isGroup=== '1'">-</div>
+            <div v-else-if="scope.row.isGroup !== '1'">{{ formatStatus(scope.row.ourbimComponentInfo.comStatus) }}</div>
+            <!-- 转换中 -->
+            <el-progress
+              :text-inside="true"
+              :percentage="scope.row.ourbimComponentInfo.progress"
+              :show-text="true"
+              :stroke-width="13"
+              :color="customColor"
+              v-if="
+               scope.row.ourbimComponentInfo !== null && scope.row.ourbimComponentInfo.comStatus === '1' && scope.row.ourbimComponentInfo.progress !== 100
+                  ? true
+                  : false
+              "
+            >
+            </el-progress>
+            <!-- 转换失败 -->
+            <div  v-if="scope.row.ourbimComponentInfo !== null && scope.row.ourbimComponentInfo.comStatus === '3'">
+               <img src="../manage/err.png" alt="" />
+            </div>
+          </template>
+        </el-table-column>
 
-      <div
-        style="
-          margin: 10px 40px;
-          margin-top: -20px;
-          text-align: left;
-          font-size: 14px;
-        "
-      >
-        <span style="color: red">*</span>
-        文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
-      </div>
-      <div class="btn">
-        <el-button
-          @click="update"
-          type="primary"
-          :loading="isLoading"
-          :disabled="disabl"
-        >
-          {{ $t("Render") }}
-        </el-button>
-      </div>
+        <el-table-column label="操作">
+          <template slot-scope="scope" class="goapp-row">
+            <!-- 点点点 -->
+            <el-dropdown
+              @command="handleCommand"
+              @visible-change="visibleChange(scope.row)"
+              trigger="hover"
+              placement="bottom"
+            >
+              <div class="ellipsis">
+                <div class="ellipsis-item"></div>
+                <div class="ellipsis-item"></div>
+                <div class="ellipsis-item"></div>
+              </div>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  command="delete"
+                  >删除</el-dropdown-item>
+                <el-dropdown-item
+                  command="edit"
+                  >编辑</el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+        
+      </el-table>
     </div>
-    <!-- 第三步之上传成功-->
-    <div class="third" v-show="isShow == 3">
-      <div class="icon">
-        <img src="./success.png" alt="" />
+    <!-- 上传项目对话框 -->
+    <el-dialog :visible.sync="addCompDialog" width="50%" center>
+      <addComps :pageParentID="pageParentId"></addComps>
+    </el-dialog>
+    <!-- 新建分组 -->
+     <el-dialog title="新建分组" :visible="addNewGroupDialog" @close="closeNewBuild" width="25%">
+      <el-form :style="{'width':'90%'}" :model="formInline" :rules="rulesInline" ref="formInline">
+        <el-form-item label="分组名称:" label-width="100px" prop="name">
+          <el-input v-model="formInline.name"></el-input>
+        </el-form-item>    
+      </el-form>
+      <div slot="footer" class="dialog-footer" :style="{'text-align':'center'}">
+           <el-button @click="closeNewBuild" size="medium">取 消</el-button>
+           <el-button type="primary" @click="submitAddGroup('formInline')" size="medium">确 定</el-button>
+      </div>   
+    </el-dialog>
+    <!-- 编辑自定义构件 -->
+    <div class="selfDialog">
+      <el-dialog title="编辑" :visible="editComDialog" @close="closeEditCom" width="25%" class="editFirst">
+      <el-form :style="{'width':'90%'}" :model="editForm" :rules="rulesEditForm" ref="editForm">
+        <el-form-item label="名称:" label-width="100px" prop="name">
+          <el-input v-model="editForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="换组:" label-width="100px" class="btnMore">
+          <el-select v-model="selectVal" placeholder="请选择分组" size="mini" ref="select" @clear="clearValue"  @visible-change="canChange" clearable :disabled="breadArr.length === 0 ? true : false">
+             <el-option hidden key="id" :value="selectVal" :label="selectName"></el-option>
+             <el-tree
+              :data="treeData"
+              :props="defaultProps"
+              @node-click="handleNodeClick"
+              :expand-on-click-node="true"
+              :check-on-click-node="true"
+              ref="tree"
+              node-key="id"
+            >
+              <span class="father" slot-scope="{ data }">  
+                <span>{{ data.groupName }}</span>
+              </span>
+            </el-tree>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer" :style="{'text-align':'center'}">
+        <el-button @click="closeEditCom">取 消</el-button>
+        <el-button type="primary" @click="editSubmit('editForm')">确 定</el-button>
       </div>
-      <span class="news">提交完成</span>
-      <div class="button">
-        <el-button @click="toManage" type="primary">
-          {{ $t("manage") }}
-        </el-button>
-      </div>
-    </div>
-    <!-- 第三步之上传失败-->
-    <div class="third" v-show="isShow == 4">
-      <div class="icon">
-        <img src="./error.png" alt="" />
-      </div>
-      <span class="news">上传模型失败</span>
-      <div class="button">
-        <el-button @click="toManage" type="primary">
-          {{ $t("manage") }}
-        </el-button>
-      </div>
+    </el-dialog>
     </div>
   </div>
 </template>
 
-<script>
-import { addProject, ProjectModel } from "@/api/my.js";
+<script type='text/html' style='display:block'>
+
+import MODELAPI from "@/api/model_api";
 import { Getuserid } from "@/store/index.js";
 import axios from "@/utils/request";
+import qs from "qs";
+import { updateJudgeMsg } from '../../api/my';
+
+import addComps from './components/addComps.vue'
 
 export default {
-  name: "found",
+  name: "manage",
+  components: {
+    addComps
+  },
   data() {
-    return {
-      radio: "1", //单选框
-      active: 1,
-      isShow: 2,
-      disabl: true, //按钮禁用
-      // 上传图片
-      dialogImageUrl: "",
-      dialogVisible: false,
-      disabled: false,
-      appName: "",
-      baseURL: axios.defaults.baseURL,
-      appImgSrc: [], // 封面图
-      hideUpload: false, // 封面图添加按钮隐藏
-      appInfo: "",
-      appModel: [], // 上传模型
-      imglimit: 1, // 上传封面图限制数量
-      // limt: 1, // 限制模型数量
-      bimupNumber: 0, // 监听
-      appliId: "",
-      fileUpload: "",
-      // limit:1,
-      isLoading: false,
+    return {  
+        componentsList:[], // 自定义构件列表
+        customColor:'#00aaf0',
+        pollingComps:true, // 是否开启轮询自定义构件
+        timerComp:null, // 轮询自定义构建的定时器
+        addCompDialog:false, // 添加构件弹框
+        selectRowInfo:{}, // 鼠标点击当前行的数据
+        addNewGroupDialog:false, // 新建分组弹框
+        formInline:{  // 新建分组弹框绑定数据
+          name:'',
+        },
+        pageParentId:'god', // 当前页面的父id
+        currentId:'',  // 当前点击的那一个分组的id
+        breadArr:[], // 面包屑导航的数组
+        editComDialog:false,   // 编辑自定义构件弹框
+        editForm:{  // 编辑弹框数据
+          name:'',
+        },
+        icon:'el-icon-arrow-down',
+        selectVal:'',  // select框的绑定值
+        selectName:'', // select框的显示的name
+        // 树形数据
+        treeData:[],
+        defaultProps: {
+          children: "data",
+          label: "groupName",
+        },
+        rulesInline:{
+          name:[
+            {
+              required: true, message: '必填项', trigger: 'blur'
+            },
+            // {
+            //   validator:(rules,value,callback) =>{
+            //     const resBol = this.componentsList.some(item=>{
+            //       if(item.isGroup === '1'){
+            //         return item.groupName === value
+            //       }else{
+            //         return item.ourbimComponentInfo.comName === value;
+            //       }
+            //     })
+            //     resBol ? callback(new Error('名称重复')) : callback()
+            //   },
+            //   trigger:'change'            
+            // }
+          ]
+        },
+        rulesEditForm:{
+          name:[{
+            required:true,
+            message:'请输入名称',
+            trigger:'blur'
+          },
+          // {
+          //   validator:(rules,value,callback) =>{
+          //     const resBol = this.componentsList.some(item=>{
+          //       if(item.isGroup === '1'){
+          //         return item.groupName === value && item.id !== this.selectRowInfo.id;
+          //       }else{
+          //         return item.ourbimComponentInfo.comName === value && item.ourbimComponentInfo.comId !== this.selectRowInfo.comId;
+          //       }
+          //     })
+          //     resBol ? callback(new Error('名称重复')) : callback()
+          //   },
+          //   trigger:'change'
+          //  }
+          ]
+         },
+         nextBread:'',   // 控制是否有下一级的面包屑 
+         nextBreadFlag:false,
+         idFirst:'',  // 新建分组要传递的父id
     };
   },
   computed: {
-    uploadingNum() {
-      return this.$store.state.uploadingNum;
+    uploadCom() {
+      return this.$store.state.uploadCom;
     },
   },
   created() {
-    this.userId = Getuserid();
+    this.getCompList();
+    this.setPollingComp();
   },
   methods: {
-    // 上传封面图
-    upLoadImg(response, file, fileList) {
-      this.appImgSrc.push(response.data);
+    // ------------
+    // 获取自定义构件列表
+    getCompList(){
+     let params = {
+        userId: Getuserid(),
+        parentId:this.pageParentId
+     }
+     MODELAPI.GETCOMLISTBYPARENTID(params).then((res)=>{
+        this.componentsList = [];
+        if(res.data.code === 0){
+          if(this.pageParentId === 'god'){
+            this.idFirst = res.data.data.parentId;
+          }
+          if(res.data.data === undefined){
+            this.componentsList =[];
+          }else{
+            this.componentsList = res.data.data.ourbimComponentInfoList;
+          }
+          if(this.nextBreadFlag === true){
+            this.breadArr.push(this.nextBread);
+          }
+        }
+        this.nextBreadFlag = false;
+     }).catch(()=>{
+        this.nextBreadFlag = false;
+     })
     },
-    // 上传封面图失败
-    errorImg(err, file, fileList) {
-      console.log(err);
+    // 根据传入的status做适配
+    formatStatus(status) {
+      const statusObj = {
+        0: "正在同步",
+        1: "转换中",
+        2: "转换完成",
+        3: "转换失败",
+        4: "文件损坏",
+        5: "删除中",
+        6: "升级中",
+      };
+      return statusObj[status];
     },
-    changeUploadingNum(num) {
-      this.$store.commit("changeState", {
-        key: "uploadingNum",
-        value: this.uploadingNum + num,
-      });
+    // 上传构件
+    AddIntegrate(){
+      this.addCompDialog = true;
     },
-    // 上传模型失败
-    errorModel(err, file, fileList) {
-      this.changeUploadingNum(-1)
-      this.isLoading = false;
-      console.log(err);
-      this.isShow = 4;
-      this.$common.closeLoading();
+    // 新建分组
+    AddGroup(){
+      this.addNewGroupDialog = true;
+      this.formInline.name = '';
     },
-    // 下一步
-    next() {
-      if (this.appName !== "") {
-        this.isLoading = true;
-        this.$common.openLoading("正在加载请稍后");
-        // if (this.active++ > 3) this.active = 0
-        addProject({
-          userId: Getuserid(),
-          appName: this.appName,
-          screenImg: this.appImgSrc.toString(),
-        })
-          .then((res) => {
-            this.isLoading = false;
-            if (res.data.code === 0) {
-              this.appInfo = res.data.data;
-              this.appliId = res.data.data.appid;
-              this.$message.success("创建项目成功");
-              this.$common.closeLoading();
-              if (this.active++ > 3) this.active = 0;
-              this.isShow = 2;
-            } else if (res.data.code === 1) {
-              this.$message.error("创建项目失败");
-              this.$common.closeLoading();
-            }
-          })
-          .catch((err) => {
-            this.isLoading = false;
-            console.log(err);
-            this.$common.closeLoading();
-            this.$message.error("创建失败，请稍后重试");
-          });
-      } else {
-        this.$message.warning("请先创建项目名称");
+    handleCommand(command){
+      const item = this.selectRowInfo;
+      switch (command) {
+        case "delete":
+          this.removeCom(item);
+          break;
+        case "edit":
+          this.editCom(item);
+          break;
+        default:
+          break;
       }
     },
-    // 开始转换
-    update() {
-      this.disabl = true;
-      // 上传bim模型
-
-      let uploadTimeout = setTimeout(() => {
-        this.$refs.bimupload.submit();
-        clearTimeout(uploadTimeout);
-      }, 500);
+    // 关闭新建分组
+    closeNewBuild(){
+      this.addNewGroupDialog = false;
+      this.$refs["formInline"].resetFields();
+      this.formInline.name = '';
     },
-    submit(status) {},
-    //去往应用管理
-    toManage() {
-      this.$router.push("../manage");
-      this.isShow = 2;
+    // 点点点下拉框的出现/隐藏时触发
+    visibleChange(e){
+      this.selectRowInfo = e;
     },
-
-    // 预览图片
-    handlePictureCardPreview(file) {
-      this.dialogImageUrl = file.url;
-      this.dialogVisible = true;
-    },
-    // 删除图片
-    handleRemove(file) {
-      this.$confirm("此操作将删除该图片, 是否继续?", "提示", {
+    // 删除构件组
+    removeCom(e){
+      this.$confirm("此操作将删除该应用, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(() => {
-          let newarr = this.$common.deOneArr(
-            this.appImgSrc,
-            file.response.data
-          );
-          this.appImgSrc = newarr;
-          this.$refs.upload.handleRemove(file);
-          this.hideUpload = false;
-          console.log(this.hideUpload);
-          this.$message({
-            type: "success",
-            message: "删除成功",
-          });
+          let params = {
+            userId:Getuserid(),
+            comId: e.isGroup==='0' ? e.ourbimComponentInfo.comId : '',
+            groupId:e.isGroup==='1' ? e.id : ''
+          }
+          MODELAPI.DELETEUSERCOM(params).then((res)=>{
+            if(res.data.code === 0){
+              this.$message.success(res.data.message);
+              this.getCompList();
+            }else{
+              this.$message.warning(res.data.message);
+            }
+          }).catch((err)=>{this.$message.error("删除失败")});
         })
         .catch(() => {
           this.$message({
@@ -277,280 +369,550 @@ export default {
           });
         });
     },
-    // 删除模型事件
-    onremove(file, fileList) {
-      console.log('onremove',file, fileList);
-      if(file.status==="uploading"){
-        this.changeUploadingNum(-1)
-      }
-      this.bimupNumber--;
-      // this.disabl = !this.disabl;
+    // 编辑自定义构件
+    editCom(e){
+      console.log('edit',e);
+      this.editComDialog = true;
+      this.editForm.name = e.isGroup === '1' ? e.groupName : e.ourbimComponentInfo.comName;
     },
-    // 添加模型文件
-    onchange(file, fileList) {
-      console.log('onchange',file, fileList);
-      if (!file.response) {
-        this.bimupNumber++;
-        // this.disabl = !this.disabl;
+    // 关闭自定义构件弹框
+    closeEditCom(){
+        this.editComDialog = false;
+        this.editForm.name = '';
+        this.selectVal = '';
+        this.selectName='';
+        this.$refs["editForm"].resetFields();
+    },
+    // 编辑自定义构件确定
+    editSubmit(editForm){
+      // console.log('确定',this.editForm);
+        this.$refs[editForm].validate((valid) => {
+          if (valid) {
+            let params = {
+              userId:Getuserid(),
+              groupId: this.selectRowInfo.id,
+              groupName:this.editForm.name,
+              parentId:this.selectVal
+          }
+          MODELAPI.UPDATECOMGROUP(params).then((res)=>{
+            if(res.data.code === 0){
+              this.editComDialog = false;
+              this.$message({
+                type: "success",
+                message: res.data.message,
+              });
+                this.getCompList();
+            }
+          })
+         }else {
+            return false;
+          }
+        });
+    },
+    // 轮询自定义构件
+    setPollingComp(){
+      if(this.pollingComps === true){
+        this.timerComp = setInterval(()=>{
+          this.getCompList();
+        },2500)
       }
     },
-    // 上传模型成功
-    upLoadModel(response, file, fileList) {
-      this.changeUploadingNum(-1)
-      this.isLoading = false;
-      this.appModel.push(response.data);
-      // response等同于后端返回的res，根据response里的code判断状态
-      if (response.code === 0) {
-        this.$message.success(response.message);
-        if (this.bimupNumber === this.appModel.length) {
-          this.$common.closeLoading();
-          this.disabl = false;
-          if (this.active++ > 3) this.active = 0;
-          // this.isShow = 3;
-          this.disabl = !this.disabl;
+    rowClick(e){
+      if(e.isGroup==='0'){
+        return;
+      }
+      this.nextBread = e;
+      this.nextBreadFlag = true;
+      this.currentId = e.id;
+      this.pageParentId = e.id;
+      this.getCompList();
+      console.log('bgbgb',this.nextBread,this.nextBreadFlag);
+    },
+    // 新建分组弹框确定
+    submitAddGroup(formName){
+      this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let params = {
+              userId:Getuserid(),
+              groupId:this.idFirst,
+              groupName:this.formInline.name
+            }
+            MODELAPI.ADDCOMGROUP(params).then((res)=>{
+              if(res.data.code === 0){
+                  this.getCompList();
+                  this.$message.success(res.data.message);
+                  this.addNewGroupDialog = false;
+              }else{
+                  this.$message.warning(res.data.message);
+              }
+            }).catch(()=>{})
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+      });
+    },
+    // 点击面包屑
+    // clickBread(e,index){
+    //   if(index === this.breadArr.length -1){
+    //     return;
+    //   }
+    //   let arr = this.breadArr.slice(0,index+1);
+    //   this.breadArr = arr;
+    //   this.pageParentId = e.id;
+    //   this.getCompList();
+    // },
+    // 点击面包屑导航的第一个
+    clickBreadFirst(){
+      this.breadArr = [];
+      // this.$router.push({path: '/found'});
+      this.pageParentId = 'god';
+      this.getCompList();
+      console.log('999',this.breadArr);
+    },
+    // 点击选择框的叉
+    clearValue(){
+      console.log('888');
+      this.selectVal = ''; 
+      this.selectName = '';
+    },
+     // 树形结构 点击事件
+    handleNodeClick(data) {
+      this.selectVal = data.id; // select绑定值为点击的选项的value
+      this.selectName = data.groupName; // input中显示值为label
+      // this.treeFilter = ""; // 点击后搜索框清空
+      this.$refs.select.blur(); // 点击后关闭下拉框，因为点击树形控件后select不会自动折叠
+    },
+
+    canChange(e){
+      if(e === true){
+        let params = {
+          userId:Getuserid()
         }
-      } else if (response.code === 1) {
-        this.$message.error(response.message);
-        if (this.bimupNumber === this.appModel.length) {
-          this.$common.closeLoading();
-          if (this.active++ > 3) this.active = 0;
-          // this.isShow = 4;
-          this.disabl = !this.disabl;
-        }
+        MODELAPI.GETALLCOM(params).then((res)=>{
+          if(res.data.code === 0){
+            this.treeData = this.delDataFn(res.data.data[0].data);
+          }
+        });
       }
     },
-    // 限制上传封面次数
-    handleExceed() {
-      this.$message.warning(`亲，只能上传一张图片哦！`);
-    },
-    // 限制上传封面格式
-    beforeUpload(file) {
-      var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
-      const one = testmsg === "jpg";
-      const two = testmsg === "jpeg";
-      const three = testmsg === "png";
-      if (!one && !two && !three) {
-        this.$message.error("上传封面只能是.jpg .jpeg .png格式!");
-        this.hideUpload = false;
-      } else {
-        this.hideUpload = true;
-      }
-      return one || two || three;
-    },
-    // 限制上传模型次数
-    exceed() {
-      this.$message.warning(`上传模型数量超过限制`);
-    },
-    // 上传bim模型前
-    beforeModelUpload(file) {
-      let testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
-      let listModel = ["rvt", "ifc", "zip","rfa","ipt","dgn","dwg","step","c4d","fbx","obj","stp","xyz","txt","pts","las"];
-      // const isLt = file.size / 1024 / 1024 < 200;
-      // if (!isLt) {
-      //   this.$message({
-      //     message: "上传文件大小不能超过200MB!",
-      //     type: "warning",
-      //   });
-      //   return false;
-      // }
-      let extension = false;
-      if (listModel.indexOf(testmsg.toLowerCase()) === -1) {
-        extension = false;
-        this.isLoading = false;
-        this.$message.error("请上传支持的文件格式!");
-      } else {
-        extension = true;
-        this.changeUploadingNum(1)
-        this.$message("正在上传，上传过程请勿关闭或刷新页面!");
-        // this.$common.openLoading("上传模型中");
-      }
-      return extension;
-    },
+    // 树形数据结构过滤函数
+    delDataFn(arr) {
+          if (Array.isArray(arr)) {
+            for (let i = 0; i < arr.length; i++) {
+              const item = arr[i];
+              if (item.isGroup === "0" || item.id === this.selectRowInfo.id) {
+                arr.splice(i, 1);
+                i--;
+              } else {
+                if (Array.isArray(item.data)) {
+                  this.delDataFn(item.data);
+                }
+              }
+            }
+          }
+        return arr;
+      },
+
+    // -----------
+
+  },
+  mounted() {
+    
   },
   watch: {
-    // 监听路由变化，当路由发生变化的时候，重新加载组件
-    $route(to, from) {
-      window.location.reload();
-    },
-    bimupNumber(num) {
-      if (num) {
-        this.disabl = false;
-      } else {
-        this.disabl = true;
-      }
-    },
+    
   },
+  beforeDestroy(){
+    clearInterval(this.timerComp);
+  }
 };
 </script>
 
 <style lang="less" scoped>
+.handle-btn {
+  text-align: center;
+}
 .box {
-  // padding-top: 38px;
-  // 隐藏上传
-  /deep/.hide .el-upload--picture-card {
-    display: none;
+  overflow: hidden;
+  width: 96%;
+  padding: 20px 2%;
+  /deep/ .el-button--primary {
+    background-color: #00aaf0;
   }
-  .buzhou {
-    width: 500px;
-    margin: 0 auto;
-    margin-top: 50px;
-    /deep/ .el-step__description {
+  .record {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    position: relative;
+    margin-bottom: 12px;
+    .right {
+      margin-left: auto;
+    }
+  }
+  ::v-deep .el-breadcrumb .el-breadcrumb__item .el-breadcrumb__inner{
+    cursor: pointer !important;
+  }
+  ::v-deep .el-breadcrumb .el-breadcrumb__item .el-breadcrumb__inner:hover{
+    color: #00aaf0;
+  }
+  .table {
+    margin-top: 20px;
+    margin-bottom: 40px;
+    ::v-deep .el-table__body-wrapper .el-table__body .el-table__row{
+      cursor: pointer;
+    }
+    .name-two {
+      background-color: red !important;
+    }
+    .sheet {
       font-size: 16px;
-      // color: red;
     }
-    /deep/.is-process {
-      color: #c0c4cc !important;
-      font-weight: 10 !important;
-      border-color: #c0c4cc !important;
+    // 进度条里的文字
+    /deep/ .el-progress-bar__innerText {
+      color: #000;
+      margin-top: -6px;
     }
-  }
-  .first {
-    width: 560px;
-    height: 480px;
-    box-shadow: 0px 1px 13px 0px rgba(4, 0, 0, 0.1);
-    border-radius: 12px;
-    margin: 0 auto;
-    margin-top: 50px;
-    padding-top: 30px;
-    /deep/ .el-button--primary {
-      width: 140px;
-      height: 40px;
-      vertical-align: middle;
+    /deep/ .el-table thead {
+      color: #fff;
+    }
+    /deep/ .el-table th {
       background-color: #00aaf0;
+      text-align: center;
       font-size: 17px;
+      font-weight: normal;
     }
-    .img {
-      width: 50px;
-      height: 50px;
-      margin: 0 auto;
-      margin-bottom: 20px;
-      img {
-        width: 100%;
-        height: 100%;
-      }
-    }
-    .text {
+    /deep/ .el-table td {
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 20px;
-      font-weight: bold;
     }
-    .input {
-      margin-left: 100px;
-      .el-input {
-        width: 237px;
-        margin: 0 auto;
-      }
+    // 表头字体颜色
+    /deep/ .el-table th > .cell {
+      color: #fff;
     }
-    .picture {
-      margin-left: 100px;
-      margin-top: 40px;
-      overflow: hidden;
-      .news {
-        float: left;
-        // margin-left: 14px;
-      }
-      .cover {
-        // background-color: red;
-        float: left;
-      }
-    }
-    .xiaoxi {
+    //表格去横线
+    // /deep/ .el-table__row > td {
+    //   border: none;
+    // }
+    //表格去横线之去掉最下面的那一条线
+    // /deep/ .el-table::before {
+    //   height: 0px;
+    // }
+    // 第一列字体颜色
+    // /deep/ .el-table_1_column_1 {
+    //   color: #00aaf0;
+    // }
+    .btn-one {
       font-size: 14px;
-      text-align: center;
-      margin-left: 30px;
-      margin-top: 10px;
+      color: #00aaf0;
     }
-    .anNiu {
-      margin-top: 180px;
-      // background-color: green;
-      text-align: center;
+    .gray-btn {
+      background-color: #bbb;
+      color: #fff;
     }
-  }
-  .second {
-    width: 560px;
-    // height: 530px;
-    padding-bottom: 10px;
-    box-shadow: 0px 1px 13px 0px rgba(4, 0, 0, 0.1);
-    border-radius: 12px;
-    margin: 0 auto;
-    margin-top: 50px;
-    padding-top: 30px;
-    text-align: center;
-    .img {
-      width: 50px;
-      height: 50px;
-      margin: 0 auto;
-      img {
-        width: 100%;
-        height: 100%;
-      }
+    .blue-btn {
+      background-color: #00aaf0;
+      color: #fff;
     }
-    .text {
-      margin: 0 auto;
-      margin: 20px 0;
-      font-size: 20px;
-      font-weight: bold;
+    .red {
+      font-size: 16px;
+      color: #ff6600;
     }
-    .radio {
-      margin-right: 10px;
-      /deep/ .el-radio__label {
-        font-size: 16px;
-      }
+    .gray {
+      font-size: 14px;
+      color: gray;
     }
-    .cover {
-      margin-top: 20px;
-      margin-bottom: 25px;
-      .el-upload__text {
-        font-size: 16px;
-      }
-      /deep/ .el-upload-dragger {
-        width: 476px;
-        height: 232px;
-
-        background-color: #f5f5f5;
-      }
-    }
-    .btn {
-      /deep/ .el-button--primary {
-        width: 140px;
-        height: 40px;
-        vertical-align: middle;
-        font-size: 16px;
-      }
+    .blue {
+      color: #00aaf0;
+      font-size: 14px;
     }
   }
-  .third {
-    width: 560px;
-    height: 480px;
-    box-shadow: 0px 1px 13px 0px rgba(4, 0, 0, 0.1);
-    border-radius: 12px;
-    margin: 0 auto;
-    margin-top: 50px;
-    padding-top: 60px;
-    text-align: center;
-    .icon {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto;
-      margin-bottom: 50px;
-      img {
-        width: 100%;
-        height: 100%;
+  .el-dialog {
+    .content {
+      display: flex;
+      justify-content: center;
+      .el-form {
+        .el-input {
+          width: 150px;
+        }
+        .el-select {
+          width: 150px;
+        }
       }
     }
-    .news {
-      font-size: 25px;
-      font-weight: bold;
-    }
-    .button {
-      margin-top: 50px;
-      .el-button {
-        width: 140px;
-        height: 40px;
-        font-size: 16px;
-      }
+   
+    .hidden {
+      width: 0;
+      height: 0;
+      opacity: 0;
+      position: absolute;
+      top: -1000%;
+      left: -1000%;
+      z-index: -9999999;
     }
   }
 }
+.form-integrate {
+  margin-top: 20px;
+}
+.integrate-transfer {
+  /deep/ .el-transfer__buttons {
+    padding: 0 10px;
+  }
+  /deep/ .el-transfer__button {
+    display: block;
+    margin-left: 0;
+    padding: 7px;
+    background-color: #ecf5ff;
+    border-color: #ecf5ff;
+    color: #606266;
+    &:hover {
+      background-color: #ecf5ff8f;
+      border-color: #ecf5ff8f;
+      color: #606266;
+    }
+  }
+}
+</style>
+<style lang="less">
+/* 背景 */
+.app-name-tip {
+  background-color: #00aaf0 !important;
+  /* 箭头 */
+  &[x-placement^="top"] .popper__arrow:after {
+    border-top-color: #00aaf0 !important;
+  }
+  &[x-placement^="bottom"] .popper__arrow:after {
+    border-bottom-color: #00aaf0 !important;
+  }
+  /* 箭头边框 */
+  &[x-placement^="bottom"] .popper__arrow {
+    border-bottom-color: #00aaf0 !important;
+  }
+  &[x-placement^="top"] .popper__arrow {
+    border-top-color: #00aaf0 !important;
+  }
+}
+
+/* 转换失败 */
+.trans-tooplip {
+  background-color: #ffe8e8 !important;
+  /* 箭头 */
+  &[x-placement^="top"] .popper__arrow:after {
+    border-top-color: #ffe8e8 !important;
+  }
+  &[x-placement^="bottom"] .popper__arrow:after {
+    border-bottom-color: #ffe8e8 !important;
+  }
+  /* 箭头边框 */
+  &[x-placement^="bottom"] .popper__arrow {
+    border-bottom-color: #ffe8e8 !important;
+  }
+  &[x-placement^="top"] .popper__arrow {
+    border-top-color: #ffe8e8 !important;
+  }
+}
+
+.integrate-transfer {
+  .el-transfer-panel:nth-of-type(3) {
+    width: 300px;
+    .el-checkbox__label{
+      width: 629px;
+    }
+  }
+  .el-transfer-panel:nth-of-type(1) {
+    width: 300px;
+  }
+}
+.integrate-dialog {
+  .el-dialog__body {
+    padding: 20px !important;
+  }
+  .el-dialog__footer {
+    padding-top: 0;
+  }
+}
+.sheet {
+  .el-table__body,
+  .el-table__header {
+    width: 100% !important;
+    table-layout: auto;
+  }
+}
+
+.trans-tooplip-content {
+  // color: #ff3333;
+  font-size: 14px;
+  // background-color: #ffe8e8;
+  width: 100%;
+  height: 100%;
+  color: #ff3333;
+}
+
+.err-icon {
+  margin-top: 7px;
+  margin-left: 2px;
+}
+
+.aaaaaaaa {
+  width: 100%;
+  background-color: #ddd;
+  box-sizing: border-box;
+}
+
+/deep/ .el-notification__group {
+  width: 100%;
+  background-color: red;
+}
+.skills {
+  text-align: right;
+  padding-right: 20px;
+  line-height: 40px;
+  color: white;
+  box-sizing: border-box;
+}
+
+/deep/ .el-notification__content {
+  background-color: pink;
+  width: 100px;
+  p {
+    display: block;
+  }
+}
+
+.ellipsis {
+  cursor: pointer;
+  display: flex;
+  display: inline-block;
+  margin-left: 10px;
+  .ellipsis-item {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: #999;
+    margin: 0 3px;       
+  }
+}
+
+.zzwinput{
+  width: 100px;
+  border: 2px solid #dcdfe6;
+  border-radius:5px;
+  margin-top: 5px;
+  outline-color:#666666; 
+}
+
+</style>
+
+<style lang="less" scoped>
+::v-deep .saveAsDialog{
+  width: 700px !important;
+}
+.wordEllipsis{
+  width: 100px;
+  white-space: nowrap; //强制在一行显示
+  overflow: hidden; //溢出隐藏
+  text-overflow: ellipsis; //显示省略号
+  float: left;
+}
+.clearfix::before,
+.clearfix::after{
+  content:'';
+  display: table;
+}
+.clearfix::after{
+  clear:both;
+}
+// .text{
+//   overflow: hidden;
+// }
+::v-deep .el-card__body {
+    padding: 0.25rem 1.25rem;
+}
+.elinput ::v-deep .el-input__inner{
+  width: 96px;
+  height: 20px;
+  padding: 0 10px;
+}
+
+.yinc{
+  padding-left: 10px;
+  color: #00aaf0;
+}
+.bind{
+  display: none;
+}
+.yinc:hover{
+  cursor:pointer;
+}
+.td{
+  float:right;
+  position: relative;
+  top:0px;
+}
+.upload-btn {
+  position: relative;
+  .uploadCom {
+    position: absolute;
+    top: -13px;
+    right: -10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: red;
+    font-size: 14px;
+    color: #fff;
+    font-weight: 500;
+    padding: 6px;
+  }
+}
+// 为了解决 链接模型弹框 右侧名字太长导致的布局问题
+::v-deep .el-transfer .el-transfer-panel .optionName{
+  font-style: normal !important;
+}
+// 为了解决 链接模型弹框 右侧名字太长导致的布局问题
+::v-deep .el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-checkbox-group .el-checkbox .el-checkbox__label .appna .optionName{
+  display: inline-block;
+    width: 150px;
+  white-space: nowrap; //强制在一行显示
+  overflow: hidden; //溢出隐藏
+  text-overflow: ellipsis; //显示省略号
+}
+.box-card{
+  margin-left: 9px;
+}
+// --------
+.sheet ::v-deep .el-table__body-wrapper tbody tr td .el-tooltip{
+  display: flex;
+  align-items: center;
+    i{
+      margin: 0 20px 0 20px;
+    }
+}
+.selfDialog{
+  ::v-deep .el-select {
+  width: 100%;
+}
+  ::v-deep .el-input__inner{
+    height: 40px !important;
+  }
+}
+.father{
+    width: 90%;
+     span{
+      font-size: 14px;
+      width:150px;
+      overflow:hidden;
+      white-space:nowrap;/*限制不换行*/
+      text-overflow:ellipsis;
+     }
+  }
+.band{
+  display: none !important;
+}
+
+// --------
 </style>
