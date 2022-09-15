@@ -45,7 +45,7 @@ export default {
 
 <style lang="less" scoped>
     // .box{
-    //     border: 1px solid red;
+    //     border: 1px solid red;  
     // }
  .avatar-uploader .el-upload {
     border: 1px dashed #852727;
