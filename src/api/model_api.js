@@ -241,10 +241,18 @@ const MODELAPI = {
             params
         })
     },
-    // 自定义构建换组、更名 （自定义构件）
+    // 自定义构建组更名 （自定义构件）
     UPDATECOMGROUP: params => {
         return request({
             url: '/comControl/updateComGroup',
+            method: 'post',
+            params
+        })
+    },
+    // 自定义构建 编辑 （自定义构件）
+    UPDATEUSERCOM: params => {
+        return request({
+            url: '/comControl/updateUserCom',
             method: 'post',
             params
         })

@@ -141,6 +141,9 @@
         <el-form-item label="名称:" label-width="100px" prop="name">
           <el-input v-model="editForm.name"></el-input>
         </el-form-item>
+        <el-form-item label="缩略图:" label-width="100px" v-if="breadArr.length !== 0">
+            <uploadComImg></uploadComImg>
+        </el-form-item>
         <el-form-item label="换组:" label-width="100px" class="btnMore">
           <el-select v-model="selectVal" placeholder="请选择分组" size="mini" ref="select" @clear="clearValue"  @visible-change="canChange" clearable :disabled="breadArr.length === 0 ? true : false">
              <el-option hidden key="id" :value="selectVal" :label="selectName"></el-option>
@@ -178,11 +181,13 @@ import qs from "qs";
 import { updateJudgeMsg } from '../../api/my';
 
 import addComps from './components/addComps.vue'
+import uploadComImg from './components/uploadComImg.vue'
 
 export default {
   name: "manage",
   components: {
-    addComps
+    addComps,
+    uploadComImg
   },
   data() {
     return {  
@@ -386,6 +391,28 @@ export default {
     // 编辑自定义构件确定
     editSubmit(editForm){
       // console.log('确定',this.editForm);
+      if(this.breadArr.length !== 0){
+        this.$refs[editForm].validate((valid) => {
+          if(valid){
+            let params = {
+              userId:Getuserid(),
+              comId: this.selectRowInfo.comId,
+              comName:this.editForm.name,
+              groupId:this.selectVal
+            }
+            MODELAPI.UPDATEUSERCOM(params).then((res)=>{
+              this.editComDialog = false;
+              this.$message({
+                type: "success",
+                message: res.data.message,
+              });
+              this.getCompList();
+            }).catch(()=>{})
+          }else{
+            return false
+          }
+        });
+      }else if(this.breadArr.length === 0){
         this.$refs[editForm].validate((valid) => {
           if (valid) {
             let params = {
@@ -408,6 +435,7 @@ export default {
             return false;
           }
         });
+      }
     },
     // 轮询自定义构件
     setPollingComp(){
