@@ -249,14 +249,6 @@ const MODELAPI = {
             params
         })
     },
-    // 自定义构建 编辑 （自定义构件）
-    UPDATEUSERCOM: params => {
-        return request({
-            url: '/comControl/updateUserCom',
-            method: 'post',
-            params
-        })
-    },
     // 获取所有文档信息（文档管理）
     GETUSERALLCLOUDDOC: params => {
         return request({

@@ -6,6 +6,7 @@
             name="fileUpload"
             :show-file-list="false"
             :on-success="handleAvatarSuccess"
+            :on-change="changeFile"
             :before-upload="beforeAvatarUpload">
             <img v-if="imageUrl" :src="imageUrl" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -20,9 +21,14 @@ export default {
       return {
         imageUrl: '',
         baseURL: axios.defaults.baseURL,
+        uploadFiles:''  // formData 文件
       };
     },
     methods: {
+      changeFile(file, fileList) {
+         this.uploadFiles = fileList[0].raw 
+         this.$emit('fromSonFile',this.uploadFiles)
+    },
       handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
       },
