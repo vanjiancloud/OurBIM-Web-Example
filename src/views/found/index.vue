@@ -142,7 +142,7 @@
           <el-input v-model="editForm.name"></el-input>
         </el-form-item>
         <el-form-item label="缩略图:" label-width="100px" v-if="breadArr.length !== 0">
-            <uploadComImg></uploadComImg>
+            <uploadComImg ref="uploadPhoto" @fromSonFile="fromSonFile"></uploadComImg>
         </el-form-item>
         <el-form-item label="换组:" label-width="100px" class="btnMore">
           <el-select v-model="selectVal" placeholder="请选择分组" size="mini" ref="select" @clear="clearValue"  @visible-change="canChange" clearable :disabled="breadArr.length === 0 ? true : false">
@@ -182,6 +182,8 @@ import { updateJudgeMsg } from '../../api/my';
 
 import addComps from './components/addComps.vue'
 import uploadComImg from './components/uploadComImg.vue'
+import axios2 from 'axios'
+// import request from '../utils/request'
 
 export default {
   name: "manage",
@@ -261,6 +263,9 @@ export default {
          nextBread:'',   // 控制是否有下一级的面包屑 
          nextBreadFlag:false,
          idFirst:'',  // 新建分组要传递的父id
+         photoFile:'',
+         baseURL: axios.defaults.baseURL,
+         picUpload:''
     };
   },
   computed: {
@@ -273,6 +278,9 @@ export default {
     this.setPollingComp();
   },
   methods: {
+    fromSonFile(e){
+      this.photoFile = e;
+    },
     // ------------
     // 获取自定义构件列表
     getCompList(){
@@ -394,20 +402,31 @@ export default {
       if(this.breadArr.length !== 0){
         this.$refs[editForm].validate((valid) => {
           if(valid){
-            let params = {
-              userId:Getuserid(),
-              comId: this.selectRowInfo.comId,
-              comName:this.editForm.name,
-              groupId:this.selectVal
+              let fd = new FormData();
+              fd.append('fileUpload',this.photoFile);
+              fd.append('userId', Getuserid());
+              fd.append('comId', this.selectRowInfo.comId);
+              fd.append('comName', this.editForm.name);
+              fd.append('groupId', this.selectVal);  
+            let config = {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
             }
-            MODELAPI.UPDATEUSERCOM(params).then((res)=>{
-              this.editComDialog = false;
-              this.$message({
-                type: "success",
-                message: res.data.message,
-              });
-              this.getCompList();
-            }).catch(()=>{})
+            axios2.post(this.baseURL + '/comControl/updateUserCom', fd, config).then(res => {
+                if (res.data.code === 0) {
+                    this.editComDialog = false;
+                    this.$message({
+                      type: "success",
+                      message: res.data.message,
+                    });
+                    this.getCompList();
+                  } else {
+                    this.$message.error(res.data.message);
+                  }
+              }).catch(res => {
+                console.log(res)
+              })
           }else{
             return false
           }
