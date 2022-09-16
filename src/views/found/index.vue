@@ -142,7 +142,7 @@
           <el-input v-model="editForm.name"></el-input>
         </el-form-item>
         <el-form-item label="缩略图:" label-width="100px" v-if="breadArr.length !== 0">
-            <uploadComImg ref="uploadPhoto" @fromSonFile="fromSonFile"></uploadComImg>
+          <uploadComImg ref="uploadPhoto" @fromSonFile="fromSonFile"></uploadComImg>
         </el-form-item>
         <el-form-item label="换组:" label-width="100px" class="btnMore">
           <el-select v-model="selectVal" placeholder="请选择分组" size="mini" ref="select" @clear="clearValue"  @visible-change="canChange" clearable :disabled="breadArr.length === 0 ? true : false">
@@ -402,7 +402,7 @@ export default {
       if(this.breadArr.length !== 0){
         this.$refs[editForm].validate((valid) => {
           if(valid){
-              let fd = new FormData();
+            let fd = new FormData();
               fd.append('fileUpload',this.photoFile);
               fd.append('userId', Getuserid());
               fd.append('comId', this.selectRowInfo.comId);

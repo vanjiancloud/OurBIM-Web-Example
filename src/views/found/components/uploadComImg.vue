@@ -25,7 +25,7 @@ export default {
       };
     },
     methods: {
-      changeFile(file, fileList) {
+        changeFile(file, fileList) {
 			this.uploadFiles = fileList[0].raw 
             this.$emit('fromSonFile',this.uploadFiles)
 	  },
