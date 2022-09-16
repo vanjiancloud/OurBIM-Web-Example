@@ -190,8 +190,10 @@
                 </div>
                 <!-- 播放条 -->
                 <div class="startPost" v-if="animaViewPointer.length>=2" :class="this.playFlags==='2' ? 'noAllowed' : ''" style="left: 6px;">
+                        <div class="outCircle">
+                        </div>
                         <div class="bigCircle" @mousedown="pushMouse" @mouseup="releaseMouse">
-                            <div class="smallCircle"></div>
+                             <div class="smallCircle"></div>
                         </div>
                         <div class="postDown"></div>
                 </div>
@@ -1167,7 +1169,7 @@ import { log } from 'console';
             moveEvent(e){
                     var event = e || window.event;
                     var target = event.target || event.srcElement;
-                    if(document.querySelector('.proEditDown').contains(target) || document.querySelector('.startPost').contains(target)) {
+                    if(document.querySelector('.outCircle').contains(target) || document.querySelector('.startPost').contains(target)) {
                         console.log("in");
                     } else {
                         console.log("out");
@@ -1571,6 +1573,13 @@ import { log } from 'console';
             width: 14px;
             height: 133px;
             z-index: 9999;
+            .outCircle{
+                width: 46px;
+                height: 44px;
+                position: absolute;
+                top: -15px;
+                left: -16px;
+            }
             .bigCircle{
                 position: absolute;
                 left: 0;
