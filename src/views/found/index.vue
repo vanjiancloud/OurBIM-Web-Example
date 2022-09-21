@@ -68,24 +68,26 @@
         <el-table-column :label="$t('state')" width="150">
           <template slot-scope="scope">
             <div v-if=" scope.row.isGroup=== '1'">-</div>
-            <div v-else-if="scope.row.isGroup !== '1'">{{ formatStatus(scope.row.ourbimComponentInfo.comStatus) }}</div>
-            <!-- 转换中 -->
-            <el-progress
-              :text-inside="true"
-              :percentage="scope.row.ourbimComponentInfo.progress"
-              :show-text="true"
-              :stroke-width="13"
-              :color="customColor"
-              v-if="
-               scope.row.ourbimComponentInfo !== null && scope.row.ourbimComponentInfo.comStatus === '1' && scope.row.ourbimComponentInfo.progress !== 100
-                  ? true
-                  : false
-              "
-            >
-            </el-progress>
-            <!-- 转换失败 -->
-            <div  v-if="scope.row.ourbimComponentInfo !== null && scope.row.ourbimComponentInfo.comStatus === '3'">
-               <img src="../manage/err.png" alt="" />
+            <div v-else>
+              <div>{{ formatStatus(scope.row.ourbimComponentInfo.comStatus) }}</div>
+              <!-- 转换中 -->
+              <el-progress
+                :text-inside="true"
+                :percentage="scope.row.ourbimComponentInfo.progress"
+                :show-text="true"
+                :stroke-width="13"
+                :color="customColor"
+                v-if="
+                scope.row.ourbimComponentInfo !== null && scope.row.ourbimComponentInfo.comStatus === '1' && scope.row.ourbimComponentInfo.progress !== 100
+                    ? true
+                    : false
+                "
+              >
+              </el-progress>
+              <!-- 转换失败 -->
+              <div  v-if="scope.row.ourbimComponentInfo !== null && scope.row.ourbimComponentInfo.comStatus === '3'">
+                <img src="../manage/err.png" alt="" />
+              </div>
             </div>
           </template>
         </el-table-column>
