@@ -37,7 +37,7 @@
                         </div>
                     </div>
                     <div class="startTest"><el-checkbox :disabled="radio===3 ? false : true" @change="threeBroke" v-model="checkTest">{{words[1]}}</el-checkbox></div>
-                    <div class="putDown" @click="putDown"><el-button :disabled="radio===3 ? false : true" type="primary" size="small">{{words[2]}}</el-button></div>
+                    <div class="putDown"><el-button @click="putDown" :disabled="radio===3 ? false : true" type="primary" size="small">{{words[2]}}</el-button></div>
                     <div class="show-speed">
                        <span>{{words[3]}}</span>
                         <el-slider class="speedView"
