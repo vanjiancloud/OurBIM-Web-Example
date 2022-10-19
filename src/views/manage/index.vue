@@ -775,6 +775,7 @@ export default {
     },
     reportErr(row) {
       console.log(11, row);
+      
     },
     async downloadFile(row) {
       this.$confirm("即将下载此源文件, 是否继续?", "提示", {
