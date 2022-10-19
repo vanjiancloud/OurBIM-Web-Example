@@ -102,12 +102,7 @@
                 {{ scope.row.errMsg }}
               </div>
               <!-- 转化失败 -->
-              <div
-                style="
-                  display: flex;
-                  justify-content: center;
-                  align-items: center;
-                "
+              <div :style="{'display':'flex','justify-content':'center','align-items':'center'}"
               >
                 <span>{{ formatStatus(scope.row.applidStatus) }}</span>
                 <div class="err-icon"><img src="./err.png" alt="" /></div>
@@ -415,6 +410,17 @@
                   <td class="td"><span style="float:right;">°</span></td>
                   <td class="td"><el-input class="elinput jing" @change="jin" v-model="longitude" type=number :max="180" :min="-180" placeholder="经度"></el-input></td>
                 </div>
+                <div class="addNewModel" v-if="form.appType === '3'">
+                  <span v-if="modelListFlag" @click="addModelClick">添加模型</span>
+                  <el-select v-model="modelListValue" clearable placeholder="请选择" size="mini" @change="modelListValChange" v-else>
+                    <el-option
+                      v-for="item in modelList"
+                      :key="item.appid"
+                      :label="item.appName"
+                      :value="item.appid">
+                    </el-option>
+                  </el-select>
+                </div>
             </el-card>
           </el-form-item>
 
@@ -712,6 +718,10 @@ export default {
         ],
       },
       selectStartups: null,
+      modelList:[], // 编辑中添加模型时的下拉框数据
+      modelListValue:'', //  编辑中添加模型时的下拉框的v-model
+      modelListFlag:true, 
+      modelInfoObj:{},
     };
   },
   computed: {
@@ -740,6 +750,7 @@ export default {
     delRow(id){
        this.$confirm('确定移除吗', '提示')
         .then(() => {
+          this.modelListValue = ''; // 将添加模型下拉框清空
           let modelStr = '';
           for(let i in this.sonAppObj){
             if(i === id){
@@ -1163,6 +1174,9 @@ export default {
     // 编辑按钮 3334678
     edit(e) {
       // console.log('45',e);
+      this.modelListFlag = true; // 将添加模型按钮显示出来
+      // 获取所有模型信息
+      this.GetIntegrate();
       this.sonAppObj = e.sonAppMap || {};
 
       this.form.appType = e.appType;
@@ -1285,14 +1299,17 @@ export default {
               }
             }else{
              for (let i = 1; i <= this.sonAppKey.length; i++) {
-             gisinfoLis[i-1] = {
-              appId:this.sonAppKey[i-1],
-              longitude:document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner").value,
-              latitude:document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner").value,
-              altitude:document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(4) .elinput .el-input__inner").value
+                gisinfoLis[i-1] = {
+                  appId:this.sonAppKey[i-1],
+                  longitude:document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner").value,
+                  latitude:document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner").value,
+                  altitude:document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(4) .elinput .el-input__inner").value
+                }
+              }
+              if(this.modelListValue){
+                gisinfoLis.push(this.modelInfoObj)
+              }
             }
-           }
-          }
          }
           var gisinfoList = JSON.stringify(gisinfoLis)
           updateProject({
@@ -1515,8 +1532,7 @@ export default {
     },
     xiala2(){
        if(this.value2 == "BIM"){
-         console.log("bin");
-
+        //  console.log("bin");
          for (var i = 1; i <= this.sonAppKey.length; i++) {
            for (let j = 3; j <= 8; j++) {
              if(
@@ -1672,6 +1688,37 @@ export default {
           ).value = '';
             this.$message.warning('纬度取值范围为正负90度');
       }
+      }
+    },
+    // 点击添加模型按钮
+    async addModelClick(){
+      this.modelListFlag = false;
+      this.modelListValue = '';
+      let modelArr = JSON.parse(JSON.stringify(this.ListLinkModel));
+      let newArr = this.form.modelIds.split(',');
+      this.modelList = modelArr.filter(item=>{
+        let flag = newArr.some(e=>{
+          return item.appid === e
+        })
+        if(flag === false){
+          return true;
+        }
+      })
+    },
+    // 添加的模型变化时
+    modelListValChange(e){
+      if(e){
+          let newArr = this.form.modelIds.split(',');
+          newArr.push(e);
+          this.form.modelIds = newArr.join(',');
+          if(this.value2 === 'GIS'){
+            this.modelInfoObj = {
+              appid:e,
+              altitude:'2',  //海拔高度
+              longitude:'116', //经度
+              latitude:'35',  //纬度
+            }
+          }
       }
     }
   },
@@ -2108,6 +2155,13 @@ export default {
 }
 .box-card{
   margin-left: 9px;
+  .addNewModel{
+    span{
+      color: #00aaf0;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  }
 }
 
 </style>
