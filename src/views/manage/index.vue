@@ -748,12 +748,16 @@ export default {
         this.FormIntegrate.appName='';
     },
     delRow(id){
+        let num = -1;
+        let num1 = 0;
        this.$confirm('确定移除吗', '提示')
         .then(() => {
           this.modelListValue = ''; // 将添加模型下拉框清空
           let modelStr = '';
           for(let i in this.sonAppObj){
+            num+=1
             if(i === id){
+              num1 = num
               modelStr = this.sonAppObj[i]
               break;
             }
@@ -768,9 +772,16 @@ export default {
             }
           }
           this.sonAppKey = newArr;
-          this.form.modelIds=newArr.join(',');         
+          this.form.modelIds=newArr.join(','); 
+          // 删除时将对应的经纬度和高度也删除
+          this.altitude.splice(num1,1);
+          this.longitude.splice(num1,1);
+          this.latitude.splice(num1,1);     
          })
         .catch(() => {
+        }).finally(()=>{
+          num = -1;
+          num1 = 0;
         })
     },
     reportErr(row) {
@@ -1174,7 +1185,6 @@ export default {
     },
     // 编辑按钮 3334678
     edit(e) {
-      // console.log('45',e);
       this.modelListFlag = true; // 将添加模型按钮显示出来
       // 获取所有模型信息
       this.GetIntegrate();
@@ -1715,9 +1725,9 @@ export default {
           if(this.value2 === 'GIS'){
             this.modelInfoObj = {
               appid:e,
-              altitude:'2',  //海拔高度
               longitude:'116', //经度
               latitude:'35',  //纬度
+              altitude:'2',  //海拔高度
             }
           }
       }
