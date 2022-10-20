@@ -750,6 +750,7 @@ export default {
     delRow(id){
         let num = -1;
         let num1 = 0;
+        
        this.$confirm('确定移除吗', '提示')
         .then(() => {
           this.modelListValue = ''; // 将添加模型下拉框清空
