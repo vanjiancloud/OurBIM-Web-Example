@@ -393,22 +393,22 @@
                 <div v-for="(itemm,i) in sonAppValue" :key="i" class="text item clearfix">
                   <td class="wordEllipsis">{{itemm}}</td>
                   <td :class="sonAppValue.length <= 2 ? 'td yinc bind' : 'td yinc'" @click="delRow(sonAppKey[i])" >移除</td>
-                  <td class="td"><span style="float:right;">m</span></td>
-                  <td class="td"><el-input class="elinput" v-model="altitude[i]" type=number placeholder="海拔高度"></el-input></td>
-                  <td class="td"><span style="float:right;">°</span></td>
-                  <td class="td"><el-input class="elinput wei" @change="jin" v-model="latitude[i]" type=number :max="90" :min="-90" placeholder="纬度"></el-input></td>
-                  <td class="td"><span style="float:right;">°</span></td>
-                  <td class="td"><el-input class="elinput jing" @change="jin" v-model="longitude[i]" type=number :max="180" :min="-180" placeholder="经度"></el-input></td>
+                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">m</span></td>
+                  <td class="td"><el-input class="elinput" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" v-model="altitude[i]" type=number placeholder="海拔高度"></el-input></td>
+                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">°</span></td>
+                  <td class="td"><el-input class="elinput wei" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" @change="jin" v-model="latitude[i]" type=number :max="90" :min="-90" placeholder="纬度"></el-input></td>
+                  <td class="td"><span style="float:right;"  v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">°</span></td>
+                  <td class="td"><el-input class="elinput jing"  v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" @change="jin" v-model="longitude[i]" type=number :max="180" :min="-180" placeholder="经度"></el-input></td>
                 </div>
                 <div v-if="form.appType === '0' && form.isGis === 'true' || form.appType === '0' && value2 === 'GIS'" class="text item">
                   <td class="wordEllipsis" >{{form.name}}</td>
                   <td class="td yinc bind" >移除</td>
-                  <td class="td"><span style="float:right;">m</span></td>
-                  <td class="td"><el-input class="elinput" v-model="altitude" type=number placeholder="海拔高度"></el-input></td>
-                  <td class="td"><span style="float:right;">°</span></td>
-                  <td class="td"><el-input class="elinput wei" @change="jin" v-model="latitude" type=number :max="90" :min="-90" placeholder="纬度"></el-input></td>
-                  <td class="td"><span style="float:right;">°</span></td>
-                  <td class="td"><el-input class="elinput jing" @change="jin" v-model="longitude" type=number :max="180" :min="-180" placeholder="经度"></el-input></td>
+                  <td class="td"><span style="float:right;"  v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">m</span></td>
+                  <td class="td"><el-input class="elinput" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" v-model="altitude" type=number placeholder="海拔高度"></el-input></td>
+                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">°</span></td>
+                  <td class="td"><el-input class="elinput wei" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" @change="jin" v-model="latitude" type=number :max="90" :min="-90" placeholder="纬度"></el-input></td>
+                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">°</span></td>
+                  <td class="td"><el-input class="elinput jing" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" @change="jin" v-model="longitude" type=number :max="180" :min="-180" placeholder="经度"></el-input></td>
                 </div>
                 <div class="addNewModel" v-if="form.appType === '3'">
                   <span v-if="modelListFlag" @click="addModelClick">添加模型</span>
@@ -721,7 +721,8 @@ export default {
       modelList:[], // 编辑中添加模型时的下拉框数据
       modelListValue:'', //  编辑中添加模型时的下拉框的v-model
       modelListFlag:true, 
-      modelInfoObj:{},
+      modelInfoObj:[],
+      selectModelName:'', // 选中的模型的名称
     };
   },
   computed: {
@@ -1316,9 +1317,9 @@ export default {
                   altitude:document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(4) .elinput .el-input__inner").value
                 }
               }
-              if(this.modelListValue){
-                gisinfoLis.push(this.modelInfoObj)
-              }
+              // if(this.modelListValue){
+              //   gisinfoLis = [...gisinfoLis,...this.modelInfoObj];
+              // }
             }
          }
           var gisinfoList = JSON.stringify(gisinfoLis)
@@ -1541,30 +1542,31 @@ export default {
        }
     },
     xiala2(){
-       if(this.value2 == "BIM"){
-        //  console.log("bin");
-         for (var i = 1; i <= this.sonAppKey.length; i++) {
-           for (let j = 3; j <= 8; j++) {
-             if(
-               document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!="none"
-             ){
-                document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display="none"
-           }
-           }
-         }
-       }else{
-         console.log("gei");  
-            for (var i = 1; i <= this.sonAppKey.length; i++) {
-              for (let j = 3; j <= 8; j++) {
-               if(
-                 document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!=""
-                ){
-                document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display=""
-             }
-             }
-            }
+      //  if(this.value2 == "BIM"){
+      //   //  console.log("bin");
+      //   console.log('xiala2', this.sonAppKey);
+      //    for (var i = 1; i <= this.sonAppKey.length; i++) {
+      //      for (let j = 3; j <= 8; j++) {
+      //        if(
+      //          document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!="none"
+      //        ){
+      //           document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display="none"
+      //      }
+      //      }
+      //    }
+      //  }else{
+      //    console.log("gei");  
+      //       for (var i = 1; i <= this.sonAppKey.length; i++) {
+      //         for (let j = 3; j <= 8; j++) {
+      //          if(
+      //            document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!=""
+      //           ){
+      //           document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display=""
+      //        }
+      //        }
+      //       }
             
-          }
+      //     }
        },
     rendercontent(h,option){
       return <span label="option.appName" class="appna"><em class="optionName">{option.appName}</em>
@@ -1718,18 +1720,31 @@ export default {
     // 添加的模型变化时
     modelListValChange(e){
       if(e){
+          this.modelNameGet(e);
+          let keyValueObj = {[e]: this.selectModelName}
+          this.sonAppObj = {...this.sonAppObj,...keyValueObj}
           let newArr = this.form.modelIds.split(',');
           newArr.push(e);
           this.form.modelIds = newArr.join(',');
-          if(this.value2 === 'GIS'){
-            this.modelInfoObj = {
-              appid:e,
-              longitude:'116', //经度
-              latitude:'35',  //纬度
-              altitude:'2',  //海拔高度
-            }
-          }
+          // if(this.value2 === 'GIS'){
+          //   let obj = {
+          //     appid:e,
+          //     longitude:'116', //经度
+          //     latitude:'35',  //纬度
+          //     altitude:'2',  //海拔高度
+          //   }
+          //   this.modelInfoObj.push(obj);
+          // }
+          this.modelListFlag = true;
       }
+    },
+    // 得到点击的那一项的模型名称
+    modelNameGet(e){
+      this.modelList.forEach(item=>{
+        if(e === item.appid){
+          this.selectModelName = item.appName;
+        }
+      })
     }
   },
   mounted() {
