@@ -425,6 +425,18 @@
           </el-form-item>
 
           <el-form-item
+              label="GIS坐标系："
+              v-if="(form.appType === '3' && form.isGis==='true' && value2 !=='BIM') || (form.appType === '0' && form.isGis==='true' && value2 !=='BIM') || value2==='GIS'"
+              label-width="110px"
+            >
+              <el-select v-model="form.gisCoordinateType" placeholder="请选择GIS坐标系">
+                <el-option value="WGS-84" label="WGS-84"></el-option>
+                <el-option value="GCJ-02" label="GCJ-02"></el-option>
+                <el-option value="BD-09" label="BD-09"></el-option>
+              </el-select>
+            </el-form-item>
+
+          <el-form-item
             label="最大并发数："
             label-width="110px"
             prop="maxInstance"
@@ -585,21 +597,21 @@ export default {
       options: [
         {
           value: "GIS",
-          label: "OurGISEngine.exe",
+          label: "OurGISEngine",
         },
         {
           value: "BIM",
-          label: "OurBIMEngine.exe",
+          label: "OurBIMEngine",
         },
       ],
       optionss: [
         {
           value2: "GIS",
-          label: "OurGISEngine.exe",
+          label: "OurGISEngine",
         },
         {
           value2: "BIM",
-          label: "OurBIMEngine.exe",
+          label: "OurBIMEngine",
         },
       ],
       value: "BIM",
@@ -648,6 +660,7 @@ export default {
       form: {
         appType:"",
         startup:"",
+        gisCoordinateType:"WGS-84",
         applid:[],
         appName:[],
         displayName: "",
@@ -899,7 +912,8 @@ export default {
             type : this.type,
             bimList:this.ActiveLinkModel.join(),
             gisInfo:JSON.stringify(gisinfoList),
-            isGis:this.isGis
+            isGis:this.isGis,
+            gisCoordinateType:"WGS-84",
           }
           MODELAPI.ADDINTEGRARE(params).then((res) => {
             if (res.data.code === 0) {
@@ -1203,6 +1217,7 @@ export default {
       this.form.startup = e.startup;
       this.form.isGis = e.isGis;
       this.form.modelIds = e.combineId;
+      this.form.gisCoordinateType = e.gisCoordinateType;
       // this.form.gisinfo = [];
 
       // 状态 只有是  转换完成  的情况下才可以编辑
@@ -1335,7 +1350,8 @@ export default {
             startup: this.form.startup,
             gisInfo:gisinfoList,
             isGis:this.form.isGis,
-            combineId:this.form.modelIds
+            combineId:this.form.modelIds,
+            gisCoordinateType:this.form.gisCoordinateType
           })
             .then((res) => {
               if (res.data.code === 0) {
