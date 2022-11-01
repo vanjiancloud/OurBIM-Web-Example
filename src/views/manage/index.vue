@@ -384,6 +384,18 @@
           </el-form-item>
 
           <el-form-item
+              label="GIS坐标系："
+              v-if="(form.appType === '3' && form.isGis==='true' && value2 !=='BIM') || (form.appType === '0' && form.isGis==='true' && value2 !=='BIM') || value2==='GIS'"
+              label-width="110px"
+            >
+              <el-select v-model="form.gisCoordinateType" placeholder="请选择GIS坐标系">
+                <el-option value="WGS-84" label="WGS-84"></el-option>
+                <el-option value="GCJ-02" label="GCJ-02"></el-option>
+                <el-option value="BD-09" label="BD-09"></el-option>
+              </el-select>
+            </el-form-item>
+
+          <el-form-item
             :label="this.value2==='GIS' ? 'GIS信息:' : '子模型列表:'"
             v-if="form.appType === '3' && form.isGis==='true' ||form.appType === '3' && form.isGis==='false' || form.appType === '0' && this.value2==='GIS'"
             label-width="100px"
@@ -393,22 +405,22 @@
                 <div v-for="(itemm,i) in sonAppValue" :key="i" class="text item clearfix">
                   <td class="wordEllipsis">{{itemm}}</td>
                   <td :class="sonAppValue.length <= 2 ? 'td yinc bind' : 'td yinc'" @click="delRow(sonAppKey[i])" >移除</td>
-                  <td class="td"><span style="float:right;">m</span></td>
-                  <td class="td"><el-input class="elinput" v-model="altitude[i]" type=number placeholder="海拔高度"></el-input></td>
-                  <td class="td"><span style="float:right;">°</span></td>
-                  <td class="td"><el-input class="elinput wei" @change="jin" v-model="latitude[i]" type=number :max="90" :min="-90" placeholder="纬度"></el-input></td>
-                  <td class="td"><span style="float:right;">°</span></td>
-                  <td class="td"><el-input class="elinput jing" @change="jin" v-model="longitude[i]" type=number :max="180" :min="-180" placeholder="经度"></el-input></td>
+                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">m</span></td>
+                  <td class="td"><el-input class="elinput" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" v-model="altitude[i]" type=number placeholder="海拔高度"></el-input></td>
+                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">°</span></td>
+                  <td class="td"><el-input class="elinput wei" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" @change="jin" v-model="latitude[i]" type=number :max="90" :min="-90" placeholder="纬度"></el-input></td>
+                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">°</span></td>
+                  <td class="td"><el-input class="elinput jing" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" @change="jin" v-model="longitude[i]" type=number :max="180" :min="-180" placeholder="经度"></el-input></td>
                 </div>
                 <div v-if="form.appType === '0' && form.isGis === 'true' || form.appType === '0' && value2 === 'GIS'" class="text item">
                   <td class="wordEllipsis" >{{form.name}}</td>
                   <td class="td yinc bind" >移除</td>
-                  <td class="td"><span style="float:right;">m</span></td>
-                  <td class="td"><el-input class="elinput" v-model="altitude" type=number placeholder="海拔高度"></el-input></td>
-                  <td class="td"><span style="float:right;">°</span></td>
-                  <td class="td"><el-input class="elinput wei" @change="jin" v-model="latitude" type=number :max="90" :min="-90" placeholder="纬度"></el-input></td>
-                  <td class="td"><span style="float:right;">°</span></td>
-                  <td class="td"><el-input class="elinput jing" @change="jin" v-model="longitude" type=number :max="180" :min="-180" placeholder="经度"></el-input></td>
+                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">m</span></td>
+                  <td class="td"><el-input class="elinput" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" v-model="altitude" type=number placeholder="海拔高度"></el-input></td>
+                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">°</span></td>
+                  <td class="td"><el-input class="elinput wei" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" @change="jin" v-model="latitude" type=number :max="90" :min="-90" placeholder="纬度"></el-input></td>
+                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">°</span></td>
+                  <td class="td"><el-input class="elinput jing" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" @change="jin" v-model="longitude" type=number :max="180" :min="-180" placeholder="经度"></el-input></td>
                 </div>
                 <div class="addNewModel" v-if="form.appType === '3'">
                   <span v-if="modelListFlag" @click="addModelClick">添加模型</span>
@@ -423,18 +435,6 @@
                 </div>
             </el-card>
           </el-form-item>
-
-          <el-form-item
-              label="GIS坐标系："
-              v-if="(form.appType === '3' && form.isGis==='true' && value2 !=='BIM') || (form.appType === '0' && form.isGis==='true' && value2 !=='BIM') || value2==='GIS'"
-              label-width="110px"
-            >
-              <el-select v-model="form.gisCoordinateType" placeholder="请选择GIS坐标系">
-                <el-option value="WGS-84" label="WGS-84"></el-option>
-                <el-option value="GCJ-02" label="GCJ-02"></el-option>
-                <el-option value="BD-09" label="BD-09"></el-option>
-              </el-select>
-            </el-form-item>
 
           <el-form-item
             label="最大并发数："
@@ -485,6 +485,11 @@
               :value="item.value"
             >
             </el-option>
+          </el-select>
+          <el-select v-if="value === 'GIS'" v-model="linkGisCoordinateType" placeholder="请选择GIS坐标系" :style="{'margin-left':'132px'}">
+                <el-option value="WGS-84" label="WGS-84"></el-option>
+                <el-option value="GCJ-02" label="GCJ-02"></el-option>
+                <el-option value="BD-09" label="BD-09"></el-option>
           </el-select>
         </template>
       </div>
@@ -735,6 +740,7 @@ export default {
       modelListValue:'', //  编辑中添加模型时的下拉框的v-model
       modelListFlag:true, 
       modelInfoObj:{},
+      linkGisCoordinateType:'WGS-84', // 链接模型时选择坐标系
     };
   },
   computed: {
@@ -913,7 +919,7 @@ export default {
             bimList:this.ActiveLinkModel.join(),
             gisInfo:JSON.stringify(gisinfoList),
             isGis:this.isGis,
-            gisCoordinateType:"WGS-84",
+            gisCoordinateType: this.value ==='BIM' ? 'WGS-84' : this.linkGisCoordinateType,
           }
           MODELAPI.ADDINTEGRARE(params).then((res) => {
             if (res.data.code === 0) {
@@ -1217,7 +1223,7 @@ export default {
       this.form.startup = e.startup;
       this.form.isGis = e.isGis;
       this.form.modelIds = e.combineId;
-      this.form.gisCoordinateType = e.gisCoordinateType;
+      this.form.gisCoordinateType = e.gisCoordinateType || 'WGS-84';
       // this.form.gisinfo = [];
 
       // 状态 只有是  转换完成  的情况下才可以编辑
@@ -1298,7 +1304,7 @@ export default {
          let noBlack = this.sonAppValue.length == 0 ? 1 : this.sonAppValue.length;
          for(var i = 1; i <= noBlack; i++){
            for(let k = 4; k <= 8; k+=2){
-             let inputValue = document.querySelector('.saveAsDialog .el-dialog__body .el-form .el-form-item:nth-of-type(3) .text:nth-of-type('+i+') .td:nth-of-type('+k+') .el-input__inner');
+             let inputValue = document.querySelector('.saveAsDialog .el-dialog__body .el-form .el-form-item:nth-of-type(4) .text:nth-of-type('+i+') .td:nth-of-type('+k+') .el-input__inner');
              inputValue.value ==='' ? onBlackNum = 1 : onBlackNumber = 2;
            }
          }
@@ -1320,17 +1326,17 @@ export default {
             // if(this.form.gisinfo.length === 0 || this.form.appType === '0'){
             if(this.form.appType === '0'){
               gisinfoLis = {
-                longitude: document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text  .jing .el-input__inner").value,
-                latitude: document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text  .wei .el-input__inner").value,
-                altitude: document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text .elinput .el-input__inner").value
+                longitude: document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text  .jing .el-input__inner").value,
+                latitude: document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text  .wei .el-input__inner").value,
+                altitude: document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text .elinput .el-input__inner").value
               }
             }else{
              for (let i = 1; i <= this.sonAppKey.length; i++) {
                 gisinfoLis[i-1] = {
                   appId:this.sonAppKey[i-1],
-                  longitude:document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner").value,
-                  latitude:document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner").value,
-                  altitude:document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(4) .elinput .el-input__inner").value
+                  longitude:document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner").value,
+                  latitude:document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner").value,
+                  altitude:document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(4) .elinput .el-input__inner").value
                 }
               }
               if(this.modelListValue){
@@ -1559,31 +1565,34 @@ export default {
        }
     },
     xiala2(){
-       if(this.value2 == "BIM"){
-        //  console.log("bin");
-         for (var i = 1; i <= this.sonAppKey.length; i++) {
-           for (let j = 3; j <= 8; j++) {
-             if(
-               document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!="none"
-             ){
-                document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display="none"
-           }
-           }
-         }
-       }else{
-         console.log("gei");  
-            for (var i = 1; i <= this.sonAppKey.length; i++) {
-              for (let j = 3; j <= 8; j++) {
-               if(
-                 document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!=""
-                ){
-                document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display=""
-             }
-             }
-            }
-            
-          }
-       },
+      //  if(this.value2 == "BIM"){
+      //   //  console.log("bin");
+      //    this.$nextTick(()=>{
+      //       for (var i = 1; i <= this.sonAppKey.length; i++) {
+      //       for (let j = 3; j <= 8; j++) {
+      //         if(
+      //           document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!="none"
+      //         ){
+      //             document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display="none"
+      //       }
+      //       }
+      //     }
+      //    })
+      //  }else{
+      //   //  console.log("gei");  
+      //    this.$nextTick(()=>{
+      //       for (var i = 1; i <= this.sonAppKey.length; i++) {
+      //         for (let j = 3; j <= 8; j++) {
+      //          if(
+      //            document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!=""
+      //           ){
+      //            document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display=""
+      //           }
+      //        }
+      //       }
+      //    })         
+      //  }
+    },
     rendercontent(h,option){
       return <span label="option.appName" class="appna"><em class="optionName">{option.appName}</em>
         <span class="zspan" style="display:none;float:right;">m</span>
@@ -1684,35 +1693,35 @@ export default {
       for (let i = 1; i <= gisLength ; i++) {
         if(
           document.querySelector(
-            ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
+            ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
             ).value > 180
           ){
         document.querySelector(
-          ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
+          ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
           ).value = '';
           this.$message.warning('经度取值范围为正负180度')
       }else if(
         document.querySelector(
-            ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
+            ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
             ).value < -180
             ){
           document.querySelector(
-          ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
+          ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
           ).value = '';
           this.$message.warning('经度取值范围为正负180度')
       }
       if(document.querySelector(
-            ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
+            ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
             ).value > 90){
         document.querySelector(
-          ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
+          ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
           ).value = '';
           this.$message.warning('纬度取值范围为正负90度');
       }else if(document.querySelector(
-            ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
+            ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
             ).value < -90){
         document.querySelector(
-          ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
+          ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
           ).value = '';
             this.$message.warning('纬度取值范围为正负90度');
       }
