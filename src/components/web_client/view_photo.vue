@@ -206,18 +206,18 @@
                             <img :src="item.imagePath" alt="" @click="selectPoints(index)" :class="{'pointBor':activePoints === index}" :style="{'width':'100%','height':'100%'}">
                             <i class="el-icon-close pointsClose" @click="delPoints(index,item)" v-if="activePoints === index"></i>
                             <div class="videosPlus">
-                                <img :src="require('@/assets/images/view/jiahao.png')" @click="addView(index)" :style="{'width':'100%','height':'100%'}" alt="">
+                                <img :src="require('@/assets/images/view/jiahao.png')" @click.stop="addView(index)" :style="{'width':'100%','height':'100%'}" alt="">
                             </div>
                             <div class="videoWords" v-if="index<=animaViewPointer.length-2 && animaViewPointer.length>1" @click="changePointTime(item)">{{item.time | timeChanger}}</div>
                             <div class="firstAdd" v-if="index === 0">
-                                <img :src="require('@/assets/images/view/jiahao.png')" @click="addView('one')" :style="{'width':'100%','height':'100%'}" alt="">
+                                <img :src="require('@/assets/images/view/jiahao.png')" @click.stop="addView('one')" :style="{'width':'100%','height':'100%'}" alt="">
                             </div>
                         </div>
                     </transition-group>
                   </draggable> 
                 </div>
                 <div class="onlyPlus" v-if="animaViewPointer.length === 0">
-                    <img :src="require('@/assets/images/view/jiahao.png')" @click="addView('one')" :style="{'width':'100%','height':'100%'}" alt="">
+                    <img :src="require('@/assets/images/view/jiahao.png')" @click.stop="addView('one')" :style="{'width':'100%','height':'100%'}" alt="">
                 </div>
             </div>
         </div>
