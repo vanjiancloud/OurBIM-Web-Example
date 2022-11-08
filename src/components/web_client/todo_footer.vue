@@ -30,7 +30,7 @@
             />
           </el-tooltip>
 
-          <el-collapse-transition>
+          <transition name="el-zoom-in-bottom">
             <div class="show-icon-list" v-show="this.imgList[13].state">
               <el-tooltip
                 v-for="(item, index) in showHideList"
@@ -55,7 +55,7 @@
                 </div>
               </el-tooltip>
             </div>
-          </el-collapse-transition>
+          </transition>
         </div>
         <!-- 跟随视角改为第三人称 -->
         <!-- 框选 -->
@@ -171,7 +171,7 @@
               mode=""
             />
           </el-tooltip>
-          <el-collapse-transition>
+          <transition name="el-zoom-in-bottom">
             <div class="show-slice show-split" v-if="imgList[2].state === 1">
               <el-tooltip
                 v-for="(item, index) in sliceList"
@@ -196,7 +196,7 @@
                 </div>
               </el-tooltip>
             </div>
-          </el-collapse-transition>
+          </transition>
         </div>
         <!-- 测量 -->
         <div
@@ -217,7 +217,7 @@
               mode=""
             />
           </el-tooltip>
-          <el-collapse-transition>
+          <transition name="el-zoom-in-bottom">
             <div class="show-cutting" v-if="imgList[3].state === 1">
               <el-tooltip
                 v-for="(item, index) in cuttingList"
@@ -304,7 +304,7 @@
                 </el-tooltip>
               </el-tooltip>
             </div>
-          </el-collapse-transition>
+          </transition>
         </div>
         <!-- 标签 -->
         <div
@@ -397,7 +397,7 @@
               />
             </el-tooltip>
           <!-- </el-tooltip> -->
-          <el-collapse-transition>
+          <transition name="el-zoom-in-bottom">
             <div class="show-slice show-com" v-if="imgList[6].state === 1" :style="{'left':'16%','top':'-83px'}">
             <!-- <div class="show-slice show-com" v-if="false"> -->
               <el-tooltip
@@ -421,7 +421,7 @@
                 </div>
               </el-tooltip>
             </div>
-          </el-collapse-transition>
+          </transition>
         </div>
         <!-- 模型动画 -->
         <div
@@ -604,9 +604,9 @@
             />
           </el-tooltip>
            <!-- 浏览器的 移动旋转缩放 -->
-           <el-collapse-transition>
+           <transition name="el-zoom-in-bottom">
             <!-- <div class="show-slice show-com" v-if="imgList[10].state === 1 && totalLogo === true"> ---555 -->
-            <div class="show-slice show-com" v-if="totalLogo">  
+            <div class="show-slice show-com noBorder" v-if="totalLogo">  
               <el-tooltip
                 v-for="(item, index) in comIconList"
                 :key="index"
@@ -625,8 +625,21 @@
                   />
                 </div>
               </el-tooltip>
+            <!-- 新增轴心 -->
+            <el-tooltip
+                v-for="(item) in axisList"
+                :key="item.content"
+                :enterable="false"
+                effect="dark"
+                :content="item.content"
+                placement="left"
+              >
+                <div class="moveAxis">
+                  <img @click="clickAxis(item)" :src="item.active ? item.activeImg : item.img" alt="" :style="{'cursor': (comIconList[0].active || comIconList[1].active || comIconList[2].active) ? '' : 'not-allowed'}">
+                </div>
+              </el-tooltip>
             </div>
-          </el-collapse-transition>
+          </transition>
         </div>
         <!-- 属性 -->
         <div
@@ -794,6 +807,15 @@ export default {
           active: false,
         },
       ],
+      axisList:[
+                {
+                content: "轴心",
+                name: "scale",
+                img: require("@/assets/images/todo/unchecked/com/axis.png"),
+                activeImg: require("@/assets/images/todo/check/com/axis.png"),
+                active: false,
+                }
+            ],
       // (视图)
        angleList:[
         {
@@ -1295,6 +1317,10 @@ export default {
       })
         .then((res) => {
           if (res.data.code === 0) {
+            // 关闭构件库操作成功后 并轴心是打开时 要将轴心恢复未点击状态
+            if(!flag && this.axisList[0].active){
+              this.axisList[0].active = false;
+            }
           } else {
             this.$message.error(res.data.message);
           }
@@ -1369,6 +1395,10 @@ export default {
               this.$resMsg(res.data);
               if (res.data.code === 0) {
                 row.active = false;
+                // 关闭构件库操作成功后 并轴心是打开时 要将轴心恢复未点击状态
+                if(!flag && this.axisList[0].active){
+                  this.axisList[0].active = false;
+                }
               }
             });
           }
@@ -1412,6 +1442,39 @@ export default {
         .catch((res) => {});
       }
     },
+    // 点击轴心
+    clickAxis(e){
+            let flagAxis = this.comIconList.some(item=>{
+                return item.active === true;
+            })
+            if(!flagAxis){
+                return false;
+            }
+            if(this.axisList[0].active){
+                this.axisOpenClose(false);
+            }else{
+                this.axisOpenClose(true);
+            }
+            },
+            // 轴心请求
+            axisOpenClose(e){
+                let params = {
+                taskId:this.taskId,
+                flag:e
+                }
+                MODELAPI.SETGIZMOAXIS(params).then((res)=>{
+                if(res.data.code === 0){
+                    if(params.flag){
+                        this.$message.success('坐标模式切换开启');
+                        this.axisList[0].active = true;
+                    }else{
+                        this.axisList[0].active = false;
+                    }
+                }else{
+                    this.$message.error('坐标模式切换失败');
+                }
+                }).catch(()=>{})
+      },
     //  移动 旋转
     SetWeather(e) {
       /**
@@ -2396,6 +2459,26 @@ export default {
     }
     .show-com {
       top: -117px;
+      .moveAxis{
+        position: absolute;
+        top: -32px;
+        left: 0;
+        width: 100%;
+        height: 30%;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px 10px 0 0;
+        img{
+          width: 20px;
+          height: 20px;
+          margin-top: 4px;
+        }
+      }
+    }
+    .noBorder{
+      border-radius: 0;
     }
     .show-weather {
       position: absolute;
