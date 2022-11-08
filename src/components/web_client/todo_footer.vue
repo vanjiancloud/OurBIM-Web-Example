@@ -1396,7 +1396,7 @@ export default {
               if (res.data.code === 0) {
                 row.active = false;
                 // 关闭构件库操作成功后 并轴心是打开时 要将轴心恢复未点击状态
-                if(!flag && this.axisList[0].active){
+                if(this.axisList[0].active){
                   this.axisList[0].active = false;
                 }
               }
