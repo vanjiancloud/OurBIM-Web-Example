@@ -352,6 +352,14 @@ const MODELAPI = {
             data: qsStringify(params)
         })
     },
+    // 打开或者关闭(轴心)
+    SETGIZMOAXIS: params => {
+        return request({
+            url: '/OurBim/setGizmoModeType',
+            method: 'post',
+            params
+        })
+    },
 }
 
 export default MODELAPI
