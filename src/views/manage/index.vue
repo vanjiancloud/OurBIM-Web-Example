@@ -384,6 +384,18 @@
           </el-form-item>
 
           <el-form-item
+            label="GIS坐标系："
+            v-if="(form.appType === '3' && form.isGis==='true' && value2 !=='BIM') || (form.appType === '0' && form.isGis==='true' && value2 !=='BIM') || value2==='GIS'"
+            label-width="110px"
+          >
+            <el-select v-model="form.gisCoordinateType" placeholder="请选择GIS坐标系">
+              <el-option value="WGS-84" label="WGS-84"></el-option>
+              <el-option value="GCJ-02" label="GCJ-02"></el-option>
+              <el-option value="BD-09" label="BD-09"></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item
             :label="this.value2==='GIS' ? 'GIS信息:' : '子模型列表:'"
             v-if="form.appType === '3' && form.isGis==='true' ||form.appType === '3' && form.isGis==='false' || form.appType === '0' && this.value2==='GIS'"
             label-width="100px"
@@ -474,6 +486,11 @@
             >
             </el-option>
           </el-select>
+          <el-select v-model="linkGisCoordinateType" placeholder="请选择GIS坐标系" :style="{'margin-left':'132px'}">
+              <el-option value="WGS-84" label="WGS-84"></el-option>
+              <el-option value="GCJ-02" label="GCJ-02"></el-option>
+              <el-option value="BD-09" label="BD-09"></el-option>
+           </el-select>
         </template>
       </div>
       <br />
@@ -585,21 +602,21 @@ export default {
       options: [
         {
           value: "GIS",
-          label: "OurGISEngine.exe",
+          label: "OurGISEngine",
         },
         {
           value: "BIM",
-          label: "OurBIMEngine.exe",
+          label: "OurBIMEngine",
         },
       ],
       optionss: [
         {
           value2: "GIS",
-          label: "OurGISEngine.exe",
+          label: "OurGISEngine",
         },
         {
           value2: "BIM",
-          label: "OurBIMEngine.exe",
+          label: "OurBIMEngine",
         },
       ],
       value: "BIM",
@@ -648,6 +665,7 @@ export default {
       form: {
         appType:"",
         startup:"",
+        gisCoordinateType:"WGS-84",
         applid:[],
         appName:[],
         displayName: "",
@@ -723,6 +741,7 @@ export default {
       modelListFlag:true, 
       modelInfoObj:[],
       selectModelName:'', // 选中的模型的名称
+      linkGisCoordinateType:'WGS-84', // 链接模型时选择坐标系
     };
   },
   computed: {
@@ -754,7 +773,7 @@ export default {
        this.$confirm('确定移除吗', '提示')
         .then(() => {
           this.modelListValue = ''; // 将添加模型下拉框清空
-          let modelStr = '';
+          let modelStr = '';  // 要移除的模型的名称
           for(let i in this.sonAppObj){
             num+=1
             if(i === id){
@@ -763,17 +782,21 @@ export default {
               break;
             }
           }
-          this.sonAppValue = this.sonAppValue.filter(item=>{
-           return item != modelStr;
+          this.$delete(this.sonAppObj,id);
+          // this.sonAppValue = this.sonAppValue.filter(item=>{
+          //  return item != modelStr;
+          // })
+          // let newArr = []; // 用来 存储的是 移除某个模型后  剩下的模型id
+          // for(let k in this.sonAppObj){
+          //   if(this.sonAppValue.includes(this.sonAppObj[k])){
+          //       newArr.push(k);
+          //   }
+          // }
+          // this.sonAppKey = newArr;
+          let newArr = this.sonAppKey.filter(item=>{
+             return item !== id;
           })
-          let newArr = []; // 用来 存储的是 移除某个模型后  剩下的模型id
-          for(let k in this.sonAppObj){
-            if(this.sonAppValue.includes(this.sonAppObj[k])){
-                newArr.push(k);
-            }
-          }
-          this.sonAppKey = newArr;
-          this.form.modelIds=newArr.join(','); 
+          this.form.modelIds=newArr.join(',');     
           // 删除时将对应的经纬度和高度也删除
           this.altitude.splice(num1,1);
           this.longitude.splice(num1,1);
@@ -898,7 +921,8 @@ export default {
             type : this.type,
             bimList:this.ActiveLinkModel.join(),
             gisInfo:JSON.stringify(gisinfoList),
-            isGis:this.isGis
+            isGis:this.isGis,
+            gisCoordinateType: this.value ==='BIM' ? 'WGS-84' : this.linkGisCoordinateType,
           }
           MODELAPI.ADDINTEGRARE(params).then((res) => {
             if (res.data.code === 0) {
@@ -1185,6 +1209,7 @@ export default {
     },
     // 编辑按钮 3334678
     edit(e) {
+      console.log('45',e);
       this.modelListFlag = true; // 将添加模型按钮显示出来
       // 获取所有模型信息
       this.GetIntegrate();
@@ -1202,6 +1227,7 @@ export default {
       this.form.startup = e.startup;
       this.form.isGis = e.isGis;
       this.form.modelIds = e.combineId;
+      this.form.gisCoordinateType = e.gisCoordinateType || 'WGS-84';
       // this.form.gisinfo = [];
 
       // 状态 只有是  转换完成  的情况下才可以编辑
@@ -1222,7 +1248,7 @@ export default {
       }else if(e.appType == "0" && e.isGis=='true'){
           this.value2 = "GIS"
           this.form.gisinfo = JSON.parse(e.gisInfo);
-           this.longitude = this.form.gisinfo.longitude
+          this.longitude = this.form.gisinfo.longitude
           this.latitude = this.form.gisinfo.latitude
           this.altitude = this.form.gisinfo.altitude
       }else{
@@ -1248,8 +1274,6 @@ export default {
         this.fileList[index].url = e.screenImg;
       }
       this.editDialogFormVisible = true;
-      
-      // console.log('565',this.form);
     },
     //确定修改
     amend() {
@@ -1282,7 +1306,7 @@ export default {
          let noBlack = this.sonAppValue.length == 0 ? 1 : this.sonAppValue.length;
          for(var i = 1; i <= noBlack; i++){
            for(let k = 4; k <= 8; k+=2){
-             let inputValue = document.querySelector('.saveAsDialog .el-dialog__body .el-form .el-form-item:nth-of-type(3) .text:nth-of-type('+i+') .td:nth-of-type('+k+') .el-input__inner');
+             let inputValue = document.querySelector('.saveAsDialog .el-dialog__body .el-form .el-form-item:nth-of-type(4) .text:nth-of-type('+i+') .td:nth-of-type('+k+') .el-input__inner');
              inputValue.value ==='' ? onBlackNum = 1 : onBlackNumber = 2;
            }
          }
@@ -1304,17 +1328,17 @@ export default {
             // if(this.form.gisinfo.length === 0 || this.form.appType === '0'){
             if(this.form.appType === '0'){
               gisinfoLis = {
-                longitude: document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text  .jing .el-input__inner").value,
-                latitude: document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text  .wei .el-input__inner").value,
-                altitude: document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text .elinput .el-input__inner").value
+                longitude: document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text  .jing .el-input__inner").value,
+                latitude: document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text  .wei .el-input__inner").value,
+                altitude: document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text .elinput .el-input__inner").value
               }
             }else{
              for (let i = 1; i <= this.sonAppKey.length; i++) {
                 gisinfoLis[i-1] = {
                   appId:this.sonAppKey[i-1],
-                  longitude:document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner").value,
-                  latitude:document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner").value,
-                  altitude:document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(4) .elinput .el-input__inner").value
+                  longitude:document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner").value,
+                  latitude:document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner").value,
+                  altitude:document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(4) .elinput .el-input__inner").value
                 }
               }
               // if(this.modelListValue){
@@ -1334,7 +1358,8 @@ export default {
             startup: this.form.startup,
             gisInfo:gisinfoList,
             isGis:this.form.isGis,
-            combineId:this.form.modelIds
+            combineId:this.form.modelIds,
+            gisCoordinateType:this.form.gisCoordinateType
           })
             .then((res) => {
               if (res.data.code === 0) {
@@ -1542,32 +1567,34 @@ export default {
        }
     },
     xiala2(){
-      //  if(this.value2 == "BIM"){
-      //   //  console.log("bin");
-      //   console.log('xiala2', this.sonAppKey);
-      //    for (var i = 1; i <= this.sonAppKey.length; i++) {
-      //      for (let j = 3; j <= 8; j++) {
-      //        if(
-      //          document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!="none"
-      //        ){
-      //           document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display="none"
-      //      }
-      //      }
-      //    }
-      //  }else{
-      //    console.log("gei");  
-      //       for (var i = 1; i <= this.sonAppKey.length; i++) {
-      //         for (let j = 3; j <= 8; j++) {
-      //          if(
-      //            document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!=""
-      //           ){
-      //           document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display=""
-      //        }
-      //        }
-      //       }
-            
-      //     }
-       },
+  //     if(this.value2 == "BIM"){
+  //     //  console.log("bin");
+  //      this.$nextTick(()=>{
+  //         for (var i = 1; i <= this.sonAppKey.length; i++) {
+  //         for (let j = 3; j <= 8; j++) {
+  //           if(
+  //             document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!="none"
+  //           ){
+  //               document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display="none"
+  //         }
+  //         }
+  //       }
+  //      })
+  //    }else{
+  //     //  console.log("gei");  
+  //      this.$nextTick(()=>{
+  //         for (var i = 1; i <= this.sonAppKey.length; i++) {
+  //           for (let j = 3; j <= 8; j++) {
+  //            if(
+  //              document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!=""
+  //             ){
+  //              document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display=""
+  //             }
+  //          }
+  //         }
+  //      })         
+  //    }
+    },
     rendercontent(h,option){
       return <span label="option.appName" class="appna"><em class="optionName">{option.appName}</em>
         <span class="zspan" style="display:none;float:right;">m</span>
@@ -1668,35 +1695,35 @@ export default {
       for (let i = 1; i <= gisLength ; i++) {
         if(
           document.querySelector(
-            ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
+            ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
             ).value > 180
           ){
         document.querySelector(
-          ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
+          ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
           ).value = '';
           this.$message.warning('经度取值范围为正负180度')
       }else if(
         document.querySelector(
-            ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
+            ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
             ).value < -180
             ){
           document.querySelector(
-          ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
+          ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
           ).value = '';
           this.$message.warning('经度取值范围为正负180度')
       }
       if(document.querySelector(
-            ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
+            ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
             ).value > 90){
         document.querySelector(
-          ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
+          ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
           ).value = '';
           this.$message.warning('纬度取值范围为正负90度');
       }else if(document.querySelector(
-            ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
+            ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
             ).value < -90){
         document.querySelector(
-          ".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
+          ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
           ).value = '';
             this.$message.warning('纬度取值范围为正负90度');
       }
