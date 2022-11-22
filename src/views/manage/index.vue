@@ -1030,7 +1030,7 @@ export default {
             }
           }
           if (res.data.code == "0") {
-            this.itemList = res.data.data;
+            this.itemList = res.data.data.list;
             this.reverse();
             this.appid = res.data.data.appid;
             this.maxInstance = res.data.data.maxInstance;
