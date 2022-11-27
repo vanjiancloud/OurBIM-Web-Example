@@ -486,7 +486,7 @@
             >
             </el-option>
           </el-select>
-          <el-select v-model="linkGisCoordinateType" placeholder="请选择GIS坐标系" :style="{'margin-left':'132px'}" v-if="this.value === 'GIS'">
+          <el-select v-model="linkGisCoordinateType" placeholder="请选择GIS坐标系" :style="{'margin-left':'132px'}" v-if="value === 'GIS'">
               <el-option value="WGS-84" label="WGS-84"></el-option>
               <el-option value="GCJ-02" label="GCJ-02"></el-option>
               <el-option value="BD-09" label="BD-09"></el-option>
