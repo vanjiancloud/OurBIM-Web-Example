@@ -186,7 +186,7 @@
               "
             >
               <tr
-                v-for="(item, index) in memberInfo.data.dynamicData"
+                v-for="(item, index) in (memberInfo.data.dynamicData ? memberInfo.data.dynamicData : memberInfo.data.rsInfo)"
                 :key="index"
               >
                 <td v-text="item.name"></td>
@@ -2102,7 +2102,7 @@ export default {
           if (realData.id === "1") {
             this.memberInfo = {
               type: 1,
-              data: realData.data,
+              data: realData.data || realData,
             };
             let messageInfo = {
               prex: "ourbimMessage",
