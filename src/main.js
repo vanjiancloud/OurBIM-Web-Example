@@ -207,6 +207,9 @@ const i18n = new VueI18n({
                             label: '时间'
                         }
                     ],
+                    materEdit: {
+                        title: '材质编辑'
+                    },
                     browser: {
                         title: '模型浏览器',
                         tips: ['加载中', '暂无数据']
@@ -222,7 +225,7 @@ const i18n = new VueI18n({
                         title: '标签'
                     },
                     componentLibrary: {
-                        title: '构件库'
+                        title: '资料库'
                     },
                     qrcodePart: {
                         title: '二维码',
@@ -427,6 +430,9 @@ const i18n = new VueI18n({
                             label: 'time'
                         }
                     ],
+                    materEdit: {
+                        title: 'Material Editing'
+                    },
                     browser: {
                         title: 'Model browser',
                         tips: 'No data available'
