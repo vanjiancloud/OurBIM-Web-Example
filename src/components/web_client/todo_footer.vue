@@ -563,7 +563,7 @@
             <!-- <div class="show-slice show-com" v-if="imgList[14].state === 1"> -->
             <!-- 此处的移动旋转和缩放按钮与浏览器的重复了 要隐藏掉 -->
             <div class="show-slice show-com" v-if="false">
-              <el-tooltip
+              <!-- <el-tooltip
                 v-for="(item, index) in comIconList"
                 :key="index"
                 class="item"
@@ -580,7 +580,7 @@
                     mode=""
                   />
                 </div>
-              </el-tooltip>
+              </el-tooltip> -->
             </div>
           </el-collapse-transition>
         </div>
@@ -625,18 +625,31 @@
                   />
                 </div>
               </el-tooltip>
-            <!-- 新增轴心 -->
-            <el-tooltip
-                v-for="(item) in axisList"
-                :key="item.content"
-                :enterable="false"
-                effect="dark"
-                :content="item.content"
-                placement="left"
-              >
-                <div class="moveAxis">
-                  <img @click="clickAxis(item)" :src="item.active ? item.activeImg : item.img" alt="" :style="{'cursor': (comIconList[0].active || comIconList[1].active || comIconList[2].active) ? '' : 'not-allowed'}">
-                </div>
+              <!-- 新增轴心 -->
+              <el-tooltip
+                  v-for="(item) in axisList"
+                  :key="item.content"
+                  :enterable="false"
+                  effect="dark"
+                  :content="item.content"
+                  placement="left"
+                >
+                  <div class="moveAxis">
+                    <img @click="clickAxis(item)" :src="item.active ? item.activeImg : item.img" alt="" :style="{'cursor': (comIconList[0].active || comIconList[1].active || comIconList[2].active) ? '' : 'not-allowed'}">
+                  </div>
+              </el-tooltip>
+              <!-- 材质编辑开关 -->
+              <el-tooltip
+                  v-for="(item) in editMaterialBtn"
+                  :key="item.content"
+                  :enterable="false"
+                  effect="dark"
+                  :content="item.content"
+                  placement="left"
+                >
+                  <div class="moveAxis moveAxis2">
+                    <img @click="clickBtnMaterial('none')" :src="item.active ? item.activeImg : item.img" alt="">
+                  </div>
               </el-tooltip>
             </div>
           </transition>
@@ -703,6 +716,7 @@
 <script>
 import MODELAPI from "@/api/model_api";
 import COMPONENTLIBRARY from "@/api/component-library";
+import CHAILIAOAPI from "@/api/material_api.js";
 export default {
   components: {},
   props: {
@@ -809,13 +823,23 @@ export default {
       ],
       axisList:[
                 {
-                content: "轴心",
-                name: "scale",
-                img: require("@/assets/images/todo/unchecked/com/axis.png"),
-                activeImg: require("@/assets/images/todo/check/com/axis.png"),
-                active: false,
+                  content: "轴心",
+                  name: "scale",
+                  img: require("@/assets/images/todo/unchecked/com/axis.png"),
+                  activeImg: require("@/assets/images/todo/check/com/axis.png"),
+                  active: false,
                 }
-            ],
+      ],
+      editMaterialBtn:[
+        {
+          //  材质库
+          content: "材质编辑",  
+          name: "materialEdit",
+          img: require("@/assets/images/todo/unchecked/com/editMaterial.png"),
+          activeImg: require("@/assets/images/todo/check/com/editMate.png"),
+          active: false,
+        }
+      ],
       // (视图)
        angleList:[
         {
@@ -1091,6 +1115,7 @@ export default {
           select: false,
         },
       ],
+      materialFlag:false,  // 传递给父组件，用于控制材料编辑框的显示 （材质库）
     };
   },
   computed: {
@@ -1317,10 +1342,10 @@ export default {
       })
         .then((res) => {
           if (res.data.code === 0) {
-            // 关闭构件库操作成功后 并轴心是打开时 要将轴心恢复未点击状态
-            if(!flag && this.axisList[0].active){
-              this.axisList[0].active = false;
-            }
+             // 关闭构件库操作成功后 并轴心是打开时 要将轴心恢复未点击状态
+             if(!flag && this.axisList[0].active){
+                this.axisList[0].active = false;
+             }
           } else {
             this.$message.error(res.data.message);
           }
@@ -1330,58 +1355,58 @@ export default {
         });
     },
      // 移动 旋转 (原有的  构件库的)
-    comItemClick(item) {
-      let isSame = false;
-      this.comIconList.forEach((row) => {
-        if (item.content === row.content) {
-          if (row.active) {
-            // 如果图标原本就是亮着，灭掉它
-            // 发关闭轴的指令
-            isSame = true;
-            COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
-              this.$resMsg(res.data);
-              if (res.data.code === 0) {
-                row.active = false;
-              }
-            });
-          }
-          row.active = true;
-        } else {
-          row.active = false;
-        }
-      });
-      if (isSame) {
-        return;
-      }
-      let action = "";
-      switch (item.content) {
-        case "旋转":
-          action = "rotate";
-          break;
-        case "移动":
-          action = "translate";
-          break;
-        case "缩放":
-          action = "scale";
-          break;
-        default:
-          break;
-      }
-      const params = {
-        comId: this.socketData.mN || null,
-        taskId: this.taskId,
-        action, //translate、rotate、scale
-      };
-      COMPONENTLIBRARY.operateCom(params)
-        .then((res) => {
-          if (res.data.code === 0) {
-            this.$message.success(res.data.message);
-          } else {
-            this.$message.error(res.data.message);
-          }
-        })
-        .catch((res) => {});
-    },
+    // comItemClick(item) {
+    //   let isSame = false;
+    //   this.comIconList.forEach((row) => {
+    //     if (item.content === row.content) {
+    //       if (row.active) {
+    //         // 如果图标原本就是亮着，灭掉它
+    //         // 发关闭轴的指令
+    //         isSame = true;
+    //         COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
+    //           this.$resMsg(res.data);
+    //           if (res.data.code === 0) {
+    //             row.active = false;
+    //           }
+    //         });
+    //       }
+    //       row.active = true;
+    //     } else {
+    //       row.active = false;
+    //     }
+    //   });
+    //   if (isSame) {
+    //     return;
+    //   }
+    //   let action = "";
+    //   switch (item.content) {
+    //     case "旋转":
+    //       action = "rotate";
+    //       break;
+    //     case "移动":
+    //       action = "translate";
+    //       break;
+    //     case "缩放":
+    //       action = "scale";
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    //   const params = {
+    //     comId: this.socketData.mN || null,
+    //     taskId: this.taskId,
+    //     action, //translate、rotate、scale
+    //   };
+    //   COMPONENTLIBRARY.operateCom(params)
+    //     .then((res) => {
+    //       if (res.data.code === 0) {
+    //         this.$message.success(res.data.message);
+    //       } else {
+    //         this.$message.error(res.data.message);
+    //       }
+    //     })
+    //     .catch((res) => {});
+    // },
     // 移动 旋转  浏览器的
     browerClick(item) {
       let isSame = false;
@@ -1396,7 +1421,7 @@ export default {
               if (res.data.code === 0) {
                 row.active = false;
                 // 关闭构件库操作成功后 并轴心是打开时 要将轴心恢复未点击状态
-                if(this.axisList[0].active){
+                if(!flag && this.axisList[0].active){
                   this.axisList[0].active = false;
                 }
               }
@@ -1412,6 +1437,9 @@ export default {
       }
       let mode = "";
       switch (item.content) {
+        case "材质编辑":      // （材质库）
+          mode = "materialEdit";
+          break;
         case "旋转":
           mode = "rotate";
           break;
@@ -1423,6 +1451,10 @@ export default {
           break;
         default:
           break;
+      } 
+      if(mode === "materialEdit"){ // （材质库）
+        this.materialFun();
+        return false
       }
       const params = {
         // comId: this.socketData.mN || null,
@@ -2081,8 +2113,10 @@ export default {
           let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
           this.imgList[6].url = oldUrl;
         }
+        if(this.editMaterialBtn[0].active === true){
+          this.clickBtnMaterial('close'); // 打开浏览器 关闭材质编辑
+        }
       }
-      console.log("e=", e, "oldState=", this.oldState);
       this.footerIconChange(e);
       // 功能未开放 模型动画
       // || || e === 14
@@ -2193,7 +2227,6 @@ export default {
         }
         // 在出现显示隐藏图标的情况下，除了框选、小地图、浏览器、属性，点了下边其他图标，都得关闭显示隐藏图标
       } else {
-        console.log("隐藏隔离");
         this.imgList[13].state = 0;
       }
       // 重置状态
@@ -2202,7 +2235,6 @@ export default {
           // 点了框选，再点显示，不重置状态
           return;
         }
-        console.log("重置状态");
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;
@@ -2345,6 +2377,53 @@ export default {
         })
         .catch(() => {});
     },
+    // 材质库相关方法 start ---
+    materialFun(){   // （材质库）
+        this.materialFlag = !this.materialFlag;
+        // 如果选中材质编辑按钮(高亮) 就发关闭轴的指令
+        if(this.materialFlag === true){
+          COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
+              if (res.data.code === 0) {
+                console.log('材质库',res.data);
+              }
+            }).catch(()=>{});
+        }
+        this.$emit('materialRelevant', this.materialFlag);
+    },
+    // 点击材质编辑开关按钮
+    clickBtnMaterial(e){
+      if(e === 'none'){
+        this.editMaterialBtn[0].active = !this.editMaterialBtn[0].active;
+         // 打开材质时 关闭浏览器 
+         if (this.imgList[10].state === 1) {
+          this.imgList[10].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[10].name}`);
+          this.imgList[10].url = oldUrl;
+          this.$emit("listenTodo", {
+            state: this.imgList[10].state,
+            type: 10,
+          });
+         }
+      }else if(e === 'close'){
+        this.editMaterialBtn[0].active = false;
+      }
+      let params = {
+        taskId: this.taskId,
+        flag: this.editMaterialBtn[0].active ? 'on' : 'off'
+      }
+      CHAILIAOAPI.MATERIALEDITORCONTROL(params).then((res)=>{
+        if(res.data.code === 0){
+          // this.$message.success(res.data.message);
+          this.$emit("listenTodo", {
+              state: this.editMaterialBtn[0].active,
+              flag:'material'
+          });
+        }else{
+          this.$message.error(res.data.message);
+        }
+      }).catch(()=>{});
+    }
+    // 材质库相关方法 end ---
   },
 };
 </script>
@@ -2461,10 +2540,10 @@ export default {
       top: -117px;
       .moveAxis{
         position: absolute;
-        top: -32px;
+        top: -69px;
         left: 0;
         width: 100%;
-        height: 30%;
+        height: 35%;
         background-color: rgba(0, 0, 0, 0.6);
         display: flex;
         align-items: center;
@@ -2475,6 +2554,11 @@ export default {
           height: 20px;
           margin-top: 4px;
         }
+      }
+      .moveAxis2{
+        border-radius: 0;
+        height: 30%;
+        top: -32px;
       }
     }
     .noBorder{

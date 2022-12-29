@@ -57,7 +57,7 @@
         ></div>
       </div>
     </div>
-
+    
     <!-- runTimeCode 1:mobile  0 ：PC  -->
     <div v-if="runTimeCode === 0">
       <!-- 模型浏览器 -->
@@ -206,7 +206,7 @@
         <!-- 构件库 （自定义构件） -->
         <div v-show="comVisible">
           <div
-            class="bim-info com-box"
+            class="bim-info com-box comsStore"
             @click.stop=""
             v-show="
               controllerInfo.tagUiBar &&
@@ -228,7 +228,8 @@
                 ></i>
               </div>
             </div>
-                <div class="detail-main detail-collapse">
+            <!-- <div class="detail-main detail-collapse">    // （材质库）   ）-->
+            <div class="detail-collapse">             <!-- （材质库）-->  
                   <!-- <el-collapse v-model="componentCollapse" accordion>
                     <el-collapse-item title="二维码" name="1">
                       <div class="collapse-main">
@@ -238,65 +239,283 @@
                       </div>
                     </el-collapse-item>
                   </el-collapse> -->
-
-                  <!-- 公共构件库列表 -->
-                <el-tabs v-model="activeName" @tab-click="changeTab">
-                  <el-tab-pane label="公共构件" name="first">
-                    <el-collapse
-                      accordion
-                      v-for="(item, index) in publicComList"
-                      :key="item.title"
-                      class=""
-                    >
-                      <el-collapse-item :title="item.group" :name="index">
-                        <div class="collapse-main">
-                          <div class="oooooooo">
-                            <div
-                              class="publicComListItem"
-                              v-for="listItem in item.rsComponent"
-                              :key="listItem.id"
-                              @click="addCom(listItem)"
-                            >
-                              <div class="img">
-                                <img :src="listItem.comUrl" alt="" />
+              <el-tabs v-model="activeNameOne" type="card" id="moreLimitUp" @tab-click="outTab">
+                  <el-tab-pane label="构件库" name="coms">
+                        <!-- 公共构件 与 自定义构件列表 -->
+                        <el-tabs v-model="activeName" type="card" @tab-click="changeTab" :before-leave='leaveTab' id="moreLimit">
+                          <el-tab-pane>
+                            <div slot="label">
+                                <div class="search">
+                                  <el-input
+                                    class="searchInput"
+                                    type="text"
+                                    placeholder="请输入您要搜索的内容"
+                                    
+                                  >
+                                      <div slot="prefix"><i class="el-icon-search" ></i></div>
+                                  </el-input>
                               </div>
-                              <div class="name">{{ listItem.comName }}</div>
                             </div>
-                          </div>
-                        </div>
-                      </el-collapse-item>
-                    </el-collapse>
-                  </el-tab-pane>
-                  <el-tab-pane label="自定义构件" name="second">
-                    <el-collapse
-                      accordion
-                      v-for="(item, index) in selfComList"
-                      :key="item.id"
-                      class=""
-                    >
-                      <el-collapse-item :title="item.groupName" :name="index">
-                        <div class="collapse-main">
-                          <div class="oooooooo">
-                            <div
-                              class="publicComListItem"
-                              v-for="listItem in item.data"
-                              :key="listItem.ourbimComponentInfo.comId"
-                              @click="addCom(listItem)"
+                          </el-tab-pane>
+                          <el-tab-pane label="公共构件" name="first">
+                            <el-collapse
+                              accordion
+                              v-for="(item, index) in publicComList"
+                              :key="item.title"
+                              class=""
                             >
-                              <div class="img">
-                                <img v-if="listItem.ourbimComponentInfo.comUrl === 'default.png'" :src="require('@/views/manage/B.png')" alt="" />
-                                <img v-else :src="listItem.ourbimComponentInfo.comUrl" alt="" />
-                              </div>
-                              <div class="name">{{ listItem.ourbimComponentInfo.comName }}</div>
-                            </div>
-                          </div>
-                        </div>
-                      </el-collapse-item>
-                    </el-collapse>
+                              <el-collapse-item :title="item.group" :name="index">
+                                <div class="collapse-main">
+                                  <div class="moreList">
+                                    <div
+                                      class="publicComListItem"
+                                      v-for="listItem in item.rsComponent"
+                                      :key="listItem.id"
+                                      @click="addCom(listItem)"
+                                    >
+                                      <div class="img">
+                                        <img :src="listItem.comUrl" alt="" />
+                                      </div>
+                                      <div class="name">{{ listItem.comName }}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </el-collapse-item>
+                            </el-collapse>
+                          </el-tab-pane>
+                          <el-tab-pane label="自定义构件" name="second">
+                            <el-collapse
+                              accordion
+                              v-for="(item, index) in selfComList"
+                              :key="item.id"
+                              class=""
+                            >
+                              <el-collapse-item :title="item.groupName" :name="index">
+                                <div class="collapse-main">
+                                  <div class="moreList">
+                                    <div
+                                      class="publicComListItem"
+                                      v-for="listItem in item.data"
+                                      :key="listItem.ourbimComponentInfo.comId"
+                                      @click="addCom(listItem)"
+                                    >
+                                      <div class="img">
+                                        <img v-if="listItem.ourbimComponentInfo.comUrl === 'default.png'" :src="require('@/assets/logo.png')" alt="" />
+                                        <img v-else :src="listItem.ourbimComponentInfo.comUrl" alt="" />
+                                      </div>
+                                      <div class="name">{{ listItem.ourbimComponentInfo.comName }}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </el-collapse-item>
+                            </el-collapse>
+                          </el-tab-pane>
+                        </el-tabs>
                   </el-tab-pane>
-                </el-tabs>
-                </div>
+                  <el-tab-pane label="材质库" name="material">
+                        <el-tabs v-model="materActiveName" type="card" :before-leave='leaveTab' id="moreLimit">
+                            <el-tab-pane>
+                              <div slot="label">
+                                  <div class="search">
+                                    <el-input
+                                      class="searchInput"
+                                      type="text"
+                                      v-model.trim="inputTwo" 
+                                      placeholder="请输入您要搜索的内容"
+                                    >
+                                        <div slot="prefix"><i class="el-icon-search" ></i></div>
+                                    </el-input>
+                                </div>
+                              </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="公共库" name="firstMater">    
+                              <el-collapse
+                                accordion
+                                v-for="(item,index) in publicMater"
+                                :key="item.groupId"
+                                class=""
+                              >
+                                <el-collapse-item :title="item.groupName" :name="index">   
+                                    <div class="collapse-main">
+                                      <div class="moreList publicList">
+                                        <div
+                                          class="publicComListItem"
+                                          v-for="itemPub in item.sonList"
+                                          :key="itemPub.matId"                                     
+                                        >
+                                          <div class="img" @click.stop="selectPublicImg(itemPub)">
+                                            <img :class="{activeBorder: activePub === itemPub.matId}" :src="itemPub.matImgPath" alt="" />               
+                                          </div>
+                                          <div class="name" :style="{'font-size':'14px'}">{{ itemPub.matName }}</div>
+                                        </div>
+                                      </div>
+                                    </div> 
+                                </el-collapse-item>
+                              </el-collapse>                                      
+                            </el-tab-pane>
+                        </el-tabs>
+                  </el-tab-pane>
+              </el-tabs>                      
+            </div>
           </div>
+        </div>
+        <!-- 材质编辑模块   (材质库)-->
+        <div class="material-main" v-if="materialShow && topImgMaterial.length>0">
+            <div class="material-title">
+              <div class="" v-text="$t('webClient.materEdit.title')"></div>
+              <div class="close-materialPart">
+                <i
+                  class="el-icon-close"
+                  @click.stop="closeMaterialBtn"
+                ></i>
+              </div>
+            </div>
+            <div class="bottomTotal">
+                <div class="material-img">
+                  <div class="singleImg" v-for="(item,index) in topImgMaterial" :key="index">
+                    <div class="imgPic" @click="photoSelect(item,index)" :class="{activeBorder: activeMater === index}">
+                        <img v-if="item.photoUrl === undefined" :src="require('@/assets/caizhi.jpg')" alt="">
+                        <img v-else :src="item.photoUrl" alt="">
+                    </div> 
+                  </div>
+                </div>
+                <div class="materEditMain" v-if="middleMaterInfo[0].nameInfo.length>0 && activeMater !== ''">
+                    <div class="topEditMain">
+                        <div class="yanse">
+                            <div class="yanseName">颜色</div>
+                            <div class="yanseBody">
+                              <el-color-picker class="colorSelect" color-format="rgb" v-model="color1" @change="colorBeChange"></el-color-picker>
+                              <i class="el-icon-arrow-down plusIcon" v-if="!color1"></i>
+                            </div>
+                        </div>
+                        <div class="yanse">
+                            <div class="yanseName">贴图</div>
+                            <div class="yanseBody stickPic" @click="photoStore" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === true}">
+                              <!-- <img :src="this.texturePicture ? this.texturePicture : require('@/assets/logo.png')" alt="" :style="{'width':'100%','height':'100%'}"> -->
+                              <img v-if="texturePicture" :src="this.texturePicture" alt="" :style="{'width':'100%','height':'100%'}">
+                              <i v-else class="el-icon-plus plusIcon"></i>
+                              <div class="deleteIcon" @click.stop="deleteStickPic" v-if="this.texturePicture"><i class="el-icon-delete"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bottomEditMain">
+                        <el-collapse
+                          accordion
+                          v-model="spread"
+                          v-for="(item,index) in middleMaterInfo"
+                          :key="item.id"
+                          class=""
+                        >
+                          <el-collapse-item :title="item.titleName" :name="index">                         
+                                <div
+                                  class="editInfoItem"
+                                  v-for="listItem in item.nameInfo"
+                                  :key="listItem.index"
+                                >  
+                                  <div class="editInfoList" v-if="listItem.label === '等比缩放'">
+                                      <div class="editInfoListName">{{ listItem.label }}</div>
+                                      <div class="editInfoListNum">
+                                        <el-switch
+                                          @change="materialInfoChange"
+                                          v-model="listItem.paramValue"
+                                          inactive-color="#646464"
+                                          active-value="1"
+                                          inactive-value="0">
+                                        </el-switch>
+                                      </div>
+                                      <div class="editInfoListPercent"></div>
+                                  </div>       
+                                  <div class="editInfoList" v-if="listItem.label !== '等比缩放'">
+                                      <div class="editInfoListName">{{ listItem.label }}</div>
+                                      <div class="editInfoListNum">
+                                        <el-slider @change="materialInfoChange" v-model="listItem.paramValue"
+                                        :max="listItem.label==='角度' ? 360 : ((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 2 : ((listItem.label==='横向偏移' || listItem.label==='纵向偏移') ? 1 : 100))"
+                                        :min="listItem.label==='凹凸比例' ? -100 : ((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 0.01 : (listItem.label==='亮度' ? 1 : 0))"
+                                        :step="(listItem.label==='横向偏移' || listItem.label==='纵向偏移') ? 0.1 :((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 0.01 : 1)"
+                                        ></el-slider>
+                                      </div>
+                                      <div class="editInfoListPercent">{{listItem.paramValue + (listItem.label==='角度' ? '°' :  '')}}</div>
+                                  </div>
+                                </div>
+                          </el-collapse-item>
+                        </el-collapse>
+                    </div>
+                </div>
+                <div class="mater-bottom" v-if="false">
+                    <el-checkbox-group v-model="materilCheckList">
+                      <el-checkbox label="1">金属</el-checkbox>
+                      <el-checkbox label="2">替换所有相同实例</el-checkbox>
+                      <el-checkbox label="3">双面材质</el-checkbox>
+                    </el-checkbox-group>
+                </div>
+            </div>
+            <div class="uploadImg" v-if="photoStoreFlag">
+                <div class="titleUploadimg">
+                  <span>贴图库</span>
+                  <i
+                    class="el-icon-close postStoreImgClose"
+                    @click="canclePhotostore"
+                  ></i>
+                </div>
+                <div class="middleUploadimg">
+                     <el-tabs v-model="activeNamePic" type="card" :before-leave='leavePic' @tab-click="texureClick">
+                        <el-tab-pane label="公共库" name="first">
+                            <!-- <el-collapse
+                              accordion
+                              v-for="(item,index) in picMaterInfo"
+                              :key="item.id"
+                              class=""
+                            >
+                              <el-collapse-item :title="item.titleName" :name="index">   
+                                 <div class="flexDiv">          
+                                    <div
+                                      v-for="listItem in item.nameInfo"
+                                      :key="listItem.index"
+                                      class="flexDivInde"
+                                      :style="{'width':'60px','height':'76px'}"
+                                    >           
+                                      <div :style="{'width':'60px','height':'60px'}"><img :src="listItem.img" alt="" :style="{'width':'100%','height':'100%'}"></div>
+                                      <div class="textureTitle"><span>hahahha</span></div>
+                                    </div>
+                                  </div>  
+                              </el-collapse-item>
+                            </el-collapse> -->
+                        </el-tab-pane>
+                        <el-tab-pane label="个人库" name="second">
+                          <el-collapse
+                              v-model="spreadPerson"
+                              accordion
+                              v-for="(item,index) in personalPicMaterInfo"
+                              :key="index"
+                              class=""
+                            >
+                              <el-collapse-item :title="item.groupName" :name="index">   
+                                 <div class="flexDiv">          
+                                    <div
+                                      v-for="listItem in item.rsTextureList"
+                                      :key="listItem.textureId"
+                                      class="flexDivInde"
+                                      :style="{'width':'60px','height':'76px'}"
+                                    >           
+                                      <div @click="texturePhotoSelect(listItem)" :class="{activeBorder: activeTexTurePerson === listItem.textureId}" :style="{'width':'60px','height':'60px'}"><img :src="listItem.imgPath" alt="" :style="{'width':'100%','height':'100%'}"></div>
+                                      <div class="textureTitle"><span>{{listItem.textureName}}</span></div>
+                                    </div>
+                                  </div>  
+                              </el-collapse-item>
+                            </el-collapse>
+                        </el-tab-pane>
+                        <el-tab-pane name="zero">
+                          <div slot="label">
+                            <el-button type="primary" @click="postUploadPic" size="mini" :disabled="btnUpTexure ? false : true">上传贴图</el-button>
+                          </div>
+                        </el-tab-pane>
+                     </el-tabs>
+                </div>
+                <!-- <div class="bottomUpload">
+                  <el-button type="primary" size="mini" :style="{'background-color':'#575757','border':'none'}">取消</el-button>
+                  <el-button type="primary" size="mini" @click="submitBaseTexture">确定</el-button>
+                </div> -->
+            </div>
         </div>
         <!-- 二维码 -->
         <qrcode-part
@@ -368,6 +587,10 @@
     ></roamNavigate>
     <!-- (视图) -->
     <viewPhoto :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
+    <!-- 上传贴图弹框 （材质库） -->
+    <el-dialog :visible="addViewUpImgPost" @close="closeTexureDialog('none')" width="30%" center>
+      <viewUpimg :personalTexureGroup="personalTexureGroup" @texureClose="closeTexureDialog"></viewUpimg>
+    </el-dialog>
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
       ref="teamworkDialogRef"
@@ -385,6 +608,7 @@
 
 <script>
 import MODELAPI from "@/api/model_api";
+import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
 import TAGTREE from "@/api/tag_tree";
 import COMPONENTLIBRARY from "@/api/component-library";
 import todoFooter from "@/components/web_client/todo_footer";
@@ -402,6 +626,7 @@ import TeamworkDialog from "../../manage/TeamworkDialog.vue";
 import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
 
 import { Getuserid } from "@/store/index.js"; // (自定义构件)
+import viewUpimg from "@/components/web_client/view_upImg.vue"; // （材质库）
 
 export default {
   name: "look_app",
@@ -416,6 +641,7 @@ export default {
     EscDialogItem,
     roamNavigate,
     viewPhoto,
+    viewUpimg,
   },
   data() {
     return {
@@ -520,8 +746,61 @@ export default {
       comVisible: false,
       appType: null,
       userType: null,
+      activeNameOne:'coms', // 构件库的第一层 el-tabs  （材质库）
       activeName:'first', // 构件库的Tabs 标签页 （自定义构件）
+      materActiveName:'firstMater',
       selfComList:[],  // 所有自定义构建  （自定义构件）
+      inputTwo:'',  // 材质库搜索绑定值 （材质库）
+      activePub:'', // 选中公共库某个材质
+      activeMater:'', // 选中材质编辑中的 构件材质图片
+      // （材质库）
+      topImgMaterial:[],
+      // 材质要修改的信息（材质库）
+      middleMaterInfo:[
+        {
+          id:0,
+          titleName:'贴图位置',
+          nameInfo:[]
+        },
+          {
+          id:2,
+          titleName:'材质效果属性',
+          nameInfo:[]
+        }
+      ],
+      materilCheckList:[],  // 材质编辑底部复选框 （材质库）
+      activeNamePic:'first', // 贴图弹框的 el-tabs  （材质库）
+      color1:null,   // 材质编辑 颜色选择器  （材质库）
+      photoStoreFlag:false, // 贴图库显示隐藏   （材质库）
+      addViewUpImgPost:false, // 上传贴图弹框
+      publicMater:[],  // 公共材质列表
+      projectMaterList:[],  // 项目材质列表
+      exchangeData:{      // 指令更换材质的参数
+        matId:'',
+        isPublic:'',
+        actorId:'',
+        comType:''
+      },
+      // 贴图库 公共库的信息
+      picMaterInfo:[],
+      personalPicMaterInfo:[], // 贴图库 个人库
+      btnUpTexure:false, // 控制上传按钮
+      personalTexureGroup:[], // 贴图 个人库分组
+      materialShow:false, // 材质编辑 弹窗显示与隐藏
+      modelIsLink:null, // 是否是链接模型
+      pakIdMapweb:'', // 区分点击的是自定义构件还是模型自带的构件
+      matParam:{}, // 材质的部分信息
+      activeTexTurePerson:'', // 贴图库个人库
+      // materialMatId:'', // 选中材质编辑的材质的matId
+      texturePicture:'', // 贴图图片
+      mapNormal:'', // 法线图片
+      spread:[], // 材质参数折叠面板展开
+      spreadPerson:[], // 贴图库折叠面板展开
+      materialAllInfo:{}, // 构件某材质全部信息
+      matEditIndex:null, // 选中的材质编辑图片的下标
+      defaultUrl:null, // 识别本地与线上
+      comPakId:'', // 材质编辑点击的构件的pakId
+      pakAndAppid:[], 
     };
   },
 
@@ -536,7 +815,7 @@ export default {
             }
            MODELAPI.LOCKOPENORCLOSE(params).then((res)=>{
             if(res.data.code === 0){
-              console.log('res');
+              // console.log('res');
             }
            })
         }
@@ -556,6 +835,10 @@ export default {
             this.$set(this.lockObj.data, [`lockView${this.lockObj.num}`], false);
             // 锁的状态(false)
             this.lockState = false;
+         }
+        //  构件库关闭的同时要关闭材质编辑按钮
+         if(newVal === false){
+            this.closeMaterialBtn();
          }
        }
     }
@@ -604,6 +887,7 @@ export default {
     }
   },
   mounted() {
+    this.defaultUrl = process.env.VUE_APP_REQUEST_URL;
     document
       .querySelector("#tree-content")
       .addEventListener("scroll", this.throttle(this.handleScroll));
@@ -629,6 +913,7 @@ export default {
       this.hiddenState = 3;
     }
     this.addMessageEvent();
+    this.getLinkModelAppid(); // 获取appid
   },
   destroyed() {
     this.clearTimePass();
@@ -666,6 +951,12 @@ export default {
 
         },
 
+    // 资源库中 点击搜索时防止切换 （材质库）
+    leaveTab(activeName, oldActiveName){
+      if(activeName === '0'){
+        return false;
+      }
+    },
     // 用于给 viewphoto组件传值 （视图）
     showViewPic(valModel){
       this.showViewPicture = valModel;
@@ -1813,7 +2104,6 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
-      console.log('eee',e);
       // 漫游导航内 控制 viewCube ---
       if(e.name==='viewCube'){
         this.controllerInfo.viewCube = e.flag;
@@ -1855,6 +2145,7 @@ export default {
         this.handleTagShow();
       } else {
         if (this.isTag && e.type !== 11) {
+          if(e.flag === 'material') return; // 开启标签并关闭材质编辑时，防止标签消失
           this.$refs.tagTree.closePart(false);
           // 如果不是标签并且标签已经开启
           // this.listenTodoInfo = {
@@ -1928,6 +2219,10 @@ export default {
        if (e.type === 0) {
          this.viewAngle = e
        }
+      // 点击 材质编辑 开关
+      if(e.flag==='material'){
+        this.materialShow = e.state;
+      }
     },
     UpdateMemeberState() {
       /**
@@ -2100,6 +2395,9 @@ export default {
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {
+            if(realData.pakId){
+              realData.pakId === 'MAPWEB' ? this.pakIdMapweb = 'public' : this.pakIdMapweb = '';
+            }
             this.memberInfo = {
               type: 1,
               data: realData.data || realData,
@@ -2243,6 +2541,12 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "12") {
+            // 判断是否是链接模型
+            if(realData.isLink === "true"){
+              this.modelIsLink = true;
+            }else{
+              this.modelIsLink = false;
+            }
             if (
               Number(this.propsProgress.loadData) >= 0 &&
               Number(this.propsProgress.loadData) <= 100
@@ -2281,11 +2585,11 @@ export default {
               this.$refs.EscDialogItem.changeVisible(false);
             }
           } else if (realData.id === "15") {
-            if(this.$refs.getFooter){
-              this.$refs.getFooter.handleComOperateIcon(realData);
-            }else{
-              return false;
-            }
+              if(this.$refs.getFooter){
+                this.$refs.getFooter.handleComOperateIcon(realData);
+              }else{
+                return false;
+              }
           } else if (realData.id === "16") {
             // 距离上一次操作时长
             this.exitMiniprogram(realData.lastOperationTime);
@@ -2326,6 +2630,30 @@ export default {
                 let url = realData.object;
                 this.outPic(url);
               }
+          }else if(realData.id === "28"){
+              this.comPakId = realData.rsInfo[0].pakId;
+              let newArr = [];
+              realData.rsInfo.forEach((item,index)=>{
+                 newArr = [...newArr,...item.matList];
+              });
+              // newArr = realData.rsInfo[0].matList;
+              this.topImgMaterial = newArr;
+              this.activeMater = 0; // 默认选中第一张图片
+              this.matEditIndex = 0;
+              this.materialAllInfo = this.topImgMaterial[0]; // 构件的第一个材质信息
+              this.exchangeData.actorId = realData.rsInfo[0].actorId;
+              this.getMaterialInfomation(this.getActiveMatid(this.activeMater)); // 默认先获取第一张图片材质信息
+          }else if(realData.id === "29"){
+            if(this.topImgMaterial.length !== 0){
+              this.topImgMaterial.forEach(item => {
+                let flag = realData.rsInfo.some(e=>{
+                  if(item.matId === e.matId){
+                    item.photoUrl = e.imgPath;
+                  }
+                  return item.matId === e.matId;
+                })
+              })
+            }
           }
         }
       };
@@ -2607,7 +2935,7 @@ export default {
       } else {
       }
     },
-    // 构件库中点击 自定义构件 时触发  （自定义构件）
+    // 构件库 中点击 构件库中的标签页时触发  （自定义构件）
     changeTab(e){
       if(e._props.name === 'second'){
          let params = {
@@ -2615,11 +2943,422 @@ export default {
         }
         MODELAPI.GETALLCOM(params).then((res)=>{
           if(res.data.code === 0){
-            this.selfComList = res.data.data[0].data;
+            if(res.data.data===undefined){
+              this.selfComList = [];
+            }else{
+              this.selfComList = res.data.data[0].data;
+            }
           }
         });
       }
+    },
+    // 材质库 相关方法start
+    // 贴图弹框的 阻止标签页跳转 (材质库)
+    leavePic(activeName,oldActiveName){ 
+      if(activeName === 'zero'){
+        return false;
+      }
+    },
+    // 资源库 点击外层的标签页时 (材质库)
+    outTab(e){
+      if(e._props.name === 'material'){
+        if(this.publicMater.length > 0) return;
+        let params = {
+          taskId:this.taskId
+        }
+        CHAILIAOAPI.GETOURBIMMATERIALGROUP(params).then((res)=>{
+          this.publicMater = [];
+          if(res.data.code === 0){
+            this.publicMater = res.data.data;
+            this.publicMater.forEach((item,indexPub)=>{
+              let params = {
+                taskId:this.taskId,
+                groupId:item.groupId
+              }
+              CHAILIAOAPI.GETOURBIMMATERIALBYGROUP(params).then(response=>{
+                if(response.data.code === 0){
+                  this.$set(this.publicMater[indexPub],'sonList',response.data.data)
+                }else{
+                  item.sonList = [];
+                }
+              })
+            })
+
+          }else{
+            this.$message.error(res.data.message)
+          }
+        }).catch(()=>{});
+      }
+    },
+    // 点击贴图 (材质库)
+    photoStore(){
+      this.photoStoreFlag = !this.photoStoreFlag;
+    },
+    spreadCircle(arr,str){
+      let open = [];
+      for(let i=0;i<arr.length;i++){
+        open.push(i)
+      }
+      if(str === '0'){
+        this.spread = open;
+      }else if(str === '1'){
+        this.spreadPerson = open;
+      }
+    },
+    // 点击贴图库 取消 (材质库)
+    canclePhotostore(){
+      this.photoStoreFlag = false;
+    },
+    // 点击上传贴图
+    postUploadPic(){
+      this.addViewUpImgPost = true;
+    },
+    // 点击 材质编辑弹框 叉号
+    closeMaterialBtn(){
+      this.activeMater = '';
+      this.materialShow = false;
+      this.$refs['getFooter'].clickBtnMaterial('close');
+      this.topImgMaterial = [];
+    },
+    // 选中公共库或项目库的材质
+    selectPublicImg(e){
+        if(this.activeMater === ''){
+          this.$message.warning('请选择构件');
+          return false;
+        }
+        if(this.activePub === e.matId){
+          this.activePub = ''
+        }else{
+          this.activePub = e.matId;
+          this.exchangeData.matId = e.matId;
+          this.getMaterialInfomation(e.matId,'public'); // 获取材质信息
+        }
+    },
+    // 选中材质编辑中的 构件材质图片
+    photoSelect(e,num){
+        this.matEditIndex = num; // 选中的材质编辑图片的下标
+        this.materialAllInfo = e; 
+        if(this.activeMater === num){
+          this.activeMater = ''
+        }else{
+          this.activeMater = num;
+          this.getMaterialInfomation(e.matId); // 获取材质信息
+        }
+        this.canclePhotostore(); // 关闭贴图弹框
+    },
+    // 获取材质编辑选中的材质的matid
+    getActiveMatid(str){
+        return this.topImgMaterial[str].matId;
+    },
+    // 替换材质
+    exchangeMater(materialId){
+        let params = {
+          taskId:this.taskId,
+          appId: this.pakidToAppid(this.comPakId),
+          matId:materialId,
+          isPublic: false
+        }
+        let temp = {
+          matAndActorInfos:[
+            {
+              actorId:this.exchangeData.actorId,
+              meshIndex:this.materialAllInfo.meshIndex,
+              matIndex:this.materialAllInfo.matIndex,
+              comType: this.pakIdMapweb,
+              pakId:this.comPakId
+            }
+          ]
+        }
+        CHAILIAOAPI.CHANGEMATERIALBYINSTRUCTION(params,JSON.stringify(temp.matAndActorInfos)).then((res)=>{
+            if(res.data.code===0){
+              this.$message.success('材质替换成功');
+              this.activePub = '';
+              this.activeTexTurePerson = ''; // 个人贴图
+              this.getMaterialInfomation(materialId,'change'); // 获取刚替换好的材质的信息
+            }
+        }).catch(()=>{})
+    },
+    // 获取 个人库 贴图
+    getPersonPhoto(str){
+      let params = {
+          userId:Getuserid()
+      }
+      CHAILIAOAPI.GETMATERIALALLTEXTUREINFO(params).then((res)=>{
+          if(res.data.code === 0){
+            this.personalPicMaterInfo = res.data.data || [];
+            if(str === 'groupOrNot' && this.personalPicMaterInfo.length<=0){
+              this.createTextureGroup(); // 新用户没有分组 默认创建一个分组
+            }
+            if(this.personalTexureGroup.length<=0){
+              res.data.data.forEach(item=>{
+                let obj = {};
+                obj.value = item.groupId;
+                obj.label = item.groupName;
+                this.personalTexureGroup.push(obj);
+              })
+            }
+          }
+      }).catch(()=>{})
+    },
+    // 创建个人库贴图分组
+    createTextureGroup(){
+      let params = {
+        userId:Getuserid(),
+        groupName:'我的分组'
+      }
+      CHAILIAOAPI.CREATEMATERIALTEXTUREGROUP(params).then(res=>{
+        if(res.data.code === 1){
+          this.getPersonPhoto();
+        }
+      }).catch(()=>{})
+    },
+    // 贴图库点击 公共库和个人库时触发
+    texureClick(e){
+      if(e._props.name === 'second'){
+        this.btnUpTexure = true;
+        this.getPersonPhoto('groupOrNot');
+        this.spreadCircle(this.personalPicMaterInfo,'1'); // 折叠面板
+      }else if(e._props.name === 'first'){
+        this.btnUpTexure = false;
+      }
+    },
+    // 关闭上传贴图弹框
+    closeTexureDialog(e){
+      this.addViewUpImgPost = false;
+      if(e === 'success'){
+        this.getPersonPhoto();
+      }
+    },
+    // 获取材质信息
+    getMaterialInfomation(e,str){
+      let params = {
+        matId:e,
+        isPublic:str==='public' ? true : false
+      }
+      CHAILIAOAPI.GETMATERIALBYMATID(params).then(res=>{
+        if(res.data.code === 0){
+          this.matParam = JSON.parse(res.data.data.matParam);
+          // this.materialMatId = res.data.data.matId; // 选中材质编辑的材质的matId
+          this.$set(this.middleMaterInfo[0],'nameInfo',this.strToNumber(this.matParam.textureParamsList,'texture'))
+          this.$set(this.middleMaterInfo[1],'nameInfo',this.strToNumber(this.matParam.baseParamsList))
+          this.color1 = this.arrToRgb(this.matParam.colorList.length>0 ? this.matParam.colorList[0].paramValue : []);
+          this.matParam.texturesList.forEach(item=>{
+            if(item.paramName === 'BaseColorMap'){
+              this.texturePicture = item.paramValue;
+            }else if(item.paramName === 'NormalMap'){
+              this.mapNormal = item.paramValue;
+            }
+          })
+          this.spreadCircle(this.middleMaterInfo,'0'); // 折叠面板
+          if(this.activePub !== ''){
+            this.addMaterialToUser(res.data.data.matId); // 添加材质到用户库
+          }
+          if(str === 'change'){
+            let arr = this.topImgMaterial[this.matEditIndex]
+            arr.matId = res.data.data.matId;
+            arr.photoUrl = res.data.data.matImgPath;
+            this.$set(this.topImgMaterial,this.matEditIndex,arr);
+            this.activeMater = this.matEditIndex;
+          }
+        }else if(res.data.code === 1){
+            this.$message.error(res.data.message)
+        }
+      }).catch(()=>{})
+    },
+    // 修改材质参数
+    updateMateInfo(flag){
+      let params = {
+        taskId:this.taskId,
+        appId: this.pakidToAppid(this.comPakId),
+        baseColorTextureId:this.activeTexTurePerson,
+        normalMapTextureId:''
+      }
+      let temp = [
+        {
+          matId: this.getActiveMatid(this.activeMater),
+          pakId: this.comPakId,
+          matParam:
+          {
+            matId:this.getActiveMatid(this.activeMater),
+            baseParamsList:this.matParam.baseParamsList,
+            colorList:[
+              {
+                ParamName:'BaseColor', // 颜色
+                ParamValue:this.rgbChangeArr(this.color1)
+              }
+            ],
+            textureParamsList:this.matParam.textureParamsList,
+            texturesList:[
+              {paramName: 'BaseColorMap', paramValue: this.texturePicture},
+              {paramName: 'NormalMap', paramValue: this.mapNormal}
+            ]
+          }
+        }
+      ]
+      CHAILIAOAPI.UPDATEMATERIAL(params,JSON.stringify(temp)).then((res)=>{
+            if(res.data.code === 0){
+              this.$message.success('材质替换成功')
+              this.getMaterialInfomation(this.getActiveMatid(this.activeMater)); // 获取材质信息
+              if(flag === 'reset'){
+                this.$message.success('删除成功')
+              }
+            }
+      }).catch(()=>{})
+    },
+    // 添加材质到用户材质库
+    addMaterialToUser(id,str){
+      let params = {
+        userId:Getuserid(),
+        matId:id,
+        isPublic: str ==='textureChange' ? false : true,
+        baseColorTextureId:this.activeTexTurePerson
+      }
+      let temp = 
+        {
+            baseParamsList:this.matParam.baseParamsList,
+            colorList:[
+              {
+                ParamName:'BaseColor', // 颜色
+                ParamValue:this.rgbChangeArr(this.color1)
+              }
+            ],
+            textureParamsList:this.matParam.textureParamsList,
+            texturesList:[
+              {paramName: 'BaseColorMap', paramValue: this.texturePicture},
+              {paramName: 'NormalMap', paramValue: this.mapNormal}
+            ]
+        }
+      CHAILIAOAPI.ADDMATERIALFORUSER(params,JSON.stringify(temp)).then((res)=>{
+            if(res.data.code === 0){
+              this.exchangeMater(res.data.data); // 替换材质
+            }
+      }).catch(()=>{})
+    },
+    // 重置材质贴图
+    deleteStickPic(){
+      this.$confirm('您要删除此贴图, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          this.texturePicture = '';
+          this.updateMateInfo('reset');
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+    },
+    // 点击贴图库的个人库图片
+    texturePhotoSelect(e){
+        if(this.activeTexTurePerson === e.textureId){
+          this.activeTexTurePerson = ''
+        }else{
+          this.activeTexTurePerson = e.textureId;
+          this.addMaterialToUser(this.getActiveMatid(this.activeMater),'textureChange');// 添加贴图到用户
+          // this.updateMateInfo();
+        }
+    },
+    // 材质编辑 颜色改变
+    colorBeChange(e){
+      this.updateMateInfo();
+    },
+    rgbChangeArr (value) {// rgb()数字转为数组
+      if(value){
+        var arr = []
+        const str = value.slice(4)
+        const str1 = str.slice(0, str.length - 1)
+        arr = str1.split(',')
+        // arr.push('255')
+        return arr
+      }else{
+        return []
+      }
+    },
+    // 数组变rgb
+    arrToRgb(arr){
+      let str = '';
+      if(arr.length>0){
+        str = `rgb(${arr[0]},${arr[1]},${arr[2]})`
+      }else{
+        str = null
+      }
+      return str;
+    },
+    strToNumber(arr,str){
+        if(arr.length<0){
+          return [];
+        }
+        let flag = '';
+        let newArr = [];
+        arr.forEach(item=>{
+          if(item.label !== '等比缩放'){
+            item.paramValue = Number(item.paramValue); // 字符串转数值
+          }else{
+            flag = item.paramValue; // 拿到等比缩放的值
+          }
+        })
+        if(str === 'texture'){
+          if(flag==='1'){
+            newArr = arr.filter(item=>{
+                let fake = (item.label === '横向缩放' || item.label === '纵向缩放') ? false : true;
+                return fake;
+            })
+          }else{
+            newArr = arr.filter(item=>{
+                return item.label !== '缩放';
+            })
+          }
+            // 排序
+            let sortArr = []
+            let obj = null;
+            newArr.forEach((com)=>{
+              if(com.label==='横向缩放' || com.label==='纵向缩放' || com.label==='缩放'){
+                sortArr.unshift(com);
+              }else{
+                if(com.label==='等比缩放'){
+                  obj = com
+                }
+                sortArr.push(com);
+              }
+            })
+            let finalArr = sortArr.filter(items=>{
+              return items.label !== '等比缩放'
+            })
+            if(obj){
+              finalArr.unshift(obj)
+            }
+            arr = finalArr
+        }
+        return arr;
+    },
+    // 获取pakid
+    getLinkModelAppid(){
+      let params = {
+        appId:this.appId
+      }
+      CHAILIAOAPI.GETPAKIDBYAPPID(params).then(item=>{
+          if(res.data.code === 0){
+            this.pakAndAppid = res.data.data;
+          }
+      }).catch(()=>{})
+    },
+    // 根据pakId 找到appId
+    pakidToAppid(str){
+      let componentAppId = '';
+      this.pakAndAppid.forEach(item=>{
+        if(item.pakId === str){
+          componentAppId = item.appId;
+        }
+      })
+      return componentAppId;
+    },
+    // 材质信息改变
+    materialInfoChange(){
+      this.updateMateInfo();
     }
+    // 材质库 相关方法 end --------
   },
 };
 </script>
@@ -2984,8 +3723,9 @@ export default {
       right: 0;
       margin: 2vh 20px 0 0;
       border-radius: 10px;
-      overflow-x: hidden;
-      overflow-y: auto;
+      overflow-x: hidden; 
+      // overflow-y: auto;   // (材质库)
+      overflow-y: hidden;   // (材质库)
       background-color: rgba(17, 17, 17, 0.88);
       color: #ffffff;
       .bim-title {
@@ -3023,7 +3763,8 @@ export default {
         }
       }
       .detail-collapse {
-        padding: 0 10px;
+        // padding: 0 10px;  // (材质库)
+        padding: 10px 0 0 0;
         .el-collapse {
           border-bottom: none;
           border-top: none;
@@ -3072,21 +3813,450 @@ export default {
           }
         }
       }
-      ::v-deep .el-tabs__nav{  // （自定义构件）
-        margin-left: 5px;
-      }
-      ::v-deep .el-tabs__nav-wrap::after{ // （自定义构件）
-        background-color: #6b6b6b;
-      }
-      ::v-deep .el-tabs__item{ // （自定义构件）
+    }
+    .comsStore{
+      ::v-deep .el-tabs__item{ // （材质库）
         color:#fff;
-        padding: 0 60px;
+        border: none !important;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 100%;
       }
-      ::v-deep .el-tabs__active-bar{ // （自定义构件）
-        background-color: #fff;
+      ::v-deep .el-tabs__item.is-active { // （材质库）
+          color: #409EFF;
+          background-color: #3c3f45;
+      }
+      
+      ::v-deep .el-tabs--card>.el-tabs__header .el-tabs__nav{ // （材质库）
+        border: none;
+      }
+      ::v-deep .el-tabs__header{  // （材质库）
+        margin: 0;
+      }
+      ::v-deep .el-tabs--card>.el-tabs__header{       // （材质库）
+       border-top: 1px solid rgba(255,255,255,0.2);
+       border-bottom: 1px solid rgba(255,255,255,0.2);
+      }
+      #moreLimit{
+        .search{    // （材质库）
+        height: 46px;
+        border-bottom: 1px solid #25282e;
+        ::v-deep .searchInput .el-input__inner{
+            width: 185px;
+            height: 28px;
+            color: #fff;
+            padding-left: 40px;
+            border: none;
+            border-radius: 14px;
+            background-color: #28292E;
+        }
+        ::v-deep .searchInput .el-input__inner::placeholder{
+            font-size: 12px;
+            color: #fff;
+        }
+        .el-icon-search{
+            font-size: 20px;
+            color: #fff;
+            line-height: 44px !important;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        }
+        ::v-deep .el-tabs__content{    // （材质库）
+              // position: absolute;
+              overflow-y: auto;
+              height: 350px;
+              right: 0px;
+              left: 0px;
+              padding-left: 18px;
+              &::-webkit-scrollbar {
+              /* 对应纵向滚动条的宽度 */
+              width: 10px;
+              /* 对应横向滚动条的宽度 */
+              height: 10px;
+              }
+      
+              /* 滚动条上的滚动滑块 */
+              &::-webkit-scrollbar-thumb {
+                  background-color: #515560;
+                  border-radius: 5px;
+              }
+      
+              /* 滚动条轨道 */
+              &::-webkit-scrollbar-track {
+                  background-color: #16191f;
+                  border: 1px solid #41444D;
+                  border-radius:2px;
+              }
+        }
+        ::v-deep .el-tabs__item{ // （材质库）
+        color:#fff;
+        border: none !important;
+        height: 42px;
+        line-height: 42px;
+        padding: 0 14px;
+        }
+        ::v-deep .el-tabs__item.is-active { // （材质库）
+            color: #409EFF;
+            background-color: rgba(255, 255, 255, 0);
+        }
+        
+        ::v-deep .el-tabs--card>.el-tabs__header .el-tabs__nav{ // （材质库）
+          border: none;
+        }
+        ::v-deep .el-tabs__header{  // （材质库）
+          margin: 1px 0 0 0;
+        }
+        ::v-deep .el-tabs__header{       // （材质库）
+          border-top: none;
+        }
+       }
+    }
+    // 材质编辑开始   （材质库）
+    .material-main{
+      position: relative;
+      pointer-events: auto;
+      height: 50vh;
+      width: 350px;
+      margin: 2vh 0 0 20px;
+      border-radius: 10px;
+      background-color: rgba(17, 17, 17, 0.88);
+      .material-title {
+        display: flex;
+        padding: 2vh 15px 0 15px;
+        color: #ffffff;
+        margin-bottom: 1vh;
+        .close-materialPart {
+          margin-left: auto;
+          cursor: pointer;
+        }
+      }
+      .bottomTotal{
+          height: 44vh;
+          width: 100%;
+          overflow: hidden;
+          overflow-y: auto;
+          border-top: 1px solid #41444D;
+          &::-webkit-scrollbar {
+          /* 对应纵向滚动条的宽度 */
+          width: 10px;
+          /* 对应横向滚动条的宽度 */
+          height: 10px;
+          }
+
+          /* 滚动条上的滚动滑块 */
+          &::-webkit-scrollbar-thumb {
+              background-color: #515560;
+              border-radius: 5px;
+          }
+
+          /* 滚动条轨道 */
+          &::-webkit-scrollbar-track {
+              background-color: #16191f;
+              border: 1px solid #41444D;
+              border-radius:2px;
+          }
+        .material-img{
+          width: 100%;
+          padding-top: 1vh;
+          display: flex;
+          flex-wrap: wrap;
+          border-bottom: 1px solid #41444D;
+          .singleImg{
+            width: 90px;
+            height: 9.3vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 10px 10px 10px;
+            .imgPic{
+              position: relative;
+              width: 90px;
+              height: 9.3vh;
+              cursor: pointer;
+              img{
+                width: 100%;
+                height: 100%;
+              }
+            }
+          }
+        }
+        .materEditMain{
+          padding-top: 1vh;
+          // height: 23vh;
+          .topEditMain{
+            width: 100%;
+            // height: 4vh;
+            padding-left: 20px;
+            margin-bottom: 2vh;
+            display: flex;
+            .yanse{
+              width: 80px;
+              height: 100%;
+              display: flex;
+              justify-content: space-between;
+              margin-right: 32px;
+              .yanseName{
+                font-size: 14px;
+                color: #ffff;
+              }
+              .yanseBody{
+                position: relative;
+                width: 40px;
+                height: 40px;
+                background-color: #ccc;
+                // border-radius: 2px;
+                ::v-deep .el-color-picker__trigger{
+                  padding: 0;
+                  border: none;
+                  .el-color-picker__icon, .el-icon-close{
+                    display: none;
+                  }
+                  .el-color-picker__color{
+                    border: none;
+                  }
+                }
+                .plusIcon, .deleteIcon{
+                  font-size: 16px;
+                  color: #fff;
+                  position: absolute;
+                  top: 12px;
+                  left: 12px;
+                }
+                .deleteIcon{
+                  top: -8px;
+                  left: 30px;
+                  width: 20px;
+                  height: 20px;
+                  text-align: center;
+                  line-height: 20px;
+                  border-radius: 10px;
+                  background-color: rgba(255,255,255,.3);
+                  display: none;
+                }
+              }
+              .stickPic{
+                &:hover .deleteIcon{
+                  display: block;
+                }
+              }
+            }
+          }
+          .bottomEditMain{
+            padding-left: 20px;
+            width: 95%;
+            // height: 17vh;
+            overflow: hidden;
+            ::v-deep .el-collapse{
+              border: none;
+            }
+            ::v-deep .el-collapse-item__header{
+              background-color: rgba(16,16,16,0.1);
+              color: #fff;
+              border-bottom: none;
+              .el-icon-arrow-right{
+                color: #fff;
+              }
+            }
+            ::v-deep .el-collapse-item .el-collapse-item__wrap{
+              background-color: rgba(16,16,16,0.1);
+              border-bottom: none;
+            .el-collapse-item__content{
+                  padding-bottom: 0px !important;
+                }
+            }
+            .editInfoList{
+              height: 20px;
+              width: 95%;
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 2vh;
+              .editInfoListName{
+                width: 60px;
+                color: #fff;
+              }
+              .editInfoListNum{
+                width: 200px;
+                ::v-deep .el-slider__runway{
+                  top: -13px;
+                  height: 20px;
+                  background-color: #252525;
+                  border: 1px solid #4D4B4B;
+                  border-radius: 5px;
+                }
+                ::v-deep .el-slider__bar{
+                  height: 20px;
+                  background-color: #646464;
+                  z-index: 1111;
+                }   
+                ::v-deep .el-slider__button-wrapper {
+                  top: -8px;
+                }     
+                ::v-deep .el-slider__button{
+                  width: 10px;
+                  height: 18px;
+                  border: 1px solid #646464;
+                  background-color: #646464;
+                }
+              }
+              .editInfoListPercent{
+                width: 26px;
+                color: #fff;
+              }
+            }
+          }
+        }
+        .mater-bottom{
+          width: 100%;
+          height: 5vh;
+          border-top: 1px solid rgba(255,255,255,0.22);
+          padding: 1.5vh 0 0 0;
+          ::v-deep .el-checkbox-group{
+            margin-left: 20px;
+          }
+        }
+      }
+      // 贴图
+      .uploadImg{
+        position: absolute;
+        top: 51vh;
+        left: 0;
+        pointer-events: auto;
+        height: 38vh;
+        width: 350px;
+        border-radius: 10px;
+        background-color: rgba(17, 17, 17, 0.88);
+        .titleUploadimg{
+          box-sizing:border-box;
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          height: 5vh;
+          padding: 1.8vh 1.8vh 0 1.8vh;
+          border-bottom: 1px solid rgba(255,255,255,0.2);
+          span{
+            color: #fff;
+            font-size: 16px;
+          }
+          .postStoreImgClose{
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 3px;
+          }
+        }
+        .middleUploadimg{
+          box-sizing: border-box;
+          width: 100%;
+          height: 34vh;
+          ::v-deep .el-tabs .el-tabs__content{
+            overflow-y: hidden;
+          }
+          ::v-deep .el-tabs .el-tabs__content{    // （材质库）
+            position: absolute;
+            overflow-y: auto;
+            height: 74%;
+            right: 0px;
+            left: 16px;
+            &::-webkit-scrollbar {
+            /* 对应纵向滚动条的宽度 */
+            width: 10px;
+            /* 对应横向滚动条的宽度 */
+            height: 10px;
+            }
+    
+            /* 滚动条上的滚动滑块 */
+            &::-webkit-scrollbar-thumb {
+                background-color: #515560;
+                border-radius: 5px;
+            }
+    
+            /* 滚动条轨道 */
+            &::-webkit-scrollbar-track {
+                background-color: #16191f;
+                border: 1px solid #41444D;
+                border-radius:2px;
+            }
+          }
+          ::v-deep .el-tabs__item{ // （材质库）
+            color:#fff;
+            border: none !important;
+            height: 42px;
+            line-height: 42px;
+            padding: 0 14px;
+          }
+          ::v-deep .el-tabs__item.is-active { // （材质库）
+              color: #409EFF;
+              background-color: rgba(255, 255, 255, 0);
+          }
+          
+          ::v-deep .el-tabs--card>.el-tabs__header .el-tabs__nav{ // （材质库）
+            border: none;
+          }
+          ::v-deep .el-tabs__header{  // （材质库）
+            margin: 1px 0 0 0;
+          }
+          ::v-deep .el-tabs--card>.el-tabs__header{       // （材质库）
+            border-bottom: 1px solid rgba(255,255,255,0);
+            border-top: 1px solid rgba(255,255,255,0);
+          }
+          ::v-deep #tab-zero{
+            margin-left: 60px;
+          }
+          // el-collapse的样式修改
+          ::v-deep .el-collapse{
+            border: none;
+          }
+          ::v-deep .el-collapse-item__header{
+            background-color: rgba(16,16,16,0.1);
+            color: #fff;
+            border-bottom: none;
+            .el-icon-arrow-right{
+              color: #fff;
+            }
+          }
+          ::v-deep .el-collapse-item .el-collapse-item__wrap{
+            background-color: rgba(16,16,16,0.1);
+            border-bottom: none;
+           .el-collapse-item__content{
+                padding-bottom: 0px !important;
+              }
+          }
+          .flexDiv{
+            display: flex;
+            flex-wrap: wrap;
+            .flexDivInde{
+              margin: 0 13px 5px 0;
+              .textureTitle{
+                width: 100%;
+                height: 16px;
+                line-height: 16px;
+                text-align: center;
+                /*1. 先强制一行内显示文本*/
+                    white-space: nowrap;
+                /*2. 超出的部分隐藏*/
+                    overflow: hidden;
+                /*3. 文字用省略号替代超出的部分*/
+                    text-overflow: ellipsis;
+                span{
+                  font-size: 12px;
+                  color: #fff;
+                }
+              }
+            }
+          }
+        }
+        // .bottomUpload{
+        //   width: 100%;
+        //   height: 5vh;
+        //   display: flex;
+        //   align-items: center;
+        //   justify-content: center;
+        // }
       }
     }
-
+    // 材质编辑结束
     .handle-body {
       pointer-events: auto;
       position: absolute;
@@ -3140,6 +4310,9 @@ export default {
     height: 100vh !important;
     width: 100vw !important;
   }
+}
+.activeBorder{
+   border: 2px solid #9bdbdd;
 }
 </style>
 <style lang="less" >
@@ -3220,10 +4393,13 @@ export default {
   left: 0;
 }
 
-.oooooooo {
+.moreList {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
+}
+.publicList{
+  padding-top: 10px;
 }
 .publicComListItem {
   display: flex;
@@ -3291,4 +4467,5 @@ export default {
 .lockLock{
   margin-right: 5px;
 }
+
 </style>
