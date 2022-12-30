@@ -3270,7 +3270,7 @@ export default {
         const str = value.slice(4)
         const str1 = str.slice(0, str.length - 1)
         arr = str1.split(',')
-        arr.push('1')
+        arr.push('255')
         return arr
       }else{
         return []
