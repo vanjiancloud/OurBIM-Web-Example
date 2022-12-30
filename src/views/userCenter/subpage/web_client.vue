@@ -3183,7 +3183,7 @@ export default {
             baseParamsList:this.matParam.baseParamsList,
             colorList:[
               {
-                ParamName:'BaseColor', // 颜色
+                ParamName:'Color', // 颜色
                 ParamValue:this.rgbChangeArr(this.color1)
               }
             ],
@@ -3218,7 +3218,7 @@ export default {
             baseParamsList:this.matParam.baseParamsList,
             colorList:[
               {
-                ParamName:'BaseColor', // 颜色
+                ParamName:'Color', // 颜色
                 ParamValue:this.rgbChangeArr(this.color1)
               }
             ],
