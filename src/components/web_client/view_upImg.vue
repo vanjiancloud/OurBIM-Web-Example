@@ -58,7 +58,7 @@
                 },
               ]
           },
-          photoFile:'',
+          photoFile:null,
           baseURL: axios.defaults.baseURL,
         }
       },
@@ -89,6 +89,7 @@
                     this.$emit('texureClose','success');
                     this.clearForm();
                     this.$message.success(res.data.message);
+                    this.$refs.uploadPhoto.delFile();
                   }else {
                     this.$emit('texureClose',false);
                     this.clearForm();
@@ -110,7 +111,6 @@
         // 清空表单
         clearForm(){
           this.editForm.name = '';
-          this.photoFile='';
           this.$refs['editForm'].resetFields();
         }
       }
