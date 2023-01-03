@@ -330,10 +330,11 @@
                             </el-tab-pane>
                             <el-tab-pane label="公共库" name="firstMater">    
                               <el-collapse
-                                accordion
+                                :accordion="true"
                                 v-for="(item,index) in publicMater"
                                 :key="item.groupId"
                                 class=""
+                                @change="openList"
                               >
                                 <el-collapse-item :title="item.groupName" :name="index">   
                                     <div class="collapse-main">
@@ -2970,24 +2971,28 @@ export default {
           this.publicMater = [];
           if(res.data.code === 0){
             this.publicMater = res.data.data;
-            this.publicMater.forEach((item,indexPub)=>{
-              let params = {
-                taskId:this.taskId,
-                groupId:item.groupId
-              }
-              CHAILIAOAPI.GETOURBIMMATERIALBYGROUP(params).then(response=>{
-                if(response.data.code === 0){
-                  this.$set(this.publicMater[indexPub],'sonList',response.data.data)
-                }else{
-                  item.sonList = [];
-                }
-              })
-            })
-
           }else{
             this.$message.error(res.data.message)
           }
         }).catch(()=>{});
+      }
+    },
+    // 打开公共材质库时
+    openList(str){
+      console.log('mmm',str);
+      if(!(str==='')){
+        if(this.publicMater[str].sonList && this.publicMater[str].sonList.length > 0) return;
+        let params = {
+          taskId:this.taskId,
+          groupId:this.publicMater[str].groupId
+        }
+        CHAILIAOAPI.GETOURBIMMATERIALBYGROUP(params).then(response=>{
+            if(response.data.code === 0){
+              this.$set(this.publicMater[str],'sonList',response.data.data)
+            }else{
+              item.sonList = [];
+            }
+        })
       }
     },
     // 点击贴图 (材质库)

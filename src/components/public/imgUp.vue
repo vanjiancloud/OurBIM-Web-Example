@@ -1,6 +1,7 @@
 <template>
     <div class="boxbox">
         <el-upload
+            ref='upLoad'
             class="avatar-uploader"
             :action="baseURL + '/material/uploadMaterialTextures'"
             name="fileUpload"
@@ -28,12 +29,11 @@ export default {
       changeFile(file, fileList) {
          this.uploadFiles = fileList[0].raw 
          this.$emit('sonFile',this.uploadFiles)
-    },
+      },
       handleAvatarSuccess(res, file) {
         this.imageUrl = URL.createObjectURL(file.raw);
       },
       beforeAvatarUpload(file) {
-        console.log('beforeUpload', file)
         const isJPG = (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg');
         const isLt2M = file.size / 1024 / 1024 < 2;
 
@@ -44,6 +44,10 @@ export default {
           this.$message.error('上传头像图片大小不能超过 2MB!');
         }
         return isJPG && isLt2M;
+      },
+      delFile(){
+        this.$refs.upLoad.clearFiles();
+        this.$emit('sonFile',null)
       }
     }
 }
