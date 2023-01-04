@@ -2396,9 +2396,6 @@ export default {
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {
-            if(realData.pakId){
-              realData.pakId === 'MAPWEB' ? this.pakIdMapweb = 'public' : this.pakIdMapweb = '';
-            }
             this.memberInfo = {
               type: 1,
               data: realData.data || realData,
@@ -2632,6 +2629,9 @@ export default {
                 this.outPic(url);
               }
           }else if(realData.id === "28"){
+              if(realData.rsInfo[0].pakId){
+                (realData.rsInfo[0].pakId === 'MAPWEB' || realData.rsInfo[0].pakId === 'gis')  ? this.pakIdMapweb = 'public' : this.pakIdMapweb = '';
+              }
               this.comPakId = realData.rsInfo[0].pakId;
               let newArr = [];
               realData.rsInfo.forEach((item,index)=>{
@@ -3188,7 +3188,7 @@ export default {
             baseParamsList:this.matParam.baseParamsList,
             colorList:[
               {
-                ParamName:'Color', // 颜色
+                ParamName:this.matParam.colorList[0].paramName, // 颜色
                 ParamValue:this.rgbChangeArr(this.color1)
               }
             ],
@@ -3223,7 +3223,7 @@ export default {
             baseParamsList:this.matParam.baseParamsList,
             colorList:[
               {
-                ParamName:'Color', // 颜色
+                ParamName:this.matParam.colorList[0].paramName, // 颜色
                 ParamValue:this.rgbChangeArr(this.color1)
               }
             ],
