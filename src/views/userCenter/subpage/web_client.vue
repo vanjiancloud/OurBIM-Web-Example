@@ -2630,7 +2630,7 @@ export default {
               }
           }else if(realData.id === "28"){
               if(realData.rsInfo[0].pakId){
-                (realData.rsInfo[0].pakId === 'MAPWEB' || realData.rsInfo[0].pakId === 'gis') ? this.pakIdMapweb = 'public' : this.pakIdMapweb = '';
+                (realData.rsInfo[0].pakId === 'MAPWEB' || realData.rsInfo[0].pakId === 'gis')  ? this.pakIdMapweb = 'public' : this.pakIdMapweb = '';
               }
               this.comPakId = realData.rsInfo[0].pakId;
               let newArr = [];
@@ -3188,7 +3188,7 @@ export default {
             baseParamsList:this.matParam.baseParamsList,
             colorList:[
               {
-                ParamName:'Color', // 颜色
+                ParamName:this.matParam.colorList[0].paramName, // 颜色
                 ParamValue:this.rgbChangeArr(this.color1)
               }
             ],
@@ -3223,7 +3223,7 @@ export default {
             baseParamsList:this.matParam.baseParamsList,
             colorList:[
               {
-                ParamName:'Color', // 颜色
+                ParamName:this.matParam.colorList[0].paramName, // 颜色
                 ParamValue:this.rgbChangeArr(this.color1)
               }
             ],
