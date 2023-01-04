@@ -2397,7 +2397,7 @@ export default {
           this.socketData = realData;
           if (realData.id === "1") {
             if(realData.pakId){
-              realData.pakId === 'MAPWEB' ? this.pakIdMapweb = 'public' : this.pakIdMapweb = '';
+              (realData.pakId === 'MAPWEB' || realData.pakId === 'gis') ? this.pakIdMapweb = 'public' : this.pakIdMapweb = '';
             }
             this.memberInfo = {
               type: 1,
