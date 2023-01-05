@@ -2939,8 +2939,9 @@ export default {
     // 构件库 中点击 构件库中的标签页时触发  （自定义构件）
     changeTab(e){
       if(e._props.name === 'second'){
-         let params = {
-          userId:Getuserid()
+        const {userId} = this.$route.query;
+        let params = {
+          userId: userId
         }
         MODELAPI.GETALLCOM(params).then((res)=>{
           if(res.data.code === 0){
@@ -3085,8 +3086,9 @@ export default {
     },
     // 获取 个人库 贴图
     getPersonPhoto(str){
+      const {userId} = this.$route.query;
       let params = {
-          userId:Getuserid()
+          userId:userId
       }
       CHAILIAOAPI.GETMATERIALALLTEXTUREINFO(params).then((res)=>{
           if(res.data.code === 0){
@@ -3107,8 +3109,9 @@ export default {
     },
     // 创建个人库贴图分组
     createTextureGroup(){
+      const {userId} = this.$route.query;
       let params = {
-        userId:Getuserid(),
+        userId:userId,
         groupName:'我的分组'
       }
       CHAILIAOAPI.CREATEMATERIALTEXTUREGROUP(params).then(res=>{
@@ -3212,8 +3215,9 @@ export default {
     },
     // 添加材质到用户材质库
     addMaterialToUser(id,str){
+      const {userId} = this.$route.query;
       let params = {
-        userId:Getuserid(),
+        userId:userId,
         matId:id,
         isPublic: str ==='textureChange' ? false : true,
         baseColorTextureId:this.activeTexTurePerson
