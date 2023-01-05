@@ -397,7 +397,7 @@
 
           <el-form-item
             :label="this.value2==='GIS' ? 'GIS信息:' : '子模型列表:'"
-            v-if="form.appType === '3' && form.isGis==='true' ||form.appType === '3' && form.isGis==='false' || form.appType === '0' && this.value2==='GIS'"
+            v-if="(noDisapper.appType === '3' && noDisapper.isGis==='true') || (noDisapper.appType === '3' && noDisapper.isGis==='false') || (noDisapper.appType === '0' && this.value2==='GIS')"
             label-width="100px"
             :style="value2 == 'BIM' ? 'width:300px' : ''"
           >
@@ -443,6 +443,15 @@
             
           >
             <el-input v-model="form.maxInstance" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item class="startNumber" label="启动参数:" v-if="form.appType === '5'" label-width="100px">
+            <el-input v-model="form.startNum"></el-input>
+          </el-form-item>
+          <el-form-item class="orStart" label="是否预启动:" v-if="form.appType !== '5'" label-width="100px">
+              <el-radio-group v-model="radioStart" @change="readStart">
+                <el-radio :label="1">是</el-radio>
+                <el-radio :label="2">否</el-radio>
+              </el-radio-group>
           </el-form-item>
           <el-form-item label="鼠标操作模式：">
             <el-select v-model="form.doMouse" placeholder="请选择操作模式">
@@ -589,7 +598,7 @@ export default {
   components: {},
   data() {
     return {  
-
+      radioStart:2, // 是否预启动
       sonAppObj:{}, // 所有的链接模型 后台返回的都有 sonApp这个对象，里面是 { 模型ID:模型名，...}   sonAppObj就是这个对象里面的东西
       sonAppKey:[],  // 这个存放着 sonAppObj的 key
       sonAppValue:[], // 这里存放着 sonAppObj的 value
@@ -679,6 +688,8 @@ export default {
         applidStatus: null,
         isGis:'',
         modelIds:'',
+        startNum:'', // 启动参数
+        startVal:null, // 是否预启动
         displayWindow: [
           {
             value: "0",
@@ -742,6 +753,10 @@ export default {
       modelInfoObj:[],
       selectModelName:'', // 选中的模型的名称
       linkGisCoordinateType:'WGS-84', // 链接模型时选择坐标系
+      noDisapper:{  // 编辑时 点击确定防止 子模型列表消失
+        appType:'',
+        isGis:''
+      }
     };
   },
   computed: {
@@ -754,6 +769,14 @@ export default {
     this.setGetdataIn();
   },
   methods: {
+    // 是否预启动
+    readStart(val){
+      if(val === 1){
+         this.form.startVal = true;
+      }else{
+        this.form.startVal = false;
+      }
+    },
     // 关闭 编辑弹框
     closeEdit(){
       this.editDialogFormVisible = false;
@@ -1113,7 +1136,7 @@ export default {
           if (res.data.code === 0) {
             this.isShow = 2;
             this.formShare.qrurl = res.data.data.qrurl;
-            this.formShare.webShareUrl = res.data.data.webShareUrl + '&weatherBin='+ this.form.isGis + '&userId=' + Getuserid();
+            this.formShare.webShareUrl = res.data.data.webShareUrl + '&weatherBin='+ this.form.isGis  + '&userId=' + Getuserid();
             this.$message.success(res.data.message);
           } else {
             this.$message.error(res.data.message);
@@ -1209,6 +1232,8 @@ export default {
     },
     // 编辑按钮 3334678
     edit(e) {
+      this.noDisapper.appType = e.appType;
+      this.noDisapper.isGis = e.isGis;
       console.log('45',e);
       this.modelListFlag = true; // 将添加模型按钮显示出来
       // 获取所有模型信息
@@ -1228,6 +1253,14 @@ export default {
       this.form.isGis = e.isGis;
       this.form.modelIds = e.combineId;
       this.form.gisCoordinateType = e.gisCoordinateType || 'WGS-84';
+      this.form.startNum = e.param || '';
+      if(e.isReserve==='true'){
+        this.radioStart = 1;
+        this.form.startVal = true;
+      }else{
+        this.radioStart = 2;
+         this.form.startVal = false;
+      }
       // this.form.gisinfo = [];
 
       // 状态 只有是  转换完成  的情况下才可以编辑
@@ -1359,7 +1392,9 @@ export default {
             gisInfo:gisinfoList,
             isGis:this.form.isGis,
             combineId:this.form.modelIds,
-            gisCoordinateType:this.form.gisCoordinateType
+            gisCoordinateType:this.form.gisCoordinateType,
+            param:this.form.startNum, // 启动参数
+            isReserve:this.form.startVal, // 是否预启动
           })
             .then((res) => {
               if (res.data.code === 0) {
@@ -1431,7 +1466,8 @@ export default {
             locale: this.$i18n.locale,
             appType: e.appType,
             token: res.data.data.token,
-            weatherBin:e.isGis,  // 用于控制 gis模型  时  渲染环境 图标隐藏
+            weatherBin: e.isGis,  // 用于控制 gis模型  时  渲染环境 图标隐藏
+            reserveId: e.reserveId || '', // 有reserveId就是预启动项目 没有就不是
             userId:Getuserid()
           };
           if (teamInfo) {
@@ -2216,5 +2252,13 @@ export default {
     }
   }
 }
-
+::v-deep .orStart .el-radio-group{
+   margin-left: 9px;
+}
+::v-deep .reaNum .el-input{
+  margin-left: 9px;
+}
+::v-deep .startNumber .el-input{
+  margin-left: 9px;
+}
 </style>

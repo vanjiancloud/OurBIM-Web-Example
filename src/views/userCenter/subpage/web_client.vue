@@ -496,9 +496,9 @@
                                       v-for="listItem in item.rsTextureList"
                                       :key="listItem.textureId"
                                       class="flexDivInde"
-                                      :style="{'width':'60px','height':'76px'}"
+                                      :style="{'width':'90px','height':'11.3vh'}"
                                     >           
-                                      <div @click="texturePhotoSelect(listItem)" :class="{activeBorder: activeTexTurePerson === listItem.textureId}" :style="{'width':'60px','height':'60px'}"><img :src="listItem.imgPath" alt="" :style="{'width':'100%','height':'100%'}"></div>
+                                      <div @click="texturePhotoSelect(listItem)" :class="{activeBorder: activeTexTurePerson === listItem.textureId}" :style="{'width':'90px','height':'9.3vh'}"><img :src="listItem.imgPath" alt="" :style="{'width':'100%','height':'100%'}"></div>
                                       <div class="textureTitle"><span>{{listItem.textureName}}</span></div>
                                     </div>
                                   </div>  
@@ -885,6 +885,11 @@ export default {
         this.isFade = false;
         this.isProgress =false;
       }
+    }
+    // 如果是 预启动项目就去掉遮罩层和加载进度
+    if (this.$route.query.reserveId){
+         this.isFade = false;
+         this.isProgress =false;
     }
   },
   mounted() {
@@ -4239,8 +4244,8 @@ export default {
               margin: 0 13px 5px 0;
               .textureTitle{
                 width: 100%;
-                height: 16px;
-                line-height: 16px;
+                height: 2.3vh;
+                line-height: 2.3vh;
                 text-align: center;
                 /*1. 先强制一行内显示文本*/
                     white-space: nowrap;
@@ -4249,7 +4254,7 @@ export default {
                 /*3. 文字用省略号替代超出的部分*/
                     text-overflow: ellipsis;
                 span{
-                  font-size: 12px;
+                  font-size: 14px;
                   color: #fff;
                 }
               }
