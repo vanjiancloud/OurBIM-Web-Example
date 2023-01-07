@@ -345,7 +345,7 @@
                                           :key="itemPub.matId"                                     
                                         >
                                           <div class="img" @click.stop="selectPublicImg(itemPub)">
-                                            <img :class="{activeBorder: activePub === itemPub.matId}" :src="itemPub.matImgPath" alt="" />               
+                                            <img :class="{activeBorder: activePub === itemPub.matId}" :src="itemPub.matImgPath" :onerror="errorImg" alt="" />               
                                           </div>
                                           <div class="name" :style="{'font-size':'14px'}">{{ itemPub.matName }}</div>
                                         </div>
@@ -783,6 +783,7 @@ export default {
         comType:''
       },
       // 贴图库 公共库的信息
+      errorImg:'this.src="' + require('@/assets/failed.png') + '"',
       picMaterInfo:[],
       personalPicMaterInfo:[], // 贴图库 个人库
       btnUpTexure:false, // 控制上传按钮
