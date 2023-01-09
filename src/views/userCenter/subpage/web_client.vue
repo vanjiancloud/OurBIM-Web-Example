@@ -377,7 +377,7 @@
                     <div class="imgPic" @click="photoSelect(item,index)" :class="{activeBorder: activeMater === index}">
                         <img v-if="item.photoUrl === undefined" :src="require('@/assets/caizhi.jpg')" alt="">
                         <img v-else :src="item.photoUrl" alt="">
-                        <!-- <div v-if="middleMaterInfo[0].nameInfo.length>0 && activeMater === index" class="resetMaterial" @click.stop="resetClick(item,index)"><i class="el-icon-refresh-left resetIcon"></i></div> -->
+                        <div v-if="middleMaterInfo[0].nameInfo.length>0 && activeMater === index" class="resetMaterial" @click.stop="resetClick(item,index)"><i class="el-icon-refresh-left resetIcon"></i></div>
                     </div> 
                   </div>
                 </div>
