@@ -114,6 +114,18 @@ const CHAILIAOAPI = {
             params
         })
     },
+    // 重置材质
+    RESETMATERIAL: (params, data) => {
+        return request({
+            url: '/material/resetMaterial',
+            method: 'post',
+            params,
+            data,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    },
 }
 
 export default CHAILIAOAPI

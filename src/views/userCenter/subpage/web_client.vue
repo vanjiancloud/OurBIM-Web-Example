@@ -377,6 +377,7 @@
                     <div class="imgPic" @click="photoSelect(item,index)" :class="{activeBorder: activeMater === index}">
                         <img v-if="item.photoUrl === undefined" :src="require('@/assets/caizhi.jpg')" alt="">
                         <img v-else :src="item.photoUrl" alt="">
+                        <div v-if="middleMaterInfo[0].nameInfo.length>0 && activeMater === index" class="resetMaterial" @click.stop="resetClick(item,index)"><i class="el-icon-refresh-left resetIcon"></i></div>
                     </div> 
                   </div>
                 </div>
@@ -444,9 +445,9 @@
                 </div>
                 <div class="mater-bottom" v-if="false">
                     <el-checkbox-group v-model="materilCheckList">
-                      <el-checkbox label="1">金属</el-checkbox>
+                      <el-checkbox label="1" v-if="false">金属</el-checkbox>
                       <el-checkbox label="2">替换所有相同实例</el-checkbox>
-                      <el-checkbox label="3">双面材质</el-checkbox>
+                      <el-checkbox label="3" v-if="false">双面材质</el-checkbox>
                     </el-checkbox-group>
                 </div>
             </div>
@@ -888,10 +889,10 @@ export default {
       }
     }
     // 如果是 预启动项目就去掉遮罩层和加载进度
-    // if (this.$route.query.reserveId){
-    //      this.isFade = false;
-    //      this.isProgress =false;
-    // }
+  //   if (this.$route.query.reserveId){
+  //        this.isFade = false;
+  //        this.isProgress =false;
+  //   }
   },
   mounted() {
     this.defaultUrl = process.env.VUE_APP_REQUEST_URL;
@@ -955,7 +956,6 @@ export default {
                 // 触发a链接点击事件，浏览器开始下载文件
                 a.click()
             }
-
         },
 
     // 资源库中 点击搜索时防止切换 （材质库）
@@ -2986,7 +2986,6 @@ export default {
     },
     // 打开公共材质库时
     openList(str){
-      console.log('mmm',str);
       if(!(str==='')){
         if(this.publicMater[str].sonList && this.publicMater[str].sonList.length > 0) return;
         let params = {
@@ -3064,11 +3063,15 @@ export default {
     },
     // 替换材质
     exchangeMater(materialId){
+        const allChange = this.materilCheckList.some(res=>{
+           return res === '2'
+        })
         let params = {
           taskId:this.taskId,
           appId: this.pakidToAppid(this.comPakId),
           matId:materialId,
-          isPublic: false
+          isPublic: false,
+          isUpdateSameMaterial:allChange,
         }
         let temp = {
           matAndActorInfos:[
@@ -3145,6 +3148,12 @@ export default {
     },
     // 获取材质信息
     getMaterialInfomation(e,str){
+      if(e === 'RESET'){  // 重置过的材质就不要再获取材质信息了
+        this.middleMaterInfo.forEach(mat=>{
+          mat.nameInfo = [];
+        })
+        return false;
+      }
       let params = {
         matId:e,
         isPublic:str==='public' ? true : false
@@ -3264,6 +3273,51 @@ export default {
             message: '已取消删除'
           });          
         });
+    },
+    // 恢复材质按钮
+    resetClick(item,num){
+        this.$confirm('您将重置此材质, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.resetMat(item.matId,num);
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+    },
+    // 恢复材质
+    resetMat(flagId,num){
+        let params = {
+          taskId:this.taskId,
+          appId: this.pakidToAppid(this.comPakId),
+          matId:flagId,
+          isPublic: false
+        }
+        let temp = {
+          matAndActorInfos:[
+            {
+              actorId:this.exchangeData.actorId,
+              meshIndex:this.materialAllInfo.meshIndex,
+              matIndex:this.materialAllInfo.matIndex,
+              comType: this.pakIdMapweb,
+              pakId:this.comPakId
+            }
+          ]
+        }
+        CHAILIAOAPI.RESETMATERIAL(params,JSON.stringify(temp.matAndActorInfos)).then((res)=>{
+            if(res.data.code===0){
+              this.middleMaterInfo.forEach(mat=>{
+                mat.nameInfo = [];
+              })
+              this.topImgMaterial[num].matId = 'RESET' // 修改被重置的材质的id
+              this.$set(this.topImgMaterial[num],'photoUrl',require('@/assets/caizhi.jpg')) // 修改被重置的材质的图片
+              this.$message.success('材质重置成功')
+            }
+        }).catch(()=>{})
     },
     // 点击贴图库的个人库图片
     texturePhotoSelect(e){
@@ -3993,6 +4047,25 @@ export default {
               img{
                 width: 100%;
                 height: 100%;
+              }
+              .resetMaterial{
+                position: absolute;
+                top:0;
+                right: 0;
+                width: 20px;
+                height: 20px;
+                border-radius: 10px;
+                background-color: rgba(0,0,0,.4);
+                text-align: center;
+                display: none;
+                .resetIcon{
+                  font-size: 18px;
+                  color: #fff;
+                  line-height: 16px;
+                }
+              }
+              &:hover .resetMaterial{
+                display: block;
               }
             }
           }
