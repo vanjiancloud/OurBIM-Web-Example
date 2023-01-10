@@ -4525,12 +4525,15 @@ export default {
   height: 15px;
 }
 .invite-team-friend {
+  padding-left: 0 !important;
   .invite-btn {
     border: 2px solid #284dba;
     display: flex;
     align-items: center;
     background-color: rgba(41, 82, 199, 0.5);
     height: 60%;
+    width: 166px;
+    justify-content: center;
     cursor: pointer;
     border-radius: 2px;
   }
