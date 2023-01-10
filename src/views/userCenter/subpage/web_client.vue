@@ -4530,7 +4530,7 @@ export default {
     border: 2px solid #284dba;
     display: flex;
     align-items: center;
-    background-color: rgba(41, 82, 199, 0.6);
+    background-color: rgba(41, 82, 199, 1);
     height: 60%;
     width: 166px;
     justify-content: center;
