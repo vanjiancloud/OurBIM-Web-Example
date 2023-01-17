@@ -10,51 +10,54 @@ import qsStringify from "qs-stringify"
 
 const COMPONENTLIBRARY = {
 
-  // 开启/关闭构件库操作
-  // /comControl/comAction
-  comSwitch: (params) => {
-    return request({
-      url: '/comControl/comAction',
-      method: 'POST',
-      data: qsStringify(params)
-    })
-  },
-  // 添加构件
-  addCom: params => {
-    return request({
-      url: '/comControl/addCom',
-      method: 'POST',
-      data: qsStringify(params)
-    })
-  },
+    // 开启/关闭构件库操作
+    // /comControl/comAction
+    comSwitch: (params) => {
+        return request({
+            url: '/comControl/comAction',
+            method: 'POST',
+            data: qsStringify(params)
+        })
+    },
+    // 添加构件
+    addCom: params => {
+        return request({
+            url: '/comControl/addCom',
+            method: 'POST',
+            params,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    },
 
-  // 获取构件列表
-  getPublicComList: params => {
-    return request({
-      url: '/comControl/getPublicComList',
-      method: 'get',
-      params
-    })
-  },
+    // 获取构件列表
+    getPublicComList: params => {
+        return request({
+            url: '/comControl/getPublicComList',
+            method: 'get',
+            params
+        })
+    },
 
-  // 初始化构件
-  initComponent: params => {
-    return request({
-      url: '/comControl/initCom',
-      method: 'GET',
-      params
-    })
-  },
-  // 构件定位
-  focusComponent: params => {
-    return request({
-      url: '/comControl/comFocus',
-      method: 'POST',
-      params
-    })
-  },
+    // 初始化构件
+    initComponent: params => {
+        return request({
+            url: '/comControl/initCom',
+            method: 'GET',
+            params
+        })
+    },
+    // 构件定位
+    focusComponent: params => {
+        return request({
+            url: '/comControl/comFocus',
+            method: 'POST',
+            params
+        })
+    },
 
-  /* 
+    /* 
  构件操作 
   params:{
     comId:'',
@@ -63,38 +66,38 @@ const COMPONENTLIBRARY = {
   }
   */
 
-  operateCom: params => {
-    return request({
-      url: '/comControl/operateCom',
-      method: 'POST',
-      params
-    })
-  },
-  // 自定义构件显示隐藏
-  controlComShowOrHide: params => {
-    return request({
-      url: '/comControl/controlComShowOrHide',
-      method: 'POST',
-      params
-    })
-  },
-  // 删除自定义构件
-  // /comControl/deleteCom
-  deleteCom: params => {
-    return request({
-      url: '/comControl/deleteCom',
-      method: 'POST',
-      params
-    })
-  },
-  // 关闭构件库轴
-  closeComEdit: id => {
-    return request({
-      url: '/comControl/comEditorAction',
-      method: 'POST',
-      data:qsStringify({taskId:id})
-    })
-  },
+    operateCom: params => {
+        return request({
+            url: '/comControl/operateCom',
+            method: 'POST',
+            params
+        })
+    },
+    // 自定义构件显示隐藏
+    controlComShowOrHide: params => {
+        return request({
+            url: '/comControl/controlComShowOrHide',
+            method: 'POST',
+            params
+        })
+    },
+    // 删除自定义构件
+    // /comControl/deleteCom
+    deleteCom: params => {
+        return request({
+            url: '/comControl/deleteCom',
+            method: 'POST',
+            params
+        })
+    },
+    // 关闭构件库轴
+    closeComEdit: id => {
+        return request({
+            url: '/comControl/comEditorAction',
+            method: 'POST',
+            data: qsStringify({ taskId: id })
+        })
+    },
 }
 
 export default COMPONENTLIBRARY
