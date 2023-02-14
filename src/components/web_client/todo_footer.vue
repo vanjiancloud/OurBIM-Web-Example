@@ -496,7 +496,7 @@
             />
           </el-tooltip>
           <!-- <el-collapse-transition> -->
-          <div class="show-weather" v-show="imgList[9].state === 1">
+          <!-- <div class="show-weather" v-show="imgList[9].state === 1">
             <el-form class="set-form" :model="setForm" label-width="80px">
               <el-form-item :label="$t('webClient.weather[0].label')">
                 <el-select
@@ -534,7 +534,7 @@
                 </div>
               </el-form-item>
             </el-form>
-          </div>
+          </div> -->
           <!-- </el-collapse-transition> -->
         </div>
         <!-- <div class="cut-apart"></div> -->

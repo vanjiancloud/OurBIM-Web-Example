@@ -1,0 +1,1312 @@
+<template>
+  <div class="systemWeather">
+    <div class="weatherClassify">
+        <div class="selectGroup">
+            <el-radio-group v-model="radio" class="singleSelect">
+                <el-radio :label="0" class="envirTemplate" :disabled="radio === 0 ? false : true">
+                    <div class="templateBox">
+                        <div class="templateName">环境模板</div>
+                        <div class="templateInfo">
+                            <el-select v-model="valueTemplate" placeholder="请选择" size="mini" @change="valueChangeBtn">
+                                <el-option
+                                    :key="index"
+                                    v-for="(item,index) in optionsTemplate"
+                                    :label="item.weatherName"
+                                    :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                </el-radio>
+                <el-radio :label="1" class="solidBackground" :disabled="valueTemplate == 24 ? false : true">
+                    <div class="boxSolidBackground">
+                        <div class="solidName">纯色背景</div>
+                        <div class="colorBox">
+                            <div class="selectColor">
+                                <el-color-picker :disabled="radio == 1 ? false : true" v-model="color1" size="mini" color-format="rgb" @change="changeColor"></el-color-picker>
+                            </div>
+                            <div class="colorName">
+                                <el-input v-model="input" size="mini" @blur="inputBlur" :disabled="radio == 1 ? false : true"></el-input>
+                            </div>
+                        </div>
+                        <div class="resetColor">
+                            <i class="el-icon-refresh-right resetColorIcon" @click.stop="clickColorBtn"></i>
+                        </div>
+                    </div>                  
+                </el-radio>
+                <el-radio :label="2" class="mySetting" :disabled="valueTemplate == 24 ? false : true">个性化设置</el-radio>
+            </el-radio-group>
+            <div class="boxTimeHour">
+                <div class="timeHour">
+                    <div class="hourName">时间</div>
+                    <div class="selectTime">
+                        <el-time-picker
+                            class="picker"
+                            v-model="hourValue"
+                            @change="hourClick"
+                            :picker-options="{
+                                selectableRange: '00:00:00 - 23:59:59'
+                            }"
+                            :clearable="false"
+                            size="mini"
+                            format='HH:mm'
+                            :disabled="radio == 2 ? false : true"
+                        >
+                        </el-time-picker>
+                    </div>
+                </div>
+                <div class="hourSpeed">
+                    <div class="speedName">时速</div>
+                    <div class="speedNumber">
+                        <el-input :disabled="radio == 2 ? false : true" :min="0" :step="0.01" :max="24" v-model="inputSpeed" @blur="hourSpeedBlur"></el-input>
+                    </div>
+                    <div class="speedInfo">小时/秒</div>
+                </div>
+            </div>
+            <div class="timeProgressBox">
+                <el-slider v-model="valueSlider"
+                    @change="timeHourChange"
+                    :min="0" 
+                    :max="24" 
+                    :step="0.01"
+                    :marks="marks"
+                    :disabled="radio == 2 ? false : true"
+                >
+                </el-slider>
+            </div>
+            <div class="boxTimeHour dateTimeBox">
+                <div class="timeHour dateTime">
+                    <div class="hourName">日期</div>
+                    <div class="selectTime selectDate">
+                        <el-date-picker
+                            class="picker"
+                            v-model="valueDate"
+                            type="date"
+                            :clearable="false"
+                            size="mini"
+                            format='MM-dd'
+                            @change="clickDateTime"
+                            :disabled="radio == 2 ? false : true"
+                        >
+                        </el-date-picker>
+                    </div>
+                </div>
+                <div class="hourSpeed latitudeBox">
+                    <div class="speedName latitudeName">纬度</div>
+                    <div class="speedNumber latitudeSelect">
+                        <el-input :disabled="radio == 2 ? false : true" v-model="inputLatitude" @blur="latitudeChange"></el-input>
+                    </div>
+                    <div class="speedInfo latitudeInfo">°</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 天气 -->
+    <div class="mainWeather">
+        <div class="titleWeather">天气</div>
+        <div class="cloude">
+            <div class="cloudeSelect">
+                <div class="imgCloude">
+                    <img :src="require('@/assets/images/weatherSys/cloudeImage.png')" alt="">
+                </div>
+                <div class="nameCloude">云</div>
+                <div class="switchCloude">
+                    <el-switch
+                        v-model="valueCloude"
+                        @change="btnWeatherClick('1')"
+                        :disabled="radio == 2 ? false : true"
+                        active-color="#409EFF"
+                        inactive-color="#191a1c">
+                    </el-switch>
+                </div>
+            </div>
+            <div class="timeProgressBox cloudeProgress">
+                <el-slider v-model="valueSliderCloude"
+                    :min="0" 
+                    :max="3" 
+                    :step="1"
+                    :marks="marksCloude"
+                    :disabled = !this.valueCloude
+                    @change="strongChange('cloude')"
+                >
+                </el-slider>
+            </div>
+        </div>
+        <div class="rain">
+            <div class="rainImage">
+                <img :src="require('@/assets/images/weatherSys/rainImage.png')" alt="">
+            </div>
+            <div class="rainName">雨</div>
+            <div class="rainSwitch">
+                <el-switch
+                    v-model="valueRain"
+                    :disabled="radio == 2 ? false : true"
+                    @change="btnWeatherClick('2')"
+                    active-color="#409EFF"
+                    inactive-color="#191a1c">
+                </el-switch>
+            </div>
+        </div>
+        <div class="cloude sonw">
+            <div class="cloudeSelect">
+                <div class="imgCloude imageSnow">
+                    <img :src="require('@/assets/images/weatherSys/snowImage.png')" alt="">
+                </div>
+                <div class="nameCloude nameSnow">雪</div>
+                <div class="switchCloude">
+                    <el-switch
+                        v-model="valueSnow"
+                        :disabled="radio == 2 ? false : true"
+                        @change="btnWeatherClick('3')"
+                        active-color="#409EFF"
+                        inactive-color="#191a1c">
+                    </el-switch>
+                </div>
+            </div>
+            <div class="timeProgressBox cloudeProgress">
+                <el-slider v-model="valueSliderSnow"
+                    class="progressSnow"
+                    :min="0" 
+                    :max="3" 
+                    :step="1"
+                    :marks="marksSnow"
+                    :disabled = !this.valueSnow
+                    @change="strongChange('snow')"
+                >
+                </el-slider>
+            </div>
+        </div>
+        <div class="rain fog">
+            <div class="rainImage fogImage">
+                <img :src="require('@/assets/images/weatherSys/fogImage.png')" alt="">
+            </div>
+            <div class="rainName">雾</div>
+            <div class="rainSwitch">
+                <el-switch
+                    v-model="valueFog"
+                    :disabled="radio == 2 ? false : true"
+                    @change="btnWeatherClick('4')"
+                    active-color="#409EFF"
+                    inactive-color="#191a1c">
+                </el-switch>
+            </div>
+        </div>
+    </div>
+    <!-- 风 -->
+    <div class="wind">
+        <div class="direction">
+            <div class="windDirectin">风向</div>
+            <div class="windSpeed">
+                <el-input type="number" :disabled="radio == 2 ? false : true" :min="0" :max="360" v-model="inputWind" @blur="blurWind" size="mini"></el-input>
+            </div>
+            <div class="windInfo">°</div>
+        </div>
+        <div class="remarks">取值0 ～360 ，东风0 ，顺时针方向</div>
+        <div class="direction speed">
+            <div class="windDirectin">风速</div>
+            <div class="windSpeed">
+                <el-input type="number" :disabled="radio == 2 ? false : true" :min="0" :max="12" v-model="inputSpeedWind" @blur="blurWind" size="mini"></el-input>
+            </div>
+            <div class="windInfo speedNumber">m/s</div>
+        </div>
+    </div>
+    <!-- 轮廓描边 -->
+    <div class="contourLine" v-if="false">
+        <el-checkbox v-model="checkedLine">模型描边轮廓线</el-checkbox>
+    </div>
+    <!-- 轮廓描边颜色 -->
+    <div class="boxSolidBackground lineColor" v-if="false">
+        <div class="solidName">颜色</div>
+        <div class="colorBox">
+            <div class="selectColor">
+                <el-color-picker v-model="colorLineSele" size="mini" color-format="rgb"></el-color-picker>
+            </div>
+            <div class="colorName">
+                    <el-input v-model="lineInput" size="mini"></el-input>
+            </div>
+        </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import MODELAPI from "@/api/model_api";
+import CHAILIAOAPI from "@/api/material_api";
+import moment from 'moment'
+import { runInThisContext } from "vm";
+import { log } from 'console';
+export default {
+    props:{
+        appId: {
+            type: String,
+            default: "",
+        },
+        taskId: {
+            type: String,
+            default: "",
+        },
+    },
+    data(){
+        return {
+            radio:0,
+            valueTemplate:'', // 环境模板
+            optionsTemplate:[], // 环境
+            color1:'rgb(228,226,228)', // 纯色背景颜色绑定
+            input:'11111', // 纯色背景颜色值
+            hourValue:new Date(2023, 2, 6, 18, 40), // 选择时间，小时
+            inputSpeed:'0.1', // 时速
+            valueSlider:0.1, // 时速进度条
+            marks: {
+                0: '0',
+                6: '6',
+                12: '12',
+                18: '18',
+                24: '24',
+            },
+            valueDate:new Date(2023, 5, 6), // 日期
+            inputLatitude:'35.6', // 维度绑定值
+            valueCloude:false, // 云开关
+            marksCloude:{
+                0: '晴',
+                1: '晴天少云',
+                2: '晴天多云',
+                3: '阴',
+            },
+            valueSliderCloude:1, // 云选择条
+            valueRain:false, // 雨
+            valueSnow:false, // 雪
+            valueSliderSnow:1,
+            marksSnow:{
+                0: '小雪',
+                1: '中雪',
+                2: '大雪',
+                3: '大雾',
+            },
+            valueFog:false, // 雾
+            inputWind:'90', // 风向
+            inputSpeedWind:'3', // 风速
+            checkedLine:false, // 轮廓线单选
+            colorLineSele:'rgb(71,93,152)', // 轮廓线颜色
+            lineInput:'', // 轮廓线颜色值
+            weatherStrong:'', // 某个天气的强度
+            weatherIntensity:'0', // 天气强度
+            cloudCoverage:'3.5', // 云密度
+            rainSnow:'0', // 雨雪比例
+            messageFlag:true,
+        }
+    },
+    created(){
+        this.getWeatherList();
+    },
+    mounted(){
+        this.changeColor(this.color1);
+    },
+    methods:{
+        getWeatherList(){ // 获取天气环境
+            MODELAPI.LISTWEATHER({
+                appId: this.appId,
+            }).then((res) => {
+                if (res.data.code === 0) {
+                    this.optionsTemplate = res.data.data;
+                    this.getWeatherId(); // 获取当前天气
+                } else {
+                    this.optionsTemplate = [];
+                }
+            });
+        },
+        valueChangeBtn(val){ // 选择天气改变时
+            this.changeWea(val);
+            setTimeout(()=>{
+                this.optionsTemplate.forEach(item=>{
+                    if(item.id == val && item.weatherName === '参数化天气'){
+                        this.setSun();
+                        this.setTimeAndSpeed();
+                        this.setWind();
+                        if(this.valueCloude){
+                            this.strongChange('cloude')
+                        }else if(this.valueRain){
+                            this.btnWeatherClick('2')
+                        }else if(this.valueSnow){
+                            this.strongChange('snow')
+                        }else if(this.valueFog){
+                            this.btnWeatherClick('4')
+                        }
+                    }
+                })
+            },2000)
+        },
+        getWeatherParams(){ // 获取参数化天气信息
+            let params = {
+                appId:this.appId,
+            }
+            CHAILIAOAPI.GETWEATHERPARAMS(params).then(res=>{
+                if(res.data.code === 0){
+                    let allData = res.data.data;
+                    if(allData.timeAndTimeSpeed){
+                        allData.timeAndTimeSpeed.forEach(item=>{
+                            if(item.key === 'timeOfDay'){
+                               this.hourValue = this.timeFromBack(item.value); // 时间
+                            }
+                        })
+                    }
+                    if(allData.simulate){
+                        let dateMouth = null;
+                        let dateDay = null;
+                        allData.simulate.forEach(item=>{
+                            if(item.key === 'simulationSpeed'){ // 时速
+                               this.inputSpeed = (Number(item.value) / 3600).toFixed(2);
+                               this.valueSlider = Number((Number(item.value) / 3600).toFixed(2));
+                            }else if(item.key === 'mouth'){  // 日期
+                                dateMouth = Number(item.value);
+                            }else if(item.key === 'day'){   // 日期
+                                dateDay = Number(item.value);
+                            }else if(item.key === 'latitude'){ // 纬度
+                                this.inputLatitude = item.value;
+                            }
+                            if(dateMouth && dateDay){
+                                this.valueDate = new Date(2023, dateMouth - 1, dateDay)
+                            }
+                        })
+                    }
+                    if(allData.weatherBasic){
+                        let bigStrongWether = -1;
+                        let cloudeMore = -1;
+                        let rainAndSnow = -1;
+                        allData.weatherBasic.forEach(item=>{
+                            if(item.key === 'windIntensity'){ // 风速
+                                this.inputSpeedWind = item.value;
+                            }else if(item.key === 'windDirection'){ // 风速
+                                this.inputWind = item.value;
+                            }else if(item.key === 'weatherIntensity'){ 
+                                bigStrongWether = item.value;
+                            }else if(item.key === 'cloudCoverage'){ 
+                                cloudeMore = item.value;
+                            }else if(item.key === 'rainSnow'){ 
+                                rainAndSnow = item.value;
+                            }
+                            if(bigStrongWether !== -1 && cloudeMore !== -1 && rainAndSnow !== -1){
+                                this.weatherNow(bigStrongWether,cloudeMore,rainAndSnow)
+                            }
+                        })
+                    }
+                }
+            }).catch(()=>{})
+        },
+        weatherNow(bigStrongWether,cloudeMore,rainAndSnow){ // 根据数据回显天气
+            if(bigStrongWether==='0' && cloudeMore==='0' && rainAndSnow==='0'){
+                this.valueCloude = true;
+                this.valueSliderCloude = 0;
+            }else if(bigStrongWether==='0' && cloudeMore==='1.6' && rainAndSnow==='0'){
+                this.valueCloude = true;
+                this.valueSliderCloude = 1;
+            }else if(bigStrongWether==='0' && cloudeMore==='3.2' && rainAndSnow==='0'){
+                this.valueCloude = true;
+                this.valueSliderCloude = 2;
+            }else if(bigStrongWether==='0' && cloudeMore==='5' && rainAndSnow==='0'){
+                this.valueCloude = true;
+                this.valueSliderCloude = 3;
+            }else if(bigStrongWether==='3.3' && cloudeMore==='6.5' && rainAndSnow==='0'){
+                this.valueRain = true;
+            }else if(bigStrongWether==='0.5' && cloudeMore==='5' && rainAndSnow==='1'){
+                this.valueSnow = true
+                this.valueSliderSnow = 0;
+            }else if(bigStrongWether==='3.3' && cloudeMore==='6.5' && rainAndSnow==='1'){
+                this.valueSnow = true
+                this.valueSliderSnow = 1;
+            }else if(bigStrongWether==='6.6' && cloudeMore==='8.5' && rainAndSnow==='1'){
+                this.valueSnow = true
+                this.valueSliderSnow = 2;
+            }else if(bigStrongWether==='0' && cloudeMore==='10' && rainAndSnow==='0'){
+                this.valueSnow = true
+                this.valueSliderSnow = 3;
+            }else if(bigStrongWether==='0' && cloudeMore==='6' && rainAndSnow==='0'){
+                this.valueFog = true;
+            }
+        },
+        changeWea(weatherId){ // 改变天气请求
+            let parasm = {
+                taskid:this.taskId,
+                action:'switchWeather',
+                weahterId:weatherId
+            }
+            MODELAPI.UPDATEORDER(parasm).then(res =>{
+                if(res.data.code === 0){
+                    if(this.messageFlag){ // 防止重复提示
+                        this.messageFlag = false;
+                        this.$message.success(res.data.message);
+                        this.messageChange()
+                    }
+                    this.optionsTemplate.forEach(item=>{
+                        if(item.id === this.valueTemplate){
+                            if(item.weatherName === '参数化天气'){
+                                this.radio = 2
+                                this.getWeatherParams();
+                            }else if(item.weatherName === '轮廓线-可变背景色'){
+                                this.radio = 1
+                                setTimeout(() => {
+                                    this.changeBackgroundColor(this.rgbChange(this.color1));
+                                }, 1500);
+                            }else{
+                                this.radio = 0
+                            }
+                        }
+                    })
+                }else{
+                    this.$message.error('天气切换失败');
+                }
+            }).catch(()=>{})
+        },
+        changeColor(val){ // 纯色 颜色改变时
+            if(val !== null){
+                this.input = val.slice(4,-1);
+            }else if(val === null){
+                this.color1 = 'rgb(228,226,228)';
+                this.input = this.color1.slice(4,-1);
+            }
+            if(this.radio === 1){
+                this.changeBackgroundColor(this.rgbChange(this.color1));
+            }
+        },
+        inputBlur(){ // 纯色 输入数据变化时
+            this.color1 = 'rgb(' + this.input + ')';
+            this.changeBackgroundColor(this.rgbChange(this.color1));
+        },
+        clickColorBtn(){ // 纯色 点击恢复按钮时
+            if(this.radio != 1) return;
+            this.color1 = 'rgb(228,226,228)';
+            this.changeColor(this.color1);
+        },
+        changeBackgroundColor(rgb){ // 改变纯色背景
+            let params = {
+                taskId:this.taskId,
+                rgbValue:rgb + 'ff'
+            }
+            CHAILIAOAPI.SETWEATHERCOLOR(params).then(res=>{
+                // console.log('rgba',res.data);
+            }).catch(()=>{})
+        },
+        rgbChange(sRGB) { // rgb转换16进制
+            let reg=/^(RGB|rgb)\((\d+),\s*(\d+),\s*(\d+)\)$/
+            if(! reg.test(sRGB)) return sRGB
+            let rgbArr = sRGB.replace(reg, '$2,$3,$4').split(',')
+            let resultRgbArr = rgbArr.map(item=>{
+                if(+item>16) return (+item).toString(16)
+                return '0'+(+item).toString(16)
+            })
+            return resultRgbArr.join('')
+        },
+        timeHourChange(val){ // 小时的滑块
+            this.inputSpeed = val;
+            this.setSun();
+            this.setTimeAndSpeed();
+        },
+        hourSpeedBlur(){ // 时速失去焦点
+            this.valueSlider = Number(this.inputSpeed);
+            this.setSun();
+            this.setTimeAndSpeed();
+        },
+        hourClick(){ // 改变时间时
+            this.setTimeAndSpeed();
+            this.setSun();
+        },
+        setTimeAndSpeed(){ // 设置时间和时速
+            let params = {
+                taskId:this.taskId,
+                timeOfDay: this.hourMinuteChange(this.hourValue),
+                animateTimeOfDay:true,
+            }
+            CHAILIAOAPI.SETTIMEWEATHERTIMEANDTIMESPEED(params).then(res=>{
+                if(res.data.code ===0){
+                    if(this.messageFlag){
+                        this.messageFlag = false;
+                        this.$message.success(res.data.message);
+                        this.messageChange()
+                    }
+                }else{
+                    this.$message.error(res.data.message)
+                }
+            }).catch(()=>{})
+        },
+        clickDateTime(){ // 日期变化时
+            this.setSun();
+            this.setTimeAndSpeed();
+        },
+        latitudeChange(){ // 纬度改变
+            this.setSun();
+            this.setTimeAndSpeed();
+        },
+        setWeatherType(){ // 设置天气类型
+            let params = {
+                taskId:this.taskId,
+                weatherMode:this.weatherStrong
+            }
+            let weather ={
+                weatherBasicControls:{
+                    weatherIntensity:this.weatherIntensity,
+                    cloudCoverage:this.cloudCoverage,
+                    rainSnow:this.rainSnow,
+                }
+            }
+            CHAILIAOAPI.SETWEATHRTTYPE(params,JSON.stringify(weather)).then(res=>{
+                if(res.data.code ===0){
+                    if(this.messageFlag){
+                        this.messageFlag = false;
+                        this.$message.success(res.data.message);
+                        this.messageChange()
+                    }
+                }else{
+                    this.$message.error(res.data.message)
+                }
+            }).catch(()=>{})
+        },
+        setSun(){ // 设置太阳方位
+            let params = {
+                taskId:this.taskId,
+            }
+            let weather = {
+                simulate:{
+                    simulateRealSun:true,
+                    day:this.monthDateChange(this.valueDate,'day'),
+                    month:this.monthDateChange(this.valueDate,'month'),
+                    simulationSpeed:Number(this.inputSpeed) * 3600,
+                    latitude:this.inputLatitude
+                }
+            }
+            CHAILIAOAPI.SETSUNLIGHTDIRECTION(params,JSON.stringify(weather)).then(res=>{
+                if(res.data.code ===0){
+                    if(this.messageFlag){
+                        this.messageFlag = false;
+                        this.$message.success(res.data.message);
+                        this.messageChange()
+                    }
+                }else{
+                    this.$message.error(res.data.message)
+                }
+            }).catch(()=>{})
+        },
+        getWeatherId(){ // 获取当前天气的id
+            let params = {
+                taskId:this.taskId
+            }
+            CHAILIAOAPI.GETCURRWEATHERID(params).then(res=>{
+                if(res.data.code === 0){
+                    let index = null;
+                    index = this.optionsTemplate.findIndex(item=>{
+                        if(item.id == res.data.data){
+                            if(item.weatherName === '参数化天气'){
+                                this.radio = 2
+                                this.getWeatherParams();
+                            }else if(item.weatherName === '轮廓线-可变背景色'){
+                                this.radio = 1
+                                setTimeout(() => {
+                                    this.changeBackgroundColor(this.rgbChange(this.color1));
+                                }, 1500);
+                            }else{
+                                this.radio = 0
+                            }
+                        }
+                        return item.id == res.data.data;
+                    })
+                    this.valueTemplate = this.optionsTemplate[index].id
+                }
+            })
+        },
+        hourMinuteChange(val){ // 时间占一天的比例
+            let dataTime =  moment(val).format('HH:mm');
+            let first = Number(dataTime.slice(0,2));
+            let last = Number(dataTime.slice(3));
+            return first + Number((last / 60).toFixed(2));
+        },
+        monthDateChange(val,flag){ // 日期转换
+            let monthStr = moment(val).format('MM-DD');
+            let first = null;
+            if(flag === 'month'){
+                first = monthStr.slice(0,2);
+            }else if(flag === 'day'){
+                first = monthStr.slice(3);
+            }
+            if(first.slice(0,1) === '0'){
+                first = first.slice(1)
+            }
+            return first;
+        },
+        btnWeatherClick(str){ // 天气开关
+            if(str === '1'){
+                if(this.valueCloude){
+                    this.wetherMutex('cloude')
+                    this.weatherStrong = 'partlyCloudy'
+                    this.valueSliderCloude = 1
+                    this.weatherIntensity = '0',
+                    this.cloudCoverage = '1.6',
+                    this.rainSnow = '0'
+                    this.setWeatherType();
+                }
+            }else if(str === '2'){
+                if(this.valueRain){
+                    this.wetherMutex('rain')
+                    this.weatherStrong = 'rain'
+                    this.weatherIntensity = '3.3',
+                    this.cloudCoverage = '6.5',
+                    this.rainSnow = '0'
+                    this.setWeatherType();
+                }    
+            }else if(str === '3'){
+                if(this.valueSnow){
+                    this.wetherMutex('snow')
+                    this.weatherStrong = 'snow'
+                    this.valueSliderSnow = 1
+                    this.weatherIntensity = '3.3',
+                    this.cloudCoverage = '6.5',
+                    this.rainSnow = '1'
+                    this.setWeatherType();
+                }    
+            }else if(str === '4'){
+                if(this.valueFog){
+                    this.wetherMutex('fog')
+                    this.weatherStrong = 'foggy'
+                    this.weatherIntensity = '0',
+                    this.cloudCoverage = '6',
+                    this.rainSnow = '0'
+                    this.setWeatherType();
+                }    
+            }
+            if(!this.valueCloude && !this.valueRain && !this.valueSnow && !this.valueFog){
+                this.weatherStrong = 'cloudy'
+                this.valueSliderCloude = 2
+                this.weatherIntensity = '0',
+                this.cloudCoverage = '3.2',
+                this.rainSnow = '0'
+                this.setWeatherType();
+            }
+        },
+        strongChange(flag){ // 云和雪的强度
+            if(flag === 'cloude'){
+                if(this.valueSliderCloude === 0){
+                    this.weatherStrong = 'clearSkies'
+                    this.weatherIntensity = '0',
+                    this.cloudCoverage = '0',
+                    this.rainSnow = '0'
+                }else if(this.valueSliderCloude === 1){
+                    this.weatherStrong = 'partlyCloudy'
+                    this.weatherIntensity = '0',
+                    this.cloudCoverage = '1.6',
+                    this.rainSnow = '0'
+                }else if(this.valueSliderCloude === 2){
+                    this.weatherStrong = 'cloudy'
+                    this.weatherIntensity = '0',
+                    this.cloudCoverage = '3.2',
+                    this.rainSnow = '0'
+                }else if(this.valueSliderCloude === 3){
+                    this.weatherStrong = 'overcast'
+                    this.weatherIntensity = '0',
+                    this.cloudCoverage = '5',
+                    this.rainSnow = '0'
+                }
+                this.setWeatherType()
+            }else if(flag === 'snow'){
+                if(this.valueSliderSnow === 0){
+                    this.weatherStrong = 'lightSnow'
+                    this.weatherIntensity = '0.5',
+                    this.cloudCoverage = '5',
+                    this.rainSnow = '1'
+                }else if(this.valueSliderSnow === 1){
+                    this.weatherStrong = 'snow'
+                    this.weatherIntensity = '3.3',
+                    this.cloudCoverage = '6.5',
+                    this.rainSnow = '1'
+                }else if(this.valueSliderSnow === 2){
+                    this.weatherStrong = 'blizzard'
+                    this.weatherIntensity = '6.6',
+                    this.cloudCoverage = '8.5',
+                    this.rainSnow = '1'
+                }else if(this.valueSliderSnow === 3){
+                    this.weatherStrong = 'foggy'
+                    this.weatherIntensity = '0',
+                    this.cloudCoverage = '10',
+                    this.rainSnow = '0'
+                }
+                this.setWeatherType()
+            }
+        },
+        blurWind(){ // 设置风向风速
+            this.setWind()
+        },
+        setWind(){ // 风向
+            let params = {
+                taskId:this.taskId,
+                windIntensity:this.inputSpeedWind,
+                windDirection:this.inputWind
+            }
+            CHAILIAOAPI.SETWINDDIRECTIONANDSPEED(params).then(res=>{
+                if(res.data.code ===0){
+                    if(this.messageFlag){
+                        this.messageFlag = false;
+                        this.$message.success(res.data.message);
+                        this.messageChange()
+                    }
+                }else{
+                    this.$message.error(res.data.message)
+                }
+            }).catch(()=>{})
+        },
+        wetherMutex(flag){ // 天气互斥
+            if(flag === 'cloude'){
+                this.valueRain =false;
+                this.valueSnow =false;
+                this.valueFog =false;
+            }else if(flag === 'rain'){
+                this.valueCloude =false;
+                this.valueSnow =false;
+                this.valueFog =false;
+            }else if(flag === 'snow'){
+                this.valueCloude =false;
+                this.valueRain =false;
+                this.valueFog =false;
+            }else if(flag === 'fog'){
+                this.valueCloude =false;
+                this.valueRain =false;
+                this.valueSnow =false;
+            }
+        },
+        timeFromBack(val){ // 获取的时间进行转换
+            let first = Number(val.slice(0,2));
+            let last = Math.floor(Number(val.slice(3)) / 100 * 60)
+            return new Date(2023, 2, 6, first, last);
+        },
+        messageChange(){
+            setTimeout(()=>{
+                this.messageFlag = true;
+            },3000)
+        }
+    }
+}
+</script>
+
+<style lang="less" scoped>
+    .systemWeather{
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+          /*滚动条整体样式*/
+          width: 6px;
+          /*高宽分别对应横竖滚动条的尺寸*/
+          height: 1px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          /*滚动条里面小方块*/
+          border-radius: 10px;
+          background: rgba(0, 0, 0, 0.3);
+        }
+
+        &::-webkit-scrollbar-track {
+          /*滚动条里面轨道*/
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.295);
+        }
+        .weatherClassify{
+            width: 272px;
+            height: 300px;
+            margin: 0 0 14px 15px;
+            border-bottom: 1px solid #464646;
+            .selectGroup{
+                .singleSelect{  // 单选组
+                    display: flex;
+                    flex-direction: column;
+                    ::v-deep .el-radio{
+                        height: 49px;
+                        display: flex;
+                        align-items: center;
+                        margin-right:0;
+                        border-top: 1px solid #464646;
+                        .el-radio__inner{
+                            width: 16px;
+                            height: 16px;
+                            background-color: #24262B;
+                            border: 1px solid #9FAFC2;
+                        }
+                        .el-radio__input.is-checked{
+                            .el-radio__inner{
+                                background-color: #20C6FF;
+                            }
+                        }
+                    }
+                    .envirTemplate{ // 环境模板
+                        .templateBox{
+                            display: flex;
+                            align-items: center;
+                            .templateName{
+                                color: rgba(255,255,255,0.7);
+                            }
+                            .templateInfo{
+                                margin-left: 8px;
+                                ::v-deep .el-select{
+                                    width: 140px;  
+                                    .el-input__inner{
+                                        background-color: #24262B;
+                                        border: 1px solid #727272;
+                                        color: #fff;
+                                    }                               
+                                }
+                            }
+                        }
+                    }
+                    .solidBackground{ // 纯色背景
+                        .boxSolidBackground{
+                            display: flex;
+                            align-items: center;
+                            .solidName{
+                                color: rgba(255,255,255,0.7);
+                            }
+                            .colorBox{
+                                display: flex;
+                                align-items: center;
+                                width: 150px;
+                                height: 32px;
+                                padding-left: 2px;
+                                margin-left: 8px;
+                                background: #24262B;
+                                border-radius: 2px;
+                                border: 1px solid #727272;
+                                .selectColor{
+                                    width: 56px;
+                                    height: 32px;
+                                    ::v-deep .el-color-picker__trigger{
+                                        height: 32px;
+                                        width: 60px;
+                                        border: none;
+                                        .el-color-picker__color{
+                                            border: none;
+                                        }
+                                        .el-color-picker__icon{
+                                            color: rgba(255,255,255,0);
+                                        }
+                                    }
+                                    ::v-deep .el-color-picker__mask{
+                                        display: none;
+                                    }
+                                }
+                                .colorName{
+                                    width: 90px;
+                                    height: 28px;     
+                                    ::v-deep .el-input--mini .el-input__inner {
+                                        border: none;
+                                    }
+                                    ::v-deep .el-input__inner{
+                                        color: #fff;
+                                        background-color: rgba(0,0,0,0);
+                                        border: none;
+                                        padding: 0 0 0 8px;
+                                    }                  
+                                }
+                            }
+                            .resetColor{
+                                .resetColorIcon{
+                                    font-size: 18px;
+                                    color: #fff;
+                                    margin-left: 5px;
+                                }
+                            }
+                        }
+                    }
+                    .mySetting{ // 个性化
+                        ::v-deep .el-radio__label{
+                            color: rgba(255,255,255,0.7);
+                        }
+                    }
+                    ::v-deep .is-checked.envirTemplate {
+                        .templateName{
+                            color: #fff;
+                        }
+                    }
+                    ::v-deep .is-checked.solidBackground {
+                        .solidName{
+                            color: #fff;
+                        }
+                    }
+                    ::v-deep .is-checked.mySetting {
+                        .el-radio__label{
+                            color: #fff;
+                        }
+                    }
+                    
+                }
+                .boxTimeHour{ // 个性化时间设置
+                    width: 100%;
+                    height: 28px;
+                    margin-bottom: 24px;
+                    display: flex;
+                    font-size: 14px;
+                    color: rgba(255,255,255,0.7);
+                    .timeHour{
+                        width: 116px;
+                        height: 28px;
+                        display: flex;
+                        justify-content: space-between;
+                        margin-right: 16px;
+                        .hourName{
+                            width: 28px;
+                            height: 20px;
+                            margin: auto 0;
+                        }
+                        .selectTime{
+                            width: 80px;
+                            height: 28px;
+                            .picker{
+                                ::v-deep .el-input__inner{
+                                    width: 36%;
+                                    background-color: #24262B;
+                                    border: 1px solid #727272;
+                                    padding-right: 0;
+                                    color: #fff;
+                                }
+                            }
+                        }
+                    }
+                    .hourSpeed{
+                        width: 130px;
+                        height: 28px;
+                        display: flex;
+                        justify-content: space-between;
+                        .speedName{
+                            width: 28px;
+                            height: 20px;
+                            margin: auto 0;
+                        }
+                        .speedNumber{
+                            width: 50px;
+                            height: 28px;
+                            ::v-deep .el-input__inner{
+                                height: 28px;
+                                color: #fff;
+                                background-color: #24262B;
+                                border: 1px solid #727272;
+                                padding: 0 0 0 5px;
+                            }
+                        }
+                        .speedInfo{
+                            width: 42px;
+                            height: 18px;
+                            font-size: 12px;
+                            margin: auto 0;
+                        }
+                    }
+                }
+                .timeProgressBox{ // 时间轴
+                    width: 92%;
+                    height: 36px;
+                    margin: 0 0 16px 5px;
+                    ::v-deep .el-slider::after,
+                    ::v-deep .el-slider::before {
+                        display: block;
+                    }
+                    ::v-deep .el-slider__runway{
+                        background-color: #24262B;
+                        .el-slider__bar{
+                            background: linear-gradient(90deg, #C1EAFF 0%, #8ED1FF 100%);
+                        }
+                    }
+                    ::v-deep .el-slider__button{
+                        width: 10px;
+                        height: 10px;
+                        border: 2px solid #fff;
+                        background-color: #00C9FD;
+                    }
+                    ::v-deep .el-slider__marks-text{
+                        color: #fff;
+                    }
+                }
+                .dateTimeBox{ // 日期与纬度
+                    .dateTime{
+                        width: 148px;
+                        .selectDate{
+                            width: 112px;
+                            height: 28px;
+                            .picker{
+                                ::v-deep .el-input__inner{
+                                    width: 50%;
+                                }
+                            }
+                        }
+                    }
+                    .latitudeBox{
+                        width: 106px;
+                        .latitudeName{
+                            width: 34px;
+                        }
+                        .latitudeSelect{
+                            width: 60px;
+                        }
+                        .speedInfo.latitudeInfo{
+                            width: 6px;        
+                            margin: 0;          
+                        }
+                    }
+                }
+            }
+        }
+        .mainWeather{ // 天气
+            height: 306px;
+            width: 280px;
+            margin: 0 0 16px 7px;
+            .titleWeather{
+                box-sizing: border-box;
+                width: 100%;
+                height: 20px;
+                font-size: 14px;
+                color: #fff;
+                margin-bottom: 8px;
+                padding-left: 8px;
+            }
+            .cloude{ // 云
+                box-sizing: border-box;
+                width: 100%;
+                height: 90px;
+                background: rgba(51,51,51,0.7);
+                border-radius: 6px;
+                border: 1px solid #575A62;
+                padding: 8px 8px 0 8px;
+                margin-bottom: 6px;
+                .cloudeSelect{
+                    width: 100%;
+                    height: 24px;
+                    margin-bottom: 14px;
+                    display: flex;
+                    .imgCloude{
+                        width: 30px;
+                        height: 20px;
+                        margin: 2px 2px 0 0;
+                        img{
+                            width: 100%;
+                            height: 100%;
+                        }
+                    }
+                    .nameCloude{
+                        width: 40px;
+                        height: 20px;
+                        font-size: 14px;
+                        color: #fff;
+                        margin-top: 2px;
+                    }
+                    .switchCloude{
+                        width: 40px;
+                        height: 20px;
+                        margin-left: auto;
+                        margin-top: 0px;
+                    }
+                }
+                .cloudeProgress{
+                    ::v-deep .el-slider::after,
+                    ::v-deep .el-slider::before {
+                        display: block;
+                    }
+                    ::v-deep .el-slider__runway{
+                        background-color: #191a1c;
+                        .el-slider__bar{
+                            background: linear-gradient(90deg, #C1EAFF 0%, #8ED1FF 100%);
+                        }
+                    }
+                    ::v-deep .el-slider__button{
+                        width: 10px;
+                        height: 10px;
+                        border: 2px solid #fff;
+                        background-color: #00C9FD;
+                    }
+                    ::v-deep .el-slider__marks-text{
+                        color: #fff;
+                    }
+                }
+            }
+            .rain{
+                width: 100%;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                box-sizing: border-box;
+                background: rgba(51,51,51,0.7);
+                border-radius: 6px;
+                border: 1px solid #575A62;
+                padding: 0 8px;
+                margin-bottom: 6px;
+                .rainImage{
+                    width: 30px;
+                    height: 20px;
+                    margin-right: 2px;
+                    img{
+                        width: 100%;
+                        height: 100%;
+                    }
+                }
+                .rainName{
+                    width: 16px;
+                    height: 20px;
+                    font-size: 14px;
+                    color: #fff;
+                }
+                .rainSwitch{
+                    width: 40px;
+                    height: 20px;
+                    margin-left: auto;
+                }
+            }
+            .sonw{ // x雪
+                .imgCloude.imageSnow{
+                    width: 22px;
+                    height: 20px;
+                    margin-right: 11px;
+                }
+                .nameCloude.nameSnow{
+                    margin-top: 2px;
+                }
+                .progressSnow{
+                    ::v-deep .el-slider__marks .el-slider__marks-text:last-child{
+                        width: 30px;
+                        left: 98% !important;
+                    }
+                    ::v-deep .el-slider__marks .el-slider__marks-text:first-child{
+                        left: 2% !important;
+                    }
+                }
+            }
+            .rain.fog{  // 雾
+                margin-bottom: 0;
+                padding-left: 0;
+                .rainImage.fogImage{
+                    width: 40px;
+                    height: 24px;
+                    margin-right: 1px;
+                }
+            }
+        }
+        .wind{ // 风
+            box-sizing: border-box;
+            width: 272px;
+            height: 126px;
+            margin: 0 0 15px 15px;
+            padding-top: 15px;
+            border-top: 1px solid #464646;
+            border-bottom: 1px solid #464646;
+            .direction{
+                width: 100%;
+                height: 28px;
+                display: flex;
+                color: rgba(255,255,255,0.7);
+                font-size: 14px;
+                margin-bottom: 4px;
+                .windDirectin{
+                    width: 30px;
+                    height: 20px;
+                    margin: 4px 8px 0 0 ;
+                }
+                .windSpeed{
+                    width: 60px;
+                    height: 28px;
+                    margin-right: 6px;
+                    ::v-deep .el-input__inner{
+                        height: 28px;
+                        color: #fff;
+                        background-color: #24262B;
+                        border: 1px solid #727272;
+                        padding: 0 8px;
+                    }
+                }
+                .windInfo{
+                    width: 36px;
+                    height: 100%;
+                    color: #fff;
+                }
+            }
+            .remarks{
+                width: 220px;
+                height: 20px;
+                margin: 0 0 16px 39px;
+                font-size: 12px;
+                color: #FFBB48;
+            }
+            .direction.speed{
+                .speedNumber{
+                    line-height: 26px;
+                    font-size: 14px;
+                    color: rgba(255,255,255,0.7);
+                }
+            }
+        }
+        .contourLine{
+            width: 124px;
+            height: 22px;
+            margin: 0 0 8px 15px;
+            ::v-deep .el-checkbox__label{
+                color: #fff;
+            }
+            ::v-deep .el-checkbox__inner{
+                border: 1px solid #9FAFC2;
+                background-color: #24262B;
+            }
+            ::v-deep .el-checkbox__input.is-checked .el-checkbox__inner{
+                background-color: #409EFF;
+            }
+        }
+        // .lineColor{ // 轮廓线颜色
+        //     width: 200px;
+        //     height: 32px;
+        //     margin-left: 15px;
+        // }
+        .boxSolidBackground.lineColor{
+                            display: flex;
+                            align-items: center;
+                            margin-left: 15px;
+                            .solidName{
+                                color: #fff;
+                                font-size: 14px;
+                            }
+                            .colorBox{
+                                display: flex;
+                                align-items: center;
+                                width: 150px;
+                                height: 32px;
+                                padding-left: 2px;
+                                margin-left: 8px;
+                                background: #24262B;
+                                border-radius: 2px;
+                                border: 1px solid #727272;
+                                .selectColor{
+                                    width: 56px;
+                                    height: 32px;
+                                    ::v-deep .el-color-picker__trigger{
+                                        height: 32px;
+                                        width: 60px;
+                                        border: none;
+                                        .el-color-picker__color{
+                                            border: none;
+                                        }
+                                        .el-color-picker__icon{
+                                            color: rgba(255,255,255,0);
+                                        }
+                                    }
+                                }
+                                .colorName{
+                                    width: 90px;
+                                    height: 28px;     
+                                    ::v-deep .el-input--mini .el-input__inner {
+                                        border: none;
+                                    }
+                                    ::v-deep .el-input__inner{
+                                        color: #fff;
+                                        background-color: rgba(0,0,0,0);
+                                        border: none;
+                                        padding: 0 0 0 8px;
+                                    }                  
+                                }
+                            }
+                            .resetColor{
+                                .resetColorIcon{
+                                    font-size: 18px;
+                                    color: #fff;
+                                    margin-left: 5px;
+                                }
+                            }
+                        }
+    }
+</style>

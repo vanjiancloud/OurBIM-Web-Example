@@ -126,6 +126,70 @@ const CHAILIAOAPI = {
             }
         })
     },
+    // 设置天气颜色
+    SETWEATHERCOLOR: params => {
+        return request({
+            url: '/OurBim/setWeatherColor',
+            method: 'post',
+            params,
+        })
+    },
+    // 设置天气时间、时速
+    SETTIMEWEATHERTIMEANDTIMESPEED: params => {
+        return request({
+            url: '/weather/setWeatherTimeAndTimeSpeed',
+            method: 'post',
+            params,
+        })
+    },
+    // 设置太阳方位
+    SETSUNLIGHTDIRECTION: (params, data) => {
+        return request({
+            url: '/weather/setSunLightDirection',
+            method: 'post',
+            params,
+            data,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    },
+    // 设置天气
+    SETWEATHRTTYPE: (params, data) => {
+        return request({
+            url: '/weather/setWeatherType',
+            method: 'post',
+            params,
+            data,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    },
+    // 设置风向风速
+    SETWINDDIRECTIONANDSPEED: params => {
+        return request({
+            url: '/weather/setWindDirectionAndSpeed',
+            method: 'post',
+            params,
+        })
+    },
+    // 获取模型参数化天气信息
+    GETWEATHERPARAMS: params => {
+        return request({
+            url: '/weather/getWeatherParams',
+            method: 'get',
+            params,
+        })
+    },
+    // 获取当前天气的Id
+    GETCURRWEATHERID: params => {
+        return request({
+            url: '/weather/getCurrWeatherId',
+            method: 'get',
+            params,
+        })
+    },
 }
 
 export default CHAILIAOAPI

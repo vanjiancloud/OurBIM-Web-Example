@@ -21,6 +21,7 @@
     "less": "^4.1.0",
     "less-loader": "^7.3.0",
     "lib-flexible": "^0.3.2",
+    "moment": "^2.29.4",
     "postcss-px2rem": "^0.3.0",
     "qrcodejs2": "0.0.2",
     "qs": "^6.10.1",

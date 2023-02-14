@@ -57,6 +57,20 @@
         ></div>
       </div>
     </div>
+
+    <div class="systemDrawer">
+      <el-drawer
+          title="天气环境"
+          :visible="weatherDrawer"
+          @close="closeSystemDrawer"
+          direction="rtl"
+          :modal="false"
+          :size="drawerLeftSize"
+          :wrapperClosable="false"
+        >
+          <weatherSystem :appId="appId" :taskId="taskId"></weatherSystem>
+      </el-drawer>
+    </div>
     
     <!-- runTimeCode 1:mobile  0 ：PC  -->
     <div v-if="runTimeCode === 0">
@@ -381,7 +395,7 @@
                     </div> 
                   </div>
                 </div>
-                <div class="materEditMain" v-if="middleMaterInfo[0].nameInfo.length>0 && activeMater !== ''">
+                <div class="materEditMain" v-if="activeMater !== ''">
                     <div class="topEditMain">
                         <div class="yanse">
                             <div class="yanseName">颜色</div>
@@ -629,6 +643,7 @@ import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
 
 import { Getuserid } from "@/store/index.js"; // (自定义构件)
 import viewUpimg from "@/components/web_client/view_upImg.vue"; // （材质库）
+import weatherSystem from "@/components/web_client/weather_system.vue"; // 天气系统
 
 export default {
   name: "look_app",
@@ -644,6 +659,7 @@ export default {
     roamNavigate,
     viewPhoto,
     viewUpimg,
+    weatherSystem
   },
   data() {
     return {
@@ -804,6 +820,8 @@ export default {
       defaultUrl:null, // 识别本地与线上
       comPakId:'', // 材质编辑点击的构件的pakId
       pakAndAppid:[], 
+      weatherDrawer:false, // 天气抽屉
+      drawerLeftSize: 300, // 抽屉宽度
     };
   },
 
@@ -2199,10 +2217,21 @@ export default {
         this.updateOrder();
       }
       // 渲染环境
-      if (e.type === 9 && e.data !== undefined) {
-        this.handleState = 15;
+      // if (e.type === 9 && e.data !== undefined) {
+      //   this.handleState = 15;
+      //   this.listenTodoInfo = e;
+      //   this.updateOrder();
+      // }
+      // 天气系统
+      if(e.type === 9){
         this.listenTodoInfo = e;
-        this.updateOrder();
+        if(e.state === 1){
+          document.querySelector('.systemDrawer').style.display = 'block';
+          this.weatherDrawer = true
+        }else{
+          this.weatherDrawer = false
+          document.querySelector('.systemDrawer').style.display = 'none';
+        }
       }
       // 小地图
       if (e.type === 5) {
@@ -3426,8 +3455,13 @@ export default {
     // 材质信息改变
     materialInfoChange(){
       this.updateMateInfo();
-    }
+    },
     // 材质库 相关方法 end --------
+    // 关闭天气系统抽屉
+    closeSystemDrawer(){
+      this.weatherDrawer = false;
+      this.closePart(9);
+    }
   },
 };
 </script>
@@ -3494,7 +3528,7 @@ export default {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-
+  position: relative;
   .time-log {
     pointer-events: none;
     position: absolute;
@@ -3696,7 +3730,29 @@ export default {
       animation: dotPhone 3s infinite step-start;
     }
   }
-
+  // 天气抽屉
+  .systemDrawer{
+    width: 300px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    ::v-deep .el-drawer__wrapper{
+      width: 300px;
+      position: absolute !important;
+      .drawer__container{
+        width: 300px;
+      }
+      .el-drawer__header{
+        color: #fff;
+        padding: 16px 16px 0;
+        margin-bottom: 11px;
+      }
+    }
+    ::v-deep .el-drawer{
+      background: rgba(0, 0, 0, 0.9);
+    }
+  }
   // 视图层
   .mutual-bim {
     position: absolute;
