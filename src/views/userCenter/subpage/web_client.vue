@@ -3732,6 +3732,7 @@ export default {
   }
   // 天气抽屉
   .systemDrawer{
+    display: none;
     width: 300px;
     height: 100%;
     position: absolute;
