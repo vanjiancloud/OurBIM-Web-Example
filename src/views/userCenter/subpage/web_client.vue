@@ -395,7 +395,7 @@
                     </div> 
                   </div>
                 </div>
-                <div class="materEditMain" v-if="activeMater !== ''">
+                <div class="materEditMain" v-if="this.matParam.colorList.length > 0 && activeMater !== ''">
                     <div class="topEditMain">
                         <div class="yanse">
                             <div class="yanseName">颜色</div>
