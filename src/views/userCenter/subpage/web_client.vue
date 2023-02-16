@@ -2140,6 +2140,7 @@ export default {
       // 构件库
       if (e.type === 14) {
         this.listenTodoInfo = e;
+        document.querySelector('.systemDrawer').style.display = 'none'; // 关闭天气弹框
       }
       // 浏览器
       if (e.type === 10) {
@@ -2149,6 +2150,8 @@ export default {
       if (e.type === 11) {
         this.natureInfo = e;
         // e.state === 0 ? (this.memberInfo = null) : "";
+        document.querySelector('.systemDrawer').style.display = 'none'; // 关闭天气弹框
+        this.$refs.getFooter.editTool(9); // 关闭天气图标
       }
       // 框选
       if (e.type === 12) {
@@ -2228,6 +2231,8 @@ export default {
         if(e.state === 1){
           document.querySelector('.systemDrawer').style.display = 'block';
           this.weatherDrawer = true
+          this.natureInfo = null; // 关闭属性弹框
+          this.$refs.getFooter.editTool(11); // 关闭属性图标
         }else{
           this.weatherDrawer = false
           document.querySelector('.systemDrawer').style.display = 'none';
