@@ -3,7 +3,7 @@
       <div class="weatherClassify">
           <div class="selectGroup">
               <el-radio-group v-model="radio" class="singleSelect" @input="radioChange">
-                  <el-radio :label="0" class="envirTemplate">
+                  <el-radio :label="0" class="envirTemplate" v-if="weatherBin==='false'">
                       <div class="templateBox">
                           <div class="templateName">环境模板</div>
                           <div class="templateInfo" v-if="radio === 0">
@@ -18,7 +18,7 @@
                           </div>
                       </div>
                   </el-radio>
-                  <el-radio :label="1" class="solidBackground">
+                  <el-radio :label="1" class="solidBackground" v-if="weatherBin==='false'">
                       <div class="boxSolidBackground">
                           <div class="solidName">纯色背景</div>
                           <div class="colorBox" v-if="radio === 1">
@@ -337,20 +337,24 @@
               rainSnow:'0', // 雨雪比例
               messageFlag:true,
               onlyTwoIds:null, // 参数化天气 和 轮廓的id
+              weatherBin:'false',
           }
       },
       created(){
           this.getWeatherList();
+          this.weatherBin = this.$route.query.weatherBin
       },
       mounted(){
           this.changeColor(this.color1);
+          if(this.weatherBin === 'true'){
+           document.querySelector('.weatherClassify').style.height = '200px';
+          }
       },
       methods:{
           radioChange(val){
               if(val == 2){
                   this.changeWea(this.getTwoIds('parameter'));
               }else if(val == 0){
-                  console.log('vv222',this.valueTemplate);
                   if(this.valueTemplate){
                       this.changeWea(this.valueTemplate);
                   }else{
@@ -374,7 +378,6 @@
                       this.lessOptions = res.data.data.filter(item=>{
                           return (item.weatherName === '参数化天气' || item.weatherName === '轮廓线-可变背景色') ? false : true
                       })
-                      console.log('bbfgf',this.lessOptions);
                       this.getWeatherId(); // 获取当前天气
                   } else {
                       this.optionsTemplate = [];
@@ -383,7 +386,6 @@
           },
           valueChangeBtn(val){ // 选择天气改变时
               this.changeWea(val);
-              console.log('vv111',this.valueTemplate);
               // setTimeout(()=>{
                   // this.optionsTemplate.forEach(item=>{
                   //     if(item.id == val && item.weatherName === '参数化天气'){
@@ -409,7 +411,6 @@
               }
               CHAILIAOAPI.GETWEATHERPARAMS(params).then(res=>{
                   if(res.data.code === 0){
-                    console.log('获取');
                       let allData = res.data.data;
                       if(allData.timeAndTimeSpeed){
                           allData.timeAndTimeSpeed.forEach(item=>{

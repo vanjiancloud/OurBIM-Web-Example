@@ -1114,9 +1114,9 @@ export default {
         }
       });
       // gis 和 分享 要隐藏天气渲染
-      if(this.lockView === 'true' || this.lockView === undefined){
-        obj.weather = false;
-      }
+      // if(this.lockView === 'true' || this.lockView === undefined){
+      //   obj.weather = false;
+      // }
       this.showTodoIconObj = obj;
     },
     getComList() {
