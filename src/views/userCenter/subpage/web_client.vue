@@ -3266,7 +3266,7 @@ export default {
     addMaterialToUser(id,str){
       const {userId} = this.$route.query;
       let params = {
-        userId:userId,
+        userId:userId || 'travels',
         matId:id,
         isPublic: str ==='textureChange' ? false : true,
         baseColorTextureId:this.activeTexTurePerson
