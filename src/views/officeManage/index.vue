@@ -222,6 +222,7 @@ export default {
                this.docuList = []; 
             }else{
                this.docuList = res.data.data;
+               this.docuList = this.sortData(this.docuList)
             }
         }
      }).catch(()=>{})
@@ -409,6 +410,18 @@ export default {
           });
         });
     },
+    sortData(arr){ // 排序
+      // this.timeData.sort(this.compare());
+      arr.sort(function(a, b) {
+        let obj1 = a['addTime']
+        let obj2 = b['addTime']
+        const val1 = Math.floor(new Date(obj1).getTime() / 1000)
+        const val2 = Math.floor(new Date(obj2).getTime() / 1000)
+        return val2 - val1
+        // return val2 - val1
+      });
+      return arr
+    }
   },
   mounted() {
     
