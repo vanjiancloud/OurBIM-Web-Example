@@ -353,7 +353,11 @@
       methods:{
           radioChange(val){
               if(val == 2){
-                  this.changeWea(this.getTwoIds('parameter'));
+                if(this.weatherBin !== 'true'){
+                    this.changeWea(this.getTwoIds('parameter'));
+                }else{
+                    this.getWeatherParams('need');
+                }
               }else if(val == 0){
                   if(this.valueTemplate){
                       this.changeWea(this.valueTemplate);
@@ -378,7 +382,12 @@
                       this.lessOptions = res.data.data.filter(item=>{
                           return (item.weatherName === '参数化天气' || item.weatherName === '轮廓线-可变背景色') ? false : true
                       })
-                      this.getWeatherId(); // 获取当前天气
+                      if(this.weatherBin !== 'true'){
+                          this.getWeatherId(); // 获取当前天气
+                      }else{
+                            this.radio = 2
+                            this.getWeatherParams('none');
+                      }
                   } else {
                       this.optionsTemplate = [];
                   }
