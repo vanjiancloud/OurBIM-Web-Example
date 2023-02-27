@@ -156,7 +156,7 @@
                         <img src="../Layout/img/sun.png" alt="" />
                       </div>
                     </div>
-                    <div class="two">华北区、东北区</div>
+                    <div class="two">北方地区</div>
                     <div class="three">
                       <div>
                         <span class="first">
@@ -172,7 +172,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="box-p">
+                  <!-- <div class="box-p">
                     <div class="one">
                       <div class="one-c">
                         <img src="../Layout/img/niu.png" alt="" />
@@ -193,14 +193,14 @@
                         <span class="second">198&emsp;6771&nbsp;9871</span>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                   <div class="box-p">
                     <div class="one">
                       <div class="one-c">
                         <img src="../Layout/img/wan.png" alt="" />
                       </div>
                     </div>
-                    <div class="two">华东区</div>
+                    <div class="two">南方地区</div>
                     <div class="three">
                       <div>
                         <span class="first">
@@ -212,11 +212,11 @@
                         <span class="first">
                           <img src="../Layout/img/phone.png" alt="" />
                         </span>
-                        <span class="second">182&emsp;2229&nbsp;5737</span>
+                        <span class="second">186&emsp;2283&nbsp;7275</span>
                       </div>
                     </div>
                   </div>
-                  <div class="box-p">
+                  <!-- <div class="box-p">
                     <div class="one">
                       <div class="one-c">
                         <img src="../Layout/img/liu.png" alt="" />
@@ -237,7 +237,7 @@
                         <span class="second">186&emsp;2283&nbsp;7275</span>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                   <el-button slot="reference" class="btn">
                     <img src="./img/yuyue.png" alt="" />
                     <span>预约演示</span>
@@ -608,7 +608,7 @@ export default {
 
 <style lang="less">
 .el-popover {
-  width: 800px;
+  width: 400px;
   height: 240px;
   display: flex;
   justify-content: space-around;

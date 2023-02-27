@@ -906,7 +906,7 @@ export default {
         this.isProgress =false;
       }
     }
-    // 如果是 预启动项目就去掉遮罩层和加载进度
+  // 如果是 预启动项目就去掉遮罩层和加载进度
   //   if (this.$route.query.reserveId){
   //        this.isFade = false;
   //        this.isProgress =false;
