@@ -161,16 +161,6 @@ const routes = [
             title: '应用详情'
         }
     },
-    // 阿里云应用详情
-    {
-        path: '/cloudApp/web_client',
-        name: 'cloudApp-web_client',
-        component: () =>
-            import ('../../pages/cloudApp/web_client.vue'),
-        meta: {
-            title: '应用详情'
-        }
-    },
 ]
 
 const router = new VueRouter({
@@ -192,8 +182,6 @@ router.beforeEach(function(to, from, next) {
             to.path !== '/registerSucceed' &&
             to.path !== '/activateSucceed' &&
             to.path !== '/web_client' &&
-            to.path !== '/cloudApp/web_client' &&
-
             to.path !== '/'
         ) {
             next('/login')
