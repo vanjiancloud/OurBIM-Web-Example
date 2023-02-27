@@ -660,6 +660,7 @@
                           this.messageFlag = false;
                           this.$message.success(res.data.message);
                           this.messageChange()
+                          this.setWind(); // 风速 风向
                       }
                   }else{
                       this.$message.error(res.data.message)
@@ -938,7 +939,7 @@
           allRequest(){ // 个性化的全部请求
                   this.setSun();
                   this.setTimeAndSpeed();
-                  this.setWind();
+                //   this.setWind();
                   if(this.valueCloude){
                       this.strongChange('cloude')
                   }else if(this.valueRain){
