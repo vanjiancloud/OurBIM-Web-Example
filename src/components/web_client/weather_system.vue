@@ -645,7 +645,7 @@
           setWeatherType(){ // 设置天气类型
               let params = {
                   taskId:this.taskId,
-                //   weatherMode:this.weatherStrong
+                //   weatherMode:this.weatherStrong;
               }
               let weather ={
                   weatherBasicControls:{
