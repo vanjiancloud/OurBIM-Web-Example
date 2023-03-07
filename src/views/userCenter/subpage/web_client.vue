@@ -1547,6 +1547,10 @@ export default {
         this.leafInfo = e;
         e.data.activeSelect = 1;
       }
+      // 新增俩个属性放在最前面
+      if(e.data?.dynamicData?.length){
+        e.data.dynamicData = [{name:'构件ID',value:e.data.revitCode},{name:'构件名称',value:e.data.name}].concat(e.data.dynamicData)
+      }
       this.memberInfo = {
         type: e.data.haveChild === "0" ? 1 : 5,
         data: e.data,
@@ -2436,6 +2440,10 @@ export default {
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {
+            // 新增俩个属性放在最前面
+            if(realData.data?.dynamicData?.length){
+              realData.data.dynamicData = [{name:'构件ID',value:realData.data.revitCode},{name:'构件名称',value:realData.data.name}].concat(realData.data.dynamicData)
+            }
             this.memberInfo = {
               type: 1,
               data: realData.data || realData,
@@ -2459,19 +2467,24 @@ export default {
               this.$refs.getFooter.resetPointList(realData.object);
             }
           } else if (realData.id === "5") {
-            this.memberInfo = {
-              type: 5,
-            };
             let messageInfo = {
               prex: "ourbimMessage",
               type: 20002,
               message: "",
             };
-            let mm = realData.multipleDataList.map((item) => {
-              return JSON.parse(item[2].value);
-            });
+            // 多选构件
+            let changeSingle = realData.object.map(e=>{
+              let newData = []
+              e.forEach(e1=>{
+                let addData = [{name:'构件ID',value:e[0].value},{name:'构件名称',value:e[4].value}]
+                if(e1.key === 'data'){
+                  newData = [...addData,...JSON.parse(e1.value)]
+                }
+              })
+              return newData
+            })
 
-            let nn = this.flatten(mm);
+            let nn = this.flatten(changeSingle);
             this.memberInfo = {
               type: 5,
               data: {
