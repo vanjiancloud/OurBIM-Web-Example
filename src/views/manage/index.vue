@@ -592,6 +592,7 @@ import { Getuserid } from "@/store/index.js";
 import axios from "@/utils/request";
 import qs from "qs";
 import { updateJudgeMsg } from '../../api/my';
+import { urlToblob } from '@/utils/file.js'
 
 export default {
   name: "manage",
@@ -1158,20 +1159,18 @@ export default {
       this.$message.error("复制失败！");
     },
     // 复制二维码图片
-    copyImg(e) {
-      //nextTick,当前dom渲染完毕的回调
-      this.$nextTick(function () {
-        const selection = window.getSelection();
-        const range = document.createRange();
-        //复制前先清除粘贴板上的缓存
-        selection.removeAllRanges();
-        range.selectNode(this.$refs.foo); //传入dom
-        selection.addRange(range);
-        document.execCommand("copy"); //copy是复制
-        //复制后再清除缓存
-        selection.removeAllRanges();
-      });
-      this.$message.success("二维码复制成功！");
+    async copyImg() {
+      // 剪切板只有image/png格式才行，其他图片格式报错
+      urlToblob(this.formShare.qrurl,async (blob)=>{
+        const item = new ClipboardItem({
+          [blob.type]: blob
+        })
+        navigator.clipboard.write([item]).then(res=>{
+          this.$message.success("二维码复制成功！");
+        },err=>{
+          this.$message.error("二维码复制失败！",err);
+        })
+      })
     },
     visibleChange(e) {
       this.selectOprationItem = e;
