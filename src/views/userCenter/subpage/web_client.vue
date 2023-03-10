@@ -17,7 +17,7 @@
       id="show-bim"
     ></iframe>
     <!-- 遮罩层 -->
-    <div
+    <!-- <div
       class="hidden-bim"
       :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
       v-if="isFade"
@@ -56,7 +56,7 @@
           v-text="$t('webClient.loadBox.message[7]')"
         ></div>
       </div>
-    </div>
+    </div> -->
 
     <div class="systemDrawer">
       <el-drawer
