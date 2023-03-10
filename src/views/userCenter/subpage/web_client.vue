@@ -17,7 +17,7 @@
       id="show-bim"
     ></iframe>
     <!-- 遮罩层 -->
-    <div
+    <!-- <div
       class="hidden-bim"
       :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
       v-if="isFade"
@@ -56,7 +56,7 @@
           v-text="$t('webClient.loadBox.message[7]')"
         ></div>
       </div>
-    </div>
+    </div> -->
 
     <div class="systemDrawer">
       <el-drawer
@@ -548,7 +548,7 @@
           :propsProgress="propsProgress"
         ></progress-bar>
       </transition>
-
+<!-- 底部的工具栏 -->
       <todo-footer
         v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar"
         v-show="controllerInfo.tagUiBar"
@@ -619,6 +619,8 @@
       </div>
     </div>
     <EscDialogItem ref="EscDialogItem" />
+    <!-- 资源库 -->
+    <ResourcePool ref="ResourcePool" :taskId="taskId" v-if="taskId"/>
   </div>
 </template>
 
@@ -644,6 +646,8 @@ import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
 import { Getuserid } from "@/store/index.js"; // (自定义构件)
 import viewUpimg from "@/components/web_client/view_upImg.vue"; // （材质库）
 import weatherSystem from "@/components/web_client/weather_system.vue"; // 天气系统
+import ResourcePool from "@/components/web_client/resourcePool.vue"; // 资源库
+
 
 export default {
   name: "look_app",
@@ -659,7 +663,8 @@ export default {
     roamNavigate,
     viewPhoto,
     viewUpimg,
-    weatherSystem
+    weatherSystem,
+    ResourcePool
   },
   data() {
     return {
@@ -2145,6 +2150,9 @@ export default {
       if (e.type === 14) {
         this.listenTodoInfo = e;
         document.querySelector('.systemDrawer').style.display = 'none'; // 关闭天气弹框
+        if(this.taskId && this.controllerInfo.tagUiBar && ((this.listenTodoInfo && this.listenTodoInfo.type === 14 && this.listenTodoInfo.state === 1) || this.controllerInfo.componentLibrary)){
+          this.$refs.ResourcePool.show()
+        }
       }
       // 浏览器
       if (e.type === 10) {
@@ -4479,6 +4487,7 @@ export default {
 }
 </style>
 <style lang="less" >
+@import './index.less';
 .tree-content {
   .el-tree {
     background: none;

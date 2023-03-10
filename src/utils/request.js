@@ -11,7 +11,7 @@ import {
   Getuserid
 } from '@/store/index.js'
 
-// axios.defaults.baseURL = 'http://api.ourbim.com:11011/vjapi' //线上
+// axios.defaults.baseURL = 'https://api.ourbim.com:11022/vjapi' //线上
 
 // axios.defaults.baseURL = 'http://api.ourbim.com:21012/vjapi'
 // axios.defaults.baseURL = 'http://192.168.3.151:11011/vjapi'

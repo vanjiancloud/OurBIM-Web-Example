@@ -1,0 +1,40 @@
+
+/* 设置滚动条的样式 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+/* 滚动条滑块 */
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #505561;
+}
+.newDrawer {
+  width: 300px;
+  .el-drawer__header {
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #ffffff;
+      padding: 16px;
+      margin: 0;
+  }
+  .el-drawer {
+      background: rgba(16, 16, 16, 0.8);
+  }
+  // 输入框
+  .search{
+    margin: 0 16px 16px 16px;
+    .el-input__inner{
+      background: #28292E;
+      border-radius: 14px;
+      border: 0;
+      color: #ffffff;
+      padding: 0 45px;
+    }
+    .el-input__prefix{
+      font-size: 20px;
+      left: 14px;
+    }
+  }
+}
