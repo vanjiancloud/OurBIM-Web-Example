@@ -17,7 +17,7 @@
       id="show-bim"
     ></iframe>
     <!-- 遮罩层 -->
-    <!-- <div
+    <div
       class="hidden-bim"
       :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
       v-if="isFade"
@@ -56,7 +56,7 @@
           v-text="$t('webClient.loadBox.message[7]')"
         ></div>
       </div>
-    </div> -->
+    </div>
 
     <div class="systemDrawer">
       <el-drawer
@@ -2523,6 +2523,7 @@ export default {
               this.propsProgress.data < 100
             ) {
               this.propsProgress.data = progress;
+              
               if (progress === 100) {
                 // 定位主视图
                 setTimeout(() => {
@@ -2531,6 +2532,7 @@ export default {
                     action: "cameraPosAll",
                   });
                 }, 1000);
+                this.isFade = false
                 // let params = {
                 //   taskId: this.taskId,
                 // };
