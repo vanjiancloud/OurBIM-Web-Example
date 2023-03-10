@@ -2528,6 +2528,8 @@ export default {
               this.propsProgress.data < 100
             ) {
               this.propsProgress.data = progress;
+              // id为8的时候进度条大于0就隐藏第一层遮罩层
+              this.isFade = false               
               if (progress === 100) {
                 // 定位主视图
                 setTimeout(() => {
@@ -2536,7 +2538,6 @@ export default {
                     action: "cameraPosAll",
                   });
                 }, 1000);
-                this.isFade = false
                 // let params = {
                 //   taskId: this.taskId,
                 // };
