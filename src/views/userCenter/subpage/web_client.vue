@@ -17,7 +17,7 @@
       id="show-bim"
     ></iframe>
     <!-- 遮罩层 -->
-    <!-- <div
+    <div
       class="hidden-bim"
       :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
       v-if="isFade"
@@ -56,7 +56,7 @@
           v-text="$t('webClient.loadBox.message[7]')"
         ></div>
       </div>
-    </div> -->
+    </div>
 
     <div class="systemDrawer">
       <el-drawer
@@ -869,10 +869,10 @@ export default {
     let timerTime = null;
     timerTime = setInterval(()=>{
       // 大于85 和 节点已达到最大时 就停止定时器---
-      if(this.propsProgress.loadData > 85 || this.maxNodes === true){
-         clearInterval(timerTime);
+      if(this.propsProgress.loadData > 90 || this.maxNodes === true){
+        clearInterval(timerTime);
       }
-      if(this.propsProgress.loadData <= 85 && this.maxNodes === false){
+      if(this.propsProgress.loadData <= 90 && this.maxNodes === false){
         this.propsProgress.loadData += 5;
       }
      },300);                
@@ -2432,12 +2432,14 @@ export default {
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
+        
         // 没有遮罩或者加载进度的时候 发指令去掉toll
         if(this.isFade === false || this.isProgress === false){
           this.sendToIframe(10200,'false',"");
         }
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
+          console.log('🚀🚀🚀',realData);
           this.socketData = realData;
           if (realData.id === "1") {
             // 新增俩个属性放在最前面
@@ -2492,7 +2494,10 @@ export default {
               },
             };
             this.sentParentIframe(messageInfo);
-          } else if (realData.id === "7") {
+          } else if(realData.id === "6"){
+            this.isFade = false
+          } 
+          else if (realData.id === "7") {
             this.memberInfo = null;
             this.activeLeaf = false;
             let messageInfo = {
@@ -2523,7 +2528,6 @@ export default {
               this.propsProgress.data < 100
             ) {
               this.propsProgress.data = progress;
-              
               if (progress === 100) {
                 // 定位主视图
                 setTimeout(() => {
