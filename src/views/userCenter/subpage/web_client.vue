@@ -445,9 +445,9 @@
                                       <div class="editInfoListName">{{ listItem.label }}</div>
                                       <div class="editInfoListNum">
                                         <el-slider @change="materialInfoChange" v-model="listItem.paramValue"
-                                        :max="listItem.label==='角度' ? 360 : ((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 2 : ((listItem.label==='横向偏移' || listItem.label==='纵向偏移') ? 1 : 100))"
-                                        :min="listItem.label==='凹凸比例' ? -100 : ((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 0.01 : (listItem.label==='亮度' ? 1 : 0))"
-                                        :step="(listItem.label==='横向偏移' || listItem.label==='纵向偏移') ? 0.1 :((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 0.01 : 1)"
+                                        :max="Number(listItem.max)"
+                                        :min="Number(listItem.min)"
+                                        :step="(listItem.label==='横向偏移' || listItem.label==='纵向偏移' || listItem.label==='透明度') ? 0.1 :((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 0.01 : 1)"
                                         ></el-slider>
                                       </div>
                                       <div class="editInfoListPercent">{{listItem.paramValue + (listItem.label==='角度' ? '°' :  '')}}</div>
@@ -550,7 +550,7 @@
       </transition>
 <!-- 底部的工具栏 -->
       <todo-footer
-        v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar"
+        v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar && !isFade"
         v-show="controllerInfo.tagUiBar"
         ref="getFooter"
         @listenTodo="listenTodo"
@@ -874,10 +874,10 @@ export default {
     let timerTime = null;
     timerTime = setInterval(()=>{
       // 大于85 和 节点已达到最大时 就停止定时器---
-      if(this.propsProgress.loadData > 85 || this.maxNodes === true){
-         clearInterval(timerTime);
+      if(this.propsProgress.loadData > 90 || this.maxNodes === true){
+        clearInterval(timerTime);
       }
-      if(this.propsProgress.loadData <= 85 && this.maxNodes === false){
+      if(this.propsProgress.loadData <= 90 && this.maxNodes === false){
         this.propsProgress.loadData += 5;
       }
      },300);                
@@ -2440,6 +2440,7 @@ export default {
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
+        
         // 没有遮罩或者加载进度的时候 发指令去掉toll
         if(this.isFade === false || this.isProgress === false){
           this.sendToIframe(10200,'false',"");
@@ -2500,7 +2501,10 @@ export default {
               },
             };
             this.sentParentIframe(messageInfo);
-          } else if (realData.id === "7") {
+          } else if(realData.id === "6"){
+            this.isFade = false
+          } 
+          else if (realData.id === "7") {
             this.memberInfo = null;
             this.activeLeaf = false;
             let messageInfo = {
@@ -2531,6 +2535,8 @@ export default {
               this.propsProgress.data < 100
             ) {
               this.propsProgress.data = progress;
+              // id为8的时候进度条大于0就隐藏第一层遮罩层
+              this.isFade = false               
               if (progress === 100) {
                 // 定位主视图
                 setTimeout(() => {
