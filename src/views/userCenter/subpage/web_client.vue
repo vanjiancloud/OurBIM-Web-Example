@@ -445,9 +445,9 @@
                                       <div class="editInfoListName">{{ listItem.label }}</div>
                                       <div class="editInfoListNum">
                                         <el-slider @change="materialInfoChange" v-model="listItem.paramValue"
-                                        :max="listItem.label==='角度' ? 360 : ((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 2 : ((listItem.label==='横向偏移' || listItem.label==='纵向偏移') ? 1 : 100))"
-                                        :min="listItem.label==='凹凸比例' ? -100 : ((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 0.01 : (listItem.label==='亮度' ? 1 : 0))"
-                                        :step="(listItem.label==='横向偏移' || listItem.label==='纵向偏移') ? 0.1 :((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 0.01 : 1)"
+                                        :max="Number(listItem.max)"
+                                        :min="Number(listItem.min)"
+                                        :step="(listItem.label==='横向偏移' || listItem.label==='纵向偏移' || listItem.label==='透明度') ? 0.1 :((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 0.01 : 1)"
                                         ></el-slider>
                                       </div>
                                       <div class="editInfoListPercent">{{listItem.paramValue + (listItem.label==='角度' ? '°' :  '')}}</div>
@@ -2439,7 +2439,6 @@ export default {
         }
         if (e.data.length > 20) {
           let realData = JSON.parse(e.data);
-          console.log('🚀🚀🚀',realData);
           this.socketData = realData;
           if (realData.id === "1") {
             // 新增俩个属性放在最前面
