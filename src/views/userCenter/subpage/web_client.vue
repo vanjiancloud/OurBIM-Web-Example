@@ -620,7 +620,7 @@
     </div>
     <EscDialogItem ref="EscDialogItem" />
     <!-- 资源库 -->
-    <ResourcePool ref="ResourcePool" :taskId="taskId" v-if="taskId"/>
+    <ResourcePool ref="ResourcePool" :taskId="taskId" :userId="$route.query.userId" v-if="taskId"/>
   </div>
 </template>
 

@@ -3,11 +3,12 @@
   <el-drawer
     title="资源库"
     :visible.sync="drawer"
+    v-if="drawer"
     direction="ltr"
     :modal="false"
     :wrapperClosable="false"
     :size="300"
-    @closed="close"
+    :before-close="close"
     class="newDrawer"
   >
     <Tab v-show="levelName.level ===1" :data="tabList" @onTab="onTab" />
@@ -24,16 +25,20 @@
         prefix-icon="el-icon-search"
       >
       </el-input>
+      <el-button v-if="levelName.tab1Index ===2" class="button" type="primary" icon="el-icon-plus" size="mini" @click="createGroup">新建分组</el-button>
     </div>
     <Tab v-show="levelName.level ===1" class="roundTab" :data="typeList" @onTab="onTypeTab" />
     <!-- 内容资源 -->
     <div class="content">
       <div class="contentItem" v-for="(item,index) in (levelName.level ===2 ? contentLevel2ListPage:contentList[levelName.tab2Index])" :key="index" @click="toLevel2(item)">
-        <img :src="item.comUrl" :onerror="errorImg"/>
+        <el-image class="img" :src="item.comUrl" lazy></el-image>
         <div>{{item.comName}}</div>
       </div>
     </div>
+    <!-- 二级才显示分页 -->
     <Pagination v-show="levelName.level ===2" :total="contentLevel2List.length" :page="pages.page" :pageSize="pages.pageSize" @pagination="pagination"  />
+    <!-- 创建分组，上传贴图 -->
+    <DialogChartlet ref="DialogChartlet"/>
   </el-drawer>
 </template>
 
@@ -42,12 +47,16 @@ import CHAILIAOAPI from "@/api/material_api";
 import MODELAPI from "@/api/model_api";
 import COMPONENTLIBRARY from "@/api/component-library";
 import Tab from "@/components/Tab/index.vue";
-import Pagination from "@/components/Pagination/index.vue"
+import Pagination from "@/components/Pagination/index.vue";
+import DialogChartlet from "@/components/web_client/DialogChartlet.vue"; // 上传贴图弹框
 export default {
-  components: { Tab, Pagination },
+  components: { Tab, Pagination, DialogChartlet },
   props: {
     taskId:{
       type: String,
+    },
+    userId:{
+      type: [String,Number],
     }
   },
   data() {
@@ -65,9 +74,6 @@ export default {
         },
       ],
       typeList: [
-      {
-          name: "全部",
-        },
         {
           name: "公共库",
         },
@@ -84,22 +90,26 @@ export default {
         page: 1, //分页，第几页
         pageSize:18
       },
-      errorImg:'this.src="' + require('@/assets/failed.png') + '"',
     };
   },
   watch: {},
   computed: {},
   created() {},
+  mounted() {
+    
+  },
   methods: {
     show() {
-      this.data = this.$options.data()
       this.drawer = true;
       this.content()
     },
-    hide() {
+    hide() { 
+      Object.assign(this.$data, this.$options.data())
       this.drawer = false;
+      
     },
     close() {
+      Object.assign(this.$data, this.$options.data())
       this.$parent.closePart(14);
     },
     // 点击tab
@@ -107,11 +117,13 @@ export default {
       this.levelName.tabName = e.name
       this.levelName.tab1Index = e.index
       this.contentList = []
+      this.typeList = this.$options.data().typeList
       switch (e.index) {
         case 0:
           this.content()
           break;
         case 1:
+          this.typeList = this.typeList.slice(0,1)
           this.getMaterials()
           break;
         case 2:
@@ -170,7 +182,6 @@ export default {
       let selfList = (await MODELAPI.GETALLCOM({userId})).data.data;
       selfList = selfList.length && selfList[0].data.map(e=>{return { comUrl:e.data?.[0].ourbimComponentInfo.comUrl,comName:e.groupName,rsComponent:e.data,...e }});
       this.contentList = [
-        publicList.concat(selfList),
         publicList,
         selfList
       ]
@@ -179,12 +190,10 @@ export default {
     // 材质库
     getMaterials(){
       CHAILIAOAPI.GETOURBIMMATERIALGROUP({taskId:this.taskId}).then((res)=>{
-        console.log('🚀🚀🚀',res.data.data);
         let publicList = res.data.data.map(e=>{
           return { comUrl:e.matImgPath,comName:e.groupName,...e }
         })
         this.contentList = [
-          publicList,
           publicList
         ]
       })
@@ -194,6 +203,9 @@ export default {
       this.pages.page = e.pageIndex
       this.pages.pageSize = e.pageSize
       this.contentLevel2ListPage = this.contentLevel2List.slice((e.pageIndex - 1)*e.pageSize,e.pageIndex*e.pageSize)
+    },
+    createGroup(){
+      this.$refs.DialogChartlet.show()
     }
   },
 };
@@ -228,7 +240,7 @@ export default {
     padding: 10px;
     cursor: pointer;
     box-sizing: border-box;
-    img{
+    .img{
       width: 100%;
       height: 85px;
       object-fit: fill;
