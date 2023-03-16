@@ -395,22 +395,21 @@
                     </div> 
                   </div>
                 </div>
-                <div class="materEditMain" v-if="this.matParam.colorList.length > 0 && activeMater !== ''">
+                <div class="materEditMain" v-if="matParam.colorList&&matParam.colorList.length&& activeMater !== ''">
                     <div class="topEditMain">
                         <div class="yanse">
                             <div class="yanseName">颜色</div>
                             <div class="yanseBody">
-                              <el-color-picker class="colorSelect" color-format="rgb" v-model="color1" @change="colorBeChange"></el-color-picker>
+                              <el-color-picker class="colorSelect" show-alpha v-model="color1" @change="colorBeChange"></el-color-picker>
                               <i class="el-icon-arrow-down plusIcon" v-if="!color1"></i>
                             </div>
                         </div>
                         <div class="yanse">
                             <div class="yanseName">贴图</div>
                             <div class="yanseBody stickPic" @click="photoStore" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === true}">
-                              <!-- <img :src="this.texturePicture ? this.texturePicture : require('@/assets/logo.png')" alt="" :style="{'width':'100%','height':'100%'}"> -->
-                              <img v-if="texturePicture" :src="this.texturePicture" alt="" :style="{'width':'100%','height':'100%'}">
+                              <img v-if="matParam.texturesList[texturesListIndex]&&matParam.texturesList[texturesListIndex].paramValue" :src="matParam.texturesList[texturesListIndex]&&matParam.texturesList[texturesListIndex].paramValue" alt="" :style="{'width':'100%','height':'100%'}">
                               <i v-else class="el-icon-plus plusIcon"></i>
-                              <div class="deleteIcon" @click.stop="deleteStickPic" v-if="this.texturePicture"><i class="el-icon-delete"></i></div>
+                              <div class="deleteIcon" @click.stop="deleteStickPic" v-if="matParam.texturesList[texturesListIndex]&&matParam.texturesList[texturesListIndex].paramValue"><i class="el-icon-delete"></i></div>
                             </div>
                         </div>
                     </div>
@@ -428,6 +427,8 @@
                                   v-for="listItem in item.nameInfo"
                                   :key="listItem.index"
                                 >  
+                                <!-- enableEdit=false不显示不可编辑,目前看到json里面返回的显示没有这个字段 -->
+                                <template v-if="!listItem.hasOwnProperty('enableEdit')||listItem.enableEdit!='false'">
                                   <div class="editInfoList" v-if="listItem.label === '等比缩放'">
                                       <div class="editInfoListName">{{ listItem.label }}</div>
                                       <div class="editInfoListNum">
@@ -452,6 +453,7 @@
                                       </div>
                                       <div class="editInfoListPercent">{{listItem.paramValue + (listItem.label==='角度' ? '°' :  '')}}</div>
                                   </div>
+                                </template>
                                 </div>
                           </el-collapse-item>
                         </el-collapse>
@@ -811,8 +813,6 @@ export default {
       matParam:{}, // 材质的部分信息
       activeTexTurePerson:'', // 贴图库个人库
       // materialMatId:'', // 选中材质编辑的材质的matId
-      texturePicture:'', // 贴图图片
-      mapNormal:'', // 法线图片
       spread:[], // 材质参数折叠面板展开
       spreadPerson:[], // 贴图库折叠面板展开
       materialAllInfo:{}, // 构件某材质全部信息
@@ -822,6 +822,7 @@ export default {
       pakAndAppid:[], 
       weatherDrawer:false, // 天气抽屉
       drawerLeftSize: 300, // 抽屉宽度
+      texturesListIndex:0,//贴图
     };
   },
 
@@ -3218,13 +3219,7 @@ export default {
           this.$set(this.middleMaterInfo[0],'nameInfo',this.strToNumber(this.matParam.textureParamsList,'texture'))
           this.$set(this.middleMaterInfo[1],'nameInfo',this.strToNumber(this.matParam.baseParamsList))
           this.color1 = this.arrToRgb(this.matParam.colorList.length>0 ? this.matParam.colorList[0].paramValue : []);
-          this.matParam.texturesList.forEach(item=>{
-            if(item.paramName === 'BaseColorMap'){
-              this.texturePicture = item.paramValue;
-            }else if(item.paramName === 'NormalMap'){
-              this.mapNormal = item.paramValue;
-            }
-          })
+          this.texturesListIndex = this.matParam.texturesList.findIndex(e=>{return e.paramName==='BaseColorMap'})
           this.spreadCircle(this.middleMaterInfo,'0'); // 折叠面板
           if(this.activePub !== ''){
             this.addMaterialToUser(res.data.data.matId); // 添加材质到用户库
@@ -3256,18 +3251,7 @@ export default {
           matParam:
           {
             matId:this.getActiveMatid(this.activeMater),
-            baseParamsList:this.matParam.baseParamsList,
-            colorList:[
-              {
-                ParamName:this.matParam.colorList[0].paramName, // 颜色
-                ParamValue:this.rgbChangeArr(this.color1)
-              }
-            ],
-            textureParamsList:this.matParam.textureParamsList,
-            texturesList:[
-              {paramName: 'BaseColorMap', paramValue: this.texturePicture},
-              {paramName: 'NormalMap', paramValue: this.mapNormal}
-            ]
+            ...this.matParam
           }
         }
       ]
@@ -3290,22 +3274,7 @@ export default {
         isPublic: str ==='textureChange' ? false : true,
         baseColorTextureId:this.activeTexTurePerson
       }
-      let temp = 
-        {
-            baseParamsList:this.matParam.baseParamsList,
-            colorList:[
-              {
-                ParamName:this.matParam.colorList[0].paramName, // 颜色
-                ParamValue:this.rgbChangeArr(this.color1)
-              }
-            ],
-            textureParamsList:this.matParam.textureParamsList,
-            texturesList:[
-              {paramName: 'BaseColorMap', paramValue: this.texturePicture},
-              {paramName: 'NormalMap', paramValue: this.mapNormal}
-            ]
-        }
-      CHAILIAOAPI.ADDMATERIALFORUSER(params,JSON.stringify(temp)).then((res)=>{
+      CHAILIAOAPI.ADDMATERIALFORUSER(params,JSON.stringify(this.matParam)).then((res)=>{
             if(res.data.code === 0){
               this.exchangeMater(res.data.data); // 替换材质
             }
@@ -3318,7 +3287,8 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(async () => {
-          this.texturePicture = '';
+          this.matParam.texturesList[this.texturesListIndex].paramValue = ''
+          this.$forceUpdate()
           this.updateMateInfo('reset');
         }).catch(() => {
           this.$message({
@@ -3386,23 +3356,11 @@ export default {
     colorBeChange(e){
       this.updateMateInfo();
     },
-    rgbChangeArr (value) {// rgb()数字转为数组
-      if(value){
-        var arr = []
-        const str = value.slice(4)
-        const str1 = str.slice(0, str.length - 1)
-        arr = str1.split(',')
-        arr.push('255')
-        return arr
-      }else{
-        return []
-      }
-    },
     // 数组变rgb
     arrToRgb(arr){
       let str = '';
       if(arr.length>0){
-        str = `rgb(${arr[0]},${arr[1]},${arr[2]})`
+        str = `rgba(${arr[0]},${arr[1]},${arr[2]},${arr[3]})`
       }else{
         str = null
       }
