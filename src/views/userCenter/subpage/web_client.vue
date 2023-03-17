@@ -415,7 +415,6 @@
                     </div>
                     <div class="bottomEditMain">
                         <el-collapse
-                          accordion
                           v-model="spread"
                           v-for="(item,index) in middleMaterInfo"
                           :key="item.id"
