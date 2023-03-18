@@ -8,7 +8,7 @@
             :on-success="handleAvatarSuccess"
             :on-change="changeFile"
             :before-upload="beforeAvatarUpload">
-            <img v-if="imageUrl" :src="imageUrl" class="avatar">
+            <img v-if="value" :src="value" class="avatar">
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
         </el-upload>
     </div>
@@ -17,12 +17,22 @@
 <script>
 import axios from "@/utils/request";
 export default {
+    model: {
+      prop: 'value',
+      event: 'input'
+    },
+    props:['value'],
     data() {
       return {
         imageUrl: '',
         baseURL: axios.defaults.baseURL,
         uploadFiles:''  // formData 文件
       };
+    },
+    watch: {
+      imageUrl(val) {
+        this.$emit('input', val)
+      }
     },
     methods: {
         changeFile(file, fileList) {

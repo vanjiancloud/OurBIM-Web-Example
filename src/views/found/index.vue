@@ -52,10 +52,12 @@
                 <span v-else>{{ scope.row.ourbimComponentInfo.comId }}</span>
             </template>
         </el-table-column>
-        <el-table-column :label="$t('uploaddate')" width="130">
+        <el-table-column :label="$t('uploaddate')" width="130" v-if="breadArr.length" key="0">
           <template slot-scope="scope">
-            <span v-if="scope.row.isGroup === '1'">-</span>
-            <span v-else>{{ scope.row.ourbimComponentInfo.createTime }}</span>
+            {{ nextBreadFlag }}
+            <!-- <span v-if="scope.row.isGroup === '1'">-</span> -->
+            <!-- <span v-else>{{ scope.row.ourbimComponentInfo.createTime }}</span> -->
+            {{ scope.row.ourbimComponentInfo&&scope.row.ourbimComponentInfo.createTime }}
           </template>
         </el-table-column>
         <el-table-column prop="" label="项目类型" width="150">
@@ -65,7 +67,7 @@
           </template>
         </el-table-column>
      
-        <el-table-column :label="$t('state')" width="150">
+        <el-table-column :label="$t('state')" width="150" v-if="breadArr.length" key="1">
           <template slot-scope="scope">
             <div v-if=" scope.row.isGroup=== '1'">-</div>
             <div v-else>
@@ -144,10 +146,10 @@
           <el-input v-model="editForm.name"></el-input>
         </el-form-item>
         <el-form-item label="缩略图:" label-width="100px" v-if="breadArr.length !== 0">
-          <uploadComImg ref="uploadPhoto" @fromSonFile="fromSonFile"></uploadComImg>
+          <uploadComImg v-model="editForm.comUrl" ref="uploadPhoto" @fromSonFile="fromSonFile"></uploadComImg>
         </el-form-item>
-        <el-form-item label="换组:" label-width="100px" class="btnMore">
-          <el-select v-model="selectVal" placeholder="请选择分组" size="mini" ref="select" @clear="clearValue"  @visible-change="canChange" clearable :disabled="breadArr.length === 0 ? true : false">
+        <el-form-item label="换组:" label-width="100px" class="btnMore" v-if="breadArr.length">
+          <el-select v-model="selectVal" placeholder="请选择分组" size="mini" ref="select" @clear="clearValue" clearable :disabled="!breadArr.length">
              <el-option hidden key="id" :value="selectVal" :label="selectName"></el-option>
              <el-tree
               :data="treeData"
@@ -211,6 +213,7 @@ export default {
         editComDialog:false,   // 编辑自定义构件弹框
         editForm:{  // 编辑弹框数据
           name:'',
+          comUrl: ''
         },
         icon:'el-icon-arrow-down',
         selectVal:'',  // select框的绑定值
@@ -389,6 +392,9 @@ export default {
       console.log('edit',e);
       this.editComDialog = true;
       this.editForm.name = e.isGroup === '1' ? e.groupName : e.ourbimComponentInfo.comName;
+      this.editForm.comUrl = e.ourbimComponentInfo.comUrl
+      this.selectVal = e.parentId;
+      this.canChange()
     },
     // 关闭自定义构件弹框
     closeEditCom(){
@@ -534,16 +540,16 @@ export default {
     },
 
     canChange(e){
-      if(e === true){
         let params = {
           userId:Getuserid()
         }
         MODELAPI.GETALLCOM(params).then((res)=>{
           if(res.data.code === 0){
             this.treeData = this.delDataFn(res.data.data[0].data);
+            let findArr = this.treeData.filter(e=>{return e.id === this.selectVal})
+            this.selectName = findArr.length&&findArr[0].groupName
           }
         });
-      }
     },
     // 树形数据结构过滤函数
     delDataFn(arr) {
@@ -565,12 +571,6 @@ export default {
 
     // -----------
 
-  },
-  mounted() {
-    
-  },
-  watch: {
-    
   },
   beforeDestroy(){
     clearInterval(this.timerComp);

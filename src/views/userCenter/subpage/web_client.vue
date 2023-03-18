@@ -2431,13 +2431,13 @@ export default {
        */
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
-      this.websock.onmessage = (e) => {
-        
+      this.websock.onmessage = (e) => {      
         // 没有遮罩或者加载进度的时候 发指令去掉toll
         if(this.isFade === false || this.isProgress === false){
           this.sendToIframe(10200,'false',"");
         }
         if (e.data.length > 20) {
+          this.isFade = false 
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {

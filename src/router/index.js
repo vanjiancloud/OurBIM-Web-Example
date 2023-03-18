@@ -54,7 +54,7 @@ const routes = [
                 path: 'found',
                 component: found,
                 meta: {
-                    title: '创建项目'
+                    title: 'BIM构件库'
                 }
             },
             {
