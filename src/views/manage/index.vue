@@ -776,7 +776,7 @@ export default {
   },
   created() {
     this.GetList();
-    // this.setGetdataIn();
+    this.setGetdataIn();
   },
   methods: {
     // 是否预启动
@@ -1041,13 +1041,13 @@ export default {
     },
 
     // // 定时器每隔一秒获取数据
-    // setGetdataIn() {
-    //   this.timer = setInterval(() => {
-    //     if (this.timerFlag) {
-    //       this.GetList();
-    //     }
-    //   }, 2500);
-    // },
+    setGetdataIn() {
+      this.timer = setInterval(() => {
+        if (this.timerFlag) {
+          this.GetList();
+        }
+      }, 2500);
+    },
 
     // 分页
     handlePageChange(data) {
@@ -1077,7 +1077,7 @@ export default {
           if (res.data.code == "0") {
             this.total = res.data.data.total
             this.itemList = res.data.data.list;
-            this.reverse();
+            // this.reverse();
             this.appid = res.data.data.appid;
             this.maxInstance = res.data.data.maxInstance;
             this.currentInstance = res.data.data.currentInstance;
