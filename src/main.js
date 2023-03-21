@@ -5,7 +5,7 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 // 引入全局样式
-import './assets/css/global.css'
+import '@/assets/css/global.less'
 // 引入less
 import less from 'less'
 // 引入复制链接插件
@@ -509,6 +509,9 @@ const i18n = new VueI18n({
     })
     // 把echarts放到原型上
 Vue.prototype.$echarts = echarts
+
+import onlyNumber from '@/directive/num'
+Vue.use(onlyNumber)
 
 
 new Vue({
