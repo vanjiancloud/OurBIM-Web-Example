@@ -404,7 +404,9 @@
           >
             <el-card class="box-card">
                 <div v-for="(itemm,i) in sonAppValue" :key="i" class="text item clearfix">
-                  <td class="wordEllipsis">{{itemm}}</td>
+                  <el-tooltip class="item" effect="dark" :content="itemm" placement="top">
+                    <td class="wordEllipsis">{{itemm}}</td>
+                  </el-tooltip>
                   <td :class="sonAppValue.length <= 2 ? 'td yinc bind' : 'td yinc'" @click="delRow(sonAppKey[i])" >移除</td>
                   <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">m</span></td>
                   <td class="td"><el-input class="elinput" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" v-model="altitude[i]" type=number placeholder="海拔高度"></el-input></td>
