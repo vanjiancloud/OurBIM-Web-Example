@@ -77,7 +77,11 @@ export default {
             }
         },
         httpRequest(param) {
-            if (!param.file) return this.$message.warning("请上传文件");
+            this.$notify({
+                title: "警告",
+                message: "正在上传，上传过程请勿关闭或刷新页面!",
+                type: "warning",
+            });
             // 接口不是统一的，emit回去调用
             this.loading = true;
             this.$emit("getFile", param.file, (data) => {
@@ -109,11 +113,9 @@ export default {
             });
         },
         submit() {
-            this.$notify({
-                title: "警告",
-                message: "正在上传，上传过程请勿关闭或刷新页面!",
-                type: "warning",
-            });
+            if(!this.$refs.upload.uploadFiles.length){
+                return this.$message.warning("请上传文件");
+            }
             this.$refs.upload.submit();
         },
     },

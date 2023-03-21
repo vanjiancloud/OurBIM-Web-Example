@@ -33,3 +33,12 @@ export function getList(params) {
     params
   });
 }
+
+// 删除GIS数据服务
+export function deleteList(params) {
+    return request({
+        url: "/appli/delGISLayerServer",
+        method: "post",
+        params
+    });
+}

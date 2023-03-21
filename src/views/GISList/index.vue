@@ -1,8 +1,8 @@
 <!-- GIS数据服务 -->
 <template>
-    <div class="box">
+    <div class="box" v-loading="loading">
         <div class="boxHeader">
-            <div class="boxHeaderTitle">您共有<span>9</span>个项目</div>
+            <div class="boxHeaderTitle">您共有<span>{{total}}</span>个项目</div>
             <div>
                 <el-button icon="el-icon-plus" class="bluePlainBtn" plain type="primary" @click="AddGISProgect('添加')">新建GIS服务项目</el-button>
                 <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="uploadGIS">上传GIS数据</el-button>
@@ -10,7 +10,7 @@
         </div>
         <el-table :data="tableData">
             <el-table-column prop="gisServerName" label="项目名称" />
-            <el-table-column prop="id" label="项目ID" />
+            <el-table-column prop="gisId" label="项目ID" />
             <el-table-column prop="createTime" label="上传日期" />
             <el-table-column prop="fileSize" label="大小" />
             <el-table-column prop="layerType" label="数据类型" />
@@ -22,17 +22,19 @@
             <el-table-column fixed="right" label="操作" width="160">
                 <template slot-scope="scope">
                     <div class="operateBtn">
-                        <el-button class="blueBtn" type="primary" :disabled="scope.row.status!=2">进入项目</el-button>
+                        <el-button class="blueBtn" type="primary" :disabled="scope.row.status!=2" @click="toProject(scope.row)">进入项目</el-button>
                         <el-dropdown>
                             <span class="el-dropdown-link">
                                 <i class="el-icon-arrow-down el-icon-more"></i>
                             </span>
+                            <!-- scope.row.status==2只有发布完成才能操作 -->
                             <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item @click.native="AddGISProgect('编辑',scope.row)">编辑</el-dropdown-item>
-                                <el-dropdown-item>复制URL</el-dropdown-item>
-                                <el-dropdown-item>分享</el-dropdown-item>
-                                <el-dropdown-item>下载</el-dropdown-item>
-                                <el-dropdown-item divided>删除</el-dropdown-item>
+                                <el-dropdown-item v-if="scope.row.status==2" @click.native="AddGISProgect('编辑',scope.row)">编辑</el-dropdown-item>
+                                <!-- isSingle=true单个GIS图层的时候才有url -->
+                                <el-dropdown-item v-if="scope.row.status==2&&scope.row.isSingle==='true'" @click.native="onCopy(scope.row.fileUrl)">复制URL</el-dropdown-item>
+                                <el-dropdown-item v-if="scope.row.status==2">分享</el-dropdown-item>
+                                <el-dropdown-item v-if="scope.row.status==2" @click.native="uploadRow(scope.row)">下载</el-dropdown-item>
+                                <el-dropdown-item :divided="scope.row.status==2" @click.native="deleteRow(scope.row)">删除</el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                     </div>
@@ -49,7 +51,7 @@
 
 <script>
 import { Getuserid } from "@/store/index.js";
-import { getList, uploadGIS } from "@/api/GISList.js";
+import { getList, deleteList } from "@/api/GISList.js";
 import DialogsProject from "./dialogsProject.vue";
 import DragUpload from "@/components/Upload/dragUpload.vue";
 import Pagination from "@/components/Pagination";
@@ -58,6 +60,7 @@ export default {
     props: {},
     data() {
         return {
+            loading:false,
             tableData: [],
             total: 0,
             pages: {
@@ -90,9 +93,13 @@ export default {
         },
         // 获取列表
         getList() {
+            this.loading = true
             getList({ ...this.pages, userId: Getuserid() }).then((res) => {
                 this.tableData = res.data.list;
                 this.total = res.data.total;
+                this.loading = false
+            }).catch(()=>{
+                this.loading = false
             });
         },
         // 分页
@@ -112,6 +119,35 @@ export default {
         // 成功上传GIS数据
         onSuccessDrag(){
             this.getList();
+        },
+        // 复制URL
+        onCopy(url){
+            this.$copyText(url).then(e=>{
+                this.$message.success("链接复制成功！");
+            },e=>{
+                this.$message.error("复制失败！")
+            })
+        },
+        // 下载
+        uploadRow(row){
+            
+        },
+        // 删除
+        deleteRow(row){
+            this.$confirm(`删除【${row.gisServerName}】项目后无法恢复，确认是否删除？`, '删除', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                closeOnClickModal:false,
+                type: 'warning'
+            }).then(() => {
+                deleteList({gisId:row.gisId,userId:Getuserid()}).then(()=>{
+                    this.$message.success("删除成功！");
+                    this.getList();
+                })
+            }).catch(() => {});
+        },
+        toProject(row){
+            console.log('🚀🚀🚀',row);
         }
     },
 };

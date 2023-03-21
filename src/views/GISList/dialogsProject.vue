@@ -94,9 +94,8 @@ export default {
       this.$nextTick(()=>{
         this.$refs.form.clearValidate();
         if(row.id){
-            console.log('🚀🚀🚀',row);
             this.form = row
-            this.form.ourGISLayerList = row.urlList&&JSON.parse(row.urlList)
+            this.form.ourGISLayerList = row.urlList&&JSON.parse(row.urlList) || []
         }
       })
     },
@@ -148,6 +147,7 @@ export default {
             editGISLayerServer(formData).then(res=>{
                 this.$parent.getList()
                 this.$message.success('编辑成功！')
+                this.hide()
             })
         }else{
             let data = {
@@ -158,6 +158,7 @@ export default {
             addGISLayerServer(data,JSON.stringify(this.form.ourGISLayerList)).then(res=>{
                 this.$parent.getList()
                 this.$message.success('创建成功！')
+                this.hide()
             })
         }
       });
