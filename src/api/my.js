@@ -159,6 +159,15 @@ export function getProjectList(data) {
         params: data
     })
 }
+
+// 获取GIS服务列表
+export function getGISProjectList(data) {
+    return request({
+        url: '/appli/getGISLayerList',
+        method: 'GET',
+        params: data
+    })
+}
 export function upgradeModle(params) { // 升级模型
     return request({
         url: '/appli/upgradeBIMModel',

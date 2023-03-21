@@ -458,6 +458,22 @@
         >
           <span slot-scope="{ option }">{{ option.appName }}</span>
         </el-transfer>
+        <!-- <el-transfer
+          v-if="value === 'GIS'"
+          class="integrate-transfer"
+          filterable
+          :titles="['GIS数据服务', 'GIS数据服务']"
+          v-model="ActiveLinkModel"
+          :data="ListLinkGISModel"
+          :props="{
+            key: 'appid',
+            label: 'appName',
+          }"
+          @change="handleChange"
+          :render-content="rendercontent"
+        >
+          <span slot-scope="{ option }">{{ option.appName }}</span>
+        </el-transfer> -->
         <el-form
           :model="FormIntegrate"
           class="form-integrate"
@@ -521,6 +537,7 @@
 <script type='text/html' style='display:block'>
 import {
   getProjectList,
+  getGISProjectList,
   deleteProject,
   updateProject,
   getWebUrl,
@@ -588,6 +605,7 @@ export default {
       reportErrDialogVisible: false,
       ActiveLinkModel: [],
       ListLinkModel: [],
+      ListLinkGISModel: [],
       IsIntegrate: false,
       btnCopy: "",
       itemList: [], //数据列表
@@ -938,6 +956,21 @@ export default {
         }
       });
     },
+    getGISProject() {
+      const params = {
+        userId: Getuserid(),
+        pageNo: 1,
+        pageSize: 1000
+      }
+      // getGISProjectList(params).then((res) => {
+      //   console.log('gis数据获取', res)
+      //   if (res.data.code === 0) {
+      //     this.ListLinkGISModel = resData
+      //   } else {
+      //     this.ListLinkGISModel = []
+      //   }
+      // });
+    },
     AddIntegrate() {
       /**
        * @Author: zk
@@ -945,6 +978,7 @@ export default {
        * @description: 新增集成
        */
       this.GetIntegrate();
+      this.getGISProject()
       this.IsIntegrate = true;
       //  链接模型 弹框 一打开就要给 this.isGis赋值
       // this.$nextTick(()=>{
@@ -1545,6 +1579,7 @@ export default {
         </span>
     },
     handleChange(value, direction, movedKeys) {
+      console.log('第1582行被执行', value, '------', direction)
       if(this.value == "BIM"){
          var goLang = value.length;
          this.chang =goLang;
