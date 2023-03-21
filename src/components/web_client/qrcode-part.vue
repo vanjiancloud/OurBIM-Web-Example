@@ -165,7 +165,7 @@ export default {
   border-radius: 10px;
   width: 400px;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(17,17,17,0.88);
   color: #ffffff;
   .qrcode-title {
     display: flex;

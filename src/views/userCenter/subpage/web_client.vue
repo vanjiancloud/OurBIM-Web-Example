@@ -26,7 +26,7 @@
         <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
         <div class="bim-progress" v-if="hiddenState === 0 || hiddenState === 3">
           <div class="load-tip">
-            基础环境加载中…
+            环境加载中…
             <div>{{ propsProgress.loadData }}%</div>
           </div>
           <el-progress
@@ -50,8 +50,28 @@
           v-if="hiddenState === 4"
           v-text="$t('webClient.loadBox.message[6]')"
         ></div>
+        <div
+          class="hidden-text learn-text"
+          v-if="hiddenState === 5 && userType == '0'"
+          v-text="$t('webClient.loadBox.message[7]')"
+        ></div>
       </div>
     </div>
+
+    <div class="systemDrawer">
+      <el-drawer
+          title="天气环境"
+          :visible="weatherDrawer"
+          @close="closeSystemDrawer"
+          direction="rtl"
+          :modal="false"
+          :size="drawerLeftSize"
+          :wrapperClosable="false"
+        >
+          <weatherSystem :appId="appId" :taskId="taskId"></weatherSystem>
+      </el-drawer>
+    </div>
+    
     <!-- runTimeCode 1:mobile  0 ：PC  -->
     <div v-if="runTimeCode === 0">
       <!-- 模型构件树 -->
@@ -90,6 +110,7 @@
           </div>
           <div class="tree-part">
             <div class="tree-content" id="tree-content">
+              <!-- 构件树开始 -->
               <el-tree
                 class="set-tree"
                 ref="setTree"
@@ -114,17 +135,42 @@
                       ? 'tree-select'
                       : ''
                   "
-                  slot-scope="{ node }"
+                  slot-scope="{ node,data}"
                   @click="handleTree(node, 0)"
                 >
                   <span class="label-span">{{ node.label }}</span>
-                  <span v-if="node.data.typeId !== 'comp'">
+                  <!-- 合模 -->
+                  <img
+                    src="@/assets/images/tag/6.png"
+                    @click.stop="deleteCom(node)"
+                    class="delect-com-icon"
+                    v-if="
+                      appType === '3' &&
+                      node.data.typeId === 'comp' &&
+                      checkedNodeVanjian(node)
+                    "
+                  />
+                  <!-- 非合模 -->
+                  <img
+                    src="@/assets/images/tag/6.png"
+                    @click.stop="deleteCom(node)"
+                    class="delect-com-icon"
+                    v-if="appType !== '3' && node.data.typeId === 'comp'"
+                  />
+                  <span v-if="node.level === 1 && (appType==='3' || appType==='0') && node.data.name != '自定义构件'">
+                    <!-- 开锁和闭锁 -->
+                    <i class="iconfont icon-24gl-lock2 lockLock" v-if="!data[`lockView${+node.id}`]" @click.stop="handleToggleLock(node, data, node.id)"></i>
+                    <i v-else class="iconfont icon-24gl-unlock4 lockLock" @click.stop="handleToggleLock(node, data, node.id)"></i> 
+                  </span> 
+                  <span>
+                    <!-- <span v-if="node.data.typeId !== 'comp'"> -->
                     <!-- 显示状态 -->
                     <i class="iconfont icon-xianshi2" v-if="!node.checked"></i>
                     <i v-else class="iconfont icon-yincang1"></i>
                   </span>
                 </span>
               </el-tree>
+              <!-- 构件树结束 -->
             </div>
           </div>
         </div>
@@ -149,88 +195,344 @@
           <div class="detail-main">
             <table
               class="detail-table"
-              v-if="memberInfo && memberInfo.type === 1"
+              v-if="
+                memberInfo && (memberInfo.type === 1 || memberInfo.type === 5)
+              "
             >
               <tr
-                v-for="(item, index) in memberInfo.data.dynamicData"
+                v-for="(item, index) in (memberInfo.data.dynamicData ? memberInfo.data.dynamicData : memberInfo.data.rsInfo)"
                 :key="index"
               >
                 <td v-text="item.name"></td>
                 <td v-text="item.value"></td>
               </tr>
             </table>
-            <table
+            <!-- <table
               class="detail-table"
               v-else-if="memberInfo && memberInfo.type === 5"
             >
               <tr>
                 <td>请选择唯一构件以查看属性</td>
               </tr>
-            </table>
+            </table> -->
           </div>
         </div>
-        <!-- 构件库 -->
-        <div
-          class="bim-info"
-          @click.stop=""
-          v-show="
-            controllerInfo.tagUiBar &&
-            ((listenTodoInfo &&
-              listenTodoInfo.type === 14 &&
-              listenTodoInfo.state === 1) ||
-              controllerInfo.componentLibrary)
-          "
-        >
-          <div class="bim-title">
-            <div class="" v-text="$t('webClient.componentLibrary.title')"></div>
-            <div class="close-part">
-              <i
-                class="el-icon-close"
-                @click.stop="closePart(listenTodoInfo.type)"
-              ></i>
+        <!-- 构件库 （自定义构件） -->
+        <div v-show="comVisible">
+          <div
+            class="bim-info com-box comsStore"
+            @click.stop=""
+            v-show="
+              controllerInfo.tagUiBar &&
+              ((listenTodoInfo &&
+                listenTodoInfo.type === 14 &&
+                listenTodoInfo.state === 1) ||
+                controllerInfo.componentLibrary)
+            "
+          >
+            <div class="bim-title">
+              <div
+                class=""
+                v-text="$t('webClient.componentLibrary.title')"
+              ></div>
+              <div class="close-part">
+                <i
+                  class="el-icon-close"
+                  @click.stop="closePart(listenTodoInfo.type)"
+                ></i>
+              </div>
+            </div>
+            <!-- <div class="detail-main detail-collapse">    // （材质库）   ）-->
+            <div class="detail-collapse">             <!-- （材质库）-->  
+                  <!-- <el-collapse v-model="componentCollapse" accordion>
+                    <el-collapse-item title="二维码" name="1">
+                      <div class="collapse-main">
+                        <el-button size="mini" type="primary" @click="AddQrCode"
+                          >新增</el-button
+                        >
+                      </div>
+                    </el-collapse-item>
+                  </el-collapse> -->
+              <el-tabs v-model="activeNameOne" type="card" id="moreLimitUp" @tab-click="outTab">
+                  <el-tab-pane label="构件库" name="coms">
+                        <!-- 公共构件 与 自定义构件列表 -->
+                        <el-tabs v-model="activeName" type="card" @tab-click="changeTab" :before-leave='leaveTab' id="moreLimit">
+                          <el-tab-pane>
+                            <div slot="label">
+                                <div class="search">
+                                  <el-input
+                                    class="searchInput"
+                                    type="text"
+                                    placeholder="请输入您要搜索的内容"
+                                    
+                                  >
+                                      <div slot="prefix"><i class="el-icon-search" ></i></div>
+                                  </el-input>
+                              </div>
+                            </div>
+                          </el-tab-pane>
+                          <el-tab-pane label="公共构件" name="first">
+                            <el-collapse
+                              accordion
+                              v-for="(item, index) in publicComList"
+                              :key="item.title"
+                              class=""
+                            >
+                              <el-collapse-item :title="item.group" :name="index">
+                                <div class="collapse-main">
+                                  <div class="moreList">
+                                    <div
+                                      class="publicComListItem"
+                                      v-for="listItem in item.rsComponent"
+                                      :key="listItem.id"
+                                      @click="addCom(listItem)"
+                                    >
+                                      <div class="img">
+                                        <img :src="listItem.comUrl" alt="" />
+                                      </div>
+                                      <div class="name">{{ listItem.comName }}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </el-collapse-item>
+                            </el-collapse>
+                          </el-tab-pane>
+                          <el-tab-pane label="自定义构件" name="second">
+                            <el-collapse
+                              accordion
+                              v-for="(item, index) in selfComList"
+                              :key="item.id"
+                              class=""
+                            >
+                              <el-collapse-item :title="item.groupName" :name="index">
+                                <div class="collapse-main">
+                                  <div class="moreList">
+                                    <div
+                                      class="publicComListItem"
+                                      v-for="listItem in item.data"
+                                      :key="listItem.ourbimComponentInfo.comId"
+                                      @click="addCom(listItem)"
+                                    >
+                                      <div class="img">
+                                        <img v-if="listItem.ourbimComponentInfo.comUrl === 'default.png'" :src="require('@/assets/logo.png')" alt="" />
+                                        <img v-else :src="listItem.ourbimComponentInfo.comUrl" alt="" />
+                                      </div>
+                                      <div class="name">{{ listItem.ourbimComponentInfo.comName }}</div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </el-collapse-item>
+                            </el-collapse>
+                          </el-tab-pane>
+                        </el-tabs>
+                  </el-tab-pane>
+                  <el-tab-pane label="材质库" name="material">
+                        <el-tabs v-model="materActiveName" type="card" :before-leave='leaveTab' id="moreLimit">
+                            <el-tab-pane>
+                              <div slot="label">
+                                  <div class="search">
+                                    <el-input
+                                      class="searchInput"
+                                      type="text"
+                                      v-model.trim="inputTwo" 
+                                      placeholder="请输入您要搜索的内容"
+                                    >
+                                        <div slot="prefix"><i class="el-icon-search" ></i></div>
+                                    </el-input>
+                                </div>
+                              </div>
+                            </el-tab-pane>
+                            <el-tab-pane label="公共库" name="firstMater">    
+                              <el-collapse
+                                :accordion="true"
+                                v-for="(item,index) in publicMater"
+                                :key="item.groupId"
+                                class=""
+                                @change="openList"
+                              >
+                                <el-collapse-item :title="item.groupName" :name="index">   
+                                    <div class="collapse-main">
+                                      <div class="moreList publicList">
+                                        <div
+                                          class="publicComListItem"
+                                          v-for="itemPub in item.sonList"
+                                          :key="itemPub.matId"                                     
+                                        >
+                                          <div class="img" @click.stop="selectPublicImg(itemPub)">
+                                            <img :class="{activeBorder: activePub === itemPub.matId}" :src="itemPub.matImgPath" :onerror="errorImg" alt="" />               
+                                          </div>
+                                          <div class="name" :style="{'font-size':'14px'}">{{ itemPub.matName }}</div>
+                                        </div>
+                                      </div>
+                                    </div> 
+                                </el-collapse-item>
+                              </el-collapse>                                      
+                            </el-tab-pane>
+                        </el-tabs>
+                  </el-tab-pane>
+              </el-tabs>                      
             </div>
           </div>
-          <div class="detail-main detail-collapse">
-            <scroll-container>
-              <!-- <el-collapse v-model="componentCollapse" accordion>
-                <el-collapse-item title="二维码" name="1">
-                  <div class="collapse-main">
-                    <el-button size="mini" type="primary" @click="AddQrCode"
-                      >新增</el-button
-                    >
+        </div>
+        <!-- 材质编辑模块   (材质库)-->
+        <div class="material-main" v-if="materialShow && topImgMaterial.length>0">
+            <div class="material-title">
+              <div class="" v-text="$t('webClient.materEdit.title')"></div>
+              <div class="close-materialPart">
+                <i
+                  class="el-icon-close"
+                  @click.stop="closeMaterialBtn"
+                ></i>
+              </div>
+            </div>
+            <div class="bottomTotal">
+                <div class="material-img">
+                  <div class="singleImg" v-for="(item,index) in topImgMaterial" :key="index">
+                    <div class="imgPic" @click="photoSelect(item,index)" :class="{activeBorder: activeMater === index}">
+                        <img v-if="item.photoUrl === undefined" :src="require('@/assets/caizhi.jpg')" alt="">
+                        <img v-else :src="item.photoUrl" alt="">
+                        <div v-if="middleMaterInfo[0].nameInfo.length>0 && activeMater === index" class="resetMaterial" @click.stop="resetClick(item,index)"><i class="el-icon-refresh-left resetIcon"></i></div>
+                    </div> 
                   </div>
-                </el-collapse-item>
-              </el-collapse> -->
-
-              <!-- 公共构件库列表 -->
-              <el-collapse
-                accordion
-                v-for="(item, index) in publicComList"
-                :key="item.title"
-                class=""
-              >
-                <el-collapse-item :title="item.group" :name="index">
-                  <div class="collapse-main">
-                    <div class="oooooooo">
-                      <div
-                        class="publicComListItem"
-                        v-for="listItem in item.rsComponent"
-                        :key="listItem.id"
-                        @click="addCom(listItem)"
-                      >
-                        <div class="img">
-                          <img :src="listItem.comUrl" alt="" />
+                </div>
+                <div class="materEditMain" v-if="matParam.colorList&&matParam.colorList.length&& activeMater !== ''">
+                    <div class="topEditMain">
+                        <div class="yanse">
+                            <div class="yanseName">颜色</div>
+                            <div class="yanseBody">
+                              <el-color-picker class="colorSelect" show-alpha v-model="color1" @change="colorBeChange"></el-color-picker>
+                              <i class="el-icon-arrow-down plusIcon" v-if="!color1"></i>
+                            </div>
                         </div>
-                        <div class="name">{{ listItem.comName }}</div>
-                      </div>
+                        <div class="yanse">
+                            <div class="yanseName">贴图</div>
+                            <div class="yanseBody stickPic" @click="photoStore" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === true}">
+                              <img v-if="matParam.texturesList[texturesListIndex]&&matParam.texturesList[texturesListIndex].paramValue" :src="matParam.texturesList[texturesListIndex]&&matParam.texturesList[texturesListIndex].paramValue" alt="" :style="{'width':'100%','height':'100%'}">
+                              <i v-else class="el-icon-plus plusIcon"></i>
+                              <div class="deleteIcon" @click.stop="deleteStickPic" v-if="matParam.texturesList[texturesListIndex]&&matParam.texturesList[texturesListIndex].paramValue"><i class="el-icon-delete"></i></div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                </el-collapse-item>
-              </el-collapse>
-
-              <!-- <div v-for="item in 100" :key="item">1111</div> -->
-            </scroll-container>
-          </div>
+                    <div class="bottomEditMain">
+                        <el-collapse
+                          v-model="spread"
+                          v-for="(item,index) in middleMaterInfo"
+                          :key="item.id"
+                          class=""
+                        >
+                          <el-collapse-item :title="item.titleName" :name="index">                         
+                                <div
+                                  class="editInfoItem"
+                                  v-for="listItem in item.nameInfo"
+                                  :key="listItem.index"
+                                >  
+                                <!-- enableEdit=false不显示不可编辑,目前看到json里面返回的显示没有这个字段 -->
+                                <template v-if="!listItem.hasOwnProperty('enableEdit')||listItem.enableEdit!='false'">
+                                  <div class="editInfoList" v-if="listItem.label === '等比缩放'">
+                                      <div class="editInfoListName">{{ listItem.label }}</div>
+                                      <div class="editInfoListNum">
+                                        <el-switch
+                                          @change="materialInfoChange"
+                                          v-model="listItem.paramValue"
+                                          inactive-color="#646464"
+                                          active-value="1"
+                                          inactive-value="0">
+                                        </el-switch>
+                                      </div>
+                                      <div class="editInfoListPercent"></div>
+                                  </div>       
+                                  <div class="editInfoList" v-if="listItem.label !== '等比缩放'">
+                                      <div class="editInfoListName">{{ listItem.label }}</div>
+                                      <div class="editInfoListNum">
+                                        <el-slider @change="materialInfoChange" v-model="listItem.paramValue"
+                                        :max="Number(listItem.max)"
+                                        :min="Number(listItem.min)"
+                                        :step="(listItem.label==='横向偏移' || listItem.label==='纵向偏移' || listItem.label==='透明度') ? 0.1 :((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 0.01 : 1)"
+                                        ></el-slider>
+                                      </div>
+                                      <div class="editInfoListPercent">{{listItem.paramValue + (listItem.label==='角度' ? '°' :  '')}}</div>
+                                  </div>
+                                </template>
+                                </div>
+                          </el-collapse-item>
+                        </el-collapse>
+                    </div>
+                </div>
+                <div class="mater-bottom" v-if="false">
+                    <el-checkbox-group v-model="materilCheckList">
+                      <el-checkbox label="1" v-if="false">金属</el-checkbox>
+                      <el-checkbox label="2">替换所有相同实例</el-checkbox>
+                      <el-checkbox label="3" v-if="false">双面材质</el-checkbox>
+                    </el-checkbox-group>
+                </div>
+            </div>
+            <div class="uploadImg" v-if="photoStoreFlag">
+                <div class="titleUploadimg">
+                  <span>贴图库</span>
+                  <i
+                    class="el-icon-close postStoreImgClose"
+                    @click="canclePhotostore"
+                  ></i>
+                </div>
+                <div class="middleUploadimg">
+                     <el-tabs v-model="activeNamePic" type="card" :before-leave='leavePic' @tab-click="texureClick">
+                        <el-tab-pane label="公共库" name="first">
+                            <!-- <el-collapse
+                              accordion
+                              v-for="(item,index) in picMaterInfo"
+                              :key="item.id"
+                              class=""
+                            >
+                              <el-collapse-item :title="item.titleName" :name="index">   
+                                 <div class="flexDiv">          
+                                    <div
+                                      v-for="listItem in item.nameInfo"
+                                      :key="listItem.index"
+                                      class="flexDivInde"
+                                      :style="{'width':'60px','height':'76px'}"
+                                    >           
+                                      <div :style="{'width':'60px','height':'60px'}"><img :src="listItem.img" alt="" :style="{'width':'100%','height':'100%'}"></div>
+                                      <div class="textureTitle"><span>hahahha</span></div>
+                                    </div>
+                                  </div>  
+                              </el-collapse-item>
+                            </el-collapse> -->
+                        </el-tab-pane>
+                        <el-tab-pane label="个人库" name="second">
+                          <el-collapse
+                              v-model="spreadPerson"
+                              accordion
+                              v-for="(item,index) in personalPicMaterInfo"
+                              :key="index"
+                              class=""
+                            >
+                              <el-collapse-item :title="item.groupName" :name="index">   
+                                 <div class="flexDiv">          
+                                    <div
+                                      v-for="listItem in item.rsTextureList"
+                                      :key="listItem.textureId"
+                                      class="flexDivInde"
+                                      :style="{'width':'90px','height':'11.3vh'}"
+                                    >           
+                                      <div @click="texturePhotoSelect(listItem)" :class="{activeBorder: activeTexTurePerson === listItem.textureId}" :style="{'width':'90px','height':'9.3vh'}"><img :src="listItem.imgPath" alt="" :style="{'width':'100%','height':'100%'}"></div>
+                                      <div class="textureTitle"><span>{{listItem.textureName}}</span></div>
+                                    </div>
+                                  </div>  
+                              </el-collapse-item>
+                            </el-collapse>
+                        </el-tab-pane>
+                        <el-tab-pane name="zero">
+                          <div slot="label">
+                            <el-button type="primary" @click="postUploadPic" size="mini" :disabled="btnUpTexure ? false : true">上传贴图</el-button>
+                          </div>
+                        </el-tab-pane>
+                     </el-tabs>
+                </div>
+                <!-- <div class="bottomUpload">
+                  <el-button type="primary" size="mini" :style="{'background-color':'#575757','border':'none'}">取消</el-button>
+                  <el-button type="primary" size="mini" @click="submitBaseTexture">确定</el-button>
+                </div> -->
+            </div>
         </div>
         <!-- 二维码 -->
         <qrcode-part
@@ -249,7 +551,7 @@
       </transition>
 
       <todo-footer
-        v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar"
+        v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar && !isFade"
         v-show="controllerInfo.tagUiBar"
         ref="getFooter"
         @listenTodo="listenTodo"
@@ -257,16 +559,24 @@
         @listenMode="listenMode"
         @listenFollow="listenFollow"
         @updataModle="updataModle"
+        @comIconChang="comIconChang"
         :setProps="propsFooter"
         :singleList="controllerInfo.singleList"
         :appId="appId"
         :taskId="taskId"
         :socketData="socketData"
         :showTodoIconObj="showTodoIconObj"
+        @passContentLogo="passContentLogo"
+        @passBrowerLogo="passBrowerLogo"
+        :lockState="lockState" 
+        @showViewPhoto="showViewPic"
       ></todo-footer>
+      <!-- (视图) @showViewPhoto="showViewPic" -->
+        <!-- :threeLogo="threeLogo" -->
       <view-cube
         v-if="controllerInfo.viewCube"
         v-show="controllerInfo.tagViewCube"
+        :userType="userType"
         @handleOrder="handleOrder"
         @goFront="goFront"
         @handleType="handleType"
@@ -283,19 +593,58 @@
         ref="tagTree"
       ></tag-tree>
     </div>
+    <!-- 漫游导航 -->
+    <roamNavigate
+    :taskId="taskId"
+    @listenTodo="listenTodo"
+    @closePart="closePart"
+    v-if="viewAngle &&
+              viewAngle.type === 0 &&
+              viewAngle.state === 1"
+    ></roamNavigate>
+    <!-- (视图) -->
+    <viewPhoto :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
+    <!-- 上传贴图弹框 （材质库） -->
+    <el-dialog :visible="addViewUpImgPost" @close="closeTexureDialog('none')" width="30%" center>
+      <viewUpimg :personalTexureGroup="personalTexureGroup" @texureClose="closeTexureDialog"></viewUpimg>
+    </el-dialog>
+    <!-- 协同模式弹窗 -->
+    <teamwork-dialog
+      ref="teamworkDialogRef"
+      :shareCode="shareCode"
+      :appId="appId"
+    ></teamwork-dialog>
+    <div class="invite-team-friend" v-if="userType === '1'">
+      <div class="invite-btn" @click="openTeamDialog">
+        <img src="./friend.png" alt="" /> 邀请成员
+      </div>
+    </div>
+    <EscDialogItem ref="EscDialogItem" />
   </div>
 </template>
 
 <script>
 import MODELAPI from "@/api/model_api";
+import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
 import TAGTREE from "@/api/tag_tree";
 import COMPONENTLIBRARY from "@/api/component-library";
 import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
+import roamNavigate from "@/components/web_client/roam_navigate";
+import viewPhoto from "@/components/web_client/view_photo";
 import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
-import scrollContainer from "@/components/web_client/scrollContainer.vue";
+
+import resMessage from "../../../utils/res-message";
+
+import TeamworkDialog from "../../manage/TeamworkDialog.vue";
+
+import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
+
+import { Getuserid } from "@/store/index.js"; // (自定义构件)
+import viewUpimg from "@/components/web_client/view_upImg.vue"; // （材质库）
+import weatherSystem from "@/components/web_client/weather_system.vue"; // 天气系统
 
 export default {
   name: "look_app",
@@ -306,10 +655,28 @@ export default {
     tagTree,
     progressBar,
     qrcodePart,
-    scrollContainer,
+    TeamworkDialog,
+    EscDialogItem,
+    roamNavigate,
+    viewPhoto,
+    viewUpimg,
+    weatherSystem
   },
   data() {
     return {
+      // threeLogo:false,
+      // myProjectId:'',
+      // modeData:[], // 树形结构数据
+      // lockLogo:false, // 锁的打开和关闭
+      showViewPicture:'0', // 传递给 viewPhoto 控制视图列表的显示 (视图)
+      maxNodes:false,
+      envProgress:0,   // 环境加载
+      lockState:false,   // 最后点击的小锁的状态
+      browerLogo:false,  // 浏览器亮 true
+      contentLogo:false, // 构件库亮 true
+      lockObj:{},   // 锁开那一项的信息
+      lockView:'', // 锁的显示
+      shareCode: null,
       showTodoIconObj: {},
       socketData: {},
       windowChangeFlag: true,
@@ -372,7 +739,8 @@ export default {
       websock: null,
       isSocket: false,
       socketTimer: null,
-      browserInfo: null,
+      browserInfo: null, //模型浏览器
+      viewAngle:null,  // 漫游导航
       natureInfo: null,
       shadowType: null,
       listenTodoInfo: null,
@@ -392,11 +760,123 @@ export default {
       isQrcode: false,
       iTime: {},
       publicComList: [],
+      comSaveNode: null,
+      godNode: null,
+      comVisible: false,
+      appType: null,
+      userType: null,
+      activeNameOne:'coms', // 构件库的第一层 el-tabs  （材质库）
+      activeName:'first', // 构件库的Tabs 标签页 （自定义构件）
+      materActiveName:'firstMater',
+      selfComList:[],  // 所有自定义构建  （自定义构件）
+      inputTwo:'',  // 材质库搜索绑定值 （材质库）
+      activePub:'', // 选中公共库某个材质
+      activeMater:'', // 选中材质编辑中的 构件材质图片
+      // （材质库）
+      topImgMaterial:[],
+      // 材质要修改的信息（材质库）
+      middleMaterInfo:[
+        {
+          id:0,
+          titleName:'贴图位置',
+          nameInfo:[]
+        },
+          {
+          id:2,
+          titleName:'材质效果属性',
+          nameInfo:[]
+        }
+      ],
+      materilCheckList:[],  // 材质编辑底部复选框 （材质库）
+      activeNamePic:'first', // 贴图弹框的 el-tabs  （材质库）
+      color1:null,   // 材质编辑 颜色选择器  （材质库）
+      photoStoreFlag:false, // 贴图库显示隐藏   （材质库）
+      addViewUpImgPost:false, // 上传贴图弹框
+      publicMater:[],  // 公共材质列表
+      projectMaterList:[],  // 项目材质列表
+      exchangeData:{      // 指令更换材质的参数
+        matId:'',
+        isPublic:'',
+        actorId:'',
+        comType:''
+      },
+      // 贴图库 公共库的信息
+      errorImg:'this.src="' + require('@/assets/failed.png') + '"',
+      picMaterInfo:[],
+      personalPicMaterInfo:[], // 贴图库 个人库
+      btnUpTexure:false, // 控制上传按钮
+      personalTexureGroup:[], // 贴图 个人库分组
+      materialShow:false, // 材质编辑 弹窗显示与隐藏
+      modelIsLink:null, // 是否是链接模型
+      pakIdMapweb:'', // 区分点击的是自定义构件还是模型自带的构件
+      matParam:{}, // 材质的部分信息
+      activeTexTurePerson:'', // 贴图库个人库
+      // materialMatId:'', // 选中材质编辑的材质的matId
+      spread:[], // 材质参数折叠面板展开
+      spreadPerson:[], // 贴图库折叠面板展开
+      materialAllInfo:{}, // 构件某材质全部信息
+      matEditIndex:null, // 选中的材质编辑图片的下标
+      defaultUrl:null, // 识别本地与线上
+      comPakId:'', // 材质编辑点击的构件的pakId
+      pakAndAppid:[], 
+      weatherDrawer:false, // 天气抽屉
+      drawerLeftSize: 300, // 抽屉宽度
+      texturesListIndex:0,//贴图
     };
   },
 
-  watch: {},
+  watch: {
+    // 监听 浏览器 是否处于关闭状态 是 就将小锁关闭 并 关闭轴
+    browerLogo:{
+      handler(newVal,oldVal){
+        if(newVal === false && this.lockObj.num !== undefined){
+           const params = {
+              taskId: this.taskId,
+              flag: "off"
+            }
+           MODELAPI.LOCKOPENORCLOSE(params).then((res)=>{
+            if(res.data.code === 0){
+              // console.log('res');
+            }
+           })
+        }
+        if(this.lockObj.num !== undefined){
+          if(newVal === false){
+            this.$set(this.lockObj.data, [`lockView${this.lockObj.num}`], false);
+             // 锁的状态(false)
+            this.lockState = false;
+          }
+        }
+      }
+    },
+    // 监听 构件库关闭 关闭小锁
+    contentLogo:{
+       handler(newVal,oldVal){
+         if(newVal === false && this.lockObj.num !== undefined){
+            this.$set(this.lockObj.data, [`lockView${this.lockObj.num}`], false);
+            // 锁的状态(false)
+            this.lockState = false;
+         }
+        //  构件库关闭的同时要关闭材质编辑按钮
+         if(newVal === false){
+            this.closeMaterialBtn();
+         }
+       }
+    }
+  },
   created() {
+    // 用定时器给 环境加载中进度条 赋假值 让其(不再只有0和100)
+    let timerTime = null;
+    timerTime = setInterval(()=>{
+      // 大于85 和 节点已达到最大时 就停止定时器---
+      if(this.propsProgress.loadData > 90 || this.maxNodes === true){
+        clearInterval(timerTime);
+      }
+      if(this.propsProgress.loadData <= 90 && this.maxNodes === false){
+        this.propsProgress.loadData += 5;
+      }
+     },300);                
+    this.lockView = this.$route.query.weatherBin; 
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -418,8 +898,22 @@ export default {
         height: 1080,
       };
     }
+    if (this.$route.query.appType) {
+      this.appType = this.$route.query.appType;
+      // 如果是云应用就去掉遮罩层和操作栏以及加载进度---
+      if(this.$route.query.appType === '5'){
+        this.isFade = false;
+        this.isProgress =false;
+      }
+    }
+    // 如果是 预启动项目就去掉遮罩层和加载进度
+  //   if (this.$route.query.reserveId){
+  //        this.isFade = false;
+  //        this.isProgress =false;
+  //   }
   },
   mounted() {
+    this.defaultUrl = process.env.VUE_APP_REQUEST_URL;
     document
       .querySelector("#tree-content")
       .addEventListener("scroll", this.throttle(this.handleScroll));
@@ -444,53 +938,155 @@ export default {
     if (isiPad !== false || isMac !== false) {
       this.hiddenState = 3;
     }
-    window.addEventListener(
-      "message",
-      (e) => {
-        if (e.data.prex === "pxymessage") {
-          this.getError(e.data);
-        }
-        if (e.data.prex === "ourbimMessage") {
-          // 控制栏显示隐藏
-          if (e.data.type === 1001) {
-            this.controllerInfo.uiBar = e.data.data;
-            this.controllerInfo.viewCube = e.data.data;
-          } else if (e.data.type >= 1002 && e.data.type <= 1014) {
-            if (this.actionList.indexOf(e.data.type) > -1) {
-              if (e.data.data === false) {
-                this.controllerInfo.singleList.push(e.data.type);
-              } else {
-                this.controllerInfo.singleList.indexOf(e.data.type) > -1
-                  ? this.controllerInfo.singleList.splice(
-                      this.controllerInfo.singleList.indexOf(e.data.type),
-                      1
-                    )
-                  : "";
-              }
-            }
-          } else if (e.data.type === 1015) {
-            this.controllerInfo.viewCube = e.data.data;
-          } else if (e.data.type === 2001) {
-            // 构件树的显示隐藏
-            this.controllerInfo.modelClient = e.data.data;
-          } else if (e.data.type === 2002) {
-            this.controllerInfo.memberAvttribute = e.data.data;
-          } else if (e.data.type === 2003) {
-            this.$refs.tagTree.closePart(e.data.data);
-            this.$refs.tagTree.closeIcon();
-          } else if (e.data.type === 2004) {
-            this.controllerInfo.componentLibrary = e.data.data;
-          }
-        }
-      },
-      false
-    );
+    this.addMessageEvent();
+    this.getLinkModelAppid(); // 获取appid
   },
   destroyed() {
     this.clearTimePass();
     this.closeWebSocket();
   },
   methods: {
+    outPic(url){
+            //实例化一个img对象
+            const img = new Image();
+            //设置img的图片路径
+            img.src = url;
+            //设置跨域解决
+            img.setAttribute('crossOrigin', 'Anonymous');
+            //img加载完后处理
+            img.onload = function() {
+                //创建一个canvas对象
+                const canvas = document.createElement('canvas')
+                //把图片的宽度设为canves的宽度
+                canvas.width = 1200
+                //把图片的高度设为canves的高度
+                canvas.height = 700
+                //创建一个2d画布
+                const ctx = canvas.getContext('2d')
+                // 将img中的内容画到画布上
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+                // 将画布内容转换为base64
+                let base64 = canvas.toDataURL()
+                // 创建a链接
+                const a = document.createElement('a')
+                a.href = base64
+                a.download = ''
+                // 触发a链接点击事件，浏览器开始下载文件
+                a.click()
+            }
+        },
+
+    // 资源库中 点击搜索时防止切换 （材质库）
+    leaveTab(activeName, oldActiveName){
+      if(activeName === '0'){
+        return false;
+      }
+    },
+    // 用于给 viewphoto组件传值 （视图）
+    showViewPic(valModel){
+      this.showViewPicture = valModel;
+    },
+    // 点击锁
+    handleToggleLock(node, data, i){
+        // 最多只开一把锁的，打开某一个锁，其他锁要关闭
+        const result = node.parent.childNodes;
+        if(result){
+          for (let index = 0; index < result.length; index++) {
+            if(result[index].data.uuid !== data.uuid) {
+              this.$set(result[index].data, `lockView${result[index].data.uuid.slice(-1)}`, false)
+            }else {
+              this.$set(data, [`lockView${i}`], !data[`lockView${i}`])
+            }
+          }
+        }
+        // 将点击锁的那一项的信息赋予 lockObj
+        this.lockObj.node = node;
+        this.lockObj.data = data;
+        this.lockObj.num = i;
+        // 锁的状态
+        this.lockState = data[`lockView${i}`];
+        const params = {
+          taskId: this.taskId,
+          flag: data[`lockView${i}`] ? "on" : "off"
+        }
+        MODELAPI.LOCKOPENORCLOSE(params).then((res) => {
+          if(res.data.code == 0) {
+            const infoParam = {
+              taskId: this.taskId,
+              actorOrAppId: data.projectId
+            }
+            if(params.flag === 'on'){
+               MODELAPI.LOCKAFTERINFO(infoParam).then((res) => {
+                 if(res.data.code === 0){
+                  this.$message({
+                    message: this.$t("webClient.loadBox.message[2]"),
+                    type: "success",
+                  });
+                 }
+              });
+            }
+          }else{
+            this.$message({
+              message: res.data.message,
+              type: "error",
+           });
+          }
+        });        
+      },
+      // 构件库 明 暗
+      passContentLogo(val){
+        this.contentLogo = val;
+      },
+      // 浏览器 明 暗
+      passBrowerLogo(val){
+        this.browerLogo = val;
+      },
+     addMessageEvent() {
+      window.addEventListener(
+        "message",
+        (e) => {
+          if (e.data.prex === "pxymessage") {
+            this.getError(e.data);
+          }
+          if (e.data.prex === "ourbimMessage") {
+            // 控制栏显示隐藏
+            if (e.data.type === 1001) {
+              this.controllerInfo.uiBar = e.data.data;
+              this.controllerInfo.viewCube = e.data.data;
+            } else if (e.data.type >= 1002 && e.data.type <= 1014) {
+              if (this.actionList.indexOf(e.data.type) > -1) {
+                if (e.data.data === false) {
+                  this.controllerInfo.singleList.push(e.data.type);
+                } else {
+                  this.controllerInfo.singleList.indexOf(e.data.type) > -1
+                    ? this.controllerInfo.singleList.splice(
+                        this.controllerInfo.singleList.indexOf(e.data.type),
+                        1
+                      )
+                    : "";
+                }
+              }
+            } else if (e.data.type === 1015) {
+              this.controllerInfo.viewCube = e.data.data;
+            } else if (e.data.type === 2001) {
+              // 构件树的显示隐藏
+              this.controllerInfo.modelClient = e.data.data;
+            } else if (e.data.type === 2002) {
+              this.controllerInfo.memberAvttribute = e.data.data;
+            } else if (e.data.type === 2003) {
+              this.$refs.tagTree.closePart(e.data.data);
+              this.$refs.tagTree.closeIcon();
+            } else if (e.data.type === 2004) {
+              this.controllerInfo.componentLibrary = e.data.data;
+            }
+          }
+        },
+        false
+      );
+    },
+    comIconChang(val) {
+      this.comVisible = val;
+    },
     handleTodoIcon(query) {
       const arr = [
         "show",
@@ -511,12 +1107,16 @@ export default {
       ];
       let obj = {};
       arr.map((v) => {
-        if (query[v] == "false") {
+        if (query[v] == "false") {  
           obj[v] = false;
         } else {
           obj[v] = true;
         }
       });
+      // gis 和 分享 要隐藏天气渲染
+      // if(this.lockView === 'true' || this.lockView === undefined){
+      //   obj.weather = false;
+      // }
       this.showTodoIconObj = obj;
     },
     getComList() {
@@ -528,13 +1128,12 @@ export default {
     },
     listenWindowSize() {
       // 监听窗口大小变化 id=14 height
-
       this.handleWindowSize();
       window.onresize = () => {
         clearTimeout(this.iTime);
         this.iTime = setTimeout(() => {
           this.handleWindowSize();
-        }, 150);
+        }, 200);
       };
     },
     handleWindowSize() {
@@ -616,6 +1215,21 @@ export default {
        */
       this.TreePageNo = 2;
       this.openNode = data;
+
+      if (this.appType === "3") {
+        // 合模
+      } else {
+        // 不是合模
+        // 展开根节点，保存根节点信息
+        if (data.level === 1) {
+          this.godNode = data || {};
+        }
+
+        // 保存自定义构件信息（普通模型）
+        if (data.data.name === "自定义构件") {
+          this.comSaveNode = data || {};
+        }
+      }
     },
     throttle(fn, delay = 500) {
       /**
@@ -655,6 +1269,37 @@ export default {
       this.ScrollDistance = scrollTop;
       if (ScrollDistance > 0) {
         this.ListScrollTree();
+      }
+    },
+    // 更新添加的自定义构件库
+    updateComTree() {
+      if (!this.comSaveNode) {
+        return;
+      }
+      this.getMyComList(this.comSaveNode).then((res) => {
+        this.$refs.setTree.updateKeyChildren(this.comSaveNode.data.uuid, res);
+      });
+    },
+    updateGodChildNode() {
+      // 没有根节点，返回
+      if (!this.godNode) {
+        return;
+      }
+      // 检查第二层有无自定义构件
+      const flag = this.godNode.childNodes.some((item) => {
+        return item.data.name === "自定义构件";
+      });
+      // 如果有
+      if (flag) {
+        this.updateComTree();
+      } else {
+        let node = this.$refs.setTree.getNode(this.godNode);
+
+        // 如果没有，添加自定义构件组
+        this.getMyComList(this.godNode).then((res) => {
+          const data = res[res.length - 1];
+          this.$refs.setTree.append(data, node);
+        });
       }
     },
     ListScrollTree() {
@@ -723,14 +1368,20 @@ export default {
         this.getMonitor();
       }
       if (errorList.indexOf(e.type) !== -1) {
-        this.hiddenState = 4;
-        this.isFade = true;
-        this.closeWebSocket();
-        this.$message({
-          message: this.$t("webClient.loadBox.message[6]"),
-          type: "warning",
-          customClass: "set-index-message",
-        });
+        if (this.userType == "0") {
+          this.hiddenState = 5;
+          this.isFade = true;
+          this.closeWebSocket();
+        } else {
+          this.hiddenState = 4;
+          this.isFade = true;
+          this.closeWebSocket();
+          this.$message({
+            message: this.$t("webClient.loadBox.message[6]"),
+            type: "warning",
+            customClass: "set-index-message",
+          });
+        }
       }
     },
     handleType(e) {
@@ -762,6 +1413,86 @@ export default {
       this.handleState = 10;
       this.updateOrder();
     },
+    // 判断父级或者父父级node名字有没有vanjian
+    checkedNodeVanjian(node) {
+      if (node.level === 1) {
+        return true;
+      } else if (node.level === 2) {
+        if (node.parent.data.uuid.indexOf("vanjian") !== -1) {
+          return false;
+        } else {
+          return true;
+        }
+      } else if (node.level === 3) {
+        if (node.parent.parent.data.uuid.indexOf("vanjian") !== -1) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+    },
+    updateComTreeAfterDeleteByUuid(uuid) {
+      // 获取自定义构件父级node
+      const nodeParent = this.$refs.setTree.getNode(uuid).parent;
+      this.$refs.setTree.remove(uuid);
+      if (nodeParent.childNodes.length === 0) {
+        this.$refs.setTree.remove(nodeParent.data.uuid);
+      }
+    },
+    deleteCom(node) {
+      const { name, uuid } = node.data;
+      this.$confirm("此操作删除此构件, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          COMPONENTLIBRARY.deleteCom({
+            taskId: this.taskId,
+            comId: uuid,
+          }).then((res) => {
+            resMessage(res.data);
+            // 获取自定义构件父级node
+            if (res.data.code === 0) {
+              this.updateComTreeAfterDeleteByUuid(node.data.uuid);
+            }
+            return;
+            const nodeParent = this.$refs.setTree.getNode(
+              node.data.uuid
+            ).parent;
+            if (res.data.code === 0) {
+              this.$refs.setTree.remove(node.data.uuid);
+              if (nodeParent.childNodes.length === 0) {
+                this.$refs.setTree.remove(nodeParent.data.uuid);
+              }
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消删除",
+          });
+        });
+    },
+    openTeamDialog() {
+      this.$refs.teamworkDialogRef.openDialog({
+        appid: this.appId,
+      });
+    },
+    componentShowHide(uuid) {
+      /* 
+        自定义构件显示隐藏
+      */
+      const lableVisibility = this.leafInfo.activeState == 1 ? false : true;
+      COMPONENTLIBRARY.controlComShowOrHide({
+        comId: uuid,
+        taskId: this.taskId,
+        lableVisibility,
+      }).then(({ data: res }) => {
+        resMessage(res);
+      });
+    },
     checkTree(data, e) {
       /**
        * @Author: zk
@@ -769,13 +1500,24 @@ export default {
        * @description: 显示隐藏
        */
       this.leafInfo = data;
+
       if (e.checkedKeys.includes(data.uuid)) {
         this.handleState = 8;
         data.activeState = 1;
+        // 如果是自定义构件
+        if (data.typeId === "comp") {
+          this.componentShowHide(data.uuid);
+          return;
+        }
         this.updateOrder();
       } else {
         this.handleState = 8;
         data.activeState = 0;
+        // 如果是自定义构件
+        if (data.typeId === "comp") {
+          this.componentShowHide(data.uuid);
+          return;
+        }
         this.updateOrder();
       }
     },
@@ -785,11 +1527,59 @@ export default {
        * @Date: 2021-03-08 14:39:51
        * @description: 构件树的指令
        */
+      let messageInfo = {
+        prex: "ourbimMessage",
+        type: 20001,
+        data: e.data,
+        message: "",
+      };
+      this.sentParentIframe(messageInfo);
+      if (this.activeTree && this.activeTree.uuid === e.data.uuid) {
+        if (e.data.activeSelect === 1) {
+          this.activeLeaf = false;
+        } else {
+          this.activeLeaf = true;
+        }
+        e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
+        this.leafInfo = e;
+      } else {
+        this.activeLeaf = true;
+        this.leafInfo = e;
+        e.data.activeSelect = 1;
+      }
+      // 新增俩个属性放在最前面
+      if(e.data?.dynamicData?.length){
+        e.data.dynamicData = [{name:'构件ID',value:e.data.revitCode},{name:'构件名称',value:e.data.name}].concat(e.data.dynamicData)
+      }
+      this.memberInfo = {
+        type: e.data.haveChild === "0" ? 1 : 5,
+        data: e.data,
+      };
+      this.leafInfo = e;
+      this.handleState = 9;
+
+      this.activeTree = e.data;
+
       if (e.data.typeId === "comp") {
+        // 如果是构件库
+        // if (e.data.haveChild === "0") {
+        this.leafInfo = e;
+        this.isQrCodeClick = true;
+        // this.handleQrcode(true);
+        this.handleFocusTag(e.data);
+        // } else {
+        //   return;
+        // }
+      } else {
+        this.updateOrder();
+      }
+      return;
+      if (e.data.typeId === "comp") {
+        // 如果是构件库
         if (e.data.haveChild === "0") {
           this.leafInfo = e;
           this.isQrCodeClick = true;
-          this.handleQrcode(true);
+          // this.handleQrcode(true);
           this.handleFocusTag(e.data);
         } else {
           return;
@@ -831,20 +1621,31 @@ export default {
        * @Date: 2021-08-17 16:00:55
        * @description: 定位二维码
        */
+      let flag = null;
+      flag = this.leafInfo.data.activeSelect ? true : false;
       let params = {
         taskId: this.taskId,
-        uuid: e.compData.id,
+        comId: e.uuid,
+        flag,
       };
-      COMPONENTLIBRARY.FOCUSCOMPONENT(params)
+
+      COMPONENTLIBRARY.focusComponent(params)
         .then((res) => {
-          this.$message({
-            message: this.$t("webClient.loadBox.message[2]"),
-            type: "success",
-          });
+          if (res.data.code === 0) {
+            this.$message({
+              message: res.data.message,
+              type: "success",
+            });
+          } else {
+            this.$message({
+              message: res.data.message,
+              type: "error",
+            });
+          }
         })
-        .catch((err) => {
+        .catch((res) => {
           this.$message({
-            message: this.$t("webClient.loadBox.message[3]"),
+            message: res.data.message,
             type: "error",
           });
         });
@@ -1053,13 +1854,13 @@ export default {
           params.action = "splitModel";
           params.splitValue = this.listenTodoInfo.data;
           break;
-        case 13:
-          // 启动应用
-          params.action = "platform";
-          params.plateType = this.isMobile() ? 1 : 0;
-          params.width = document.body.clientWidth;
-          params.height = document.body.clientHeight;
-          break;
+        // case 13:
+        //   // 启动应用
+        //   params.action = "platform";
+        //   params.plateType = this.isMobile() ? 1 : 0;
+        //   params.width = document.body.clientWidth;
+        //   params.height = document.body.clientHeight;
+        //   break;
         case 14:
           // 框选
           params.action = "componentBoxSelection";
@@ -1090,6 +1891,9 @@ export default {
           taskid: this.taskId,
           id: 20,
         };
+      }
+      if (this.handleState == 13) {
+        return;
       }
       //模型操作
       await MODELAPI.UPDATEORDER(params)
@@ -1146,6 +1950,25 @@ export default {
         this.$refs.getFooter.resetSection();
       }
     },
+
+    async getMyComList(node) {
+      let params = {
+        appliId:
+          node.data && node.data.projectId ? node.data.projectId : this.appId,
+        pageNo: 1,
+        pageSize: 999,
+      };
+      node.key ? (params.uuid = node.key) : "";
+      let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
+        if (res.data.code === 0) {
+          return res.data.data;
+        } else {
+          return [];
+        }
+      });
+      return realMember;
+    },
+
     async LisetMemberPage(node) {
       let params = {
         appliId:
@@ -1156,6 +1979,8 @@ export default {
       node.key ? (params.uuid = node.key) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
         if (res.data.code === 0) {
+          // 锁---
+          // this.myProjectId = res.data.data.projectId;
           return res.data.data;
         } else {
           return [];
@@ -1172,7 +1997,7 @@ export default {
       };
       node.key ? (params.uuid = node.key) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
-        if (res.data.code === 0) {
+        if (res.data.code === 0) { 
           return res.data.data;
         } else {
           return [];
@@ -1189,7 +2014,6 @@ export default {
               item.activeState = 0;
               item.activeSelect = 0;
             });
-
             return resolve(res);
           } else {
             this.treeEmpty = this.$t("webClient.browser.tips[1]");
@@ -1203,6 +2027,7 @@ export default {
               item.activeState = 0;
               item.activeSelect = 1;
             });
+
             return resolve(res);
           } else {
             this.treeEmpty = this.$t("webClient.browser.tips[1]");
@@ -1221,6 +2046,10 @@ export default {
       }
       if (e === 14) {
         this.listenTodoInfo = null;
+      }
+      // 漫游导航---
+      if(e === 0){
+        this.viewAngle = null;
       }
       if (this.$refs.getFooter) {
         this.$refs.getFooter.editTool(e);
@@ -1304,7 +2133,10 @@ export default {
        * @Date: 2021-03-04 14:06:09
        * @description: 监听操作栏
        */
-
+      // 漫游导航内 控制 viewCube ---
+      if(e.name==='viewCube'){
+        this.controllerInfo.viewCube = e.flag;
+      }
       this.$refs.getCube.closeView();
       if (e.type === 14 || e.type === 11) {
         this.isQrcode = false;
@@ -1312,6 +2144,7 @@ export default {
       // 构件库
       if (e.type === 14) {
         this.listenTodoInfo = e;
+        document.querySelector('.systemDrawer').style.display = 'none'; // 关闭天气弹框
       }
       // 构件树
       if (e.type === 10) {
@@ -1321,6 +2154,8 @@ export default {
       if (e.type === 11) {
         this.natureInfo = e;
         // e.state === 0 ? (this.memberInfo = null) : "";
+        document.querySelector('.systemDrawer').style.display = 'none'; // 关闭天气弹框
+        this.$refs.getFooter.editTool(9); // 关闭天气图标
       }
       // 框选
       if (e.type === 12) {
@@ -1342,12 +2177,14 @@ export default {
         this.handleTagShow();
       } else {
         if (this.isTag && e.type !== 11) {
+          if(e.flag === 'material') return; // 开启标签并关闭材质编辑时，防止标签消失
           this.$refs.tagTree.closePart(false);
-          this.listenTodoInfo = {
-            type: 4,
-            state: 0,
-          };
-          this.handleTagShow();
+          // 如果不是标签并且标签已经开启
+          // this.listenTodoInfo = {
+          //   type: 4,
+          //   state: 0,
+          // };
+          this.handleTagShow(false);   
           this.isTag = false;
         }
       }
@@ -1387,10 +2224,23 @@ export default {
         this.updateOrder();
       }
       // 渲染环境
-      if (e.type === 9 && e.data !== undefined) {
-        this.handleState = 15;
+      // if (e.type === 9 && e.data !== undefined) {
+      //   this.handleState = 15;
+      //   this.listenTodoInfo = e;
+      //   this.updateOrder();
+      // }
+      // 天气系统
+      if(e.type === 9){
         this.listenTodoInfo = e;
-        this.updateOrder();
+        if(e.state === 1){
+          document.querySelector('.systemDrawer').style.display = 'block';
+          this.weatherDrawer = true
+          this.natureInfo = null; // 关闭属性弹框
+          this.$refs.getFooter.editTool(11); // 关闭属性图标
+        }else{
+          this.weatherDrawer = false
+          document.querySelector('.systemDrawer').style.display = 'none';
+        }
       }
       // 小地图
       if (e.type === 5) {
@@ -1402,13 +2252,21 @@ export default {
       // 渲染环境
       if (e.type === 13) {
         this.listenTodoInfo = e;
-        this.UpdateMemeberState();
+        // this.UpdateMemeberState();
       }
       // 渲染环境修改时间
       if (e.type === 15) {
         this.handleState = 17;
         this.listenTodoInfo = e;
         this.updateOrder();
+      }
+      //漫游导航---
+       if (e.type === 0) {
+         this.viewAngle = e
+       }
+      // 点击 材质编辑 开关
+      if(e.flag==='material'){
+        this.materialShow = e.state;
       }
     },
     UpdateMemeberState() {
@@ -1431,28 +2289,38 @@ export default {
     },
     /* 添加构件  */
     addCom(item) {
+      let params = {};
       // parentId
-      let params = {
-        // comGroupId: item.parentId,
-        comName: item.comName,
-        taskId: this.taskId,
-        comId: item.id,
+      if(this.activeName === 'first'){
+        params = {
+          // comGroupId: item.parentId,
+          comName: item.comName,
+          taskId: this.taskId,
+          comId: item.id,
+        }
+      }else if(this.activeName === 'second'){  // (自定义构件)
+        params = {
+          // comGroupId: item.parentId,
+          comName: item.ourbimComponentInfo.comName,
+          taskId: this.taskId,
+          comId: item.ourbimComponentInfo.comId,
+          userId:item.ourbimComponentInfo.userId
+        }
       };
       COMPONENTLIBRARY.addCom(params)
         .then((res) => {
           if (res.data.code === 0) {
+            this.$refs.EscDialogItem.changeVisible(true);
             this.controllerInfo.tagUiBar = false;
             this.controllerInfo.tagViewCube = false;
           }
-
           this.$message.success(res.data.message);
-          this.$refs.getFooter.initTranslate()
         })
         .catch((res) => {
           this.$message.error(res.data.message);
         });
     },
-    handleTagShow() {
+    handleTagShow(flag) {
       /**
        * @Author: zk
        * @Date: 2021-05-12 16:05:22
@@ -1462,6 +2330,9 @@ export default {
         taskId: this.taskId,
         lableVisibility: this.listenTodoInfo.state === 0 ? false : true,
       };
+      if (flag !== undefined) {
+        params.lableVisibility = flag;
+      }
       TAGTREE.UPDATASHOWTAG(params)
         .then(() => {
           this.$message({
@@ -1475,6 +2346,73 @@ export default {
             type: "error",
           });
         });
+    },
+    updateComTreeAfterAddComs() {
+      if (this.appType === "3") {
+        // 合模
+        this.handleMultModle();
+      } else {
+        let params = {
+          appliId: this.appId,
+          pageNo: 1,
+          pageSize: 99,
+          uuid: "vanjian",
+        };
+        MODELAPI.LISTMEMBERTREE(params).then((res) => {
+          this.$refs.setTree.updateKeyChildren(params.uuid, res.data.data);
+        });
+      }
+    },
+    async handleMultModle() {
+      // 查看有没有合模的自定义构件
+      // 合模必然有 uuid vanjian1
+      const godNodeList =
+        this.$refs.setTree.getNode("vanjian1").parent.childNodes;
+
+      const mult = godNodeList.find((item) => {
+        return item.data.name === "自定义构件";
+      });
+
+      let multUuid = mult ? mult.data.uuid : null;
+      let multBeforeUuid = null;
+      // 如果没有自定义构件，保存最后一个节点，用来insertAfter节点
+      if (!multUuid) {
+        multBeforeUuid = godNodeList[godNodeList.length - 1].data.uuid;
+      }
+
+      // 处理合模添加构件后更新列表
+      if (multUuid) {
+        // 如果有了自定义构件列表
+        let params = {
+          appliId: this.appId,
+          pageNo: 1,
+          pageSize: 888,
+          uuid: multUuid,
+        };
+        MODELAPI.LISTMEMBERTREE(params).then((res) => {
+          this.$refs.setTree.updateKeyChildren(multUuid, res.data.data);
+        });
+      } else {
+        // 合模如果没有自定义构件列表
+        // 请求根节点
+        // insertAfter自定义构件列表
+        let params = {
+          appliId: this.appId,
+          pageNo: 1,
+          pageSize: 999,
+        };
+        MODELAPI.LISTMEMBERTREE(params).then((res) => {
+          const list = res.data.data;
+          this.$refs.setTree.insertAfter(list[list.length - 1], multBeforeUuid);
+        });
+      }
+    },
+
+    flatten(arr) {
+      // 数组扁平化
+      return !Array.isArray(arr)
+        ? arr
+        : [].concat.apply([], arr.map(this.flatten));
     },
     initWebSocket() {
       //初始化weosocket
@@ -1493,15 +2431,23 @@ export default {
        */
       const wsuri = MODELAPI.CREATESOCKET(this.taskId);
       this.websock = new WebSocket(wsuri);
-      this.websock.onmessage = (e) => {
+      this.websock.onmessage = (e) => {      
+        // 没有遮罩或者加载进度的时候 发指令去掉toll
+        if(this.isFade === false || this.isProgress === false){
+          this.sendToIframe(10200,'false',"");
+        }
         if (e.data.length > 20) {
-  console.log(85555,e.data);
+          this.isFade = false 
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {
+            // 新增俩个属性放在最前面
+            if(realData.data?.dynamicData?.length){
+              realData.data.dynamicData = [{name:'构件ID',value:realData.data.revitCode},{name:'构件名称',value:realData.data.name}].concat(realData.data.dynamicData)
+            }
             this.memberInfo = {
               type: 1,
-              data: realData.data,
+              data: realData.data || realData,
             };
             let messageInfo = {
               prex: "ourbimMessage",
@@ -1511,20 +2457,46 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
+            let messageInfo = {
+              prex: "ourbimMessage",
+              type: 20005,
+              data: realData,
+              message: "",
+            };
+            this.sentParentIframe(messageInfo);
             if (this.$refs.getFooter) {
               this.$refs.getFooter.resetPointList(realData.object);
             }
           } else if (realData.id === "5") {
-            this.memberInfo = {
-              type: 5,
-            };
             let messageInfo = {
               prex: "ourbimMessage",
               type: 20002,
               message: "",
             };
+            // 多选构件
+            let changeSingle = realData.object.map(e=>{
+              let newData = []
+              e.forEach(e1=>{
+                let addData = [{name:'构件ID',value:e[0].value},{name:'构件名称',value:e[4].value}]
+                if(e1.key === 'data'){
+                  newData = [...addData,...JSON.parse(e1.value)]
+                }
+              })
+              return newData
+            })
+
+            let nn = this.flatten(changeSingle);
+            this.memberInfo = {
+              type: 5,
+              data: {
+                dynamicData: nn,
+              },
+            };
             this.sentParentIframe(messageInfo);
-          } else if (realData.id === "7") {
+          } else if(realData.id === "6"){
+            this.isFade = false
+          } 
+          else if (realData.id === "7") {
             this.memberInfo = null;
             this.activeLeaf = false;
             let messageInfo = {
@@ -1535,8 +2507,7 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "8") {
-            // 加载完成
-            this.listenWindowSize();
+            // 加载过程
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10003,
@@ -1547,27 +2518,39 @@ export default {
             };
             this.sentParentIframe(messageInfo);
             this.hiddenState = 0;
+            const progress = Number(
+              String(Number(realData.progress) * 100).substring(0, 3)
+            );
             if (
-              Number(this.propsProgress.data) >= 0 &&
-              Number(this.propsProgress.data) <= 100
+              progress >= 0 &&
+              progress <= 100 &&
+              this.propsProgress.data < 100
             ) {
-              this.propsProgress.data = Number(
-                String(Number(realData.progress) * 100).substring(0, 3)
-              );
-              if (Number(this.propsProgress.data) === 100) {
-                let params = {
-                  taskId: this.taskId,
-                };
-                COMPONENTLIBRARY.initComponent(params)
-                  .then((res) => {
-                    this.$message.success(res.data.message);
-                  })
-                  .catch((res) => {
-                    this.$message.error(res.data.message);
+              this.propsProgress.data = progress;
+              // id为8的时候进度条大于0就隐藏第一层遮罩层
+              this.isFade = false               
+              if (progress === 100) {
+                // 定位主视图
+                setTimeout(() => {
+                  MODELAPI.UPDATEORDER({
+                    taskid: this.taskId,
+                    action: "cameraPosAll",
                   });
+                }, 1000);
+                // let params = {
+                //   taskId: this.taskId,
+                // };
+                // COMPONENTLIBRARY.initComponent(params)
+                //   .then((res) => {})
+                //   .catch((res) => {
+                //     this.$message.error(res.data.message);
+                //   });
               }
             }
             if (Number(realData.progress) === 1) {
+              this.limitZoomSpeed();
+              // 加载完成
+              this.listenWindowSize();
               let noneTimer = setTimeout(() => {
                 this.isProgress = false;
                 clearTimeout(noneTimer);
@@ -1586,15 +2569,7 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "10") {
-            // 构件新建完成事件
-            // 构件添加完成
-            if (this.listenTodoInfo.type !== 14) {
-              this.$refs.tagTree.closePart(true);
-            }
-            if (this.controllerInfo.uiBar) {
-              this.controllerInfo.tagUiBar = true;
-              this.controllerInfo.tagViewCube = true;
-            }
+            this.showUiBar();
             let messageInfo = {
               prex: "ourbimMessage",
               type: 30002,
@@ -1604,6 +2579,14 @@ export default {
               message: "",
             };
             this.sentParentIframe(messageInfo);
+            // 判断原本标签有没有开启
+            if (
+              this.listenTodoInfo &&
+              this.listenTodoInfo.type === 4 &&
+              this.listenTodoInfo.state === 1
+            ) {
+              this.$refs.tagTree.closePart(true);
+            }
           } else if (realData.id === "11") {
             let messageInfo = {
               prex: "ourbimMessage",
@@ -1615,13 +2598,22 @@ export default {
             };
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "12") {
+            // 判断是否是链接模型
+            if(realData.isLink === "true"){
+              this.modelIsLink = true;
+            }else{
+              this.modelIsLink = false;
+            }
             if (
               Number(this.propsProgress.loadData) >= 0 &&
               Number(this.propsProgress.loadData) <= 100
             ) {
+              this.envProgress = Number(realData.progress) * 100;
               this.propsProgress.loadData = Number(
                 String(Number(realData.progress) * 100).substring(0, 3)
               );
+              // 加载完再发 10200---
+              this.sendToIframe(10200,'false',"");
             }
             let messageInfo = {
               prex: "ourbimMessage",
@@ -1640,9 +2632,89 @@ export default {
               } else {
                 this.delMaskTimer(1000 * 5);
               }
+            } // 13cube返回数据
+          } else if (realData.id === "14") {
+            // 添加构件，但是按了 ESC
+            if (this.controllerInfo.uiBar) {
+              this.updateComTreeAfterAddComs();
+              this.controllerInfo.tagUiBar = true;
+              this.controllerInfo.tagViewCube = true;
+              this.$refs.EscDialogItem.changeVisible(false);
+            }
+          } else if (realData.id === "15") {
+              if(this.$refs.getFooter){
+                this.$refs.getFooter.handleComOperateIcon(realData);
+              }else{
+                return false;
+              }
+          } else if (realData.id === "16") {
+            // 距离上一次操作时长
+            this.exitMiniprogram(realData.lastOperationTime);
+          } else if (realData.id === "17") {
+            realData.uuids.map((v) => {
+              this.updateComTreeAfterDeleteByUuid(v);
+            });
+          } else if (realData.id === "18") {
+            // 显示面板
+            this.showUiBar();
+            // 构件创建成功
+            // 更新自定义构件列表
+            if (this.appType === "3") {
+              // 合模
+              this.handleMultModle();
+            } else {
+              this.updateGodChildNode();
+            }
+          } else if (realData.id === "19") {
+            // 构件新建失败
+            // 提示判断添加构建失败
+            this.showUiBar();
+            this.$message.error(realData.name);
+          }else if(realData.id === "21"){  // 坐标位置 (增)
+            let messageInfo = {
+              prex:"ourbimMessage",
+              type: 30004,
+              data:{
+                tagId:realData.tagId,
+                data:realData.data,
+              },
+              message:"",
+            };
+            this.sentParentIframe(messageInfo);
+          }else if(realData.id === "30"){
+              if(realData.object){
+                this.$message.success('开始下载');
+                let url = realData.object;
+                this.outPic(url);
+              }
+          }else if(realData.id === "28"){
+              if(realData.rsInfo[0].pakId){
+                (realData.rsInfo[0].pakId === 'MAPWEB' || realData.rsInfo[0].pakId === 'gis')  ? this.pakIdMapweb = 'public' : this.pakIdMapweb = '';
+              }
+              this.comPakId = realData.rsInfo[0].pakId;
+              let newArr = [];
+              realData.rsInfo.forEach((item,index)=>{
+                 newArr = [...newArr,...item.matList];
+              });
+              // newArr = realData.rsInfo[0].matList;
+              this.topImgMaterial = newArr;
+              this.activeMater = 0; // 默认选中第一张图片
+              this.matEditIndex = 0;
+              this.materialAllInfo = this.topImgMaterial[0]; // 构件的第一个材质信息
+              this.exchangeData.actorId = realData.rsInfo[0].actorId;
+              this.getMaterialInfomation(this.getActiveMatid(this.activeMater)); // 默认先获取第一张图片材质信息
+          }else if(realData.id === "29"){
+            if(this.topImgMaterial.length !== 0){
+              this.topImgMaterial.forEach(item => {
+                let flag = realData.rsInfo.some(e=>{
+                  if(item.matId === e.matId){
+                    item.photoUrl = e.imgPath;
+                  }
+                  return item.matId === e.matId;
+                })
+              })
             }
           }
-          // 13cube返回数据
         }
       };
       this.websock.onopen = (e) => {
@@ -1652,6 +2724,39 @@ export default {
         }, 1000 * 60);
       };
       this.websock.onerror = (e) => {};
+    },
+    limitZoomSpeed() {
+      // 限制缩放速度
+      if (this.runTimeCode) {
+        let params = {
+          taskid: this.taskId,
+          action: "initWorldParam",
+          zoomSpeed: "0.02",
+        };
+        MODELAPI.UPDATEORDER(params);
+      }
+    },
+    showUiBar() {
+      // 显示面板
+      this.$refs.EscDialogItem.changeVisible(false);
+      if (this.controllerInfo.uiBar) {
+        this.controllerInfo.tagUiBar = true;
+        this.controllerInfo.tagViewCube = true;
+      }
+    },
+    exitMiniprogram(time) {
+      // 微信小程序长时间未操作，返回项目列表页
+      if (time > 60) {
+        wx.miniProgram.getEnv((res) => {
+          if (res.miniprogram) {
+            this.isFade = true;
+            this.hiddenState = 1;
+            this.clearTimePass();
+            this.closeWebSocket();
+            // wx.miniProgram.redirectTo({ url: "/pages/home/home" });
+          }
+        });
+      }
     },
     delMaskTimer(e) {
       /**
@@ -1667,16 +2772,45 @@ export default {
     },
     getModelUrl() {
       let appId = this.$route.query.appid;
-      MODELAPI.GETMODELINFO({
+
+      let params = {
         appliId: appId,
         token: this.appToken,
-      })
+      };
+      const { userType, nickName, code } = this.$route.query;
+      if (userType !== undefined && userType !== null) {
+        this.userType = userType;
+        params.userType = userType;
+      }
+      if (userType == 0) {
+        this.runTimeCode = 1;
+        this.isFade = false;
+      }
+      if (nickName) {
+        params.nickName = nickName;
+      }
+      if (code) {
+        params.code = code;
+      }
+      MODELAPI.GETMODELINFO(params)
         .then((res) => {
           if (res.data.code === 0 && res.data.data) {
             this.webUrl = res.data.data.url;
             this.taskId = res.data.data.taskId;
             this.ourbimInfo = res.data.data;
             this.propsFooter.taskId = res.data.data.taskId;
+            // 保存code
+            if (res.data.data.code) {
+              this.shareCode = res.data.data.code;
+              let messageInfo = {
+                prex: "ourbimMessage",
+                type: "shareCode",
+                data: this.shareCode,
+                message: "",
+              };
+              this.sentParentIframe(messageInfo);
+            }
+
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10001,
@@ -1712,6 +2846,8 @@ export default {
               message: res.data.message,
               customClass: "set-index-message",
             });
+            // 最大节点已达到上限时
+            this.maxNodes = true;
           }
         })
         .catch((err) => {
@@ -1857,9 +2993,456 @@ export default {
           "*"
         );
       } else {
-        console.warn("content window not find.");
       }
     },
+    // 构件库 中点击 构件库中的标签页时触发  （自定义构件）
+    changeTab(e){
+      if(e._props.name === 'second'){
+        const {userId} = this.$route.query;
+        let params = {
+          userId: userId
+        }
+        MODELAPI.GETALLCOM(params).then((res)=>{
+          if(res.data.code === 0){
+            if(res.data.data===undefined){
+              this.selfComList = [];
+            }else{
+              this.selfComList = res.data.data[0].data;
+            }
+          }
+        });
+      }
+    },
+    // 材质库 相关方法start
+    // 贴图弹框的 阻止标签页跳转 (材质库)
+    leavePic(activeName,oldActiveName){ 
+      if(activeName === 'zero'){
+        return false;
+      }
+    },
+    // 资源库 点击外层的标签页时 (材质库)
+    outTab(e){
+      if(e._props.name === 'material'){
+        if(this.publicMater.length > 0) return;
+        let params = {
+          taskId:this.taskId
+        }
+        CHAILIAOAPI.GETOURBIMMATERIALGROUP(params).then((res)=>{
+          this.publicMater = [];
+          if(res.data.code === 0){
+            this.publicMater = res.data.data;
+          }else{
+            this.$message.error(res.data.message)
+          }
+        }).catch(()=>{});
+      }
+    },
+    // 打开公共材质库时
+    openList(str){
+      if(!(str==='')){
+        if(this.publicMater[str].sonList && this.publicMater[str].sonList.length > 0) return;
+        let params = {
+          taskId:this.taskId,
+          groupId:this.publicMater[str].groupId
+        }
+        CHAILIAOAPI.GETOURBIMMATERIALBYGROUP(params).then(response=>{
+            if(response.data.code === 0){
+              this.$set(this.publicMater[str],'sonList',response.data.data)
+            }else{
+              item.sonList = [];
+            }
+        })
+      }
+    },
+    // 点击贴图 (材质库)
+    photoStore(){
+      this.photoStoreFlag = !this.photoStoreFlag;
+    },
+    spreadCircle(arr,str){
+      let open = [];
+      for(let i=0;i<arr.length;i++){
+        open.push(i)
+      }
+      if(str === '0'){
+        this.spread = open;
+      }else if(str === '1'){
+        this.spreadPerson = open;
+      }
+    },
+    // 点击贴图库 取消 (材质库)
+    canclePhotostore(){
+      this.photoStoreFlag = false;
+    },
+    // 点击上传贴图
+    postUploadPic(){
+      this.addViewUpImgPost = true;
+    },
+    // 点击 材质编辑弹框 叉号
+    closeMaterialBtn(){
+      this.activeMater = '';
+      this.materialShow = false;
+      this.$refs['getFooter'].clickBtnMaterial('close');
+      this.topImgMaterial = [];
+    },
+    // 选中公共库或项目库的材质
+    selectPublicImg(e){
+        if(this.activeMater === ''){
+          this.$message.warning('请选择构件');
+          return false;
+        }
+        if(this.activePub === e.matId){
+          this.activePub = ''
+        }else{
+          this.activePub = e.matId;
+          this.exchangeData.matId = e.matId;
+          this.getMaterialInfomation(e.matId,'public'); // 获取材质信息
+        }
+    },
+    // 选中材质编辑中的 构件材质图片
+    photoSelect(e,num){
+        this.matEditIndex = num; // 选中的材质编辑图片的下标
+        this.materialAllInfo = e; 
+        if(this.activeMater === num){
+          this.activeMater = ''
+        }else{
+          this.activeMater = num;
+          this.getMaterialInfomation(e.matId); // 获取材质信息
+        }
+        this.canclePhotostore(); // 关闭贴图弹框
+    },
+    // 获取材质编辑选中的材质的matid
+    getActiveMatid(str){
+        return this.topImgMaterial[str].matId;
+    },
+    // 替换材质
+    exchangeMater(materialId){
+        const allChange = this.materilCheckList.some(res=>{
+           return res === '2'
+        })
+        let params = {
+          taskId:this.taskId,
+          appId: this.pakidToAppid(this.comPakId),
+          matId:materialId,
+          isPublic: false,
+          isUpdateSameMaterial:allChange,
+        }
+        let temp = {
+          matAndActorInfos:[
+            {
+              actorId:this.exchangeData.actorId,
+              meshIndex:this.materialAllInfo.meshIndex,
+              matIndex:this.materialAllInfo.matIndex,
+              comType: this.pakIdMapweb,
+              pakId:this.comPakId
+            }
+          ]
+        }
+        CHAILIAOAPI.CHANGEMATERIALBYINSTRUCTION(params,JSON.stringify(temp.matAndActorInfos)).then((res)=>{
+            if(res.data.code===0){
+              this.$message.success('材质替换成功');
+              this.activePub = '';
+              this.activeTexTurePerson = ''; // 个人贴图
+              this.getMaterialInfomation(materialId,'change'); // 获取刚替换好的材质的信息
+            }
+        }).catch(()=>{})
+    },
+    // 获取 个人库 贴图
+    getPersonPhoto(str){
+      const {userId} = this.$route.query;
+      let params = {
+          userId:userId
+      }
+      CHAILIAOAPI.GETMATERIALALLTEXTUREINFO(params).then((res)=>{
+          if(res.data.code === 0){
+            this.personalPicMaterInfo = res.data.data || [];
+            if(str === 'groupOrNot' && this.personalPicMaterInfo.length<=0){
+              this.createTextureGroup(); // 新用户没有分组 默认创建一个分组
+            }
+            if(this.personalTexureGroup.length<=0){
+              res.data.data.forEach(item=>{
+                let obj = {};
+                obj.value = item.groupId;
+                obj.label = item.groupName;
+                this.personalTexureGroup.push(obj);
+              })
+            }
+          }
+      }).catch(()=>{})
+    },
+    // 创建个人库贴图分组
+    createTextureGroup(){
+      const {userId} = this.$route.query;
+      let params = {
+        userId:userId,
+        groupName:'我的分组'
+      }
+      CHAILIAOAPI.CREATEMATERIALTEXTUREGROUP(params).then(res=>{
+        if(res.data.code === 1){
+          this.getPersonPhoto();
+        }
+      }).catch(()=>{})
+    },
+    // 贴图库点击 公共库和个人库时触发
+    texureClick(e){
+      if(e._props.name === 'second'){
+        this.btnUpTexure = true;
+        this.getPersonPhoto('groupOrNot');
+        this.spreadCircle(this.personalPicMaterInfo,'1'); // 折叠面板
+      }else if(e._props.name === 'first'){
+        this.btnUpTexure = false;
+      }
+    },
+    // 关闭上传贴图弹框
+    closeTexureDialog(e){
+      this.addViewUpImgPost = false;
+      if(e === 'success'){
+        this.getPersonPhoto();
+      }
+    },
+    // 获取材质信息
+    getMaterialInfomation(e,str){
+      if(e === 'RESET'){  // 重置过的材质就不要再获取材质信息了
+        this.middleMaterInfo.forEach(mat=>{
+          mat.nameInfo = [];
+        })
+        return false;
+      }
+      let params = {
+        matId:e,
+        isPublic:str==='public' ? true : false
+      }
+      CHAILIAOAPI.GETMATERIALBYMATID(params).then(res=>{
+        if(res.data.code === 0){
+          this.matParam = JSON.parse(res.data.data.matParam);
+          // this.materialMatId = res.data.data.matId; // 选中材质编辑的材质的matId
+          this.$set(this.middleMaterInfo[0],'nameInfo',this.strToNumber(this.matParam.textureParamsList,'texture'))
+          this.$set(this.middleMaterInfo[1],'nameInfo',this.strToNumber(this.matParam.baseParamsList))
+          this.color1 = this.arrToRgb(this.matParam.colorList.length>0 ? this.matParam.colorList[0].paramValue : []);
+          this.texturesListIndex = this.matParam.texturesList.findIndex(e=>{return e.paramName==='BaseColorMap'})
+          this.spreadCircle(this.middleMaterInfo,'0'); // 折叠面板
+          if(this.activePub !== ''){
+            this.addMaterialToUser(res.data.data.matId); // 添加材质到用户库
+          }
+          if(str === 'change'){
+            let arr = this.topImgMaterial[this.matEditIndex]
+            arr.matId = res.data.data.matId;
+            arr.photoUrl = res.data.data.matImgPath;
+            this.$set(this.topImgMaterial,this.matEditIndex,arr);
+            this.activeMater = this.matEditIndex;
+          }
+        }else if(res.data.code === 1){
+            this.$message.error(res.data.message)
+        }
+      }).catch(()=>{})
+    },
+    // 修改材质参数
+    updateMateInfo(flag){
+      let params = {
+        taskId:this.taskId,
+        appId: this.pakidToAppid(this.comPakId),
+        baseColorTextureId:this.activeTexTurePerson,
+        normalMapTextureId:''
+      }
+      let temp = [
+        {
+          matId: this.getActiveMatid(this.activeMater),
+          pakId: this.comPakId,
+          matParam:
+          {
+            matId:this.getActiveMatid(this.activeMater),
+            ...this.matParam
+          }
+        }
+      ]
+      CHAILIAOAPI.UPDATEMATERIAL(params,JSON.stringify(temp)).then((res)=>{
+            if(res.data.code === 0){
+              this.$message.success('材质替换成功')
+              this.getMaterialInfomation(this.getActiveMatid(this.activeMater)); // 获取材质信息
+              if(flag === 'reset'){
+                this.$message.success('删除成功')
+              }
+            }
+      }).catch(()=>{})
+    },
+    // 添加材质到用户材质库
+    addMaterialToUser(id,str){
+      const {userId} = this.$route.query;
+      let params = {
+        userId:userId || 'travels',
+        matId:id,
+        isPublic: str ==='textureChange' ? false : true,
+        baseColorTextureId:this.activeTexTurePerson
+      }
+      CHAILIAOAPI.ADDMATERIALFORUSER(params,JSON.stringify(this.matParam)).then((res)=>{
+            if(res.data.code === 0){
+              this.exchangeMater(res.data.data); // 替换材质
+            }
+      }).catch(()=>{})
+    },
+    // 重置材质贴图
+    deleteStickPic(){
+      this.$confirm('您要删除此贴图, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          this.matParam.texturesList[this.texturesListIndex].paramValue = ''
+          this.$forceUpdate()
+          this.updateMateInfo('reset');
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+    },
+    // 恢复材质按钮
+    resetClick(item,num){
+        this.$confirm('您将重置此材质, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.resetMat(item.matId,num);
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+    },
+    // 恢复材质
+    resetMat(flagId,num){
+        let params = {
+          taskId:this.taskId,
+          appId: this.pakidToAppid(this.comPakId),
+          matId:flagId,
+          isPublic: false
+        }
+        let temp = {
+          matAndActorInfos:[
+            {
+              actorId:this.exchangeData.actorId,
+              meshIndex:this.materialAllInfo.meshIndex,
+              matIndex:this.materialAllInfo.matIndex,
+              comType: this.pakIdMapweb,
+              pakId:this.comPakId
+            }
+          ]
+        }
+        CHAILIAOAPI.RESETMATERIAL(params,JSON.stringify(temp.matAndActorInfos)).then((res)=>{
+            if(res.data.code===0){
+              this.middleMaterInfo.forEach(mat=>{
+                mat.nameInfo = [];
+              })
+              this.topImgMaterial[num].matId = 'RESET' // 修改被重置的材质的id
+              this.$set(this.topImgMaterial[num],'photoUrl',require('@/assets/caizhi.jpg')) // 修改被重置的材质的图片
+              this.$message.success('材质重置成功')
+            }
+        }).catch(()=>{})
+    },
+    // 点击贴图库的个人库图片
+    texturePhotoSelect(e){
+        if(this.activeTexTurePerson === e.textureId){
+          this.activeTexTurePerson = ''
+        }else{
+          this.activeTexTurePerson = e.textureId;
+          this.addMaterialToUser(this.getActiveMatid(this.activeMater),'textureChange');// 添加贴图到用户
+          // this.updateMateInfo();
+        }
+    },
+    // 材质编辑 颜色改变
+    colorBeChange(e){
+      this.updateMateInfo();
+    },
+    // 数组变rgb
+    arrToRgb(arr){
+      let str = '';
+      if(arr.length>0){
+        str = `rgba(${arr[0]},${arr[1]},${arr[2]},${arr[3]})`
+      }else{
+        str = null
+      }
+      return str;
+    },
+    strToNumber(arr,str){
+        if(arr.length<0){
+          return [];
+        }
+        let flag = '';
+        let newArr = [];
+        arr.forEach(item=>{
+          if(item.label !== '等比缩放'){
+            item.paramValue = Number(item.paramValue); // 字符串转数值
+          }else{
+            flag = item.paramValue; // 拿到等比缩放的值
+          }
+        })
+        if(str === 'texture'){
+          if(flag==='1'){
+            newArr = arr.filter(item=>{
+                let fake = (item.label === '横向缩放' || item.label === '纵向缩放') ? false : true;
+                return fake;
+            })
+          }else{
+            newArr = arr.filter(item=>{
+                return item.label !== '缩放';
+            })
+          }
+            // 排序
+            let sortArr = []
+            let obj = null;
+            newArr.forEach((com)=>{
+              if(com.label==='横向缩放' || com.label==='纵向缩放' || com.label==='缩放'){
+                sortArr.unshift(com);
+              }else{
+                if(com.label==='等比缩放'){
+                  obj = com
+                }
+                sortArr.push(com);
+              }
+            })
+            let finalArr = sortArr.filter(items=>{
+              return items.label !== '等比缩放'
+            })
+            if(obj){
+              finalArr.unshift(obj)
+            }
+            arr = finalArr
+        }
+        return arr;
+    },
+    // 获取pakid
+    getLinkModelAppid(){
+      let params = {
+        appId:this.appId
+      }
+      CHAILIAOAPI.GETPAKIDBYAPPID(params).then(item=>{
+          if(res.data.code === 0){
+            this.pakAndAppid = res.data.data;
+          }
+      }).catch(()=>{})
+    },
+    // 根据pakId 找到appId
+    pakidToAppid(str){
+      let componentAppId = '';
+      this.pakAndAppid.forEach(item=>{
+        if(item.pakId === str){
+          componentAppId = item.appId;
+        }
+      })
+      return componentAppId;
+    },
+    // 材质信息改变
+    materialInfoChange(){
+      this.updateMateInfo();
+    },
+    // 材质库 相关方法 end --------
+    // 关闭天气系统抽屉
+    closeSystemDrawer(){
+      this.weatherDrawer = false;
+      this.closePart(9);
+    }
   },
 };
 </script>
@@ -1926,7 +3509,7 @@ export default {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-
+  position: relative;
   .time-log {
     pointer-events: none;
     position: absolute;
@@ -2128,7 +3711,30 @@ export default {
       animation: dotPhone 3s infinite step-start;
     }
   }
-
+  // 天气抽屉
+  .systemDrawer{
+    display: none;
+    width: 300px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    ::v-deep .el-drawer__wrapper{
+      width: 300px;
+      position: absolute !important;
+      .drawer__container{
+        width: 300px;
+      }
+      .el-drawer__header{
+        color: #fff;
+        padding: 16px 16px 0;
+        margin-bottom: 11px;
+      }
+    }
+    ::v-deep .el-drawer{
+      background: rgba(0, 0, 0, 0.9);
+    }
+  }
   // 视图层
   .mutual-bim {
     position: absolute;
@@ -2153,7 +3759,7 @@ export default {
       width: 400px;
       margin: 2vh 0 0 20px;
       border-radius: 10px;
-      background: rgba(0, 0, 0, 0.5);
+      background-color: rgba(17, 17, 17, 0.88);
 
       .tree-title {
         display: flex;
@@ -2212,7 +3818,9 @@ export default {
         }
       }
     }
-
+    .com-box {
+      width: 400px;
+    }
     .bim-info {
       pointer-events: auto;
       height: 50vh;
@@ -2222,10 +3830,10 @@ export default {
       right: 0;
       margin: 2vh 20px 0 0;
       border-radius: 10px;
-      width: 400px;
-      overflow-x: hidden;
-      overflow-y: auto;
-      background: rgba(0, 0, 0, 0.5);
+      overflow-x: hidden; 
+      // overflow-y: auto;   // (材质库)
+      overflow-y: hidden;   // (材质库)
+      background-color: rgba(17, 17, 17, 0.88);
       color: #ffffff;
       .bim-title {
         display: flex;
@@ -2240,7 +3848,7 @@ export default {
         overflow-x: hidden;
         overflow-y: auto;
         margin-top: 1vh;
-        height: 40vh;
+        height: calc(100% - 56px);
 
         &::-webkit-scrollbar {
           /*滚动条整体样式*/
@@ -2262,7 +3870,8 @@ export default {
         }
       }
       .detail-collapse {
-        padding: 0 10px;
+        // padding: 0 10px;  // (材质库)
+        padding: 10px 0 0 0;
         .el-collapse {
           border-bottom: none;
           border-top: none;
@@ -2276,28 +3885,504 @@ export default {
             border-bottom: none;
           }
           .collapse-main {
-            padding: 0 10px;
+            padding: 0 5px;
           }
         }
       }
       .detail-table {
         width: 100%;
-        line-height: 35px;
-        text-align: center;
-
+        // line-height: 35px;
+        text-align: left;
+        border-collapse: collapse;
+        tr {
+          border-bottom: 1px solid #3f3f3f;
+          &:first-child {
+            border-top: 1px solid #3f3f3f;
+          }
+        }
+        tr td {
+          word-wrap: break-word;
+          word-break: break-all;
+          font-size: 14px;
+          padding: 10px;
+          font-size: 12px;
+        }
         tr td {
           &:first-child {
-            width: 30%;
+            color: #999;
+            width: 40%;
+            border-right: 1px solid #3f3f3f;
           }
 
           &:last-child {
-            width: 70%;
-            word-break: break-all;
+            color: #ccc;
+            width: 60%;
           }
         }
       }
     }
+    .comsStore{
+      ::v-deep .el-tabs__item{ // （材质库）
+        color:#fff;
+        border: none !important;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 100%;
+      }
+      ::v-deep .el-tabs__item.is-active { // （材质库）
+          color: #409EFF;
+          background-color: #3c3f45;
+      }
+      
+      ::v-deep .el-tabs--card>.el-tabs__header .el-tabs__nav{ // （材质库）
+        border: none;
+      }
+      ::v-deep .el-tabs__header{  // （材质库）
+        margin: 0;
+      }
+      ::v-deep .el-tabs--card>.el-tabs__header{       // （材质库）
+       border-top: 1px solid rgba(255,255,255,0.2);
+       border-bottom: 1px solid rgba(255,255,255,0.2);
+      }
+      #moreLimit{
+        .search{    // （材质库）
+        height: 46px;
+        border-bottom: 1px solid #25282e;
+        ::v-deep .searchInput .el-input__inner{
+            width: 185px;
+            height: 28px;
+            color: #fff;
+            padding-left: 40px;
+            border: none;
+            border-radius: 14px;
+            background-color: #28292E;
+        }
+        ::v-deep .searchInput .el-input__inner::placeholder{
+            font-size: 12px;
+            color: #fff;
+        }
+        .el-icon-search{
+            font-size: 20px;
+            color: #fff;
+            line-height: 44px !important;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        }
+        ::v-deep .el-tabs__content{    // （材质库）
+              // position: absolute;
+              overflow-y: auto;
+              height: 350px;
+              right: 0px;
+              left: 0px;
+              padding-left: 18px;
+              &::-webkit-scrollbar {
+              /* 对应纵向滚动条的宽度 */
+              width: 10px;
+              /* 对应横向滚动条的宽度 */
+              height: 10px;
+              }
+      
+              /* 滚动条上的滚动滑块 */
+              &::-webkit-scrollbar-thumb {
+                  background-color: #515560;
+                  border-radius: 5px;
+              }
+      
+              /* 滚动条轨道 */
+              &::-webkit-scrollbar-track {
+                  background-color: #16191f;
+                  border: 1px solid #41444D;
+                  border-radius:2px;
+              }
+        }
+        ::v-deep .el-tabs__item{ // （材质库）
+        color:#fff;
+        border: none !important;
+        height: 42px;
+        line-height: 42px;
+        padding: 0 14px;
+        }
+        ::v-deep .el-tabs__item.is-active { // （材质库）
+            color: #409EFF;
+            background-color: rgba(255, 255, 255, 0);
+        }
+        
+        ::v-deep .el-tabs--card>.el-tabs__header .el-tabs__nav{ // （材质库）
+          border: none;
+        }
+        ::v-deep .el-tabs__header{  // （材质库）
+          margin: 1px 0 0 0;
+        }
+        ::v-deep .el-tabs__header{       // （材质库）
+          border-top: none;
+        }
+       }
+    }
+    // 材质编辑开始   （材质库）
+    .material-main{
+      position: relative;
+      pointer-events: auto;
+      height: 50vh;
+      width: 350px;
+      margin: 2vh 0 0 20px;
+      border-radius: 10px;
+      background-color: rgba(17, 17, 17, 0.88);
+      .material-title {
+        display: flex;
+        padding: 2vh 15px 0 15px;
+        color: #ffffff;
+        margin-bottom: 1vh;
+        .close-materialPart {
+          margin-left: auto;
+          cursor: pointer;
+        }
+      }
+      .bottomTotal{
+          height: 44vh;
+          width: 100%;
+          overflow: hidden;
+          overflow-y: auto;
+          border-top: 1px solid #41444D;
+          &::-webkit-scrollbar {
+          /* 对应纵向滚动条的宽度 */
+          width: 10px;
+          /* 对应横向滚动条的宽度 */
+          height: 10px;
+          }
 
+          /* 滚动条上的滚动滑块 */
+          &::-webkit-scrollbar-thumb {
+              background-color: #515560;
+              border-radius: 5px;
+          }
+
+          /* 滚动条轨道 */
+          &::-webkit-scrollbar-track {
+              background-color: #16191f;
+              border: 1px solid #41444D;
+              border-radius:2px;
+          }
+        .material-img{
+          width: 100%;
+          padding-top: 1vh;
+          display: flex;
+          flex-wrap: wrap;
+          border-bottom: 1px solid #41444D;
+          .singleImg{
+            width: 90px;
+            height: 9.3vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0 10px 10px 10px;
+            .imgPic{
+              position: relative;
+              width: 90px;
+              height: 9.3vh;
+              cursor: pointer;
+              img{
+                width: 100%;
+                height: 100%;
+              }
+              .resetMaterial{
+                position: absolute;
+                top:0;
+                right: 0;
+                width: 20px;
+                height: 20px;
+                border-radius: 10px;
+                background-color: rgba(0,0,0,.4);
+                text-align: center;
+                display: none;
+                .resetIcon{
+                  font-size: 18px;
+                  color: #fff;
+                  line-height: 16px;
+                }
+              }
+              &:hover .resetMaterial{
+                display: block;
+              }
+            }
+          }
+        }
+        .materEditMain{
+          padding-top: 1vh;
+          // height: 23vh;
+          .topEditMain{
+            width: 100%;
+            // height: 4vh;
+            padding-left: 20px;
+            margin-bottom: 2vh;
+            display: flex;
+            .yanse{
+              width: 80px;
+              height: 100%;
+              display: flex;
+              justify-content: space-between;
+              margin-right: 32px;
+              .yanseName{
+                font-size: 14px;
+                color: #ffff;
+              }
+              .yanseBody{
+                position: relative;
+                width: 40px;
+                height: 40px;
+                background-color: #ccc;
+                // border-radius: 2px;
+                ::v-deep .el-color-picker__trigger{
+                  padding: 0;
+                  border: none;
+                  .el-color-picker__icon, .el-icon-close{
+                    display: none;
+                  }
+                  .el-color-picker__color{
+                    border: none;
+                  }
+                }
+                .plusIcon, .deleteIcon{
+                  font-size: 16px;
+                  color: #fff;
+                  position: absolute;
+                  top: 12px;
+                  left: 12px;
+                }
+                .deleteIcon{
+                  top: -8px;
+                  left: 30px;
+                  width: 20px;
+                  height: 20px;
+                  text-align: center;
+                  line-height: 20px;
+                  border-radius: 10px;
+                  background-color: rgba(255,255,255,.3);
+                  display: none;
+                }
+              }
+              .stickPic{
+                &:hover .deleteIcon{
+                  display: block;
+                }
+              }
+            }
+          }
+          .bottomEditMain{
+            padding-left: 20px;
+            width: 95%;
+            // height: 17vh;
+            overflow: hidden;
+            ::v-deep .el-collapse{
+              border: none;
+            }
+            ::v-deep .el-collapse-item__header{
+              background-color: rgba(16,16,16,0.1);
+              color: #fff;
+              border-bottom: none;
+              .el-icon-arrow-right{
+                color: #fff;
+              }
+            }
+            ::v-deep .el-collapse-item .el-collapse-item__wrap{
+              background-color: rgba(16,16,16,0.1);
+              border-bottom: none;
+            .el-collapse-item__content{
+                  padding-bottom: 0px !important;
+                }
+            }
+            .editInfoList{
+              height: 20px;
+              width: 95%;
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 2vh;
+              .editInfoListName{
+                width: 60px;
+                color: #fff;
+              }
+              .editInfoListNum{
+                width: 200px;
+                ::v-deep .el-slider__runway{
+                  top: -13px;
+                  height: 20px;
+                  background-color: #252525;
+                  border: 1px solid #4D4B4B;
+                  border-radius: 5px;
+                }
+                ::v-deep .el-slider__bar{
+                  height: 20px;
+                  background-color: #646464;
+                  z-index: 1111;
+                }   
+                ::v-deep .el-slider__button-wrapper {
+                  top: -8px;
+                }     
+                ::v-deep .el-slider__button{
+                  width: 10px;
+                  height: 18px;
+                  border: 1px solid #646464;
+                  background-color: #646464;
+                }
+              }
+              .editInfoListPercent{
+                width: 26px;
+                color: #fff;
+              }
+            }
+          }
+        }
+        .mater-bottom{
+          width: 100%;
+          height: 5vh;
+          border-top: 1px solid rgba(255,255,255,0.22);
+          padding: 1.5vh 0 0 0;
+          ::v-deep .el-checkbox-group{
+            margin-left: 20px;
+          }
+        }
+      }
+      // 贴图
+      .uploadImg{
+        position: absolute;
+        top: 51vh;
+        left: 0;
+        pointer-events: auto;
+        height: 38vh;
+        width: 350px;
+        border-radius: 10px;
+        background-color: rgba(17, 17, 17, 0.88);
+        .titleUploadimg{
+          box-sizing:border-box;
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+          height: 5vh;
+          padding: 1.8vh 1.8vh 0 1.8vh;
+          border-bottom: 1px solid rgba(255,255,255,0.2);
+          span{
+            color: #fff;
+            font-size: 16px;
+          }
+          .postStoreImgClose{
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 3px;
+          }
+        }
+        .middleUploadimg{
+          box-sizing: border-box;
+          width: 100%;
+          height: 34vh;
+          ::v-deep .el-tabs .el-tabs__content{
+            overflow-y: hidden;
+          }
+          ::v-deep .el-tabs .el-tabs__content{    // （材质库）
+            position: absolute;
+            overflow-y: auto;
+            height: 74%;
+            right: 0px;
+            left: 16px;
+            &::-webkit-scrollbar {
+            /* 对应纵向滚动条的宽度 */
+            width: 10px;
+            /* 对应横向滚动条的宽度 */
+            height: 10px;
+            }
+    
+            /* 滚动条上的滚动滑块 */
+            &::-webkit-scrollbar-thumb {
+                background-color: #515560;
+                border-radius: 5px;
+            }
+    
+            /* 滚动条轨道 */
+            &::-webkit-scrollbar-track {
+                background-color: #16191f;
+                border: 1px solid #41444D;
+                border-radius:2px;
+            }
+          }
+          ::v-deep .el-tabs__item{ // （材质库）
+            color:#fff;
+            border: none !important;
+            height: 42px;
+            line-height: 42px;
+            padding: 0 14px;
+          }
+          ::v-deep .el-tabs__item.is-active { // （材质库）
+              color: #409EFF;
+              background-color: rgba(255, 255, 255, 0);
+          }
+          
+          ::v-deep .el-tabs--card>.el-tabs__header .el-tabs__nav{ // （材质库）
+            border: none;
+          }
+          ::v-deep .el-tabs__header{  // （材质库）
+            margin: 1px 0 0 0;
+          }
+          ::v-deep .el-tabs--card>.el-tabs__header{       // （材质库）
+            border-bottom: 1px solid rgba(255,255,255,0);
+            border-top: 1px solid rgba(255,255,255,0);
+          }
+          ::v-deep #tab-zero{
+            margin-left: 60px;
+          }
+          // el-collapse的样式修改
+          ::v-deep .el-collapse{
+            border: none;
+          }
+          ::v-deep .el-collapse-item__header{
+            background-color: rgba(16,16,16,0.1);
+            color: #fff;
+            border-bottom: none;
+            .el-icon-arrow-right{
+              color: #fff;
+            }
+          }
+          ::v-deep .el-collapse-item .el-collapse-item__wrap{
+            background-color: rgba(16,16,16,0.1);
+            border-bottom: none;
+           .el-collapse-item__content{
+                padding-bottom: 0px !important;
+              }
+          }
+          .flexDiv{
+            display: flex;
+            flex-wrap: wrap;
+            .flexDivInde{
+              margin: 0 13px 5px 0;
+              .textureTitle{
+                width: 100%;
+                height: 2.3vh;
+                line-height: 2.3vh;
+                text-align: center;
+                /*1. 先强制一行内显示文本*/
+                    white-space: nowrap;
+                /*2. 超出的部分隐藏*/
+                    overflow: hidden;
+                /*3. 文字用省略号替代超出的部分*/
+                    text-overflow: ellipsis;
+                span{
+                  font-size: 14px;
+                  color: #fff;
+                }
+              }
+            }
+          }
+        }
+        // .bottomUpload{
+        //   width: 100%;
+        //   height: 5vh;
+        //   display: flex;
+        //   align-items: center;
+        //   justify-content: center;
+        // }
+      }
+    }
+    // 材质编辑结束
     .handle-body {
       pointer-events: auto;
       position: absolute;
@@ -2351,6 +4436,9 @@ export default {
     height: 100vh !important;
     width: 100vw !important;
   }
+}
+.activeBorder{
+   border: 2px solid #9bdbdd;
 }
 </style>
 <style lang="less" >
@@ -2431,39 +4519,82 @@ export default {
   left: 0;
 }
 
-.oooooooo {
+.moreList {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
 }
+.publicList{
+  padding-top: 10px;
+}
 .publicComListItem {
-  // display: inline-block;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  width: 100px;
-  height: 100px;
-  margin-left: 10px;
-  margin-top: 10px;
+  margin-bottom: 10px;
   cursor: pointer;
-  // background-color: pink;
   .img {
-    // margin: 0 auto;
-    height: 60px;
-    width: 60px;
+    margin: 0 2px;
+    height: 115px;
+    width: 115px;
     img {
+      border-radius: 5px;
       width: 100%;
       height: 100%;
     }
   }
   .name {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100px;
+    // display: flex;
+    // align-items: center;
+    // justify-content: center;
     color: #fff;
     text-align: center;
+    white-space: nowrap; //强制在一行显示
+    overflow: hidden; //溢出隐藏
+    text-overflow: ellipsis; //显示省略号
   }
 }
+
+.delect-com-icon {
+  padding: 0 10px;
+  width: 15px;
+  height: 15px;
+}
+.invite-team-friend {
+  padding-left: 0 !important;
+  .invite-btn {
+    border: 2px solid #284dba;
+    display: flex;
+    align-items: center;
+    background-color: rgba(41, 82, 199, 1);
+    height: 60%;
+    width: 166px;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 228px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  color: #7184bb;
+  // color: #fff;
+  padding-left: 15px;
+  font-size: 14px;
+  box-sizing: border-box;
+
+  img {
+    width: 20px;
+    height: 20px;
+  }
+}
+.lockLock{
+  margin-right: 5px;
+}
+
 </style>

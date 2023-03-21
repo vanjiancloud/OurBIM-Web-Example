@@ -1,0 +1,84 @@
+@import './button.less';
+@import './element.less';
+html,
+body {
+    width: 100%;
+    height: 100%;
+    background-color: #F0F2F5;
+    font-size: 16px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+
+/* <=1200的设备 */
+
+@media (max-width: 1200px) {
+    .container {
+        /* min-width: 100% !important; */
+        width: 1200px !important;
+        font-family: 'microsoft yahei';
+        margin: 0 auto;
+        font-size: 16px;
+    }
+}
+
+
+/* >=1200的设备 */
+
+@media (min-width: 1200px) {
+    .container {
+        min-width: 1200px !important;
+        width: 1200px;
+        /* max-width: 1420px !important; */
+        font-family: 'microsoft yahei';
+        margin: 0 auto;
+        font-size: 16px;
+    }
+}
+
+body {
+    /* 解决滚动条造成的页面抖动问题 */
+    overflow: auto !important;
+}
+
+
+/* Element ui中  el-tooltip 的显示宽度的设置 */
+
+.el-tooltip__popper {
+    max-width: 50%!important;
+}
+
+.box{
+  overflow: hidden;
+  width: 96%;
+  padding: 20px 2%;
+  .boxHeader{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    .boxHeaderTitle{
+      span{
+        color: #00AAF0;
+        padding: 0 5px;
+      }
+    }
+  }
+}
+
+.flexBetween{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+// 文字超出隐藏
+.textEllipsis{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

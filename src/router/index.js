@@ -4,6 +4,7 @@ import VueRouter from 'vue-router'
 import Layout from '@/views/Layout/index.vue'
 import manage from '@/views/manage/index.vue'
 import found from '@/views/found/index.vue'
+import office from '@/views/officeManage/index.vue'
 import bill from '@/views/bill/index.vue'
 import code from '@/views/code/index.vue'
 import order from '@/views/order/index.vue'
@@ -13,172 +14,194 @@ import demo from '@/views/demo/index.vue'
 Vue.use(VueRouter)
 
 const routes = [
-  // 登录页面
-  {
-    path: '/login',
-    name: 'login',
-    component: () => import('../views/login/index.vue'),
-    meta: {
-      title: 'OurBIM-实时云计算BIM引擎平台'
-    }
-  },
-  // Layout
-  {
-    path: '/',
-    component: Layout,
-    redirect: 'manage', //重定向到项目管理
-    children: [
-      {
-        path: 'demo',
-        component: demo,
+    // 登录页面
+    {
+        path: '/login',
+        name: 'login',
+        component: () =>
+            import ('../views/login/index.vue'),
         meta: {
-          title:'demo'
+            title: 'OurBIM-性能遥遥领先的BIM引擎平台'
         }
-      },
-      {
-        path: 'manage',
-        component: manage,
+    },
+    // Layout
+    {
+        path: '/',
+        component: Layout,
+        redirect: 'manage', //重定向到项目管理
+        children: [{
+                path: 'demo',
+                component: demo,
+                meta: {
+                    title: 'demo'
+                }
+            },
+            {
+                path: 'manage',
+                component: manage,
+                meta: {
+                    title: '我的项目'
+                }
+            },
+            {
+                path: 'office',
+                component: office,
+                meta: {
+                    title: '文档管理'
+                }
+            },
+            {
+                path: 'GISList',
+                component: () => import('@/views/GISList/index.vue'),
+                meta: {
+                    title: 'GIS数据服务'
+                }
+            },
+            {
+                path: 'found',
+                component: found,
+                meta: {
+                    title: 'BIM构件库'
+                }
+            },
+            {
+                path: 'bill',
+                component: bill,
+                meta: {
+                    title: '个人信息'
+                },
+            },
+            {
+                path: 'code',
+                component: code,
+                meta: {
+                    title: '授权码'
+                }
+            },
+            {
+                path: 'order',
+                component: order,
+                meta: {
+                    title: '服务订单'
+                }
+            },
+
+        ]
+    },
+    // 忘记密码
+    {
+        path: '/changePassword',
+        name: 'changePassword',
+        component: () =>
+            import ('../views/changepassword/index.vue'),
         meta: {
-          title: '我的项目'
+            title: 'OurBIM重置密码'
         }
-      },
-      {
-        path: 'found',
-        component: found,
+    },
+    // 注册页
+    {
+        path: '/register',
+        name: 'register',
+        component: () =>
+            import ('../views/register/index.vue'),
         meta: {
-          title: '创建项目'
+            title: 'OurBIM注册'
         }
-      },
-      {
-        path: 'bill',
-        component: bill,
+    },
+    // 协议书
+    {
+        path: '/protocol',
+        name: 'protocol',
+        component: () =>
+            import ('../views/register/protocol.vue'),
         meta: {
-          title: '个人信息'
-        },
-      },
-      {
-        path: 'code',
-        component: code,
-        meta: {
-          title: '授权码'
+            title: 'OurBIM用户须知'
         }
-      },
-      {
-        path: 'order',
-        component: order,
+    },
+    // 注册成功
+    {
+        path: '/registerSucceed',
+        name: 'registerSucceed',
+        component: () =>
+            import ('../views/register/registerSucceed.vue'),
         meta: {
-          title: '服务订单'
+            title: 'OurBIM注册成功'
         }
-      },
-     
-    ]
-  },
-  // 忘记密码
-  {
-    path: '/changePassword',
-    name: 'changePassword',
-    component: () => import('../views/changepassword/index.vue'),
-    meta: {
-      title: 'OurBIM重置密码'
-    }
-  },
-  // 注册页
-  {
-    path: '/register',
-    name: 'register',
-    component: () => import('../views/register/index.vue'),
-    meta: {
-      title: 'OurBIM注册'
-    }
-  },
-  // 协议书
-  {
-    path: '/protocol',
-    name: 'protocol',
-    component: () => import('../views/register/protocol.vue'),
-    meta: {
-      title: 'OurBIM用户须知'
-    }
-  },
-  // 注册成功
-  {
-    path: '/registerSucceed',
-    name: 'registerSucceed',
-    component: () => import('../views/register/registerSucceed.vue'),
-    meta: {
-      title: 'OurBIM注册成功'
-    }
-  },
-  // 激活成功
-  {
-    path: '/activateSucceed',
-    name: 'activateSucceed',
-    component: () => import('../views/register/activateSucceed.vue'),
-    meta: {
-      title: 'OurBIM激活账户'
-    }
-  },
-  // 新密码
-  {
-    path: '/newPassword',
-    name: 'newPassword',
-    component: () => import('../views/newPassword/index.vue'),
-    meta: {
-      title: 'OurBIM找回密码'
-    }
-  },
-  // 修改密码成功
-  {
-    path: '/resetSucceed',
-    name: 'resetSucceed',
-    component: () => import('../views/resetSucceed/index.vue'),
-    meta: {
-      title: 'OurBIM重置密码成功'
-    }
-  },
-  // 应用详情
-  {
-    path: '/web_client',
-    name: 'web_client',
-    component: () => import('../views/userCenter/subpage/web_client.vue'),
-    meta: {
-      title: '应用详情'
-    }
-  },
+    },
+    // 激活成功
+    {
+        path: '/activateSucceed',
+        name: 'activateSucceed',
+        component: () =>
+            import ('../views/register/activateSucceed.vue'),
+        meta: {
+            title: 'OurBIM激活账户'
+        }
+    },
+    // 新密码
+    {
+        path: '/newPassword',
+        name: 'newPassword',
+        component: () =>
+            import ('../views/newPassword/index.vue'),
+        meta: {
+            title: 'OurBIM找回密码'
+        }
+    },
+    // 修改密码成功
+    {
+        path: '/resetSucceed',
+        name: 'resetSucceed',
+        component: () =>
+            import ('../views/resetSucceed/index.vue'),
+        meta: {
+            title: 'OurBIM重置密码成功'
+        }
+    },
+    // 应用详情
+    {
+        path: '/web_client',
+        name: 'web_client',
+        component: () =>
+            import ('../views/userCenter/subpage/web_client.vue'),
+        meta: {
+            title: '应用详情'
+        }
+    },
 ]
 
 const router = new VueRouter({
-  routes
+    routes
 })
 
 // 路由前置守卫
-router.beforeEach(function (to, from, next) {
-  // 如果sessionStorage中没有userid，并且去的不是登录页面，
-  // 直接返回登录页，否则放行
-  if (!sessionStorage.getItem('userid')) {
-    if (
-      to.path !== '/login' &&
-      to.path !== '/changePassword' &&
-      to.path !== '/register' &&
-      to.path !== '/newPassword' &&
-      to.path !== '/resetSucceed' &&
-      to.path !== '/protocol' &&
-      to.path !== '/registerSucceed' &&
-      to.path !== '/activateSucceed' &&
-      to.path !== '/web_client'&&
-      to.path !== '/'
-    ) {
-      next('/login')
-    }else{
-      next()
+router.beforeEach(function(to, from, next) {
+    // 如果sessionStorage中没有userid，并且去的不是登录页面，
+    // 直接返回登录页，否则放行
+    if (!sessionStorage.getItem('userid')) {
+        if (
+            to.path !== '/login' &&
+            to.path !== '/changePassword' &&
+            to.path !== '/register' &&
+            to.path !== '/newPassword' &&
+            to.path !== '/resetSucceed' &&
+            to.path !== '/protocol' &&
+            to.path !== '/registerSucceed' &&
+            to.path !== '/activateSucceed' &&
+            to.path !== '/web_client' &&
+            to.path !== '/'
+        ) {
+            next('/login')
+        } else {
+            next()
+        }
+    } else {
+        next()
     }
-  }else{
-    next()
-  }
 })
 
 router.afterEach((to, from) => {
-  document.title = to.meta.title
+    document.title = to.meta.title
 })
 
 export default router

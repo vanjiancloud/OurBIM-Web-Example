@@ -10,10 +10,10 @@
     <div class="handle-mask" @click.stop="" v-if="isMask"></div>
     <div class="todo-footer">
       <div class="todo-main">
-        <!-- 构件显示隐藏 -->
+        <!-- 新显示隐藏 -->
         <div
           class="image-main"
-          v-show="showBar(imgList[13].id) && showTodoIconObj.show"
+          v-if="showBar(imgList[13].id) && showTodoIconObj.show"
         >
           <el-tooltip
             class="item"
@@ -23,12 +23,39 @@
             placement="top"
           >
             <img
+              @click.stop="handleOrder(13)"
               class="footer-image"
               :src="imgList[13].url"
-              @click.stop="handleOrder(13)"
               mode=""
             />
           </el-tooltip>
+
+          <transition name="el-zoom-in-bottom">
+            <div class="show-icon-list" v-show="this.imgList[13].state">
+              <el-tooltip
+                v-for="(item, index) in showHideList"
+                :key="index"
+                class="item"
+                :enterable="false"
+                effect="dark"
+                :content="item.name"
+                placement="left"
+              >
+                <div class="hide-icon-wrap">
+                  <img
+                    :src="item.img"
+                    @click.stop="showHideItemClick(item.value)"
+                    class="hide-icon-item"
+                  />
+                  <img
+                    :src="item.activeImg"
+                    @click.stop="showHideItemClick(item.value)"
+                    class="hide-icon-item hide-icon-item-absolute"
+                  />
+                </div>
+              </el-tooltip>
+            </div>
+          </transition>
         </div>
         <!-- 跟随视角改为第三人称 -->
         <!-- 框选 -->
@@ -51,12 +78,12 @@
             />
           </el-tooltip>
         </div>
-        <!-- 视角 -->
+        <!-- 漫游导航（视角） -->
         <div
           class="image-main"
           v-if="showBar(imgList[0].id) && showTodoIconObj.view"
         >
-          <el-tooltip
+          <!-- <el-tooltip
             placement="top"
             v-model="personTool"
             transition="el-fade-in-linear"
@@ -74,7 +101,7 @@
                   v-text="item.name"
                 ></div>
               </div>
-            </div>
+            </div> -->
             <el-tooltip
               class="item"
               effect="dark"
@@ -89,12 +116,13 @@
                 mode=""
               />
             </el-tooltip>
-          </el-tooltip>
+          <!-- </el-tooltip> -->
         </div>
         <!-- 移动速度 -->
+          <!-- v-if="showBar(imgList[1].id) && showTodoIconObj.speed" -->
         <div
           class="image-main"
-          v-if="showBar(imgList[1].id) && showTodoIconObj.speed"
+          v-if="false"
         >
           <el-tooltip
             class="item"
@@ -143,8 +171,8 @@
               mode=""
             />
           </el-tooltip>
-          <el-collapse-transition>
-            <div class="show-slice" v-if="imgList[2].state === 1">
+          <transition name="el-zoom-in-bottom">
+            <div class="show-slice show-split" v-if="imgList[2].state === 1">
               <el-tooltip
                 v-for="(item, index) in sliceList"
                 :key="index"
@@ -168,7 +196,7 @@
                 </div>
               </el-tooltip>
             </div>
-          </el-collapse-transition>
+          </transition>
         </div>
         <!-- 测量 -->
         <div
@@ -189,7 +217,7 @@
               mode=""
             />
           </el-tooltip>
-          <el-collapse-transition>
+          <transition name="el-zoom-in-bottom">
             <div class="show-cutting" v-if="imgList[3].state === 1">
               <el-tooltip
                 v-for="(item, index) in cuttingList"
@@ -276,7 +304,7 @@
                 </el-tooltip>
               </el-tooltip>
             </div>
-          </el-collapse-transition>
+          </transition>
         </div>
         <!-- 标签 -->
         <div
@@ -299,9 +327,10 @@
           </el-tooltip>
         </div>
         <!-- 小地图 -->
+          <!-- v-if="showBar(imgList[5].id) && showTodoIconObj.map" -->
         <div
           class="image-main"
-          v-if="showBar(imgList[5].id) && showTodoIconObj.map"
+          v-if="false"
         >
           <el-tooltip
             class="item"
@@ -318,20 +347,20 @@
             />
           </el-tooltip>
         </div>
-        <!-- 关注视点 -->
-        <div
+        <!-- 关注视点 (视图) -->
+         <div
           class="image-main"
           v-if="showBar(imgList[6].id) && showTodoIconObj.camera"
         >
-          <el-tooltip
+          <!-- <el-tooltip
             popper-class="follow-bgi"
             placement="top"
             :enterable="false"
             v-model="followTool"
             transition="el-fade-in-linear"
             manual
-          >
-            <div slot="content" class="follow-main">
+          > -->
+            <!-- <div slot="content" class="follow-main">
               <div class="follow-list" v-if="pointList">
                 <div
                   class="follow-table"
@@ -352,7 +381,7 @@
               <div class="add-follow" @click="InsertFollow">
                 <i class="el-icon-plus"></i>
               </div>
-            </div>
+            </div> -->
             <el-tooltip
               class="item"
               effect="dark"
@@ -367,7 +396,32 @@
                 mode=""
               />
             </el-tooltip>
-          </el-tooltip>
+          <!-- </el-tooltip> -->
+          <transition name="el-zoom-in-bottom">
+            <div class="show-slice show-com" v-if="imgList[6].state === 1" :style="{'left':'16%','top':'-83px'}">
+            <!-- <div class="show-slice show-com" v-if="false"> -->
+              <el-tooltip
+                v-for="(item, index) in angleList"
+                :key="index"
+                class="item"
+                :enterable="false"
+                effect="dark"
+                :content="item.content"
+                placement="left"
+              >
+                <div>
+                  <!-- @click.stop="comItemClick(item)" -->
+                  <img
+                    class="slice-img com-img"
+                    :src="item.active ? item.activeImg : item.img"
+                    @click.stop="angleListClick(item)"
+                    :style="{'cursor':'pointer'}"
+                    mode=""
+                  />
+                </div>
+              </el-tooltip>
+            </div>
+          </transition>
         </div>
         <!-- 模型动画 -->
         <div
@@ -442,7 +496,7 @@
             />
           </el-tooltip>
           <!-- <el-collapse-transition> -->
-          <div class="show-weather" v-show="imgList[9].state === 1">
+          <!-- <div class="show-weather" v-show="imgList[9].state === 1">
             <el-form class="set-form" :model="setForm" label-width="80px">
               <el-form-item :label="$t('webClient.weather[0].label')">
                 <el-select
@@ -480,7 +534,7 @@
                 </div>
               </el-form-item>
             </el-form>
-          </div>
+          </div> -->
           <!-- </el-collapse-transition> -->
         </div>
         <!-- <div class="cut-apart"></div> -->
@@ -504,10 +558,12 @@
               mode=""
             />
           </el-tooltip>
-
+          <!-- 构件库的  移动旋转  原来有的 -->
           <el-collapse-transition>
-            <div class="show-slice show-com" v-if="imgList[14].state === 1">
-              <el-tooltip
+            <!-- <div class="show-slice show-com" v-if="imgList[14].state === 1"> -->
+            <!-- 此处的移动旋转和缩放按钮与浏览器的重复了 要隐藏掉 -->
+            <div class="show-slice show-com" v-if="false">
+              <!-- <el-tooltip
                 v-for="(item, index) in comIconList"
                 :key="index"
                 class="item"
@@ -524,7 +580,7 @@
                     mode=""
                   />
                 </div>
-              </el-tooltip>
+              </el-tooltip> -->
             </div>
           </el-collapse-transition>
         </div>
@@ -547,6 +603,56 @@
               mode=""
             />
           </el-tooltip>
+           <!-- 浏览器的 移动旋转缩放 -->
+           <transition name="el-zoom-in-bottom">
+            <!-- <div class="show-slice show-com" v-if="imgList[10].state === 1 && totalLogo === true"> ---555 -->
+            <div class="show-slice show-com noBorder" v-if="totalLogo">  
+              <el-tooltip
+                v-for="(item, index) in comIconList"
+                :key="index"
+                class="item"
+                :enterable="false"
+                effect="dark"
+                :content="item.content"
+                placement="left"
+              >
+                <div>
+                  <img
+                    class="slice-img com-img"
+                    @click.stop="browerClick(item)"
+                    :src="item.active ? item.activeImg : item.img"
+                    mode=""
+                  />
+                </div>
+              </el-tooltip>
+              <!-- 新增轴心 -->
+              <el-tooltip
+                  v-for="(item) in axisList"
+                  :key="item.content"
+                  :enterable="false"
+                  effect="dark"
+                  :content="item.content"
+                  placement="left"
+                >
+                  <div class="moveAxis">
+                    <img @click="clickAxis(item)" :src="item.active ? item.activeImg : item.img" alt="" :style="{'cursor': (comIconList[0].active || comIconList[1].active || comIconList[2].active) ? '' : 'not-allowed'}">
+                  </div>
+              </el-tooltip>
+              <!-- 材质编辑开关 -->
+              <el-tooltip
+                  v-for="(item) in editMaterialBtn"
+                  :key="item.content"
+                  :enterable="false"
+                  effect="dark"
+                  :content="item.content"
+                  placement="left"
+                >
+                  <div class="moveAxis moveAxis2">
+                    <img @click="clickBtnMaterial('none')" :src="item.active ? item.activeImg : item.img" alt="">
+                  </div>
+              </el-tooltip>
+            </div>
+          </transition>
         </div>
         <!-- 属性 -->
         <div
@@ -610,9 +716,20 @@
 <script>
 import MODELAPI from "@/api/model_api";
 import COMPONENTLIBRARY from "@/api/component-library";
+import CHAILIAOAPI from "@/api/material_api.js";
 export default {
   components: {},
   props: {
+    // 父页面点击锁 那一项的信息
+    // lockObj:{
+    //   type: Object,
+    //   default: () => {},
+    // },
+    // 最后点击的小锁的状态
+    lockState:{
+      type: Boolean,
+      default: false
+    },
     setProps: {
       type: Object,
       default: () => {},
@@ -632,10 +749,18 @@ export default {
     showTodoIconObj: {
       type: Object,
       value: {},
-    },
+    }
+    // threeLogo:{
+    //     type: Boolean,
+    //     default: false,
+    // }
   },
   data() {
     return {
+      totalLogo:false,
+      browerLogo:false,
+      contentLogo:false,
+      // apiFlag:true, // 是否可以调用移动旋转缩放接口
       rulesFollow: {
         name: [
           {
@@ -676,22 +801,61 @@ export default {
       comIconList: [
         {
           content: "旋转",
+          name: "rotate",
           img: require("@/assets/images/todo/unchecked/com/rotate.png"),
           activeImg: require("@/assets/images/todo/check/com/rotate.png"),
           active: false,
         },
         {
           content: "移动",
+          name: "translate",
           img: require("@/assets/images/todo/unchecked/com/move.png"),
           activeImg: require("@/assets/images/todo/check/com/move.png"),
           active: false,
         },
         {
           content: "缩放",
+          name: "scale",
           img: require("@/assets/images/todo/unchecked/com/zoom.png"),
           activeImg: require("@/assets/images/todo/check/com/zoom.png"),
           active: false,
         },
+      ],
+      axisList:[
+                {
+                  content: "轴心",
+                  name: "scale",
+                  img: require("@/assets/images/todo/unchecked/com/axis.png"),
+                  activeImg: require("@/assets/images/todo/check/com/axis.png"),
+                  active: false,
+                }
+      ],
+      editMaterialBtn:[
+        {
+          //  材质库
+          content: "材质编辑",  
+          name: "materialEdit",
+          img: require("@/assets/images/todo/unchecked/com/editMaterial.png"),
+          activeImg: require("@/assets/images/todo/check/com/editMate.png"),
+          active: false,
+        }
+      ],
+      // (视图)
+       angleList:[
+        {
+          content: "创建视图",
+          name: "translate",
+          img: require("@/assets/images/todo/unchecked/viewList/create.png"),
+          activeImg: require("@/assets/images/todo/check/viewList/create.png"),
+          active: false,
+        },
+        {
+          content: "视点动画",
+          name: "scale",
+          img: require("@/assets/images/todo/unchecked/viewList/animation.png"),
+          activeImg: require("@/assets/images/todo/check/viewList/animation.png"),
+          active: false,
+        }
       ],
       cuttingList: [
         {
@@ -733,6 +897,26 @@ export default {
         {
           name: "第三人称",
           value: 2,
+        },
+      ],
+      showHideList: [
+        {
+          name: "隐藏图元",
+          value: 0,
+          img: require("@/assets/images/hide/hide.png"),
+          activeImg: require("@/assets/images/hide/hide-ac.png"),
+        },
+        {
+          name: "隔离图元",
+          value: 1,
+          img: require("@/assets/images/hide/split.png"),
+          activeImg: require("@/assets/images/hide/split-ac.png"),
+        },
+        {
+          name: "全部显示",
+          value: 2,
+          img: require("@/assets/images/hide/show-all.png"),
+          activeImg: require("@/assets/images/hide/show-all-ac.png"),
         },
       ],
       imgList: [
@@ -858,6 +1042,8 @@ export default {
       angleTool: false,
       followTool: false,
       personTool: false,
+      showHideTool: false,
+
       setForm: {
         unit: 0,
         accuracy: 2,
@@ -929,35 +1115,72 @@ export default {
           select: false,
         },
       ],
+      materialFlag:false,  // 传递给父组件，用于控制材料编辑框的显示 （材质库）
     };
   },
+  computed: {
+    watchImgList() {
+      return this.imgList[14].state;
+    },
+  },
   watch: {
+    // 监听最后点击的小锁的状态
+    lockState:{
+      handler(val,oldVal){
+        if(val === false){
+          this.comIconList.forEach((item)=>{
+            item.active = false
+          })
+          this.noneBlock();
+        }else{
+          this.noneBlock();
+          const params = {
+             taskId: this.taskId,
+             mode:'translate'
+          }
+          MODELAPI.BROWSERBUTTON(params)
+          .then((res) => {
+            if (res.data.code === 0) {
+              // this.$message.success(res.data.message);
+              // 移动 图标高亮 其他的灭
+               this.comIconList.forEach((item)=>{
+                  item.content === '移动' ? item.active = true : item.active = false;
+                 })
+            } else {
+              this.$message.error(res.data.message);
+            }
+          })
+          .catch((res) => {});
+        }
+      }
+    },
+    watchImgList(val, old) {
+      if (val !== old) {
+        this.comSwitch();
+        let flag = null;
+        if (val === 1) {
+          flag = true;
+        } else {
+          flag = false;
+        }
+        this.$emit("comIconChang", flag);
+      }
+    },
     setProps: {
       handler() {
         if (this.setProps.taskId) {
           this.getProps = this.setProps;
           this.ListPoint();
-        }
-      },
+          }
+        },
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
-      deep: true,
-    },
+         deep: true,
+        },
     singleList: {
       handler() {
         this.uiList = this.singleList;
       },
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
-      deep: true,
-    },
-    imgList: {
-      handler(val) {
-        // 构件库颜色变灰
-        if (val[14].state == 0) {
-          this.comIconList.forEach((item) => {
-            item.active = false;
-          });
-        }
-      },
       deep: true,
     },
   },
@@ -1004,56 +1227,287 @@ export default {
   },
   mounted() {
     window.addEventListener("click", this.clickOther);
+    // view_photo传递来的 关闭视图高亮（视图）
+    this.$EventBus.$on('okok',(val)=>{
+      if(val === false){
+        if(this.imgList[6].state === 1){
+           this.imgList[6].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+          this.imgList[6].url = oldUrl;
+        }
+      }
+    })
+  },
+  updated(){
+      // 构件库 和 浏览器 状态变化 决定contentLogo和browerLogo的值
+      if(this.imgList[14].state === 0){   // ---555
+        this.contentLogo = false;  
+      }else{
+        this.contentLogo = true
+      }
+      if(this.imgList[10].state === 0){   // ---555
+        this.browerLogo = false;  
+      }else{
+        this.browerLogo = true;
+      }
+      this.noneBlock();
+      this.$emit('passContentLogo',this.contentLogo);
+      this.$emit('passBrowerLogo',this.browerLogo);
+    //  是否选中 视图 （视图）
+    if(this.imgList[6].state === 0){
+      this.angleList.forEach(item =>{
+        item.active = false
+      });
+      this.$emit('showViewPhoto','0');
+    }
   },
   beforeDestroy() {
     // 实例销毁之前对点击事件进行解绑
     window.removeEventListener("click", this.clickOther);
   },
   methods: {
-    initTranslate() {
-      this.comIconList.forEach((item) => {
-        if (item.content === "移动") {
-          item.active = true;
-        } else {
-          item.active = false;
-        }
-      });
-    },
-    comItemClick(item) {
-      this.comIconList.forEach((row) => {
+    // 点击视图上的两个按钮 (视图)
+     angleListClick(item) {
+      this.angleList.forEach((row) => {
         if (item.content === row.content) {
           row.active = true;
         } else {
           row.active = false;
         }
       });
-      let action = "";
+      let mode = "";
       switch (item.content) {
-        case "旋转":
-          action = "rotate";
+        case "创建视图":
+          mode = "1";
           break;
-        case "移动":
-          action = "translate";
-          break;
-        case "缩放":
-          action = "scale";
+        case "视点动画":
+          mode = "2";
           break;
         default:
           break;
       }
-      const params = {
-        comId: this.socketData.mN || null,
+      this.$emit('showViewPhoto',mode);
+    },
+    showHideItemClick(value) {
+      // 隐藏 隔离 显示
+      switch (value) {
+        case 0:
+          MODELAPI.UPDATEMEMBER({
+            taskid: this.taskId,
+            visible: false,
+          }).then((res) => {
+            if (res.data.code === 0) {
+              this.$message.success(res.data.message);
+            } else {
+              this.$message.error(res.data.message);
+            }
+          });
+          break;
+        case 1:
+          MODELAPI.invertHidden({
+            taskId: this.taskId,
+          }).then((res) => {
+            if (res.data.code === 0) {
+              this.$message.success(res.data.message);
+            } else {
+              this.$message.error(res.data.message);
+            }
+          });
+          break;
+        case 2:
+          MODELAPI.displayAllActor({
+            taskId: this.taskId,
+          }).then((res) => {
+            if (res.data.code === 0) {
+              this.$message.success(res.data.message);
+            } else {
+              this.$message.error(res.data.message);
+            }
+          });
+          break;
+        default:
+          break;
+      }
+    },
+    comSwitch() {
+      const status = this.imgList[14].state;
+      if (!this.taskId) {
+        return;
+      }
+      let flag = false;
+      status === 1 ? (flag = true) : (flag = false);
+      COMPONENTLIBRARY.comSwitch({
         taskId: this.taskId,
-        action, //translate、rotate、scale
-      };
-      COMPONENTLIBRARY.operateCom(params)
+        flag,
+      })
         .then((res) => {
-          console.log(111, res);
+          if (res.data.code === 0) {
+             // 关闭构件库操作成功后 并轴心是打开时 要将轴心恢复未点击状态
+             if(!flag && this.axisList[0].active){
+                this.axisList[0].active = false;
+             }
+          } else {
+            this.$message.error(res.data.message);
+          }
         })
         .catch((res) => {
-          console.log(555, res);
+          this.$message.error(res.data.message);
         });
     },
+     // 移动 旋转 (原有的  构件库的)
+    // comItemClick(item) {
+    //   let isSame = false;
+    //   this.comIconList.forEach((row) => {
+    //     if (item.content === row.content) {
+    //       if (row.active) {
+    //         // 如果图标原本就是亮着，灭掉它
+    //         // 发关闭轴的指令
+    //         isSame = true;
+    //         COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
+    //           this.$resMsg(res.data);
+    //           if (res.data.code === 0) {
+    //             row.active = false;
+    //           }
+    //         });
+    //       }
+    //       row.active = true;
+    //     } else {
+    //       row.active = false;
+    //     }
+    //   });
+    //   if (isSame) {
+    //     return;
+    //   }
+    //   let action = "";
+    //   switch (item.content) {
+    //     case "旋转":
+    //       action = "rotate";
+    //       break;
+    //     case "移动":
+    //       action = "translate";
+    //       break;
+    //     case "缩放":
+    //       action = "scale";
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    //   const params = {
+    //     comId: this.socketData.mN || null,
+    //     taskId: this.taskId,
+    //     action, //translate、rotate、scale
+    //   };
+    //   COMPONENTLIBRARY.operateCom(params)
+    //     .then((res) => {
+    //       if (res.data.code === 0) {
+    //         this.$message.success(res.data.message);
+    //       } else {
+    //         this.$message.error(res.data.message);
+    //       }
+    //     })
+    //     .catch((res) => {});
+    // },
+    // 移动 旋转  浏览器的
+    browerClick(item) {
+      let isSame = false;
+      this.comIconList.forEach((row) => {
+        if (item.content === row.content) {
+          if (row.active) {
+            // 如果图标原本就是亮着，灭掉它
+            // 发关闭轴的指令
+            isSame = true;
+            COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
+              this.$resMsg(res.data);
+              if (res.data.code === 0) {
+                row.active = false;
+                // 关闭构件库操作成功后 并轴心是打开时 要将轴心恢复未点击状态
+                if(!flag && this.axisList[0].active){
+                  this.axisList[0].active = false;
+                }
+              }
+            });
+          }
+          row.active = true;
+        } else {
+          row.active = false;
+        }
+      });
+      if (isSame) {
+        return;
+      }
+      let mode = "";
+      switch (item.content) {
+        case "材质编辑":      // （材质库）
+          mode = "materialEdit";
+          break;
+        case "旋转":
+          mode = "rotate";
+          break;
+        case "移动":
+          mode = "translate";
+          break;
+        case "缩放":
+          mode = "scale";
+          break;
+        default:
+          break;
+      } 
+      if(mode === "materialEdit"){ // （材质库）
+        this.materialFun();
+        return false
+      }
+      const params = {
+        // comId: this.socketData.mN || null,
+        taskId: this.taskId,
+        mode, //translate、rotate、scale
+      };
+      // 当 构件库亮 或者 某个所打开时 点击移动旋转才发请求
+      if(this.contentLogo === true || this.lockState === true){
+        MODELAPI.BROWSERBUTTON(params)
+        .then((res) => {
+          if (res.data.code === 0) {
+            this.$message.success(res.data.message);
+          } else {
+            this.$message.error(res.data.message);
+          }
+        })
+        .catch((res) => {});
+      }
+    },
+    // 点击轴心
+    clickAxis(e){
+            let flagAxis = this.comIconList.some(item=>{
+                return item.active === true;
+            })
+            if(!flagAxis){
+                return false;
+            }
+            if(this.axisList[0].active){
+                this.axisOpenClose(false);
+            }else{
+                this.axisOpenClose(true);
+            }
+            },
+            // 轴心请求
+            axisOpenClose(e){
+                let params = {
+                taskId:this.taskId,
+                flag:e
+                }
+                MODELAPI.SETGIZMOAXIS(params).then((res)=>{
+                if(res.data.code === 0){
+                    if(params.flag){
+                        this.$message.success('坐标模式切换开启');
+                        this.axisList[0].active = true;
+                    }else{
+                        this.axisList[0].active = false;
+                    }
+                }else{
+                    this.$message.error('坐标模式切换失败');
+                }
+                }).catch(()=>{})
+      },
+    //  移动 旋转
     SetWeather(e) {
       /**
        * @Author: zk
@@ -1302,6 +1756,10 @@ export default {
        * @Date: 2021-03-17 09:51:33
        * @description: 关闭tool
        */
+      // 如果视图被选中 就阻止点击其他地方关闭视图的功能 （视图）
+      if(this.imgList[0].state = 1){
+        return;
+      }
       if (this.isMask) {
         return;
       }
@@ -1403,12 +1861,12 @@ export default {
         action: "addViewPoint",
       };
       this.UpdateOrder(params).then(() => {
-        this.followTool = false;
+        // this.followTool = false;
         this.ListPoint();
-        this.dialogEdit = false;
-        let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
-        this.imgList[6].url = oldUrl;
-        this.imgList[6].state = 0;
+        // this.dialogEdit = false;  // 控制编辑视角名称的弹框
+        // let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+        // this.imgList[6].url = oldUrl;
+        // this.imgList[6].state = 0;
       });
     },
     EditFollow(e) {
@@ -1427,6 +1885,7 @@ export default {
        * @Date: 2021-03-17 11:36:27
        * @description: 更新视点
        */
+      this.followInfo.taskId = this.taskId;
       this.$refs["ruleFollow"].validate((valid) => {
         if (valid) {
           MODELAPI.UPDATEFOLLOWPOINT(this.followInfo)
@@ -1501,13 +1960,14 @@ export default {
         action: "moveToViewPoint",
         camerashotId: e.tid,
       };
-      if (this.followInfo.available === "0") {
-        this.$message({
-          type: "warning",
-          message: this.actionData.addLoadMessage,
-        });
-        return;
-      } else {
+      // if (this.followInfo.available === "0") {
+      //   this.$message({
+      //     type: "warning",
+      //     message: this.actionData.addLoadMessage,
+      //   });
+      //   return;
+      // } else {
+        
         this.UpdateOrder(params);
         if (e.viewMode) {
           this.activePerson = e.viewMode === "1" ? 0 : 1;
@@ -1516,7 +1976,7 @@ export default {
           // this.activePerson = e.viewMode === "1" ? 0 : 1
           this.$emit("listenMode", Number(e.projectionMode));
         }
-      }
+      // }
     },
     resetPointList(e) {
       /**
@@ -1540,17 +2000,21 @@ export default {
        * @Date: 2021-03-17 10:30:51
        * @description: 获取视点列表
        */
-      let params = {
-        taskid: this.getProps.taskId,
-      };
-      this.pointList = [];
-      MODELAPI.LISTFOLLOWPOINT(params)
-        .then((res) => {
-          if (res.data.code === 0) {
-            this.pointList = res.data.data;
-          }
-        })
-        .catch((err) => {});
+      setTimeout(() => {
+        let params = {
+          taskid: this.getProps.taskId,
+        };
+        this.pointList = [];
+        MODELAPI.LISTFOLLOWPOINT(params)
+          .then((res) => {
+            if (res.data.code === 0) {
+              setTimeout(() => {
+                 this.pointList = res.data.data;
+              }, 800);
+            }
+          })
+          .catch((err) => {});
+      }, 1000);
     },
     resetState() {
       /**
@@ -1589,7 +2053,6 @@ export default {
 
       let params = {};
       // 8 2 3 0 12
-
       let { iconSelectList } = this;
       let selectData = iconSelectList.find((item) => {
         if (item.select === true && item.index !== index) {
@@ -1606,14 +2069,58 @@ export default {
       });
       // 原本没有选中，返回
       if (!selectData || !selectData.params.action) return;
-      // if (!selectData || !selectData.params.action) return;
       this.$emit("updataModle", selectData.params);
     },
+
+    handleComOperateIcon(res) {
+      // socket信息处理构件库操作图标
+      this.comIconList.forEach((item) => {
+        if (item.name === res.gizmoMode) {
+          item.active = true;
+        } else {
+          item.active = false;
+        }
+      });
+    },
+    // 移动 旋转 缩放 显示隐藏
+    noneBlock(){
+     if(this.contentLogo===false && this.lockState === false){
+        this.totalLogo = false
+      }else if(this.contentLogo===true || this.lockState === true){
+        this.totalLogo = true
+     }
+    },
     handleOrder(e) {
+      // 除了漫游 以及 属性, 点击其他图标时 关闭漫游弹框---
+      if(e != 0 && e != 11 ){ 
+        if(this.imgList[0].state === 1){
+           this.$emit("listenTodo", {
+            state: 0,
+            type: 0,
+          });
+        };
+      }
+      // 点击浏览器时 关闭漫游高亮---
+      if(e === 10){  
+        if(this.imgList[0].state === 1){
+          this.imgList[0].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[0].name}`);
+          this.imgList[0].url = oldUrl;
+        }
+        // 点击浏览器时 关闭视图高亮（视图）
+        if(this.imgList[6].state === 1){
+           this.imgList[6].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
+          this.imgList[6].url = oldUrl;
+        }
+        if(this.editMaterialBtn[0].active === true){
+          this.clickBtnMaterial('close'); // 打开浏览器 关闭材质编辑
+        }
+      }
       this.footerIconChange(e);
       // 功能未开放 模型动画
-      // || e === 14
-      if (e === 7 || e === 14) {
+      // || || e === 14
+      if (e === 7) {
         return;
       }
       if (e === 12 && this.activePerson === 0) {
@@ -1637,17 +2144,20 @@ export default {
       // 构件显示隐藏
       if (e === 13) {
         if (this.imgList[e].state === 0) {
-          this.imgList[e].title = "隐藏";
+          // this.imgList[e].title = "隐藏";
         } else {
-          this.imgList[e].title = "显示";
+          // this.imgList[e].title = "显示";
         }
+      }
+      if (e !== 13) {
+        // 隔离图元
+        this.imgList[e].url = realImg;
       }
       //点了测量图标
       // if (e === 3) {
       //   this.setForm.unit = 0;
       //   this.setForm.accuracy = 2;
       // }
-      this.imgList[e].url = realImg;
       this.imgList[e].state = this.imgList[e].state === 0 ? 1 : 0;
       // 关闭剖切和测量
       if (this.oldState === 2 || this.oldState === 3) {
@@ -1709,8 +2219,22 @@ export default {
           data: 0,
         });
       }
+      if (e === 13 || e === 12 || e === 5 || e === 10 || e === 11) {
+        if(e === 10){  //---555
+          this.browerLogo = !this.browerLogo
+          this.noneBlock();
+          // this.$emit('passBrowerLogo',this.browerLogo)
+        }
+        // 在出现显示隐藏图标的情况下，除了框选、小地图、浏览器、属性，点了下边其他图标，都得关闭显示隐藏图标
+      } else {
+        this.imgList[13].state = 0;
+      }
       // 重置状态
-      if (e !== this.oldState && e !== 10 && e !== 11 && e !== 13 && e !== 14) {
+      if (e !== this.oldState && e !== 10 && e !== 11) {
+        if (e == 13 && this.oldState == 12) {
+          // 点了框选，再点显示，不重置状态
+          return;
+        }
         this.angleTool = false;
         this.followTool = false;
         this.personTool = false;
@@ -1736,6 +2260,21 @@ export default {
       }
       if (e === 0) {
         this.personTool = this.imgList[e].state === 1 ? true : false;
+        // 漫游导航---
+        this.$emit("listenTodo", {
+            state: this.imgList[0].state,
+            type: 0,
+          });
+        // 打开漫游导航时 关闭浏览器---
+        if (this.imgList[10].state === 1) {
+          this.imgList[10].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[10].name}`);
+          this.imgList[10].url = oldUrl;
+          this.$emit("listenTodo", {
+            state: this.imgList[10].state,
+            type: 10,
+          });
+         }
       }
       // 标签 重置模型构件树
       if (e === 4) {
@@ -1747,8 +2286,12 @@ export default {
             state: this.imgList[10].state,
             type: 10,
           });
-        }
-      } else {
+          // 做和浏览器关闭时一样的操作
+          this.browerLogo = false
+          this.noneBlock();
+          // this.$emit('passBrowerLogo',this.browerLogo)
+         }
+       } else {
         if (e !== 11 && this.oldState !== 4) {
           this.imgList[4].state = 0;
           let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[4].name}`);
@@ -1799,6 +2342,16 @@ export default {
       }
       if (e === 6) {
         this.followTool = this.imgList[e].state === 1 ? true : false;
+         // 打开视图时 关闭浏览器 （视图）
+        if (this.imgList[10].state === 1) {
+          this.imgList[10].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[10].name}`);
+          this.imgList[10].url = oldUrl;
+          this.$emit("listenTodo", {
+            state: this.imgList[10].state,
+            type: 10,
+          });
+         }
       }
       if (e !== 0) {
         this.$emit("listenTodo", {
@@ -1824,6 +2377,53 @@ export default {
         })
         .catch(() => {});
     },
+    // 材质库相关方法 start ---
+    materialFun(){   // （材质库）
+        this.materialFlag = !this.materialFlag;
+        // 如果选中材质编辑按钮(高亮) 就发关闭轴的指令
+        if(this.materialFlag === true){
+          COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
+              if (res.data.code === 0) {
+                console.log('材质库',res.data);
+              }
+            }).catch(()=>{});
+        }
+        this.$emit('materialRelevant', this.materialFlag);
+    },
+    // 点击材质编辑开关按钮
+    clickBtnMaterial(e){
+      if(e === 'none'){
+        this.editMaterialBtn[0].active = !this.editMaterialBtn[0].active;
+         // 打开材质时 关闭浏览器 
+         if (this.imgList[10].state === 1) {
+          this.imgList[10].state = 0;
+          let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[10].name}`);
+          this.imgList[10].url = oldUrl;
+          this.$emit("listenTodo", {
+            state: this.imgList[10].state,
+            type: 10,
+          });
+         }
+      }else if(e === 'close'){
+        this.editMaterialBtn[0].active = false;
+      }
+      let params = {
+        taskId: this.taskId,
+        flag: this.editMaterialBtn[0].active ? 'on' : 'off'
+      }
+      CHAILIAOAPI.MATERIALEDITORCONTROL(params).then((res)=>{
+        if(res.data.code === 0){
+          // this.$message.success(res.data.message);
+          this.$emit("listenTodo", {
+              state: this.editMaterialBtn[0].active,
+              flag:'material'
+          });
+        }else{
+          this.$message.error(res.data.message);
+        }
+      }).catch(()=>{});
+    }
+    // 材质库相关方法 end ---
   },
 };
 </script>
@@ -1843,7 +2443,7 @@ export default {
   .todo-main {
     // max-width: 800px;
     padding: 10px;
-    background: rgba(0, 0, 0, 0.6);
+    background-color: rgba(17, 17, 17, 0.88);
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -1917,7 +2517,7 @@ export default {
     .show-slice {
       position: absolute;
       width: 60%;
-      left: 20%;
+      left: -80%;
       border-radius: 10px 10px 0 0;
       top: -195px;
       padding-bottom: 5px;
@@ -1933,8 +2533,36 @@ export default {
         height: 20px;
       }
     }
+    .show-split{ // 刨切图标偏移修改---
+      left: 10px !important;
+    }
     .show-com {
       top: -117px;
+      .moveAxis{
+        position: absolute;
+        top: -69px;
+        left: 0;
+        width: 100%;
+        height: 35%;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px 10px 0 0;
+        img{
+          width: 20px;
+          height: 20px;
+          margin-top: 4px;
+        }
+      }
+      .moveAxis2{
+        border-radius: 0;
+        height: 30%;
+        top: -32px;
+      }
+    }
+    .noBorder{
+      border-radius: 0;
     }
     .show-weather {
       position: absolute;
@@ -2092,7 +2720,7 @@ export default {
   }
 }
 .popper-bgi {
-  background: rgba(0, 0, 0, 0.6);
+  background-color: rgba(17, 17, 17, 0.88);
   border: transparent;
   .el-select-dropdown__item {
     color: #ffffff !important;
@@ -2110,5 +2738,34 @@ export default {
       border-top-color: rgba(0, 0, 0, 0.6) !important;
     }
   }
+}
+</style>
+
+<style lang="less" scoped>
+// 显示隐藏图标样式
+
+.show-icon-list {
+  background-color: rgba(0, 0, 0, 0.6);
+  position: absolute;
+  left: 4px;
+  top: -142px;
+  border-radius: 10px 10px 0 0;
+}
+
+.hide-icon-wrap {
+  position: relative;
+  .hide-icon-item {
+    padding: 10px;
+  }
+  .hide-icon-item-absolute {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: none;
+  }
+}
+
+.hide-icon-wrap:hover .hide-icon-item-absolute {
+  display: block;
 }
 </style>

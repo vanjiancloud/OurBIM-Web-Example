@@ -6,7 +6,7 @@
  * @description: 
 -->
 <template>
-  <div class="box-main">
+  <div :class="userType == 1 ? 'box-main userType' : 'box-main'">
     <div
       id="box"
       :class="isAnimation ? 'box-transition' : ''"
@@ -21,38 +21,96 @@
         :class="[
           item.className,
           activeFace === item.value ? 'active-face' : '',
-          'face-' + index
+          'face-' + index,
         ]"
       >
         <span v-text="item.label"></span>
         <!-- 边 -->
-        <div class="edge-0" @click.stop="handleEdge(index, 0)" @mouseenter="setEdge(index, 0, true)" @mouseleave="setEdge(index, 0, false)"></div>
-        <div class="edge-1" @click.stop="handleEdge(index, 1)" @mouseenter="setEdge(index, 1, true)" @mouseleave="setEdge(index, 1, false)"></div>
-        <div class="edge-2" @click.stop="handleEdge(index, 2)" @mouseenter="setEdge(index, 2, true)" @mouseleave="setEdge(index, 2, false)"></div>
-        <div class="edge-3" @click.stop="handleEdge(index, 3)" @mouseenter="setEdge(index, 3, true)" @mouseleave="setEdge(index, 3, false)"></div>
+        <div
+          class="edge-0"
+          @click.stop="handleEdge(index, 0)"
+          @mouseenter="setEdge(index, 0, true)"
+          @mouseleave="setEdge(index, 0, false)"
+        ></div>
+        <div
+          class="edge-1"
+          @click.stop="handleEdge(index, 1)"
+          @mouseenter="setEdge(index, 1, true)"
+          @mouseleave="setEdge(index, 1, false)"
+        ></div>
+        <div
+          class="edge-2"
+          @click.stop="handleEdge(index, 2)"
+          @mouseenter="setEdge(index, 2, true)"
+          @mouseleave="setEdge(index, 2, false)"
+        ></div>
+        <div
+          class="edge-3"
+          @click.stop="handleEdge(index, 3)"
+          @mouseenter="setEdge(index, 3, true)"
+          @mouseleave="setEdge(index, 3, false)"
+        ></div>
         <!-- 点 -->
-        <div class="spot-0" @click.stop="handleSpot(index, 0)" @mouseenter="setSpot(index, 0, true)" @mouseleave="setSpot(index, 0, false)"></div>
-        <div class="spot-1" @click.stop="handleSpot(index, 1)" @mouseenter="setSpot(index, 1, true)" @mouseleave="setSpot(index, 1, false)"></div>
-        <div class="spot-2" @click.stop="handleSpot(index, 2)" @mouseenter="setSpot(index, 2, true)" @mouseleave="setSpot(index, 2, false)"></div>
-        <div class="spot-3" @click.stop="handleSpot(index, 3)" @mouseenter="setSpot(index, 3, true)" @mouseleave="setSpot(index, 3, false)"></div>
+        <div
+          class="spot-0"
+          @click.stop="handleSpot(index, 0)"
+          @mouseenter="setSpot(index, 0, true)"
+          @mouseleave="setSpot(index, 0, false)"
+        ></div>
+        <div
+          class="spot-1"
+          @click.stop="handleSpot(index, 1)"
+          @mouseenter="setSpot(index, 1, true)"
+          @mouseleave="setSpot(index, 1, false)"
+        ></div>
+        <div
+          class="spot-2"
+          @click.stop="handleSpot(index, 2)"
+          @mouseenter="setSpot(index, 2, true)"
+          @mouseleave="setSpot(index, 2, false)"
+        ></div>
+        <div
+          class="spot-3"
+          @click.stop="handleSpot(index, 3)"
+          @mouseenter="setSpot(index, 3, true)"
+          @mouseleave="setSpot(index, 3, false)"
+        ></div>
       </div>
     </div>
-    <img class="go-front" @click.stop="goFront" src="../../assets/images/todo/home.png" mode="">
-      <div class="drop-down">
-        <img class="handle-down" @click.stop="changeView" src="../../assets/images/todo/drop_down.png" alt="">
-        <transition name="el-zoom-in-top">
-          <div class="cube-type" v-if="isCubeType">
-            <div v-for="(item, index) in handleList" :key="index">
-              <div :class="activeType === item.value ? 'active-type' : ''" v-text="item.label" class="select-type" @click.stop="changeType(item)"></div>
-            </div>
+    <img
+      class="go-front"
+      @click.stop="goFront"
+      src="../../assets/images/todo/home.png"
+      mode=""
+    />
+    <div class="drop-down">
+      <img
+        class="handle-down"
+        @click.stop="changeView"
+        src="../../assets/images/todo/drop_down.png"
+        alt=""
+      />
+      <transition name="el-zoom-in-top">
+        <div class="cube-type" v-if="isCubeType">
+          <div v-for="(item, index) in handleList" :key="index">
+            <div
+              :class="activeType === item.value ? 'active-type' : ''"
+              v-text="item.label"
+              class="select-type"
+              @click.stop="changeType(item)"
+            ></div>
           </div>
-        </transition>
-      </div>
+        </div>
+      </transition>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
+  props: {
+    userType: {},
+  },
   data() {
     return {
       faceList: [
@@ -183,6 +241,7 @@ export default {
        * @description: 边 鼠标移入移出
        */
       // 上
+      console.log(888);
       if ((node === 0 && e === 0) || (node === 2 && e === 2)) {
         this.setActiveEdge(0, 0, isShow, "edge");
         this.setActiveEdge(2, 2, isShow, "edge");
@@ -409,7 +468,7 @@ export default {
               y: -180,
               z: 0,
             };
-            this.activeOrder = 13;
+            this.activeOrder = 13;       
           } else if (e === 1) {
             // 右
             this.downInfo = {
@@ -788,13 +847,13 @@ export default {
        * @Date: 2020-09-21 09:44:35
        * @description: 旋转确认 前 0 后 1 上 2 下 3 左 4 右 5
        */
+      console.log('111',this.isAnimation);
       if (!this.isAnimation) {
         return;
       }
       // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       const oldDownInfo = JSON.parse(JSON.stringify(this.downInfo));
       this.activeFace = e;
-      console.log(555,e);
       switch (e) {
         case 0:
           this.downInfo = {
@@ -855,7 +914,6 @@ export default {
        * @Date: 2021-04-01 17:56:46
        * @description: 重置角度
        */
-      console.log(666);
       this.closeView();
       // if (this.activeType === 2) {
       // this.activeType = 1;
@@ -1040,6 +1098,9 @@ export default {
     }
   }
 }
+.userType {
+  right: 300px;
+}
 
 #box {
   width: 68px;
@@ -1053,7 +1114,7 @@ export default {
   transition: all 1s;
 }
 
-#box div {
+#box div{
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -1068,6 +1129,12 @@ export default {
   background-size: cover;
   color: #a5a5a4;
 }
+// 解决 #box div 加上 overflow: hidden;后  viewcube某些角度无法点击问题
+#box>div{
+  overflow: inherit;
+}
+
+
 .active-face {
   color: #ff6600 !important;
 }

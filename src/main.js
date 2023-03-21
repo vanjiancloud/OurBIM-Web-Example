@@ -5,7 +5,7 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 // 引入全局样式
-import './assets/css/global.css'
+import '@/assets/css/global.less'
 // 引入less
 import less from 'less'
 // 引入复制链接插件
@@ -22,6 +22,8 @@ import VueCropper from 'vue-cropper'
 // 引入echart
 import * as echarts from "echarts"
 import 'echarts-liquidfill'
+// 引入 iconfont
+import './assets/iconLock/iconfont.css'
 
 Vue.use(VueI18n)
 Vue.use(VueCropper)
@@ -31,7 +33,14 @@ Vue.use(VueClipboard)
 ElementUI.Dialog.props.lockScroll.default = false
 Vue.use(ElementUI)
 
-// 把axiox放到原型上
+// 引入后端响应数据提示方法
+import resMessage from "./utils/res-message"
+
+// 引入vuex
+import store from "./store/vuex.js"
+
+Vue.prototype.$resMsg = resMessage
+    // 把axiox放到原型上
 Vue.prototype.$axios = axios
     // 把$EventBus放到原型上
 Vue.prototype.$EventBus = new Vue()
@@ -78,8 +87,11 @@ const i18n = new VueI18n({
                 node: '节点:',
                 into: '进入项目',
                 release: '我的发布',
-                management: '项目管理',
+                management: '文件管理',
+                modelmanage: '模型管理', // 模型管理 （修改项目中心）
+                docmanage: '文档管理', // (文档管理)
                 Create: '创建项目',
+                makeComponent: 'BIM构件库', //自定义构件
                 Account: '账户管理',
                 // 我的发布
                 wholes: '全部',
@@ -99,6 +111,12 @@ const i18n = new VueI18n({
                 operation: '操作',
                 edit: '编辑',
                 del: '删除',
+                // 自定义构件 应用管理
+                compApplyname: '构件名称',
+                componentId: '构件ID',
+                componentSingle: '构件',
+                projectMore: '分组',
+                uploadComp: '上传构件',
                 // 创建应用
                 Step: '步骤一',
                 twoStep: '步骤二',
@@ -116,7 +134,7 @@ const i18n = new VueI18n({
                 uploadLimit: '文件上传限制200MB',
                 uploadGoBeyond: '超出200MB请联系我们',
                 xianzhi: '每次只能上传一个模型',
-                limit: '支持上传扩展名：.rvt, .ifc',
+                limit: '支持上传扩展名：.rvt, .ifc,.zip,.rfa',
                 Render: '开始上传',
                 application: '项目名称：',
                 Required: '必填项',
@@ -189,8 +207,11 @@ const i18n = new VueI18n({
                             label: '时间'
                         }
                     ],
+                    materEdit: {
+                        title: '材质编辑'
+                    },
                     browser: {
-                        title: '模型构件树',
+                        title: '模型浏览器',
                         tips: ['加载中', '暂无数据']
                     },
                     tag: {
@@ -204,7 +225,7 @@ const i18n = new VueI18n({
                         title: '标签'
                     },
                     componentLibrary: {
-                        title: '构件库'
+                        title: '资料库'
                     },
                     qrcodePart: {
                         title: '二维码',
@@ -223,7 +244,8 @@ const i18n = new VueI18n({
                             '指令下发失败',
                             '请求失败',
                             '正在执行添加视角，请稍候……',
-                            '长时间未操作，已自动关闭，刷新即可重新进入。'
+                            '刷新重新打开。',
+                            '发起方已退出协同！'
                         ]
                     },
                     cubeBox: {
@@ -232,7 +254,7 @@ const i18n = new VueI18n({
                     },
                     tooltipList: {
                         toolPerson: ["第一人称", "上帝视角", "第三人称"],
-                        tool: ["视角", "移动速度", "模型剖切", "测量", "标签", "小地图", "关注视点", "模型动画", "分解模型", "渲染环境", "构件树", "属性"],
+                        tool: ["漫游导航", "移动速度", "模型剖切", "测量", "标签", "小地图", "视图", "模型动画", "分解模型", "渲染环境", "浏览器", "属性"],
                         subtool: ["坐标", "距离", "角度", "设置"],
                         sliceTool: ["移动", "旋转", "反选", "指定", "重置"],
                     },
@@ -292,7 +314,10 @@ const i18n = new VueI18n({
                 into: 'Application',
                 release: 'release',
                 management: 'Application',
+                modelmanage: 'Model management', // 模型管理 （修改项目中心）
+                docmanage: 'Document management', // （文档管理）
                 Create: 'Create app',
+                makeComponent: 'Custom component', // 自定义构件
                 Account: 'Account',
                 // 我的发布
                 wholes: 'whole',
@@ -312,6 +337,12 @@ const i18n = new VueI18n({
                 operation: 'Operation',
                 edit: 'Edit',
                 del: 'Delete',
+                // 自定义构件 应用管理
+                compApplyname: 'Component name',
+                componentId: 'Component ID',
+                componentSingle: 'Component',
+                projectMore: 'Groups',
+                uploadComp: 'Upload component',
                 // 创建应用
                 Step: 'Step one',
                 twoStep: 'Step two',
@@ -399,6 +430,9 @@ const i18n = new VueI18n({
                             label: 'time'
                         }
                     ],
+                    materEdit: {
+                        title: 'Material Editing'
+                    },
                     browser: {
                         title: 'Model browser',
                         tips: 'No data available'
@@ -476,9 +510,13 @@ const i18n = new VueI18n({
     // 把echarts放到原型上
 Vue.prototype.$echarts = echarts
 
+import onlyNumber from '@/directive/num'
+Vue.use(onlyNumber)
+
 
 new Vue({
     router,
     i18n,
+    store,
     render: h => h(App)
 }).$mount('#app')

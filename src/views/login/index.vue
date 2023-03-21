@@ -202,7 +202,7 @@ export default {
             trigger: "blur",
           },
           {
-            pattern: /^[\w.]{6,20}$/,
+            pattern: /^[\w.~!@#$%^&*_?+><]{6,20}$/,
             message: "请输入密码,字符为英文&数字&英文符号，位数6-20",
             trigger: "blur",
           },

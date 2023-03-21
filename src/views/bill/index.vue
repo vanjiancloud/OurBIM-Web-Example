@@ -124,7 +124,6 @@ export default {
         userid: Getuserid(),
       })
         .then((res) => {
-          console.log("axios-获取用户信息", res.data.data);
           // //更新cookie里的信息
           if (res.data && res.data.data) {
             sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
@@ -143,7 +142,6 @@ export default {
           }
         })
         .catch((err) => {
-          console.log(err);
           this.$message.error("请求失败");
         });
     },

@@ -62,7 +62,7 @@ export default {
       background-color: #00AAF0;
     }
   .load-tip{
-    background: rgba(0, 0, 0, 0.6);
+    background-color: rgba(17,17,17,0.88);
     color: #fff;
     margin: 10px 0;
     padding: 5px;

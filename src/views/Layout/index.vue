@@ -28,11 +28,11 @@
                       功能介绍</a
                     ></el-menu-item
                   >
-                  <el-menu-item index=""
+                  <!-- <el-menu-item index=""
                     ><a href="http://www.ourbim.com/solution">
                       解决方案</a
                     ></el-menu-item
-                  >
+                  > -->
                   <el-menu-item index=""
                     ><a href="http://www.ourbim.com/sample_project">
                       示例项目</a
@@ -51,6 +51,11 @@
                   <el-menu-item index=""
                     ><a href="http://www.ourbim.com/latest_news">
                       最新资讯</a
+                    ></el-menu-item
+                  >
+                  <el-menu-item index=""
+                    ><a href="https://www.ourbim.com/download">
+                      下载</a
                     ></el-menu-item
                   >
                   <el-submenu index="" popper-class="popper-class">
@@ -83,6 +88,21 @@
                         {{ $t("APIdov") }}
                       </a></el-menu-item
                     >
+                    <el-menu-item index="/"
+                      ><a
+                        href="https://www.ourbim.com/developer/demo/index.html"
+                        style="
+                          text-decoration: none;
+                          color: #999;
+                          font-size: 16px;
+                          display: block;
+                          width: 100%;
+                        "
+                      >
+                        示例DEMO
+                      </a></el-menu-item
+                    >
+
                     <el-menu-item index="/">
                       <a
                         href="http://www.ourbim.com/developer/update_log"
@@ -136,7 +156,7 @@
                         <img src="../Layout/img/sun.png" alt="" />
                       </div>
                     </div>
-                    <div class="two">华北区</div>
+                    <div class="two">北方地区</div>
                     <div class="three">
                       <div>
                         <span class="first">
@@ -152,7 +172,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="box-p">
+                  <!-- <div class="box-p">
                     <div class="one">
                       <div class="one-c">
                         <img src="../Layout/img/niu.png" alt="" />
@@ -173,30 +193,30 @@
                         <span class="second">198&emsp;6771&nbsp;9871</span>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                   <div class="box-p">
                     <div class="one">
                       <div class="one-c">
-                        <img src="../Layout/img/cao.png" alt="" />
+                        <img src="../Layout/img/wan.png" alt="" />
                       </div>
                     </div>
-                    <div class="two">华东区</div>
+                    <div class="two">南方地区</div>
                     <div class="three">
                       <div>
                         <span class="first">
                           <img src="../Layout/img/user.png" alt="" />
                         </span>
-                        <span class="second">曹经理</span>
+                        <span class="second">小万</span>
                       </div>
                       <div>
                         <span class="first">
                           <img src="../Layout/img/phone.png" alt="" />
                         </span>
-                        <span class="second">139&emsp;6266&nbsp;2352</span>
+                        <span class="second">186&emsp;2283&nbsp;7275</span>
                       </div>
                     </div>
                   </div>
-                  <div class="box-p">
+                  <!-- <div class="box-p">
                     <div class="one">
                       <div class="one-c">
                         <img src="../Layout/img/liu.png" alt="" />
@@ -217,7 +237,7 @@
                         <span class="second">186&emsp;2283&nbsp;7275</span>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                   <el-button slot="reference" class="btn">
                     <img src="./img/yuyue.png" alt="" />
                     <span>预约演示</span>
@@ -315,17 +335,39 @@
               router
               background-color="#fff"
             >
-              <!-- 项目管理 -->
+               <!-- 项目管理
               <el-menu-item index="/manage">
                 <i class="el-icon-setting"></i>
                 <span slot="title" class="write">{{ $t("management") }}</span>
               </el-menu-item>
 
-              <!-- 创建项目 -->
-              <!--  <el-menu-item index="/found">
+               自定义构件（创建项目） 
+               <el-menu-item index="/found">
                 <i class="el-icon-folder-add"></i>
-                <span slot="title" class="write">{{ $t("Create") }}</span>
-              </el-menu-item> -->
+                <span slot="title" class="write">{{ $t("makeComponent") }}</span>
+              </el-menu-item>  -->
+
+              <!-- (修改项目中心) -->
+              <el-submenu index="manage">
+                <template slot="title">
+                  <i class="el-icon-setting"></i>
+                  <span class="write">{{ $t("management") }}</span>
+                </template>
+                <!-- 模型管理 -->
+                <el-menu-item index="/manage">{{
+                  $t("modelmanage")
+                }}</el-menu-item>
+                <!-- GIS数据服务 -->
+                <!-- <el-menu-item index="/GISList">GIS数据服务</el-menu-item> -->
+                <!-- 文档管理 -->
+                <el-menu-item index="/office">{{
+                  $t("docmanage")
+                }}</el-menu-item>
+                <!-- 自定义构件 -->
+                <el-menu-item index="/found">{{
+                  $t("makeComponent")
+                }}</el-menu-item>
+              </el-submenu>
 
               <!-- 账户管理 -->
               <el-submenu index="account">
@@ -396,7 +438,7 @@ import { showDetail } from "@/api/my.js";
 import { Getuserid } from "@/store/index.js";
 import { Deluserid } from "@/store/index.js";
 
-import createProject from "../found/index.vue";
+import createProject from "../found/createProj.vue";
 export default {
   name: "myHeader",
   components: {
@@ -568,7 +610,7 @@ export default {
 
 <style lang="less">
 .el-popover {
-  width: 800px;
+  width: 400px;
   height: 240px;
   display: flex;
   justify-content: space-around;
@@ -736,7 +778,6 @@ export default {
           font-family: PingFang SC;
           font-size: 16px;
           color: #999;
-        
         }
         a:hover {
           color: #ff6600;
@@ -825,7 +866,6 @@ export default {
         }
         .tiao {
           .tu {
-            
             margin-top: 10px;
             display: flex;
             .icon {
