@@ -88,7 +88,7 @@
               </el-progress>
               <!-- 转换失败 -->
               <div  v-if="scope.row.ourbimComponentInfo !== null && scope.row.ourbimComponentInfo.comStatus === '3'">
-                <img src="../manage/err.png" alt="" />
+                <img src="../../assets/err.png" alt="" />
               </div>
             </div>
           </template>
