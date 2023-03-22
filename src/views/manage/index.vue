@@ -6,7 +6,7 @@
       <!-- 消息提示 -->
       <div class="left">
         {{ $t("Youhave") }}&nbsp;
-        <span style="color: #00aaf0">{{ itemList.length }} </span>&nbsp;
+        <span style="color: #00aaf0">{{ total }} </span>&nbsp;
         {{ $t("project") }}
       </div>
       <!-- 按钮 -->
@@ -105,7 +105,7 @@
               <div :style="{'display':'flex','justify-content':'center','align-items':'center'}"
               >
                 <span>{{ formatStatus(scope.row.applidStatus) }}</span>
-                <div class="err-icon"><img src="./err.png" alt="" /></div>
+                <div class="err-icon"><img src="../../assets/err.png" alt="" /></div>
               </div>
             </el-tooltip>
             <div v-else>{{ formatStatus(scope.row.applidStatus) }}</div>
@@ -271,6 +271,7 @@
           </template>
         </el-table-column>
       </el-table>
+      <Pagination :total="total" :page.sync="pages.pageNo" :limit.sync="pages.pageSize" @pagination="handlePageChange" />
     </div>
     <!-- 分享dialog框 -->
     <el-dialog
@@ -403,7 +404,9 @@
           >
             <el-card class="box-card">
                 <div v-for="(itemm,i) in sonAppValue" :key="i" class="text item clearfix">
-                  <td class="wordEllipsis">{{itemm}}</td>
+                  <el-tooltip class="item" effect="dark" :content="itemm" placement="top">
+                    <td class="wordEllipsis">{{itemm}}</td>
+                  </el-tooltip>
                   <td :class="sonAppValue.length <= 2 ? 'td yinc bind' : 'td yinc'" @click="delRow(sonAppKey[i])" >移除</td>
                   <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">m</span></td>
                   <td class="td"><el-input class="elinput" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" v-model="altitude[i]" type=number placeholder="海拔高度"></el-input></td>
@@ -593,10 +596,13 @@ import axios from "@/utils/request";
 import qs from "qs";
 import { updateJudgeMsg } from '../../api/my';
 import { urlToblob } from '@/utils/file.js'
+import Pagination from "@/components/Pagination"
 
 export default {
   name: "manage",
-  components: {},
+  components: {
+    Pagination
+  },
   data() {
     return {  
       radioStart:2, // 是否预启动
@@ -757,6 +763,11 @@ export default {
       noDisapper:{  // 编辑时 点击确定防止 子模型列表消失
         appType:'',
         isGis:''
+      },
+      total: 0,
+      pages: {
+        pageNo: 1,
+        pageSize: 20
       }
     };
   },
@@ -1030,7 +1041,8 @@ export default {
         ? (row.showTooltip = false)
         : (row.showTooltip = true);
     },
-    // 定时器每隔一秒获取数据
+
+    // // 定时器每隔一秒获取数据
     setGetdataIn() {
       this.timer = setInterval(() => {
         if (this.timerFlag) {
@@ -1038,11 +1050,22 @@ export default {
         }
       }, 2500);
     },
+
+    // 分页
+    handlePageChange(data) {
+        this.pages.pageNo = data.pageIndex
+        this.pages.pageSize = data.pageSize
+        this.GetList()
+    },
+
     // 获取应用数据列表
     GetList() {
-      getProjectList({
-        userid: Getuserid(),
-      })
+      const params = {
+        pageNo: this.pages.pageNo,
+        pageSize: this.pages.pageSize,
+        userid: Getuserid()
+      }
+      getProjectList(params)
         .then((res) => {
           if(this.form.applid.length != "0"){
             for (let i = 0; i < this.sonAppKey.length; i++) {
@@ -1054,8 +1077,9 @@ export default {
             }
           }
           if (res.data.code == "0") {
+            this.total = res.data.data.total
             this.itemList = res.data.data.list;
-            this.reverse();
+            // this.reverse();
             this.appid = res.data.data.appid;
             this.maxInstance = res.data.data.maxInstance;
             this.currentInstance = res.data.data.currentInstance;

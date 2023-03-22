@@ -51,10 +51,17 @@ const routes = [
                 }
             },
             {
+                path: 'GISList',
+                component: () => import('@/views/GISList/index.vue'),
+                meta: {
+                    title: 'GIS数据服务'
+                }
+            },
+            {
                 path: 'found',
                 component: found,
                 meta: {
-                    title: '创建项目'
+                    title: 'BIM构件库'
                 }
             },
             {

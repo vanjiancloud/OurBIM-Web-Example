@@ -1,14 +1,12 @@
 <template>
   <div class="pagination">
     <el-pagination
-      small
       :background="background"
       :current-page.sync="currentPage"
       :page-size.sync="pageSize"
       :layout="layout"
       :page-sizes="pageSizes"
       :total="total"
-      :pager-count="pagerCount"
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
@@ -28,7 +26,7 @@ export default {
     },
     limit: {
       type: Number,
-      default: 18 // 默认每页20条
+      default: 15 // 默认每页20条
     },
     pageSizes: {
       type: Array,
@@ -38,7 +36,7 @@ export default {
     },
     layout: {
       type: String,
-      default: 'prev, pager, next'
+      default: 'prev, pager, next, jumper, sizes,total'
     },
     background: {
       type: Boolean,
@@ -51,11 +49,6 @@ export default {
     hidden: {
       type: Boolean,
       default: false
-    },
-    // 超过多少条隐藏分页
-    pagerCount: {
-      type: Number,
-      default: 5 
     }
   },
   computed: {
@@ -89,11 +82,11 @@ export default {
 
 <style scoped lang="less">
 .pagination {
-  margin-top: 20px;
+  margin-top: 40px;
   text-align: center;
 }
 ::v-deep.el-pagination.is-background .el-pager li:not(.disabled).active {
-  background: none;
+  background: #5ec8f3;
   border-radius: 100%;
 }
 ::v-deep .el-pagination.is-background .btn-next, ::v-deep .el-pagination.is-background .btn-prev, ::v-deep .el-pagination.is-background .el-pager li{
@@ -101,14 +94,5 @@ export default {
 }
 ::v-deep .el-input__inner{
   border-radius: 4px;
-}
-::v-deep .el-pagination__sizes{
-  margin: 0 10px 0 10%;
-  .el-input__inner,.el-input__inner:hover, .el-input__inner:focus{
-    border: none !important;
-  }
-}
-::v-deep .el-pager li{
-  min-width: auto;
 }
 </style>

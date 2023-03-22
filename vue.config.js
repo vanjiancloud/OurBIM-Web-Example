@@ -6,6 +6,7 @@
  * @description: 
  */
 module.exports = {
+    lintOnSave: false,
     // publicPath: "./",
     publicPath: "/project_center/",
     // 生产环境是否生成 sourceMap 文件

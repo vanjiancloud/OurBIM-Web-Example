@@ -21,6 +21,7 @@ module.exports = {
     'vue/no-parsing-error': [2, { 'x-invalid-end-tag': false }],
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    "vue/no-unused-vars":"off",
     "vue/no-unused-components": "off"
   }
 }

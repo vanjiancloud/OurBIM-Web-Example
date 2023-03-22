@@ -351,7 +351,7 @@ export default {
     // 上传bim模型前
     beforeModelUpload(file) {
       let testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
-      let listModel = ["rvt", "ifc", "zip","rfa","ipt","dgn","dwg","step","c4d","fbx","FBX","obj","stp","xyz","txt","pts","las"];
+      let listModel = ["rvt", "ifc", "zip","rfa","ipt","dgn","dwg","step","fbx","FBX","obj","stp","xyz","txt","pts","las"];
       // const isLt = file.size / 1024 / 1024 < 200;
       // if (!isLt) {
       //   this.$message({

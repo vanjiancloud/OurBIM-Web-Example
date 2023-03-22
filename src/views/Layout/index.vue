@@ -357,6 +357,8 @@
                 <el-menu-item index="/manage">{{
                   $t("modelmanage")
                 }}</el-menu-item>
+                <!-- GIS数据服务 -->
+                <!-- <el-menu-item index="/GISList">GIS数据服务</el-menu-item> -->
                 <!-- 文档管理 -->
                 <el-menu-item index="/office">{{
                   $t("docmanage")

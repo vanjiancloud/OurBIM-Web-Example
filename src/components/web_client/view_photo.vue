@@ -71,10 +71,11 @@
             @close="dialogVisibleClose"
             width="25%"
             :append-to-body="true"
+            :close-on-click-modal="false"
             >
             <el-form :model="editForm" :rules="rules" ref="editForm">
                 <el-form-item label="名称:" label-width="80px" prop="inputName">
-                    <el-input v-model="editForm.inputName" placeholder="请输入内容"></el-input>
+                    <el-input v-model="editForm.inputName" placeholder="请输入内容" @keydown.native.stop></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -200,10 +201,10 @@
             </div>
             <div class="proEditDown">
                 <div class="allWidth" :style="{'display':'flex'}" onselectstart="return false;">
-                  <draggable v-model="animaViewPointer"  chosenClass="chosen" forceFallback="true" group="people" animation="1000" @start="onStart" @end="onEnd">
+                  <draggable v-model="animaViewPointer" handle=".dragImg"  chosenClass="chosen" forceFallback="true" group="people" animation="1000" @start="onStart" @end="onEnd">
                     <transition-group :style="{'display':'flex'}">
                         <div class="viewMorePic" v-for="(item,index) in animaViewPointer" :key="item.tid">
-                            <img :src="item.imagePath" alt="" @click="selectPoints(index)" :class="{'pointBor':activePoints === index}" :style="{'width':'100%','height':'100%'}">
+                            <img class="dragImg" :src="item.imagePath" alt="" @click="selectPoints(index)" :class="{'pointBor':activePoints === index}" :style="{'width':'100%','height':'100%','cursor': 'move'}">
                             <i class="el-icon-close pointsClose" @click="delPoints(index,item)" v-if="activePoints === index"></i>
                             <div class="videosPlus">
                                 <img :src="require('@/assets/images/view/jiahao.png')" @click.stop="addView(index)" :style="{'width':'100%','height':'100%'}" alt="">
@@ -225,14 +226,15 @@
       <!-- 新建空的视点动画的名称（或改变视点间的时间） -->
         <el-dialog
             title="编辑"
-            :visible="newBlockView"
+            :visible.sync="newBlockView"
+            :close-on-click-modal="false"
             @close="closeNewView"
             width="25%"
             :append-to-body="true"
             >
-            <el-form v-if="flagTime === ''" :model="newViewForm" :rules="ruleNewView" ref="newViewForm">
+            <el-form v-if="flagTime === ''" :model="newViewForm" :rules="ruleNewView" ref="newViewForm" @submit.native.prevent>
                 <el-form-item label="名称:" label-width="80px" prop="name">
-                    <el-input v-model="newViewForm.name" placeholder="请输入内容"></el-input>
+                    <el-input v-model="newViewForm.name" placeholder="请输入内容"  @keydown.native.stop autofocus="true"></el-input>
                 </el-form-item>
             </el-form>
             <el-form v-if="flagTime === '1'" :model="newTime" :rules="ruleTime" ref="newTime">
@@ -539,12 +541,14 @@ import { log } from 'console';
             // 视点列表搜索
             searchBtn(){
                 if(this.input.trim() !== ''){
-                    let newArrSear = this.pointList.filter((item)=>{
+                    let newArrSear = this.searchPoint.filter((item)=>{
                         if(item.name.indexOf(this.input.trim())>-1){
                             return item;
                         }
                     })
                     this.pointList = newArrSear;
+                }else{
+                  this.pointList = this.searchPoint;
                 }
             },
             // 视点列表搜索框失去焦点时
@@ -669,7 +673,6 @@ import { log } from 'console';
                     let params = {
                      taskid: this.getProps.taskId,
                     };
-                    this.pointList = [];
                     MODELAPI.LISTFOLLOWPOINT(params)  
                     .then((res) => {
                         if (res.data.code === 0) {
@@ -922,7 +925,6 @@ import { log } from 'console';
                 let params = {
                     viewId:idView
                 }
-                this.animaViewPointer = [];
                 MODELAPI.GETANIMBYVIEW(params).then((res)=>{
                     if(res.data.code===200){
                         this.animaViewPointer = res.data.data;
@@ -1022,7 +1024,6 @@ import { log } from 'console';
             },
             // 点击播放按钮
             startPlay(){
-                console.log('vvvvvvvvv');
                 let params = {
                     viewId:this.animViewId,
                     taskId:this.getProps.taskId,
@@ -1041,6 +1042,7 @@ import { log } from 'console';
                 let startPost = document.querySelector('.startPost');
                 let proEditMain = document.querySelector('.proEditMain');
                 let stepTime = Number(( this.picTime * 1000 / allWidth.offsetWidth ).toFixed(5));
+                console.log('🚀🚀🚀',this.picTime,stepTime);
                 // 如果没有进度条
                 if(allWidth.offsetWidth < proEditMain.offsetWidth){
                      this.noTimer = setInterval(()=>{
@@ -1052,6 +1054,7 @@ import { log } from 'console';
                                 startPost.style.left =  6 +'px';
                                 this.startLang = parseInt(startPost.style.left);
                                 this.playFlags = '1';
+                                this.clickPlayTime = 0
                                 clearInterval(this.noTimer);
                              },1000);
                         }
@@ -1071,6 +1074,7 @@ import { log } from 'console';
                                         setTimeout(()=>{
                                             dom.scrollLeft = 0;
                                             this.playFlags = '1';
+                                            this.clickPlayTime = 0
                                             startPost.style.left =  6 +'px';
                                             clearInterval(this.threeTimer);
                                         },1000);
@@ -1177,7 +1181,8 @@ import { log } from 'console';
                     }
             },
             // 松开播放条
-            releaseMouse(){
+            releaseMouse(e){
+              console.log('🚀🚀🚀q',e);
                 window.onmousemove = null;
                 document.removeEventListener("mousemove",this.moveEvent,false);
                 this.getPlayTime();
@@ -1676,6 +1681,7 @@ import { log } from 'console';
                 width: 25px;
                 height: 25px;
                 cursor: pointer;
+                user-select: none;
            }
         .videosPlus:last-child{
             right: -18px;

@@ -1,0 +1,54 @@
+.btn(@bgColor,@color:'#FFFFFF'){
+  background: @bgColor;
+  border: 1px solid @bgColor;
+  color: @color;
+  &:hover,&:focus{
+    background: rgba(@bgColor,0.8);
+    border: 1px solid @bgColor;
+    color: @color;
+  }
+}
+.borderBtn(@bgColor){
+  border: 1px solid @bgColor!important;
+  background: #fff!important;
+  color: @bgColor!important;
+  &:hover,&:focus{
+    background: rgba(@bgColor,1)!important;
+    border: 1px solid @bgColor!important;
+    color:#FFFFFF!important;
+  }
+}
+.blueBtn{
+  .btn(#00AAF0)
+}
+
+.bluePlainBtn{
+  .borderBtn(#00AAF0)
+}
+
+.bluePlainBtn1{
+  .borderBtn(#00C9FD)
+}
+
+.iconBtn(@color){
+  font-size: 16px;
+  cursor: pointer;
+  color: @color;
+  margin: 0 5px;
+  &:hover{
+    color: rgba(@color,0.8);
+  }
+}
+
+.editIcon{
+  .iconBtn(#20C6FF)
+}
+.deleteIcon{
+  .iconBtn(#FF0008)
+}
+
+.el-button.is-disabled, .el-button.is-disabled:focus, .el-button.is-disabled:hover{
+    background: #E0E0E0!important;
+    border: #E0E0E0!important;
+    color: #6D7278;
+}
