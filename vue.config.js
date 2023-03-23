@@ -5,6 +5,10 @@
  * @LastEditTime: 2021-09-10 11:32:13
  * @description: 
  */
+const path = require('path')
+function resolve(dir) {
+    return path.join(__dirname, dir)
+}
 module.exports = {
     lintOnSave: false,
     // publicPath: "./",
