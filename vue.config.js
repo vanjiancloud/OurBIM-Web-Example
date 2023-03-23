@@ -18,5 +18,23 @@ module.exports = {
         if (process.env.NODE_ENV === 'production') {
             config.optimization.minimizer[0].options.terserOptions.compress.drop_console = true
         }
+    },
+    chainWebpack(config) {
+        // set svg-sprite-loader
+        config.module
+            .rule('svg')
+            .exclude.add(resolve('src/icons'))
+            .end()
+        config.module
+            .rule('icons')
+            .test(/\.svg$/)
+            .include.add(resolve('src/icons'))
+            .end()
+            .use('svg-sprite-loader')
+            .loader('svg-sprite-loader')
+            .options({
+            symbolId: 'icon-[name]'
+            })
+            .end()
     }
 }
