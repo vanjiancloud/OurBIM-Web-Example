@@ -647,7 +647,7 @@ import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
 import { Getuserid } from "@/store/index.js"; // (自定义构件)
 import viewUpimg from "@/components/web_client/view_upImg.vue"; // （材质库）
 import weatherSystem from "@/components/web_client/weather_system.vue"; // 天气系统
-import ResourcePool from "@/components/web_client/resourcePool.vue"; // 资源库
+import ResourcePool from "../resourcePool/index.vue"; // 资源库
 
 
 export default {

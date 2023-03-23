@@ -1,3 +1,4 @@
+import newRequest from '@/utils/newRequest'
 import request from '../utils/request'
 import qsStringify from "qs-stringify"
 
@@ -34,14 +35,6 @@ const CHAILIAOAPI = {
             headers: {
                 'Content-Type': 'application/json'
             }
-        })
-    },
-    // 获取 个人库 贴图
-    GETMATERIALALLTEXTUREINFO: params => {
-        return request({
-            url: '/material/getAllMaterialTextureInfo',
-            method: 'get',
-            params
         })
     },
     // 材质编辑模式开关
@@ -97,14 +90,6 @@ const CHAILIAOAPI = {
                 "Content-Type": "multipart/form-data;"
             },
             data: formData,
-        })
-    },
-    // 创建个人库材质贴图分组
-    CREATEMATERIALTEXTUREGROUP: params => {
-        return request({
-            url: '/material/createMaterialTextureGroup',
-            method: 'post',
-            params,
         })
     },
     GETPAKIDBYAPPID: params => {
@@ -191,5 +176,40 @@ const CHAILIAOAPI = {
         })
     },
 }
+
+
+// 创建贴图分组
+export function addChartletGroup(data) {
+    return newRequest({
+        url: "/material/createMaterialTextureGroup",
+        method: "post",
+        data,
+        headers: {
+            "Content-Type": "multipart/form-data;"
+        },
+    });
+}
+
+// 获取 个人库 贴图
+export function getChartletList(params) {
+    return newRequest({
+        url: "/material/getAllMaterialTextureInfo",
+        method: "get",
+        params
+    });
+}
+
+// 上传贴图
+export function addChartlet(data) {
+    return newRequest({
+        url: "/material/uploadMaterialTextures",
+        method: "post",
+        data,
+        headers: {
+            "Content-Type": "multipart/form-data;"
+        },
+    });
+}
+
 
 export default CHAILIAOAPI
