@@ -37,11 +37,15 @@
             <!-- 创建分组，上传贴图 -->
         </el-drawer>
         <!-- 收缩和展开 -->
-        <!-- <transition name="el-fade-in"> -->
-            <div class="isShow" @click="onIsShow" v-if="drawer">
-                <i :class="{'el-icon-arrow-right':!isShow,'el-icon-arrow-left':isShow}"></i>
-            </div>
-        <!-- </transition> -->
+        <div class="isShow" @click="onIsShow" v-if="drawer">
+            <i :class="{'el-icon-arrow-right':!isShow,'el-icon-arrow-left':isShow}"></i>
+        </div>
+        <!-- 弹出图标 -->
+        <div class="toolList" v-if="drawer">
+            <el-tooltip v-for="(item,index) in toolIcons" :key="index" effect="dark" :content="item.name" placement="bottom">
+                <img :src="item.check?item.checkUrl:item.url" @click="onOprate(item)" />
+            </el-tooltip>
+        </div>
         <!-- 新建分组弹框 -->
         <DialogChartletGroup ref="DialogChartletGroup" />
         <!-- 上传贴图弹框 -->
@@ -106,6 +110,33 @@ export default {
                 page: 1, //分页，第几页
                 pageSize: 18,
             },
+            toolIcons:[
+                {
+                    url:require('@/assets/images/todo/unchecked/com/move1.png'),
+                    checkUrl:require('@/assets/images/todo/check/com/move1.png'),
+                    name:'缩放'
+                },
+                {
+                    url:require('@/assets/images/todo/unchecked/com/move2.png'),
+                    checkUrl:require('@/assets/images/todo/check/com/move2.png'),
+                    name:'旋转'
+                },
+                {
+                    url:require('@/assets/images/todo/unchecked/com/move3.png'),
+                    checkUrl:require('@/assets/images/todo/check/com/move3.png'),
+                    name:'移动'
+                },
+                {
+                    url:require('@/assets/images/todo/unchecked/com/move4.png'),
+                    checkUrl:require('@/assets/images/todo/check/com/move4.png'),
+                    name:'轴心'
+                },
+                {
+                    url:require('@/assets/images/todo/unchecked/com/move5.png'),
+                    checkUrl:require('@/assets/images/todo/check/com/move5.png'),
+                    name:'笔刷'
+                },
+            ]
         };
     },
     watch: {},
@@ -323,6 +354,50 @@ export default {
                 })
                 .catch(() => {});
         },
+        // 那五个操作
+        onOprate(item){
+            if(item.check){
+                this.$set(item,'check',false)
+            }else{
+                let isEnd = new Promise((resolve, reject) => {
+                    let total = null
+                    this.toolIcons.forEach((e,i)=>{
+                        if(e.name!=='轴心'){
+                            e.check = false
+                        }
+                        total = i+1
+                    })
+                    if(total===this.toolIcons.length){
+                        resolve(true)
+                    }
+                })
+                isEnd.then((qq)=>{
+                    this.$set(item,'check',true)
+                    this.$forceUpdate()
+                    console.log('🚀🚀🚀',qq,item);
+                })
+            }
+            switch (item.name) {
+                case '缩放':
+                    
+                    break;
+                case '旋转':
+                    
+                    break;
+                case '移动':
+                    
+                    break;
+                case '轴心':
+                    
+                    break;
+                case '笔刷':
+                    
+                    break;
+            
+                default:
+                    break;
+            }
+        }
     },
 };
 </script>
@@ -409,6 +484,23 @@ export default {
                 margin: 0 10px;
             }
         }
+    }
+}
+.toolList{
+    position: absolute;
+    right: -250px;
+    top: 0;
+    height: 40px;
+    background: rgba(13,22,40,0.7);
+    border-radius: 4px;
+    line-height: 40px;
+    padding: 0 10px;
+    img{
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        vertical-align: middle;
+        margin: 0 10px;
     }
 }
 </style>

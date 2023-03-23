@@ -772,63 +772,63 @@ export default {
       },
       uiList: [],
       sliceList: [
-        {
-          content: null,
-          img: require("@/assets/images/todo/unchecked/slice/move.png"),
-          activeImg: require("@/assets/images/todo/check/slice/move.png"),
-        },
-        {
-          content: null,
-          img: require("@/assets/images/todo/unchecked/slice/rotate.png"),
-          activeImg: require("@/assets/images/todo/check/slice/rotate.png"),
-        },
-        {
-          content: null,
-          img: require("@/assets/images/todo/unchecked/slice/reverse.png"),
-          activeImg: require("@/assets/images/todo/check/slice/reverse.png"),
-        },
-        {
-          content: null,
-          img: require("@/assets/images/todo/unchecked/slice/appoint.png"),
-          activeImg: require("@/assets/images/todo/check/slice/appoint.png"),
-        },
-        {
-          content: null,
-          img: require("@/assets/images/todo/unchecked/slice/reset.png"),
-          activeImg: require("@/assets/images/todo/check/slice/reset.png"),
-        },
+        // {
+        //   content: null,
+        //   img: require("@/assets/images/todo/unchecked/slice/move.png"),
+        //   activeImg: require("@/assets/images/todo/check/slice/move.png"),
+        // },
+        // {
+        //   content: null,
+        //   img: require("@/assets/images/todo/unchecked/slice/rotate.png"),
+        //   activeImg: require("@/assets/images/todo/check/slice/rotate.png"),
+        // },
+        // {
+        //   content: null,
+        //   img: require("@/assets/images/todo/unchecked/slice/reverse.png"),
+        //   activeImg: require("@/assets/images/todo/check/slice/reverse.png"),
+        // },
+        // {
+        //   content: null,
+        //   img: require("@/assets/images/todo/unchecked/slice/appoint.png"),
+        //   activeImg: require("@/assets/images/todo/check/slice/appoint.png"),
+        // },
+        // {
+        //   content: null,
+        //   img: require("@/assets/images/todo/unchecked/slice/reset.png"),
+        //   activeImg: require("@/assets/images/todo/check/slice/reset.png"),
+        // },
       ],
       comIconList: [
-        {
-          content: "旋转",
-          name: "rotate",
-          img: require("@/assets/images/todo/unchecked/com/rotate.png"),
-          activeImg: require("@/assets/images/todo/check/com/rotate.png"),
-          active: false,
-        },
-        {
-          content: "移动",
-          name: "translate",
-          img: require("@/assets/images/todo/unchecked/com/move.png"),
-          activeImg: require("@/assets/images/todo/check/com/move.png"),
-          active: false,
-        },
-        {
-          content: "缩放",
-          name: "scale",
-          img: require("@/assets/images/todo/unchecked/com/zoom.png"),
-          activeImg: require("@/assets/images/todo/check/com/zoom.png"),
-          active: false,
-        },
+        // {
+        //   content: "旋转",
+        //   name: "rotate",
+        //   img: require("@/assets/images/todo/unchecked/com/rotate.png"),
+        //   activeImg: require("@/assets/images/todo/check/com/rotate.png"),
+        //   active: false,
+        // },
+        // {
+        //   content: "移动",
+        //   name: "translate",
+        //   img: require("@/assets/images/todo/unchecked/com/move.png"),
+        //   activeImg: require("@/assets/images/todo/check/com/move.png"),
+        //   active: false,
+        // },
+        // {
+        //   content: "缩放",
+        //   name: "scale",
+        //   img: require("@/assets/images/todo/unchecked/com/zoom.png"),
+        //   activeImg: require("@/assets/images/todo/check/com/zoom.png"),
+        //   active: false,
+        // },
       ],
       axisList:[
-                {
-                  content: "轴心",
-                  name: "scale",
-                  img: require("@/assets/images/todo/unchecked/com/axis.png"),
-                  activeImg: require("@/assets/images/todo/check/com/axis.png"),
-                  active: false,
-                }
+                // {
+                //   content: "轴心",
+                //   name: "scale",
+                //   img: require("@/assets/images/todo/unchecked/com/axis.png"),
+                //   activeImg: require("@/assets/images/todo/check/com/axis.png"),
+                //   active: false,
+                // }
       ],
       editMaterialBtn:[
         {
