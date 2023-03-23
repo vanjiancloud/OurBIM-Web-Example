@@ -422,12 +422,12 @@
       title="链接模型"
       custom-class="integrate-dialog"
       :visible="IsIntegrate"
-      :width="value == 'GIS' ? '1090px' : '690px'"
+      :width="value == 'GIS' ? '1090px' : '705px'"
       @close="closeLinkModel"
     >
       <div>
         <template>
-          <el-select v-model="value" :placeholder="value" @change="xiala">
+          <el-select v-model="value" :placeholder="value">
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -445,37 +445,36 @@
       </div>
       <br />
       <div>
-        <el-transfer
+        <Transfer
           class="integrate-transfer"
           filterable
+          ref="linkModel"
           :titles="['模型', '模型2']"
           v-model="ActiveLinkModel"
           :data="ListLinkModel"
+          :isCustomRight="value === 'GIS'"
           :props="{
             key: 'appid',
             label: 'appName',
           }"
-          @change="handleChange"
-          :render-content="rendercontent"
+          @getData="handleChange"
         >
-          <span slot-scope="{ option }">{{ option.appName }}</span>
-        </el-transfer>
-        <!-- <el-transfer
+        </Transfer>
+        <Transfer
           v-if="value === 'GIS'"
           class="integrate-transfer"
           filterable
           :titles="['GIS数据服务', 'GIS数据服务']"
-          v-model="ActiveLinkModel"
+          v-model="ActiveLinkGISModel"
           :data="ListLinkGISModel"
+          :isGIS="true"
           :props="{
             key: 'appid',
             label: 'appName',
           }"
-          @change="handleChange"
-          :render-content="rendercontent"
+          @change="handleGISChange"
         >
-          <span slot-scope="{ option }">{{ option.appName }}</span>
-        </el-transfer> -->
+        </Transfer>
         <el-form
           :model="FormIntegrate"
           class="form-integrate"
@@ -553,22 +552,24 @@ import { updateJudgeMsg } from '../../api/my';
 import { urlToblob } from '@/utils/file.js'
 import Pagination from "@/components/Pagination"
 import Share from "./share.vue"
+import Transfer from "./transfer/main.vue"
 
 export default {
   name: "manage",
   components: {
     Pagination,
+    Transfer,
     Share
   },
   data() {
     return {  
+      GISInfo: '',
       radioStart:2, // 是否预启动
       sonAppObj:{}, // 所有的链接模型 后台返回的都有 sonApp这个对象，里面是 { 模型ID:模型名，...}   sonAppObj就是这个对象里面的东西
       sonAppKey:[],  // 这个存放着 sonAppObj的 key
       sonAppValue:[], // 这里存放着 sonAppObj的 value
       isGis:'',
       type:null,
-      chang:0,
       altitude:[],  //海拔高度
       longitude:[], //经度
       latitude:[],  //纬度
@@ -606,6 +607,7 @@ export default {
       },
       reportErrDialogVisible: false,
       ActiveLinkModel: [],
+      ActiveLinkGISModel: [],
       ListLinkModel: [],
       ListLinkGISModel: [],
       IsIntegrate: false,
@@ -735,6 +737,14 @@ export default {
     this.setGetdataIn();
   },
   methods: {
+    handleChange (data) {
+      this.GISInfo = data
+      // console.log('模型数据', this.ActiveLinkModel, data)
+    },
+    handleGISChange (data) {
+      // this.GISInfo = data
+      // console.log('GIS数据', this.ActiveLinkGISModel, data)
+    },
     // 是否预启动
     readStart(val){
       if(val === 1){
@@ -835,53 +845,21 @@ export default {
       this.$emit("handleCreateProjectDialog", true);
     },
    SubmitIntegrate() {
-      /**
-       * @Author: zk
-       * @Date: 2021-06-05 11:20:15
-       * @description: 确认集成
-       */
-      var jing = [];
-      var wei = [];
-      for (let i = 1; i <= this.chang; i++) {
-        jing[i-1] = document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zzwinput:nth-of-type(3)").value
-        wei[i-1] = document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zzwinput:nth-of-type(2)").value
-        if(jing[i-1] > 180){
-          document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zzwinput:nth-of-type(3)").value = 180
-          this.$message({
-            message: "经度范围为-180~180",
-            type: "warning",
-          });
-          return
-        }else if(jing[i-1] < -180){
-          document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zzwinput:nth-of-type(3)").value = -180
-          this.$message({
-            message: "经度范围为-180~180",
-            type: "warning",
-          });
-          return
-        }
-        if(wei[i-1] > 90){
-          document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zzwinput:nth-of-type(2)").value = 90
-          this.$message({
-            message: "纬度范围为-90~90",
-            type: "warning",
-          });
-          return
-        }else if(wei[i-1] < -90){
-          document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zzwinput:nth-of-type(2)").value = -90
-          this.$message({
-            message: "纬度范围为-90~90",
-            type: "warning",
-          });
-          return
-        }
-      }
+      
       if (this.ActiveLinkModel.length === 0) {
         this.$message({
           message: "请选择模型",
           type: "warning",
         });
         return false;
+      }
+      const gisMessageValid = this.$refs.linkModel.checkGIS()
+      if (!gisMessageValid) {
+        this.$message({
+          message: "请填写正确的gis信息",
+          type: "warning",
+        });
+        return
       }
       this.$refs["FormIntegrate"].validate((valid) => {
         if (valid) {
@@ -891,14 +869,11 @@ export default {
           if(this.value == "GIS"){
             this.type = "gis";
             this.isGis = true;
-             for (var i = 1; i <= this.chang; i++) {
-              gisinfoList[i-1] = {
-                appId: this.ActiveLinkModel[i-1],
-                altitude:document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zzwinput:nth-of-type(1)").value,
-                latitude:document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zzwinput:nth-of-type(2)").value,
-                longitude:document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zzwinput:nth-of-type(3)").value
-              };
-           }
+            
+            gisinfoList = this.GISInfo.map(item => {
+              const { appid, altitude, latitude, longitude }  = item
+              return { appId: appid, altitude, latitude, longitude }
+            })
           }else{
             this.type = "bim";
              this.isGis = false;
@@ -910,9 +885,12 @@ export default {
             type : this.type,
             bimList:this.ActiveLinkModel.join(),
             gisInfo:JSON.stringify(gisinfoList),
+            // gisList: gisList,
             isGis:this.isGis,
             gisCoordinateType: this.value ==='BIM' ? 'WGS-84' : this.linkGisCoordinateType,
           }
+          
+          console.log('参数打印', params)
           MODELAPI.ADDINTEGRARE(params).then((res) => {
             if (res.data.code === 0) {
               this.GetList();
@@ -1507,40 +1485,6 @@ export default {
       // }
       // return extension;
     },
-    xiala(){
-       if(this.value == "BIM"){
-        //  this.isGis = false;
-         document.querySelector(".el-transfer-panel:nth-of-type(3)").style.width = "300px";
-         if(this.ActiveLinkModel.length!=0){
-            for (var i = 1; i <= this.chang; i++) {
-           for (let j = 1; j <= 3; j++) {
-             if(
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zspan:nth-of-type(" +j +")").style.display!="none"
-             ){
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zspan:nth-of-type(" +j +")").style.display="none";
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zinput:nth-of-type(" +j +")").style.display="none";
-             }
-           }
-          }
-         }
-       }else if(this.value == "GIS"){
-        //  this.isGis = true;
-         document.querySelector(".el-transfer-panel:nth-of-type(3)").style.width = "700px";
-         if(this.ActiveLinkModel.length!=0){
-            for (var i = 1; i <= this.chang; i++) {
-             for (let j = 1; j <= 3; j++) {
-             if(
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zspan:nth-of-type(" +j +")").style.display=="none"
-             ){
-              document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zspan:nth-of-type(" +j +")").style.display="block";
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type(" +i +") .appna .zinput:nth-of-type(" +j +")").style.display="block";
-              
-             }
-           }
-          }
-         }
-       }
-    },
     xiala2(){
   //     if(this.value2 == "BIM"){
   //     //  console.log("bin");
@@ -1569,101 +1513,6 @@ export default {
   //         }
   //      })         
   //    }
-    },
-    rendercontent(h,option){
-      return <span label="option.appName" class="appna"><em class="optionName">{option.appName}</em>
-        <span class="zspan" style="display:none;float:right;">m</span>
-        <input class="zzwinput zinput gao" type="number" style="display:none;float:right;" placeholder="海拔高度"></input>
-        <span class="zspan" style="display:none;float:right;">°</span> 
-        <input  type="number" class="zzwinput zinput wei" style="display:none;float:right;" placeholder="纬度"></input>
-        <span class="zspan" style="display:none;float:right;">°</span> 
-        <input  type="number" class="zzwinput zinput jing" style="display:none;float:right;" placeholder="经度"></input>
-        </span>
-    },
-    handleChange(value, direction, movedKeys) {
-      console.log('第1582行被执行', value, '------', direction)
-      if(this.value == "BIM"){
-         var goLang = value.length;
-         this.chang =goLang;
-         // 为了解决 链接模型时，右侧的选框使用搜索后 不能输入 gis信息的问题
-         let gisBind = document.querySelector(".el-transfer .el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-input__inner")
-          gisBind.addEventListener('input',function(){
-           if(gisBind.value===''){
-              for (var i = 1; i <= goLang; i++) {
-               for (let j = 1; j <= 3; j++) {
-                if(
-                  document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
-                ){
-                  document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
-                  document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
-                }
-               }
-              }
-            }
-        });
-        let gisClear = document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-icon-search" )
-          gisClear.addEventListener('click',function(){
-          if(gisBind.value===''){
-              for (var i = 1; i <= goLang; i++) {
-           for (let j = 1; j <= 3; j++) {
-             if(
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
-             ){
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
-             }
-           }
-          }
-         }
-        });
-      }
-      if (direction == "right" && this.value == "GIS") {
-        var leng = value.length;
-        this.chang = leng;
-        // 为了解决 链接模型时，右侧的选框使用搜索后 不能输入 gis信息的问题
-        let gisBind = document.querySelector(".el-transfer .el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-input__inner")
-         gisBind.addEventListener('input',function(){
-           if(gisBind.value===''){
-            for (var i = 1; i <= leng; i++) {
-            for (let j = 1; j <= 3; j++) {
-              if(
-                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
-              ){
-                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
-                document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
-              }
-            }
-          }
-        }
-        });
-        let gisClear = document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-icon-search" )
-          gisClear.addEventListener('click',function(){
-         if(gisBind.value===''){
-              for (var i = 1; i <= leng; i++) {
-                for (let j = 1; j <= 3; j++) {
-                  if(
-                    document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
-                  ){
-                    document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
-                    document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
-                  }
-                }
-            }
-           }
-        });
-        this.$nextTick(() => {
-         for (var i = 1; i <= leng; i++) {
-           for (let j = 1; j <= 3; j++) {
-             if(
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display=="none"
-             ){
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zspan:nth-of-type("+j+")").style.display="block",
-               document.querySelector(".el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-transfer-panel__list .el-checkbox:nth-of-type("+i+") .appna .zinput:nth-of-type("+j+")").style.display="block";
-             }
-           }
-         }
-        });
-      }
     },
     
     jin(){
@@ -1901,6 +1750,7 @@ export default {
   margin-top: 20px;
 }
 .integrate-transfer {
+  margin: 0 0 20px 0;
   /deep/ .el-transfer__buttons {
     padding: 0 10px;
   }
@@ -1999,12 +1849,6 @@ export default {
   margin-left: 2px;
 }
 
-.aaaaaaaa {
-  width: 100%;
-  background-color: #ddd;
-  box-sizing: border-box;
-}
-
 /deep/ .el-notification__group {
   width: 100%;
   background-color: red;
@@ -2038,14 +1882,6 @@ export default {
     background-color: #999;
     margin: 0 3px;       
   }
-}
-
-.zzwinput{
-  width: 100px;
-  border: 2px solid #dcdfe6;
-  border-radius:5px;
-  margin-top: 5px;
-  outline-color:#666666; 
 }
 
 </style>
