@@ -71,14 +71,14 @@
             <!-- <span v-else-if="scope.row.appType === '3'">链接模型</span> -->
             <span v-else-if="scope.row.appType === '4'">示例模型</span>
             <span v-else-if="scope.row.appType === '5'">云应用</span>
-            <span v-else-if="scope.row.appType === '0' && scope.row.isGis ==='true'">GIS模型</span>
+            <span v-else-if="scope.row.appType === '0' && scope.row.isGis ==='true'" class="can-click" @click="edit(scope.row)">GIS模型</span>
             <el-tooltip
               effect="dark"
               :content="JSON.stringify(scope.row.sonAppMap)"
               placement="top"
               v-else-if="scope.row.appType === '3' && scope.row.isGis ==='true'"
             >
-              <div>GIS链接模型</div>
+              <div class="can-click" @click="edit(scope.row)">GIS链接模型</div>
             </el-tooltip>
             <!-- <span v-else-if="scope.row.appType === '3' && scope.row.isGis ==='true'">GIS链接模型</span> -->
             <span v-else>其他模型</span>
@@ -288,11 +288,11 @@
     >
       <div :class="form.appType == '3' && form.isGis =='true' || form.appType == '3'&&value2 == 'GIS' || form.appType == '0' && value2 == 'GIS' ? '' : 'content' " >
         <el-form :model="form" :rules="rules" ref="form">
-          <el-form-item label="项目名称：" label-width="110px" >
+          <el-form-item label="项目名称：" label-width="110px">
             <el-input v-model="form.name" autocomplete="off"></el-input>
           </el-form-item>
-          <el-form-item label="项目缩略图：" label-width="110px" >
-            <SingleUpload v-model="form.thumbnail" url="/appli/uploadThumbnail"/>
+          <el-form-item label="项目缩略图：" label-width="110px">
+            <SingleUpload v-model="form.screenImg" url="/appli/uploadThumbnail"/>
           </el-form-item>
 
           <el-form-item
@@ -391,6 +391,31 @@
                     </el-option>
                   </el-select>
                 </div>
+            </el-card>
+          </el-form-item>
+
+          <el-form-item
+            v-if="editShowGisServeData.length !== 0"
+            label="链接GIS数据服务："
+            label-width="110px"
+          >
+            <el-card class="box-card">
+              <div v-for="(item, index) in editShowGisServeData" class="gis-serve-box" :key="item.gisId">
+                <el-tooltip class="item" effect="dark" :content="item.gisServerName" placement="top">
+                  <div class="line-one gis-serve"> {{ item.gisServerName }} </div>
+                </el-tooltip>
+                <span class="gis-serve-delete" @click="deleteGisServe(index)">移除</span>
+              </div>
+
+              <span class="add-gis-serve" v-if="selectGisList.length === 0" @click="showSelectGis">添加GIS服务</span>
+              <el-select v-model="selectedGisServe" placeholder="请选择" size="mini" @change="addGisServe" v-else>
+                <el-option
+                  v-for="item in selectGisList"
+                  :key="item.gisId"
+                  :label="item.gisServerName"
+                  :value="item.gisId">
+                </el-option>
+              </el-select>
             </el-card>
           </el-form-item>
 
@@ -505,8 +530,8 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="项目缩略图" prop="thumbnail">
-                <SingleUpload v-model="FormIntegrate.thumbnail" url="/appli/uploadThumbnail"/>
+              <el-form-item label="项目缩略图" prop="screenImg">
+                <SingleUpload v-model="FormIntegrate.screenImg" url="/appli/uploadThumbnail"/>
               </el-form-item>
             </el-col>
           </el-row>
@@ -620,6 +645,7 @@ export default {
       isGis:'',
       type:null,
       editShowGisInfoData: [],
+      editShowGisServeData: [],
       options: [
         {
           value: "GIS",
@@ -758,8 +784,10 @@ export default {
       },
       selectStartups: null,
       modelList:[], // 编辑中添加模型时的下拉框数据
+      selectGisList: [], // 可选的gis服务数据
+      selectedGisServe: '',
       modelListValue:'', //  编辑中添加模型时的下拉框的v-model
-      modelListFlag: true, 
+      modelListFlag: true,
       modelInfoObj:[],
       selectModelName:'', // 选中的模型的名称
       linkGisCoordinateType:'WGS-84', // 链接模型时选择坐标系
@@ -779,6 +807,8 @@ export default {
   created() {
     this.GetList();
     this.setGetdataIn();
+    // 获取gis服务数据
+    this.getGISProject()
   },
   methods: {
     handleChange (data) {
@@ -817,6 +847,12 @@ export default {
         this.form.modelIds = data.join(',')
 
         this.editShowGisInfoData.splice(index, 1)
+      })
+    },
+
+    deleteGisServe (index) {
+      this.$confirm('确定移除吗', '提示').then(() => {
+        this.editShowGisServeData.splice(index, 1)
       })
     },
 
@@ -898,7 +934,7 @@ export default {
             bimList: this.ActiveLinkModel.join(),
             gisInfo: JSON.stringify(gisinfoList),
             gisList: this.ActiveLinkGISModel.join(),
-            // thumbnail: this.FormIntegrate.thumbnail, // 项目缩略图
+            screenImg: this.FormIntegrate.screenImg, // 项目缩略图
             isGis: this.isGis,
             gisCoordinateType: this.value ==='BIM' ? 'WGS-84' : this.linkGisCoordinateType,
           }
@@ -964,7 +1000,6 @@ export default {
     },
     AddIntegrate() {
       this.GetIntegrate();
-      this.getGISProject()
       this.IsIntegrate = true;
       //  链接模型 弹框 一打开就要给 this.isGis赋值
       // this.$nextTick(()=>{
@@ -1160,6 +1195,7 @@ export default {
     // 编辑按钮
     edit(e) {
       this.editShowGisInfoData = []
+      this.editShowGisServeData = []
       // 将添加模型按钮显示出来
       this.modelListFlag = true
       // 获取所有模型信息
@@ -1179,7 +1215,16 @@ export default {
         this.radioStart = 2;
          this.form.startVal = false;
       }
-      // this.form.gisinfo = [];
+
+      // 获取gis服务数据
+      if (e.gisServerMap) {
+        for (let item in e.gisServerMap) {
+          this.editShowGisServeData.push({
+            gisId: item,
+            gisServerName: e.gisServerMap[item]
+          })
+        }
+      }
 
       // 状态 只有是  转换完成  的情况下才可以编辑
       if (this.form.applidStatus !== '2') {
@@ -1280,6 +1325,7 @@ export default {
         if (valid) {
           this.$common.openLoading("正在加载中....")
           
+          // 整理gis信息数据
           // 如果不是链接模型,这里的数据就需要传对象,链接模型则需要传数组
           let gisinfoLis = this.form.appType === '3' ? [] : {}
           if (this.form.appType === '3' && this.editShowGisInfoData.length !== 0) {
@@ -1302,6 +1348,8 @@ export default {
             }
           }
 
+          // 整理gis服务数据
+          const gisServerList = this.editShowGisServeData.map(item => item.gisId).join(',')
           const params = {
             appid: this.form.appid,
             appName: this.form.name,
@@ -1312,6 +1360,7 @@ export default {
             maxInstance: this.form.maxInstance,
             startup: this.form.startup,
             gisInfo: JSON.stringify(gisinfoLis),
+            gisServerList: gisServerList,
             isGis: this.value2 === 'BIM' ? 'false' : 'true',
             combineId: this.form.modelIds,
             gisCoordinateType: this.form.gisCoordinateType,
@@ -1319,7 +1368,7 @@ export default {
             isReserve: this.form.startVal // 是否预启动
           }
 
-          console.log('请求参数', params, gisinfoLis)
+          console.log('请求参数', params)
 
           updateProject(params).then(res => {
               if (res.data.code === 0) {
@@ -1504,6 +1553,26 @@ export default {
       this.modelList = this.ListLinkModel.filter(item => !combineIds.includes(item.appid))
     },
 
+    showSelectGis () {
+      this.selectedGisServe = ''
+      const selectedGisServeIds = this.editShowGisServeData.map(item => item.gisId)
+      // 找出未被选中的gis服务数据
+      this.selectGisList = this.ListLinkGISModel.filter(item => !selectedGisServeIds.includes(item.gisId))
+      if (this.selectGisList.length === 0) {
+        this.$message.warning('已添加全部gis服务，没有更多gis服务可供添加')
+      }
+    },
+
+    addGisServe (data) {
+      const index = this.selectGisList.findIndex(item => item.gisId === data)
+      const { gisId, gisServerName } = this.selectGisList[index]
+      this.editShowGisServeData.push({
+        gisId,
+        gisServerName
+      })
+      this.selectGisList = []
+    },
+
     // 添加的模型变化时
     modelListValChange (appId) {
       console.log('添加模型下拉', appId, this.modelList)
@@ -1561,6 +1630,12 @@ export default {
 /deep/ .gis-form-box .el-form-item__content {
   display: flex;
 }
+
+.can-click {
+  color: #409eff;
+  cursor: pointer;
+}
+
 .gis-form {
   display: flex;
   align-items: flex-start;
@@ -1835,6 +1910,34 @@ export default {
   text-overflow: ellipsis; //显示省略号
   float: left;
 }
+
+.line-one {
+  white-space: nowrap; //强制在一行显示
+  overflow: hidden; //溢出隐藏
+  text-overflow: ellipsis; //显示省略号
+}
+
+.gis-serve-box {
+  position: relative;
+  .gis-serve {
+    margin: 0 80px 0 0;
+  }
+  .gis-serve-delete {
+    position: absolute;
+    right: 20px;
+    top: 0;
+    color: #00aaf0;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+.add-gis-serve {
+  color: #00aaf0;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 .clearfix::before,
 .clearfix::after{
   content:'';

@@ -58,16 +58,16 @@
               ref="gisInfo"
             >
               <el-form-item label="" prop="longitude" class="right-form-box">
-                <el-input size="small" placeholder="请输入经度" v-model="item.longitude"></el-input>
+                <el-input size="small" class="right-input" placeholder="请输入经度" v-model="item.longitude"></el-input>
                 <span class="right-input-label">°</span>
               </el-form-item>
               <el-form-item label="" prop="latitude" class="right-form-box">
-                <el-input size="small" placeholder="请输入纬度" v-model="item.latitude"></el-input>
-              <span class="right-input-label">°</span>
+                <el-input size="small" class="right-input" placeholder="请输入纬度" v-model="item.latitude"></el-input>
+                <span class="right-input-label">°</span>
               </el-form-item>
               <el-form-item label="" prop="altitude" class="right-form-box">
-                <el-input size="small" placeholder="请输入海拔高度" v-model="item.altitude"></el-input>
-              <span class="right-input-label">m</span>
+                <el-input size="small" class="right-input" placeholder="请输入海拔高度" v-model="item.altitude"></el-input>
+                <span class="right-input-label">m</span>
               </el-form-item>
             </el-form>
           </div>
@@ -362,9 +362,15 @@
 .right-form-box {
   flex: 1;
   margin: 0 5px 0 5px;
+  .right-input {
+    flex: 1;
+  }
   .right-input-label {
     margin: 0 0 0 5px;
   }
+}
+/deep/ .el-form-item__content {
+  display: flex;
 }
 /deep/ .right-checkbox span.el-checkbox__inner {
   margin-top: 5px;
