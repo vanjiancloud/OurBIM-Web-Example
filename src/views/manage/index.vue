@@ -1079,7 +1079,7 @@ export default {
         for (let item in e.sonAppMap) {
           this.editShowGisInfoData.push({
             name: e.sonAppMap[item],
-            appId: this.form.appid,
+            appId: item,
             longitude: '',
             latitude: '',
             altitude: ''
