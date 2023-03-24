@@ -201,7 +201,7 @@
         </el-table-column>
 
         <el-table-column label="操作" width="300">
-          <template slot-scope="scope" class="goapp-row">
+          <template slot-scope="scope">
             <el-button
               @click="GoApp(scope.row)"
               :disabled="scope.row.applidStatus === '2' ? false : true"
@@ -291,13 +291,16 @@
           <el-form-item label="项目名称：" label-width="110px" >
             <el-input v-model="form.name" autocomplete="off"></el-input>
           </el-form-item>
+          <el-form-item label="项目缩略图：" label-width="110px" >
+            <SingleUpload v-model="form.thumbnail" url="/appli/uploadThumbnail"/>
+          </el-form-item>
 
           <el-form-item
             label="基础程序路径："
             v-if="form.appType === '3' || form.appType === '0'"
             label-width="110px"
           >
-            <el-select v-model="value2" @change="xiala2">
+            <el-select v-model="value2" @change="changeEditorEngine">
               <el-option
                 v-for="item in optionss"
                 :key="item.value2"
@@ -334,35 +337,49 @@
             </el-select>
           </el-form-item>
 
+          <!-- appType  0:普通模型(isGis: GIS模型)   1:漫游模型   3:链接模型(isGis: GIS链接模型)  4:示例模型    5:云应用 -->
+          <!-- value2: 编辑框基础程序路径的绑定值 -->
+
+          <!-- GIS模型 或者 GIS链接模型 或者 链接模型 或者 普通模型改为GIS模型时展示 -->
           <el-form-item
             :label="this.value2==='GIS' ? 'GIS信息:' : '子模型列表:'"
-            v-if="(noDisapper.appType === '3' && noDisapper.isGis==='true') || (noDisapper.appType === '3' && noDisapper.isGis==='false') || (noDisapper.appType === '0' && this.value2==='GIS')"
+            v-if="(form.appType === '3' && form.isGis==='true') || (form.appType === '3' && form.isGis==='false') || (form.appType === '0' && this.value2==='GIS')"
             label-width="100px"
             :style="value2 == 'BIM' ? 'width:300px' : ''"
           >
             <el-card class="box-card">
-                <div v-for="(itemm,i) in sonAppValue" :key="i" class="text item clearfix">
-                  <el-tooltip class="item" effect="dark" :content="itemm" placement="top">
-                    <td class="wordEllipsis">{{itemm}}</td>
+                <div v-for="(GISitem, index) in editShowGisInfoData" :key="index" class="text item clearfix">
+                  <el-tooltip class="item" effect="dark" :content="GISitem.name" placement="top">
+                    <div class="wordEllipsis"> {{ GISitem.name }} </div>
                   </el-tooltip>
-                  <td :class="sonAppValue.length <= 2 ? 'td yinc bind' : 'td yinc'" @click="delRow(sonAppKey[i])" >移除</td>
-                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">m</span></td>
-                  <td class="td"><el-input class="elinput" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" v-model="altitude[i]" type=number placeholder="海拔高度"></el-input></td>
-                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">°</span></td>
-                  <td class="td"><el-input class="elinput wei" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" @change="jin" v-model="latitude[i]" type=number :max="90" :min="-90" placeholder="纬度"></el-input></td>
-                  <td class="td"><span style="float:right;"  v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">°</span></td>
-                  <td class="td"><el-input class="elinput jing"  v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" @change="jin" v-model="longitude[i]" type=number :max="180" :min="-180" placeholder="经度"></el-input></td>
+                  <!-- 链接模型最低要2个模型 -->
+                  <div v-if="editShowGisInfoData.length > 2" class="td yinc" @click="delRow(index)"> 移除 </div>
+
+                  <!-- GIS模型 或者 改为GIS模型的时候显示 -->
+                  <div v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">
+                    <el-form
+                      :model="GISitem"
+                      :rules="gisInfoRules"
+                      class="gis-form"
+                      ref="editorGISInfo"
+                    >
+                      <el-form-item label="" prop="longitude" class="gis-form-box">
+                        <el-input size="small" placeholder="请输入经度" v-model="GISitem.longitude"></el-input>
+                        <span class="gis-input-label">°</span>
+                      </el-form-item>
+                      <el-form-item label="" prop="latitude" class="gis-form-box">
+                        <el-input size="small" placeholder="请输入纬度" v-model="GISitem.latitude"></el-input>
+                      <span class="gis-input-label">°</span>
+                      </el-form-item>
+                      <el-form-item label="" prop="altitude" class="gis-form-box">
+                        <el-input size="small" placeholder="请输入海拔高度" v-model="GISitem.altitude"></el-input>
+                      <span class="gis-input-label">m</span>
+                      </el-form-item>
+                    </el-form>
+                  </div>
                 </div>
-                <div v-if="form.appType === '0' && form.isGis === 'true' || form.appType === '0' && value2 === 'GIS'" class="text item">
-                  <td class="wordEllipsis" >{{form.name}}</td>
-                  <td class="td yinc bind" >移除</td>
-                  <td class="td"><span style="float:right;"  v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">m</span></td>
-                  <td class="td"><el-input class="elinput" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" v-model="altitude" type=number placeholder="海拔高度"></el-input></td>
-                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">°</span></td>
-                  <td class="td"><el-input class="elinput wei" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" @change="jin" v-model="latitude" type=number :max="90" :min="-90" placeholder="纬度"></el-input></td>
-                  <td class="td"><span style="float:right;" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">°</span></td>
-                  <td class="td"><el-input class="elinput jing" v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'" @change="jin" v-model="longitude" type=number :max="180" :min="-180" placeholder="经度"></el-input></td>
-                </div>
+
+                <!-- 链接模型展示 -->
                 <div class="addNewModel" v-if="form.appType === '3'">
                   <span v-if="modelListFlag" @click="addModelClick">添加模型</span>
                   <el-select v-model="modelListValue" clearable placeholder="请选择" size="mini" @change="modelListValChange" v-else>
@@ -414,7 +431,7 @@
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeEdit">取 消</el-button>
-        <el-button type="primary" @click="amend()">确 定</el-button>
+        <el-button type="primary" @click="amend">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 链接模型 -->
@@ -469,10 +486,9 @@
           :data="ListLinkGISModel"
           :isGIS="true"
           :props="{
-            key: 'appid',
-            label: 'appName',
+            key: 'gisId',
+            label: 'gisServerName',
           }"
-          @change="handleGISChange"
         >
         </Transfer>
         <el-form
@@ -482,9 +498,18 @@
           ref="FormIntegrate"
           label-width="110px"
         >
-          <el-form-item label="链接模型名称" prop="appName">
-            <el-input v-model="FormIntegrate.appName"></el-input>
-          </el-form-item>
+          <el-row>
+            <el-col :span="12">
+              <el-form-item label="链接模型名称" prop="appName">
+                <el-input v-model="FormIntegrate.appName"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="项目缩略图" prop="thumbnail">
+                <SingleUpload v-model="FormIntegrate.thumbnail" url="/appli/uploadThumbnail"/>
+              </el-form-item>
+            </el-col>
+          </el-row>
         </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -553,26 +578,48 @@ import { urlToblob } from '@/utils/file.js'
 import Pagination from "@/components/Pagination"
 import Share from "./share.vue"
 import Transfer from "./transfer/main.vue"
+import SingleUpload from "@/components/Upload/singleUpload.vue"
 
 export default {
   name: "manage",
   components: {
     Pagination,
+    SingleUpload,
     Transfer,
     Share
   },
   data() {
-    return {  
+    const validaLongitude = (rule, value, callback) => {
+      if (!value || value === '') {
+        callback(new Error('经度不能为空'))
+      }
+      if (Number(value) > 180 || Number(value) < -180) {
+        callback(new Error('经度范围为-180~180'))
+      } else {
+        callback()
+      }
+    }
+    const validaLatitude = (rule, value, callback) => {
+      if (!value || value === '') {
+        callback(new Error('纬度不能为空'))
+      }
+      if (Number(value) > 90 || Number(value) < -90) {
+        callback(new Error('纬度范围为-90~90'))
+      } else {
+        callback()
+      }
+    }
+    return {
+      gisInfoRules: {
+        longitude: [{ required: true, validator: validaLongitude, trigger: ['change', 'blur'] }],
+        latitude: [{ required: true, validator: validaLatitude, trigger: ['change', 'blur'] }],
+        altitude: [{ required: true, message: "海拔高度不能为空", trigger: ['change', 'blur'] }]
+      },
       GISInfo: '',
-      radioStart:2, // 是否预启动
-      sonAppObj:{}, // 所有的链接模型 后台返回的都有 sonApp这个对象，里面是 { 模型ID:模型名，...}   sonAppObj就是这个对象里面的东西
-      sonAppKey:[],  // 这个存放着 sonAppObj的 key
-      sonAppValue:[], // 这里存放着 sonAppObj的 value
+      radioStart:2, // 是否预启动      
       isGis:'',
       type:null,
-      altitude:[],  //海拔高度
-      longitude:[], //经度
-      latitude:[],  //纬度
+      editShowGisInfoData: [],
       options: [
         {
           value: "GIS",
@@ -712,14 +759,11 @@ export default {
       selectStartups: null,
       modelList:[], // 编辑中添加模型时的下拉框数据
       modelListValue:'', //  编辑中添加模型时的下拉框的v-model
-      modelListFlag:true, 
+      modelListFlag: true, 
       modelInfoObj:[],
       selectModelName:'', // 选中的模型的名称
       linkGisCoordinateType:'WGS-84', // 链接模型时选择坐标系
-      noDisapper:{  // 编辑时 点击确定防止 子模型列表消失
-        appType:'',
-        isGis:''
-      },
+      
       total: 0,
       pages: {
         pageNo: 1,
@@ -739,11 +783,6 @@ export default {
   methods: {
     handleChange (data) {
       this.GISInfo = data
-      // console.log('模型数据', this.ActiveLinkModel, data)
-    },
-    handleGISChange (data) {
-      // this.GISInfo = data
-      // console.log('GIS数据', this.ActiveLinkGISModel, data)
     },
     // 是否预启动
     readStart(val){
@@ -753,64 +792,39 @@ export default {
         this.form.startVal = false;
       }
     },
+
     // 关闭 编辑弹框
-    closeEdit(){
-      this.editDialogFormVisible = false;
-      this.longitude = [];
-        this.latitude = [];
-        this.altitude = [];
+    closeEdit () {
+      this.editDialogFormVisible = false
+      this.editShowGisInfoData = []
     },
+
     // 关闭链接模型弹框
     closeLinkModel(){
         this.IsIntegrate = false;
         this.ActiveLinkModel=[];
         this.FormIntegrate.appName='';
     },
-    delRow(id){
-        let num = -1;
-        let num1 = 0;
-       this.$confirm('确定移除吗', '提示')
-        .then(() => {
-          this.modelListValue = ''; // 将添加模型下拉框清空
-          let modelStr = '';  // 要移除的模型的名称
-          for(let i in this.sonAppObj){
-            num+=1
-            if(i === id){
-              num1 = num
-              modelStr = this.sonAppObj[i]
-              break;
-            }
-          }
-          this.$delete(this.sonAppObj,id);
-          // this.sonAppValue = this.sonAppValue.filter(item=>{
-          //  return item != modelStr;
-          // })
-          // let newArr = []; // 用来 存储的是 移除某个模型后  剩下的模型id
-          // for(let k in this.sonAppObj){
-          //   if(this.sonAppValue.includes(this.sonAppObj[k])){
-          //       newArr.push(k);
-          //   }
-          // }
-          // this.sonAppKey = newArr;
-          let newArr = this.sonAppKey.filter(item=>{
-             return item !== id;
-          })
-          this.form.modelIds=newArr.join(',');     
-          // 删除时将对应的经纬度和高度也删除
-          this.altitude.splice(num1,1);
-          this.longitude.splice(num1,1);
-          this.latitude.splice(num1,1);     
-         })
-        .catch(() => {
-        }).finally(()=>{
-          num = -1;
-          num1 = 0;
-        })
+
+    delRow (index) {
+      this.$confirm('确定移除吗', '提示').then(() => {
+        // 将添加模型下拉框清空
+        this.modelListValue = ''
+
+        // 更新modelIds
+        let combineIds = this.form.modelIds.split(',')
+        const data = combineIds.filter(item => item !== this.editShowGisInfoData[index].appId)
+        this.form.modelIds = data.join(',')
+
+        this.editShowGisInfoData.splice(index, 1)
+      })
     },
+
     reportErr(row) {
-      console.log(11, row);
+      console.log(11, row)
     },
-    async downloadFile(row) {
+
+    downloadFile (row) {
       this.$confirm("即将下载此源文件, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -844,8 +858,7 @@ export default {
     handleCreateProjectDialog() {
       this.$emit("handleCreateProjectDialog", true);
     },
-   SubmitIntegrate() {
-      
+    SubmitIntegrate() {
       if (this.ActiveLinkModel.length === 0) {
         this.$message({
           message: "请选择模型",
@@ -861,32 +874,32 @@ export default {
         });
         return
       }
-      this.$refs["FormIntegrate"].validate((valid) => {
+      this.$refs["FormIntegrate"].validate(valid => {
         if (valid) {
-          var gisinfoList = [];
-          var userId = Getuserid();
-          var appName= this.FormIntegrate.appName;
-          if(this.value == "GIS"){
+          let gisinfoList = [];
+          const userId = Getuserid();
+          const appName= this.FormIntegrate.appName;
+          if (this.value == "GIS") {
             this.type = "gis";
             this.isGis = true;
-            
             gisinfoList = this.GISInfo.map(item => {
               const { appid, altitude, latitude, longitude }  = item
               return { appId: appid, altitude, latitude, longitude }
             })
-          }else{
+          } else {
             this.type = "bim";
-             this.isGis = false;
-             gisinfoList = '';
+            this.isGis = false;
+            gisinfoList = '';
           }
-          var params = {
+          const params = {
             userId,
             appName,
             type : this.type,
-            bimList:this.ActiveLinkModel.join(),
-            gisInfo:JSON.stringify(gisinfoList),
-            // gisList: gisList,
-            isGis:this.isGis,
+            bimList: this.ActiveLinkModel.join(),
+            gisInfo: JSON.stringify(gisinfoList),
+            gisList: this.ActiveLinkGISModel.join(),
+            // thumbnail: this.FormIntegrate.thumbnail, // 项目缩略图
+            isGis: this.isGis,
             gisCoordinateType: this.value ==='BIM' ? 'WGS-84' : this.linkGisCoordinateType,
           }
           
@@ -938,25 +951,18 @@ export default {
     },
     getGISProject() {
       const params = {
-        userId: Getuserid(),
-        pageNo: 1,
-        pageSize: 1000
+        userId: Getuserid()
       }
-      // getGISProjectList(params).then((res) => {
-      //   console.log('gis数据获取', res)
-      //   if (res.data.code === 0) {
-      //     this.ListLinkGISModel = resData
-      //   } else {
-      //     this.ListLinkGISModel = []
-      //   }
-      // });
+      getGISProjectList(params).then(res => {
+        if (res.data.code === 0) {
+          // 只显示status为2的数据
+          this.ListLinkGISModel = res.data.data.list.filter(item => item.status === '2')
+        } else {
+          this.ListLinkGISModel = []
+        }
+      })
     },
     AddIntegrate() {
-      /**
-       * @Author: zk
-       * @Date: 2021-06-05 10:14:30
-       * @description: 新增集成
-       */
       this.GetIntegrate();
       this.getGISProject()
       this.IsIntegrate = true;
@@ -1013,44 +1019,35 @@ export default {
         pageSize: this.pages.pageSize,
         userid: Getuserid()
       }
-      getProjectList(params)
-        .then((res) => {
-          if(this.form.applid.length != "0"){
-            for (let i = 0; i < this.sonAppKey.length; i++) {
-              for (let j = 0; j < res.data.data.length; j++) {
-                if(this.sonAppKey[i] == res.data.data[j].appid){
-                  this.form.appName[i] = res.data.data[j].appName
-                }
-              }
-            }
-          }
-          if (res.data.code == "0") {
-            this.total = res.data.data.total
-            this.itemList = res.data.data.list;
-            // this.reverse();
-            this.appid = res.data.data.appid;
-            this.maxInstance = res.data.data.maxInstance;
-            this.currentInstance = res.data.data.currentInstance;
-            this.appName = res.data.data.appName;
-            this.fileSize = res.data.data.fileSize;
-            this.applidStatus = res.data.data.applidStatus;
-            this.createTime = res.data.data.createTime;
-          } else if (res.data.code < 0) {
-            this.timerFlag = false;
-            this.$message.warning(res.data.message);
-            this.itemList = [];
-          } else {
-            this.itemList = [];
-          }
-        })
-        .catch((err) => {
-          // this.$message.error('请求失败')
-        });
+      getProjectList(params).then((res) => {
+        if (res.data.code == "0") {
+          this.total = res.data.data.total
+          this.itemList = res.data.data.list
+          this.appid = res.data.data.appid
+          this.maxInstance = res.data.data.maxInstance
+          this.currentInstance = res.data.data.currentInstance
+          this.appName = res.data.data.appName
+          this.fileSize = res.data.data.fileSize
+          this.applidStatus = res.data.data.applidStatus
+          this.createTime = res.data.data.createTime
+        } else if (res.data.code < 0) {
+          this.timerFlag = false
+          this.$message.warning(res.data.message)
+          this.itemList = []
+        } else {
+          this.itemList = []
+        }
+      })
+      .catch((err) => {
+        // this.$message.error('请求失败')
+      })
     },
+
     //翻转数组
     reverse() {
-      this.itemList.reverse();
+      this.itemList.reverse()
     },
+
     // 根据传入的status做适配
     formatStatus(status) {
       const statusObj = {
@@ -1060,10 +1057,11 @@ export default {
         3: "转换失败",
         4: "文件损坏",
         5: "删除中",
-        6: "升级中",
+        6: "升级中"
       };
-      return statusObj[status];
+      return statusObj[status]
     },
+
     upgrade(row) {
       this.$confirm("此操作将升级该应用, 是否继续?", "提示", {
         confirmButtonText: "确定",
@@ -1085,8 +1083,8 @@ export default {
     },
     // 分享按钮
     share(e) {
-      this.formShare.appid = e.appid;
-      this.form.isGis = e.isGis;
+      this.formShare.appid = e.appid
+      this.form.isGis = e.isGis
     },
     
     visibleChange(e) {
@@ -1146,73 +1144,86 @@ export default {
           });
         });
     },
-    // 编辑按钮 3334678
-    edit(e) {
-      this.noDisapper.appType = e.appType;
-      this.noDisapper.isGis = e.isGis;
-      console.log('45',e);
-      this.modelListFlag = true; // 将添加模型按钮显示出来
-      // 获取所有模型信息
-      this.GetIntegrate();
-      this.sonAppObj = e.sonAppMap || {};
 
-      this.form.appType = e.appType;
-      this.form.name = e.appName;
-      this.form.appid = e.appid;
-      this.form.displayName = e.displayName;
-      this.form.displayWindow = e.displayWindow;
-      this.form.doMouse = e.doMouse;
-      this.form.maxInstance = e.maxInstance;
-      this.form.applidStatus = e.applidStatus;
-      this.form.screenImg = e.screenImg;
-      this.form.startup = e.startup;
-      this.form.isGis = e.isGis;
-      this.form.modelIds = e.combineId;
-      this.form.gisCoordinateType = e.gisCoordinateType || 'WGS-84';
-      this.form.startNum = e.param || '';
-      if(e.isReserve==='true'){
+    changeEditorEngine (value) {
+      if (value === 'GIS' && this.editShowGisInfoData.length === 0) {
+        this.editShowGisInfoData.push({
+          name: this.form.name,
+          appId: this.form.appid,
+          longitude: '',
+          latitude: '',
+          altitude: ''
+        })
+      } 
+    },
+
+    // 编辑按钮
+    edit(e) {
+      this.editShowGisInfoData = []
+      // 将添加模型按钮显示出来
+      this.modelListFlag = true
+      // 获取所有模型信息
+      this.GetIntegrate()
+      let data = JSON.parse(JSON.stringify(e))
+      // { appType, displayName, displayWindow, doMouse, maxInstance, applidStatus, screenImg, startup, isGis, appid } = data
+      this.form = data
+      this.form.name = data.appName;
+      this.form.appid = data.appid;
+      this.form.modelIds = data.combineId;
+      this.form.gisCoordinateType = data.gisCoordinateType || 'WGS-84';
+      this.form.startNum = data.param || '';
+      if (e.isReserve === 'true') {
         this.radioStart = 1;
         this.form.startVal = true;
-      }else{
+      } else {
         this.radioStart = 2;
          this.form.startVal = false;
       }
       // this.form.gisinfo = [];
 
       // 状态 只有是  转换完成  的情况下才可以编辑
-      if(this.form.applidStatus !== '2'){
+      if (this.form.applidStatus !== '2') {
          this.$message.error("当前状态不可编辑");
          return;
       }
-      
-      if(e.appType == "3" && e.isGis=='true'){
+
+      // appType  0:普通模型(isGis: GIS模型)   1:漫游模型   3:链接模型(isGis: GIS链接模型)  4:示例模型    5:云应用
+      if (e.appType == "3" && e.isGis=='true') { // GIS链接模型
         this.value2 = "GIS"
         this.form.gisinfo = JSON.parse(e.gisInfo);
-        for (let i = 0; i < this.form.gisinfo.length; i++) {
-          this.form.applid[i] = this.form.gisinfo[i]
-          this.longitude[i] = this.form.gisinfo[i].longitude
-          this.latitude[i] = this.form.gisinfo[i].latitude
-          this.altitude[i] = this.form.gisinfo[i].altitude
-        }
-      }else if(e.appType == "0" && e.isGis=='true'){
-          this.value2 = "GIS"
-          this.form.gisinfo = JSON.parse(e.gisInfo);
-          this.longitude = this.form.gisinfo.longitude
-          this.latitude = this.form.gisinfo.latitude
-          this.altitude = this.form.gisinfo.altitude
-      }else{
+        // console.log('看看编辑这里的数据GIS链接模型', this.form.gisinfo)
+
+        this.editShowGisInfoData = this.form.gisinfo
+        // e.sonAppMap: 是个对象里面存的是gis的id和模型名字
+        // e.gisinfo数组,有经纬度和appid
+        this.editShowGisInfoData.forEach(item => {
+          // console.log('第1250行被执行')
+          item.name = e.sonAppMap[item.appId]
+        })
+      } else if (e.appType == "0" && e.isGis=='true') { // GIS模型
+        this.value2 = "GIS"
+        this.form.gisinfo = JSON.parse(e.gisInfo);
+        // console.log('看看编辑这里的数据GIS模型', this.form.gisinfo, e)
+
+        this.editShowGisInfoData.push(this.form.gisinfo)
+        this.editShowGisInfoData[0].name = e.appName
+        this.editShowGisInfoData[0].appId = e.appid
+      } else if (e.appType == "3" && e.isGis == 'false') { // 链接模型
+        // console.log('链接模型', e.sonAppMap)
         this.value2 = "BIM"
         this.form.gisinfo = JSON.parse(e.gisInfo);
-        this.longitude = [];
-        this.latitude = [];
-        this.altitude = [];
-      }
-      // ---555
-      if(this.form.appType === '3' && this.form.isGis==='false'){
-        this.$nextTick(() => {
-          this.xiala2();
-        })
-      
+        for (let item in e.sonAppMap) {
+          this.editShowGisInfoData.push({
+            name: e.sonAppMap[item],
+            appId: this.form.appid,
+            longitude: '',
+            latitude: '',
+            altitude: ''
+          })
+        }
+      } else {
+        this.value2 = "BIM"
+        this.form.gisinfo = JSON.parse(e.gisInfo);
       }
       
       if (e.startups) {
@@ -1224,95 +1235,93 @@ export default {
       }
       this.editDialogFormVisible = true;
     },
-    //确定修改
-    amend() {
-      
-      // 点击确认修改时 先给 this.form.isGis赋值。
-      if(this.value2 === "BIM"){
-        this.form.isGis = false;
-      }else{
-        this.form.isGis = true;
-      }
 
-      let param = this.form;
+    validaGISInputForm () {
+      if (!this.$refs.editorGISInfo || this.$refs.editorGISInfo.length === 0) return true
+      const dataArr = this.$refs.editorGISInfo
+      let validStatus = true
+      dataArr.forEach(item => {
+        item.validate(valid => {
+          if (!valid) {
+            validStatus = false
+          }
+        })
+      })
+      return validStatus
+    },
+
+    //确定修改
+    amend () {
+      let param = this.form
       // 1 验证必填项
       const verify = {
         name: "项目名称",
-        maxInstance: "最大并发数",
-      };
+        maxInstance: "最大并发数"
+      }
       for (const k in verify) {
-        const val = Array.isArray(param[k]) ? param[k][0] : param[k];
+        const val = Array.isArray(param[k]) ? param[k][0] : param[k]
         if (!this.$common.noNull(val)) {
-          this.$common.message(verify[k] + " 不能为空", "warning"); // 提示信息
-          return;
+          this.$common.message(verify[k] + " 不能为空", "warning") // 提示信息
+          return
         }
       }
      
-      // 验证 gis信息 不能为空555
-      if(this.value2 === 'GIS'){
-         let onBlackNum = 0;
-         let onBlackNumber = 0;
-         let noBlack = this.sonAppValue.length == 0 ? 1 : this.sonAppValue.length;
-         for(var i = 1; i <= noBlack; i++){
-           for(let k = 4; k <= 8; k+=2){
-             let inputValue = document.querySelector('.saveAsDialog .el-dialog__body .el-form .el-form-item:nth-of-type(4) .text:nth-of-type('+i+') .td:nth-of-type('+k+') .el-input__inner');
-             inputValue.value ==='' ? onBlackNum = 1 : onBlackNumber = 2;
-           }
-         }
-          if(onBlackNum === 1){
-             this.$message.error('缺少必要参数');
-            // 这里不太清除，为什么  后台返回的 isGis是 字符串型的，但是这里会变成 布尔型，所以要把他变成字符串型，才可以让 gis信息 显示出来
-             this.form.isGis = 'true';
-             return;
-           }
+      // 验证 gis信息 不能为空
+      const gisMessageValid = this.validaGISInputForm()
+      if (!gisMessageValid) {
+        this.$message({
+          message: "请填写正确的gis信息",
+          type: "warning"
+        })
+        return
       }
-      this.$refs.form.validate((valid) => {
+
+      this.$refs.form.validate(valid => {
         if (valid) {
-          this.$common.openLoading("正在加载中....");
-          // var gisinfoLis = this.form.gisinfo.length === 0 || this.form.appType === '0' ? {} : [];
-          var gisinfoLis = this.form.appType === '3' ? [] : {};
-            
-         if( this.value2 === 'GIS'){
-           
-            // if(this.form.gisinfo.length === 0 || this.form.appType === '0'){
-            if(this.form.appType === '0'){
-              gisinfoLis = {
-                longitude: document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text  .jing .el-input__inner").value,
-                latitude: document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text  .wei .el-input__inner").value,
-                altitude: document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text .elinput .el-input__inner").value
+          this.$common.openLoading("正在加载中....")
+          
+          // 如果不是链接模型,这里的数据就需要传对象,链接模型则需要传数组
+          let gisinfoLis = this.form.appType === '3' ? [] : {}
+          if (this.form.appType === '3' && this.editShowGisInfoData.length !== 0) {
+            gisinfoLis = this.editShowGisInfoData.map(item => {
+              const { appId, longitude, altitude, latitude } = item
+              return {
+                appId,
+                longitude,
+                altitude,
+                latitude
               }
-            }else{
-             for (let i = 1; i <= this.sonAppKey.length; i++) {
-                gisinfoLis[i-1] = {
-                  appId:this.sonAppKey[i-1],
-                  longitude:document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner").value,
-                  latitude:document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner").value,
-                  altitude:document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(4) .elinput .el-input__inner").value
-                }
-              }
-              // if(this.modelListValue){
-              //   gisinfoLis = [...gisinfoLis,...this.modelInfoObj];
-              // }
+            })
+          } else if (this.editShowGisInfoData.length !== 0) {
+            const { appId, longitude, altitude, latitude } = this.editShowGisInfoData[0]
+            gisinfoLis = {
+              appId,
+              longitude,
+              altitude,
+              latitude
             }
-         }
-          var gisinfoList = JSON.stringify(gisinfoLis)
-          updateProject({
+          }
+
+          const params = {
             appid: this.form.appid,
             appName: this.form.name,
             doMouse: this.form.doMouse,
             displayWindow: this.form.displayWindow,
-            appType:this.form.appType,
+            appType: this.form.appType,
             screenImg: this.form.screenImg,
             maxInstance: this.form.maxInstance,
             startup: this.form.startup,
-            gisInfo:gisinfoList,
-            isGis:this.form.isGis,
-            combineId:this.form.modelIds,
-            gisCoordinateType:this.form.gisCoordinateType,
-            param:this.form.startNum, // 启动参数
-            isReserve:this.form.startVal, // 是否预启动
-          })
-            .then((res) => {
+            gisInfo: JSON.stringify(gisinfoLis),
+            isGis: this.value2 === 'BIM' ? 'false' : 'true',
+            combineId: this.form.modelIds,
+            gisCoordinateType: this.form.gisCoordinateType,
+            param: this.form.startNum, // 启动参数
+            isReserve: this.form.startVal // 是否预启动
+          }
+
+          console.log('请求参数', params, gisinfoLis)
+
+          updateProject(params).then(res => {
               if (res.data.code === 0) {
                 this.$message.success(res.data.message);
                 this.$common.closeLoading();
@@ -1485,119 +1494,38 @@ export default {
       // }
       // return extension;
     },
-    xiala2(){
-  //     if(this.value2 == "BIM"){
-  //     //  console.log("bin");
-  //      this.$nextTick(()=>{
-  //         for (var i = 1; i <= this.sonAppKey.length; i++) {
-  //         for (let j = 3; j <= 8; j++) {
-  //           if(
-  //             document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!="none"
-  //           ){
-  //               document.querySelector(".el-form-item:nth-of-type(3) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display="none"
-  //         }
-  //         }
-  //       }
-  //      })
-  //    }else{
-  //     //  console.log("gei");  
-  //      this.$nextTick(()=>{
-  //         for (var i = 1; i <= this.sonAppKey.length; i++) {
-  //           for (let j = 3; j <= 8; j++) {
-  //            if(
-  //              document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display!=""
-  //             ){
-  //              document.querySelector(".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type("+j+")").style.display=""
-  //             }
-  //          }
-  //         }
-  //      })         
-  //    }
+    
+    // 点击添加模型按钮
+    addModelClick () {
+      this.modelListFlag = false
+      this.modelListValue = ''
+
+      const combineIds = this.form.modelIds.split(',')
+      this.modelList = this.ListLinkModel.filter(item => !combineIds.includes(item.appid))
+    },
+
+    // 添加的模型变化时
+    modelListValChange (appId) {
+      console.log('添加模型下拉', appId, this.modelList)
+      const index = this.modelList.findIndex(item => item.appid === appId)
+      if (appId) {
+        // 更新modelIds
+        const combineIds = this.form.modelIds.split(',')
+        combineIds.push(appId)
+        this.form.modelIds = combineIds.join(',')
+
+        const { appName, appid } = this.modelList[index]
+        this.editShowGisInfoData.push({
+          name: appName,
+          appId: appid,
+          longitude: '',
+          latitude: '',
+          altitude: ''
+        })
+        this.modelListFlag = true
+      }
     },
     
-    jin(){
-      let gisLength = this.sonAppKey.length == 0 ? 1 : this.sonAppKey.length;
-      for (let i = 1; i <= gisLength ; i++) {
-        if(
-          document.querySelector(
-            ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
-            ).value > 180
-          ){
-        document.querySelector(
-          ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
-          ).value = '';
-          this.$message.warning('经度取值范围为正负180度')
-      }else if(
-        document.querySelector(
-            ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
-            ).value < -180
-            ){
-          document.querySelector(
-          ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(8) .jing .el-input__inner"
-          ).value = '';
-          this.$message.warning('经度取值范围为正负180度')
-      }
-      if(document.querySelector(
-            ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
-            ).value > 90){
-        document.querySelector(
-          ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
-          ).value = '';
-          this.$message.warning('纬度取值范围为正负90度');
-      }else if(document.querySelector(
-            ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
-            ).value < -90){
-        document.querySelector(
-          ".el-form-item:nth-of-type(4) .el-form-item__content .el-card .el-card__body .text:nth-of-type("+i+") .td:nth-of-type(6) .wei .el-input__inner"
-          ).value = '';
-            this.$message.warning('纬度取值范围为正负90度');
-      }
-      }
-    },
-    // 点击添加模型按钮
-    async addModelClick(){
-      this.modelListFlag = false;
-      this.modelListValue = '';
-      let modelArr = JSON.parse(JSON.stringify(this.ListLinkModel));
-      let newArr = this.form.modelIds.split(',');
-      this.modelList = modelArr.filter(item=>{
-        let flag = newArr.some(e=>{
-          return item.appid === e
-        })
-        if(flag === false){
-          return true;
-        }
-      })
-    },
-    // 添加的模型变化时
-    modelListValChange(e){
-      if(e){
-          this.modelNameGet(e);
-          let keyValueObj = {[e]: this.selectModelName}
-          this.sonAppObj = {...this.sonAppObj,...keyValueObj}
-          let newArr = this.form.modelIds.split(',');
-          newArr.push(e);
-          this.form.modelIds = newArr.join(',');
-          // if(this.value2 === 'GIS'){
-          //   let obj = {
-          //     appid:e,
-          //     longitude:'116', //经度
-          //     latitude:'35',  //纬度
-          //     altitude:'2',  //海拔高度
-          //   }
-          //   this.modelInfoObj.push(obj);
-          // }
-          this.modelListFlag = true;
-      }
-    },
-    // 得到点击的那一项的模型名称
-    modelNameGet(e){
-      this.modelList.forEach(item=>{
-        if(e === item.appid){
-          this.selectModelName = item.appName;
-        }
-      })
-    }
   },
   mounted() {
     //禁用返回键
@@ -1616,17 +1544,8 @@ export default {
     $route(to, from) {
       this.GetList();
       this.$router.go(0);
-    },
-    // 监听 后台返回的sonApp
-    sonAppObj:{
-       handler(newValue, oldValue) {
-        this.sonAppKey = Object.keys(newValue);
-        this.sonAppValue = Object.values(newValue);
-      },
-      deep:true,
-      immediate: true,
-     }
-    },
+    }
+  },
   // ===== 页面实例销毁 =====
   beforeDestroy() {
     // 清除定时器
@@ -1636,6 +1555,25 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/ .el-dialog__wrapper {
+  overflow: hidden;
+}
+/deep/ .gis-form-box .el-form-item__content {
+  display: flex;
+}
+.gis-form {
+  display: flex;
+  align-items: flex-start;
+  height: 58px;
+}
+.gis-form-box {
+  flex: 1;
+  margin: 0 5px 0 5px;
+  display: flex;
+  .gis-input-label {
+    margin: 0 0 0 5px;
+  }
+}
 .handle-btn {
   text-align: center;
 }
