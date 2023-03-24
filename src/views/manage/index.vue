@@ -1,15 +1,11 @@
 <template>
-  <!-- 应用管理 -->
   <div class="box">
-    <!-- 消息提示 -->
     <div class="record">
-      <!-- 消息提示 -->
       <div class="left">
         {{ $t("Youhave") }}&nbsp;
         <span style="color: #00aaf0">{{ total }} </span>&nbsp;
         {{ $t("project") }}
       </div>
-      <!-- 按钮 -->
       <div class="right">
         <el-button
           :type="timerFlag ? 'primary' : 'info'"
@@ -21,12 +17,13 @@
             {{ uploadingNum }}
           </div>
         </el-button>
-        <el-button type="primary" @click="AddIntegrate">链接模型</el-button>
+        <el-button type="primary" @click="showLinkModelDialog">链接模型</el-button>
       </div>
     </div>
-    <!-- 表格 -->
+
+    <!-- 模型表格 -->
     <div class="table">
-      <el-table :data="itemList" style="width: 100%" class="sheet">
+      <el-table :data="allModelData" style="width: 100%" class="sheet">
         <el-table-column prop="appName" :label="$t('applyname')">
           <template slot-scope="scope">
             <el-tooltip
@@ -126,79 +123,14 @@
           </template>
         </el-table-column>
 
-        <!-- 操作 -->
-        <el-table-column
-          :label="$t('operation')"
-          width="220"
-          align="canter"
-          v-if="false"
+        <!-- 报错 -->
+        <!-- <el-button
+          @click="reportErr(scope.row)"
+          type="text"
+          class="btn-one"
         >
-          <template slot-scope="scope">
-            <div class="handle-btn">
-              <!-- 升级 -->
-              <el-button
-                @click="upgrade(scope.row)"
-                type="text"
-                v-if="
-                  scope.row.currVersion !== 'V5' &&
-                  scope.row.applidStatus === '2' &&
-                  scope.row.appType === '0'
-                "
-                class="blue"
-              >
-                升级
-              </el-button>
-
-              <!-- 下载 -->
-              <!-- <el-button
-                @click="downloadFile(scope.row)"
-                type="text"
-                v-if="
-                  scope.row.applidStatus === '2' && scope.row.appType === '3'
-                "
-              >
-                下载
-              </el-button> -->
-
-              <!-- 分享 -->
-              <el-button
-                @click="share(scope.row), (dialogFormVisibleOne = true)"
-                type="text"
-                v-if="scope.row.applidStatus === '2'"
-                :class="scope.row.applidStatus === '2' ? 'blue' : 'gray'"
-                :disabled="scope.row.applidStatus === '2' ? false : true"
-              >
-                分享
-              </el-button>
-              <!-- 编辑 -->
-              <el-button
-                @click="edit(scope.row);GetList()"
-                type="text"
-                class="btn-one"
-                :disabled="scope.row.applidStatus === '4' ? true : false"
-                v-if="scope.row.applidStatus === '5' ? false : true"
-              >
-                {{ $t("edit") }}
-              </el-button>
-              <!-- 报错 -->
-              <!-- <el-button
-                @click="reportErr(scope.row), (reportErrDialogVisible = true)"
-                type="text"
-                class="btn-one"
-              >
-                报错
-              </el-button> -->
-              <!-- 删除 -->
-              <el-button
-                @click="remove(scope.row)"
-                type="text"
-                v-if="scope.row.applidStatus === '5' ? false : true"
-              >
-                {{ $t("del") }}
-              </el-button>
-            </div>
-          </template>
-        </el-table-column>
+          报错
+        </el-button> -->
 
         <el-table-column label="操作" width="300">
           <template slot-scope="scope">
@@ -289,7 +221,7 @@
       <div :class="form.appType == '3' && form.isGis =='true' || form.appType == '3'&&value2 == 'GIS' || form.appType == '0' && value2 == 'GIS' ? '' : 'content' " >
         <el-form :model="form" :rules="rules" ref="form">
           <el-form-item label="项目名称：" label-width="110px">
-            <el-input v-model="form.name" autocomplete="off"></el-input>
+            <el-input v-model="form.name"></el-input>
           </el-form-item>
           <el-form-item label="项目缩略图：" label-width="110px">
             <SingleUpload v-model="form.screenImg" url="/appli/uploadThumbnail"/>
@@ -302,10 +234,10 @@
           >
             <el-select v-model="value2" @change="changeEditorEngine">
               <el-option
-                v-for="item in optionss"
-                :key="item.value2"
+                v-for="item in options"
+                :key="item.value"
                 :label="item.label"
-                :value="item.value2">
+                :value="item.value">
               </el-option>
             </el-select>
           </el-form-item>
@@ -402,7 +334,7 @@
             <el-card class="box-card">
               <div v-for="(item, index) in editShowGisServeData" class="gis-serve-box" :key="item.gisId">
                 <el-tooltip class="item" effect="dark" :content="item.gisServerName" placement="top">
-                  <div class="line-one gis-serve"> {{ item.gisServerName }} </div>
+                  <div class="textEllipsis gis-serve"> {{ item.gisServerName }} </div>
                 </el-tooltip>
                 <span class="gis-serve-delete" @click="deleteGisServe(index)">移除</span>
               </div>
@@ -456,14 +388,14 @@
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="closeEdit">取 消</el-button>
-        <el-button type="primary" @click="amend">确 定</el-button>
+        <el-button type="primary" @click="editComfirm">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 链接模型 -->
     <el-dialog
       title="链接模型"
       custom-class="integrate-dialog"
-      :visible="IsIntegrate"
+      :visible="linkModelDialog"
       :width="value == 'GIS' ? '1090px' : '705px'"
       @close="closeLinkModel"
     >
@@ -591,15 +523,11 @@ import {
   getGISProjectList,
   deleteProject,
   updateProject,
-  getWebUrl,
   upgradeModle,
 } from "@/api/my.js";
 import MODELAPI from "@/api/model_api";
 import { Getuserid } from "@/store/index.js";
-import axios from "@/utils/request";
 import qs from "qs";
-import { updateJudgeMsg } from '../../api/my';
-import { urlToblob } from '@/utils/file.js'
 import Pagination from "@/components/Pagination"
 import Share from "./share.vue"
 import Transfer from "./transfer/main.vue"
@@ -656,16 +584,6 @@ export default {
           label: "OurBIMEngine",
         },
       ],
-      optionss: [
-        {
-          value2: "GIS",
-          label: "OurGISEngine",
-        },
-        {
-          value2: "BIM",
-          label: "OurBIMEngine",
-        },
-      ],
       value: "BIM",
       value2: "",
       timerFlag: true, //是否开启定时器轮询
@@ -683,22 +601,11 @@ export default {
       ActiveLinkGISModel: [],
       ListLinkModel: [],
       ListLinkGISModel: [],
-      IsIntegrate: false,
-      btnCopy: "",
-      itemList: [], //数据列表
-      appid: "", //应用ID
-      appName: "", //应用名称
-      fileSize: "", //文件大小
-      maxInstance: "", //最大并发数
-      currentInstance: "", //当前并发数
-      applidStatus: null, //状态
-      createTime: "", //上传日期
-      timer: null, //定时器
+      linkModelDialog: false,
+      allModelData: [], //数据列表
+      timer: null, // 模型列表接口请求定时器
       display: false, //转换进度条默认隐藏
       customColor: "#00AAF0", //进度条颜色
-      baseURL: axios.defaults.baseURL,
-      appliId: "",
-      fileUpload: "",
       fileList: [{ url: "" }], //上传图片列表显示
       editDialogFormVisible: false,
       dialogFormVisibleOne: false,
@@ -706,7 +613,7 @@ export default {
       formShare: {
         appid: "",
       },
-      //编辑应用表单
+      // 编辑应用表单
       form: {
         appType:"",
         startup:"",
@@ -719,13 +626,11 @@ export default {
         maxInstance: "",
         appid: "",
         screenImg: "",
-        appModel: "",
-        dialogImageUrl: "",
         applidStatus: null,
         isGis:'',
         modelIds:'',
         startNum:'', // 启动参数
-        startVal:null, // 是否预启动
+        startVal: null, // 是否预启动
         displayWindow: [
           {
             value: "0",
@@ -751,7 +656,6 @@ export default {
           },
         ],
       },
-      // 校验规则
       rules: {
         // 最大并发的校验
         maxInstance: [
@@ -759,8 +663,8 @@ export default {
             pattern: /^([1-9]\d{0,3})$/,
             message: "请输入1-9999的正整数",
             trigger: "blur",
-          },
-        ],
+          }
+        ]
       },
       // 报错表单
       reportErrForm: {
@@ -772,24 +676,22 @@ export default {
       reportErrRules: {
         title: [
           { required: true, message: "请输入标题!", trigger: "blur" },
-          { min: 1, max: 20, message: "字数不能超过20!", trigger: "blur" },
+          { min: 1, max: 20, message: "字数不能超过20!", trigger: "blur" }
         ],
         type: [
-          { required: true, message: "请选择活动区域", trigger: "change" },
+          { required: true, message: "请选择活动区域", trigger: "change" }
         ],
         detail: [
           { required: true, message: "请输入问题描述!", trigger: "blur" },
-          { min: 1, max: 200, message: "字数不能超过200!", trigger: "blur" },
-        ],
+          { min: 1, max: 200, message: "字数不能超过200!", trigger: "blur" }
+        ]
       },
       selectStartups: null,
-      modelList:[], // 编辑中添加模型时的下拉框数据
+      modelList: [], // 编辑中添加模型时的下拉框数据
       selectGisList: [], // 可选的gis服务数据
       selectedGisServe: '',
       modelListValue:'', //  编辑中添加模型时的下拉框的v-model
       modelListFlag: true,
-      modelInfoObj:[],
-      selectModelName:'', // 选中的模型的名称
       linkGisCoordinateType:'WGS-84', // 链接模型时选择坐标系
       
       total: 0,
@@ -797,16 +699,16 @@ export default {
         pageNo: 1,
         pageSize: 20
       }
-    };
+    }
   },
   computed: {
     uploadingNum() {
-      return this.$store.state.uploadingNum;
-    },
+      return this.$store.state.uploadingNum
+    }
   },
   created() {
-    this.GetList();
-    this.setGetdataIn();
+    this.getAllModelList()
+    this.setGetModelListTimer()
     // 获取gis服务数据
     this.getGISProject()
   },
@@ -814,26 +716,24 @@ export default {
     handleChange (data) {
       this.GISInfo = data
     },
-    // 是否预启动
-    readStart(val){
-      if(val === 1){
-         this.form.startVal = true;
-      }else{
-        this.form.startVal = false;
+
+    readStart (val) {
+      if (val === 1) {
+         this.form.startVal = true
+      } else {
+        this.form.startVal = false
       }
     },
 
-    // 关闭 编辑弹框
     closeEdit () {
       this.editDialogFormVisible = false
       this.editShowGisInfoData = []
     },
 
-    // 关闭链接模型弹框
-    closeLinkModel(){
-        this.IsIntegrate = false;
-        this.ActiveLinkModel=[];
-        this.FormIntegrate.appName='';
+    closeLinkModel () {
+        this.linkModelDialog = false
+        this.ActiveLinkModel = []
+        this.FormIntegrate.appName=''
     },
 
     delRow (index) {
@@ -856,58 +756,28 @@ export default {
       })
     },
 
-    reportErr(row) {
-      console.log(11, row)
+    reportErr (row) {
+      reportErrDialogVisible = true
     },
 
-    downloadFile (row) {
-      this.$confirm("即将下载此源文件, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          this.$message({
-            type: "warning",
-            message: "开始下载",
-          });
-          let params = {
-            userId: Getuserid(),
-            appId: row.appid,
-          };
-          let urllll =
-            process.env.VUE_APP_REQUEST_URL +
-            "/FileStorge/downloadModelFile?" +
-            qs.stringify(params);
-          // window.location.href=urllll
-          window.open(urllll);
-          return;
-          this.startDownLoad(row);
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消下载",
-          });
-        });
+    handleCreateProjectDialog () {
+      this.$emit("handleCreateProjectDialog", true)
     },
-    handleCreateProjectDialog() {
-      this.$emit("handleCreateProjectDialog", true);
-    },
-    SubmitIntegrate() {
+
+    SubmitIntegrate () {
       if (this.ActiveLinkModel.length === 0) {
         this.$message({
           message: "请选择模型",
-          type: "warning",
-        });
-        return false;
+          type: "warning"
+        })
+        return false
       }
       const gisMessageValid = this.$refs.linkModel.checkGIS()
       if (!gisMessageValid) {
         this.$message({
           message: "请填写正确的gis信息",
-          type: "warning",
-        });
+          type: "warning"
+        })
         return
       }
       this.$refs["FormIntegrate"].validate(valid => {
@@ -927,25 +797,27 @@ export default {
             this.isGis = false;
             gisinfoList = '';
           }
-          const params = {
+          let params = {
             userId,
             appName,
             type : this.type,
-            bimList: this.ActiveLinkModel.join(),
+            bimList: this.ActiveLinkModel.join(','),
             gisInfo: JSON.stringify(gisinfoList),
-            gisList: this.ActiveLinkGISModel.join(),
             screenImg: this.FormIntegrate.screenImg, // 项目缩略图
             isGis: this.isGis,
             gisCoordinateType: this.value ==='BIM' ? 'WGS-84' : this.linkGisCoordinateType,
+          }
+          if (this.ActiveLinkGISModel.length !== 0) {
+            params.gisList = this.ActiveLinkGISModel.join(',')
           }
           
           console.log('参数打印', params)
           MODELAPI.ADDINTEGRARE(params).then((res) => {
             if (res.data.code === 0) {
-              this.GetList();
+              this.getAllModelList();
               this.ActiveLinkModel = [];
               this.$refs["FormIntegrate"].resetFields();
-              this.IsIntegrate = false;
+              this.linkModelDialog = false
             } else {
               this.$message({
                 message: res.data.message,
@@ -966,25 +838,7 @@ export default {
           userInfo.name || userInfo.mobile || userInfo.email || "默认昵称",
       });
     },
-    GetIntegrate() {
-      getProjectList({
-        userid: Getuserid(),
-        isHandle: 1,
-        appType: 0,
-      }).then((res) => {
-        if (res.data.code === 0) {
-          let resData = res.data.data.list.filter((item) => {
-            if (item.appType !== "4") {
-              return item;
-            } else {
-            }
-          });
-          this.ListLinkModel = resData;
-        } else {
-          this.ListLinkModel = [];
-        }
-      });
-    },
+
     getGISProject() {
       const params = {
         userId: Getuserid()
@@ -998,89 +852,62 @@ export default {
         }
       })
     },
-    AddIntegrate() {
-      this.GetIntegrate();
-      this.IsIntegrate = true;
-      //  链接模型 弹框 一打开就要给 this.isGis赋值
-      // this.$nextTick(()=>{
-      //   if(this.value === 'GIS'){
-      //     this.isGis =true;
-      //   }else{
-      //     this.isGis = false;
-      //   }
-      // });
 
-    },
-    noneTips(obj, row) {
-      row.showTooltip = false;
-    },
-    showTips(obj, row) {
-      /*obj为鼠标移入时的事件对象*/
-      /*currentWidth 为文本在页面中所占的宽度，创建标签，加入到页面，获取currentWidth ,最后在移除*/
-      let TemporaryTag = document.createElement("span");
-      TemporaryTag.innerText = row.appName;
-      TemporaryTag.className = "getTextWidth";
-      document.querySelector("body").appendChild(TemporaryTag);
-      let currentWidth = document.querySelector(".getTextWidth").offsetWidth;
-      document.querySelector(".getTextWidth").remove();
-      /*cellWidth为表格容器的宽度*/
-      const cellWidth = obj.target.offsetWidth;
-      /*当文本宽度小于||等于容器宽度两倍时，代表文本显示未超过两行*/
-      currentWidth <= 2 * cellWidth
-        ? (row.showTooltip = false)
-        : (row.showTooltip = true);
+    showLinkModelDialog() {
+      this.linkModelDialog = true
+      getProjectList({
+        userid: Getuserid(),
+        isHandle: 1,
+        appType: 0
+      }).then(res => {
+        if (res.data.code === 0) {
+          let resData = res.data.data.list
+          this.ListLinkModel = resData.filter(item => item.appType !== '4')
+        } else {
+          this.ListLinkModel = []
+        }
+      })
     },
 
-    // // 定时器每隔一秒获取数据
-    setGetdataIn() {
+    // 这里增加定时器轮询是为了获取最新的数据状态
+    // 比如：删除模型和上传模型操作比较耗时，需要轮询来获取最新的操作状态
+    setGetModelListTimer () {
       this.timer = setInterval(() => {
         if (this.timerFlag) {
-          this.GetList();
+          this.getAllModelList()
         }
-      }, 2500);
+      }, 2500)
     },
 
     // 分页
-    handlePageChange(data) {
-        this.pages.pageNo = data.pageIndex
-        this.pages.pageSize = data.pageSize
-        this.GetList()
+    handlePageChange (data) {
+      this.pages.pageNo = data.pageIndex
+      this.pages.pageSize = data.pageSize
+      this.getAllModelList()
     },
 
     // 获取应用数据列表
-    GetList() {
+    getAllModelList() {
       const params = {
         pageNo: this.pages.pageNo,
         pageSize: this.pages.pageSize,
         userid: Getuserid()
       }
-      getProjectList(params).then((res) => {
+      getProjectList(params).then(res => {
         if (res.data.code == "0") {
           this.total = res.data.data.total
-          this.itemList = res.data.data.list
-          this.appid = res.data.data.appid
-          this.maxInstance = res.data.data.maxInstance
-          this.currentInstance = res.data.data.currentInstance
-          this.appName = res.data.data.appName
-          this.fileSize = res.data.data.fileSize
-          this.applidStatus = res.data.data.applidStatus
-          this.createTime = res.data.data.createTime
+          this.allModelData = res.data.data.list
         } else if (res.data.code < 0) {
           this.timerFlag = false
           this.$message.warning(res.data.message)
-          this.itemList = []
+          this.allModelData = []
         } else {
-          this.itemList = []
+          this.allModelData = []
         }
       })
       .catch((err) => {
         // this.$message.error('请求失败')
       })
-    },
-
-    //翻转数组
-    reverse() {
-      this.itemList.reverse()
     },
 
     // 根据传入的status做适配
@@ -1106,8 +933,8 @@ export default {
         .then(async (res) => {
           const { data: upRes } = await upgradeModle({
             userId: Getuserid(),
-            appId: row.appid,
-          });
+            appId: row.appid
+          })
           if (upRes.code === 0) {
             this.$message.success(upRes.message);
           } else {
@@ -1167,9 +994,8 @@ export default {
           let urlDownload =
             process.env.VUE_APP_REQUEST_URL +
             "/FileStorge/downloadModelFile?" +
-            qs.stringify(params);
-          // window.location.href=urllll
-          window.open(urlDownload);
+            qs.stringify(params)
+          window.open(urlDownload)
           return;
         })
         .catch(() => {
@@ -1198,10 +1024,8 @@ export default {
       this.editShowGisServeData = []
       // 将添加模型按钮显示出来
       this.modelListFlag = true
-      // 获取所有模型信息
-      this.GetIntegrate()
+
       let data = JSON.parse(JSON.stringify(e))
-      // { appType, displayName, displayWindow, doMouse, maxInstance, applidStatus, screenImg, startup, isGis, appid } = data
       this.form = data
       this.form.name = data.appName;
       this.form.appid = data.appid;
@@ -1236,25 +1060,20 @@ export default {
       if (e.appType == "3" && e.isGis=='true') { // GIS链接模型
         this.value2 = "GIS"
         this.form.gisinfo = JSON.parse(e.gisInfo);
-        // console.log('看看编辑这里的数据GIS链接模型', this.form.gisinfo)
-
         this.editShowGisInfoData = this.form.gisinfo
         // e.sonAppMap: 是个对象里面存的是gis的id和模型名字
         // e.gisinfo数组,有经纬度和appid
         this.editShowGisInfoData.forEach(item => {
-          // console.log('第1250行被执行')
           item.name = e.sonAppMap[item.appId]
         })
       } else if (e.appType == "0" && e.isGis=='true') { // GIS模型
         this.value2 = "GIS"
         this.form.gisinfo = JSON.parse(e.gisInfo);
-        // console.log('看看编辑这里的数据GIS模型', this.form.gisinfo, e)
 
         this.editShowGisInfoData.push(this.form.gisinfo)
         this.editShowGisInfoData[0].name = e.appName
         this.editShowGisInfoData[0].appId = e.appid
       } else if (e.appType == "3" && e.isGis == 'false') { // 链接模型
-        // console.log('链接模型', e.sonAppMap)
         this.value2 = "BIM"
         this.form.gisinfo = JSON.parse(e.gisInfo);
         for (let item in e.sonAppMap) {
@@ -1275,7 +1094,6 @@ export default {
         this.selectStartups = e.startups.split(",");
       }
       for (let index = 0; index < this.fileList.length; index++) {
-
         this.fileList[index].url = e.screenImg;
       }
       this.editDialogFormVisible = true;
@@ -1295,8 +1113,7 @@ export default {
       return validStatus
     },
 
-    //确定修改
-    amend () {
+    editComfirm () {
       let param = this.form
       // 1 验证必填项
       const verify = {
@@ -1369,23 +1186,21 @@ export default {
           }
 
           console.log('请求参数', params)
-
           updateProject(params).then(res => {
-              if (res.data.code === 0) {
-                this.$message.success(res.data.message);
-                this.$common.closeLoading();
-                this.GetList();
-                this.editDialogFormVisible = false;
-              } else if (res.data.code === 1) {
-                this.$message.error("修改失败，" + res.data.message);
-                this.$common.closeLoading();
-                // this.editDialogFormVisible = false;
-              }
-            })
-            .catch((err) => {
-              this.$message.error("修改信息失败,请重新修改");
-              this.$common.closeLoading();
-            });
+            if (res.data.code === 0) {
+              this.$message.success(res.data.message)
+              this.$common.closeLoading()
+              this.getAllModelList()
+              this.editDialogFormVisible = false
+            } else if (res.data.code === 1) {
+              this.$message.error("修改失败，" + res.data.message)
+              this.$common.closeLoading()
+            }
+          })
+          .catch(err => {
+            this.$message.error("修改信息失败,请重新修改")
+            this.$common.closeLoading()
+          })
         }
       });
     },
@@ -1415,7 +1230,7 @@ export default {
         .then((res) => {
           if (res.data.code === 0) {
             this.$message.success(res.data.message);
-            this.GetList();
+            this.getAllModelList();
           } else if (res.data.code === 1) {
             this.$message.warning(res.data.message);
           }
@@ -1479,70 +1294,6 @@ export default {
         }
       });
     },
-    // 上传封面图
-    upLoadImg(response, file, fileList) {
-      this.form.screenImg = response.data;
-    },
-    // 上传模型
-    upLoadModel(response, file, fileList) {
-      this.$message.success("模型上传成功");
-      this.form.appModel = response.data;
-      this.disabl = false;
-    },
-    // 上传封面图失败
-    errorImg(err, file, fileList) {},
-    // 删除图片
-    handleRemove(file) {
-      this.$confirm("此操作将删除该图片, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          this.form.screenImg = "";
-          // 删除文件
-          this.$refs.upload.clearFiles();
-          this.$message({
-            type: "success",
-            message: "删除成功",
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除",
-          });
-        });
-    },
-
-    // 限制上传封面次数
-    handleExceed() {
-      this.$message.warning(`亲，只能上传一张图片哦！`);
-    },
-    // 限制上传封面格式
-    beforeUpload(file) {
-      var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
-      const one = testmsg === "jpg";
-      const two = testmsg === "jpeg";
-      const three = testmsg === "png";
-      if (!one && !two && !three) {
-        this.$message.error("上传封面只能是.jpg .jpeg .png格式!");
-      }
-      return one || two || three;
-    },
-    // 限制上传模型次数
-    exceed() {
-      this.$message.warning(`您只能上传一个模型`);
-    },
-    // 限制上传模型格式
-    beforeModelUpload(file) {
-      var testmsg = file.name.substring(file.name.lastIndexOf(".") + 1);
-      // const extension = testmsg === "rvt";
-      // if (!extension) {
-      //   this.$message.error("上传模型只能是.rvt格式!");
-      // }
-      // return extension;
-    },
     
     // 点击添加模型按钮
     addModelClick () {
@@ -1575,7 +1326,6 @@ export default {
 
     // 添加的模型变化时
     modelListValChange (appId) {
-      console.log('添加模型下拉', appId, this.modelList)
       const index = this.modelList.findIndex(item => item.appid === appId)
       if (appId) {
         // 更新modelIds
@@ -1611,14 +1361,15 @@ export default {
   },
   watch: {
     $route(to, from) {
-      this.GetList();
+      this.getAllModelList();
       this.$router.go(0);
     }
   },
-  // ===== 页面实例销毁 =====
-  beforeDestroy() {
-    // 清除定时器
-    clearInterval(this.timer);
+
+  beforeDestroy () {
+    // 清除列表接口请求定时器
+    clearInterval(this.timer)
+    this.timer = null
   },
 };
 </script>
@@ -1649,9 +1400,7 @@ export default {
     margin: 0 0 0 5px;
   }
 }
-.handle-btn {
-  text-align: center;
-}
+
 .box {
   overflow: hidden;
   width: 96%;
@@ -1849,9 +1598,7 @@ export default {
 }
 
 .trans-tooplip-content {
-  // color: #ff3333;
   font-size: 14px;
-  // background-color: #ffe8e8;
   width: 100%;
   height: 100%;
   color: #ff3333;
@@ -1865,13 +1612,6 @@ export default {
 /deep/ .el-notification__group {
   width: 100%;
   background-color: red;
-}
-.skills {
-  text-align: right;
-  padding-right: 20px;
-  line-height: 40px;
-  color: white;
-  box-sizing: border-box;
 }
 
 /deep/ .el-notification__content {
@@ -1911,12 +1651,6 @@ export default {
   float: left;
 }
 
-.line-one {
-  white-space: nowrap; //强制在一行显示
-  overflow: hidden; //溢出隐藏
-  text-overflow: ellipsis; //显示省略号
-}
-
 .gis-serve-box {
   position: relative;
   .gis-serve {
@@ -1946,9 +1680,7 @@ export default {
 .clearfix::after{
   clear:both;
 }
-// .text{
-//   overflow: hidden;
-// }
+
 ::v-deep .el-card__body {
     padding: 0.25rem 1.25rem;
 }
@@ -1958,17 +1690,17 @@ export default {
   padding: 0 10px;
 }
 
-.yinc{
+.yinc {
   padding-left: 10px;
   color: #00aaf0;
 }
-.bind{
+.bind {
   display: none;
 }
-.yinc:hover{
-  cursor:pointer;
+.yinc:hover {
+  cursor: pointer;
 }
-.td{
+.td {
   float:right;
   position: relative;
   top:0px;
@@ -1992,35 +1724,24 @@ export default {
     padding: 6px;
   }
 }
-// 为了解决 链接模型弹框 右侧名字太长导致的布局问题
-::v-deep .el-transfer .el-transfer-panel .optionName{
-  font-style: normal !important;
-}
-// 为了解决 链接模型弹框 右侧名字太长导致的布局问题
-::v-deep .el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-checkbox-group .el-checkbox .el-checkbox__label .appna .optionName{
-  display: inline-block;
-    width: 150px;
-  white-space: nowrap; //强制在一行显示
-  overflow: hidden; //溢出隐藏
-  text-overflow: ellipsis; //显示省略号
-}
-.box-card{
+
+.box-card {
   margin-left: 9px;
   .addNewModel{
-    span{
+    span {
       color: #00aaf0;
       font-size: 14px;
       cursor: pointer;
     }
   }
 }
-::v-deep .orStart .el-radio-group{
+::v-deep .orStart .el-radio-group {
    margin-left: 9px;
 }
-::v-deep .reaNum .el-input{
+::v-deep .reaNum .el-input {
   margin-left: 9px;
 }
-::v-deep .startNumber .el-input{
+::v-deep .startNumber .el-input {
   margin-left: 9px;
 }
 </style>
