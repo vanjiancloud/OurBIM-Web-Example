@@ -6,8 +6,8 @@
         </div>
         <div class="middle">
             <el-radio-group v-model="radio" class="singleSelect" @change="changeRadio">
-                <el-radio :label="2" class="needBlock"><span class="viewModel">{{personView[0].name}}</span></el-radio>
-                <el-radio :label="1" class="needBlock"><span class="viewModel">{{personView[1].name}}</span></el-radio>
+                <el-radio :label="2" class="needBlock"><span class="viewModel">{{personView[0].name}}</span></el-radio><br>
+                <el-radio :label="1" class="needBlock"><span class="viewModel">{{personView[1].name}}</span></el-radio><br>
                 <el-radio class="needNone selfView" disabled>
                     <div>
                         <el-checkbox @change="weight" v-model="checkWeight" :disabled="radio===1 ? false : true" class="firstSelect">{{checkListArr[0].name}}</el-checkbox>
@@ -18,8 +18,8 @@
                         <input @blur="adjustHeight" class="oneHeight" type="number" :disabled="radio!==1 || this.checkWeight === false ? true : false"  value="1.72">
                         <span>m</span>
                     </div>
-                </el-radio>
-                <el-radio :label="3" class="needBlock"><span class="viewModel">{{personView[2].name}}</span></el-radio>
+                </el-radio><br>
+                <el-radio :label="3" class="needBlock"><span class="viewModel">{{personView[2].name}}</span></el-radio><br>
                 <el-radio class="needNone followView" disabled>
                     <div class="upTwo">
                         <el-select @change="changeSelect" :disabled="radio===3 ? false : true" v-model="value" placeholder="请选择对象" size="mini">
@@ -30,7 +30,7 @@
                                 :value="item.value">
                             </el-option>
                         </el-select>
-                        <div class="turnHeight">
+                        <div class="turnHeight magin-left">
                             <span>{{words[0]}}</span>
                             <input  class="twoHeight" type="number" :disabled="radio===3 ? false : true" value="1.72">
                             <span>m</span>
@@ -444,14 +444,15 @@ export default {
   .middle{
     padding: 16px 23px 0 23px;
     .singleSelect{
-        display: flex;
-        flex-direction: column;
        ::v-deep .needNone .el-radio__input{
             display: none;
         }
         .needBlock{
             color: #fff;
             margin-bottom: 16px;
+        }
+        .magin-left {
+            margin: 0 0 0 45px;
         }
         ::v-deep .selfView .el-radio__label{
             display: flex;
@@ -471,10 +472,10 @@ export default {
             }
         }
         .followView {
+            width: 100%;
             .upTwo {
                 display: flex;
-                justify-content: space-around;
-                margin: -12px 0 14px 0;
+                margin: -12px 0 14px 25px;
                 ::v-deep .el-select .el-input .el-input__inner{
                     height: 22px !important;
                     width: 160px;
@@ -488,14 +489,18 @@ export default {
                     margin-left: 9px;
                 }
             }
-            ::v-deep .startTest .el-checkbox{
-                    margin: 0 0 14px 20px;
-                }
+            ::v-deep .startTest .el-checkbox {
+                margin: 0 0 14px 25px;
+            }
             .putDown{
                 margin-left: 120px;
             }
-            .show-speed{
+            .show-speed {
+                width: 100%;
                 margin-bottom: 10px;
+            }
+            .speedView {
+                padding: 0 20px 0 0;
             }
         }
     }

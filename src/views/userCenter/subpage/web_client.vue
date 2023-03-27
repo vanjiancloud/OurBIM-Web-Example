@@ -595,12 +595,12 @@
     </div>
     <!-- 漫游导航 -->
     <roamNavigate
-    :taskId="taskId"
-    @listenTodo="listenTodo"
-    @closePart="closePart"
-    v-if="viewAngle &&
-              viewAngle.type === 0 &&
-              viewAngle.state === 1"
+      :taskId="taskId"
+      @listenTodo="listenTodo"
+      @closePart="closePart"
+      v-if="viewAngle &&
+      viewAngle.type === 0 &&
+      viewAngle.state === 1"
     ></roamNavigate>
     <!-- (视图) -->
     <viewPhoto :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
@@ -2048,8 +2048,8 @@ export default {
         this.listenTodoInfo = null;
       }
       // 漫游导航---
-      if(e === 0){
-        this.viewAngle = null;
+      if (e === 0) { // 关闭漫游导航弹窗
+        this.viewAngle = null
       }
       if (this.$refs.getFooter) {
         this.$refs.getFooter.editTool(e);
@@ -2137,7 +2137,9 @@ export default {
       if(e.name==='viewCube'){
         this.controllerInfo.viewCube = e.flag;
       }
-      this.$refs.getCube.closeView();
+      if (this.$refs.getCube) {
+        this.$refs.getCube.closeView()
+      }
       if (e.type === 14 || e.type === 11) {
         this.isQrcode = false;
       }
