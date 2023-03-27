@@ -68,6 +68,14 @@ export default {
         taskId:{
           type: String,
           default: ""
+        },
+        showViewCube: {
+            type: Boolean,
+            default: false
+        },
+        showNavMap: {
+            type: Boolean,
+            default: false
         }
     },
     data(){
@@ -232,6 +240,7 @@ export default {
     },
     created(){
       this.threeView();
+      this.watchStatus()
     },
     mounted(){
     },
@@ -243,6 +252,12 @@ export default {
                 }
             },
             immediate:true
+        },
+        showViewCube (newVal, oldVal) {
+            this.watchStatus()
+        },
+        showNavMap (newVal, oldVal) {
+            this.watchStatus()
         }
     },
     methods:{
@@ -403,6 +418,16 @@ export default {
                     name: 'viewCube',
                     flag: false,
                 });
+            }
+        },
+
+        watchStatus () {
+            this.checkListBottom = []
+            if (this.showViewCube) {
+                this.checkListBottom.push('viewCube')
+            }
+            if (this.showNavMap) {
+                this.checkListBottom.push('导航地图')
             }
         }
     }

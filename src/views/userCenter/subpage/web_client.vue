@@ -595,6 +595,8 @@
     </div>
     <!-- 漫游导航 -->
     <roamNavigate
+      :showViewCube="controllerInfo.viewCube"
+      :showNavMap="showNavMap"
       :taskId="taskId"
       @listenTodo="listenTodo"
       @closePart="closePart"
@@ -664,6 +666,7 @@ export default {
   },
   data() {
     return {
+      showNavMap: false, // 导航地图是否显示
       // threeLogo:false,
       // myProjectId:'',
       // modeData:[], // 树形结构数据
@@ -2127,12 +2130,9 @@ export default {
       this.listenInfo = e;
       this.updateOrder();
     },
-    listenTodo(e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-03-04 14:06:09
-       * @description: 监听操作栏
-       */
+
+    // 监听操作栏
+    listenTodo (e) {
       // 漫游导航内 控制 viewCube ---
       if(e.name==='viewCube'){
         this.controllerInfo.viewCube = e.flag;
@@ -2248,6 +2248,7 @@ export default {
       if (e.type === 5) {
         this.handleState = 16;
         this.listenTodoInfo = e;
+        this.showNavMap = this.listenTodoInfo.state === 0 ? false : true
         this.updateOrder();
       }
       // 构件显示隐藏
