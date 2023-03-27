@@ -6,7 +6,7 @@
         </div>
         <div class="middle">
             <el-radio-group v-model="radio" class="singleSelect" @change="changeRadio">
-                <el-radio :label="2" class="needBlock"><span class="viewModel">{{personView[0].name}}</span></el-radio><br>
+                <el-radio v-if="!isGis" :label="2" class="needBlock"><span class="viewModel">{{personView[0].name}}</span></el-radio><br>
 
                 <!-- 第一人称模式 -->
                 <el-radio :label="1" class="needBlock"><span class="viewModel">{{personView[1].name}}</span></el-radio><br>
@@ -87,6 +87,10 @@ export default {
         viewAngleData: {
             type: Object,
             default: () => {}
+        },
+        isGis: {
+            type: Boolean,
+            default: false
         }
     },
     data(){
@@ -252,11 +256,18 @@ export default {
         }
     },
     created(){
-        if (this.viewAngleData.angle === 2) {
-            this.threeView()
-        }
         this.watchStatus()
         this.dealAngleData()
+
+        // 非gis模式下默认是第三人称视角
+        if (this.viewAngleData.angle === 2 && !this.isGis) {
+            this.threeView()
+        }
+        // gis模式默认是第一人称视角
+        if (this.viewAngleData.angle === 1 && this.isGis) {
+            this.radio = 1
+            this.changeRadio(1)
+        }
     },
     beforeDestroy () {
         this.watchAngleData()
@@ -444,7 +455,7 @@ export default {
             this.params.taskid = this.taskId
             const { angle, angleData } = this.viewAngleData
             this.radio = angle
-            if (angle === 1) {
+            if (angle === 1 && angleData) {
                 this.oneHeight = angleData.oneHeight
                 this.checkWeight = angleData.checkWeight
                 this.checkBroken = angleData.checkBroken
@@ -453,10 +464,10 @@ export default {
                 this.params.viewMode = angle
                 this.params.enableGravity = angleData.checkWeight
                 this.params.enableAllCollision = angleData.checkBroken
-                this.params.characterHeight = angleData.oneHeight * 100
+                this.params.characterHeight = this.oneHeight * 100
                 this.params.speedLevel = angleData.speedValue
 
-            } else if (angle === 3) {
+            } else if (angle === 3 && angleData) {
                 this.value = angleData.value
                 this.checkTest = angleData.checkTest
                 this.twoHeight = angleData.twoHeight

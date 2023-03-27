@@ -599,6 +599,7 @@
       :showNavMap="showNavMap"
       :viewAngleData.sync="viewAngleData"
       :taskId="taskId"
+      :isGis="isGis"
       @listenTodo="listenTodo"
       @closePart="closePart"
       v-if="viewAngle &&
@@ -668,9 +669,10 @@ export default {
   data() {
     return {
       showNavMap: false, // 导航地图是否显示
+      isGis: false,
       viewAngleData: {
         angle: 2, // 视角
-        angleData: {}
+        angleData: null
       }, // 漫游导航的视角数据
       // threeLogo:false,
       // myProjectId:'',
@@ -919,6 +921,12 @@ export default {
   //        this.isFade = false;
   //        this.isProgress =false;
   //   }
+
+    // appType  0:普通模型(isGis: GIS模型)   1:漫游模型   3:链接模型(isGis: GIS链接模型)  4:示例模型    5:云应用
+    this.isGis = (this.appType === '0' && this.lockView === 'true') || (this.appType === '3' && this.lockView === 'true')
+    if (this.isGis) {
+      this.viewAngleData = { angle: 1, angleData: null }
+    }
   },
   mounted() {
     this.defaultUrl = process.env.VUE_APP_REQUEST_URL;
