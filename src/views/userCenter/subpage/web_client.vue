@@ -597,6 +597,7 @@
     <roamNavigate
       :showViewCube="controllerInfo.viewCube"
       :showNavMap="showNavMap"
+      :viewAngleData.sync="viewAngleData"
       :taskId="taskId"
       @listenTodo="listenTodo"
       @closePart="closePart"
@@ -667,6 +668,10 @@ export default {
   data() {
     return {
       showNavMap: false, // 导航地图是否显示
+      viewAngleData: {
+        angle: 2, // 视角
+        angleData: {}
+      }, // 漫游导航的视角数据
       // threeLogo:false,
       // myProjectId:'',
       // modeData:[], // 树形结构数据

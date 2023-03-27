@@ -7,6 +7,8 @@
         <div class="middle">
             <el-radio-group v-model="radio" class="singleSelect" @change="changeRadio">
                 <el-radio :label="2" class="needBlock"><span class="viewModel">{{personView[0].name}}</span></el-radio><br>
+
+                <!-- 第一人称模式 -->
                 <el-radio :label="1" class="needBlock"><span class="viewModel">{{personView[1].name}}</span></el-radio><br>
                 <el-radio class="needNone selfView" disabled>
                     <div>
@@ -15,10 +17,12 @@
                     </div>
                     <div class="turnHeight">
                         <span>{{words[0]}}</span>
-                        <input @blur="adjustHeight" class="oneHeight" type="number" :disabled="radio!==1 || this.checkWeight === false ? true : false"  value="1.72">
+                        <el-input @blur="adjustHeight" v-model="oneHeight" size="small" class="oneHeight" type="number" :disabled="radio!==1 || this.checkWeight === false ? true : false"></el-input>
                         <span>m</span>
                     </div>
                 </el-radio><br>
+
+                <!-- 跟随对象模式 -->
                 <el-radio :label="3" class="needBlock"><span class="viewModel">{{personView[2].name}}</span></el-radio><br>
                 <el-radio class="needNone followView" disabled>
                     <div class="upTwo">
@@ -32,11 +36,14 @@
                         </el-select>
                         <div class="turnHeight magin-left">
                             <span>{{words[0]}}</span>
-                            <input  class="twoHeight" type="number" :disabled="radio===3 ? false : true" value="1.72">
+                            <el-input  class="twoHeight" v-model="twoHeight" size="small" type="number" :disabled="radio===3 ? false : true"></el-input>
                             <span>m</span>
                         </div>
                     </div>
+
+                    <!-- 开启碰撞检测 -->
                     <div class="startTest"><el-checkbox :disabled="radio===3 ? false : true" @change="threeBroke" v-model="checkTest">{{words[1]}}</el-checkbox></div>
+                    
                     <div class="putDown"><el-button @click="putDown" :disabled="radio===3 ? false : true" type="primary" size="small">{{words[2]}}</el-button></div>
                     <div class="show-speed">
                        <span>{{words[3]}}</span>
@@ -76,6 +83,10 @@ export default {
         showNavMap: {
             type: Boolean,
             default: false
+        },
+        viewAngleData: {
+            type: Object,
+            default: () => {}
         }
     },
     data(){
@@ -109,6 +120,8 @@ export default {
                 }
             ],
             value:4, // 下拉框
+            oneHeight: 1.72,
+            twoHeight: 1.72,
             options:[            
                       {
                         value:4,
@@ -239,10 +252,14 @@ export default {
         }
     },
     created(){
-      this.threeView();
-      this.watchStatus()
+        if (this.viewAngleData.angle === 2) {
+            this.threeView()
+        }
+        this.watchStatus()
+        this.dealAngleData()
     },
-    mounted(){
+    beforeDestroy () {
+        this.watchAngleData()
     },
     watch:{
         radio:{
@@ -280,6 +297,7 @@ export default {
             this.$emit('closePart',val);
         },
         requestFun(){
+            // console.log('参数打印', this.params)
             MODELAPI.UPDATEORDER(this.params).then((res)=>{
                 if(res.data.code === 0){
                     this.$message.success(res.data.message);
@@ -302,7 +320,7 @@ export default {
                 this.params.viewMode = val;
                 this.params.enableGravity = true;
                 this.params.enableAllCollision = true;
-                this.params.characterHeight = document.querySelector('.oneHeight').value * 100;
+                this.params.characterHeight = this.oneHeight * 100;
                 this.params.speedLevel = this.speedValue;
                 this.requestFun();
             }
@@ -310,13 +328,7 @@ export default {
             if(val === 3){
                 // 默认开启碰撞
                 this.checkTest = true;
-                // 赋初值 调用接口
-                // let targetIn =  this.options.find((item)=>{
-                //   return item.value === this.value;
-                // })
-                // this.params.dollName = targetIn.English;
                 this.params.viewMode = val;
-                // this.params.dollHeight = document.querySelector('.twoHeight').value * 100;
                 this.params.enableAllCollision = true;
                 this.requestFun();
             }
@@ -342,7 +354,7 @@ export default {
         },
         // 第一人称中的视角高度
         adjustHeight(){
-            this.params.characterHeight = document.querySelector('.oneHeight').value * 100;
+            this.params.characterHeight = this.oneHeight * 100;
             this.requestFun();
         },
         // 跟随对象 碰撞 
@@ -362,7 +374,7 @@ export default {
             }else{
                 this.speedValue = 4
             }
-            document.querySelector('.twoHeight').value = selectIn.tall;
+            this.twoHeight = selectIn.tall;
             // 下拉赋值 调接口
             // if(this.putObj === 1){
             //     this.params.dollName === selectIn.English;
@@ -371,11 +383,7 @@ export default {
             //     this.requestFun();
             // }
         },
-        // 跟随对象 height
-        /*normalHeight(){
-            this.params.dollHeight = document.querySelector('.twoHeight').value * 100;
-            this.requestFun();
-        },*/
+        
         // 放置对象
         putDown(){
             this.putObj = 1;
@@ -384,8 +392,8 @@ export default {
               return item.value === this.value;
             })
             this.params.dollName = targetIn.English;
-            this.params.dollHeight = document.querySelector('.twoHeight').value * 100;
-             this.params.speedLevel = this.speedValue;
+            this.params.dollHeight = this.twoHeight * 100;
+            this.params.speedLevel = this.speedValue;
             this.requestFun();
         },
         // 速度
@@ -429,16 +437,92 @@ export default {
             if (this.showNavMap) {
                 this.checkListBottom.push('导航地图')
             }
+        },
+
+        dealAngleData () {
+            // console.log('初始化的视角数据', this.viewAngleData)
+            this.params.taskid = this.taskId
+            const { angle, angleData } = this.viewAngleData
+            this.radio = angle
+            if (angle === 1) {
+                this.oneHeight = angleData.oneHeight
+                this.checkWeight = angleData.checkWeight
+                this.checkBroken = angleData.checkBroken
+                this.speedValue = angleData.speedValue
+
+                this.params.viewMode = angle
+                this.params.enableGravity = angleData.checkWeight
+                this.params.enableAllCollision = angleData.checkBroken
+                this.params.characterHeight = angleData.oneHeight * 100
+                this.params.speedLevel = angleData.speedValue
+
+            } else if (angle === 3) {
+                this.value = angleData.value
+                this.checkTest = angleData.checkTest
+                this.twoHeight = angleData.twoHeight
+                this.speedValue = angleData.speedValue
+
+                this.params.viewMode = angle
+                this.params.enableAllCollision = angleData.checkTest
+                this.params.speedLevel = angleData.speedValue
+                this.params.dollHeight = angleData.twoHeight * 100
+                let targetIn =  this.options.find(item => {
+                    return item.value === this.value
+                })
+                this.params.dollName = targetIn.English
+            }
+        },
+
+        watchAngleData () {
+            let viewAngleData = {}
+            if (this.radio === 1) {
+                viewAngleData = {
+                    angle: 1,
+                    angleData: {
+                        checkWeight: this.checkWeight,
+                        checkBroken: this.checkBroken,
+                        oneHeight: this.oneHeight,
+                        speedValue: this.speedValue
+                    }
+                }
+            } else if (this.radio === 2) {
+                viewAngleData = {
+                    angle: 2,
+                    angleData: {}
+                }
+            } else if (this.radio === 3) {
+                viewAngleData = {
+                    angle: 3,
+                    angleData: {
+                        value: this.value,
+                        checkTest: this.checkTest,
+                        twoHeight: this.twoHeight,
+                        speedValue: this.speedValue
+                    }
+                }
+            }
+            // console.log('数据', viewAngleData)
+            this.$emit('update:viewAngleData', viewAngleData)
         }
     }
 }
 </script>
 
 <style lang="less" scoped>
-// 下拉框内部样式
-//  ::v-deep .el-select-dropdown .el-scrollbar{
-//     height: 200px !important;
-//  }           
+         
+/deep/ .turnHeight .el-input {
+    width: 95px;
+}
+/deep/ .turnHeight input.el-input__inner {
+    width: 80px;
+    height: 20px;
+    margin-left: 9px;
+}
+
+.turnHeight {
+    margin: 0 0 0 10px;
+}
+ 
 .roam_navigate {
   position: absolute;
   z-index: 9;
@@ -484,14 +568,7 @@ export default {
             flex-direction: row;
             justify-content: space-around;
             margin-bottom: 16px;
-            .turnHeight input{
-                width: 60px;
-                height: 17px;
-                margin-left: 9px;
-            }
-             .turnHeight span:first-of-type{
-                    margin-left: 10px;
-                }
+            
             .firstSelect{
                 margin: 0 6px 0 16px;
             }
@@ -508,11 +585,6 @@ export default {
                 ::v-deep .el-input--mini .el-input__icon{
                     line-height: 23px !important;
                 }
-                .turnHeight input{
-                    width: 60px;
-                    height: 17px;
-                    margin-left: 9px;
-                }
             }
             ::v-deep .startTest .el-checkbox {
                 margin: 0 0 14px 25px;
@@ -525,7 +597,7 @@ export default {
                 margin-bottom: 10px;
             }
             .speedView {
-                padding: 0 20px 0 0;
+                padding: 0 40px 0 0;
             }
         }
     }
