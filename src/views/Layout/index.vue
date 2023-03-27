@@ -406,7 +406,7 @@
           <div class="wenzi">
             <div class="first">
               <a href="https://www.vanjian.com/" target="_blank">
-                Copyright © 2017-2021 万间网络科技（天津）有限公司 版权所有</a
+                Copyright © 2017-2023 万间网络科技（天津）有限公司 版权所有</a
               >
             </div>
             <div class="last">

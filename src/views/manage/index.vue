@@ -258,7 +258,7 @@
                 >
                 <el-dropdown-item
                   command="downloadModel"
-                  v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false')"
+                  v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false') &&scope.row.fileSize!='0'"
                   >下载</el-dropdown-item
                 >
                 <el-dropdown-item
@@ -593,6 +593,7 @@ import {
 import MODELAPI from "@/api/model_api";
 import { Getuserid } from "@/store/index.js";
 import axios from "@/utils/request";
+import newRequest from "@/utils/newRequest.js";
 import qs from "qs";
 import { updateJudgeMsg } from '../../api/my';
 import { urlToblob } from '@/utils/file.js'
@@ -865,10 +866,8 @@ export default {
             process.env.VUE_APP_REQUEST_URL +
             "/FileStorge/downloadModelFile?" +
             qs.stringify(params);
-          // window.location.href=urllll
           window.open(urllll);
           return;
-          this.startDownLoad(row);
         })
         .catch(() => {
           this.$message({

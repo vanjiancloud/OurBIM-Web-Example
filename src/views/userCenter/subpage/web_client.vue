@@ -603,7 +603,7 @@
               viewAngle.state === 1"
     ></roamNavigate>
     <!-- (视图) -->
-    <viewPhoto :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
+    <viewPhoto ref="viewPhoto" :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
     <!-- 上传贴图弹框 （材质库） -->
     <el-dialog :visible="addViewUpImgPost" @close="closeTexureDialog('none')" width="30%" center>
       <viewUpimg :personalTexureGroup="personalTexureGroup" @texureClose="closeTexureDialog"></viewUpimg>
@@ -2314,7 +2314,7 @@ export default {
             this.controllerInfo.tagUiBar = false;
             this.controllerInfo.tagViewCube = false;
           }
-          this.$message.success(res.data.message);
+          this.$message.success('指令下发成功');
         })
         .catch((res) => {
           this.$message.error(res.data.message);
@@ -2669,7 +2669,8 @@ export default {
             // 构件新建失败
             // 提示判断添加构建失败
             this.showUiBar();
-            this.$message.error(realData.name);
+            // this.$message.error(realData.name);
+            this.$message.error('指令下发失败');
           }else if(realData.id === "21"){  // 坐标位置 (增)
             let messageInfo = {
               prex:"ourbimMessage",
@@ -2714,6 +2715,9 @@ export default {
                 })
               })
             }
+          }else if(realData.id === "33"){
+            // 视点动画播放
+            this.$refs.viewPhoto.WebSocketData = realData
           }
         }
       };
@@ -3235,6 +3239,13 @@ export default {
         }
       }).catch(()=>{})
     },
+    rgbaToArr(color) {
+        var arr = []
+        const str = color.slice(5)
+        const str1 = str.slice(0, str.length - 1)
+        arr = str1.split(',')
+        return arr
+    },
     // 修改材质参数
     updateMateInfo(flag){
       let params = {
@@ -3243,6 +3254,10 @@ export default {
         baseColorTextureId:this.activeTexTurePerson,
         normalMapTextureId:''
       }
+      let colorList = JSON.parse(JSON.stringify(this.matParam.colorList)) || []
+      if(colorList.length){
+        colorList[0].paramValue = this.rgbaToArr(this.color1)
+      }
       let temp = [
         {
           matId: this.getActiveMatid(this.activeMater),
@@ -3250,7 +3265,8 @@ export default {
           matParam:
           {
             matId:this.getActiveMatid(this.activeMater),
-            ...this.matParam
+            ...this.matParam,
+            colorList
           }
         }
       ]

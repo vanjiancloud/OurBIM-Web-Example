@@ -121,6 +121,9 @@
                     </div>
                 </div>
                 <div class="videosEdit">
+                    <i v-if="item.playFlags==='1'&&item.imagePath" class="el-icon-video-play" @click="startPlay(item)"></i>
+                    <i v-if="item.playFlags==='2'&&item.imagePath" class="el-icon-video-pause" @click="logoClick('pause',item)"></i>
+                    <i v-if="item.playFlags==='3'&&item.imagePath" class="el-icon-remove-outline" @click="logoClick('replay',item)"></i>
                     <i class="el-icon-edit" @click="editPro(item,'two')"></i>
                     <i class="el-icon-delete" @click="delAnimation(item)"></i>
                 </div>
@@ -277,6 +280,7 @@ import { log } from 'console';
         },
         data() {
             return {
+                WebSocketData: {},//websocket返回的数据
               proviewPic:false, // 图片预览弹框
               namePicDif:'', // 区分图片预览的名称
               drag:false, // 拖拽视点相关
@@ -449,6 +453,7 @@ import { log } from 'console';
                clickPlayTime:null,  // 点击播放时 应该传递的时间
                proLookPic:'',  // 预览视点图片地址
                addViewTimeFlage:true, // 防止连续点击视图动画加号
+               videoItem: {}
           }
         },
         watch:{
@@ -478,7 +483,15 @@ import { log } from 'console';
                         }
                     }
                 }
-             }
+            },
+            WebSocketData(val){
+                if(val.id==='33'&&val.rsInfo[0].value==='false'){
+                    this.playFlags = '1'
+                    if(this.videoItem){
+                        this.$set(this.videoItem,'playFlags','1')
+                    }
+                }
+            }
         },
         filters:{
             timeChanger(value){
@@ -773,8 +786,8 @@ import { log } from 'console';
                                 this.viewPointLists = [];
                                 this.animNewarr = [];
                             }else{
-                                this.viewPointLists = res.data.data;
-                                this.animNewarr = res.data.data;
+                                this.viewPointLists = res.data.data.map(e=>({ playFlags:'1', ...e }));
+                                this.animNewarr = res.data.data.map(e=>({ playFlags:'1', ...e }));
                             }
                         }
                     }).catch(()=>{});
@@ -926,9 +939,9 @@ import { log } from 'console';
                     viewId:idView
                 }
                 MODELAPI.GETANIMBYVIEW(params).then((res)=>{
+                    this.animaViewPointer = res.data.data || [];
                     if(res.data.code===200){
-                        this.animaViewPointer = res.data.data;
-                        if(res.data.data.length<=1){
+                        if(!res.data.data||res.data.data.length<=1){
                             this.picTime = Number(0);
                         }else{
                             this.picTime = 0;
@@ -1023,15 +1036,19 @@ import { log } from 'console';
                 this.getListsAnimations();
             },
             // 点击播放按钮
-            startPlay(){
+            startPlay(item){
+                this.videoItem = item
                 let params = {
-                    viewId:this.animViewId,
+                    viewId:item&&item.viewId||this.animViewId,
                     taskId:this.getProps.taskId,
                     time: this.clickPlayTime || 0
                 }
                 MODELAPI.VIEWANIMPREVIEW(params).then((res)=>{
                     if(res.data.code === 200){
                         this.playFlags = '2';
+                        if(item){
+                            this.$set(item,'playFlags','2')
+                        }
                         this.moveStart();
                     }
                 })
@@ -1041,8 +1058,8 @@ import { log } from 'console';
                 let allWidth = document.querySelector('.allWidth');
                 let startPost = document.querySelector('.startPost');
                 let proEditMain = document.querySelector('.proEditMain');
+                console.log('🚀🚀🚀',allWidth);
                 let stepTime = Number(( this.picTime * 1000 / allWidth.offsetWidth ).toFixed(5));
-                console.log('🚀🚀🚀',this.picTime,stepTime);
                 // 如果没有进度条
                 if(allWidth.offsetWidth < proEditMain.offsetWidth){
                      this.noTimer = setInterval(()=>{
@@ -1085,11 +1102,11 @@ import { log } from 'console';
                 }
             },
             // 点击暂停、播放、停止时
-            logoClick(difLogo){
+            logoClick(difLogo,item){
                 let params = {
                    taskId:this.getProps.taskId,
                    status:difLogo,
-                   viewId:this.animViewId,
+                   viewId:item&&item.viewId||this.animViewId,
                 }
                 MODELAPI.PLAYOPERATION(params).then((res)=>{
                     if(res.data.code === 200){
@@ -1099,6 +1116,9 @@ import { log } from 'console';
                         let dom = document.querySelector('.proEditDown');
                         if(difLogo==='pause'){
                             this.playFlags = '3';
+                            if(item){
+                                this.$set(item,'playFlags','3')
+                            }
                             if(allWidth.offsetWidth < proEditMain.offsetWidth){
                                 clearInterval(this.noTimer);
                             }else{
@@ -1107,9 +1127,15 @@ import { log } from 'console';
                             }
                         }else if(difLogo==='replay'){
                             this.playFlags = '2';
+                            if(item){
+                                this.$set(item,'playFlags','2')
+                            }
                             this.moveStart();
                         }else{
                             this.playFlags = '1';
+                            if(item){
+                                this.$set(item,'playFlags','1')
+                            }
                             clearInterval(this.noTimer);
                             clearInterval(this.twoTimer);
                             clearInterval(this.threeTimer);
@@ -1438,6 +1464,7 @@ import { log } from 'console';
                 height: 55px;
                 i{
                     cursor:pointer;
+                    margin: 0 5px;
                 }
             }
         }
