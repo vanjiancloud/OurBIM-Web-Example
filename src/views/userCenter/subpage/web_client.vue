@@ -389,8 +389,7 @@
                 <div class="material-img">
                   <div class="singleImg" v-for="(item,index) in topImgMaterial" :key="index">
                     <div class="imgPic" @click="photoSelect(item,index)" :class="{activeBorder: activeMater === index}">
-                        <img v-if="item.photoUrl === undefined" :src="require('@/assets/caizhi.jpg')" alt="">
-                        <img v-else :src="item.photoUrl" alt="">
+                        <img :src="item.photoUrl||require('@/assets/caizhi.jpg')" alt="">
                         <div v-if="middleMaterInfo[0].nameInfo.length>0 && activeMater === index" class="resetMaterial" @click.stop="resetClick(item,index)"><i class="el-icon-refresh-left resetIcon"></i></div>
                     </div> 
                   </div>
@@ -2390,7 +2389,9 @@ export default {
           uuid: multUuid,
         };
         MODELAPI.LISTMEMBERTREE(params).then((res) => {
+            if(res.data.data){
           this.$refs.setTree.updateKeyChildren(multUuid, res.data.data);
+        }
         });
       } else {
         // 合模如果没有自定义构件列表
@@ -3205,6 +3206,7 @@ export default {
     },
     // 获取材质信息
     getMaterialInfomation(e,str){
+        console.log('🚀🚀🚀',e,str);
       if(e === 'RESET'){  // 重置过的材质就不要再获取材质信息了
         this.middleMaterInfo.forEach(mat=>{
           mat.nameInfo = [];
@@ -3227,12 +3229,18 @@ export default {
           if(this.activePub !== ''){
             this.addMaterialToUser(res.data.data.matId); // 添加材质到用户库
           }
+        //   arr.photoUrl：添加这段代码为了解决接口返回的图片显示不对，更新后后端返回错误还不解决由前端修改了，🤦‍
+        let arr = this.topImgMaterial[this.matEditIndex]
+          if(str === 'public'){
+              arr.photoUrl = res.data.data.matImgPath;
+          }
           if(str === 'change'){
             let arr = this.topImgMaterial[this.matEditIndex]
             arr.matId = res.data.data.matId;
-            arr.photoUrl = res.data.data.matImgPath;
+            // arr.photoUrl = res.data.data.matImgPath;
             this.$set(this.topImgMaterial,this.matEditIndex,arr);
             this.activeMater = this.matEditIndex;
+            console.log('🚀🚀🚀',this.topImgMaterial,arr,res.data);
           }
         }else if(res.data.code === 1){
             this.$message.error(res.data.message)
@@ -3241,9 +3249,11 @@ export default {
     },
     rgbaToArr(color) {
         var arr = []
-        const str = color.slice(5)
-        const str1 = str.slice(0, str.length - 1)
-        arr = str1.split(',')
+        if(color){
+            const str = color.slice(5)
+            const str1 = str.slice(0, str.length - 1)
+            arr = str1.split(',')
+        }
         return arr
     },
     // 修改材质参数

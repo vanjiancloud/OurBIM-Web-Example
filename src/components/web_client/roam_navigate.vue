@@ -6,7 +6,7 @@
         </div>
         <div class="middle">
             <el-radio-group v-model="radio" class="singleSelect" @change="changeRadio">
-                <el-radio :label="2" class="needBlock"><span class="viewModel">{{personView[0].name}}</span></el-radio>
+                <el-radio :label="2" class="needBlock" v-if="$route.query.weatherBin !== 'true'"><span class="viewModel">{{personView[0].name}}</span></el-radio>
                 <el-radio :label="1" class="needBlock"><span class="viewModel">{{personView[1].name}}</span></el-radio>
                 <el-radio class="needNone selfView" disabled>
                     <div>
@@ -219,7 +219,7 @@ export default {
             params:{
                 taskid:'',
                 action:'switchViewMode',
-                viewMode:'2',
+                viewMode:this.$route.query.weatherBin === 'true'?1:2,
                 projectionMode:'1',
                 enableGravity:'true', // 重力
                 enableAllCollision:'', // 碰撞
@@ -231,9 +231,11 @@ export default {
         }
     },
     created(){
-      this.threeView();
+        this.radio = this.$route.query.weatherBin === 'true'?1:2
+    //   this.threeView();
     },
     mounted(){
+        this.changeRadio(this.radio)
     },
     watch:{
         radio:{
@@ -250,7 +252,7 @@ export default {
           let par = {
             taskid: this.taskId,
             action: 'switchViewMode',
-            viewMode: 2,
+            viewMode: this.$route.query.weatherBin === 'true'?1:2,
             projectionMode: 1
            }
            MODELAPI.UPDATEORDER(par).then((res)=>{
