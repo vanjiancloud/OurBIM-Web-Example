@@ -121,6 +121,9 @@
                     </div>
                 </div>
                 <div class="videosEdit">
+                    <i v-if="item.playFlags==='1'&&item.imagePath" class="el-icon-video-play" @click="startPlay(item,index)"></i>
+                    <i v-if="item.playFlags==='2'&&item.imagePath" class="el-icon-video-pause" @click="logoClick('pause',item,index)"></i>
+                    <i v-if="item.playFlags==='3'&&item.imagePath" class="el-icon-remove-outline" @click="logoClick('replay',item,index)"></i>
                     <i class="el-icon-edit" @click="editPro(item,'two')"></i>
                     <i class="el-icon-delete" @click="delAnimation(item)"></i>
                 </div>
@@ -159,14 +162,14 @@
                     </el-select> -->
                 </div>
                 <div class="play">
-                    <div class="leftPlay" @click="logoClick('stop')" :style="{'cursor':'pointer'}" :class="animaViewPointer===undefined || animaViewPointer.length<2 ? 'noAllowed' : ''">
+                    <div class="leftPlay" @mousedown="speedUp(true)" @mouseup="speedStop()" :class="animaViewPointer===undefined || animaViewPointer.length<2 ? 'noAllowed' : ''">
                          <i class="el-icon-caret-left" :style="{'font-size':'16px'}"></i>
                          <i class="el-icon-caret-left" ></i>
                     </div>
-                    <i v-if="playFlags==='1'" class="el-icon-video-play" @click="startPlay" :style="{'cursor':'pointer'}" :class="animaViewPointer===undefined || animaViewPointer.length<2 ? 'noAllowed' : ''"></i>
-                    <i v-if="playFlags==='2'" class="el-icon-video-pause" @click="logoClick('pause')" :style="{'cursor':'pointer'}"></i>
-                    <i v-if="playFlags==='3'" class="el-icon-remove-outline" @click="logoClick('replay')" :style="{'cursor':'pointer'}"></i>
-                    <div class="rightPlay" @click="logoClick('stop')" :style="{'cursor':'pointer'}" :class="animaViewPointer===undefined || animaViewPointer.length<2 ? 'noAllowed' : ''">
+                    <i v-if="playFlags==='1'" class="el-icon-video-play" @click="startPlay" :class="animaViewPointer===undefined || animaViewPointer.length<2 ? 'noAllowed' : ''"></i>
+                    <i v-if="playFlags==='2'" class="el-icon-video-pause" @click="logoClick('pause')"></i>
+                    <i v-if="playFlags==='3'" class="el-icon-remove-outline" @click="logoClick('replay')"></i>
+                    <div class="rightPlay"  @mousedown="speedUp()" @mouseup="speedStop()" :class="animaViewPointer===undefined || animaViewPointer.length<2 ? 'noAllowed' : ''">
                         <i class="el-icon-caret-right" ></i>
                         <i class="el-icon-caret-right" :style="{'font-size':'16px',}"></i>
                     </div>
@@ -204,7 +207,7 @@
                   <draggable v-model="animaViewPointer" handle=".dragImg"  chosenClass="chosen" forceFallback="true" group="people" animation="1000" @start="onStart" @end="onEnd">
                     <transition-group :style="{'display':'flex'}">
                         <div class="viewMorePic" v-for="(item,index) in animaViewPointer" :key="item.tid">
-                            <img class="dragImg" :src="item.imagePath" alt="" @click="selectPoints(index)" :class="{'pointBor':activePoints === index}" :style="{'width':'100%','height':'100%','cursor': 'move'}">
+                            <img class="dragImg" :src="item.imagePath" alt="" @click="selectPoints(item,index)" :class="{'pointBor':activePoints === index}" :style="{'width':'100%','height':'100%','cursor': 'move'}">
                             <i class="el-icon-close pointsClose" @click="delPoints(index,item)" v-if="activePoints === index"></i>
                             <div class="videosPlus">
                                 <img :src="require('@/assets/images/view/jiahao.png')" @click.stop="addView(index)" :style="{'width':'100%','height':'100%'}" alt="">
@@ -277,6 +280,7 @@ import { log } from 'console';
         },
         data() {
             return {
+                WebSocketData: {},//websocket返回的数据
               proviewPic:false, // 图片预览弹框
               namePicDif:'', // 区分图片预览的名称
               drag:false, // 拖拽视点相关
@@ -449,6 +453,7 @@ import { log } from 'console';
                clickPlayTime:null,  // 点击播放时 应该传递的时间
                proLookPic:'',  // 预览视点图片地址
                addViewTimeFlage:true, // 防止连续点击视图动画加号
+               videoIndex: null
           }
         },
         watch:{
@@ -478,7 +483,15 @@ import { log } from 'console';
                         }
                     }
                 }
-             }
+            },
+            WebSocketData(val){
+                if(val.id==='33'&&val.rsInfo[0].value==='false'){
+                    this.playFlags = '1'
+                    if(this.videoIndex!==null){
+                        this.$set(this.viewPointLists[this.videoIndex],'playFlags','1')
+                    }
+                }
+            }
         },
         filters:{
             timeChanger(value){
@@ -773,8 +786,8 @@ import { log } from 'console';
                                 this.viewPointLists = [];
                                 this.animNewarr = [];
                             }else{
-                                this.viewPointLists = res.data.data;
-                                this.animNewarr = res.data.data;
+                                this.viewPointLists = res.data.data.map(e=>({ playFlags:'1', ...e }));
+                                this.animNewarr = res.data.data.map(e=>({ playFlags:'1', ...e }));
                             }
                         }
                     }).catch(()=>{});
@@ -810,6 +823,7 @@ import { log } from 'console';
             },
             // 点击视点动画图片
             picAnimation(item,ind){
+                this.videoIndex = ind
                 if(this.activeAnimation === ind){
                     this.num2 += 1;
                     if(this.num2 % 2 === 1){
@@ -926,9 +940,9 @@ import { log } from 'console';
                     viewId:idView
                 }
                 MODELAPI.GETANIMBYVIEW(params).then((res)=>{
+                    this.animaViewPointer = res.data.data || [];
                     if(res.data.code===200){
-                        this.animaViewPointer = res.data.data;
-                        if(res.data.data.length<=1){
+                        if(!res.data.data||res.data.data.length<=1){
                             this.picTime = Number(0);
                         }else{
                             this.picTime = 0;
@@ -972,16 +986,21 @@ import { log } from 'console';
                 
             },
             // 点击视图动画里面的视点图片
-            selectPoints(index){
+            selectPoints(item,index){
                 if(this.activePoints === index){
                     this.num3 += 1;
                     if(this.num3 % 2 === 1){
-                        this.activePoints = -1;   
-                      
+                        this.activePoints = -1;
                     }
                 }else{
                     this.num3 = 0;
-                    this.activePoints = index; 
+                    this.activePoints = index;
+                    let params = {
+                        taskid: this.getProps.taskId,
+                        action: "moveToViewPoint",
+                        camerashotId: item.tid,
+                    };
+                    this.UpdateOrder(params);
                 }
             },
             // 删除视图动画中的视点
@@ -1022,16 +1041,62 @@ import { log } from 'console';
                 this.newTime.timeTid = e.tid;
                 this.getListsAnimations();
             },
-            // 点击播放按钮
-            startPlay(){
+            // 向左右快进
+            speedUp(isLeft = false){
+                let allWidth = document.querySelector('.allWidth').offsetWidth;
+                let startPost = document.querySelector('.startPost');
                 let params = {
                     viewId:this.animViewId,
+                    taskId:this.getProps.taskId,
+                    time: this.clickPlayTime || 0
+                }
+                MODELAPI.VIEWANIMPREVIEW(params)
+                const set = () => {
+                    if(isLeft){
+                        if(parseInt(startPost.style.left)<=6){
+                            this.speedStop()
+                            startPost.style.left = '6px'
+                            return
+                        }
+                        startPost.style.left = (parseInt(startPost.style.left)-14)+'px'
+                    }else{
+                        if(parseInt(startPost.style.left) >= allWidth){
+                            this.speedStop()
+                            startPost.style.left = '6px'
+                            return
+                        }
+                        startPost.style.left = (parseInt(startPost.style.left)+14)+'px'
+                    }
+                }
+                // 鼠标单击
+                set();
+                // 鼠标长按
+                this.noTimer = setInterval(() => {
+                    set()
+                }, 100);
+            },
+            // 停止
+            speedStop(){
+                clearInterval(this.noTimer);
+                this.noTimer = null;
+                this.logoClick('pause')
+            },
+            // 点击播放按钮
+            startPlay(item,i){
+                if(i!=null&&i!=undefined){
+                    this.videoIndex = i
+                }
+                let params = {
+                    viewId:item&&item.viewId||this.animViewId,
                     taskId:this.getProps.taskId,
                     time: this.clickPlayTime || 0
                 }
                 MODELAPI.VIEWANIMPREVIEW(params).then((res)=>{
                     if(res.data.code === 200){
                         this.playFlags = '2';
+                        if(this.videoIndex!==null){
+                            this.$set(this.viewPointLists[this.videoIndex],'playFlags','2')
+                        }
                         this.moveStart();
                     }
                 })
@@ -1041,8 +1106,8 @@ import { log } from 'console';
                 let allWidth = document.querySelector('.allWidth');
                 let startPost = document.querySelector('.startPost');
                 let proEditMain = document.querySelector('.proEditMain');
+                if(!startPost) return
                 let stepTime = Number(( this.picTime * 1000 / allWidth.offsetWidth ).toFixed(5));
-                console.log('🚀🚀🚀',this.picTime,stepTime);
                 // 如果没有进度条
                 if(allWidth.offsetWidth < proEditMain.offsetWidth){
                      this.noTimer = setInterval(()=>{
@@ -1085,11 +1150,14 @@ import { log } from 'console';
                 }
             },
             // 点击暂停、播放、停止时
-            logoClick(difLogo){
+            logoClick(difLogo,item,i){
+                if(i!=null&&i!=undefined){
+                    this.videoIndex = i
+                }
                 let params = {
                    taskId:this.getProps.taskId,
                    status:difLogo,
-                   viewId:this.animViewId,
+                   viewId:item&&item.viewId||this.animViewId,
                 }
                 MODELAPI.PLAYOPERATION(params).then((res)=>{
                     if(res.data.code === 200){
@@ -1099,6 +1167,9 @@ import { log } from 'console';
                         let dom = document.querySelector('.proEditDown');
                         if(difLogo==='pause'){
                             this.playFlags = '3';
+                            if(this.videoIndex!==null){
+                                this.$set(this.viewPointLists[this.videoIndex],'playFlags','3')
+                            }
                             if(allWidth.offsetWidth < proEditMain.offsetWidth){
                                 clearInterval(this.noTimer);
                             }else{
@@ -1107,9 +1178,15 @@ import { log } from 'console';
                             }
                         }else if(difLogo==='replay'){
                             this.playFlags = '2';
+                            if(this.videoIndex!==null){
+                                this.$set(this.viewPointLists[this.videoIndex],'playFlags','2')
+                            }
                             this.moveStart();
                         }else{
                             this.playFlags = '1';
+                            if(this.videoIndex!==null){
+                                this.$set(this.viewPointLists[this.videoIndex],'playFlags','1')
+                            }
                             clearInterval(this.noTimer);
                             clearInterval(this.twoTimer);
                             clearInterval(this.threeTimer);
@@ -1140,7 +1217,6 @@ import { log } from 'console';
                     // 计算赋值
                     startPost.style.left = e.pageX - proEditMain.offsetLeft - x +'px';
                     this.startLang = parseInt(startPost.style.left);
-                    // console.log('999',e.pageX,e.pageX - proEditMain.offsetLeft - 6);
                     // 如果进度条的定位小于等于6px
                     if(e.pageX - proEditMain.offsetLeft - x <= 6){
                         startPost.style.left = 6 + 'px';
@@ -1182,7 +1258,6 @@ import { log } from 'console';
             },
             // 松开播放条
             releaseMouse(e){
-              console.log('🚀🚀🚀q',e);
                 window.onmousemove = null;
                 document.removeEventListener("mousemove",this.moveEvent,false);
                 this.getPlayTime();
@@ -1438,6 +1513,7 @@ import { log } from 'console';
                 height: 55px;
                 i{
                     cursor:pointer;
+                    margin: 0 5px;
                 }
             }
         }
@@ -1507,6 +1583,7 @@ import { log } from 'console';
     i{
         font-size: 24px;
         color: #fff;
+        cursor: pointer;
     }
     .leftPlay, .rightPlay{
         position: relative;

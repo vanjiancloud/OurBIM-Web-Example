@@ -54,7 +54,6 @@
         </el-table-column>
         <el-table-column :label="$t('uploaddate')" width="130" v-if="breadArr.length" key="0">
           <template slot-scope="scope">
-            {{ nextBreadFlag }}
             <!-- <span v-if="scope.row.isGroup === '1'">-</span> -->
             <!-- <span v-else>{{ scope.row.ourbimComponentInfo.createTime }}</span> -->
             {{ scope.row.ourbimComponentInfo&&scope.row.ourbimComponentInfo.createTime }}
