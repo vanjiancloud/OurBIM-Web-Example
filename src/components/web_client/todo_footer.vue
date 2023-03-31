@@ -1742,7 +1742,7 @@ export default {
        * @description: 关闭tool
        */
       // 如果视图被选中 就阻止点击其他地方关闭视图的功能 （视图）
-      if(this.imgList[0].state = 1){
+      if(this.imgList[0].state === 1){
         return;
       }
       if (this.isMask) {
