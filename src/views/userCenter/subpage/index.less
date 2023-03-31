@@ -1,45 +1,88 @@
-
 /* 设置滚动条的样式 */
 ::-webkit-scrollbar {
-  width: 6px;
+    width: 6px;
 }
 
 /* 滚动条滑块 */
 
 ::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  background: #505561;
+    border-radius: 10px;
+    background: #505561;
 }
+
 .newDrawer {
-  width: 300px;
-  .el-drawer__header {
-      font-family: PingFangSC-Regular, PingFang SC;
-      font-weight: 400;
-      color: #ffffff;
-      padding: 16px;
-      margin: 0;
-  }
-  .el-drawer {
-      background: rgba(16, 16, 16, 0.7);
-  }
-  // 输入框
-  .search{
-    margin: 0 16px 16px 16px;
-    display: flex;
-    .el-input__inner{
-      background: #28292E;
-      border-radius: 14px;
-      border: 0;
-      color: #ffffff;
-      padding: 0 0 0 35px;
+    width: 300px;
+
+    .el-drawer__header {
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: #ffffff;
+        padding: 16px;
+        margin: 0;
     }
-    .el-input__prefix{
-      font-size: 20px;
-      left: 8px;
+
+    .el-drawer {
+        background: rgba(16, 16, 16, 0.7);
     }
-    .button{
-      margin-left: 16px;
-      padding: 6px 6px;
+
+    // 输入框
+    .search {
+        margin: 0 16px 16px 16px;
+        display: flex;
+
+        .el-input__inner {
+            background: #28292E;
+            border-radius: 14px;
+            border: 0;
+            padding: 0 0 0 35px;
+        }
+
+        .el-input__prefix {
+            font-size: 20px;
+            left: 8px;
+        }
+
+        .button {
+            margin-left: 16px;
+            padding: 6px 6px;
+        }
     }
-  }
+
+    .comTitle {
+        font-size: 16px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: 500;
+        color: #00AAF0;
+        margin: 15px 0;
+
+        img {
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+    }
+
+    .el-input__inner {
+        background: #24262B;
+        color: #ffffff;
+        border: 1px solid #727272;
+    }
+
+    .el-input-number--mini {
+        width: 60px;
+        margin: 0 3px 0 7px;
+
+        .el-input__inner {
+            padding-right: 14px;
+            padding-left: 5px;
+        }
+
+        .el-input-number__decrease,
+        .el-input-number__increase {
+            width: 12px;
+            background: none;
+            border: none;
+            color: #ffffff;
+            right: 4px;
+        }
+    }
 }

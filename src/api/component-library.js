@@ -5,6 +5,7 @@
  * @LastEditTime: 2021-08-17 16:15:29
  * @description: 构件库
  */
+import newRequest from '@/utils/newRequest'
 import request from '../utils/request'
 import qsStringify from "qs-stringify"
 
@@ -17,17 +18,6 @@ const COMPONENTLIBRARY = {
             url: '/comControl/comAction',
             method: 'POST',
             data: qsStringify(params)
-        })
-    },
-    // 添加构件
-    addCom: params => {
-        return request({
-            url: '/comControl/addCom',
-            method: 'POST',
-            params,
-            headers: {
-                'Content-Type': 'application/json'
-            }
         })
     },
 
@@ -99,5 +89,19 @@ const COMPONENTLIBRARY = {
         })
     },
 }
+
+
+// 添加构件
+export function addCom(params) {
+    return newRequest({
+        url: "/comControl/addCom",
+        method: "post",
+        params,
+        headers: {
+            "Content-Type": "application/json"
+        },
+    });
+}
+
 
 export default COMPONENTLIBRARY

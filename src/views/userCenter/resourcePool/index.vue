@@ -1,9 +1,9 @@
-<!-- 构件库
-    同一种类型接口返回的数据格式全部不一样我真的。。。。。。。
+<!-- 资源库
+    同一种类型接口返回的数据格式全部不一样。。。。。。。
 -->
 <template>
     <div class="drawerBox" :style="{'width':isShow?'300px':'0px'}">
-        <el-drawer title="资源库" :visible.sync="drawer" direction="ltr" :modal="false" :wrapperClosable="false" :size="300" :before-close="close" class="newDrawer" :style="{'width':isShow?'300px':'0px'}">
+        <el-drawer title="资源库" :visible.sync="drawer" direction="ltr" :modal="false" :wrapperClosable="false" :size="300" @close="close" class="newDrawer" :style="{'width':isShow?'300px':'0px'}">
             <Tab v-model="levelName.tab1Index" v-show="levelName.level ===1" :data="tabList" @onTab="onTab" />
             <!-- 点击到二级构件 -->
             <div class="level2" v-if="levelName.level ===2">
@@ -46,23 +46,27 @@
                 <img :src="item.check?item.checkUrl:item.url" @click="onOprate(item)" />
             </el-tooltip>
         </div>
+
         <!-- 新建分组弹框 -->
         <DialogChartletGroup ref="DialogChartletGroup" />
         <!-- 上传贴图弹框 -->
         <DialogChartlet ref="DialogChartlet" :groupList="contentList[1]"/>
+        <!-- esc提示 -->
+        <EscDialogItem ref="EscDialogItem"/>
     </div>
 </template>
 
 <script>
 import CHAILIAOAPI, { getChartletList } from "@/api/material_api";
 import MODELAPI from "@/api/model_api";
-import COMPONENTLIBRARY from "@/api/component-library";
+import COMPONENTLIBRARY, { addCom } from "@/api/component-library";
 import Tab from "@/components/Tab/index.vue";
 import Pagination from "@/components/Pagination/index.vue";
 import DialogChartletGroup from "./DialogChartletGroup.vue"; // 新建分组弹框
 import DialogChartlet from "./DialogCharlet.vue"; // 上传贴图弹框
+import EscDialogItem from "@/components/web_client/EscDialogItem.vue"; //esc提示
 export default {
-    components: { Tab, Pagination, DialogChartletGroup, DialogChartlet },
+    components: { Tab, Pagination, DialogChartletGroup, DialogChartlet, EscDialogItem },
     props: {
         taskId: {
             type: String,
@@ -192,6 +196,8 @@ export default {
         },
         // 点击去二级构件
         toLevel2(item) {
+            console.log('🚀🚀🚀',item);
+            // 一级点击   0：构件库   1：材质库   2：贴图库
             if (this.levelName.level === 1) {
                 this.pages = this.$options.data().pages;
                 this.levelName.level = 2;
@@ -249,6 +255,25 @@ export default {
                     (this.pages.page - 1) * this.pages.pageSize,
                     this.pages.page * this.pages.pageSize
                 );
+                return
+            }
+            /*  
+              *  二级点击
+              * this.levelName.tab2Index === 1  个人库
+            */
+            if (this.levelName.level === 2) {
+                let data = {
+                    taskId: this.taskId,
+                    comName: item.comName,
+                    comId: this.levelName.tab2Index === 1 ? item.ourbimComponentInfo.comId : item.id,
+                    userId: item.userId
+                }
+                addCom(data).then(res=>{
+                    this.$parent.controllerInfo.tagUiBar = false;//底部栏隐藏
+                    this.$refs.EscDialogItem.changeVisible(true);
+                    this.$message.success('指令下发成功');
+                })
+                return
             }
         },
         // 构件库
@@ -371,12 +396,11 @@ export default {
                         resolve(true)
                     }
                 })
-                isEnd.then((qq)=>{
+                isEnd.then(()=>{
                     this.$set(item,'check',true)
-                    this.$forceUpdate()
-                    console.log('🚀🚀🚀',qq,item);
                 })
             }
+            this.$forceUpdate()
             switch (item.name) {
                 case '缩放':
                     

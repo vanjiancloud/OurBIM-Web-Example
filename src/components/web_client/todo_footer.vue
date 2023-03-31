@@ -1011,7 +1011,7 @@ export default {
           state: 0,
           url: require("@/assets/images/todo/unchecked/attribute.png"),
           name: "attribute.png",
-          title: "属性",
+          title: "构件信息",
           id: 1014,
         },
         {
@@ -1354,59 +1354,6 @@ export default {
           this.$message.error(res.data.message);
         });
     },
-     // 移动 旋转 (原有的  构件库的)
-    // comItemClick(item) {
-    //   let isSame = false;
-    //   this.comIconList.forEach((row) => {
-    //     if (item.content === row.content) {
-    //       if (row.active) {
-    //         // 如果图标原本就是亮着，灭掉它
-    //         // 发关闭轴的指令
-    //         isSame = true;
-    //         COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
-    //           this.$resMsg(res.data);
-    //           if (res.data.code === 0) {
-    //             row.active = false;
-    //           }
-    //         });
-    //       }
-    //       row.active = true;
-    //     } else {
-    //       row.active = false;
-    //     }
-    //   });
-    //   if (isSame) {
-    //     return;
-    //   }
-    //   let action = "";
-    //   switch (item.content) {
-    //     case "旋转":
-    //       action = "rotate";
-    //       break;
-    //     case "移动":
-    //       action = "translate";
-    //       break;
-    //     case "缩放":
-    //       action = "scale";
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    //   const params = {
-    //     comId: this.socketData.mN || null,
-    //     taskId: this.taskId,
-    //     action, //translate、rotate、scale
-    //   };
-    //   COMPONENTLIBRARY.operateCom(params)
-    //     .then((res) => {
-    //       if (res.data.code === 0) {
-    //         this.$message.success(res.data.message);
-    //       } else {
-    //         this.$message.error(res.data.message);
-    //       }
-    //     })
-    //     .catch((res) => {});
-    // },
     // 移动 旋转  浏览器的
     browerClick(item) {
       let isSame = false;

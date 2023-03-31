@@ -65,7 +65,7 @@
           @close="closeSystemDrawer"
           direction="rtl"
           :modal="false"
-          :size="drawerLeftSize"
+          :size="300"
           :wrapperClosable="false"
         >
           <weatherSystem :appId="appId" :taskId="taskId"></weatherSystem>
@@ -174,7 +174,8 @@
             </div>
           </div>
         </div>
-        <div
+        <!-- 属性 -->
+        <!-- <div
           class="bim-info"
           v-show="
             controllerInfo.tagUiBar &&
@@ -182,7 +183,6 @@
               controllerInfo.memberAvttribute)
           "
         >
-          <!-- 属性 -->
           <div class="bim-title">
             <div class="" v-text="$t('webClient.attribute.title')"></div>
             <div class="close-part">
@@ -207,173 +207,9 @@
                 <td v-text="item.value"></td>
               </tr>
             </table>
-            <!-- <table
-              class="detail-table"
-              v-else-if="memberInfo && memberInfo.type === 5"
-            >
-              <tr>
-                <td>请选择唯一构件以查看属性</td>
-              </tr>
-            </table> -->
           </div>
-        </div>
-        <!-- 构件库 （自定义构件） -->
-        <div v-show="comVisible">
-          <div
-            class="bim-info com-box comsStore"
-            @click.stop=""
-            v-show="
-              controllerInfo.tagUiBar &&
-              ((listenTodoInfo &&
-                listenTodoInfo.type === 14 &&
-                listenTodoInfo.state === 1) ||
-                controllerInfo.componentLibrary)
-            "
-          >
-            <div class="bim-title">
-              <div
-                class=""
-                v-text="$t('webClient.componentLibrary.title')"
-              ></div>
-              <div class="close-part">
-                <i
-                  class="el-icon-close"
-                  @click.stop="closePart(listenTodoInfo.type)"
-                ></i>
-              </div>
-            </div>
-            <!-- <div class="detail-main detail-collapse">    // （材质库）   ）-->
-            <div class="detail-collapse">             <!-- （材质库）-->  
-                  <!-- <el-collapse v-model="componentCollapse" accordion>
-                    <el-collapse-item title="二维码" name="1">
-                      <div class="collapse-main">
-                        <el-button size="mini" type="primary" @click="AddQrCode"
-                          >新增</el-button
-                        >
-                      </div>
-                    </el-collapse-item>
-                  </el-collapse> -->
-              <el-tabs v-model="activeNameOne" type="card" id="moreLimitUp" @tab-click="outTab">
-                  <el-tab-pane label="构件库" name="coms">
-                        <!-- 公共构件 与 自定义构件列表 -->
-                        <el-tabs v-model="activeName" type="card" @tab-click="changeTab" :before-leave='leaveTab' id="moreLimit">
-                          <el-tab-pane>
-                            <div slot="label">
-                                <div class="search">
-                                  <el-input
-                                    class="searchInput"
-                                    type="text"
-                                    placeholder="请输入您要搜索的内容"
-                                    
-                                  >
-                                      <div slot="prefix"><i class="el-icon-search" ></i></div>
-                                  </el-input>
-                              </div>
-                            </div>
-                          </el-tab-pane>
-                          <el-tab-pane label="公共构件" name="first">
-                            <el-collapse
-                              accordion
-                              v-for="(item, index) in publicComList"
-                              :key="item.title"
-                              class=""
-                            >
-                              <el-collapse-item :title="item.group" :name="index">
-                                <div class="collapse-main">
-                                  <div class="moreList">
-                                    <div
-                                      class="publicComListItem"
-                                      v-for="listItem in item.rsComponent"
-                                      :key="listItem.id"
-                                      @click="addCom(listItem)"
-                                    >
-                                      <div class="img">
-                                        <img :src="listItem.comUrl" alt="" />
-                                      </div>
-                                      <div class="name">{{ listItem.comName }}</div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </el-collapse-item>
-                            </el-collapse>
-                          </el-tab-pane>
-                          <el-tab-pane label="自定义构件" name="second">
-                            <el-collapse
-                              accordion
-                              v-for="(item, index) in selfComList"
-                              :key="item.id"
-                              class=""
-                            >
-                              <el-collapse-item :title="item.groupName" :name="index">
-                                <div class="collapse-main">
-                                  <div class="moreList">
-                                    <div
-                                      class="publicComListItem"
-                                      v-for="listItem in item.data"
-                                      :key="listItem.ourbimComponentInfo.comId"
-                                      @click="addCom(listItem)"
-                                    >
-                                      <div class="img">
-                                        <img v-if="listItem.ourbimComponentInfo.comUrl === 'default.png'" :src="require('@/assets/logo.png')" alt="" />
-                                        <img v-else :src="listItem.ourbimComponentInfo.comUrl" alt="" />
-                                      </div>
-                                      <div class="name">{{ listItem.ourbimComponentInfo.comName }}</div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </el-collapse-item>
-                            </el-collapse>
-                          </el-tab-pane>
-                        </el-tabs>
-                  </el-tab-pane>
-                  <el-tab-pane label="材质库" name="material">
-                        <el-tabs v-model="materActiveName" type="card" :before-leave='leaveTab' id="moreLimit">
-                            <el-tab-pane>
-                              <div slot="label">
-                                  <div class="search">
-                                    <el-input
-                                      class="searchInput"
-                                      type="text"
-                                      v-model.trim="inputTwo" 
-                                      placeholder="请输入您要搜索的内容"
-                                    >
-                                        <div slot="prefix"><i class="el-icon-search" ></i></div>
-                                    </el-input>
-                                </div>
-                              </div>
-                            </el-tab-pane>
-                            <el-tab-pane label="公共库" name="firstMater">    
-                              <el-collapse
-                                :accordion="true"
-                                v-for="(item,index) in publicMater"
-                                :key="item.groupId"
-                                class=""
-                                @change="openList"
-                              >
-                                <el-collapse-item :title="item.groupName" :name="index">   
-                                    <div class="collapse-main">
-                                      <div class="moreList publicList">
-                                        <div
-                                          class="publicComListItem"
-                                          v-for="itemPub in item.sonList"
-                                          :key="itemPub.matId"                                     
-                                        >
-                                          <div class="img" @click.stop="selectPublicImg(itemPub)">
-                                            <img :class="{activeBorder: activePub === itemPub.matId}" :src="itemPub.matImgPath" :onerror="errorImg" alt="" />               
-                                          </div>
-                                          <div class="name" :style="{'font-size':'14px'}">{{ itemPub.matName }}</div>
-                                        </div>
-                                      </div>
-                                    </div> 
-                                </el-collapse-item>
-                              </el-collapse>                                      
-                            </el-tab-pane>
-                        </el-tabs>
-                  </el-tab-pane>
-              </el-tabs>                      
-            </div>
-          </div>
-        </div>
+        </div> -->
+
         <!-- 材质编辑模块   (材质库)-->
         <div class="material-main" v-if="materialShow && topImgMaterial.length>0">
             <div class="material-title">
@@ -474,7 +310,7 @@
                   ></i>
                 </div>
                 <div class="middleUploadimg">
-                     <el-tabs v-model="activeNamePic" type="card" :before-leave='leavePic' @tab-click="texureClick">
+                     <el-tabs v-model="activeNamePic" type="card" @tab-click="texureClick">
                         <el-tab-pane label="公共库" name="first">
                             <!-- <el-collapse
                               accordion
@@ -527,10 +363,6 @@
                         </el-tab-pane>
                      </el-tabs>
                 </div>
-                <!-- <div class="bottomUpload">
-                  <el-button type="primary" size="mini" :style="{'background-color':'#575757','border':'none'}">取消</el-button>
-                  <el-button type="primary" size="mini" @click="submitBaseTexture">确定</el-button>
-                </div> -->
             </div>
         </div>
         <!-- 二维码 -->
@@ -570,8 +402,6 @@
         :lockState="lockState" 
         @showViewPhoto="showViewPic"
       ></todo-footer>
-      <!-- (视图) @showViewPhoto="showViewPic" -->
-        <!-- :threeLogo="threeLogo" -->
       <view-cube
         v-if="controllerInfo.viewCube"
         v-show="controllerInfo.tagViewCube"
@@ -620,7 +450,9 @@
     </div>
     <EscDialogItem ref="EscDialogItem" />
     <!-- 资源库 -->
-    <ResourcePool ref="ResourcePool" :taskId="taskId" :userId="$route.query.userId" v-if="taskId"/>
+    <ResourcePool ref="ResourcePool" :taskId="taskId" :userId="$route.query.userId" v-if="taskId" v-show="controllerInfo.tagUiBar"/>
+    <!-- 构件信息 -->
+    <ComponentInformation ref="ComponentInformation" :taskId="taskId" :data="memberInfo" v-if="taskId"/>
   </div>
 </template>
 
@@ -647,6 +479,7 @@ import { Getuserid } from "@/store/index.js"; // (自定义构件)
 import viewUpimg from "@/components/web_client/view_upImg.vue"; // （材质库）
 import weatherSystem from "@/components/web_client/weather_system.vue"; // 天气系统
 import ResourcePool from "../resourcePool/index.vue"; // 资源库
+import ComponentInformation from "../componentInformation/index.vue"; //构件信息
 
 
 export default {
@@ -664,14 +497,11 @@ export default {
     viewPhoto,
     viewUpimg,
     weatherSystem,
-    ResourcePool
+    ResourcePool,
+    ComponentInformation
   },
   data() {
     return {
-      // threeLogo:false,
-      // myProjectId:'',
-      // modeData:[], // 树形结构数据
-      // lockLogo:false, // 锁的打开和关闭
       showViewPicture:'0', // 传递给 viewPhoto 控制视图列表的显示 (视图)
       maxNodes:false,
       envProgress:0,   // 环境加载
@@ -708,6 +538,7 @@ export default {
           }
         },
       },
+    //   uiBar： ，viewCube：，tagUiBar：底部栏显示隐藏，tagViewCube：，modelClient：，memberAvttribute：，componentLibrary：，singleList：
       controllerInfo: {
         uiBar: true,
         viewCube: true,
@@ -735,7 +566,7 @@ export default {
       cubeState: 6,
       runTimeCode: 0,
       timerInfo: null,
-      memberInfo: null,
+      memberInfo: [], //属性信息
       activeLeaf: false,
       loadTimer: null,
       timerCount: 0,
@@ -763,18 +594,11 @@ export default {
       ScrollDistance: 0,
       isQrcode: false,
       iTime: {},
-      publicComList: [],
       comSaveNode: null,
       godNode: null,
-      comVisible: false,
       appType: null,
       userType: null,
-      activeNameOne:'coms', // 构件库的第一层 el-tabs  （材质库）
-      activeName:'first', // 构件库的Tabs 标签页 （自定义构件）
-      materActiveName:'firstMater',
-      selfComList:[],  // 所有自定义构建  （自定义构件）
       inputTwo:'',  // 材质库搜索绑定值 （材质库）
-      activePub:'', // 选中公共库某个材质
       activeMater:'', // 选中材质编辑中的 构件材质图片
       // （材质库）
       topImgMaterial:[],
@@ -796,7 +620,6 @@ export default {
       color1:null,   // 材质编辑 颜色选择器  （材质库）
       photoStoreFlag:false, // 贴图库显示隐藏   （材质库）
       addViewUpImgPost:false, // 上传贴图弹框
-      publicMater:[],  // 公共材质列表
       projectMaterList:[],  // 项目材质列表
       exchangeData:{      // 指令更换材质的参数
         matId:'',
@@ -805,7 +628,6 @@ export default {
         comType:''
       },
       // 贴图库 公共库的信息
-      errorImg:'this.src="' + require('@/assets/failed.png') + '"',
       picMaterInfo:[],
       personalPicMaterInfo:[], // 贴图库 个人库
       btnUpTexure:false, // 控制上传按钮
@@ -815,7 +637,6 @@ export default {
       pakIdMapweb:'', // 区分点击的是自定义构件还是模型自带的构件
       matParam:{}, // 材质的部分信息
       activeTexTurePerson:'', // 贴图库个人库
-      // materialMatId:'', // 选中材质编辑的材质的matId
       spread:[], // 材质参数折叠面板展开
       spreadPerson:[], // 贴图库折叠面板展开
       materialAllInfo:{}, // 构件某材质全部信息
@@ -824,7 +645,6 @@ export default {
       comPakId:'', // 材质编辑点击的构件的pakId
       pakAndAppid:[], 
       weatherDrawer:false, // 天气抽屉
-      drawerLeftSize: 300, // 抽屉宽度
       texturesListIndex:0,//贴图
     };
   },
@@ -980,12 +800,6 @@ export default {
             }
         },
 
-    // 资源库中 点击搜索时防止切换 （材质库）
-    leaveTab(activeName, oldActiveName){
-      if(activeName === '0'){
-        return false;
-      }
-    },
     // 用于给 viewphoto组件传值 （视图）
     showViewPic(valModel){
       this.showViewPicture = valModel;
@@ -1089,7 +903,7 @@ export default {
       );
     },
     comIconChang(val) {
-      this.comVisible = val;
+    //   this.comVisible = val;
     },
     handleTodoIcon(query) {
       const arr = [
@@ -1122,13 +936,6 @@ export default {
       //   obj.weather = false;
       // }
       this.showTodoIconObj = obj;
-    },
-    getComList() {
-      COMPONENTLIBRARY.getPublicComList({
-        taskId: this.taskId,
-      }).then((res) => {
-        this.publicComList = res.data.data;
-      });
     },
     listenWindowSize() {
       // 监听窗口大小变化 id=14 height
@@ -1460,16 +1267,6 @@ export default {
             if (res.data.code === 0) {
               this.updateComTreeAfterDeleteByUuid(node.data.uuid);
             }
-            return;
-            const nodeParent = this.$refs.setTree.getNode(
-              node.data.uuid
-            ).parent;
-            if (res.data.code === 0) {
-              this.$refs.setTree.remove(node.data.uuid);
-              if (nodeParent.childNodes.length === 0) {
-                this.$refs.setTree.remove(nodeParent.data.uuid);
-              }
-            }
           });
         })
         .catch(() => {
@@ -1555,10 +1352,7 @@ export default {
       if(e.data?.dynamicData?.length){
         e.data.dynamicData = [{name:'构件ID',value:e.data.revitCode},{name:'构件名称',value:e.data.name}].concat(e.data.dynamicData)
       }
-      this.memberInfo = {
-        type: e.data.haveChild === "0" ? 1 : 5,
-        data: e.data,
-      };
+      this.memberInfo = e.data
       this.leafInfo = e;
       this.handleState = 9;
 
@@ -1566,57 +1360,11 @@ export default {
 
       if (e.data.typeId === "comp") {
         // 如果是构件库
-        // if (e.data.haveChild === "0") {
         this.leafInfo = e;
         this.isQrCodeClick = true;
-        // this.handleQrcode(true);
         this.handleFocusTag(e.data);
-        // } else {
-        //   return;
-        // }
       } else {
         this.updateOrder();
-      }
-      return;
-      if (e.data.typeId === "comp") {
-        // 如果是构件库
-        if (e.data.haveChild === "0") {
-          this.leafInfo = e;
-          this.isQrCodeClick = true;
-          // this.handleQrcode(true);
-          this.handleFocusTag(e.data);
-        } else {
-          return;
-        }
-      } else {
-        let messageInfo = {
-          prex: "ourbimMessage",
-          type: 20001,
-          data: e.data,
-          message: "",
-        };
-        this.sentParentIframe(messageInfo);
-        if (this.activeTree && this.activeTree.uuid === e.data.uuid) {
-          if (e.data.activeSelect === 1) {
-            this.activeLeaf = false;
-          } else {
-            this.activeLeaf = true;
-          }
-          e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
-          this.leafInfo = e;
-        } else {
-          this.activeLeaf = true;
-          this.leafInfo = e;
-          e.data.activeSelect = 1;
-        }
-        this.memberInfo = {
-          type: e.data.haveChild === "0" ? 1 : 5,
-          data: e.data,
-        };
-        this.leafInfo = e;
-        this.handleState = 9;
-        this.updateOrder();
-        this.activeTree = e.data;
       }
     },
     handleFocusTag(e) {
@@ -1983,8 +1731,6 @@ export default {
       node.key ? (params.uuid = node.key) : "";
       let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
         if (res.data.code === 0) {
-          // 锁---
-          // this.myProjectId = res.data.data.projectId;
           return res.data.data;
         } else {
           return [];
@@ -2160,9 +1906,9 @@ export default {
       // 构件属性
       if (e.type === 11) {
         this.natureInfo = e;
-        // e.state === 0 ? (this.memberInfo = null) : "";
         document.querySelector('.systemDrawer').style.display = 'none'; // 关闭天气弹框
         this.$refs.getFooter.editTool(9); // 关闭天气图标
+        this.$refs.ComponentInformation.show()
       }
       // 框选
       if (e.type === 12) {
@@ -2294,39 +2040,6 @@ export default {
         });
       });
     },
-    /* 添加构件  */
-    addCom(item) {
-      let params = {};
-      // parentId
-      if(this.activeName === 'first'){
-        params = {
-          // comGroupId: item.parentId,
-          comName: item.comName,
-          taskId: this.taskId,
-          comId: item.id,
-        }
-      }else if(this.activeName === 'second'){  // (自定义构件)
-        params = {
-          // comGroupId: item.parentId,
-          comName: item.ourbimComponentInfo.comName,
-          taskId: this.taskId,
-          comId: item.ourbimComponentInfo.comId,
-          userId:item.ourbimComponentInfo.userId
-        }
-      };
-      COMPONENTLIBRARY.addCom(params)
-        .then((res) => {
-          if (res.data.code === 0) {
-            this.$refs.EscDialogItem.changeVisible(true);
-            this.controllerInfo.tagUiBar = false;
-            this.controllerInfo.tagViewCube = false;
-          }
-          this.$message.success('指令下发成功');
-        })
-        .catch((res) => {
-          this.$message.error(res.data.message);
-        });
-    },
     handleTagShow(flag) {
       /**
        * @Author: zk
@@ -2450,14 +2163,11 @@ export default {
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {
-            // 新增俩个属性放在最前面
+            // 不知道构件为啥返回的格式不一样，有dynamicData的需要新增俩个属性放在最前面
             if(realData.data?.dynamicData?.length){
-              realData.data.dynamicData = [{name:'构件ID',value:realData.data.revitCode},{name:'构件名称',value:realData.data.name}].concat(realData.data.dynamicData)
+              realData.data.dynamicData = [{name:'构件名称',value:realData.data.name},{name:'构件ID',value:realData.data.revitCode}].concat(realData.data.dynamicData)
             }
-            this.memberInfo = {
-              type: 1,
-              data: realData.data || realData,
-            };
+            this.memberInfo = realData.rsInfo || realData?.data?.dynamicData || []
             let messageInfo = {
               prex: "ourbimMessage",
               type: 20001,
@@ -2477,36 +2187,12 @@ export default {
               this.$refs.getFooter.resetPointList(realData.object);
             }
           } else if (realData.id === "5") {
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 20002,
-              message: "",
-            };
             // 多选构件
-            let changeSingle = realData.object.map(e=>{
-              let newData = []
-              e.forEach(e1=>{
-                let addData = [{name:'构件ID',value:e[0].value},{name:'构件名称',value:e[4].value}]
-                if(e1.key === 'data'){
-                  newData = [...addData,...JSON.parse(e1.value)]
-                }
-              })
-              return newData
-            })
-
-            let nn = this.flatten(changeSingle);
-            this.memberInfo = {
-              type: 5,
-              data: {
-                dynamicData: nn,
-              },
-            };
-            this.sentParentIframe(messageInfo);
+            this.sentParentIframe({prex: "ourbimMessage",type: 20002,message: ""});
           } else if(realData.id === "6"){
             this.isFade = false
           } 
           else if (realData.id === "7") {
-            this.memberInfo = null;
             this.activeLeaf = false;
             let messageInfo = {
               prex: "ourbimMessage",
@@ -2645,9 +2331,9 @@ export default {
           } else if (realData.id === "14") {
             // 添加构件，但是按了 ESC
             if (this.controllerInfo.uiBar) {
-              this.updateComTreeAfterAddComs();
+            //   this.updateComTreeAfterAddComs();
               this.controllerInfo.tagUiBar = true;
-              this.controllerInfo.tagViewCube = true;
+            //   this.controllerInfo.tagViewCube = true;
               this.$refs.EscDialogItem.changeVisible(false);
             }
           } else if (realData.id === "15") {
@@ -2832,7 +2518,6 @@ export default {
               },
               message: "",
             };
-            this.getComList();
             this.sentParentIframe(messageInfo);
             this.initWebSocket();
             if (res.data.data.appliType !== "1") {
@@ -3008,65 +2693,6 @@ export default {
       } else {
       }
     },
-    // 构件库 中点击 构件库中的标签页时触发  （自定义构件）
-    changeTab(e){
-      if(e._props.name === 'second'){
-        const {userId} = this.$route.query;
-        let params = {
-          userId: userId
-        }
-        MODELAPI.GETALLCOM(params).then((res)=>{
-          if(res.data.code === 0){
-            if(res.data.data===undefined){
-              this.selfComList = [];
-            }else{
-              this.selfComList = res.data.data[0].data;
-            }
-          }
-        });
-      }
-    },
-    // 材质库 相关方法start
-    // 贴图弹框的 阻止标签页跳转 (材质库)
-    leavePic(activeName,oldActiveName){ 
-      if(activeName === 'zero'){
-        return false;
-      }
-    },
-    // 资源库 点击外层的标签页时 (材质库)
-    outTab(e){
-      if(e._props.name === 'material'){
-        if(this.publicMater.length > 0) return;
-        let params = {
-          taskId:this.taskId
-        }
-        CHAILIAOAPI.GETOURBIMMATERIALGROUP(params).then((res)=>{
-          this.publicMater = [];
-          if(res.data.code === 0){
-            this.publicMater = res.data.data;
-          }else{
-            this.$message.error(res.data.message)
-          }
-        }).catch(()=>{});
-      }
-    },
-    // 打开公共材质库时
-    openList(str){
-      if(!(str==='')){
-        if(this.publicMater[str].sonList && this.publicMater[str].sonList.length > 0) return;
-        let params = {
-          taskId:this.taskId,
-          groupId:this.publicMater[str].groupId
-        }
-        CHAILIAOAPI.GETOURBIMMATERIALBYGROUP(params).then(response=>{
-            if(response.data.code === 0){
-              this.$set(this.publicMater[str],'sonList',response.data.data)
-            }else{
-              item.sonList = [];
-            }
-        })
-      }
-    },
     // 点击贴图 (材质库)
     photoStore(){
       this.photoStoreFlag = !this.photoStoreFlag;
@@ -3096,20 +2722,6 @@ export default {
       this.materialShow = false;
       this.$refs['getFooter'].clickBtnMaterial('close');
       this.topImgMaterial = [];
-    },
-    // 选中公共库或项目库的材质
-    selectPublicImg(e){
-        if(this.activeMater === ''){
-          this.$message.warning('请选择构件');
-          return false;
-        }
-        if(this.activePub === e.matId){
-          this.activePub = ''
-        }else{
-          this.activePub = e.matId;
-          this.exchangeData.matId = e.matId;
-          this.getMaterialInfomation(e.matId,'public'); // 获取材质信息
-        }
     },
     // 选中材质编辑中的 构件材质图片
     photoSelect(e,num){
@@ -3153,7 +2765,6 @@ export default {
         CHAILIAOAPI.CHANGEMATERIALBYINSTRUCTION(params,JSON.stringify(temp.matAndActorInfos)).then((res)=>{
             if(res.data.code===0){
               this.$message.success('材质替换成功');
-              this.activePub = '';
               this.activeTexTurePerson = ''; // 个人贴图
               this.getMaterialInfomation(materialId,'change'); // 获取刚替换好的材质的信息
             }
@@ -3228,15 +2839,14 @@ export default {
       CHAILIAOAPI.GETMATERIALBYMATID(params).then(res=>{
         if(res.data.code === 0){
           this.matParam = JSON.parse(res.data.data.matParam);
-          // this.materialMatId = res.data.data.matId; // 选中材质编辑的材质的matId
           this.$set(this.middleMaterInfo[0],'nameInfo',this.strToNumber(this.matParam.textureParamsList,'texture'))
           this.$set(this.middleMaterInfo[1],'nameInfo',this.strToNumber(this.matParam.baseParamsList))
           this.color1 = this.arrToRgb(this.matParam.colorList.length>0 ? this.matParam.colorList[0].paramValue : []);
           this.texturesListIndex = this.matParam.texturesList.findIndex(e=>{return e.paramName==='BaseColorMap'})
           this.spreadCircle(this.middleMaterInfo,'0'); // 折叠面板
-          if(this.activePub !== ''){
-            this.addMaterialToUser(res.data.data.matId); // 添加材质到用户库
-          }
+        //   if(this.activePub !== ''){
+        //     this.addMaterialToUser(res.data.data.matId); // 添加材质到用户库
+        //   }
         //   arr.photoUrl：添加这段代码为了解决接口返回的图片显示不对，更新后后端返回错误还不解决由前端修改了，🤦‍
         let arr = this.topImgMaterial[this.matEditIndex]
           if(str === 'public'){
@@ -3248,7 +2858,6 @@ export default {
             // arr.photoUrl = res.data.data.matImgPath;
             this.$set(this.topImgMaterial,this.matEditIndex,arr);
             this.activeMater = this.matEditIndex;
-            console.log('🚀🚀🚀',this.topImgMaterial,arr,res.data);
           }
         }else if(res.data.code === 1){
             this.$message.error(res.data.message)
@@ -3852,9 +3461,6 @@ export default {
         }
       }
     }
-    .com-box {
-      width: 400px;
-    }
     .bim-info {
       pointer-events: auto;
       height: 50vh;
@@ -3903,26 +3509,6 @@ export default {
           background: rgba(255, 255, 255, 0.295);
         }
       }
-      .detail-collapse {
-        // padding: 0 10px;  // (材质库)
-        padding: 10px 0 0 0;
-        .el-collapse {
-          border-bottom: none;
-          border-top: none;
-          /deep/ .el-collapse-item__header {
-            background: none;
-            color: #fff;
-            border-bottom: none;
-          }
-          /deep/ .el-collapse-item__wrap {
-            background: none;
-            border-bottom: none;
-          }
-          .collapse-main {
-            padding: 0 5px;
-          }
-        }
-      }
       .detail-table {
         width: 100%;
         // line-height: 35px;
@@ -3955,104 +3541,7 @@ export default {
         }
       }
     }
-    .comsStore{
-      ::v-deep .el-tabs__item{ // （材质库）
-        color:#fff;
-        border: none !important;
-        height: 30px;
-        line-height: 30px;
-        padding: 0 100%;
-      }
-      ::v-deep .el-tabs__item.is-active { // （材质库）
-          color: #409EFF;
-          background-color: #3c3f45;
-      }
-      
-      ::v-deep .el-tabs--card>.el-tabs__header .el-tabs__nav{ // （材质库）
-        border: none;
-      }
-      ::v-deep .el-tabs__header{  // （材质库）
-        margin: 0;
-      }
-      ::v-deep .el-tabs--card>.el-tabs__header{       // （材质库）
-       border-top: 1px solid rgba(255,255,255,0.2);
-       border-bottom: 1px solid rgba(255,255,255,0.2);
-      }
-      #moreLimit{
-        .search{    // （材质库）
-        height: 46px;
-        border-bottom: 1px solid #25282e;
-        ::v-deep .searchInput .el-input__inner{
-            width: 185px;
-            height: 28px;
-            color: #fff;
-            padding-left: 40px;
-            border: none;
-            border-radius: 14px;
-            background-color: #28292E;
-        }
-        ::v-deep .searchInput .el-input__inner::placeholder{
-            font-size: 12px;
-            color: #fff;
-        }
-        .el-icon-search{
-            font-size: 20px;
-            color: #fff;
-            line-height: 44px !important;
-            margin-left: 8px;
-            cursor: pointer;
-        }
-        }
-        ::v-deep .el-tabs__content{    // （材质库）
-              // position: absolute;
-              overflow-y: auto;
-              height: 350px;
-              right: 0px;
-              left: 0px;
-              padding-left: 18px;
-              &::-webkit-scrollbar {
-              /* 对应纵向滚动条的宽度 */
-              width: 10px;
-              /* 对应横向滚动条的宽度 */
-              height: 10px;
-              }
-      
-              /* 滚动条上的滚动滑块 */
-              &::-webkit-scrollbar-thumb {
-                  background-color: #515560;
-                  border-radius: 5px;
-              }
-      
-              /* 滚动条轨道 */
-              &::-webkit-scrollbar-track {
-                  background-color: #16191f;
-                  border: 1px solid #41444D;
-                  border-radius:2px;
-              }
-        }
-        ::v-deep .el-tabs__item{ // （材质库）
-        color:#fff;
-        border: none !important;
-        height: 42px;
-        line-height: 42px;
-        padding: 0 14px;
-        }
-        ::v-deep .el-tabs__item.is-active { // （材质库）
-            color: #409EFF;
-            background-color: rgba(255, 255, 255, 0);
-        }
-        
-        ::v-deep .el-tabs--card>.el-tabs__header .el-tabs__nav{ // （材质库）
-          border: none;
-        }
-        ::v-deep .el-tabs__header{  // （材质库）
-          margin: 1px 0 0 0;
-        }
-        ::v-deep .el-tabs__header{       // （材质库）
-          border-top: none;
-        }
-       }
-    }
+
     // 材质编辑开始   （材质库）
     .material-main{
       position: relative;
@@ -4407,13 +3896,6 @@ export default {
             }
           }
         }
-        // .bottomUpload{
-        //   width: 100%;
-        //   height: 5vh;
-        //   display: flex;
-        //   align-items: center;
-        //   justify-content: center;
-        // }
       }
     }
     // 材质编辑结束
