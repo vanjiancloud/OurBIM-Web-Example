@@ -244,7 +244,7 @@ export default {
             params:{
                 taskid:'',
                 action:'switchViewMode',
-                viewMode:'2',
+                viewMode:this.$route.query.weatherBin === 'true'?1:2,
                 projectionMode:'1',
                 enableGravity:'true', // 重力
                 enableAllCollision:'', // 碰撞
@@ -293,7 +293,7 @@ export default {
           let par = {
             taskid: this.taskId,
             action: 'switchViewMode',
-            viewMode: 2,
+            viewMode: this.$route.query.weatherBin === 'true'?1:2,
             projectionMode: 1
            }
            MODELAPI.UPDATEORDER(par).then((res)=>{

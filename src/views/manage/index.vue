@@ -190,7 +190,7 @@
                 >
                 <el-dropdown-item
                   command="downloadModel"
-                  v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false')"
+                  v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false') &&scope.row.fileSize!='0'"
                   >下载</el-dropdown-item
                 >
                 <el-dropdown-item
@@ -527,6 +527,8 @@ import {
 } from "@/api/my.js";
 import MODELAPI from "@/api/model_api";
 import { Getuserid } from "@/store/index.js";
+import axios from "@/utils/request";
+import newRequest from "@/utils/newRequest.js";
 import qs from "qs";
 import Pagination from "@/components/Pagination"
 import Share from "./share.vue"
@@ -748,6 +750,28 @@ export default {
 
         this.editShowGisInfoData.splice(index, 1)
       })
+        .then(() => {
+          this.$message({
+            type: "warning",
+            message: "开始下载",
+          });
+          let params = {
+            userId: Getuserid(),
+            appId: row.appid,
+          };
+          let urllll =
+            process.env.VUE_APP_REQUEST_URL +
+            "/FileStorge/downloadModelFile?" +
+            qs.stringify(params);
+          window.open(urllll);
+          return;
+        })
+        .catch(() => {
+          this.$message({
+            type: "info",
+            message: "已取消下载",
+          });
+        });
     },
 
     deleteGisServe (index) {

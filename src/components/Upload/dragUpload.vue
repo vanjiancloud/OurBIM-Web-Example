@@ -10,12 +10,13 @@
 -->
 <template>
     <el-dialog :visible.sync="dialogVisible" width="50%" :before-close="hide" :close-on-click-modal="false">
+        <slot name="append"></slot>
         <div class="dragUpLoad">
             <div class="dragUpLoadTitle">
                 <img src="@/views/found/icon.png" alt="" />
                 <div class="dragUpLoadText">{{ title }}</div>
             </div>
-            <el-upload ref="upload" drag action="#" :auto-upload="false" :accept="accept" :on-change="onChange" :http-request="httpRequest" multiple>
+            <el-upload ref="upload" drag action="#" :auto-upload="false" :accept="accept" :limit="limit" :on-change="onChange" :on-exceed="handleExceed" :http-request="httpRequest" multiple>
                 <img src="@/views/found/file.png" />
                 <div class="el-upload__text">
                     <em>点击</em>或将文件拖拽到这里上传
@@ -36,9 +37,14 @@ import request from "@/utils/newRequest.js";
 export default {
     components: {},
     props: {
+        limit:{
+            type: Number,
+            default: 5
+        },
         accept: {
             type: String,
-            default: "application/x-zip-compressed",
+            // default: 'application/x-zip-compressed,application/zip,application/x-rar-compressed,application/x-rar-compressed,application/x-7z-compressed'
+            default: '.zip,.zipx,.rar,.rar4,.7z'
         },
     },
     data() {
@@ -54,6 +60,7 @@ export default {
     mounted() {},
     methods: {
         show(title) {
+            this.$emit("open")
             this.title = title;
             this.loading = false;
             this.dialogVisible = true;
@@ -65,7 +72,9 @@ export default {
             this.dialogVisible = false;
         },
         onChange(file, fileList) {
-            const isJPG = this.accept.split(",").includes(file.raw.type);
+            let splitName = file.name.split('.')
+            const isJPG = this.accept.split(",").includes(`.${splitName[splitName.length-1].toLowerCase()}`);
+            // const isJPG = this.accept.split(",").includes(file.raw.type);
             if (!isJPG) {
                 const idx = this.$refs.upload.uploadFiles.findIndex(
                     (e) => e.uid === file.uid
@@ -75,6 +84,10 @@ export default {
                 this.$message.error("上传格式不正确！");
                 return false;
             }
+        },
+        handleExceed() {
+            // 最多只能上传
+            this.$message.warning(`最多只能上传${this.limit}个`)
         },
         httpRequest(param) {
             this.$notify({
@@ -113,7 +126,13 @@ export default {
             });
         },
         submit() {
-            if(!this.$refs.upload.uploadFiles.length){
+            // beforeUpload：上传文件前验证
+            let isCheck = false
+            this.$emit("beforeUpload",(data)=>{
+                isCheck = !!data
+                if(data) return
+            })
+            if(!this.$refs.upload.uploadFiles.length && !isCheck){
                 return this.$message.warning("请上传文件");
             }
             this.$refs.upload.submit();
@@ -126,7 +145,7 @@ export default {
     box-shadow: 0 0.0625rem 0.8125rem 0 rgb(4 0 0 / 10%);
     border-radius: 8px;
     padding: 30px 40px;
-    margin: 10px 30px;
+    margin: 10px 0;
     .dragUpLoadTitle {
         text-align: center;
         .dragUpLoadText {

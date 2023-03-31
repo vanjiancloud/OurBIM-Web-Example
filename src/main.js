@@ -512,6 +512,7 @@ Vue.prototype.$echarts = echarts
 
 import onlyNumber from '@/directive/num'
 Vue.use(onlyNumber)
+// import '@/icons'
 
 
 new Vue({

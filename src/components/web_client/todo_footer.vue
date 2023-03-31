@@ -1015,7 +1015,7 @@ export default {
           state: 0,
           url: require("@/assets/images/todo/unchecked/component-library.png"),
           name: "component-library.png",
-          title: "构件库",
+          title: "资源库",
           id: 1016,
         },
       ],

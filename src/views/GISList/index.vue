@@ -45,11 +45,23 @@
         <!-- 新建GIS服务项目 -->
         <DialogsProject ref="DialogsProject" />
         <!-- 上传GIS数据 -->
-        <DragUpload ref="DragUpload" accept="application/x-zip-compressed" @getFile="getFileDrag" @onSuccess="onSuccessDrag" />
+        <DragUpload ref="DragUpload" :limit="1" @open="layerType=null" @getFile="getFileDrag" @onSuccess="getList" @beforeUpload="beforeUpload">
+            <template v-slot:append>
+                <el-select v-model="layerType" placeholder="请选择" style="width:100%;">
+                    <el-option
+                    v-for="item in layerTypeList"
+                    :key="item.value"
+                    :label="item.note"
+                    :value="item.value">
+                    </el-option>
+                </el-select>
+            </template>
+        </DragUpload>
     </div>
 </template>
 
 <script>
+import { getDict } from "@/api/dict.js"
 import { Getuserid } from "@/store/index.js";
 import { getList, deleteList } from "@/api/GISList.js";
 import DialogsProject from "./dialogsProject.vue";
@@ -74,6 +86,8 @@ export default {
                 4: "删除中",
                 5: "删除失败",
             },
+            layerTypeList: [],
+            layerType:null
         };
     },
     watch: {},
@@ -81,8 +95,12 @@ export default {
     created() {},
     mounted() {
         this.getList();
+        this.getType()
     },
     methods: {
+        async getType(){
+            this.layerTypeList = (await getDict('layerType')).data
+        },
         // 新建GIS服务项目
         AddGISProgect(title, row = {}) {
             this.$refs.DialogsProject.show(title, row);
@@ -111,14 +129,19 @@ export default {
         // 上传GIS数据
         getFileDrag(file, callback) {
             callback({
+                layerType:this.layerType,
                 fileUpload: file,
                 userId: Getuserid(),
                 url: "/appli/uploadGISLayerFile",
             });
         },
-        // 成功上传GIS数据
-        onSuccessDrag(){
-            this.getList();
+        // 上传GIS数据验证
+        beforeUpload(callback){
+            if(!this.layerType){
+                this.$message.warning('请选择图层类型！')
+                callback(true)
+                return
+            }
         },
         // 复制URL
         onCopy(url){
