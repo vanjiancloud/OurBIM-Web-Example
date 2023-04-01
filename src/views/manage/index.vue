@@ -327,7 +327,6 @@
           </el-form-item>
 
           <el-form-item
-            v-if="editShowGisServeData.length !== 0"
             label="链接GIS数据服务："
             label-width="110px"
           >
