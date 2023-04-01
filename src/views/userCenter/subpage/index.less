@@ -69,7 +69,7 @@
 
     .el-input-number--mini {
         width: 60px;
-        margin: 0 3px 0 7px;
+        margin: 0 3px 0 6px;
 
         .el-input__inner {
             padding-right: 14px;
@@ -84,5 +84,20 @@
             color: #ffffff;
             right: 4px;
         }
+    }
+    .el-textarea__inner{
+        background: #24262B;
+        border: 1px solid #727272;
+        color: #ffffff;
+    }
+    .el-checkbox{
+        color: #ffffff;
+    }
+    .el-checkbox__input.is-checked+.el-checkbox__label{
+        color: #20C6FF;
+    }
+    .el-checkbox__input.is-checked .el-checkbox__inner, .el-checkbox__input.is-indeterminate .el-checkbox__inner{
+        background-color: #20C6FF;
+        border-color: #20C6FF;
     }
 }
