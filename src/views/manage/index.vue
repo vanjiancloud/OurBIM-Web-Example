@@ -1545,7 +1545,7 @@ export default {
     margin-left: 0;
     padding: 7px;
     background-color: #ecf5ff;
-    border-color: #ecf5ff;
+    border: none;
     color: #606266;
     &:hover {
       background-color: #ecf5ff8f;

@@ -47,14 +47,33 @@
         <!-- 上传GIS数据 -->
         <DragUpload ref="DragUpload" :limit="1" @open="layerType=null" @getFile="getFileDrag" @onSuccess="getList" @beforeUpload="beforeUpload">
             <template v-slot:append>
-                <el-select v-model="layerType" placeholder="请选择" style="width:100%;">
-                    <el-option
-                    v-for="item in layerTypeList"
-                    :key="item.value"
-                    :label="item.note"
-                    :value="item.value">
-                    </el-option>
-                </el-select>
+                <el-form :model="form" :rules="rules" ref="form" label-width="130px">
+                    <el-form-item label="图层类型：" prop="layerType">
+                        <el-select v-model="form.layerType " placeholder="请选择" style="width:100%">
+                            <el-option :value="item.value" v-for="(item,index) in layerTypeList" :key="index" :disabled="item.value==='OurGIS'">{{ item.note }}</el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="GIS信息：" required v-if="form.layerType==='3dtiles'">
+                        <el-col :span="7">
+                            <el-form-item prop="longitude">
+                                <el-input v-model="form.longitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:4}"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="GISMark" :span="1">°</el-col>
+                        <el-col :span="7">
+                            <el-form-item prop="latitude">
+                                <el-input v-model="form.latitude" placeholder="纬度" v-only-number="{min:-90,max:90,precision:4}"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="GISMark" :span="1">°</el-col>
+                        <el-col :span="7">
+                            <el-form-item prop="altitude">
+                                <el-input v-model="form.altitude" placeholder="海拔高度"></el-input>
+                            </el-form-item>
+                        </el-col>
+                        <el-col class="GISMark" :span="1">m</el-col>
+                    </el-form-item>
+                </el-form>
             </template>
         </DragUpload>
     </div>
@@ -87,7 +106,37 @@ export default {
                 5: "删除失败",
             },
             layerTypeList: [],
-            layerType:null
+            form:{},
+            rules: {
+                layerType: [
+                    {
+                        required: true,
+                        message: '请选择图层类型',
+                        trigger: 'blur'
+                    }
+                ],
+                longitude: [
+                    {
+                        required: true,
+                        message: '请输入经度(-180°~180°)',
+                        trigger: 'blur'
+                    }
+                ],
+                latitude: [
+                    {
+                        required: true,
+                        message: '请输入纬度(-90°~90°)',
+                        trigger: 'blur'
+                    }
+                ],
+                altitude: [
+                    {
+                        required: true,
+                        message: '请输入海拔高度',
+                        trigger: 'blur'
+                    }
+                ],
+            },
         };
     },
     watch: {},
@@ -129,7 +178,7 @@ export default {
         // 上传GIS数据
         getFileDrag(file, callback) {
             callback({
-                layerType:this.layerType,
+                ...this.form,
                 fileUpload: file,
                 userId: Getuserid(),
                 url: "/appli/uploadGISLayerFile",
@@ -137,11 +186,12 @@ export default {
         },
         // 上传GIS数据验证
         beforeUpload(callback){
-            if(!this.layerType){
-                this.$message.warning('请选择图层类型！')
-                callback(true)
-                return
-            }
+            this.$refs.form.validate((valid) => {
+                if (!valid){
+                    callback(true)
+                    return false;
+                }
+            })
         },
         // 复制URL
         onCopy(url){
@@ -227,5 +277,8 @@ export default {
     &::before{
         background: #8692A1;
     }
+}
+.GISMark{
+    text-align: center;
 }
 </style>

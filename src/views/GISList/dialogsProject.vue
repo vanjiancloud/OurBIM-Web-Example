@@ -20,10 +20,16 @@
             <el-option :value="item.value" :label="item.note" v-for="(item,index) in gisCoordinateTypeList" :key="index"></el-option>
             </el-select>
         </el-form-item>
-        <el-form-item label="GIS图层：" prop="ourGISLayerList">
+        <el-form-item label="GIS图层：" prop="ourGISLayerList" v-if="form.layerType==='OurGIS'||title==='添加'">
           <el-button type="primary" @click="addLayer('添加')" plain class="bluePlainBtn1">添加图层</el-button>
           <el-table class="GISLayer" :data="form.ourGISLayerList" style="width: 100%" :show-header="false" border max-height="300">
             <el-table-column prop="gisServerName" />
+            <el-table-column>
+              <template slot-scope="scope">
+                <span v-if="scope.row.longitude">{{ scope.row.longitude }}° {{ scope.row.latitude }}° {{ scope.row.altitude }}m</span>
+                <span v-else>无</span>
+              </template>
+            </el-table-column>
             <el-table-column fixed="right" width="75">
               <template slot-scope="scope">
                 <i class="el-icon-edit editIcon" @click="addLayer('编辑',scope.row,scope.$index)"></i>
