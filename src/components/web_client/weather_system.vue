@@ -342,7 +342,7 @@
       },
       created(){
           this.getWeatherList();
-          this.weatherBin = this.$route.query.weatherBin
+          this.weatherBin = this.$route.query.isGis
       },
       mounted(){
           this.changeColor(this.color1);
