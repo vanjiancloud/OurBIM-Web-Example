@@ -2072,6 +2072,7 @@ export default {
     },
     // 移动 旋转 缩放 显示隐藏
     noneBlock(){
+        console.log('🚀🚀🚀',this.contentLogo,this.lockState);
      if(this.contentLogo===false && this.lockState === false){
         this.totalLogo = false
       }else if(this.contentLogo===true || this.lockState === true){

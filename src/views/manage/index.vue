@@ -329,6 +329,7 @@
           <el-form-item
             label="链接GIS数据服务："
             label-width="110px"
+            v-if="form.isGis==='true'"
           >
             <el-card class="box-card">
               <div v-for="(item, index) in editShowGisServeData" class="gis-serve-box" :key="item.gisId">

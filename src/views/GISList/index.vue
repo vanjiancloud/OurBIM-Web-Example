@@ -156,6 +156,7 @@ export default {
         },
         // 上传GIS数据
         uploadGIS() {
+            this.form = this.$options.data().form
             this.$refs.DragUpload.show("上传GIS");
         },
         // 获取列表

@@ -2053,6 +2053,7 @@ export default {
     },
     // 关闭模块
     closePart(e) {
+        console.log('🚀🚀🚀',e);
       if (e === 10) {
         this.browserInfo = null;
       }
@@ -2061,6 +2062,7 @@ export default {
       }
       if (e === 14) {
         this.listenTodoInfo = null;
+        setTimeout(()=>{this.$refs.getFooter.totalLogo = false},500)
       }
       // 漫游导航---
       if (e === 0) { // 关闭漫游导航弹窗
