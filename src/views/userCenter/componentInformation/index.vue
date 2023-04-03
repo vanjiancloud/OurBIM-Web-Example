@@ -1,7 +1,7 @@
 <!-- 构件信息 -->
 <template>
-    <div class="drawerBox" :style="{'width':isShow?'300px':'0px'}">
-        <el-drawer title="构件信息" :visible.sync="drawer" direction="rtl" :modal="false" :wrapperClosable="false" :size="300" @close="hide" class="newDrawer" :style="{'width':isShow?'300px':'0px'}">
+    <Drawer ref="Drawer" title="构件信息" direction="rtl" @onShow="show">
+        <template slot="drawer">
             <Tab :data="tabList" @onTab="onTab" />
             <!-- 属性信息 -->
             <div class="attribute" v-if="activeTab===0">
@@ -191,18 +191,15 @@
                     <el-checkbox v-model="form.checked">替换所有相同材质</el-checkbox>
                 </div>
             </div>
-        </el-drawer>
-        <!-- 收缩和展开 -->
-        <div class="isShow" @click="onIsShow" v-if="drawer">
-            <i :class="{'el-icon-arrow-right':isShow,'el-icon-arrow-left':!isShow}"></i>
-        </div>
-    </div>
+        </template>
+    </Drawer>
 </template>
 
 <script>
+import Drawer from "@/components/Drawer/index.vue";
 import Tab from "@/components/Tab/index.vue";
 export default {
-    components: { Tab },
+    components: { Tab, Drawer },
     props: {
         taskId: {
             type: String,
@@ -214,8 +211,6 @@ export default {
     },
     data() {
         return {
-            drawer: false,
-            isShow: true, //是否展开和收缩
             activeTab:0,//tab栏
             tabList: [
                 {
@@ -239,16 +234,9 @@ export default {
     created() {},
     mounted() {},
     methods: {
-        onIsShow(){
-            this.isShow=!this.isShow
-        },
         show() {
-            this.drawer = true;
+            this.$refs.Drawer.show()
             // this.content();
-        },
-        hide() {
-            Object.assign(this.$data, this.$options.data());
-            this.drawer = false;
         },
         onTab(e){
             this.activeTab = e.index
@@ -268,33 +256,6 @@ export default {
             padding-left: 0;
         }
     }
-}
-.drawerBox {
-    width: 300px;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    right: 0;
-    animation: rtl-drawer-in .3s 1ms;
-    .isShow{
-        width: 20px;
-        height: 64px;
-        background: rgba(16,16,16,0.7);
-        border-radius: 14px 0 0 14px;
-        position: absolute;
-        left: -20px;
-        top: 0;
-        bottom: 0;
-        margin: auto 0;
-        cursor: pointer;
-        color: #ffffff;
-        font-size: 18px;
-        line-height: 64px;
-        text-align: center;
-    }
-}
-/deep/ .el-drawer__wrapper{
-    left: initial;
 }
 .componentTitle{
     font-weight: 500;

@@ -2,8 +2,8 @@
     同一种类型接口返回的数据格式全部不一样。。。。。。。
 -->
 <template>
-    <div class="drawerBox" :style="{'width':isShow?'300px':'0px'}">
-        <el-drawer title="资源库" :visible.sync="drawer" direction="ltr" :modal="false" :wrapperClosable="false" :size="300" @close="close" class="newDrawer" :style="{'width':isShow?'300px':'0px'}">
+    <Drawer ref="Drawer" title="资源库">
+        <template slot="drawer">
             <Tab v-model="levelName.tab1Index" v-show="levelName.level ===1" :data="tabList" @onTab="onTab" />
             <!-- 点击到二级构件 -->
             <div class="level2" v-if="levelName.level ===2">
@@ -15,7 +15,7 @@
                 </el-input>
                 <!-- 贴图按钮 -->
                 <el-button v-if="levelName.tab1Index ===2&&levelName.tab2Index===1" class="button" :class="{blueBtn1:levelName.level ===1,blueBtn1:levelName.level ===2}" type="primary" icon="el-icon-plus" size="mini"
-                           @click="createGroup(levelName.level ===1?'新建分组':'上传贴图')">{{levelName.level ===1?'新建分组':'上传贴图'}}</el-button>
+                            @click="createGroup(levelName.level ===1?'新建分组':'上传贴图')">{{levelName.level ===1?'新建分组':'上传贴图'}}</el-button>
             </div>
             <Tab v-model="levelName.tab2Index" v-show="levelName.level ===1" class="roundTab" :data="typeList" @onTab="onTypeTab" />
             
@@ -34,26 +34,23 @@
             </div>
             <!-- 二级才显示分页 -->
             <Pagination v-if="levelName.level ===2" class="modelPage" layout="prev, pager, next" :pagerCount="5" :limit.sync="pages.pageSize" :total="contentLevel2List.length" :page="pages.page" @pagination="pagination" />
-            <!-- 创建分组，上传贴图 -->
-        </el-drawer>
-        <!-- 收缩和展开 -->
-        <div class="isShow" @click="onIsShow" v-if="drawer">
-            <i :class="{'el-icon-arrow-right':!isShow,'el-icon-arrow-left':isShow}"></i>
-        </div>
-        <!-- 弹出图标 -->
-        <div class="toolList" v-if="drawer">
-            <el-tooltip v-for="(item,index) in toolIcons" :key="index" effect="dark" :content="item.name" placement="bottom">
-                <img :src="item.check?item.checkUrl:item.url" @click="onOprate(item)" />
-            </el-tooltip>
-        </div>
-
-        <!-- 新建分组弹框 -->
-        <DialogChartletGroup ref="DialogChartletGroup" />
-        <!-- 上传贴图弹框 -->
-        <DialogChartlet ref="DialogChartlet" :groupList="contentList[1]"/>
-        <!-- esc提示 -->
-        <EscDialogItem ref="EscDialogItem"/>
-    </div>
+        </template>
+        <template #append="{ drawer }">
+            <!-- 弹出图标 -->
+            <div class="toolList" v-if="drawer">
+                <el-tooltip v-for="(item,index) in toolIcons" :key="index" effect="dark" :content="item.name" placement="bottom">
+                    <img :src="item.check?item.checkUrl:item.url" @click="onOprate(item)" />
+                </el-tooltip>
+            </div>
+        
+            <!-- 新建分组弹框 -->
+            <DialogChartletGroup ref="DialogChartletGroup" />
+            <!-- 上传贴图弹框 -->
+            <DialogChartlet ref="DialogChartlet" :groupList="contentList[1]"/>
+            <!-- esc提示 -->
+            <EscDialogItem ref="EscDialogItem"/>
+        </template>
+    </Drawer>
 </template>
 
 <script>
@@ -65,8 +62,9 @@ import Pagination from "@/components/Pagination/index.vue";
 import DialogChartletGroup from "./DialogChartletGroup.vue"; // 新建分组弹框
 import DialogChartlet from "./DialogCharlet.vue"; // 上传贴图弹框
 import EscDialogItem from "@/components/web_client/EscDialogItem.vue"; //esc提示
+import Drawer from "@/components/Drawer/index.vue";
 export default {
-    components: { Tab, Pagination, DialogChartletGroup, DialogChartlet, EscDialogItem },
+    components: { Tab, Pagination, DialogChartletGroup, DialogChartlet, EscDialogItem, Drawer },
     props: {
         taskId: {
             type: String,
@@ -77,8 +75,6 @@ export default {
     },
     data() {
         return {
-            drawer: false,
-            isShow:true,//是否展开和收缩
             tabList: [
                 {
                     name: "构件库",
@@ -148,20 +144,16 @@ export default {
     created() {},
     mounted() {},
     methods: {
-        onIsShow(){
-            this.isShow=!this.isShow
-        },
         show() {
-            this.drawer = true;
+            this.$refs.Drawer.show()
             this.content();
         },
         hide() {
-            Object.assign(this.$data, this.$options.data());
-            this.drawer = false;
+            // Object.assign(this.$data, this.$options.data());
         },
         close() {
-            Object.assign(this.$data, this.$options.data());
-            this.$parent.closePart(14);
+            // Object.assign(this.$data, this.$options.data());
+            // this.$parent.closePart(14);
         },
         // 点击tab
         onTab(e) {
@@ -426,29 +418,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.drawerBox{
-    width: 300px;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    animation: ltr-drawer-in .3s 1ms;
-    .isShow{
-        width: 20px;
-        height: 64px;
-        background: rgba(16,16,16,0.7);
-        border-radius: 0px 14px 14px 0px;
-        position: absolute;
-        right: -20px;
-        top: 0;
-        bottom: 0;
-        margin: auto 0;
-        cursor: pointer;
-        color: #ffffff;
-        font-size: 18px;
-        line-height: 64px;
-        text-align: center;
-    }
-}
 .level2 {
     font-size: 16px;
     font-family: PingFangSC-Medium, PingFang SC;
