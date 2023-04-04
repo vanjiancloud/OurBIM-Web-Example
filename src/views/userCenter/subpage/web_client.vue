@@ -432,7 +432,7 @@
                           <el-collapse-item :title="item.titleName" :name="index">                         
                                 <div
                                   class="editInfoItem"
-                                  v-for="listItem in item.nameInfo"
+                                  v-for="(listItem, index1) in item.nameInfo"
                                   :key="listItem.index"
                                 >  
                                 <!-- enableEdit=false不显示不可编辑,目前看到json里面返回的显示没有这个字段 -->
@@ -453,13 +453,13 @@
                                   <div class="editInfoList" v-if="listItem.label !== '等比缩放'">
                                       <div class="editInfoListName">{{ listItem.label }}</div>
                                       <div class="editInfoListNum">
-                                        <el-slider @change="materialInfoChange" v-model="listItem.paramValue"
-                                        show-input
+                                        <el-slider @change="materialSliderChange(listItem.paramValue1,index,index1)" v-model="listItem.paramValue1"
                                         input-size="mini"
                                         :max="Number(listItem.max)"
                                         :min="Number(listItem.min)"
                                         :step="(listItem.label==='横向偏移' || listItem.label==='纵向偏移' || listItem.label==='透明度') ? 0.1 :((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 0.01 : 1)"
                                         ></el-slider>
+                                        <input type="number" v-model.trim.number="listItem.paramValue" style="width:70px;height: 23px;" @change="materialInfoChange()" />
                                       </div>
                                       <div class="editInfoListPercent">{{listItem.label==='角度' ? '°' :  ''}}</div>
                                   </div>
@@ -861,7 +861,7 @@ export default {
         this.propsProgress.loadData += 5;
       }
      },300);                
-    this.lockView = this.$route.query.isGis; 
+    this.lockView = this.$route.query.isGis || this.$route.query.weatherBin; 
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -3169,7 +3169,7 @@ export default {
         if(res.data.code === 0){
           this.matParam = JSON.parse(res.data.data.matParam);
           // this.materialMatId = res.data.data.matId; // 选中材质编辑的材质的matId
-          this.$set(this.middleMaterInfo[0],'nameInfo',this.strToNumber(this.matParam.textureParamsList,'texture'))
+          this.$set(this.middleMaterInfo[0],'nameInfo',this.strToNumber(this.matParam.textureParamsList),'texture')
           this.$set(this.middleMaterInfo[1],'nameInfo',this.strToNumber(this.matParam.baseParamsList))
           this.color1 = this.arrToRgb(this.matParam.colorList.length>0 ? this.matParam.colorList[0].paramValue : []);
           this.spreadCircle(this.middleMaterInfo,'0'); // 折叠面板
@@ -3212,7 +3212,6 @@ export default {
         normalMapTextureId:''
       }
       let colorList = JSON.parse(JSON.stringify(this.matParam.colorList)) || []
-      console.log('🚀🚀🚀',colorList);
       if(colorList.length){
         try {
             // 不同材质不同取值
@@ -3232,7 +3231,7 @@ export default {
           {
             matId:this.getActiveMatid(this.activeMater),
             ...this.matParam,
-            colorList
+            colorList,
           }
         }
       ]
@@ -3361,6 +3360,7 @@ export default {
         arr.forEach(item=>{
           if(item.label !== '等比缩放'){
             item.paramValue = Number(item.paramValue); // 字符串转数值
+            this.$set(item, 'paramValue1', item.paramValue)
           }else{
             flag = item.paramValue; // 拿到等比缩放的值
           }
@@ -3421,8 +3421,12 @@ export default {
       return componentAppId;
     },
     // 材质信息改变
+    materialSliderChange(val,prI,i){
+        this.middleMaterInfo[prI].nameInfo[i].paramValue = val
+        this.updateMateInfo();
+    },
     materialInfoChange(){
-      this.updateMateInfo();
+        this.updateMateInfo();
     },
     // 材质库 相关方法 end --------
     // 关闭天气系统抽屉
@@ -4191,6 +4195,11 @@ export default {
               }
               .editInfoListNum{
                 width: 200px;
+                display: flex;
+                /deep/ .el-slider{
+                    flex: 1;
+                    margin-right: 15px;
+                }
                 ::v-deep .el-slider__runway{
                   top: -13px;
                   height: 20px;
