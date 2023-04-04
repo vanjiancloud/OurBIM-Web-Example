@@ -6,7 +6,7 @@
         </div>
         <div class="middle">
             <el-radio-group v-model="radio" class="singleSelect" @change="changeRadio">
-                <el-radio :label="2" class="needBlock" v-if="$route.query.isGis !== 'true' || $route.query.weatherBin !== 'true'"><span class="viewModel">{{personView[0].name}}</span></el-radio>
+                <el-radio :label="2" class="needBlock" v-if="!isGis"><span class="viewModel">{{personView[0].name}}</span></el-radio>
                 <el-radio :label="1" class="needBlock"><span class="viewModel">{{personView[1].name}}</span></el-radio>
                 <el-radio class="needNone selfView" disabled>
                     <div>
@@ -242,7 +242,7 @@ export default {
             params:{
                 taskid:'',
                 action:'switchViewMode',
-                viewMode:this.$route.query.isGis === 'true' || this.$route.query.weatherBin === 'true'?1:2,
+                viewMode:2,
                 projectionMode:'1',
                 enableGravity:'true', // 重力
                 enableAllCollision:'', // 碰撞
@@ -250,11 +250,14 @@ export default {
                 characterHeight:'',  // 视角高度
                 dollName:'', // 人物/车辆名
                 dollHeight:'' // 对象高度cm
-            }
+            },
+            isGis: false
         }
     },
     created(){
-        this.radio = this.$route.query.isGis === 'true' || this.$route.query.weatherBin === 'true'?1:2
+        this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
+        this.radio = this.isGis?1:2
+        this.params.viewMode = this.isGis?1:2
     //   this.threeView();
     },
     beforeDestroy () {
@@ -281,7 +284,7 @@ export default {
           let par = {
             taskid: this.taskId,
             action: 'switchViewMode',
-            viewMode: this.$route.query.isGis === 'true' || this.$route.query.weatherBin === 'true' ?1:2,
+            viewMode: this.isGis ?1:2,
             projectionMode: 1
            }
            MODELAPI.UPDATEORDER(par).then((res)=>{
