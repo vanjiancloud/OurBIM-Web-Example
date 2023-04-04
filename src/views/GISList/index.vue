@@ -163,8 +163,7 @@ export default {
         setTime(){
             this.timer = window.setInterval(() => {
                 setTimeout(() => {
-                    let res = this.tableData.find(e=>[1,4].includes(e.status))
-                    console.log('🚀🚀🚀',res);
+                    let res = this.tableData.find(e=>[1,4].includes(+e.status))
                     if(res){
                         this.getList()
                     }

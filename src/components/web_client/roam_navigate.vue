@@ -6,10 +6,8 @@
         </div>
         <div class="middle">
             <el-radio-group v-model="radio" class="singleSelect" @change="changeRadio">
-                <el-radio v-if="!isGis" :label="2" class="needBlock"><span class="viewModel">{{personView[0].name}}</span></el-radio><br>
-
-                <!-- 第一人称模式 -->
-                <el-radio :label="1" class="needBlock"><span class="viewModel">{{personView[1].name}}</span></el-radio><br>
+                <el-radio :label="2" class="needBlock" v-if="$route.query.isGis !== 'true' || $route.query.weatherBin !== 'true'"><span class="viewModel">{{personView[0].name}}</span></el-radio>
+                <el-radio :label="1" class="needBlock"><span class="viewModel">{{personView[1].name}}</span></el-radio>
                 <el-radio class="needNone selfView" disabled>
                     <div>
                         <el-checkbox @change="weight" v-model="checkWeight" :disabled="radio===1 ? false : true" class="firstSelect">{{checkListArr[0].name}}</el-checkbox>
@@ -244,7 +242,7 @@ export default {
             params:{
                 taskid:'',
                 action:'switchViewMode',
-                viewMode:this.$route.query.weatherBin === 'true'?1:2,
+                viewMode:this.$route.query.isGis === 'true' || this.$route.query.weatherBin === 'true'?1:2,
                 projectionMode:'1',
                 enableGravity:'true', // 重力
                 enableAllCollision:'', // 碰撞
@@ -256,18 +254,8 @@ export default {
         }
     },
     created(){
-        this.watchStatus()
-        this.dealAngleData()
-
-        // 非gis模式下默认是第三人称视角
-        if (this.viewAngleData.angle === 2 && !this.isGis) {
-            this.threeView()
-        }
-        // gis模式默认是第一人称视角
-        if (this.viewAngleData.angle === 1 && this.isGis) {
-            this.radio = 1
-            this.changeRadio(1)
-        }
+        this.radio = this.$route.query.isGis === 'true' || this.$route.query.weatherBin === 'true'?1:2
+    //   this.threeView();
     },
     beforeDestroy () {
         this.watchAngleData()
@@ -293,7 +281,7 @@ export default {
           let par = {
             taskid: this.taskId,
             action: 'switchViewMode',
-            viewMode: this.$route.query.weatherBin === 'true'?1:2,
+            viewMode: this.$route.query.isGis === 'true' || this.$route.query.weatherBin === 'true' ?1:2,
             projectionMode: 1
            }
            MODELAPI.UPDATEORDER(par).then((res)=>{

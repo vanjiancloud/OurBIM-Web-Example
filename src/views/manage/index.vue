@@ -969,8 +969,64 @@ export default {
     },
     // 分享按钮
     share(e) {
-      this.formShare.appid = e.appid
-      this.form.isGis = e.isGis
+      this.formShare.appid = e.appid;
+      this.form.isGis = e.isGis;
+    },
+    // 关闭分享dialog
+    handleClose(done) {
+      done();
+      this.isShow = 1;
+      this.formShare.days = "999";
+      // this.$confirm("确认关闭？")
+      //   .then((_) => {})
+      //   .catch((_) => {});
+    },
+    //确定分享
+    confirm() {
+      this.$common.openLoading("正在加载中....");
+      getWebUrl({
+        appid: this.formShare.appid,
+        days: this.formShare.days,
+        userid: Getuserid(),
+      })
+        .then((res) => {
+          if (res.data.code === 0) {
+            this.isShow = 2;
+            this.formShare.qrurl = res.data.data.qrurl;
+            this.formShare.webShareUrl = res.data.data.webShareUrl
+            this.$message.success(res.data.message);
+          } else {
+            this.$message.error(res.data.message);
+          }
+          this.$common.closeLoading();
+        })
+        .catch((err) => {
+          this.$message.error("分享失败,请重新选择");
+          this.$common.closeLoading();
+          this.dialogFormVisibleOne = false;
+        });
+    },
+    //复制链接成功
+    onCopyUrl: function (e) {
+      this.$message.success("链接复制成功！");
+    },
+    //复制链接失败
+    onErrorUrl: function (e) {
+      this.$message.error("复制失败！");
+    },
+    // 复制二维码图片
+    async copyImg() {
+      // 剪切板只有image/png格式才行，其他图片格式报错
+      urlToblob(this.formShare.qrurl,async (blob)=>{
+        const item = new ClipboardItem({
+          [blob.type]: blob
+        })
+        navigator.clipboard.write([item]).then(res=>{
+          this.$message.success("二维码复制成功！");
+        },err=>{
+          this.$message.error("二维码复制失败！",err);
+        })
+      })
     },
     
     visibleChange(e) {
@@ -1280,7 +1336,7 @@ export default {
             locale: this.$i18n.locale,
             appType: e.appType,
             token: res.data.data.token,
-            weatherBin: e.isGis,  // 用于控制 gis模型  时  渲染环境 图标隐藏
+            isGis: e.isGis,  // 用于控制 gis模型  时  渲染环境 图标隐藏
             reserveId: e.reserveId || '', // 有reserveId就是预启动项目 没有就不是
             userId:Getuserid()
           };
