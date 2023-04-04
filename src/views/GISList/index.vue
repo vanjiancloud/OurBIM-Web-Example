@@ -168,7 +168,7 @@ export default {
                         this.getList()
                     }
                 },0)
-            },3000)
+            },10000)
         },
         async getType(){
             this.layerTypeList = (await getDict('layerType')).data
