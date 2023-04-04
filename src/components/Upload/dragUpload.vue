@@ -46,6 +46,11 @@ export default {
             // default: 'application/x-zip-compressed,application/zip,application/x-rar-compressed,application/x-rar-compressed,application/x-7z-compressed'
             default: '.zip,.zipx,.rar,.rar4,.7z'
         },
+        // vuex中缓存的上传类型key
+        numType:{
+            type: String,
+            default: ''
+        }
     },
     data() {
         return {
@@ -95,6 +100,12 @@ export default {
                 message: "正在上传，上传过程请勿关闭或刷新页面!",
                 type: "warning",
             });
+            if(this.numType){
+                this.$store.commit("changeState", {
+                    key: this.numType,
+                    value: ++this.$store.state[this.numType],
+                });
+            }
             // 接口不是统一的，emit回去调用
             this.loading = true;
             this.$emit("getFile", param.file, (data) => {
@@ -109,17 +120,30 @@ export default {
                     url: data.url,
                     data: formData,
                     onUploadProgress: (progressEvent) => {
+                        if(!progressEvent) return
                         let percent = ((progressEvent.loaded / progressEvent.total) * 100) | 0;
                         param.onProgress({ percent });
                     },
                 }).then((res) => {
                     // 成功状态
+                    if(this.numType){
+                        this.$store.commit("changeState", {
+                            key: this.numType,
+                            value: --this.$store.state[this.numType],
+                        });
+                    }
                     this.loading = false;
                     param.onSuccess(res);
                     this.$emit("onSuccess", res.data)
                     this.hide();
                 }).catch(() => {
                     // 失败状态
+                    if(this.numType){
+                        this.$store.commit("changeState", {
+                            key: this.numType,
+                            value: --this.$store.state[this.numType],
+                        });
+                    }
                     this.loading = false;
                     param.onError();
                 });

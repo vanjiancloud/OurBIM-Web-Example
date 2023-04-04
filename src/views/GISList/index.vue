@@ -4,8 +4,11 @@
         <div class="boxHeader">
             <div class="boxHeaderTitle">您共有<span>{{total}}</span>个项目</div>
             <div>
-                <el-button icon="el-icon-plus" class="bluePlainBtn" plain type="primary" @click="AddGISProgect('添加')">新建GIS服务项目</el-button>
-                <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="uploadGIS">上传GIS数据</el-button>
+                <el-button style="margin-right:20px" icon="el-icon-plus" class="bluePlainBtn" plain type="primary" @click="AddGISProgect('添加')">新建GIS服务项目</el-button>
+                <!-- 上传GIS数据的关闭弹窗后显示正在上传的个数  -->
+                <el-badge :value="uploadGISNum" :hidden="!uploadGISNum">
+                    <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="uploadGIS">上传GIS数据</el-button>
+                </el-badge>
             </div>
         </div>
         <el-table :data="tableData">
@@ -45,7 +48,7 @@
         <!-- 新建GIS服务项目 -->
         <DialogsProject ref="DialogsProject" />
         <!-- 上传GIS数据 -->
-        <DragUpload ref="DragUpload" :limit="1" @open="layerType=null" @getFile="getFileDrag" @onSuccess="getList" @beforeUpload="beforeUpload">
+        <DragUpload ref="DragUpload" :limit="1" numType="uploadGISNum" @getFile="getFileDrag" @onSuccess="getList" @beforeUpload="beforeUpload">
             <template v-slot:append>
                 <el-form :model="form" :rules="rules" ref="form" label-width="130px">
                     <el-form-item label="图层类型：" prop="layerType">
@@ -137,16 +140,37 @@ export default {
                     }
                 ],
             },
+            timer: null //轮询
         };
     },
     watch: {},
-    computed: {},
+    computed: {
+        uploadGISNum() {
+            return this.$store.state.uploadGISNum;
+        },
+    },
     created() {},
     mounted() {
         this.getList();
         this.getType()
+        this.setTime()
+    },
+    destroyed() {
+        window.clearInterval(this.timer)
     },
     methods: {
+        // 轮询  删除中和发布中才轮询
+        setTime(){
+            this.timer = window.setInterval(() => {
+                setTimeout(() => {
+                    let res = this.tableData.find(e=>[1,4].includes(e.status))
+                    console.log('🚀🚀🚀',res);
+                    if(res){
+                        this.getList()
+                    }
+                },0)
+            },3000)
+        },
         async getType(){
             this.layerTypeList = (await getDict('layerType')).data
         },

@@ -329,7 +329,7 @@
           <el-form-item
             label="链接GIS数据服务："
             label-width="110px"
-            v-if="form.isGis==='true'"
+            v-if="value2==='GIS'"
           >
             <el-card class="box-card">
               <div v-for="(item, index) in editShowGisServeData" class="gis-serve-box" :key="item.gisId">
@@ -900,7 +900,7 @@ export default {
         if (this.timerFlag) {
           this.getAllModelList()
         }
-      }, 2500)
+      }, 30000)
     },
 
     // 分页
@@ -1046,6 +1046,7 @@ export default {
     edit(e) {
       this.editShowGisInfoData = []
       this.editShowGisServeData = []
+      this.selectGisList = []
       // 将添加模型按钮显示出来
       this.modelListFlag = true
 
