@@ -38,6 +38,26 @@
             </el-table-column>
           </el-table>
         </el-form-item>
+        <el-form-item label="GIS信息：" required v-if="form.layerType==='3dtiles'">
+            <el-col :span="7">
+                <el-form-item prop="longitude">
+                    <el-input v-model="form.longitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:4}"></el-input>
+                </el-form-item>
+            </el-col>
+            <el-col class="GISMark" :span="1">°</el-col>
+            <el-col :span="7">
+                <el-form-item prop="latitude">
+                    <el-input v-model="form.latitude" placeholder="纬度" v-only-number="{min:-90,max:90,precision:4}"></el-input>
+                </el-form-item>
+            </el-col>
+            <el-col class="GISMark" :span="1">°</el-col>
+            <el-col :span="7">
+                <el-form-item prop="altitude">
+                    <el-input v-model="form.altitude" placeholder="海拔高度"></el-input>
+                </el-form-item>
+            </el-col>
+            <el-col class="GISMark" :span="1">m</el-col>
+        </el-form-item>
         <el-form-item label="最大并发数：" v-if="title==='编辑'">
           <el-input v-model="form.maxInstance" v-only-number="{min:0,precision:0}" placeholder="请输入"></el-input>
         </el-form-item>
