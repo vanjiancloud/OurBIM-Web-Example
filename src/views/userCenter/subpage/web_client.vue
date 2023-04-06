@@ -239,12 +239,22 @@
                               <i class="el-icon-arrow-down plusIcon" v-if="!color1"></i>
                             </div>
                         </div>
-                        <div class="yanse">
-                            <div class="yanseName">贴图</div>
-                            <div class="yanseBody stickPic" @click="photoStore" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === true}">
-                              <img v-if="matParam.texturesList[texturesListIndex]&&matParam.texturesList[texturesListIndex].paramValue" :src="matParam.texturesList[texturesListIndex]&&matParam.texturesList[texturesListIndex].paramValue" alt="" :style="{'width':'100%','height':'100%'}">
-                              <i v-else class="el-icon-plus plusIcon"></i>
-                              <div class="deleteIcon" @click.stop="deleteStickPic" v-if="matParam.texturesList[texturesListIndex]&&matParam.texturesList[texturesListIndex].paramValue"><i class="el-icon-delete"></i></div>
+                        <div style="display:flex">                    
+                            <div class="yanse">
+                                <div class="yanseName">基础颜色贴图</div>
+                                <div class="yanseBody stickPic" @click="photoStore('基础')" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === '基础'}">
+                                  <img v-if="getTextType('BaseColorMap')" :src="getTextType('BaseColorMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
+                                  <i v-else class="el-icon-plus plusIcon"></i>
+                                  <div class="deleteIcon" @click.stop="deleteStickPic('BaseColorMap')" v-if="getTextType('BaseColorMap').paramValue"><i class="el-icon-delete"></i></div>
+                                </div>
+                            </div>
+                            <div class="yanse">
+                                <div class="yanseName">法线贴图</div>
+                                <div class="yanseBody stickPic" @click="photoStore('法线')" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === '法线'}">
+                                  <img v-if="getTextType('NormalMap')" :src="getTextType('NormalMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
+                                  <i v-else class="el-icon-plus plusIcon"></i>
+                                  <div class="deleteIcon" @click.stop="deleteStickPic('NormalMap')" v-if="getTextType('NormalMap').paramValue"><i class="el-icon-delete"></i></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -258,7 +268,7 @@
                           <el-collapse-item :title="item.titleName" :name="index">                         
                                 <div
                                   class="editInfoItem"
-                                  v-for="listItem in item.nameInfo"
+                                  v-for="(listItem, index1) in item.nameInfo"
                                   :key="listItem.index"
                                 >  
                                 <!-- enableEdit=false不显示不可编辑,目前看到json里面返回的显示没有这个字段 -->
@@ -279,13 +289,15 @@
                                   <div class="editInfoList" v-if="listItem.label !== '等比缩放'">
                                       <div class="editInfoListName">{{ listItem.label }}</div>
                                       <div class="editInfoListNum">
-                                        <el-slider @change="materialInfoChange" v-model="listItem.paramValue"
+                                        <el-slider @change="materialSliderChange(listItem.paramValue1,index,index1)" v-model="listItem.paramValue1"
+                                        input-size="mini"
                                         :max="Number(listItem.max)"
                                         :min="Number(listItem.min)"
                                         :step="(listItem.label==='横向偏移' || listItem.label==='纵向偏移' || listItem.label==='透明度') ? 0.1 :((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 0.01 : 1)"
                                         ></el-slider>
+                                        <input type="number" v-model.trim.number="listItem.paramValue" style="width:70px;height: 23px;" @change="materialInfoChange()" />
                                       </div>
-                                      <div class="editInfoListPercent">{{listItem.paramValue + (listItem.label==='角度' ? '°' :  '')}}</div>
+                                      <div class="editInfoListPercent">{{listItem.label==='角度' ? '°' :  ''}}</div>
                                   </div>
                                 </template>
                                 </div>
@@ -312,26 +324,6 @@
                 <div class="middleUploadimg">
                      <el-tabs v-model="activeNamePic" type="card" @tab-click="texureClick">
                         <el-tab-pane label="公共库" name="first">
-                            <!-- <el-collapse
-                              accordion
-                              v-for="(item,index) in picMaterInfo"
-                              :key="item.id"
-                              class=""
-                            >
-                              <el-collapse-item :title="item.titleName" :name="index">   
-                                 <div class="flexDiv">          
-                                    <div
-                                      v-for="listItem in item.nameInfo"
-                                      :key="listItem.index"
-                                      class="flexDivInde"
-                                      :style="{'width':'60px','height':'76px'}"
-                                    >           
-                                      <div :style="{'width':'60px','height':'60px'}"><img :src="listItem.img" alt="" :style="{'width':'100%','height':'100%'}"></div>
-                                      <div class="textureTitle"><span>hahahha</span></div>
-                                    </div>
-                                  </div>  
-                              </el-collapse-item>
-                            </el-collapse> -->
                         </el-tab-pane>
                         <el-tab-pane label="个人库" name="second">
                           <el-collapse
@@ -618,7 +610,7 @@ export default {
       materilCheckList:[],  // 材质编辑底部复选框 （材质库）
       activeNamePic:'first', // 贴图弹框的 el-tabs  （材质库）
       color1:null,   // 材质编辑 颜色选择器  （材质库）
-      photoStoreFlag:false, // 贴图库显示隐藏   （材质库）
+      photoStoreFlag:'', // 贴图库显示隐藏   （材质库）
       addViewUpImgPost:false, // 上传贴图弹框
       projectMaterList:[],  // 项目材质列表
       exchangeData:{      // 指令更换材质的参数
@@ -628,7 +620,7 @@ export default {
         comType:''
       },
       // 贴图库 公共库的信息
-      picMaterInfo:[],
+      errorImg:'this.src="' + require('@/assets/failed.png') + '"',
       personalPicMaterInfo:[], // 贴图库 个人库
       btnUpTexure:false, // 控制上传按钮
       personalTexureGroup:[], // 贴图 个人库分组
@@ -645,7 +637,7 @@ export default {
       comPakId:'', // 材质编辑点击的构件的pakId
       pakAndAppid:[], 
       weatherDrawer:false, // 天气抽屉
-      texturesListIndex:0,//贴图
+      drawerLeftSize: 300, // 抽屉宽度
     };
   },
 
@@ -700,7 +692,7 @@ export default {
         this.propsProgress.loadData += 5;
       }
      },300);                
-    this.lockView = this.$route.query.weatherBin; 
+    this.lockView = this.$route.query.isGis || this.$route.query.weatherBin; 
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.setOrderList();
     this.appId = this.$route.query.appid;
@@ -2694,8 +2686,8 @@ export default {
       }
     },
     // 点击贴图 (材质库)
-    photoStore(){
-      this.photoStoreFlag = !this.photoStoreFlag;
+    photoStore(type){
+      this.photoStoreFlag = type
     },
     spreadCircle(arr,str){
       let open = [];
@@ -2710,7 +2702,7 @@ export default {
     },
     // 点击贴图库 取消 (材质库)
     canclePhotostore(){
-      this.photoStoreFlag = false;
+      this.photoStoreFlag = '';
     },
     // 点击上传贴图
     postUploadPic(){
@@ -2823,9 +2815,13 @@ export default {
         this.getPersonPhoto();
       }
     },
+    // 获取贴图数据
+    getTextType(type){
+        let res = this.matParam.texturesList.filter(e=>{return e.paramName===type})
+        return res.length&&res[0]
+    },
     // 获取材质信息
     getMaterialInfomation(e,str){
-        console.log('🚀🚀🚀',e,str);
       if(e === 'RESET'){  // 重置过的材质就不要再获取材质信息了
         this.middleMaterInfo.forEach(mat=>{
           mat.nameInfo = [];
@@ -2839,10 +2835,10 @@ export default {
       CHAILIAOAPI.GETMATERIALBYMATID(params).then(res=>{
         if(res.data.code === 0){
           this.matParam = JSON.parse(res.data.data.matParam);
-          this.$set(this.middleMaterInfo[0],'nameInfo',this.strToNumber(this.matParam.textureParamsList,'texture'))
+          // this.materialMatId = res.data.data.matId; // 选中材质编辑的材质的matId
+          this.$set(this.middleMaterInfo[0],'nameInfo',this.strToNumber(this.matParam.textureParamsList),'texture')
           this.$set(this.middleMaterInfo[1],'nameInfo',this.strToNumber(this.matParam.baseParamsList))
           this.color1 = this.arrToRgb(this.matParam.colorList.length>0 ? this.matParam.colorList[0].paramValue : []);
-          this.texturesListIndex = this.matParam.texturesList.findIndex(e=>{return e.paramName==='BaseColorMap'})
           this.spreadCircle(this.middleMaterInfo,'0'); // 折叠面板
         //   if(this.activePub !== ''){
         //     this.addMaterialToUser(res.data.data.matId); // 添加材质到用户库
@@ -2869,7 +2865,7 @@ export default {
         if(color){
             const str = color.slice(5)
             const str1 = str.slice(0, str.length - 1)
-            arr = str1.split(',')
+            arr = str1.replace(/\s*/g,"").split(',')
         }
         return arr
     },
@@ -2878,12 +2874,20 @@ export default {
       let params = {
         taskId:this.taskId,
         appId: this.pakidToAppid(this.comPakId),
-        baseColorTextureId:this.activeTexTurePerson,
+        baseColorTextureId:'',
         normalMapTextureId:''
       }
       let colorList = JSON.parse(JSON.stringify(this.matParam.colorList)) || []
       if(colorList.length){
-        colorList[0].paramValue = this.rgbaToArr(this.color1)
+        try {
+            // 不同材质不同取值
+            colorList.forEach(e=>{
+                if(e.paramName==='BaseColor' || e.paramName==='Color' || e.paramName==='GlowColor' || e.paramName==='BaseColor1' || e.paramName==='BaseColor2'){
+                    e.paramValue = this.rgbaToArr(this.color1)
+                    throw new Error()
+                }
+            })           
+        } catch (error) {}
       }
       let temp = [
         {
@@ -2893,7 +2897,7 @@ export default {
           {
             matId:this.getActiveMatid(this.activeMater),
             ...this.matParam,
-            colorList
+            colorList,
           }
         }
       ]
@@ -2914,7 +2918,8 @@ export default {
         userId:userId || 'travels',
         matId:id,
         isPublic: str ==='textureChange' ? false : true,
-        baseColorTextureId:this.activeTexTurePerson
+        baseColorTextureId:this.photoStoreFlag==='基础'?this.activeTexTurePerson:'',
+        normalMapTextureId:this.photoStoreFlag==='法线'?this.activeTexTurePerson:''
       }
       CHAILIAOAPI.ADDMATERIALFORUSER(params,JSON.stringify(this.matParam)).then((res)=>{
             if(res.data.code === 0){
@@ -2923,13 +2928,18 @@ export default {
       }).catch(()=>{})
     },
     // 重置材质贴图
-    deleteStickPic(){
+    deleteStickPic(type){
+        this.photoStoreFlag = type
       this.$confirm('您要删除此贴图, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(async () => {
-          this.matParam.texturesList[this.texturesListIndex].paramValue = ''
+            this.matParam.texturesList.forEach(e=>{
+                if(e.paramName === type){
+                    e.paramValue = ''
+                }
+            })
           this.$forceUpdate()
           this.updateMateInfo('reset');
         }).catch(() => {
@@ -2991,7 +3001,6 @@ export default {
         }else{
           this.activeTexTurePerson = e.textureId;
           this.addMaterialToUser(this.getActiveMatid(this.activeMater),'textureChange');// 添加贴图到用户
-          // this.updateMateInfo();
         }
     },
     // 材质编辑 颜色改变
@@ -3017,6 +3026,7 @@ export default {
         arr.forEach(item=>{
           if(item.label !== '等比缩放'){
             item.paramValue = Number(item.paramValue); // 字符串转数值
+            this.$set(item, 'paramValue1', item.paramValue)
           }else{
             flag = item.paramValue; // 拿到等比缩放的值
           }
@@ -3077,8 +3087,12 @@ export default {
       return componentAppId;
     },
     // 材质信息改变
+    materialSliderChange(val,prI,i){
+        this.middleMaterInfo[prI].nameInfo[i].paramValue = val
+        this.updateMateInfo();
+    },
     materialInfoChange(){
-      this.updateMateInfo();
+        this.updateMateInfo();
     },
     // 材质库 相关方法 end --------
     // 关闭天气系统抽屉
@@ -3633,22 +3647,22 @@ export default {
         }
         .materEditMain{
           padding-top: 1vh;
-          // height: 23vh;
           .topEditMain{
             width: 100%;
-            // height: 4vh;
             padding-left: 20px;
             margin-bottom: 2vh;
-            display: flex;
+            // display: flex;
             .yanse{
-              width: 80px;
+            //   width: 80px;
               height: 100%;
               display: flex;
-              justify-content: space-between;
+            //   justify-content: space-between;
               margin-right: 32px;
+              margin-top: 10px;
               .yanseName{
                 font-size: 14px;
                 color: #ffff;
+                margin-right: 10px;
               }
               .yanseBody{
                 position: relative;
@@ -3727,6 +3741,11 @@ export default {
               }
               .editInfoListNum{
                 width: 200px;
+                display: flex;
+                /deep/ .el-slider{
+                    flex: 1;
+                    margin-right: 15px;
+                }
                 ::v-deep .el-slider__runway{
                   top: -13px;
                   height: 20px;
@@ -3747,6 +3766,29 @@ export default {
                   height: 18px;
                   border: 1px solid #646464;
                   background-color: #646464;
+                }
+                /deep/ .el-input-number--mini {
+                    width: 60px;
+                    margin: 0 3px 0 6px;
+
+                    .el-input__inner {
+                        padding-right: 14px;
+                        padding-left: 5px;
+                    }
+
+                    .el-input-number__decrease,
+                    .el-input-number__increase {
+                        width: 12px;
+                        background: none;
+                        border: none;
+                        color: #646464;
+                        right: 4px;
+                    }
+                }
+                /deep/ .el-slider{
+                    .el-slider__runway.show-input{
+                        margin-right: 75px;
+                    }
                 }
               }
               .editInfoListPercent{

@@ -3,7 +3,7 @@
       <div class="weatherClassify">
           <div class="selectGroup">
               <el-radio-group v-model="radio" class="singleSelect" @input="radioChange">
-                  <el-radio :label="0" class="envirTemplate" v-if="weatherBin==='false'">
+                  <el-radio :label="0" class="envirTemplate" v-if="!isGis">
                       <div class="templateBox">
                           <div class="templateName">环境模板</div>
                           <div class="templateInfo" v-if="radio === 0">
@@ -18,7 +18,7 @@
                           </div>
                       </div>
                   </el-radio>
-                  <el-radio :label="1" class="solidBackground" v-if="weatherBin==='false'">
+                  <el-radio :label="1" class="solidBackground" v-if="!isGis">
                       <div class="boxSolidBackground">
                           <div class="solidName">纯色背景</div>
                           <div class="colorBox" v-if="radio === 1">
@@ -337,23 +337,23 @@
               rainSnow:'0', // 雨雪比例
               messageFlag:true,
               onlyTwoIds:null, // 参数化天气 和 轮廓的id
-              weatherBin:'false',
+              isGis: false,
           }
       },
       created(){
           this.getWeatherList();
-          this.weatherBin = this.$route.query.weatherBin
+          this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
       },
       mounted(){
           this.changeColor(this.color1);
-          if(this.weatherBin === 'true'){
+          if(this.isGis){
            document.querySelector('.weatherClassify').style.height = '200px';
           }
       },
       methods:{
           radioChange(val){
               if(val == 2){
-                if(this.weatherBin !== 'true'){
+                if(this.isGis){
                     this.changeWea(this.getTwoIds('parameter'));
                 }else{
                     this.getWeatherParams('need');
@@ -382,7 +382,7 @@
                       this.lessOptions = res.data.data.filter(item=>{
                           return (item.weatherName === '参数化天气' || item.weatherName === '轮廓线-可变背景色') ? false : true
                       })
-                      if(this.weatherBin !== 'true'){
+                      if(!this.isGis){
                           this.getWeatherId(); // 获取当前天气
                       }else{
                             this.radio = 2

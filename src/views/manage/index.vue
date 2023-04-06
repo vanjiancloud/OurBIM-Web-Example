@@ -1160,7 +1160,7 @@ export default {
           if (res.data.code === 0) {
             this.isShow = 2;
             this.formShare.qrurl = res.data.data.qrurl;
-            this.formShare.webShareUrl = res.data.data.webShareUrl + '&weatherBin='+ this.form.isGis  + '&userId=' + Getuserid();
+            this.formShare.webShareUrl = res.data.data.webShareUrl
             this.$message.success(res.data.message);
           } else {
             this.$message.error(res.data.message);
@@ -1488,7 +1488,7 @@ export default {
             locale: this.$i18n.locale,
             appType: e.appType,
             token: res.data.data.token,
-            weatherBin: e.isGis,  // 用于控制 gis模型  时  渲染环境 图标隐藏
+            isGis: e.isGis,  // 用于控制 gis模型  时  渲染环境 图标隐藏
             reserveId: e.reserveId || '', // 有reserveId就是预启动项目 没有就不是
             userId:Getuserid()
           };
