@@ -27,7 +27,7 @@
                 <el-col class="GISMark" :span="1">°</el-col>
                 <el-col :span="7">
                     <el-form-item prop="altitude">
-                        <el-input v-model="form.altitude" placeholder="海拔高度"></el-input>
+                        <el-input type="number" v-model.number="form.altitude" placeholder="海拔高度"></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col class="GISMark" :span="1">m</el-col>
@@ -124,8 +124,8 @@ export default {
                 let data = this.form
                 // 3dtiles这个类型的图层要传经纬度
                 if(this.form.layerType!=='3dtiles'){
-                    let { gisServerName, layerType, fileUrl } = this.form
-                    data = { gisServerName, layerType, fileUrl }
+                    let { gisServerName, layerType, fileUrl, index } = this.form
+                    data = { gisServerName, layerType, fileUrl, index }
                 }
                 this.$emit('onLayerSuccess', data)
                 this.hide()

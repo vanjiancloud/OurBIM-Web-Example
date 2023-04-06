@@ -1108,11 +1108,16 @@ export default {
 
       let data = JSON.parse(JSON.stringify(e))
       this.form = data
-      this.form.name = data.appName;
-      this.form.appid = data.appid;
-      this.form.modelIds = data.combineId;
-      this.form.gisCoordinateType = data.gisCoordinateType || 'WGS-84';
-      this.form.startNum = data.param || '';
+    //   this.form.name = data.appName;
+    //   this.form.appid = data.appid;
+    //   this.form.modelIds = data.combineId;
+    //   this.form.gisCoordinateType = data.gisCoordinateType || 'WGS-84';
+    //   this.form.startNum = data.param || '';
+      this.$set(this.form,'name',data.appName)
+      this.$set(this.form,'appid',data.appid)
+      this.$set(this.form,'modelIds',data.combineId)
+      this.$set(this.form,'gisCoordinateType',data.gisCoordinateType || 'WGS-84')
+      this.$set(this.form,'startNum',data.param || '')
       if (e.isReserve === 'true') {
         this.radioStart = 1;
         this.form.startVal = true;
