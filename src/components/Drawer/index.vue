@@ -6,9 +6,12 @@
             <i v-else :class="{'el-icon-arrow-right':isShow,'el-icon-arrow-left':!isShow}"></i>
         </div>
 
-        <el-drawer :title="title" :visible.sync="drawer" :direction="direction" :modal="false" :wrapperClosable="false" :size="300" @close="close" class="newDrawer" :style="{'width':isShow?'300px':'0px'}">
+        <div class="drawerTitle">{{ title }}<i class="el-icon-close" @click="close"></i></div>
+
+
+        <!-- <el-drawer :title="title" :visible.sync="drawer" :direction="direction" :modal="false" :wrapperClosable="false" :size="300" @close="close" class="newDrawer" :style="{'width':isShow?'300px':'0px'}">
             <slot name="drawer" :isShow="isShow" :drawer="drawer"></slot>
-        </el-drawer>
+        </el-drawer> -->
 
         <!-- 其他内容避免弹窗获取不到父级 -->
         <slot name="append" :isShow="isShow" :drawer="drawer"></slot>
@@ -79,7 +82,7 @@ export default {
     height: 100%;
     position: fixed;
     top: 0;
-    animation: ltr-drawer-in 0.3s 1ms;
+    background: rgba(16,16,16,0.7);
     .isShow {
         width: 20px;
         height: 64px;
@@ -95,19 +98,35 @@ export default {
         line-height: 64px;
         text-align: center;
     }
+    .drawerTitle{
+        font-size: 16px;
+        color: #FFFFFF;
+        font-family: PingFangSC-Regular, PingFang SC;
+        padding: 16px 40px 16px 16px;
+        word-break: break-all;
+        position: relative;
+        border-bottom: 1px solid #464646;
+        i{
+            color: #FFFFFF;
+            position: absolute;
+            right: 16px;
+            top: 20px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    }
 }
 .drawerBoxLeft{
-    animation: fadeRight 0.3s 1ms;
+    animation: ltr-drawer-in 0.3s 1ms;
     .isShow {
         right: -20px;
         left: initial;
         border-radius: 0px 14px 14px 0px;
-        animation: fadeRight 0.3s 1ms;
     }
 }
 .drawerBoxRight {
     right: 0;
-    animation: fadeLeft 0.3s 1ms;
+    animation: rtl-drawer-in 0.3s 1ms;
     /deep/ .el-drawer__wrapper {
         left: initial;
     }
@@ -115,12 +134,11 @@ export default {
         left: -20px;
         right: initial;
         border-radius: 14px 0 0 14px;
-        animation: fadeLeft 0.3s 1ms;
     }
 }
 // 公共样式
 .newDrawer {
-    width: 300px;
+    width: 100%;
     /deep/.el-drawer {
         background: rgba(16, 16, 16, 0.7);
         .el-drawer__header {
