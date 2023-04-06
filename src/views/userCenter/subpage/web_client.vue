@@ -450,7 +450,7 @@
                                       </div>
                                       <div class="editInfoListPercent"></div>
                                   </div>       
-                                  <div class="editInfoList" v-if="listItem.label !== '等比缩放'">
+                                  <div class="editInfoList" v-if="listItem.label !== '等比缩放' && ((filterTexturesList('等比缩放')==='1'&&listItem.label!=='纵向缩放'&&listItem.label!=='横向缩放') || (filterTexturesList('等比缩放')==='0'))">
                                       <div class="editInfoListName">{{ listItem.label }}</div>
                                       <div class="editInfoListNum">
                                         <el-slider @change="materialSliderChange(listItem.paramValue1,index,index1)" v-model="listItem.paramValue1"
@@ -2949,7 +2949,7 @@ export default {
       if(e._props.name === 'second'){
         const {userId} = this.$route.query;
         let params = {
-          userId: userId
+          userId: userId || JSON.parse(sessionStorage.getItem("userid"))
         }
         MODELAPI.GETALLCOM(params).then((res)=>{
           if(res.data.code === 0){
@@ -3099,7 +3099,7 @@ export default {
     getPersonPhoto(str){
       const {userId} = this.$route.query;
       let params = {
-          userId:userId
+          userId:userId || JSON.parse(sessionStorage.getItem("userid"))
       }
       CHAILIAOAPI.GETMATERIALALLTEXTUREINFO(params).then((res)=>{
           if(res.data.code === 0){
@@ -3122,7 +3122,7 @@ export default {
     createTextureGroup(){
       const {userId} = this.$route.query;
       let params = {
-        userId:userId,
+        userId:userId || JSON.parse(sessionStorage.getItem("userid")),
         groupName:'我的分组'
       }
       CHAILIAOAPI.CREATEMATERIALTEXTUREGROUP(params).then(res=>{
@@ -3152,6 +3152,10 @@ export default {
     getTextType(type){
         let res = this.matParam.texturesList.filter(e=>{return e.paramName===type})
         return res.length&&res[0]
+    },
+    filterTexturesList(type){
+        let res = this.middleMaterInfo[0].nameInfo.filter(e=>{return e.label===type})
+        return res.length&&res[0].paramValue
     },
     // 获取材质信息
     getMaterialInfomation(e,str){
@@ -3249,7 +3253,7 @@ export default {
     addMaterialToUser(id,str){
       const {userId} = this.$route.query;
       let params = {
-        userId:userId || 'travels',
+        userId:userId || JSON.parse(sessionStorage.getItem("userid")) || 'travels',
         matId:id,
         isPublic: str ==='textureChange' ? false : true,
         baseColorTextureId:this.photoStoreFlag==='基础'?this.activeTexTurePerson:'',
