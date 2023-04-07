@@ -6,15 +6,10 @@
             <i v-else :class="{'el-icon-arrow-right':isShow,'el-icon-arrow-left':!isShow}"></i>
         </div>
 
-        <div class="drawerTitle">{{ title }}<i class="el-icon-close" @click="close"></i></div>
-
-
-        <!-- <el-drawer :title="title" :visible.sync="drawer" :direction="direction" :modal="false" :wrapperClosable="false" :size="300" @close="close" class="newDrawer" :style="{'width':isShow?'300px':'0px'}">
-            <slot name="drawer" :isShow="isShow" :drawer="drawer"></slot>
-        </el-drawer> -->
-
-        <!-- 其他内容避免弹窗获取不到父级 -->
-        <slot name="append" :isShow="isShow" :drawer="drawer"></slot>
+        <div class="drawerContent">           
+            <div class="drawerTitle">{{ title }}<i class="el-icon-close" @click="close"></i></div>
+            <slot :isShow="isShow" :drawer="drawer"></slot>
+        </div>
     </div>
 </template>
 
@@ -29,12 +24,12 @@ export default {
         title: {
             type: String,
             default: '标题'
-        }
+        },
     },
     data() {
         return {
             isShow: true, //展开和收缩
-            drawer: false
+            drawer: false,
         }
     },
     watch: {},
@@ -48,34 +43,34 @@ export default {
         show() {
             this.drawer = true
         },
-        close() {
+        hide(){
             this.drawer = false
+            console.log('🚀🚀🚀',this.drawer);
+        },
+        close() {
+            this.hide()
+            this.$emit('onClose')
         }
     }
 }
 </script>
 <style lang="less" scoped>
-@keyframes fadeLeft {
-    0% {
-        transform: translateX(300px);
-    }
-    100% {
-        transform: translateX(0);
-    }
-}
-@keyframes fadeRight {
-    0% {
-        transform: translateX(-300px);
-    }
-    100% {
-        transform: translateX(0);
+.drawerBoxLeft{
+    animation: ltr-drawer-in 0.6s;
+    .isShow {
+        right: -20px;
+        left: initial;
+        border-radius: 0px 14px 14px 0px!important;
     }
 }
-.left {
-    animation: ltr-drawer-in 0.3s 1ms;
-}
-.right {
-    animation: rtl-drawer-in 0.3s 1ms;
+.drawerBoxRight {
+    right: 0;
+    animation: rtl-drawer-in 0.6s;
+    .isShow {
+        left: -20px;
+        right: initial;
+        border-radius: 14px 0 0 14px!important;
+    }
 }
 .drawerBox {
     width: 300px;
@@ -110,85 +105,18 @@ export default {
             color: #FFFFFF;
             position: absolute;
             right: 16px;
-            top: 20px;
+            top: 17px;
             font-size: 20px;
             cursor: pointer;
         }
     }
-}
-.drawerBoxLeft{
-    animation: ltr-drawer-in 0.3s 1ms;
-    .isShow {
-        right: -20px;
-        left: initial;
-        border-radius: 0px 14px 14px 0px;
+    div {
+        box-sizing: border-box;
+    }
+    .drawerContent{
+        width: 100%;
+        overflow: hidden;
     }
 }
-.drawerBoxRight {
-    right: 0;
-    animation: rtl-drawer-in 0.3s 1ms;
-    /deep/ .el-drawer__wrapper {
-        left: initial;
-    }
-    .isShow {
-        left: -20px;
-        right: initial;
-        border-radius: 14px 0 0 14px;
-    }
-}
-// 公共样式
-.newDrawer {
-    width: 100%;
-    /deep/.el-drawer {
-        background: rgba(16, 16, 16, 0.7);
-        .el-drawer__header {
-            font-family: PingFangSC-Regular, PingFang SC;
-            font-weight: 400;
-            color: #ffffff;
-            padding: 16px;
-            margin: 0;
-        }
-    }
 
-    /deep/ .el-input__inner {
-        background: #24262b;
-        color: #ffffff;
-        border: 1px solid #727272;
-    }
-
-    /deep/ .el-input-number--mini {
-        width: 60px;
-        margin: 0 3px 0 6px;
-
-        .el-input__inner {
-            padding-right: 14px;
-            padding-left: 5px;
-        }
-
-        .el-input-number__decrease,
-        .el-input-number__increase {
-            width: 12px;
-            background: none;
-            border: none;
-            color: #ffffff;
-            right: 4px;
-        }
-    }
-    /deep/ .el-textarea__inner {
-        background: #24262b;
-        border: 1px solid #727272;
-        color: #ffffff;
-    }
-    /deep/ .el-checkbox {
-        color: #ffffff;
-    }
-    /deep/ .el-checkbox__input.is-checked + .el-checkbox__label {
-        color: #20c6ff;
-    }
-    /deep/ .el-checkbox__input.is-checked .el-checkbox__inner,
-    /deep/ .el-checkbox__input.is-indeterminate .el-checkbox__inner {
-        background-color: #20c6ff;
-        border-color: #20c6ff;
-    }
-}
 </style>

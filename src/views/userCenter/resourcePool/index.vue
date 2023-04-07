@@ -2,8 +2,8 @@
     同一种类型接口返回的数据格式全部不一样。。。。。。。
 -->
 <template>
-    <Drawer ref="Drawer" title="资源库">
-        <template slot="drawer">
+    <Drawer ref="Drawer" title="资源库" @onClose="close">
+        <template v-slot="{ drawer }">
             <Tab v-model="levelName.tab1Index" v-show="levelName.level ===1" :data="tabList" @onTab="onTab" />
             <!-- 点击到二级构件 -->
             <div class="level2" v-if="levelName.level ===2">
@@ -34,8 +34,6 @@
             </div>
             <!-- 二级才显示分页 -->
             <Pagination v-if="levelName.level ===2" class="modelPage" layout="prev, pager, next" :pagerCount="5" :limit.sync="pages.pageSize" :total="contentLevel2List.length" :page="pages.page" @pagination="pagination" />
-        </template>
-        <template #append="{ drawer }">
             <!-- 弹出图标 -->
             <div class="toolList" v-if="drawer">
                 <el-tooltip v-for="(item,index) in toolIcons" :key="index" effect="dark" :content="item.name" placement="bottom">
@@ -47,30 +45,26 @@
             <DialogChartletGroup ref="DialogChartletGroup" />
             <!-- 上传贴图弹框 -->
             <DialogChartlet ref="DialogChartlet" :groupList="contentList[1]"/>
-            <!-- esc提示 -->
-            <EscDialogItem ref="EscDialogItem"/>
         </template>
     </Drawer>
 </template>
 
 <script>
-import CHAILIAOAPI, { getChartletList } from "@/api/material_api";
+import { EventBus } from '@/utils/bus.js'
+import CHAILIAOAPI, { getChartletList, getMaterialByGroup } from "@/api/material_api";
 import MODELAPI from "@/api/model_api";
 import COMPONENTLIBRARY, { addCom } from "@/api/component-library";
 import Tab from "@/components/Tab/index.vue";
 import Pagination from "@/components/Pagination/index.vue";
 import DialogChartletGroup from "./DialogChartletGroup.vue"; // 新建分组弹框
 import DialogChartlet from "./DialogCharlet.vue"; // 上传贴图弹框
-import EscDialogItem from "@/components/web_client/EscDialogItem.vue"; //esc提示
 import Drawer from "@/components/Drawer/index.vue";
 export default {
-    components: { Tab, Pagination, DialogChartletGroup, DialogChartlet, EscDialogItem, Drawer },
+    components: { Tab, Pagination, DialogChartletGroup, DialogChartlet, Drawer },
     props: {
-        taskId: {
-            type: String,
-        },
-        userId: {
-            type: [String, Number],
+        data: {
+            type: Object,
+            default:()=> {}
         },
     },
     data() {
@@ -148,13 +142,19 @@ export default {
             this.$refs.Drawer.show()
             this.content();
         },
-        hide() {
-            // Object.assign(this.$data, this.$options.data());
+        hide(){
+            this.$refs.Drawer.hide()
         },
-        close() {
-            // Object.assign(this.$data, this.$options.data());
-            // this.$parent.closePart(14);
+        close(){
+            EventBus.$emit('eventTool', 'resource')
         },
+        // hide() {
+        //     // Object.assign(this.$data, this.$options.data());
+        // },
+        // close() {
+        //     // Object.assign(this.$data, this.$options.data());
+        //     // this.$parent.closePart(14);
+        // },
         // 点击tab
         onTab(e) {
             this.levelName.tabName = e.name;
@@ -187,8 +187,8 @@ export default {
             this.levelName.level = 1;
         },
         // 点击去二级构件
-        toLevel2(item) {
-            console.log('🚀🚀🚀',item);
+        async toLevel2(item) {
+            console.log('🚀🚀🚀',item,this.levelName.tab1Index);
             // 一级点击   0：构件库   1：材质库   2：贴图库
             if (this.levelName.level === 1) {
                 this.pages = this.$options.data().pages;
@@ -212,22 +212,10 @@ export default {
                         break;
                     case 1:
                         let params = {
-                            taskId: this.taskId,
+                            taskId: this.data.taskId,
                             groupId: item.groupId,
                         };
-                        CHAILIAOAPI.GETOURBIMMATERIALBYGROUP(params).then(
-                            (res) => {
-                                this.contentLevel2List = res.data.data.map(
-                                    (e) => {
-                                        return {
-                                            comName: e.matName,
-                                            comUrl: e.matImgPath,
-                                            ...e,
-                                        };
-                                    }
-                                );
-                            }
-                        );
+                        this.contentLevel2List = (await getMaterialByGroup(params)).data.map(e=>{return{comName: e.matName,comUrl: e.matImgPath,...e,}})
                         break;
                     case 2:
                         this.contentLevel2List = item.rsTextureList.map((e) => {
@@ -254,17 +242,31 @@ export default {
               * this.levelName.tab2Index === 1  个人库
             */
             if (this.levelName.level === 2) {
-                let data = {
-                    taskId: this.taskId,
-                    comName: item.comName,
-                    comId: this.levelName.tab2Index === 1 ? item.ourbimComponentInfo.comId : item.id,
-                    userId: item.userId
+                switch (this.levelName.tab1Index) {
+                    case 0:
+                        let data = {
+                            taskId: this.data.taskId,
+                            comName: item.comName,
+                            comId: this.levelName.tab2Index === 1 ? item.ourbimComponentInfo.comId : item.id,
+                            userId: item.userId
+                        }
+                        addCom(data).then(res=>{
+                            this.$parent.hideTool();//底部栏隐藏
+                            this.$message.success('指令下发成功');
+                        })
+                        break;
+                    case 1:
+                        console.log('🚀🚀🚀',this.data);
+                        if(!this.data.selectPark){
+                            return this.$message.warning('请先选择构件！')
+                        }
+
+                        break;
+                    case 2:
+                        break;
+                    default:
+                        break;
                 }
-                addCom(data).then(res=>{
-                    this.$parent.controllerInfo.tagUiBar = false;//底部栏隐藏
-                    this.$refs.EscDialogItem.changeVisible(true);
-                    this.$message.success('指令下发成功');
-                })
                 return
             }
         },
@@ -272,7 +274,7 @@ export default {
         async content() {
             // 获取公共库
             let publicList = (
-                await COMPONENTLIBRARY.getPublicComList({ taskId: this.taskId })
+                await COMPONENTLIBRARY.getPublicComList({ taskId: this.data.taskId })
             ).data.data;
             publicList =
                 publicList.length &&
@@ -284,8 +286,7 @@ export default {
                     };
                 });
             // 获取个人库
-            const { userId } = this.$route.query;
-            let selfList = (await MODELAPI.GETALLCOM({ userId })).data.data;
+            let selfList = (await MODELAPI.GETALLCOM({ userId: this.data.userId })).data.data;
             selfList =
                 selfList.length &&
                 selfList[0].data.map((e) => {
@@ -300,7 +301,7 @@ export default {
         },
         // 材质库
         getMaterials() {
-            CHAILIAOAPI.GETOURBIMMATERIALGROUP({ taskId: this.taskId }).then(
+            CHAILIAOAPI.GETOURBIMMATERIALGROUP({ taskId: this.data.taskId }).then(
                 (res) => {
                     let publicList = res.data.data.map((e) => {
                         return {
@@ -315,7 +316,7 @@ export default {
         },
         // 获取贴图库
         getChartletList() {
-            getChartletList({ userId: this.$route.query.userId }).then(
+            getChartletList({ userId: this.data.userId }).then(
                 (res) => {
                     let data = res.data.map((e) => {
                         return {
@@ -423,7 +424,7 @@ export default {
     font-family: PingFangSC-Medium, PingFang SC;
     font-weight: 500;
     color: #ffffff;
-    padding: 0 16px 16px 16px;
+    padding: 16px;
     i {
         margin-right: 5px;
         cursor: pointer;

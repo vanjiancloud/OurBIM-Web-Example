@@ -61,14 +61,6 @@ const CHAILIAOAPI = {
             params
         })
     },
-    // 获取OurBIM材质库某分组下的材质
-    GETOURBIMMATERIALBYGROUP: params => {
-        return request({
-            url: '/material/getOurBIMMaterialByGroup',
-            method: 'get',
-            params
-        })
-    },
     // 修改材质参数
     UPDATEMATERIAL: (params, data) => {
         return request({
@@ -209,6 +201,14 @@ export function addChartlet(data) {
             "Content-Type": "multipart/form-data;"
         },
     });
+}
+// 获取OurBIM材质库某分组下的材质
+export function getMaterialByGroup(params) {
+    return newRequest({
+        url: '/material/getOurBIMMaterialByGroup',
+        method: 'get',
+        params
+    })
 }
 
 

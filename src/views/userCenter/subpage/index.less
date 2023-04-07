@@ -10,7 +10,7 @@
     background: #505561;
 }
 
-.newDrawer {
+.drawerBox {
 
     // 输入框
     .search {
@@ -46,5 +46,45 @@
             margin-right: 5px;
             vertical-align: middle;
         }
+    }
+    .el-input__inner {
+        background: #24262b;
+        color: #ffffff;
+        border: 1px solid #727272;
+    }
+
+    .el-input-number--mini {
+        width: 60px;
+        margin: 0 3px 0 6px;
+
+        .el-input__inner {
+            padding-right: 14px;
+            padding-left: 5px;
+        }
+
+        .el-input-number__decrease,
+        .el-input-number__increase {
+            width: 12px;
+            background: none;
+            border: none;
+            color: #ffffff;
+            right: 4px;
+        }
+    }
+    .el-textarea__inner {
+        background: #24262b;
+        border: 1px solid #727272;
+        color: #ffffff;
+    }
+    .el-checkbox {
+        color: #ffffff;
+    }
+    .el-checkbox__input.is-checked + .el-checkbox__label {
+        color: #20c6ff;
+    }
+    .el-checkbox__input.is-checked .el-checkbox__inner,
+    .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+        background-color: #20c6ff;
+        border-color: #20c6ff;
     }
 }

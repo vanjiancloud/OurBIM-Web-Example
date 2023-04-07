@@ -1,201 +1,200 @@
 <!-- 构件信息 -->
 <template>
-    <Drawer ref="Drawer" title="构件信息" direction="rtl" @onShow="show">
-        <template slot="drawer">
-            <Tab :data="tabList" @onTab="onTab" />
-            <!-- 属性信息 -->
-            <div class="attribute" v-if="activeTab===0">
-                <el-row :gutter="20" v-for="(item,index) in data" :key="index">
-                    <el-col :span="8">{{item.name}}</el-col>
-                    <el-col :span="16">{{item.value}}</el-col>
-                </el-row>
+    <Drawer ref="Drawer" title="构件信息" direction="rtl" @onClose="close">
+        <Tab :data="tabList" @onTab="onTab" />
+        <!-- 属性信息 -->
+        <div class="attribute" v-if="activeTab===0">
+            <el-row :gutter="20" v-for="(item,index) in data" :key="index">
+                <el-col :span="8">{{item.name}}</el-col>
+                <el-col :span="16">{{item.value}}</el-col>
+            </el-row>
+        </div>
+        <!-- 几何信息 -->
+        <div class="geometry" v-if="activeTab===1">
+            <div class="coordinate geometryItem">          
+                <div class="comTitle"><img src="@/assets/images/component/title1.png"/>圆管</div>
+                <div class="coordinateTitle">坐标：</div>
+                <div class="coordinateItemInput">
+                    X<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
+                    Y<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
+                    Z<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
+                    <i class="el-icon-refresh-right"></i>
+                </div>
+                <div class="coordinateTitle">角度：</div>
+                <div class="coordinateItemInput">
+                    X<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
+                    Y<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
+                    Z<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
+                    <i class="el-icon-refresh-right"></i>
+                </div>
+                <div class="coordinateTitle">比例：</div>
+                <div class="coordinateItemInput">
+                    X<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
+                    Y<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
+                    Z<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
+                    <i class="el-icon-refresh-right"></i>
+                </div>
             </div>
-            <!-- 几何信息 -->
-            <div class="geometry" v-if="activeTab===1">
-                <div class="coordinate geometryItem">          
-                    <div class="comTitle"><img src="@/assets/images/component/title1.png"/>圆管</div>
-                    <div class="coordinateTitle">坐标：</div>
-                    <div class="coordinateItemInput">
-                        X<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                        Y<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                        Z<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                        <i class="el-icon-refresh-right"></i>
-                    </div>
-                    <div class="coordinateTitle">角度：</div>
-                    <div class="coordinateItemInput">
-                        X<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                        Y<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                        Z<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                        <i class="el-icon-refresh-right"></i>
-                    </div>
-                    <div class="coordinateTitle">比例：</div>
-                    <div class="coordinateItemInput">
-                        X<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                        Y<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                        Z<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                        <i class="el-icon-refresh-right"></i>
-                    </div>
+            <!-- 参数化尺寸参数 -->
+            <div class="parameter geometryItem">
+                <div class="comTitle"><img src="@/assets/images/component/title2.png"/>参数化尺寸参数</div>
+                <div class="parameterItem">
+                    <span>内半径</span>
+                    <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
+                    <i class="el-icon-refresh-right"></i>
                 </div>
-                <!-- 参数化尺寸参数 -->
-                <div class="parameter geometryItem">
-                    <div class="comTitle"><img src="@/assets/images/component/title2.png"/>参数化尺寸参数</div>
-                    <div class="parameterItem">
-                        <span>内半径</span>
-                        <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
-                        <i class="el-icon-refresh-right"></i>
-                    </div>
-                    <div class="parameterItem">
-                        <span>外半径</span>
-                        <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
-                        <i class="el-icon-refresh-right"></i>
-                    </div>
-                    <div class="parameterItem">
-                        <span>长度</span>
-                        <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
-                        <i class="el-icon-refresh-right"></i>
-                    </div>
+                <div class="parameterItem">
+                    <span>外半径</span>
+                    <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
+                    <i class="el-icon-refresh-right"></i>
                 </div>
-                <!-- 光源参数 -->
-                <div class="light geometryItem">
-                    <div class="comTitle"><img src="@/assets/images/component/title2.png"/>光源参数</div>
-                    <div class="switchBox" style="margin-bottom: 26px;"><span>反射开关</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch></div>
-                    <div class="CubeMap">
-                        <div>CubeMap</div>
+                <div class="parameterItem">
+                    <span>长度</span>
+                    <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
+                    <i class="el-icon-refresh-right"></i>
+                </div>
+            </div>
+            <!-- 光源参数 -->
+            <div class="light geometryItem">
+                <div class="comTitle"><img src="@/assets/images/component/title2.png"/>光源参数</div>
+                <div class="switchBox" style="margin-bottom: 26px;"><span>反射开关</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch></div>
+                <div class="CubeMap">
+                    <div>CubeMap</div>
 
-                    </div>
-                    <div class="sliderBox"><span>影响范围</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
-                    <div class="sliderBox"><span>反射强度</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">0.4</span></div>
                 </div>
-                <!-- 点光源 -->
-                <div class="pointolite geometryItem">
-                    <div class="comTitle"><img src="@/assets/images/component/title3.png"/>点光源</div>
-                    <div class="switchBox">
-                        <span>灯光开关</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch>
-                        <span>阴影开关</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch>
-                    </div>
-                    <div class="colorBox"><span>灯光颜色</span><div><el-color-picker v-model="form.color" show-alpha></el-color-picker><span>{{formatColor(form.color)}}</span></div></div>
-                    <div class="sliderBox"><span>灯光强度</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cd</span></div>
-                    <div class="sliderBox"><span>锥体内角</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200°</span></div>
-                    <div class="sliderBox"><span>锥体外角</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200°</span></div>
-                    <div class="sliderBox"><span>衰减半径</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
-                    <div class="sliderBox"><span>光源半径</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
-                    <div class="sliderBox"><span>光源长度</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
-                </div>
-                <!-- 文字信息 -->
-                <div class="word">
-                    <div class="wordTextarea">
-                        <span>文字内容</span>
-                        <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 8}" placeholder="请输入内容" v-model="form.textarea2"></el-input>
-                    </div>
-                    <div class="componentTitle">大小字体</div>
-                    <div class="wordDetail">
-                        <span>高度</span>
-                        <el-select v-model="form.value" placeholder="请选择" size="mini" style="width: 70px;">
-                            <el-option
-                            v-for="item in wordHeightList"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                            </el-option>
-                        </el-select>
-                        <span>字体</span>
-                        <el-select v-model="form.value" placeholder="请选择" size="mini" style="width: 95px;">
-                            <el-option
-                            v-for="item in wordTypeList"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </div>
-                    <div class="colorBox">
-                        <span>颜色</span>
-                        <div><el-color-picker v-model="form.color" show-alpha></el-color-picker><span>{{formatColor(form.color)}}</span></div>
-                        <i class="el-icon-refresh-right"></i>
-                    </div>
-                </div>
+                <div class="sliderBox"><span>影响范围</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
+                <div class="sliderBox"><span>反射强度</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">0.4</span></div>
             </div>
-            <!-- 材质信息 -->
-            <div class="material" v-if="activeTab===2">
-                <div class="materialList">
-                    <div class="materialListCon" :style="{'height':isOpen?'auto':'90px'}">
-                        <div class="materialItem">
-                            <el-image class="img" :src="require('@/assets/err.png')" lazy></el-image>
-                            <div class="materialReset"><i class="el-icon-refresh-right"></i></div>
-                        </div>
-                    </div>
-                    <!-- 是否展开和收缩 -->
-                    <div class="isOpen" @click="isOpen=!isOpen"><i :class="{'el-icon-caret-top':isOpen,'el-icon-caret-bottom':!isOpen}"></i></div>
-                </div>
-                <div class="materialImg">
-                    <span>颜色</span>
-                    <el-color-picker v-model="form.color" show-alpha></el-color-picker>
-                    <span>贴图</span>
-                    <el-image class="img" :src="require('@/assets/err.png')" lazy></el-image>
-                </div>
-                <div class="componentTitle">贴图位置</div>
-                <div class="materialSlider">
-                    <div>横向偏移</div>
-                    <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider><span>mm</span></div>
-                </div>
-                <div class="materialSlider">
-                    <div>纵向偏移</div>
-                    <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider><span>mm</span></div>
-                </div>
-                <div class="materialSlider">
-                    <div>角度</div>
-                    <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider><span>°</span></div>
-                </div>
+            <!-- 点光源 -->
+            <div class="pointolite geometryItem">
+                <div class="comTitle"><img src="@/assets/images/component/title3.png"/>点光源</div>
                 <div class="switchBox">
-                    <span>等比缩放</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch>
+                    <span>灯光开关</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch>
+                    <span>阴影开关</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch>
                 </div>
-                <div class="materialSlider">
-                    <div>缩放</div>
-                    <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
+                <div class="colorBox"><span>灯光颜色</span><div><el-color-picker v-model="form.color" show-alpha></el-color-picker><span>{{formatColor(form.color)}}</span></div></div>
+                <div class="sliderBox"><span>灯光强度</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cd</span></div>
+                <div class="sliderBox"><span>锥体内角</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200°</span></div>
+                <div class="sliderBox"><span>锥体外角</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200°</span></div>
+                <div class="sliderBox"><span>衰减半径</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
+                <div class="sliderBox"><span>光源半径</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
+                <div class="sliderBox"><span>光源长度</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
+            </div>
+            <!-- 文字信息 -->
+            <div class="word">
+                <div class="wordTextarea">
+                    <span>文字内容</span>
+                    <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 8}" placeholder="请输入内容" v-model="form.textarea2"></el-input>
                 </div>
-                <div class="materialSlider">
-                    <div>横向缩放</div>
-                    <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
+                <div class="componentTitle">大小字体</div>
+                <div class="wordDetail">
+                    <span>高度</span>
+                    <el-select v-model="form.value" placeholder="请选择" size="mini" style="width: 70px;">
+                        <el-option
+                        v-for="item in wordHeightList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                        </el-option>
+                    </el-select>
+                    <span>字体</span>
+                    <el-select v-model="form.value" placeholder="请选择" size="mini" style="width: 95px;">
+                        <el-option
+                        v-for="item in wordTypeList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value">
+                        </el-option>
+                    </el-select>
                 </div>
-                <div class="materialSlider">
-                    <div>纵向缩放</div>
-                    <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-                </div>
-                <div class="componentTitle">材质效果属性</div>
-                <div class="materialSlider">
-                    <div>凹凸比例</div>
-                    <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-                </div>
-                <div class="materialSlider">
-                    <div>反射强度</div>
-                    <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-                </div>
-                <div class="materialSlider">
-                    <div>粗糙度</div>
-                    <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-                </div>
-                <div class="materialSlider">
-                    <div>透明度</div>
-                    <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-                </div>
-                <div class="materialSlider">
-                    <div>饱和度</div>
-                    <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-                </div>
-                <div class="materialSlider">
-                    <div>亮度</div>
-                    <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-                </div>
-                <div>
-                    <el-checkbox v-model="form.checked">双面材质</el-checkbox>
-                    <el-checkbox v-model="form.checked">替换所有相同材质</el-checkbox>
+                <div class="colorBox">
+                    <span>颜色</span>
+                    <div><el-color-picker v-model="form.color" show-alpha></el-color-picker><span>{{formatColor(form.color)}}</span></div>
+                    <i class="el-icon-refresh-right"></i>
                 </div>
             </div>
-        </template>
+        </div>
+        <!-- 材质信息 -->
+        <div class="material" v-if="activeTab===2">
+            <div class="materialList">
+                <div class="materialListCon" :style="{'height':isOpen?'auto':'90px'}">
+                    <div class="materialItem">
+                        <el-image class="img" :src="require('@/assets/err.png')" lazy></el-image>
+                        <div class="materialReset"><i class="el-icon-refresh-right"></i></div>
+                    </div>
+                </div>
+                <!-- 是否展开和收缩 -->
+                <div class="isOpen" @click="isOpen=!isOpen"><i :class="{'el-icon-caret-top':isOpen,'el-icon-caret-bottom':!isOpen}"></i></div>
+            </div>
+            <div class="materialImg">
+                <span>颜色</span>
+                <el-color-picker v-model="form.color" show-alpha></el-color-picker>
+                <span>贴图</span>
+                <el-image class="img" :src="require('@/assets/err.png')" lazy></el-image>
+            </div>
+            <div class="componentTitle">贴图位置</div>
+            <div class="materialSlider">
+                <div>横向偏移</div>
+                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider><span>mm</span></div>
+            </div>
+            <div class="materialSlider">
+                <div>纵向偏移</div>
+                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider><span>mm</span></div>
+            </div>
+            <div class="materialSlider">
+                <div>角度</div>
+                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider><span>°</span></div>
+            </div>
+            <div class="switchBox">
+                <span>等比缩放</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch>
+            </div>
+            <div class="materialSlider">
+                <div>缩放</div>
+                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
+            </div>
+            <div class="materialSlider">
+                <div>横向缩放</div>
+                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
+            </div>
+            <div class="materialSlider">
+                <div>纵向缩放</div>
+                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
+            </div>
+            <div class="componentTitle">材质效果属性</div>
+            <div class="materialSlider">
+                <div>凹凸比例</div>
+                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
+            </div>
+            <div class="materialSlider">
+                <div>反射强度</div>
+                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
+            </div>
+            <div class="materialSlider">
+                <div>粗糙度</div>
+                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
+            </div>
+            <div class="materialSlider">
+                <div>透明度</div>
+                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
+            </div>
+            <div class="materialSlider">
+                <div>饱和度</div>
+                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
+            </div>
+            <div class="materialSlider">
+                <div>亮度</div>
+                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
+            </div>
+            <div>
+                <el-checkbox v-model="form.checked">双面材质</el-checkbox>
+                <el-checkbox v-model="form.checked">替换所有相同材质</el-checkbox>
+            </div>
+        </div>
     </Drawer>
 </template>
 
 <script>
+import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";
 import Tab from "@/components/Tab/index.vue";
 export default {
@@ -237,6 +236,12 @@ export default {
         show() {
             this.$refs.Drawer.show()
             // this.content();
+        },
+        hide(){
+            this.$refs.Drawer.hide()
+        },
+        close(){
+            EventBus.$emit('eventTool', 'componentInformation')
         },
         onTab(e){
             this.activeTab = e.index

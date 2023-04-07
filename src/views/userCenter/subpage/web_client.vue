@@ -174,41 +174,6 @@
             </div>
           </div>
         </div>
-        <!-- 属性 -->
-        <!-- <div
-          class="bim-info"
-          v-show="
-            controllerInfo.tagUiBar &&
-            ((natureInfo && natureInfo.type === 11 && natureInfo.state === 1) ||
-              controllerInfo.memberAvttribute)
-          "
-        >
-          <div class="bim-title">
-            <div class="" v-text="$t('webClient.attribute.title')"></div>
-            <div class="close-part">
-              <i
-                class="el-icon-close"
-                @click.stop="closePart(natureInfo.type)"
-              ></i>
-            </div>
-          </div>
-          <div class="detail-main">
-            <table
-              class="detail-table"
-              v-if="
-                memberInfo && (memberInfo.type === 1 || memberInfo.type === 5)
-              "
-            >
-              <tr
-                v-for="(item, index) in (memberInfo.data.dynamicData ? memberInfo.data.dynamicData : memberInfo.data.rsInfo)"
-                :key="index"
-              >
-                <td v-text="item.name"></td>
-                <td v-text="item.value"></td>
-              </tr>
-            </table>
-          </div>
-        </div> -->
 
         <!-- 材质编辑模块   (材质库)-->
         <div class="material-main" v-if="materialShow && topImgMaterial.length>0">
@@ -373,7 +338,7 @@
         ></progress-bar>
       </transition>
 <!-- 底部的工具栏 -->
-      <todo-footer
+      <!-- <todo-footer
         v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar && !isFade"
         v-show="controllerInfo.tagUiBar"
         ref="getFooter"
@@ -393,7 +358,7 @@
         @passBrowerLogo="passBrowerLogo"
         :lockState="lockState" 
         @showViewPhoto="showViewPic"
-      ></todo-footer>
+      ></todo-footer> -->
       <view-cube
         v-if="controllerInfo.viewCube"
         v-show="controllerInfo.tagViewCube"
@@ -442,18 +407,21 @@
     </div>
     <EscDialogItem ref="EscDialogItem" />
     <!-- 资源库 -->
-    <ResourcePool ref="ResourcePool" :taskId="taskId" :userId="$route.query.userId" v-if="taskId" v-show="controllerInfo.tagUiBar"/>
+    <ResourcePool ref="ResourcePool" :data="{taskId,userId,selectPark}" v-if="taskId" v-show="controllerInfo.tagUiBar"/>
     <!-- 构件信息 -->
     <ComponentInformation ref="ComponentInformation" :taskId="taskId" :data="memberInfo" v-if="taskId"/>
+    <!-- 底部工具栏 -->
+    <Tool ref="Tool" @onSuccess="toolSuccess" @close="closeDrawer"/>
   </div>
 </template>
 
 <script>
+import { EventBus } from '@/utils/bus.js'
 import MODELAPI from "@/api/model_api";
 import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
 import TAGTREE from "@/api/tag_tree";
 import COMPONENTLIBRARY from "@/api/component-library";
-import todoFooter from "@/components/web_client/todo_footer";
+// import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
 import tagTree from "@/components/web_client/tag_tree";
 import roamNavigate from "@/components/web_client/roam_navigate";
@@ -472,13 +440,13 @@ import viewUpimg from "@/components/web_client/view_upImg.vue"; // （材质库�
 import weatherSystem from "@/components/web_client/weather_system.vue"; // 天气系统
 import ResourcePool from "../resourcePool/index.vue"; // 资源库
 import ComponentInformation from "../componentInformation/index.vue"; //构件信息
+import Tool from "../Tool/index.vue"; //底部工具栏
 
 
 export default {
   name: "look_app",
   layout: "reset",
   components: {
-    todoFooter,
     viewCube,
     tagTree,
     progressBar,
@@ -490,10 +458,13 @@ export default {
     viewUpimg,
     weatherSystem,
     ResourcePool,
-    ComponentInformation
+    ComponentInformation,
+    Tool
   },
   data() {
     return {
+        userId: this.$route.query.userId || JSON.parse(sessionStorage.getItem("userid")),//用户id：链接可能没有用户id取缓存的
+        activeTool: null,//点击tool
       showViewPicture:'0', // 传递给 viewPhoto 控制视图列表的显示 (视图)
       maxNodes:false,
       envProgress:0,   // 环境加载
@@ -638,6 +609,7 @@ export default {
       pakAndAppid:[], 
       weatherDrawer:false, // 天气抽屉
       drawerLeftSize: 300, // 抽屉宽度
+      selectPark: null,//选择构件
     };
   },
 
@@ -762,6 +734,135 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    // 点击底部工具栏后操作
+    toolSuccess(e){
+        console.log('🚀🚀🚀',e);
+        // this.activeTool = e
+        // EventBus.$emit('onToTool', e)//传给Drawer组件关闭的时候使用
+        if(e.check) return
+        switch (e.key) {
+            // 显示
+            case 'show':
+                
+                break;
+            // 框选
+            case 'selection':
+                
+                break;
+            // 漫游导航
+            case 'roaming':
+                
+                break;
+            // 模型剖切
+            case 'modelSectioning':
+                
+                break;
+            // 测量
+            case 'measure':
+                
+                break;
+            // 标签
+            case 'label':
+                
+                break;
+            // 视图
+            case 'view':
+                
+                break;
+            // 模型动画
+            case 'modelAnimation':
+                
+                break;
+            // 分解模型
+            case 'decompositionModel':
+                
+                break;
+            // 渲染环境
+            case 'renderingEnvironment':
+                
+                break;
+            // 资源库
+            case 'resource':
+                this.$refs.ResourcePool.show({activeTool:e,taskId:this.taskId,userId:this.userId,selectPark:this.selectPark})
+                break;
+            // 浏览器
+            case 'browser':
+                
+                break;
+            // 构件信息
+            case 'componentInformation':
+                this.$refs.ComponentInformation.show({activeTool:e,taskId:this.taskId,memberInfo:this.memberInfo})
+                break;
+        
+            default:
+                break;
+        }
+    },
+    // 隐藏弹窗
+    closeDrawer(e){
+        switch (e.key) {
+            // 显示
+            case 'show':
+                
+                break;
+            // 框选
+            case 'selection':
+                
+                break;
+            // 漫游导航
+            case 'roaming':
+                
+                break;
+            // 模型剖切
+            case 'modelSectioning':
+                
+                break;
+            // 测量
+            case 'measure':
+                
+                break;
+            // 标签
+            case 'label':
+                
+                break;
+            // 视图
+            case 'view':
+                
+                break;
+            // 模型动画
+            case 'modelAnimation':
+                
+                break;
+            // 分解模型
+            case 'decompositionModel':
+                
+                break;
+            // 渲染环境
+            case 'renderingEnvironment':
+                
+                break;
+            // 资源库
+            case 'resource':
+                this.$refs.ResourcePool.hide()
+                break;
+            // 浏览器
+            case 'browser':
+                
+                break;
+            // 构件信息
+            case 'componentInformation':
+                this.$refs.ComponentInformation.hide()
+                break;
+        
+            default:
+                break;
+        }
+    },
+    // 操作的时候隐藏工具栏true隐藏，false显示
+    hideTool(val = true){
+        this.controllerInfo.tagUiBar = !val;//底部栏隐藏
+        this.$refs.EscDialogItem.changeVisible(val);
+    },
     outPic(url){
             //实例化一个img对象
             const img = new Image();
@@ -2329,6 +2430,7 @@ export default {
               this.$refs.EscDialogItem.changeVisible(false);
             }
           } else if (realData.id === "15") {
+            this.selectPark = realData //选择构件
               if(this.$refs.getFooter){
                 this.$refs.getFooter.handleComOperateIcon(realData);
               }else{
@@ -3471,86 +3573,6 @@ export default {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-          }
-        }
-      }
-    }
-    .bim-info {
-      pointer-events: auto;
-      height: 50vh;
-      width: 400px;
-      position: absolute;
-      top: 0;
-      right: 0;
-      margin: 2vh 20px 0 0;
-      border-radius: 10px;
-      overflow-x: hidden; 
-      // overflow-y: auto;   // (材质库)
-      overflow-y: hidden;   // (材质库)
-      background-color: rgba(17, 17, 17, 0.88);
-      color: #ffffff;
-      .bim-title {
-        display: flex;
-        padding: 20px 15px 0 15px;
-        color: #ffffff;
-        .close-part {
-          margin-left: auto;
-          cursor: pointer;
-        }
-      }
-      .detail-main {
-        overflow-x: hidden;
-        overflow-y: auto;
-        margin-top: 1vh;
-        height: calc(100% - 56px);
-
-        &::-webkit-scrollbar {
-          /*滚动条整体样式*/
-          width: 6px;
-          /*高宽分别对应横竖滚动条的尺寸*/
-          height: 1px;
-        }
-
-        &::-webkit-scrollbar-thumb {
-          /*滚动条里面小方块*/
-          border-radius: 10px;
-          background: rgba(0, 0, 0, 0.3);
-        }
-
-        &::-webkit-scrollbar-track {
-          /*滚动条里面轨道*/
-          border-radius: 10px;
-          background: rgba(255, 255, 255, 0.295);
-        }
-      }
-      .detail-table {
-        width: 100%;
-        // line-height: 35px;
-        text-align: left;
-        border-collapse: collapse;
-        tr {
-          border-bottom: 1px solid #3f3f3f;
-          &:first-child {
-            border-top: 1px solid #3f3f3f;
-          }
-        }
-        tr td {
-          word-wrap: break-word;
-          word-break: break-all;
-          font-size: 14px;
-          padding: 10px;
-          font-size: 12px;
-        }
-        tr td {
-          &:first-child {
-            color: #999;
-            width: 40%;
-            border-right: 1px solid #3f3f3f;
-          }
-
-          &:last-child {
-            color: #ccc;
-            width: 60%;
           }
         }
       }
