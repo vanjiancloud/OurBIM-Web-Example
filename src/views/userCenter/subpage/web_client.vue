@@ -450,7 +450,7 @@
                                       </div>
                                       <div class="editInfoListPercent"></div>
                                   </div>       
-                                  <div class="editInfoList" v-if="listItem.label !== '等比缩放' && ((filterTexturesList('等比缩放')==='1'&&listItem.label!=='纵向缩放'&&listItem.label!=='横向缩放') || (filterTexturesList('等比缩放')==='0'))">
+                                  <div class="editInfoList" v-if="listItem.label !== '等比缩放' && (((filterTexturesList('等比缩放')==='1'&&listItem.label!=='纵向缩放'&&listItem.label!=='横向缩放') || (filterTexturesList('等比缩放')==='0'&&listItem.label!=='缩放')))">
                                       <div class="editInfoListName">{{ listItem.label }}</div>
                                       <div class="editInfoListNum">
                                         <el-slider @change="materialSliderChange(listItem.paramValue1,index,index1)" v-model="listItem.paramValue1"
