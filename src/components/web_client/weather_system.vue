@@ -104,6 +104,17 @@
       </div>
       <!-- 天气 -->
       <div class="mainWeather" v-if="radio == 2">
+        <div class="titleWeather">天空</div>
+        <div class="sun">
+            <div>
+                <span>太阳光颜色</span>
+                <el-color-picker class="colorSelect" show-alpha v-model="form.sunLightColor" @change="colorChange"></el-color-picker>
+            </div>
+            <div>
+                <span>太阳光强度</span>
+                <el-slider v-model.number="form.sunLightIntensity" :min="0" :max="10" @change="colorChange"></el-slider>
+            </div>
+        </div>
           <div class="titleWeather">天气</div>
           <div class="cloude">
               <div class="cloudeSelect">
@@ -259,7 +270,7 @@
   </template>
   
   <script>
-  import MODELAPI from "@/api/model_api";
+  import MODELAPI, { setWeatherSun } from "@/api/model_api";
   import CHAILIAOAPI from "@/api/material_api";
   import moment from 'moment'
   import { runInThisContext } from "vm";
@@ -338,6 +349,10 @@
               messageFlag:true,
               onlyTwoIds:null, // 参数化天气 和 轮廓的id
               isGis: false,
+              form:{
+                sunLightIntensity:4.65,
+                sunLightColor: ''
+              }
           }
       },
       created(){
@@ -351,6 +366,35 @@
           }
       },
       methods:{
+        rgbaToArr(color) {
+            var arr = []
+            if(color){
+                const str = color.slice(5)
+                const str1 = str.slice(0, str.length - 1)
+                arr = str1.replace(/\s*/g,"").split(',')
+            }
+            return arr
+        },
+        // 数组变rgb
+        arrToRgb(arr){
+            let str = '';
+            if(arr.length>0){
+                str = `rgba(${arr[0]},${arr[1]},${arr[2]},${arr[3]})`
+            }else{
+                str = null
+            }
+            return str;
+        },
+        colorChange(){
+            let data = {
+                taskId: this.taskId,
+                sunLightIntensity:this.form.sunLightIntensity
+            }
+            setWeatherSun(data,this.rgbaToArr(this.form.sunLightColor)).then(()=>{
+                this.$message.success('修改成功')
+                this.getWeatherParams()
+            })
+        },
           radioChange(val){
               if(val == 2){
                 if(this.isGis){
@@ -468,6 +512,17 @@
                                   this.weatherNow(bigStrongWether,cloudeMore,rainAndSnow)
                               }
                           })
+                      }
+                      if(allData.sun){
+                        allData.sun.forEach(e=>{
+                            if(e.key==='sunLightIntensity'){
+                                this.form[e.key] = +e.value
+                            }else if(e.key==='sunLightColor'){
+                                this.form[e.key] = this.arrToRgb(JSON.parse(e.value))
+                            }else{
+                                this.form[e.key] = e.value
+                            }
+                        })
                       }
                       if(flag==='need'){
                         setTimeout(()=>{
@@ -959,6 +1014,22 @@
   </script>
   
   <style lang="less" scoped>
+  .sun{
+    border-bottom: 1px solid #464646;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    margin-bottom: 10px;
+    >div{
+        display: flex;
+        align-items: center;
+        span{
+            margin-right: 10px;
+        }
+        /deep/ .el-slider{
+            flex: 1;
+        }
+    }
+  }
       .systemWeather{
           width: 100%;
           height: 100%;

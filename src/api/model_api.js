@@ -5,6 +5,7 @@
  * @LastEditTime: 2021-06-09 11:10:08
  * @description: 
  */
+import newRequest from "@/utils/newRequest.js";
 import qs from "qs"
 import {
     BASE
@@ -360,6 +361,15 @@ const MODELAPI = {
             params
         })
     },
+}
+// 设置太阳光、天空光照属性
+export function setWeatherSun(params,data) {
+    return request({
+      url: `/weather/setSunLightIntensityAndColor`,
+      method: "post",
+      params,
+      data
+    });
 }
 
 export default MODELAPI
