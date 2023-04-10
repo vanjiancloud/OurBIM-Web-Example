@@ -3173,15 +3173,30 @@ export default {
         if(res.data.code === 0){
           this.matParam = JSON.parse(res.data.data.matParam);
           // this.materialMatId = res.data.data.matId; // 选中材质编辑的材质的matId
-          let reSort = this.strToNumber(this.matParam.textureParamsList).reverse()
-          reSort.forEach((e,i)=>{
+        //   为了排序start
+          let imgData = this.strToNumber(this.matParam.textureParamsList)
+          let reSort = []
+          imgData.forEach((e,i)=>{
             e.paramValue = parseInt(e.paramValue).toString()
             if(e.label==='等比缩放'){
                 reSort.unshift(e)
-                reSort.splice(i+1,1)
+            }
+            if(e.label==='横向缩放'){
+                reSort.push(e)
+            }
+            if(e.label==='纵向缩放'){
+                reSort.push(e)
+            }
+            if(e.label==='缩放'){
+                reSort.push(e)
             }
           })
-          this.$set(this.middleMaterInfo[0],'nameInfo',reSort,'texture')
+          let seen = new Map();
+            let uniqueArr = reSort.concat(imgData).filter((item) => {
+                return !seen.has(JSON.stringify(item)) && seen.set(JSON.stringify(item), 1);
+            });
+            // end
+          this.$set(this.middleMaterInfo[0],'nameInfo',uniqueArr,'texture')
           this.$set(this.middleMaterInfo[1],'nameInfo',this.strToNumber(this.matParam.baseParamsList))
           this.color1 = this.arrToRgb(this.matParam.colorList.length>0 ? this.matParam.colorList[0].paramValue : []);
           this.spreadCircle(this.middleMaterInfo,'0'); // 折叠面板
