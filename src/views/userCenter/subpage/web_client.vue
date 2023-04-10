@@ -407,7 +407,7 @@
                             <div class="yanse">
                                 <div class="yanseName">基础颜色贴图</div>
                                 <div class="yanseBody stickPic" @click="photoStore('基础')" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === '基础'}">
-                                  <img v-if="getTextType('BaseColorMap')" :src="getTextType('BaseColorMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
+                                  <img v-if="getTextType('BaseColorMap').paramValue" :src="getTextType('BaseColorMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
                                   <i v-else class="el-icon-plus plusIcon"></i>
                                   <div class="deleteIcon" @click.stop="deleteStickPic('BaseColorMap')" v-if="getTextType('BaseColorMap').paramValue"><i class="el-icon-delete"></i></div>
                                 </div>
@@ -415,7 +415,7 @@
                             <div class="yanse">
                                 <div class="yanseName">法线贴图</div>
                                 <div class="yanseBody stickPic" @click="photoStore('法线')" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === '法线'}">
-                                  <img v-if="getTextType('NormalMap')" :src="getTextType('NormalMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
+                                  <img v-if="getTextType('NormalMap').paramValue" :src="getTextType('NormalMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
                                   <i v-else class="el-icon-plus plusIcon"></i>
                                   <div class="deleteIcon" @click.stop="deleteStickPic('NormalMap')" v-if="getTextType('NormalMap').paramValue"><i class="el-icon-delete"></i></div>
                                 </div>
