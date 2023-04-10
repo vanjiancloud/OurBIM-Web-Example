@@ -449,8 +449,8 @@
                                         </el-switch>
                                       </div>
                                       <div class="editInfoListPercent"></div>
-                                  </div>       
-                                  <div class="editInfoList" v-if="listItem.label !== '等比缩放' && (((filterTexturesList('等比缩放')==='1'&&listItem.label!=='纵向缩放'&&listItem.label!=='横向缩放') || (filterTexturesList('等比缩放')==='0'&&listItem.label!=='缩放')))">
+                                  </div>
+                                  <div class="editInfoList" v-else-if="listItem.label !== '等比缩放' && (((filterTexturesList('等比缩放')==1&&listItem.label!=='纵向缩放'&&listItem.label!=='横向缩放') || (filterTexturesList('等比缩放')==0&&listItem.label!=='缩放')))">
                                       <div class="editInfoListName">{{ listItem.label }}</div>
                                       <div class="editInfoListNum">
                                         <el-slider @change="materialSliderChange(listItem.paramValue1,index,index1)" v-model="listItem.paramValue1"
@@ -3155,7 +3155,7 @@ export default {
     },
     filterTexturesList(type){
         let res = this.middleMaterInfo[0].nameInfo.filter(e=>{return e.label===type})
-        return res.length&&res[0].paramValue
+        return Number(res.length&&res[0].paramValue)
     },
     // 获取材质信息
     getMaterialInfomation(e,str){
@@ -3173,7 +3173,15 @@ export default {
         if(res.data.code === 0){
           this.matParam = JSON.parse(res.data.data.matParam);
           // this.materialMatId = res.data.data.matId; // 选中材质编辑的材质的matId
-          this.$set(this.middleMaterInfo[0],'nameInfo',this.strToNumber(this.matParam.textureParamsList),'texture')
+          let reSort = this.strToNumber(this.matParam.textureParamsList).reverse()
+          reSort.forEach((e,i)=>{
+            e.paramValue = parseInt(e.paramValue).toString()
+            if(e.label==='等比缩放'){
+                reSort.unshift(e)
+                reSort.splice(i+1,1)
+            }
+          })
+          this.$set(this.middleMaterInfo[0],'nameInfo',reSort,'texture')
           this.$set(this.middleMaterInfo[1],'nameInfo',this.strToNumber(this.matParam.baseParamsList))
           this.color1 = this.arrToRgb(this.matParam.colorList.length>0 ? this.matParam.colorList[0].paramValue : []);
           this.spreadCircle(this.middleMaterInfo,'0'); // 折叠面板
@@ -3191,7 +3199,6 @@ export default {
             // arr.photoUrl = res.data.data.matImgPath;
             this.$set(this.topImgMaterial,this.matEditIndex,arr);
             this.activeMater = this.matEditIndex;
-            console.log('🚀🚀🚀',this.topImgMaterial,arr,res.data);
           }
         }else if(res.data.code === 1){
             this.$message.error(res.data.message)
