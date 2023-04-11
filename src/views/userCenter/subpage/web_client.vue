@@ -444,8 +444,8 @@
                                           @change="materialInfoChange"
                                           v-model="listItem.paramValue"
                                           inactive-color="#646464"
-                                          :active-value="1"
-                                          :inactive-value="0">
+                                          active-value="1"
+                                          inactive-value="0">
                                         </el-switch>
                                       </div>
                                       <div class="editInfoListPercent"></div>
@@ -3175,15 +3175,10 @@ export default {
           // this.materialMatId = res.data.data.matId; // 选中材质编辑的材质的matId
         //   为了排序start
           let imgData = this.strToNumber(this.matParam.textureParamsList)
-        //   console.log('🚀🚀🚀',imgData,JSON.parse(JSON.stringify(imgData)));
-          console.log('🚀🚀🚀',imgData);
           let reSort = []
           imgData.forEach((e,i)=>{
-              console.log('🚀🚀🚀',typeof e.paramValue);
-            e.paramValue = Number(e.paramValue)
-            // if(typeof e.paramValue === 'String'){
-            // }
             if(e.label==='等比缩放'){
+                e.paramValue = Number(e.paramValue).toString()
                 reSort.unshift(e)
             }
             if(e.label==='横向缩放'){
