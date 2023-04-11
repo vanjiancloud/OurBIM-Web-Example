@@ -45,7 +45,6 @@ export default {
         },
         hide(){
             this.drawer = false
-            console.log('🚀🚀🚀',this.drawer);
         },
         close() {
             this.hide()

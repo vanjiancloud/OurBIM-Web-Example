@@ -37,14 +37,6 @@ const CHAILIAOAPI = {
             }
         })
     },
-    // 材质编辑模式开关
-    MATERIALEDITORCONTROL: params => {
-        return request({
-            url: '/material/materialEditorControl',
-            method: 'get',
-            params
-        })
-    },
     // 获取材质的信息（替换过的材质才有信息）
     GETMATERIALBYMATID: params => {
         return request({
@@ -89,18 +81,6 @@ const CHAILIAOAPI = {
             url: '/appli/getPakIdByAppId',
             method: 'get',
             params
-        })
-    },
-    // 重置材质
-    RESETMATERIAL: (params, data) => {
-        return request({
-            url: '/material/resetMaterial',
-            method: 'post',
-            params,
-            data,
-            headers: {
-                'Content-Type': 'application/json'
-            }
         })
     },
     // 设置天气颜色
@@ -208,6 +188,34 @@ export function getMaterialByGroup(params) {
         url: '/material/getOurBIMMaterialByGroup',
         method: 'get',
         params
+    })
+}
+// 材质编辑模式开关
+export function materialEditorControl(params) {
+    return newRequest({
+        url: '/material/materialEditorControl',
+        method: 'get',
+        params
+    })
+}
+// 获取材质的信息（替换过的材质才有信息）
+export function getMaterialByMatId(params) {
+    return newRequest({
+        url: '/material/getMaterialByMatId',
+        method: 'get',
+        params
+    })
+}
+// 重置材质
+export function resetMaterial(params,data) {
+    return newRequest({
+        url: '/material/resetMaterial',
+        method: 'post',
+        params,
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
 }
 

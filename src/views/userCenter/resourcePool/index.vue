@@ -65,7 +65,7 @@ export default {
         data: {
             type: Object,
             default:()=> {}
-        },
+        }
     },
     data() {
         return {
@@ -130,7 +130,8 @@ export default {
                     checkUrl:require('@/assets/images/todo/check/com/move5.png'),
                     name:'笔刷'
                 },
-            ]
+            ],
+            openMater:false //是否打开材质编辑
         };
     },
     watch: {},
@@ -142,18 +143,12 @@ export default {
             this.$refs.Drawer.show()
             this.content();
         },
-        hide(){
-            this.$refs.Drawer.hide()
-        },
         close(){
+            this.$refs.Drawer.hide()
             EventBus.$emit('eventTool', 'resource')
         },
         // hide() {
         //     // Object.assign(this.$data, this.$options.data());
-        // },
-        // close() {
-        //     // Object.assign(this.$data, this.$options.data());
-        //     // this.$parent.closePart(14);
         // },
         // 点击tab
         onTab(e) {
@@ -256,11 +251,15 @@ export default {
                         })
                         break;
                     case 1:
-                        console.log('🚀🚀🚀',this.data);
+                        EventBus.$on('openMaterial', data => {
+                            this.openMater = data
+                        })
+                        if(!this.openMater||!this.$parent.checkShow('componentInformation')){
+                            return this.$message.warning('请打开材质信息！')
+                        }
                         if(!this.data.selectPark){
                             return this.$message.warning('请先选择构件！')
                         }
-
                         break;
                     case 2:
                         break;

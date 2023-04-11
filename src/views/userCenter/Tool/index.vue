@@ -15,7 +15,12 @@
 import { EventBus } from '@/utils/bus.js'
 export default {
     components: {},
-    props: {},
+    props: {
+        value: {
+            type:Array,
+            default:()=> []
+        }
+    },
     data() {
         return {
             // key的值不要改动，name可以随便改
@@ -131,11 +136,14 @@ export default {
                 })
                 isEnd.then(()=>{
                     this.$set(item,'check',true)
+                    this.$emit('onSuccess',item)
+                    this.getChecks()
                 })
             }
             if(item.check){
                 this.$set(item,'check',false)
                 this.$emit('close',item)
+                this.getChecks()
 
             }else{
                 switch (item.key) {
@@ -197,17 +205,29 @@ export default {
                 }
             }
             this.$forceUpdate()
-            this.$emit('onSuccess',item)
         },
-        // 隐藏x关掉相应工具栏
+        // 点击x关掉相应工具栏
         hideContent(){
             EventBus.$on('eventTool', data => {
                 this.list.forEach(e=>{
                     if(e.key===data){
                         e.check = false
+                        this.getChecks()
                     }
                 })
             })
+        },
+        // 获取check=true的数组
+        getChecks(){
+            let result = []
+            this.list.forEach(e=>{ 
+                if(e.check) {
+                    result.push(e.key) 
+                }
+            })
+            console.log('🚀🚀🚀check=true',result);
+            this.$emit("input", result);
+            return result
         }
     }
 }
