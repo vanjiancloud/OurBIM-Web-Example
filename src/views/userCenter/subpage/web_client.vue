@@ -194,7 +194,7 @@
                             <div class="yanse">
                                 <div class="yanseName">基础颜色贴图</div>
                                 <div class="yanseBody stickPic" @click="photoStore('基础')" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === '基础'}">
-                                  <img v-if="getTextType('BaseColorMap')" :src="getTextType('BaseColorMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
+                                  <img v-if="getTextType('BaseColorMap').paramValue" :src="getTextType('BaseColorMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
                                   <i v-else class="el-icon-plus plusIcon"></i>
                                   <div class="deleteIcon" @click.stop="deleteStickPic('BaseColorMap')" v-if="getTextType('BaseColorMap').paramValue"><i class="el-icon-delete"></i></div>
                                 </div>
@@ -202,7 +202,7 @@
                             <div class="yanse">
                                 <div class="yanseName">法线贴图</div>
                                 <div class="yanseBody stickPic" @click="photoStore('法线')" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === '法线'}">
-                                  <img v-if="getTextType('NormalMap')" :src="getTextType('NormalMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
+                                  <img v-if="getTextType('NormalMap').paramValue" :src="getTextType('NormalMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
                                   <i v-else class="el-icon-plus plusIcon"></i>
                                   <div class="deleteIcon" @click.stop="deleteStickPic('NormalMap')" v-if="getTextType('NormalMap').paramValue"><i class="el-icon-delete"></i></div>
                                 </div>
@@ -231,13 +231,13 @@
                                           @change="materialInfoChange"
                                           v-model="listItem.paramValue"
                                           inactive-color="#646464"
-                                          active-value="1"
-                                          inactive-value="0">
+                                          :active-value="1"
+                                          :inactive-value="0">
                                         </el-switch>
                                       </div>
                                       <div class="editInfoListPercent"></div>
-                                  </div>       
-                                  <div class="editInfoList" v-if="listItem.label !== '等比缩放'">
+                                  </div>
+                                  <div class="editInfoList" v-else-if="listItem.label !== '等比缩放' && (((filterTexturesList('等比缩放')==1&&listItem.label!=='纵向缩放'&&listItem.label!=='横向缩放') || (filterTexturesList('等比缩放')==0&&listItem.label!=='缩放')))">
                                       <div class="editInfoListName">{{ listItem.label }}</div>
                                       <div class="editInfoListNum">
                                         <el-slider @change="materialSliderChange(listItem.paramValue1,index,index1)" v-model="listItem.paramValue1"
@@ -2760,7 +2760,7 @@ export default {
     getPersonPhoto(str){
       const {userId} = this.$route.query;
       let params = {
-          userId:userId
+          userId:userId || JSON.parse(sessionStorage.getItem("userid"))
       }
       CHAILIAOAPI.GETMATERIALALLTEXTUREINFO(params).then((res)=>{
           if(res.data.code === 0){
@@ -2783,7 +2783,7 @@ export default {
     createTextureGroup(){
       const {userId} = this.$route.query;
       let params = {
-        userId:userId,
+        userId:userId || JSON.parse(sessionStorage.getItem("userid")),
         groupName:'我的分组'
       }
       CHAILIAOAPI.CREATEMATERIALTEXTUREGROUP(params).then(res=>{
@@ -2814,6 +2814,10 @@ export default {
         let res = this.matParam.texturesList.filter(e=>{return e.paramName===type})
         return res.length&&res[0]
     },
+    filterTexturesList(type){
+        let res = this.middleMaterInfo[0].nameInfo.filter(e=>{return e.label===type})
+        return Number(res.length&&res[0].paramValue)
+    },
     // 获取材质信息
     getMaterialInfomation(e,str){
       if(e === 'RESET'){  // 重置过的材质就不要再获取材质信息了
@@ -2830,7 +2834,35 @@ export default {
         if(res.data.code === 0){
           this.matParam = JSON.parse(res.data.data.matParam);
           // this.materialMatId = res.data.data.matId; // 选中材质编辑的材质的matId
-          this.$set(this.middleMaterInfo[0],'nameInfo',this.strToNumber(this.matParam.textureParamsList),'texture')
+        //   为了排序start
+          let imgData = this.strToNumber(this.matParam.textureParamsList)
+        //   console.log('🚀🚀🚀',imgData,JSON.parse(JSON.stringify(imgData)));
+          console.log('🚀🚀🚀',imgData);
+          let reSort = []
+          imgData.forEach((e,i)=>{
+              console.log('🚀🚀🚀',typeof e.paramValue);
+            e.paramValue = Number(e.paramValue)
+            // if(typeof e.paramValue === 'String'){
+            // }
+            if(e.label==='等比缩放'){
+                reSort.unshift(e)
+            }
+            if(e.label==='横向缩放'){
+                reSort.push(e)
+            }
+            if(e.label==='纵向缩放'){
+                reSort.push(e)
+            }
+            if(e.label==='缩放'){
+                reSort.push(e)
+            }
+          })
+          let seen = new Map();
+            let uniqueArr = reSort.concat(imgData).filter((item) => {
+                return !seen.has(JSON.stringify(item)) && seen.set(JSON.stringify(item), 1);
+            });
+            // end
+          this.$set(this.middleMaterInfo[0],'nameInfo',uniqueArr,'texture')
           this.$set(this.middleMaterInfo[1],'nameInfo',this.strToNumber(this.matParam.baseParamsList))
           this.color1 = this.arrToRgb(this.matParam.colorList.length>0 ? this.matParam.colorList[0].paramValue : []);
           this.spreadCircle(this.middleMaterInfo,'0'); // 折叠面板
@@ -2907,7 +2939,7 @@ export default {
     addMaterialToUser(id,str){
       const {userId} = this.$route.query;
       let params = {
-        userId:userId || 'travels',
+        userId:userId || JSON.parse(sessionStorage.getItem("userid")) || 'travels',
         matId:id,
         isPublic: str ==='textureChange' ? false : true,
         baseColorTextureId:this.photoStoreFlag==='基础'?this.activeTexTurePerson:'',
