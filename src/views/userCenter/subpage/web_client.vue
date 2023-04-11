@@ -176,23 +176,10 @@
         </div>
 
         <!-- 材质编辑模块   (材质库)-->
-        <div class="material-main" v-if="materialShow && topImgMaterial.length>0">
-            <div class="material-title">
-              <div class="" v-text="$t('webClient.materEdit.title')"></div>
-              <div class="close-materialPart">
-                <i
-                  class="el-icon-close"
-                  @click.stop="closeMaterialBtn"
-                ></i>
-              </div>
-            </div>
+        <div class="material-main" style="display: none;">
             <div class="bottomTotal">
                 <div class="material-img">
                   <div class="singleImg" v-for="(item,index) in topImgMaterial" :key="index">
-                    <div class="imgPic" @click="photoSelect(item,index)" :class="{activeBorder: activeMater === index}">
-                        <img :src="item.photoUrl||require('@/assets/caizhi.jpg')" alt="">
-                        <div v-if="middleMaterInfo[0].nameInfo.length>0 && activeMater === index" class="resetMaterial" @click.stop="resetClick(item,index)"><i class="el-icon-refresh-left resetIcon"></i></div>
-                    </div> 
                   </div>
                 </div>
                 <div class="materEditMain" v-if="matParam.colorList&&matParam.colorList.length&& activeMater !== ''">
@@ -201,7 +188,6 @@
                             <div class="yanseName">颜色</div>
                             <div class="yanseBody">
                               <el-color-picker class="colorSelect" show-alpha v-model="color1" @change="colorBeChange"></el-color-picker>
-                              <i class="el-icon-arrow-down plusIcon" v-if="!color1"></i>
                             </div>
                         </div>
                         <div style="display:flex">                    
@@ -407,16 +393,15 @@
     </div>
     <EscDialogItem ref="EscDialogItem" />
     <!-- 资源库 -->
-    <ResourcePool ref="ResourcePool" :data="{taskId,userId,selectPark}" v-if="taskId" v-show="controllerInfo.tagUiBar"/>
+    <ResourcePool ref="ResourcePool" :data="{ taskId, userId, selectPark }" v-show="controllerInfo.tagUiBar&&checkShow('resource')"/>
     <!-- 构件信息 -->
-    <ComponentInformation ref="ComponentInformation" :taskId="taskId" :data="memberInfo" v-if="taskId"/>
+    <ComponentInformation ref="ComponentInformation" :data="{ taskId, memberInfo, materialData, pakIdMapweb }" v-show="checkShow('componentInformation')"/>
     <!-- 底部工具栏 -->
-    <Tool ref="Tool" @onSuccess="toolSuccess" @close="closeDrawer"/>
+    <Tool ref="Tool" v-model="activeToolArr" @onSuccess="toolSuccess"/>
   </div>
 </template>
 
 <script>
-import { EventBus } from '@/utils/bus.js'
 import MODELAPI from "@/api/model_api";
 import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
 import TAGTREE from "@/api/tag_tree";
@@ -464,7 +449,7 @@ export default {
   data() {
     return {
         userId: this.$route.query.userId || JSON.parse(sessionStorage.getItem("userid")),//用户id：链接可能没有用户id取缓存的
-        activeTool: null,//点击tool
+        activeToolArr: [],//工具栏打开的内容
       showViewPicture:'0', // 传递给 viewPhoto 控制视图列表的显示 (视图)
       maxNodes:false,
       envProgress:0,   // 环境加载
@@ -564,7 +549,7 @@ export default {
       inputTwo:'',  // 材质库搜索绑定值 （材质库）
       activeMater:'', // 选中材质编辑中的 构件材质图片
       // （材质库）
-      topImgMaterial:[],
+      materialData: {},
       // 材质要修改的信息（材质库）
       middleMaterInfo:[
         {
@@ -595,7 +580,6 @@ export default {
       personalPicMaterInfo:[], // 贴图库 个人库
       btnUpTexure:false, // 控制上传按钮
       personalTexureGroup:[], // 贴图 个人库分组
-      materialShow:false, // 材质编辑 弹窗显示与隐藏
       modelIsLink:null, // 是否是链接模型
       pakIdMapweb:'', // 区分点击的是自定义构件还是模型自带的构件
       matParam:{}, // 材质的部分信息
@@ -603,7 +587,6 @@ export default {
       spread:[], // 材质参数折叠面板展开
       spreadPerson:[], // 贴图库折叠面板展开
       materialAllInfo:{}, // 构件某材质全部信息
-      matEditIndex:null, // 选中的材质编辑图片的下标
       defaultUrl:null, // 识别本地与线上
       comPakId:'', // 材质编辑点击的构件的pakId
       pakAndAppid:[], 
@@ -644,10 +627,6 @@ export default {
             this.$set(this.lockObj.data, [`lockView${this.lockObj.num}`], false);
             // 锁的状态(false)
             this.lockState = false;
-         }
-        //  构件库关闭的同时要关闭材质编辑按钮
-         if(newVal === false){
-            this.closeMaterialBtn();
          }
        }
     }
@@ -736,10 +715,7 @@ export default {
   methods: {
     // 点击底部工具栏后操作
     toolSuccess(e){
-        console.log('🚀🚀🚀',e);
-        // this.activeTool = e
-        // EventBus.$emit('onToTool', e)//传给Drawer组件关闭的时候使用
-        if(e.check) return
+        if(!this.taskId) return
         switch (e.key) {
             // 显示
             case 'show':
@@ -783,82 +759,26 @@ export default {
                 break;
             // 资源库
             case 'resource':
-                this.$refs.ResourcePool.show({activeTool:e,taskId:this.taskId,userId:this.userId,selectPark:this.selectPark})
+                this.$refs.ResourcePool.show()
                 break;
             // 浏览器
             case 'browser':
                 
                 break;
-            // 构件信息
+            // 构件信息memberInfo:属性信息
             case 'componentInformation':
-                this.$refs.ComponentInformation.show({activeTool:e,taskId:this.taskId,memberInfo:this.memberInfo})
+                this.$refs.ComponentInformation.show()
                 break;
         
             default:
                 break;
         }
     },
-    // 隐藏弹窗
-    closeDrawer(e){
-        switch (e.key) {
-            // 显示
-            case 'show':
-                
-                break;
-            // 框选
-            case 'selection':
-                
-                break;
-            // 漫游导航
-            case 'roaming':
-                
-                break;
-            // 模型剖切
-            case 'modelSectioning':
-                
-                break;
-            // 测量
-            case 'measure':
-                
-                break;
-            // 标签
-            case 'label':
-                
-                break;
-            // 视图
-            case 'view':
-                
-                break;
-            // 模型动画
-            case 'modelAnimation':
-                
-                break;
-            // 分解模型
-            case 'decompositionModel':
-                
-                break;
-            // 渲染环境
-            case 'renderingEnvironment':
-                
-                break;
-            // 资源库
-            case 'resource':
-                this.$refs.ResourcePool.hide()
-                break;
-            // 浏览器
-            case 'browser':
-                
-                break;
-            // 构件信息
-            case 'componentInformation':
-                this.$refs.ComponentInformation.hide()
-                break;
-        
-            default:
-                break;
-        }
+    // 是否显示弹窗
+    checkShow(key){
+        return this.activeToolArr.includes(key)
     },
-    // 操作的时候隐藏工具栏true隐藏，false显示
+    // 操作esc的时候隐藏工具栏true隐藏，false显示
     hideTool(val = true){
         this.controllerInfo.tagUiBar = !val;//底部栏隐藏
         this.$refs.EscDialogItem.changeVisible(val);
@@ -2110,10 +2030,6 @@ export default {
        if (e.type === 0) {
          this.viewAngle = e
        }
-      // 点击 材质编辑 开关
-      if(e.flag==='material'){
-        this.materialShow = e.state;
-      }
     },
     UpdateMemeberState() {
       /**
@@ -2256,6 +2172,7 @@ export default {
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {
+            this.selectPark = realData
             // 不知道构件为啥返回的格式不一样，有dynamicData的需要新增俩个属性放在最前面
             if(realData.data?.dynamicData?.length){
               realData.data.dynamicData = [{name:'构件名称',value:realData.data.name},{name:'构件ID',value:realData.data.revitCode}].concat(realData.data.dynamicData)
@@ -2325,14 +2242,6 @@ export default {
                     action: "cameraPosAll",
                   });
                 }, 1000);
-                // let params = {
-                //   taskId: this.taskId,
-                // };
-                // COMPONENTLIBRARY.initComponent(params)
-                //   .then((res) => {})
-                //   .catch((res) => {
-                //     this.$message.error(res.data.message);
-                //   });
               }
             }
             if (Number(realData.progress) === 1) {
@@ -2482,28 +2391,19 @@ export default {
                 (realData.rsInfo[0].pakId === 'MAPWEB' || realData.rsInfo[0].pakId === 'gis')  ? this.pakIdMapweb = 'public' : this.pakIdMapweb = '';
               }
               this.comPakId = realData.rsInfo[0].pakId;
+              this.$set(this.materialData,'matList',realData.rsInfo.length&&realData.rsInfo[0].matList || [])
+              this.$set(this.materialData,'actorId',realData.rsInfo.length&&realData.rsInfo[0].actorId)
+              this.$set(this.materialData,'pakId',realData.rsInfo.length&&realData.rsInfo[0].pakId)
               let newArr = [];
               realData.rsInfo.forEach((item,index)=>{
                  newArr = [...newArr,...item.matList];
               });
-              // newArr = realData.rsInfo[0].matList;
-              this.topImgMaterial = newArr;
               this.activeMater = 0; // 默认选中第一张图片
-              this.matEditIndex = 0;
-              this.materialAllInfo = this.topImgMaterial[0]; // 构件的第一个材质信息
+            //   this.materialAllInfo = this.topImgMaterial[0]; // 构件的第一个材质信息
               this.exchangeData.actorId = realData.rsInfo[0].actorId;
               this.getMaterialInfomation(this.getActiveMatid(this.activeMater)); // 默认先获取第一张图片材质信息
           }else if(realData.id === "29"){
-            if(this.topImgMaterial.length !== 0){
-              this.topImgMaterial.forEach(item => {
-                let flag = realData.rsInfo.some(e=>{
-                  if(item.matId === e.matId){
-                    item.photoUrl = e.imgPath;
-                  }
-                  return item.matId === e.matId;
-                })
-              })
-            }
+            this.$set(this.materialData,'rsInfo',realData.rsInfo)
           }else if(realData.id === "33"){
             // 视点动画播放
             this.$refs.viewPhoto.WebSocketData = realData
@@ -2810,25 +2710,17 @@ export default {
     postUploadPic(){
       this.addViewUpImgPost = true;
     },
-    // 点击 材质编辑弹框 叉号
-    closeMaterialBtn(){
-      this.activeMater = '';
-      this.materialShow = false;
-      this.$refs['getFooter'].clickBtnMaterial('close');
-      this.topImgMaterial = [];
-    },
     // 选中材质编辑中的 构件材质图片
-    photoSelect(e,num){
-        this.matEditIndex = num; // 选中的材质编辑图片的下标
-        this.materialAllInfo = e; 
-        if(this.activeMater === num){
-          this.activeMater = ''
-        }else{
-          this.activeMater = num;
-          this.getMaterialInfomation(e.matId); // 获取材质信息
-        }
-        this.canclePhotostore(); // 关闭贴图弹框
-    },
+    // photoSelect(e,num){
+    //     this.materialAllInfo = e; 
+    //     if(this.activeMater === num){
+    //       this.activeMater = ''
+    //     }else{
+    //       this.activeMater = num;
+    //       this.getMaterialInfomation(e.matId); // 获取材质信息
+    //     }
+    //     this.canclePhotostore(); // 关闭贴图弹框
+    // },
     // 获取材质编辑选中的材质的matid
     getActiveMatid(str){
         return this.topImgMaterial[str].matId;
@@ -2953,8 +2845,6 @@ export default {
           if(str === 'change'){
             let arr = this.topImgMaterial[this.matEditIndex]
             arr.matId = res.data.data.matId;
-            // arr.photoUrl = res.data.data.matImgPath;
-            this.$set(this.topImgMaterial,this.matEditIndex,arr);
             this.activeMater = this.matEditIndex;
           }
         }else if(res.data.code === 1){
@@ -3052,50 +2942,50 @@ export default {
         });
     },
     // 恢复材质按钮
-    resetClick(item,num){
-        this.$confirm('您将重置此材质, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.resetMat(item.matId,num);
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
-        });
-    },
+    // resetClick(item,num){
+    //     this.$confirm('您将重置此材质, 是否继续?', '提示', {
+    //       confirmButtonText: '确定',
+    //       cancelButtonText: '取消',
+    //       type: 'warning'
+    //     }).then(() => {
+    //       this.resetMat(item.matId,num);
+    //     }).catch(() => {
+    //       this.$message({
+    //         type: 'info',
+    //         message: '已取消删除'
+    //       });          
+    //     });
+    // },
     // 恢复材质
-    resetMat(flagId,num){
-        let params = {
-          taskId:this.taskId,
-          appId: this.pakidToAppid(this.comPakId),
-          matId:flagId,
-          isPublic: false
-        }
-        let temp = {
-          matAndActorInfos:[
-            {
-              actorId:this.exchangeData.actorId,
-              meshIndex:this.materialAllInfo.meshIndex,
-              matIndex:this.materialAllInfo.matIndex,
-              comType: this.pakIdMapweb,
-              pakId:this.comPakId
-            }
-          ]
-        }
-        CHAILIAOAPI.RESETMATERIAL(params,JSON.stringify(temp.matAndActorInfos)).then((res)=>{
-            if(res.data.code===0){
-              this.middleMaterInfo.forEach(mat=>{
-                mat.nameInfo = [];
-              })
-              this.topImgMaterial[num].matId = 'RESET' // 修改被重置的材质的id
-              this.$set(this.topImgMaterial[num],'photoUrl',require('@/assets/caizhi.jpg')) // 修改被重置的材质的图片
-              this.$message.success('材质重置成功')
-            }
-        }).catch(()=>{})
-    },
+    // resetMat(flagId,num){
+    //     let params = {
+    //       taskId:this.taskId,
+    //       appId: this.pakidToAppid(this.comPakId),
+    //       matId:flagId,
+    //       isPublic: false
+    //     }
+    //     let temp = {
+    //       matAndActorInfos:[
+    //         {
+    //           actorId:this.exchangeData.actorId,
+    //           meshIndex:this.materialAllInfo.meshIndex,
+    //           matIndex:this.materialAllInfo.matIndex,
+    //           comType: this.pakIdMapweb,
+    //           pakId:this.comPakId
+    //         }
+    //       ]
+    //     }
+    //     CHAILIAOAPI.RESETMATERIAL(params,JSON.stringify(temp.matAndActorInfos)).then((res)=>{
+    //         if(res.data.code===0){
+    //           this.middleMaterInfo.forEach(mat=>{
+    //             mat.nameInfo = [];
+    //           })
+    //           this.topImgMaterial[num].matId = 'RESET' // 修改被重置的材质的id
+    //           this.$set(this.topImgMaterial[num],'photoUrl',require('@/assets/caizhi.jpg')) // 修改被重置的材质的图片
+    //           this.$message.success('材质重置成功')
+    //         }
+    //     }).catch(()=>{})
+    // },
     // 点击贴图库的个人库图片
     texturePhotoSelect(e){
         if(this.activeTexTurePerson === e.textureId){
@@ -3186,6 +3076,7 @@ export default {
           componentAppId = item.appId;
         }
       })
+      console.log('🚀🚀🚀',this.pakAndAppid);
       return componentAppId;
     },
     // 材质信息改变
@@ -3577,433 +3468,6 @@ export default {
         }
       }
     }
-
-    // 材质编辑开始   （材质库）
-    .material-main{
-      position: relative;
-      pointer-events: auto;
-      height: 50vh;
-      width: 350px;
-      margin: 2vh 0 0 20px;
-      border-radius: 10px;
-      background-color: rgba(17, 17, 17, 0.88);
-      .material-title {
-        display: flex;
-        padding: 2vh 15px 0 15px;
-        color: #ffffff;
-        margin-bottom: 1vh;
-        .close-materialPart {
-          margin-left: auto;
-          cursor: pointer;
-        }
-      }
-      .bottomTotal{
-          height: 44vh;
-          width: 100%;
-          overflow: hidden;
-          overflow-y: auto;
-          border-top: 1px solid #41444D;
-          &::-webkit-scrollbar {
-          /* 对应纵向滚动条的宽度 */
-          width: 10px;
-          /* 对应横向滚动条的宽度 */
-          height: 10px;
-          }
-
-          /* 滚动条上的滚动滑块 */
-          &::-webkit-scrollbar-thumb {
-              background-color: #515560;
-              border-radius: 5px;
-          }
-
-          /* 滚动条轨道 */
-          &::-webkit-scrollbar-track {
-              background-color: #16191f;
-              border: 1px solid #41444D;
-              border-radius:2px;
-          }
-        .material-img{
-          width: 100%;
-          padding-top: 1vh;
-          display: flex;
-          flex-wrap: wrap;
-          border-bottom: 1px solid #41444D;
-          .singleImg{
-            width: 90px;
-            height: 9.3vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            margin: 0 10px 10px 10px;
-            .imgPic{
-              position: relative;
-              width: 90px;
-              height: 9.3vh;
-              cursor: pointer;
-              img{
-                width: 100%;
-                height: 100%;
-              }
-              .resetMaterial{
-                position: absolute;
-                top:0;
-                right: 0;
-                width: 20px;
-                height: 20px;
-                border-radius: 10px;
-                background-color: rgba(0,0,0,.4);
-                text-align: center;
-                display: none;
-                .resetIcon{
-                  font-size: 18px;
-                  color: #fff;
-                  line-height: 16px;
-                }
-              }
-              &:hover .resetMaterial{
-                display: block;
-              }
-            }
-          }
-        }
-        .materEditMain{
-          padding-top: 1vh;
-          .topEditMain{
-            width: 100%;
-            padding-left: 20px;
-            margin-bottom: 2vh;
-            // display: flex;
-            .yanse{
-            //   width: 80px;
-              height: 100%;
-              display: flex;
-            //   justify-content: space-between;
-              margin-right: 32px;
-              margin-top: 10px;
-              .yanseName{
-                font-size: 14px;
-                color: #ffff;
-                margin-right: 10px;
-              }
-              .yanseBody{
-                position: relative;
-                width: 40px;
-                height: 40px;
-                background-color: #ccc;
-                // border-radius: 2px;
-                ::v-deep .el-color-picker__trigger{
-                  padding: 0;
-                  border: none;
-                  .el-color-picker__icon, .el-icon-close{
-                    display: none;
-                  }
-                  .el-color-picker__color{
-                    border: none;
-                  }
-                }
-                .plusIcon, .deleteIcon{
-                  font-size: 16px;
-                  color: #fff;
-                  position: absolute;
-                  top: 12px;
-                  left: 12px;
-                }
-                .deleteIcon{
-                  top: -8px;
-                  left: 30px;
-                  width: 20px;
-                  height: 20px;
-                  text-align: center;
-                  line-height: 20px;
-                  border-radius: 10px;
-                  background-color: rgba(255,255,255,.3);
-                  display: none;
-                }
-              }
-              .stickPic{
-                &:hover .deleteIcon{
-                  display: block;
-                }
-              }
-            }
-          }
-          .bottomEditMain{
-            padding-left: 20px;
-            width: 95%;
-            // height: 17vh;
-            overflow: hidden;
-            ::v-deep .el-collapse{
-              border: none;
-            }
-            ::v-deep .el-collapse-item__header{
-              background-color: rgba(16,16,16,0.1);
-              color: #fff;
-              border-bottom: none;
-              .el-icon-arrow-right{
-                color: #fff;
-              }
-            }
-            ::v-deep .el-collapse-item .el-collapse-item__wrap{
-              background-color: rgba(16,16,16,0.1);
-              border-bottom: none;
-            .el-collapse-item__content{
-                  padding-bottom: 0px !important;
-                }
-            }
-            .editInfoList{
-              height: 20px;
-              width: 95%;
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 2vh;
-              .editInfoListName{
-                width: 60px;
-                color: #fff;
-              }
-              .editInfoListNum{
-                width: 200px;
-                display: flex;
-                /deep/ .el-slider{
-                    flex: 1;
-                    margin-right: 15px;
-                }
-                ::v-deep .el-slider__runway{
-                  top: -13px;
-                  height: 20px;
-                  background-color: #252525;
-                  border: 1px solid #4D4B4B;
-                  border-radius: 5px;
-                }
-                ::v-deep .el-slider__bar{
-                  height: 20px;
-                  background-color: #646464;
-                  z-index: 1111;
-                }   
-                ::v-deep .el-slider__button-wrapper {
-                  top: -8px;
-                }     
-                ::v-deep .el-slider__button{
-                  width: 10px;
-                  height: 18px;
-                  border: 1px solid #646464;
-                  background-color: #646464;
-                }
-                /deep/ .el-input-number--mini {
-                    width: 60px;
-                    margin: 0 3px 0 6px;
-
-                    .el-input__inner {
-                        padding-right: 14px;
-                        padding-left: 5px;
-                    }
-
-                    .el-input-number__decrease,
-                    .el-input-number__increase {
-                        width: 12px;
-                        background: none;
-                        border: none;
-                        color: #646464;
-                        right: 4px;
-                    }
-                }
-                /deep/ .el-slider{
-                    .el-slider__runway.show-input{
-                        margin-right: 75px;
-                    }
-                }
-              }
-              .editInfoListPercent{
-                width: 26px;
-                color: #fff;
-              }
-            }
-          }
-        }
-        .mater-bottom{
-          width: 100%;
-          height: 5vh;
-          border-top: 1px solid rgba(255,255,255,0.22);
-          padding: 1.5vh 0 0 0;
-          ::v-deep .el-checkbox-group{
-            margin-left: 20px;
-          }
-        }
-      }
-      // 贴图
-      .uploadImg{
-        position: absolute;
-        top: 51vh;
-        left: 0;
-        pointer-events: auto;
-        height: 38vh;
-        width: 350px;
-        border-radius: 10px;
-        background-color: rgba(17, 17, 17, 0.88);
-        .titleUploadimg{
-          box-sizing:border-box;
-          display: flex;
-          justify-content: space-between;
-          width: 100%;
-          height: 5vh;
-          padding: 1.8vh 1.8vh 0 1.8vh;
-          border-bottom: 1px solid rgba(255,255,255,0.2);
-          span{
-            color: #fff;
-            font-size: 16px;
-          }
-          .postStoreImgClose{
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 3px;
-          }
-        }
-        .middleUploadimg{
-          box-sizing: border-box;
-          width: 100%;
-          height: 34vh;
-          ::v-deep .el-tabs .el-tabs__content{
-            overflow-y: hidden;
-          }
-          ::v-deep .el-tabs .el-tabs__content{    // （材质库）
-            position: absolute;
-            overflow-y: auto;
-            height: 74%;
-            right: 0px;
-            left: 16px;
-            &::-webkit-scrollbar {
-            /* 对应纵向滚动条的宽度 */
-            width: 10px;
-            /* 对应横向滚动条的宽度 */
-            height: 10px;
-            }
-    
-            /* 滚动条上的滚动滑块 */
-            &::-webkit-scrollbar-thumb {
-                background-color: #515560;
-                border-radius: 5px;
-            }
-    
-            /* 滚动条轨道 */
-            &::-webkit-scrollbar-track {
-                background-color: #16191f;
-                border: 1px solid #41444D;
-                border-radius:2px;
-            }
-          }
-          ::v-deep .el-tabs__item{ // （材质库）
-            color:#fff;
-            border: none !important;
-            height: 42px;
-            line-height: 42px;
-            padding: 0 14px;
-          }
-          ::v-deep .el-tabs__item.is-active { // （材质库）
-              color: #409EFF;
-              background-color: rgba(255, 255, 255, 0);
-          }
-          
-          ::v-deep .el-tabs--card>.el-tabs__header .el-tabs__nav{ // （材质库）
-            border: none;
-          }
-          ::v-deep .el-tabs__header{  // （材质库）
-            margin: 1px 0 0 0;
-          }
-          ::v-deep .el-tabs--card>.el-tabs__header{       // （材质库）
-            border-bottom: 1px solid rgba(255,255,255,0);
-            border-top: 1px solid rgba(255,255,255,0);
-          }
-          ::v-deep #tab-zero{
-            margin-left: 60px;
-          }
-          // el-collapse的样式修改
-          ::v-deep .el-collapse{
-            border: none;
-          }
-          ::v-deep .el-collapse-item__header{
-            background-color: rgba(16,16,16,0.1);
-            color: #fff;
-            border-bottom: none;
-            .el-icon-arrow-right{
-              color: #fff;
-            }
-          }
-          ::v-deep .el-collapse-item .el-collapse-item__wrap{
-            background-color: rgba(16,16,16,0.1);
-            border-bottom: none;
-           .el-collapse-item__content{
-                padding-bottom: 0px !important;
-              }
-          }
-          .flexDiv{
-            display: flex;
-            flex-wrap: wrap;
-            .flexDivInde{
-              margin: 0 13px 5px 0;
-              .textureTitle{
-                width: 100%;
-                height: 2.3vh;
-                line-height: 2.3vh;
-                text-align: center;
-                /*1. 先强制一行内显示文本*/
-                    white-space: nowrap;
-                /*2. 超出的部分隐藏*/
-                    overflow: hidden;
-                /*3. 文字用省略号替代超出的部分*/
-                    text-overflow: ellipsis;
-                span{
-                  font-size: 14px;
-                  color: #fff;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    // 材质编辑结束
-    .handle-body {
-      pointer-events: auto;
-      position: absolute;
-      top: 3vh;
-      right: 3vh;
-    }
-
-    .show-footer {
-      position: absolute;
-      pointer-events: auto;
-      padding: 10px 0;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      left: 0;
-      bottom: 0;
-      color: #ffffff;
-
-      .foot-title {
-        width: 100%;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-
-      .footer-main {
-        margin: 0 auto;
-        width: 680px;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: @font-c;
-        align-items: @font-c;
-        text-align: @font-c;
-
-        .main-content {
-          flex: 0 0 16.66%;
-          width: 16.66%;
-        }
-      }
-    }
   }
 
   #show-bim {
@@ -4016,9 +3480,6 @@ export default {
     height: 100vh !important;
     width: 100vw !important;
   }
-}
-.activeBorder{
-   border: 2px solid #9bdbdd;
 }
 </style>
 <style lang="less" >
@@ -4041,11 +3502,6 @@ export default {
       .is-leaf {
         color: transparent;
       }
-      // .is-current {
-      //   .tree-select {
-      //     background: rgba(255, 255, 255, 0.2);
-      //   }
-      // }
       .el-checkbox {
         position: absolute;
         right: 0;
@@ -4074,7 +3530,6 @@ export default {
     margin: 0 auto;
     width: 100%;
     .el-progress-bar__outer {
-      // height: 6px!important;
       background-color: #00a8f054;
     }
     .el-progress-bar__inner {
@@ -4127,9 +3582,6 @@ export default {
   }
   .name {
     width: 100px;
-    // display: flex;
-    // align-items: center;
-    // justify-content: center;
     color: #fff;
     text-align: center;
     white-space: nowrap; //强制在一行显示
@@ -4164,7 +3616,6 @@ export default {
   display: flex;
   align-items: center;
   color: #7184bb;
-  // color: #fff;
   padding-left: 15px;
   font-size: 14px;
   box-sizing: border-box;

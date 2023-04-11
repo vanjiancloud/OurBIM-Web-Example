@@ -1,13 +1,14 @@
 <!-- 构件信息 -->
 <template>
     <Drawer ref="Drawer" title="构件信息" direction="rtl" @onClose="close">
-        <Tab :data="tabList" @onTab="onTab" />
+        <Tab v-model="activeTab" :data="tabList" @onTab="onTab" />
         <!-- 属性信息 -->
         <div class="attribute" v-if="activeTab===0">
-            <el-row :gutter="20" v-for="(item,index) in data" :key="index">
+            <el-row :gutter="20" v-for="(item,index) in data.memberInfo" :key="index">
                 <el-col :span="8">{{item.name}}</el-col>
                 <el-col :span="16">{{item.value}}</el-col>
             </el-row>
+            <el-empty :image-size="100" v-if="!data.memberInfo.length"></el-empty>
         </div>
         <!-- 几何信息 -->
         <div class="geometry" v-if="activeTab===1">
@@ -118,9 +119,9 @@
         <div class="material" v-if="activeTab===2">
             <div class="materialList">
                 <div class="materialListCon" :style="{'height':isOpen?'auto':'90px'}">
-                    <div class="materialItem">
-                        <el-image class="img" :src="require('@/assets/err.png')" lazy></el-image>
-                        <div class="materialReset"><i class="el-icon-refresh-right"></i></div>
+                    <div class="materialItem" :class="{activeMaterial:activeMaterialIndex===index}" v-for="(item,index) in data.materialData.rsInfo" :key="index" @click="onMaterial(item,index)">
+                        <el-image class="img" :src="item.imgPath" lazy></el-image>
+                        <div class="materialReset" @click.stop="resetMaterial(item)"><i class="el-icon-refresh-right"></i></div>
                     </div>
                 </div>
                 <!-- 是否展开和收缩 -->
@@ -194,18 +195,16 @@
 </template>
 
 <script>
+import { materialEditorControl, getMaterialByMatId, resetMaterial } from "@/api/material_api";
 import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";
 import Tab from "@/components/Tab/index.vue";
 export default {
     components: { Tab, Drawer },
     props: {
-        taskId: {
-            type: String,
-        },
         data: {
-            type: Array,
-            default:()=> []
+            type: Object,
+            default:()=> {}
         }
     },
     data() {
@@ -225,31 +224,85 @@ export default {
             form:{},
             wordHeightList: [], //字体高度
             wordTypeList: [], //字体
-            isOpen:false
+            isOpen:false,
+            activeMaterialIndex: 0, //默认选中材质
+            materialAllInfo: null, //材质下面的信息,贴图，缩放
         }
     },
-    watch: {},
+    watch: {
+        activeMaterialIndex(val){
+            this.materialAllInfo = this.getOtherContent(this.data.materialData.rsInfo[val].matId);
+        }
+    },
     computed: {},
     created() {},
     mounted() {},
     methods: {
         show() {
             this.$refs.Drawer.show()
-            // this.content();
-        },
-        hide(){
-            this.$refs.Drawer.hide()
+            this.materialAllInfo = this.data.materialData.rsInfo?.length && this.getOtherContent(this.data.materialData.rsInfo[0].matId);
+            console.log('🚀🚀🚀materialAllInfo',this.materialAllInfo);
         },
         close(){
+            this.$refs.Drawer.hide()
             EventBus.$emit('eventTool', 'componentInformation')
         },
-        onTab(e){
+        async onTab(e){
             this.activeTab = e.index
+            // 打开或关闭材质编辑
+            await materialEditorControl({taskId: this.data.taskId,flag:this.activeTab===2?'on':'off'})
+            EventBus.$emit('openMaterial', this.activeTab===2)
         },
         // 去掉rgba
         formatColor(color){
             return color && color.slice(5,color.length-1)
-        }
+        },
+        // 颜色数组变rgb
+        arrToRgb(arr){
+            if(!arr.length) return null
+            return `rgba(${arr[0]},${arr[1]},${arr[2]},${arr[3]})`
+        },
+        formatData(){
+            this.materialAllInfo.matParam
+        },
+        // 获取材质下面的信息
+        getOtherContent(matId){
+            let res = this.data.materialData.matList.filter(e=>e.matId === matId)
+            return res.length&&res[0]
+        },
+        onMaterial(item,i){
+            this.activeMaterialIndex = i
+            getMaterialByMatId({ matId:item.matId, isPublic: false }).then(res=>{
+                console.log('🚀🚀🚀',JSON.parse(res.data.matParam));
+            })
+        },
+        // 恢复材质按钮,公共构件appId不用传；pakIdMapweb：是否是公共构件
+        resetMaterial(item){
+            this.$confirm('您将重置此材质, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                let params = {
+                    taskId:this.data.taskId,
+                    appId: this.$parent.pakidToAppid(this.data.materialData.pakId),
+                    matId:item.matId,
+                    isPublic: false
+                }
+                let arr = [
+                    {
+                        actorId:this.data.materialData.actorId,
+                        meshIndex:this.getOtherContent(item.matId).meshIndex,
+                        matIndex:this.getOtherContent(item.matId).matIndex,
+                        comType: this.data.pakIdMapweb,
+                        pakId:this.data.materialData.pakId
+                    }
+                ]
+                resetMaterial(params,JSON.stringify(arr)).then(()=>{
+                    this.$message.success('材质重置成功')
+                })
+            }).catch((err) => {});
+        },
     }
 }
 </script>
@@ -430,7 +483,7 @@ export default {
         .materialListCon{
             display: flex;
             flex-wrap: wrap;
-            gap: 13px;
+            gap: 12px;
             overflow: hidden;
             height: 90px;
         }
@@ -464,6 +517,9 @@ export default {
             &:hover .materialReset{
                 display: block;
             }
+        }
+        .activeMaterial{
+            border:1px solid #00C9FD;
         }
         .isOpen{
             text-align: center;
