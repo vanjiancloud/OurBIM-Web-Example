@@ -3371,7 +3371,7 @@ export default {
     arrToRgb(arr){
       let str = '';
       if(arr.length>0){
-        str = `rgba(${arr[0]},${arr[1]},${arr[2]},1)`
+        str = `rgba(${arr[0]},${arr[1]},${arr[2]},${arr[3]/255})`
       }else{
         str = null
       }
