@@ -50,8 +50,9 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { EventBus } from '@/utils/bus.js'
-import CHAILIAOAPI, { getChartletList, getMaterialByGroup } from "@/api/material_api";
+import CHAILIAOAPI, { getChartletList, getMaterialByGroup, addMaterialForUser, changeMaterialByInstruction, getMaterialByMatId } from "@/api/material_api";
 import MODELAPI from "@/api/model_api";
 import COMPONENTLIBRARY, { addCom } from "@/api/component-library";
 import Tab from "@/components/Tab/index.vue";
@@ -99,6 +100,7 @@ export default {
                 tabName: "构件库",
                 level: 1,
                 groupId:null,//组id
+                activeContent: null
             }, //构件组名称,tab名称,默认一级
             pages: {
                 page: 1, //分页，第几页
@@ -135,7 +137,9 @@ export default {
         };
     },
     watch: {},
-    computed: {},
+    computed: {
+        ...mapGetters(["material","componentAllInfo","materialAllInfo"]),
+    },
     created() {},
     mounted() {},
     methods: {
@@ -184,6 +188,7 @@ export default {
         // 点击去二级构件
         async toLevel2(item) {
             console.log('🚀🚀🚀',item,this.levelName.tab1Index);
+            this.levelName.activeContent = item
             // 一级点击   0：构件库   1：材质库   2：贴图库
             if (this.levelName.level === 1) {
                 this.pages = this.$options.data().pages;
@@ -251,23 +256,78 @@ export default {
                         })
                         break;
                     case 1:
-                        EventBus.$on('openMaterial', data => {
-                            this.openMater = data
-                        })
-                        if(!this.openMater||!this.$parent.checkShow('componentInformation')){
+                        if(!this.material.openMaterial||!this.$parent.checkShow('componentInformation')){
                             return this.$message.warning('请打开材质信息！')
                         }
                         if(!this.data.selectPark){
                             return this.$message.warning('请先选择构件！')
                         }
+                        // 先获取要替换的材质信息
+                        this.getMaterial(item.matId)
                         break;
                     case 2:
+                        this.addMaterial({textureId:item.textureId,isPublic:false})
                         break;
                     default:
                         break;
                 }
                 return
             }
+        },
+        // 获取材质信息isPublic=true：添加材质
+        getMaterial(matId,isPublic=true){
+            getMaterialByMatId({ matId: matId || this.materialAllInfo.matId, isPublic }).then(res=>{
+                if(isPublic){
+                    this.addMaterial({matId:res.data.matId,matParam:JSON.parse(res.data.matParam)})
+                }else{
+                    this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: { ...res.data,matParam:JSON.parse(res.data.matParam),matImgPath:this.levelName.activeContent.comUrl} })
+                    // 构件库替换构件的时候更新右边构件信息的图片
+                    if(this.levelName.tab1Index === 1 && this.levelName.level === 2){
+                        let matList = JSON.parse(JSON.stringify(this.componentAllInfo.matList))
+                        matList[this.material.activeMaterialIndex].imgPath = this.levelName.activeContent.comUrl
+                        this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {matList} })
+                    }
+                }
+            })
+        },
+        // 添加材质
+        addMaterial({matId, matParam, isPublic = true, textureId }){
+            let params = {
+                userId: this.$route.query.userId || JSON.parse(sessionStorage.getItem("userid")) || 'travels',
+                matId: matId || this.materialAllInfo.matId,
+                isPublic,
+                baseColorTextureId: this.material.openTexture==='基础' ? textureId : '',
+                normalMapTextureId: this.material.openTexture==='法线' ? textureId : ''
+            }
+            addMaterialForUser(params, JSON.stringify(matParam || this.materialAllInfo.matParam)).then(res=>{
+                let matList = JSON.parse(JSON.stringify(this.componentAllInfo.matList))
+                matList[this.material.activeMaterialIndex].matId = res.data
+                this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {matList} })
+                this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: {matId:res.data} })
+                this.changeMaterial(res.data)
+            })
+        },
+        // 替换材质
+        changeMaterial(matId){
+            let params = {
+                taskId: this.data.taskId,
+                appId: this.$parent.pakidToAppid(this.componentAllInfo.pakId),
+                matId,
+                isPublic: false,
+                isUpdateSameMaterial: false,
+            }
+            let data = [{
+                actorId:this.componentAllInfo.actorId,
+                meshIndex:this.materialAllInfo.meshIndex,
+                matIndex:this.materialAllInfo.matIndex,
+                comType: this.data.pakIdMapweb,
+                pakId:this.componentAllInfo.pakId
+            }]
+            changeMaterialByInstruction(params,JSON.stringify(data)).then(res=>{
+                this.getMaterial(matId,false)
+                this.$message.success('材质替换成功');
+
+            })
         },
         // 构件库
         async content() {

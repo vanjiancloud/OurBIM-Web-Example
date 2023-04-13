@@ -57,20 +57,6 @@
         ></div>
       </div>
     </div>
-
-    <div class="systemDrawer">
-      <el-drawer
-          title="天气环境"
-          :visible="weatherDrawer"
-          @close="closeSystemDrawer"
-          direction="rtl"
-          :modal="false"
-          :size="300"
-          :wrapperClosable="false"
-        >
-          <weatherSystem :appId="appId" :taskId="taskId"></weatherSystem>
-      </el-drawer>
-    </div>
     
     <!-- runTimeCode 1:mobile  0 ：PC  -->
     <div v-if="runTimeCode === 0">
@@ -78,20 +64,14 @@
       <div class="mutual-bim">
         <div
           class="tree-main"
-          v-show="
-            controllerInfo.tagUiBar &&
-            ((browserInfo &&
-              browserInfo.type === 10 &&
-              browserInfo.state === 1) ||
-              controllerInfo.modelClient)
-          "
+          v-show="controllerInfo.tagUiBar && browserInfo && checkShow('browser')"
         >
           <div class="tree-title">
             <div class="" v-text="$t('webClient.browser.title')"></div>
             <div class="close-part">
               <i
                 class="el-icon-close"
-                @click.stop="closePart(browserInfo.type)"
+                @click.stop="closePart('browser')"
               ></i>
             </div>
           </div>
@@ -175,139 +155,6 @@
           </div>
         </div>
 
-        <!-- 材质编辑模块   (材质库)-->
-        <div class="material-main" style="display: none;">
-            <div class="bottomTotal">
-                <div class="material-img">
-                  <div class="singleImg" v-for="(item,index) in topImgMaterial" :key="index">
-                  </div>
-                </div>
-                <div class="materEditMain" v-if="matParam.colorList&&matParam.colorList.length&& activeMater !== ''">
-                    <div class="topEditMain">
-                        <div class="yanse">
-                            <div class="yanseName">颜色</div>
-                            <div class="yanseBody">
-                              <el-color-picker class="colorSelect" show-alpha v-model="color1" @change="colorBeChange"></el-color-picker>
-                            </div>
-                        </div>
-                        <div style="display:flex">                    
-                            <div class="yanse">
-                                <div class="yanseName">基础颜色贴图</div>
-                                <div class="yanseBody stickPic" @click="photoStore('基础')" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === '基础'}">
-                                  <img v-if="getTextType('BaseColorMap').paramValue" :src="getTextType('BaseColorMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
-                                  <i v-else class="el-icon-plus plusIcon"></i>
-                                  <div class="deleteIcon" @click.stop="deleteStickPic('BaseColorMap')" v-if="getTextType('BaseColorMap').paramValue"><i class="el-icon-delete"></i></div>
-                                </div>
-                            </div>
-                            <div class="yanse">
-                                <div class="yanseName">法线贴图</div>
-                                <div class="yanseBody stickPic" @click="photoStore('法线')" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === '法线'}">
-                                  <img v-if="getTextType('NormalMap').paramValue" :src="getTextType('NormalMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
-                                  <i v-else class="el-icon-plus plusIcon"></i>
-                                  <div class="deleteIcon" @click.stop="deleteStickPic('NormalMap')" v-if="getTextType('NormalMap').paramValue"><i class="el-icon-delete"></i></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bottomEditMain">
-                        <el-collapse
-                          v-model="spread"
-                          v-for="(item,index) in middleMaterInfo"
-                          :key="item.id"
-                          class=""
-                        >
-                          <el-collapse-item :title="item.titleName" :name="index">                         
-                                <div
-                                  class="editInfoItem"
-                                  v-for="(listItem, index1) in item.nameInfo"
-                                  :key="listItem.index"
-                                >  
-                                <!-- enableEdit=false不显示不可编辑,目前看到json里面返回的显示没有这个字段 -->
-                                <template v-if="!listItem.hasOwnProperty('enableEdit')||listItem.enableEdit!='false'">
-                                  <div class="editInfoList" v-if="listItem.label === '等比缩放'">
-                                      <div class="editInfoListName">{{ listItem.label }}</div>
-                                      <div class="editInfoListNum">
-                                        <el-switch
-                                          @change="materialInfoChange"
-                                          v-model="listItem.paramValue"
-                                          inactive-color="#646464"
-                                          :active-value="1"
-                                          :inactive-value="0">
-                                        </el-switch>
-                                      </div>
-                                      <div class="editInfoListPercent"></div>
-                                  </div>
-                                  <div class="editInfoList" v-else-if="listItem.label !== '等比缩放' && (((filterTexturesList('等比缩放')==1&&listItem.label!=='纵向缩放'&&listItem.label!=='横向缩放') || (filterTexturesList('等比缩放')==0&&listItem.label!=='缩放')))">
-                                      <div class="editInfoListName">{{ listItem.label }}</div>
-                                      <div class="editInfoListNum">
-                                        <el-slider @change="materialSliderChange(listItem.paramValue1,index,index1)" v-model="listItem.paramValue1"
-                                        input-size="mini"
-                                        :max="Number(listItem.max)"
-                                        :min="Number(listItem.min)"
-                                        :step="(listItem.label==='横向偏移' || listItem.label==='纵向偏移' || listItem.label==='透明度') ? 0.1 :((listItem.label==='横向缩放' || listItem.label==='纵向缩放' || listItem.label==='缩放') ? 0.01 : 1)"
-                                        ></el-slider>
-                                        <input type="number" v-model.trim.number="listItem.paramValue" style="width:70px;height: 23px;" @change="materialInfoChange()" />
-                                      </div>
-                                      <div class="editInfoListPercent">{{listItem.label==='角度' ? '°' :  ''}}</div>
-                                  </div>
-                                </template>
-                                </div>
-                          </el-collapse-item>
-                        </el-collapse>
-                    </div>
-                </div>
-                <div class="mater-bottom" v-if="false">
-                    <el-checkbox-group v-model="materilCheckList">
-                      <el-checkbox label="1" v-if="false">金属</el-checkbox>
-                      <el-checkbox label="2">替换所有相同实例</el-checkbox>
-                      <el-checkbox label="3" v-if="false">双面材质</el-checkbox>
-                    </el-checkbox-group>
-                </div>
-            </div>
-            <div class="uploadImg" v-if="photoStoreFlag">
-                <div class="titleUploadimg">
-                  <span>贴图库</span>
-                  <i
-                    class="el-icon-close postStoreImgClose"
-                    @click="canclePhotostore"
-                  ></i>
-                </div>
-                <div class="middleUploadimg">
-                     <el-tabs v-model="activeNamePic" type="card" @tab-click="texureClick">
-                        <el-tab-pane label="公共库" name="first">
-                        </el-tab-pane>
-                        <el-tab-pane label="个人库" name="second">
-                          <el-collapse
-                              v-model="spreadPerson"
-                              accordion
-                              v-for="(item,index) in personalPicMaterInfo"
-                              :key="index"
-                              class=""
-                            >
-                              <el-collapse-item :title="item.groupName" :name="index">   
-                                 <div class="flexDiv">          
-                                    <div
-                                      v-for="listItem in item.rsTextureList"
-                                      :key="listItem.textureId"
-                                      class="flexDivInde"
-                                      :style="{'width':'90px','height':'11.3vh'}"
-                                    >           
-                                      <div @click="texturePhotoSelect(listItem)" :class="{activeBorder: activeTexTurePerson === listItem.textureId}" :style="{'width':'90px','height':'9.3vh'}"><img :src="listItem.imgPath" alt="" :style="{'width':'100%','height':'100%'}"></div>
-                                      <div class="textureTitle"><span>{{listItem.textureName}}</span></div>
-                                    </div>
-                                  </div>  
-                              </el-collapse-item>
-                            </el-collapse>
-                        </el-tab-pane>
-                        <el-tab-pane name="zero">
-                          <div slot="label">
-                            <el-button type="primary" @click="postUploadPic" size="mini" :disabled="btnUpTexure ? false : true">上传贴图</el-button>
-                          </div>
-                        </el-tab-pane>
-                     </el-tabs>
-                </div>
-            </div>
-        </div>
         <!-- 二维码 -->
         <qrcode-part
           v-if="isQrcode"
@@ -330,7 +177,6 @@
         ref="getFooter"
         @listenTodo="listenTodo"
         @listenPerson="listenPerson"
-        @listenMode="listenMode"
         @listenFollow="listenFollow"
         @updataModle="updataModle"
         @comIconChang="comIconChang"
@@ -345,6 +191,7 @@
         :lockState="lockState" 
         @showViewPhoto="showViewPic"
       ></todo-footer> -->
+      <!-- 右上角 -->
       <view-cube
         v-if="controllerInfo.viewCube"
         v-show="controllerInfo.tagViewCube"
@@ -369,17 +216,11 @@
     <roamNavigate
     :taskId="taskId"
     @listenTodo="listenTodo"
-    @closePart="closePart"
-    v-if="viewAngle &&
-              viewAngle.type === 0 &&
-              viewAngle.state === 1"
+    @closePart="closePart('roaming')"
+    v-if="viewAngle&&checkShow('roaming')"
     ></roamNavigate>
     <!-- (视图) -->
     <viewPhoto ref="viewPhoto" :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
-    <!-- 上传贴图弹框 （材质库） -->
-    <el-dialog :visible="addViewUpImgPost" @close="closeTexureDialog('none')" width="30%" center>
-      <viewUpimg :personalTexureGroup="personalTexureGroup" @texureClose="closeTexureDialog"></viewUpimg>
-    </el-dialog>
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
       ref="teamworkDialogRef"
@@ -393,11 +234,13 @@
     </div>
     <EscDialogItem ref="EscDialogItem" />
     <!-- 资源库 -->
-    <ResourcePool ref="ResourcePool" :data="{ taskId, userId, selectPark }" v-show="controllerInfo.tagUiBar&&checkShow('resource')"/>
+    <ResourcePool ref="ResourcePool" :data="{ taskId, userId, selectPark, materialData, pakIdMapweb }" v-show="controllerInfo.tagUiBar&&checkShow('resource')"/>
     <!-- 构件信息 -->
     <ComponentInformation ref="ComponentInformation" :data="{ taskId, memberInfo, materialData, pakIdMapweb }" v-show="checkShow('componentInformation')"/>
+    <!-- 天气 -->
+    <weatherSystem ref="weatherSystem" :appId="appId" :taskId="taskId" v-show="checkShow('renderingEnvironment')"></weatherSystem>
     <!-- 底部工具栏 -->
-    <Tool ref="Tool" v-model="activeToolArr" @onSuccess="toolSuccess"/>
+    <Tool ref="Tool" v-model="activeToolArr" @onSuccess="toolSuccess" @close="closeTool"/>
   </div>
 </template>
 
@@ -421,12 +264,11 @@ import TeamworkDialog from "../../manage/TeamworkDialog.vue";
 import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
 
 import { Getuserid } from "@/store/index.js"; // (自定义构件)
-import viewUpimg from "@/components/web_client/view_upImg.vue"; // （材质库）
 import weatherSystem from "@/components/web_client/weather_system.vue"; // 天气系统
 import ResourcePool from "../resourcePool/index.vue"; // 资源库
 import ComponentInformation from "../componentInformation/index.vue"; //构件信息
 import Tool from "../Tool/index.vue"; //底部工具栏
-
+import { EventBus } from '@/utils/bus.js'
 
 export default {
   name: "look_app",
@@ -440,7 +282,6 @@ export default {
     EscDialogItem,
     roamNavigate,
     viewPhoto,
-    viewUpimg,
     weatherSystem,
     ResourcePool,
     ComponentInformation,
@@ -461,11 +302,8 @@ export default {
       shareCode: null,
       showTodoIconObj: {},
       socketData: {},
-      windowChangeFlag: true,
-      componentCollapse: "1",
       modelBrowser: null,
       openNode: null,
-      actionList: [],
       propsFooter: {
         taskId: null,
       },
@@ -502,7 +340,6 @@ export default {
       appToken: null,
       locale: "zh",
       taskId: null,
-      ourbimInfo: null,
       isFade: true,
       isFollow: false,
       isTag: false,
@@ -517,10 +354,8 @@ export default {
       memberInfo: [], //属性信息
       activeLeaf: false,
       loadTimer: null,
-      timerCount: 0,
       hiddenState: 0,
       websock: null,
-      isSocket: false,
       socketTimer: null,
       browserInfo: null, //模型浏览器
       viewAngle:null,  // 漫游导航
@@ -528,10 +363,6 @@ export default {
       shadowType: null,
       listenTodoInfo: null,
       isUiBar: true,
-      pageSizeInfo: {
-        width: null,
-        height: null,
-      },
       uaInfo: null,
       gaugeInfo: {
         unit: "m",
@@ -546,53 +377,13 @@ export default {
       godNode: null,
       appType: null,
       userType: null,
-      inputTwo:'',  // 材质库搜索绑定值 （材质库）
-      activeMater:'', // 选中材质编辑中的 构件材质图片
       // （材质库）
       materialData: {},
-      // 材质要修改的信息（材质库）
-      middleMaterInfo:[
-        {
-          id:0,
-          titleName:'贴图位置',
-          nameInfo:[]
-        },
-          {
-          id:2,
-          titleName:'材质效果属性',
-          nameInfo:[]
-        }
-      ],
-      materilCheckList:[],  // 材质编辑底部复选框 （材质库）
-      activeNamePic:'first', // 贴图弹框的 el-tabs  （材质库）
-      color1:null,   // 材质编辑 颜色选择器  （材质库）
-      photoStoreFlag:'', // 贴图库显示隐藏   （材质库）
-      addViewUpImgPost:false, // 上传贴图弹框
-      projectMaterList:[],  // 项目材质列表
-      exchangeData:{      // 指令更换材质的参数
-        matId:'',
-        isPublic:'',
-        actorId:'',
-        comType:''
-      },
+      selectPark: null,//选择构件
       // 贴图库 公共库的信息
-      errorImg:'this.src="' + require('@/assets/failed.png') + '"',
-      personalPicMaterInfo:[], // 贴图库 个人库
-      btnUpTexure:false, // 控制上传按钮
-      personalTexureGroup:[], // 贴图 个人库分组
       modelIsLink:null, // 是否是链接模型
       pakIdMapweb:'', // 区分点击的是自定义构件还是模型自带的构件
-      matParam:{}, // 材质的部分信息
-      activeTexTurePerson:'', // 贴图库个人库
-      spread:[], // 材质参数折叠面板展开
-      spreadPerson:[], // 贴图库折叠面板展开
-      materialAllInfo:{}, // 构件某材质全部信息
-      defaultUrl:null, // 识别本地与线上
-      comPakId:'', // 材质编辑点击的构件的pakId
       pakAndAppid:[], 
-      weatherDrawer:false, // 天气抽屉
-      drawerLeftSize: 300, // 抽屉宽度
-      selectPark: null,//选择构件
     };
   },
 
@@ -645,7 +436,6 @@ export default {
      },300);                
     this.lockView = this.$route.query.isGis || this.$route.query.weatherBin; 
     this.uaInfo = navigator.userAgent.toLowerCase();
-    this.setOrderList();
     this.appId = this.$route.query.appid;
     this.appToken = this.$route.query.token;
     this.isUiBar =
@@ -654,17 +444,6 @@ export default {
         : false;
 
     this.handleTodoIcon(this.$route.query);
-    if (this.$route.query.width && this.$route.query.height) {
-      this.pageSizeInfo = {
-        width: this.$route.query.width,
-        height: this.$route.query.height,
-      };
-    } else {
-      this.pageSizeInfo = {
-        width: 1920,
-        height: 1080,
-      };
-    }
     if (this.$route.query.appType) {
       this.appType = this.$route.query.appType;
       // 如果是云应用就去掉遮罩层和操作栏以及加载进度---
@@ -680,7 +459,6 @@ export default {
   //   }
   },
   mounted() {
-    this.defaultUrl = process.env.VUE_APP_REQUEST_URL;
     document
       .querySelector("#tree-content")
       .addEventListener("scroll", this.throttle(this.handleScroll));
@@ -727,7 +505,7 @@ export default {
                 break;
             // 漫游导航
             case 'roaming':
-                
+                this.viewAngle = true
                 break;
             // 模型剖切
             case 'modelSectioning':
@@ -755,7 +533,7 @@ export default {
                 break;
             // 渲染环境
             case 'renderingEnvironment':
-                
+                this.$refs.weatherSystem.show()
                 break;
             // 资源库
             case 'resource':
@@ -763,11 +541,24 @@ export default {
                 break;
             // 浏览器
             case 'browser':
-                
+                this.browserInfo = true
                 break;
             // 构件信息memberInfo:属性信息
             case 'componentInformation':
                 this.$refs.ComponentInformation.show()
+                break;
+        
+            default:
+                break;
+        }
+    },
+    closeTool(e){
+        switch (e.key) {
+            case 'browser':
+                this.browserInfo = false
+                break;
+            case 'roaming':
+                this.viewAngle = false
                 break;
         
             default:
@@ -884,19 +675,6 @@ export default {
             if (e.data.type === 1001) {
               this.controllerInfo.uiBar = e.data.data;
               this.controllerInfo.viewCube = e.data.data;
-            } else if (e.data.type >= 1002 && e.data.type <= 1014) {
-              if (this.actionList.indexOf(e.data.type) > -1) {
-                if (e.data.data === false) {
-                  this.controllerInfo.singleList.push(e.data.type);
-                } else {
-                  this.controllerInfo.singleList.indexOf(e.data.type) > -1
-                    ? this.controllerInfo.singleList.splice(
-                        this.controllerInfo.singleList.indexOf(e.data.type),
-                        1
-                      )
-                    : "";
-                }
-              }
             } else if (e.data.type === 1015) {
               this.controllerInfo.viewCube = e.data.data;
             } else if (e.data.type === 2001) {
@@ -1151,16 +929,6 @@ export default {
         }
       });
     },
-    setOrderList() {
-      /**
-       * @Author: zk
-       * @Date: 2021-05-10 17:54:24
-       * @description: 初始化指令对照表
-       */
-      for (let index = 0; index < 13; index++) {
-        this.actionList.push(1002 + index);
-      }
-    },
     listenFollow(e) {
       /**
        * @Author: zk
@@ -1168,15 +936,6 @@ export default {
        * @description: 监听关注视角是否打开
        */
       this.isFollow = e;
-    },
-    listenMode(e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-03-17 16:01:54
-       * @description: 切换投影模式
-       */
-      this.handleState = e;
-      this.$refs.getCube.resetActive(e);
     },
     getError(e) {
       /**
@@ -1800,23 +1559,24 @@ export default {
       }
     },
     // 关闭模块
-    closePart(e) {
-      if (e === 10) {
-        this.browserInfo = null;
-      }
-      if (e === 11) {
-        this.natureInfo = null;
-      }
-      if (e === 14) {
-        this.listenTodoInfo = null;
-      }
-      // 漫游导航---
-      if(e === 0){
-        this.viewAngle = null;
-      }
-      if (this.$refs.getFooter) {
-        this.$refs.getFooter.editTool(e);
-      }
+    closePart(type) {
+        EventBus.$emit('eventTool', type)
+    //   if (e === 10) {
+    //     this.browserInfo = null;
+    //   }
+    //   if (e === 11) {
+    //     this.natureInfo = null;
+    //   }
+    //   if (e === 14) {
+    //     this.listenTodoInfo = null;
+    //   }
+    //   // 漫游导航---
+    //   if(e === 0){
+    //     this.viewAngle = null;
+    //   }
+    //   if (this.$refs.getFooter) {
+    //     this.$refs.getFooter.editTool(e);
+    //   }
     },
     closeTag() {
       /**
@@ -1891,145 +1651,7 @@ export default {
       this.updateOrder();
     },
     listenTodo(e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-03-04 14:06:09
-       * @description: 监听操作栏
-       */
-      // 漫游导航内 控制 viewCube ---
-      if(e.name==='viewCube'){
-        this.controllerInfo.viewCube = e.flag;
-      }
-      this.$refs.getCube.closeView();
-      if (e.type === 14 || e.type === 11) {
-        this.isQrcode = false;
-      }
-      // 构件库
-      if (e.type === 14) {
-        this.listenTodoInfo = e;
-        document.querySelector('.systemDrawer').style.display = 'none'; // 关闭天气弹框
-        if(this.taskId && this.controllerInfo.tagUiBar && ((this.listenTodoInfo && this.listenTodoInfo.type === 14 && this.listenTodoInfo.state === 1) || this.controllerInfo.componentLibrary)){
-          this.$refs.ResourcePool.show()
-        }
-      }
-      // 浏览器
-      if (e.type === 10) {
-        this.browserInfo = e;
-      }
-      // 构件属性
-      if (e.type === 11) {
-        this.natureInfo = e;
-        document.querySelector('.systemDrawer').style.display = 'none'; // 关闭天气弹框
-        this.$refs.getFooter.editTool(9); // 关闭天气图标
-        this.$refs.ComponentInformation.show()
-      }
-      // 框选
-      if (e.type === 12) {
-        this.handleState = 14;
-        this.listenTodoInfo = e;
-        this.updateOrder();
-      }
-      // 移动速度
-      if (e.type === 1 && e.data) {
-        this.handleState = 3;
-        this.listenTodoInfo = e;
-        this.updateOrder();
-      }
-      // 标签
-      if (e.type === 4) {
-        this.isTag = e.state === 0 ? false : true;
-        this.$refs.tagTree.closePart(e.state === 0 ? false : true);
-        this.listenTodoInfo = e;
-        this.handleTagShow();
-      } else {
-        if (this.isTag && e.type !== 11) {
-          if(e.flag === 'material') return; // 开启标签并关闭材质编辑时，防止标签消失
-          this.$refs.tagTree.closePart(false);
-          // 如果不是标签并且标签已经开启
-          // this.listenTodoInfo = {
-          //   type: 4,
-          //   state: 0,
-          // };
-          this.handleTagShow(false);   
-          this.isTag = false;
-        }
-      }
-      // 模型剖切
-      if (e.type === 2) {
-        this.handleState = 11;
-        this.listenTodoInfo = e;
-        this.updateOrder();
-      }
-      // 测量
-      /*
-        state: 0,
-        type: 3,
-        data: 0 1 2,
-        set: null,
-       */
-      if (e.type === 3) {
-        if (e.state === 1 && e.data !== undefined) {
-          this.handleState = 4;
-          this.listenTodoInfo = e;
-          if (e.data === 3) {
-            this.gaugeInfo.unit = e.set;
-          } else if (e.data === 4) {
-            this.gaugeInfo.accuracy = e.set;
-          }
-          this.updateOrder();
-        }
-        if (e.state === 0) {
-          this.handleState = 5;
-          this.updateOrder();
-        }
-      }
-      // 分解模型
-      if (e.type === 8 && e.data !== undefined) {
-        this.handleState = 12;
-        this.listenTodoInfo = e;
-        this.updateOrder();
-      }
-      // 渲染环境
-      // if (e.type === 9 && e.data !== undefined) {
-      //   this.handleState = 15;
-      //   this.listenTodoInfo = e;
-      //   this.updateOrder();
-      // }
-      // 天气系统
-      if(e.type === 9){
-        this.listenTodoInfo = e;
-        if(e.state === 1){
-          document.querySelector('.systemDrawer').style.display = 'block';
-          this.weatherDrawer = true
-          this.natureInfo = null; // 关闭属性弹框
-          this.$refs.getFooter.editTool(11); // 关闭属性图标
-        }else{
-          this.weatherDrawer = false
-          document.querySelector('.systemDrawer').style.display = 'none';
-        }
-      }
-      // 小地图
-      if (e.type === 5) {
-        this.handleState = 16;
-        this.listenTodoInfo = e;
-        this.updateOrder();
-      }
-      // 构件显示隐藏
-      // 渲染环境
-      if (e.type === 13) {
-        this.listenTodoInfo = e;
-        // this.UpdateMemeberState();
-      }
-      // 渲染环境修改时间
-      if (e.type === 15) {
-        this.handleState = 17;
-        this.listenTodoInfo = e;
-        this.updateOrder();
-      }
-      //漫游导航---
-       if (e.type === 0) {
-         this.viewAngle = e
-       }
+      
     },
     UpdateMemeberState() {
       /**
@@ -2172,6 +1794,7 @@ export default {
           let realData = JSON.parse(e.data);
           this.socketData = realData;
           if (realData.id === "1") {
+            this.$refs.ComponentInformation.activeMaterialIndex = 0 //切换点击构件默认选中为初始值
             this.selectPark = realData
             // 不知道构件为啥返回的格式不一样，有dynamicData的需要新增俩个属性放在最前面
             if(realData.data?.dynamicData?.length){
@@ -2390,20 +2013,34 @@ export default {
               if(realData.rsInfo[0].pakId){
                 (realData.rsInfo[0].pakId === 'MAPWEB' || realData.rsInfo[0].pakId === 'gis')  ? this.pakIdMapweb = 'public' : this.pakIdMapweb = '';
               }
-              this.comPakId = realData.rsInfo[0].pakId;
+            // 选中的构件信息
               this.$set(this.materialData,'matList',realData.rsInfo.length&&realData.rsInfo[0].matList || [])
-              this.$set(this.materialData,'actorId',realData.rsInfo.length&&realData.rsInfo[0].actorId)
-              this.$set(this.materialData,'pakId',realData.rsInfo.length&&realData.rsInfo[0].pakId)
-              let newArr = [];
-              realData.rsInfo.forEach((item,index)=>{
-                 newArr = [...newArr,...item.matList];
-              });
-              this.activeMater = 0; // 默认选中第一张图片
-            //   this.materialAllInfo = this.topImgMaterial[0]; // 构件的第一个材质信息
-              this.exchangeData.actorId = realData.rsInfo[0].actorId;
-              this.getMaterialInfomation(this.getActiveMatid(this.activeMater)); // 默认先获取第一张图片材质信息
+              this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: realData.rsInfo.length&&realData.rsInfo[0] || {} })
+              this.materialData.matList?.length&&this.materialData.matList.forEach(item=>{
+                try {
+                    this.materialData.rsInfo.forEach(e=>{
+                      if(item.matId === e.matId){
+                        item.imgPath = e.imgPath;
+                        throw new Error()
+                      }
+                    })             
+                } catch (error) {}
+            })
+            this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: this.materialData.matList[0] })
+            this.$refs.ComponentInformation.getMaterial(this.materialData.matList[0].matId)
           }else if(realData.id === "29"){
+            // 材质信息图片
             this.$set(this.materialData,'rsInfo',realData.rsInfo)
+            this.materialData.matList?.length&&this.materialData.matList.forEach(item=>{
+                try {
+                    this.materialData.rsInfo.forEach(e=>{
+                      if(item.matId === e.matId){
+                        item.imgPath = e.imgPath;
+                        throw new Error()
+                      }
+                    })             
+                } catch (error) {}
+            })
           }else if(realData.id === "33"){
             // 视点动画播放
             this.$refs.viewPhoto.WebSocketData = realData
@@ -2411,7 +2048,6 @@ export default {
         }
       };
       this.websock.onopen = (e) => {
-        this.isSocket = true;
         this.socketTimer = setInterval(() => {
           this.websock.send("Bang");
         }, 1000 * 60);
@@ -2490,7 +2126,6 @@ export default {
           if (res.data.code === 0 && res.data.data) {
             this.webUrl = res.data.data.url;
             this.taskId = res.data.data.taskId;
-            this.ourbimInfo = res.data.data;
             this.propsFooter.taskId = res.data.data.taskId;
             // 保存code
             if (res.data.data.code) {
@@ -2582,7 +2217,6 @@ export default {
         this.socketTimer = null;
       }
       if (this.websock) {
-        this.isSocket = false;
         this.websock.close(); //离开路由之后断开websocket连接
         this.websock = null;
         this.webUrl = null;
@@ -2687,408 +2321,6 @@ export default {
       } else {
       }
     },
-    // 点击贴图 (材质库)
-    photoStore(type){
-      this.photoStoreFlag = type
-    },
-    spreadCircle(arr,str){
-      let open = [];
-      for(let i=0;i<arr.length;i++){
-        open.push(i)
-      }
-      if(str === '0'){
-        this.spread = open;
-      }else if(str === '1'){
-        this.spreadPerson = open;
-      }
-    },
-    // 点击贴图库 取消 (材质库)
-    canclePhotostore(){
-      this.photoStoreFlag = '';
-    },
-    // 点击上传贴图
-    postUploadPic(){
-      this.addViewUpImgPost = true;
-    },
-    // 选中材质编辑中的 构件材质图片
-    // photoSelect(e,num){
-    //     this.materialAllInfo = e; 
-    //     if(this.activeMater === num){
-    //       this.activeMater = ''
-    //     }else{
-    //       this.activeMater = num;
-    //       this.getMaterialInfomation(e.matId); // 获取材质信息
-    //     }
-    //     this.canclePhotostore(); // 关闭贴图弹框
-    // },
-    // 获取材质编辑选中的材质的matid
-    getActiveMatid(str){
-        return this.topImgMaterial[str].matId;
-    },
-    // 替换材质
-    exchangeMater(materialId){
-        const allChange = this.materilCheckList.some(res=>{
-           return res === '2'
-        })
-        let params = {
-          taskId:this.taskId,
-          appId: this.pakidToAppid(this.comPakId),
-          matId:materialId,
-          isPublic: false,
-          isUpdateSameMaterial:allChange,
-        }
-        let temp = {
-          matAndActorInfos:[
-            {
-              actorId:this.exchangeData.actorId,
-              meshIndex:this.materialAllInfo.meshIndex,
-              matIndex:this.materialAllInfo.matIndex,
-              comType: this.pakIdMapweb,
-              pakId:this.comPakId
-            }
-          ]
-        }
-        CHAILIAOAPI.CHANGEMATERIALBYINSTRUCTION(params,JSON.stringify(temp.matAndActorInfos)).then((res)=>{
-            if(res.data.code===0){
-              this.$message.success('材质替换成功');
-              this.activeTexTurePerson = ''; // 个人贴图
-              this.getMaterialInfomation(materialId,'change'); // 获取刚替换好的材质的信息
-            }
-        }).catch(()=>{})
-    },
-    // 获取 个人库 贴图
-    getPersonPhoto(str){
-      const {userId} = this.$route.query;
-      let params = {
-          userId:userId || JSON.parse(sessionStorage.getItem("userid"))
-      }
-      CHAILIAOAPI.GETMATERIALALLTEXTUREINFO(params).then((res)=>{
-          if(res.data.code === 0){
-            this.personalPicMaterInfo = res.data.data || [];
-            if(str === 'groupOrNot' && this.personalPicMaterInfo.length<=0){
-              this.createTextureGroup(); // 新用户没有分组 默认创建一个分组
-            }
-            if(this.personalTexureGroup.length<=0){
-              res.data.data.forEach(item=>{
-                let obj = {};
-                obj.value = item.groupId;
-                obj.label = item.groupName;
-                this.personalTexureGroup.push(obj);
-              })
-            }
-          }
-      }).catch(()=>{})
-    },
-    // 创建个人库贴图分组
-    createTextureGroup(){
-      const {userId} = this.$route.query;
-      let params = {
-        userId:userId || JSON.parse(sessionStorage.getItem("userid")),
-        groupName:'我的分组'
-      }
-      CHAILIAOAPI.CREATEMATERIALTEXTUREGROUP(params).then(res=>{
-        if(res.data.code === 1){
-          this.getPersonPhoto();
-        }
-      }).catch(()=>{})
-    },
-    // 贴图库点击 公共库和个人库时触发
-    texureClick(e){
-      if(e._props.name === 'second'){
-        this.btnUpTexure = true;
-        this.getPersonPhoto('groupOrNot');
-        this.spreadCircle(this.personalPicMaterInfo,'1'); // 折叠面板
-      }else if(e._props.name === 'first'){
-        this.btnUpTexure = false;
-      }
-    },
-    // 关闭上传贴图弹框
-    closeTexureDialog(e){
-      this.addViewUpImgPost = false;
-      if(e === 'success'){
-        this.getPersonPhoto();
-      }
-    },
-    // 获取贴图数据
-    getTextType(type){
-        let res = this.matParam.texturesList.filter(e=>{return e.paramName===type})
-        return res.length&&res[0]
-    },
-    filterTexturesList(type){
-        let res = this.middleMaterInfo[0].nameInfo.filter(e=>{return e.label===type})
-        return Number(res.length&&res[0].paramValue)
-    },
-    // 获取材质信息
-    getMaterialInfomation(e,str){
-      if(e === 'RESET'){  // 重置过的材质就不要再获取材质信息了
-        this.middleMaterInfo.forEach(mat=>{
-          mat.nameInfo = [];
-        })
-        return false;
-      }
-      let params = {
-        matId:e,
-        isPublic:str==='public' ? true : false
-      }
-      CHAILIAOAPI.GETMATERIALBYMATID(params).then(res=>{
-        if(res.data.code === 0){
-          this.matParam = JSON.parse(res.data.data.matParam);
-          // this.materialMatId = res.data.data.matId; // 选中材质编辑的材质的matId
-        //   为了排序start
-          let imgData = this.strToNumber(this.matParam.textureParamsList)
-        //   console.log('🚀🚀🚀',imgData,JSON.parse(JSON.stringify(imgData)));
-          console.log('🚀🚀🚀',imgData);
-          let reSort = []
-          imgData.forEach((e,i)=>{
-              console.log('🚀🚀🚀',typeof e.paramValue);
-            e.paramValue = Number(e.paramValue)
-            // if(typeof e.paramValue === 'String'){
-            // }
-            if(e.label==='等比缩放'){
-                reSort.unshift(e)
-            }
-            if(e.label==='横向缩放'){
-                reSort.push(e)
-            }
-            if(e.label==='纵向缩放'){
-                reSort.push(e)
-            }
-            if(e.label==='缩放'){
-                reSort.push(e)
-            }
-          })
-          let seen = new Map();
-            let uniqueArr = reSort.concat(imgData).filter((item) => {
-                return !seen.has(JSON.stringify(item)) && seen.set(JSON.stringify(item), 1);
-            });
-            // end
-          this.$set(this.middleMaterInfo[0],'nameInfo',uniqueArr,'texture')
-          this.$set(this.middleMaterInfo[1],'nameInfo',this.strToNumber(this.matParam.baseParamsList))
-          this.color1 = this.arrToRgb(this.matParam.colorList.length>0 ? this.matParam.colorList[0].paramValue : []);
-          this.spreadCircle(this.middleMaterInfo,'0'); // 折叠面板
-        //   if(this.activePub !== ''){
-        //     this.addMaterialToUser(res.data.data.matId); // 添加材质到用户库
-        //   }
-        //   arr.photoUrl：添加这段代码为了解决接口返回的图片显示不对，更新后后端返回错误还不解决由前端修改了，🤦‍
-        let arr = this.topImgMaterial[this.matEditIndex]
-          if(str === 'public'){
-              arr.photoUrl = res.data.data.matImgPath;
-          }
-          if(str === 'change'){
-            let arr = this.topImgMaterial[this.matEditIndex]
-            arr.matId = res.data.data.matId;
-            this.activeMater = this.matEditIndex;
-          }
-        }else if(res.data.code === 1){
-            this.$message.error(res.data.message)
-        }
-      }).catch(()=>{})
-    },
-    rgbaToArr(color) {
-        var arr = []
-        if(color){
-            const str = color.slice(5)
-            const str1 = str.slice(0, str.length - 1)
-            arr = str1.replace(/\s*/g,"").split(',')
-        }
-        return arr
-    },
-    // 修改材质参数
-    updateMateInfo(flag){
-      let params = {
-        taskId:this.taskId,
-        appId: this.pakidToAppid(this.comPakId),
-        baseColorTextureId:'',
-        normalMapTextureId:''
-      }
-      let colorList = JSON.parse(JSON.stringify(this.matParam.colorList)) || []
-      if(colorList.length){
-        try {
-            // 不同材质不同取值
-            colorList.forEach(e=>{
-                if(e.paramName==='BaseColor' || e.paramName==='Color' || e.paramName==='GlowColor' || e.paramName==='BaseColor1' || e.paramName==='BaseColor2'){
-                    e.paramValue = this.rgbaToArr(this.color1)
-                    throw new Error()
-                }
-            })           
-        } catch (error) {}
-      }
-      let temp = [
-        {
-          matId: this.getActiveMatid(this.activeMater),
-          pakId: this.comPakId,
-          matParam:
-          {
-            matId:this.getActiveMatid(this.activeMater),
-            ...this.matParam,
-            colorList,
-          }
-        }
-      ]
-      CHAILIAOAPI.UPDATEMATERIAL(params,JSON.stringify(temp)).then((res)=>{
-            if(res.data.code === 0){
-              this.$message.success('材质替换成功')
-              this.getMaterialInfomation(this.getActiveMatid(this.activeMater)); // 获取材质信息
-              if(flag === 'reset'){
-                this.$message.success('删除成功')
-              }
-            }
-      }).catch(()=>{})
-    },
-    // 添加材质到用户材质库
-    addMaterialToUser(id,str){
-      const {userId} = this.$route.query;
-      let params = {
-        userId:userId || JSON.parse(sessionStorage.getItem("userid")) || 'travels',
-        matId:id,
-        isPublic: str ==='textureChange' ? false : true,
-        baseColorTextureId:this.photoStoreFlag==='基础'?this.activeTexTurePerson:'',
-        normalMapTextureId:this.photoStoreFlag==='法线'?this.activeTexTurePerson:''
-      }
-      CHAILIAOAPI.ADDMATERIALFORUSER(params,JSON.stringify(this.matParam)).then((res)=>{
-            if(res.data.code === 0){
-              this.exchangeMater(res.data.data); // 替换材质
-            }
-      }).catch(()=>{})
-    },
-    // 重置材质贴图
-    deleteStickPic(type){
-        this.photoStoreFlag = type
-      this.$confirm('您要删除此贴图, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(async () => {
-            this.matParam.texturesList.forEach(e=>{
-                if(e.paramName === type){
-                    e.paramValue = ''
-                }
-            })
-          this.$forceUpdate()
-          this.updateMateInfo('reset');
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });          
-        });
-    },
-    // 恢复材质按钮
-    // resetClick(item,num){
-    //     this.$confirm('您将重置此材质, 是否继续?', '提示', {
-    //       confirmButtonText: '确定',
-    //       cancelButtonText: '取消',
-    //       type: 'warning'
-    //     }).then(() => {
-    //       this.resetMat(item.matId,num);
-    //     }).catch(() => {
-    //       this.$message({
-    //         type: 'info',
-    //         message: '已取消删除'
-    //       });          
-    //     });
-    // },
-    // 恢复材质
-    // resetMat(flagId,num){
-    //     let params = {
-    //       taskId:this.taskId,
-    //       appId: this.pakidToAppid(this.comPakId),
-    //       matId:flagId,
-    //       isPublic: false
-    //     }
-    //     let temp = {
-    //       matAndActorInfos:[
-    //         {
-    //           actorId:this.exchangeData.actorId,
-    //           meshIndex:this.materialAllInfo.meshIndex,
-    //           matIndex:this.materialAllInfo.matIndex,
-    //           comType: this.pakIdMapweb,
-    //           pakId:this.comPakId
-    //         }
-    //       ]
-    //     }
-    //     CHAILIAOAPI.RESETMATERIAL(params,JSON.stringify(temp.matAndActorInfos)).then((res)=>{
-    //         if(res.data.code===0){
-    //           this.middleMaterInfo.forEach(mat=>{
-    //             mat.nameInfo = [];
-    //           })
-    //           this.topImgMaterial[num].matId = 'RESET' // 修改被重置的材质的id
-    //           this.$set(this.topImgMaterial[num],'photoUrl',require('@/assets/caizhi.jpg')) // 修改被重置的材质的图片
-    //           this.$message.success('材质重置成功')
-    //         }
-    //     }).catch(()=>{})
-    // },
-    // 点击贴图库的个人库图片
-    texturePhotoSelect(e){
-        if(this.activeTexTurePerson === e.textureId){
-          this.activeTexTurePerson = ''
-        }else{
-          this.activeTexTurePerson = e.textureId;
-          this.addMaterialToUser(this.getActiveMatid(this.activeMater),'textureChange');// 添加贴图到用户
-        }
-    },
-    // 材质编辑 颜色改变
-    colorBeChange(e){
-      this.updateMateInfo();
-    },
-    // 数组变rgb
-    arrToRgb(arr){
-      let str = '';
-      if(arr.length>0){
-        str = `rgba(${arr[0]},${arr[1]},${arr[2]},${arr[3]})`
-      }else{
-        str = null
-      }
-      return str;
-    },
-    strToNumber(arr,str){
-        if(arr.length<0){
-          return [];
-        }
-        let flag = '';
-        let newArr = [];
-        arr.forEach(item=>{
-          if(item.label !== '等比缩放'){
-            item.paramValue = Number(item.paramValue); // 字符串转数值
-            this.$set(item, 'paramValue1', item.paramValue)
-          }else{
-            flag = item.paramValue; // 拿到等比缩放的值
-          }
-        })
-        if(str === 'texture'){
-          if(flag==='1'){
-            newArr = arr.filter(item=>{
-                let fake = (item.label === '横向缩放' || item.label === '纵向缩放') ? false : true;
-                return fake;
-            })
-          }else{
-            newArr = arr.filter(item=>{
-                return item.label !== '缩放';
-            })
-          }
-            // 排序
-            let sortArr = []
-            let obj = null;
-            newArr.forEach((com)=>{
-              if(com.label==='横向缩放' || com.label==='纵向缩放' || com.label==='缩放'){
-                sortArr.unshift(com);
-              }else{
-                if(com.label==='等比缩放'){
-                  obj = com
-                }
-                sortArr.push(com);
-              }
-            })
-            let finalArr = sortArr.filter(items=>{
-              return items.label !== '等比缩放'
-            })
-            if(obj){
-              finalArr.unshift(obj)
-            }
-            arr = finalArr
-        }
-        return arr;
-    },
     // 获取pakid
     getLinkModelAppid(){
       let params = {
@@ -3111,20 +2343,6 @@ export default {
       console.log('🚀🚀🚀',this.pakAndAppid);
       return componentAppId;
     },
-    // 材质信息改变
-    materialSliderChange(val,prI,i){
-        this.middleMaterInfo[prI].nameInfo[i].paramValue = val
-        this.updateMateInfo();
-    },
-    materialInfoChange(){
-        this.updateMateInfo();
-    },
-    // 材质库 相关方法 end --------
-    // 关闭天气系统抽屉
-    closeSystemDrawer(){
-      this.weatherDrawer = false;
-      this.closePart(9);
-    }
   },
 };
 </script>
@@ -3393,30 +2611,7 @@ export default {
       animation: dotPhone 3s infinite step-start;
     }
   }
-  // 天气抽屉
-  .systemDrawer{
-    display: none;
-    width: 300px;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    right: 0;
-    ::v-deep .el-drawer__wrapper{
-      width: 300px;
-      position: absolute !important;
-      .drawer__container{
-        width: 300px;
-      }
-      .el-drawer__header{
-        color: #fff;
-        padding: 16px 16px 0;
-        margin-bottom: 11px;
-      }
-    }
-    ::v-deep .el-drawer{
-      background: rgba(0, 0, 0, 0.9);
-    }
-  }
+
   // 视图层
   .mutual-bim {
     position: absolute;

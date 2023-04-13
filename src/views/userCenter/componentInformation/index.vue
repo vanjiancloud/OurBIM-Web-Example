@@ -119,83 +119,73 @@
         <div class="material" v-if="activeTab===2">
             <div class="materialList">
                 <div class="materialListCon" :style="{'height':isOpen?'auto':'90px'}">
-                    <div class="materialItem" :class="{activeMaterial:activeMaterialIndex===index}" v-for="(item,index) in data.materialData.rsInfo" :key="index" @click="onMaterial(item,index)">
+                    <div class="materialItem" :class="{activeMaterial:activeMaterialIndex===index}" v-for="(item,index) in componentAllInfo.matList" :key="index" @click="onMaterial(item,index)">
                         <el-image class="img" :src="item.imgPath" lazy></el-image>
-                        <div class="materialReset" @click.stop="resetMaterial(item)"><i class="el-icon-refresh-right"></i></div>
+                        <div class="materialReset" @click.stop="resetMaterial(item,index)"><i class="el-icon-refresh-right"></i></div>
                     </div>
                 </div>
                 <!-- 是否展开和收缩 -->
                 <div class="isOpen" @click="isOpen=!isOpen"><i :class="{'el-icon-caret-top':isOpen,'el-icon-caret-bottom':!isOpen}"></i></div>
             </div>
-            <div class="materialImg">
-                <span>颜色</span>
-                <el-color-picker v-model="form.color" show-alpha></el-color-picker>
-                <span>贴图</span>
-                <el-image class="img" :src="require('@/assets/err.png')" lazy></el-image>
-            </div>
-            <div class="componentTitle">贴图位置</div>
-            <div class="materialSlider">
-                <div>横向偏移</div>
-                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider><span>mm</span></div>
-            </div>
-            <div class="materialSlider">
-                <div>纵向偏移</div>
-                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider><span>mm</span></div>
-            </div>
-            <div class="materialSlider">
-                <div>角度</div>
-                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider><span>°</span></div>
-            </div>
-            <div class="switchBox">
-                <span>等比缩放</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch>
-            </div>
-            <div class="materialSlider">
-                <div>缩放</div>
-                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-            </div>
-            <div class="materialSlider">
-                <div>横向缩放</div>
-                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-            </div>
-            <div class="materialSlider">
-                <div>纵向缩放</div>
-                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-            </div>
-            <div class="componentTitle">材质效果属性</div>
-            <div class="materialSlider">
-                <div>凹凸比例</div>
-                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-            </div>
-            <div class="materialSlider">
-                <div>反射强度</div>
-                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-            </div>
-            <div class="materialSlider">
-                <div>粗糙度</div>
-                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-            </div>
-            <div class="materialSlider">
-                <div>透明度</div>
-                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-            </div>
-            <div class="materialSlider">
-                <div>饱和度</div>
-                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-            </div>
-            <div class="materialSlider">
-                <div>亮度</div>
-                <div class="slider"><el-slider v-model="form.value1" show-input input-size="mini"></el-slider></div>
-            </div>
-            <div>
-                <el-checkbox v-model="form.checked">双面材质</el-checkbox>
-                <el-checkbox v-model="form.checked">替换所有相同材质</el-checkbox>
-            </div>
+            <template v-if="materialAllInfo.matParam && materialAllInfo.matParam.colorList.length">
+                <div class="materialImg">
+                    <span>颜色</span>
+                    <el-color-picker v-model="form.color" show-alpha @change="updateMaterial()"></el-color-picker>
+                    <div class="chartlet">
+                        <span>基础颜色贴图</span>
+                        <el-image class="img" :class="{activeChartlet:activeChartlet==='基础'}" :src="getChartletType('BaseColorMap')" lazy @click.native="onChartlet('基础')">
+                            <div slot="error" class="image-slot">
+                                <i class="el-icon-plus plusIcon"></i>
+                            </div>
+                        </el-image>
+                        <span>法线贴图</span>
+                        <el-image class="img" :class="{activeChartlet:activeChartlet==='法线'}" :src="getChartletType('NormalMap')" lazy @click.native="onChartlet('法线')">
+                            <div slot="error" class="image-slot">
+                                <i class="el-icon-plus plusIcon"></i>
+                            </div>
+                        </el-image>
+                    </div>
+                </div>
+                <div class="componentTitle">贴图位置</div>
+                <template v-for="(item,index) in materialChartlet.textureParamsList">
+                    <div v-if="!item.hasOwnProperty('enableEdit')||item.enableEdit!='false'" :key="index">
+                        <div class="switchBox" v-if="item.label === '等比缩放'">
+                            <span>等比缩放</span><el-switch @change="updateMaterial()" v-model="item.paramValue" :active-value="1" :inactive-value="0" active-color="#409EFF" inactive-color="#727272"></el-switch>
+                        </div>
+                        <div class="materialSlider" :key="index+1" v-else-if="item.label !== '等比缩放' && (((filterTexturesList('等比缩放')==1&&item.label!=='纵向缩放'&&item.label!=='横向缩放') || (filterTexturesList('等比缩放')==0&&item.label!=='缩放')))">
+                            <div>{{ item.label }}</div>
+                            <div class="slider">
+                                <el-slider @change="onChange(0,$event,index)" v-model="item.paramValue1" :max="Number(item.max)" :min="Number(item.min)" :step="Number(item.min)<=0 ? 0.1 : ((Number(item.min)<=0.01) ? 0.01 : 1)"></el-slider>
+                                <input type="number" v-model.trim.number="item.paramValue" style="width:70px;height: 23px;" @change="updateMaterial()" />
+                                <span v-if="['横向偏移','纵向偏移'].includes(item.label)">mm</span>
+                                <span v-else-if="['角度'].includes(item.label)">°</span>
+                                <span v-else></span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <div class="componentTitle">材质效果属性</div>
+                <template v-for="(item,index) in materialChartlet.baseParamsList">
+                    <div class="materialSlider" :key="index+'base'" v-if="!item.hasOwnProperty('enableEdit')||item.enableEdit!='false'">
+                        <div>{{ item.label }}</div>
+                        <div class="slider">
+                            <el-slider @change="onChange(1,$event,index)" v-model="item.paramValue1" :max="Number(item.max)" :min="Number(item.min)" :step="Number(item.min)<=0 ? 0.1 : ((Number(item.min)<=0.01) ? 0.01 : 1)"></el-slider>
+                            <input type="number" v-model.trim.number="item.paramValue" style="width:70px;height: 23px;" @change="updateMaterial()" />
+                        </div>
+                    </div>
+                </template>
+                <div>
+                    <el-checkbox v-model="form.checked">双面材质</el-checkbox>
+                    <el-checkbox v-model="form.checked">替换所有相同材质</el-checkbox>
+                </div>
+            </template>
         </div>
     </Drawer>
 </template>
 
 <script>
-import { materialEditorControl, getMaterialByMatId, resetMaterial } from "@/api/material_api";
+import { mapGetters } from 'vuex'
+import { materialEditorControl, getMaterialByMatId, resetMaterial, updateMaterial } from "@/api/material_api";
 import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";
 import Tab from "@/components/Tab/index.vue";
@@ -226,58 +216,189 @@ export default {
             wordTypeList: [], //字体
             isOpen:false,
             activeMaterialIndex: 0, //默认选中材质
-            materialAllInfo: null, //材质下面的信息,贴图，缩放
+            materialChartlet: {
+                textureParamsList: [],
+                baseParamsList: []
+            }, //材质下面的信息,贴图，缩放
+            activeChartlet: null,//贴图是否被选中
         }
     },
     watch: {
         activeMaterialIndex(val){
-            this.materialAllInfo = this.getOtherContent(this.data.materialData.rsInfo[val].matId);
-        }
+            this.changeSetting({ key: "activeMaterialIndex", value: val })
+        },
     },
-    computed: {},
-    created() {},
+    computed: {
+        ...mapGetters(["componentAllInfo", "materialAllInfo"]),
+    },
+    created() {
+        this.$store.watch((state) => state.material.materialAllInfo.matParam,(newValue, oldValue) => {
+            this.materialChartlet.textureParamsList = this.formatBaseParams(this.getChartletParams())
+            this.materialChartlet.baseParamsList = this.formatBaseParams(newValue.baseParamsList)
+            this.formatColors(newValue.colorList)
+        });
+    },
     mounted() {},
     methods: {
         show() {
             this.$refs.Drawer.show()
-            this.materialAllInfo = this.data.materialData.rsInfo?.length && this.getOtherContent(this.data.materialData.rsInfo[0].matId);
-            console.log('🚀🚀🚀materialAllInfo',this.materialAllInfo);
         },
         close(){
             this.$refs.Drawer.hide()
             EventBus.$emit('eventTool', 'componentInformation')
         },
+        // 改变vuex的数据
+        changeSetting(obj){
+            this.$store.dispatch('material/changeSetting',obj)
+        },
         async onTab(e){
             this.activeTab = e.index
             // 打开或关闭材质编辑
             await materialEditorControl({taskId: this.data.taskId,flag:this.activeTab===2?'on':'off'})
-            EventBus.$emit('openMaterial', this.activeTab===2)
+            this.changeSetting({ key: "openMaterial", value: this.activeTab===2 })
         },
         // 去掉rgba
         formatColor(color){
             return color && color.slice(5,color.length-1)
         },
-        // 颜色数组变rgb
+        // 颜色数组变rgba
         arrToRgb(arr){
-            if(!arr.length) return null
-            return `rgba(${arr[0]},${arr[1]},${arr[2]},${arr[3]})`
+            if(!arr || !arr.length) return null
+            return `rgba(${arr[0]},${arr[1]},${arr[2]},${Number(arr[3])/255})`
         },
-        formatData(){
-            this.materialAllInfo.matParam
+        /* 
+            处理贴图
+            颜色paramName：BaseColor  不同材质不同取值
+            isUpdate：true:点击更新提交的时候转为数组
+            isUpdate：false:回显的时候转为rgba
+        */
+        formatColors(colorList,isUpdate){
+            if(isUpdate){
+                if(colorList.length){
+                    try {
+                        colorList.forEach(e=>{
+                            if(e.paramName==='BaseColor' || e.paramName==='Color' || e.paramName==='GlowColor' || e.paramName==='BaseColor1' || e.paramName==='BaseColor2'){
+                                e.paramValue = this.formatColor(this.form.color).split(',')
+                                throw new Error()
+                            }
+                        })
+                    } catch (error) {}
+                }
+                return colorList
+            }else{
+                if(colorList.length){
+                    try {
+                        colorList.forEach(e=>{
+                            if(e.paramName==='BaseColor' || e.paramName==='Color' || e.paramName==='GlowColor' || e.paramName==='BaseColor1' || e.paramName==='BaseColor2'){
+                                this.$set(this.form,'color',this.arrToRgb(e.paramValue))
+                                throw new Error()
+                            }
+                        })           
+                    } catch (error) {}
+                }else{
+                    this.$set(this.form,'color',null)
+                }
+            }
         },
-        // 获取材质下面的信息
-        getOtherContent(matId){
-            let res = this.data.materialData.matList.filter(e=>e.matId === matId)
-            return res.length&&res[0]
+        // 获取贴图数据
+        getChartletType(type){
+            let res = this.materialAllInfo.matParam&&this.materialAllInfo.matParam.texturesList.find(e=>{return e.paramName===type})
+            return res&&res.paramValue
+        },
+        // 贴图位置
+        getChartletParams(){
+            //   为了排序start
+            let imgData = this.materialAllInfo.matParam.textureParamsList || []
+            let reSort = []
+            imgData.forEach((e,i)=>{
+                this.$set(e,'paramValue1',Number(e.paramValue))
+                e.paramValue = Number(e.paramValue)
+                if(e.label==='等比缩放'){
+                    // e.paramValue = Number(e.paramValue).toString()
+                    reSort.unshift(e)
+                }
+                if(e.label==='横向缩放'){
+                    reSort.push(e)
+                }
+                if(e.label==='纵向缩放'){
+                    reSort.push(e)
+                }
+                if(e.label==='缩放'){
+                    reSort.push(e)
+                }
+            })
+            let seen = new Map();
+            let uniqueArr = reSort.concat(imgData).filter((item) => {
+                return !seen.has(JSON.stringify(item)) && seen.set(JSON.stringify(item), 1);
+            });
+            // end
+            return uniqueArr
+        },
+        formatBaseParams(data){
+            return data.map(e=>{return {...e,paramValue:Number(e.paramValue),paramValue1:Number(e.paramValue)}})
+        },
+        filterTexturesList(type){
+            let res = this.getChartletParams().find(e=>{return e.label===type})
+            return res&&res.paramValue
         },
         onMaterial(item,i){
             this.activeMaterialIndex = i
-            getMaterialByMatId({ matId:item.matId, isPublic: false }).then(res=>{
-                console.log('🚀🚀🚀',JSON.parse(res.data.matParam));
+            // 重置后的数据不请求，因为返回的还是原来的数据没更新
+            if(item.matId === 'RESET'){
+                return
+            }
+            this.getMaterial(item.matId)
+        },
+        // 获取材质信息
+        getMaterial(matId){
+            getMaterialByMatId({ matId: matId || this.materialAllInfo.matId, isPublic: false }).then(res=>{
+                let materialAllInfo = {...res.data,matParam:JSON.parse(res.data.matParam)}
+                this.changeSetting({ key: "materialAllInfo", value: materialAllInfo })
+                this.formatColors(materialAllInfo.matParam.colorList)
+                this.getChartletParams()
             })
         },
+        // 更新滑动条
+        onChange(type,e,i){
+            if(type===0){
+                this.materialChartlet.textureParamsList[i].paramValue = e
+            }
+            if(type===1){
+                this.materialChartlet.baseParamsList[i].paramValue = e
+            }
+            this.updateMaterial()
+        },
+        // 更新材质
+        updateMaterial(){
+            let params = {
+                taskId:this.data.taskId,
+                appId: this.$parent.pakidToAppid(this.componentAllInfo.pakId),
+                // baseColorTextureId:'',
+                // normalMapTextureId:''
+            }
+            let colorList = this.formatColors(this.materialAllInfo.matParam.colorList,true)
+            let data = [{
+                matId: this.materialAllInfo.matId,
+                pakId: this.componentAllInfo.pakId,
+                matParam:{
+                    matId:this.materialAllInfo.matId,
+                    ...this.materialAllInfo.matParam,
+                    colorList,
+                    ...this.materialChartlet
+                }
+            }]
+            updateMaterial(params,JSON.stringify(data)).then(()=>{
+                this.$message.success('材质替换成功')
+                this.getMaterial(data.matId)
+            })
+        },
+        // 点击贴图
+        onChartlet(type){
+            this.activeChartlet = type
+            this.changeSetting({ key: "openTexture", value: type })
+        },
         // 恢复材质按钮,公共构件appId不用传；pakIdMapweb：是否是公共构件
-        resetMaterial(item){
+        resetMaterial(item,i){
             this.$confirm('您将重置此材质, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -285,23 +406,28 @@ export default {
             }).then(() => {
                 let params = {
                     taskId:this.data.taskId,
-                    appId: this.$parent.pakidToAppid(this.data.materialData.pakId),
+                    appId: this.$parent.pakidToAppid(this.componentAllInfo.pakId),
                     matId:item.matId,
                     isPublic: false
                 }
                 let arr = [
                     {
-                        actorId:this.data.materialData.actorId,
-                        meshIndex:this.getOtherContent(item.matId).meshIndex,
-                        matIndex:this.getOtherContent(item.matId).matIndex,
+                        actorId:this.componentAllInfo.actorId,
+                        meshIndex:this.materialAllInfo.meshIndex,
+                        matIndex:this.materialAllInfo.matIndex,
                         comType: this.data.pakIdMapweb,
-                        pakId:this.data.materialData.pakId
+                        pakId:this.componentAllInfo.pakId
                     }
                 ]
                 resetMaterial(params,JSON.stringify(arr)).then(()=>{
+                    let matList = JSON.parse(JSON.stringify(this.componentAllInfo.matList))
+                    matList[i].imgPath = require('@/assets/caizhi.jpg')
+                    matList[i].matId = 'RESET'
+                    this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {matList} })
+                    this.changeSetting({ key: "materialAllInfo", value: {matParam:{baseParamsList:[],colorList:[],textureParamsList:[],texturesList:[]}} })
                     this.$message.success('材质重置成功')
                 })
-            }).catch((err) => {});
+            }).catch(() => {});
         },
     }
 }
@@ -376,7 +502,7 @@ export default {
     }
 }
 .switchBox{
-    margin-bottom: 10px;
+    margin: 20px 0;
     .geometryText();
 }
 .colorBox{
@@ -531,8 +657,6 @@ export default {
     .materialImg{
         .geometryText();
         margin: 23px 0;
-        display: flex;
-        align-items: center;
         span{
             padding: 0 8px 0 20px;
         }
@@ -540,10 +664,31 @@ export default {
             border: none;
             padding: 0;
         }
-        .img{
-            width: 40px;
-            height: 40px;
-            object-fit: cover;
+        /deep/.el-color-picker{
+            vertical-align: middle;
+        }
+        .chartlet{
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            .img{
+                width: 40px;
+                height: 40px;
+                object-fit: cover;
+                cursor: pointer;
+                border-radius: 6px;
+            }
+            /deep/ .image-slot{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-color: #cccccc;
+                height: 100%;
+                width: 100%;
+            }
+            .activeChartlet{
+                border: 2px solid #00c9fd;
+            }
         }
     }
     .materialSlider{

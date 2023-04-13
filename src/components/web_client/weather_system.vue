@@ -1,4 +1,5 @@
 <template>
+    <Drawer ref="Drawer" title="天气环境" direction="rtl" @onClose="close">
     <div class="systemWeather">
       <div class="weatherClassify">
           <div class="selectGroup">
@@ -267,15 +268,19 @@
           </div>
       </div>
     </div>
+    </Drawer>
   </template>
   
   <script>
+  import { EventBus } from '@/utils/bus.js'
+  import Drawer from "@/components/Drawer/index.vue";
   import MODELAPI, { setWeatherSun } from "@/api/model_api";
   import CHAILIAOAPI from "@/api/material_api";
   import moment from 'moment'
   import { runInThisContext } from "vm";
   import { log } from 'console';
   export default {
+    components: { Drawer },
       props:{
           appId: {
               type: String,
@@ -366,6 +371,13 @@
           }
       },
       methods:{
+        show() {
+            this.$refs.Drawer.show()
+        },
+        close(){
+            this.$refs.Drawer.hide()
+            EventBus.$emit('eventTool', 'renderingEnvironment')
+        },
         rgbaToArr(color) {
             var arr = []
             if(color){

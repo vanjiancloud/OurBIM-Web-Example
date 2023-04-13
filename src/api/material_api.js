@@ -13,30 +13,6 @@ const CHAILIAOAPI = {
             params
         })
     },
-    // 指令更换材质
-    CHANGEMATERIALBYINSTRUCTION: (params, data) => {
-        return request({
-            url: '/material/changeMaterialByInstruction',
-            method: 'post',
-            params,
-            data,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-    },
-    // 添加材质到用户材质库
-    ADDMATERIALFORUSER: (params, data) => {
-        return request({
-            url: '/material/addMaterialForUser',
-            method: 'post',
-            params,
-            data,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-    },
     // 获取材质的信息（替换过的材质才有信息）
     GETMATERIALBYMATID: params => {
         return request({
@@ -51,18 +27,6 @@ const CHAILIAOAPI = {
             url: '/material/getOurBIMMaterialGroup',
             method: 'get',
             params
-        })
-    },
-    // 修改材质参数
-    UPDATEMATERIAL: (params, data) => {
-        return request({
-            url: '/material/updateMaterial',
-            method: 'post',
-            params,
-            data,
-            headers: {
-                'Content-Type': 'application/json'
-            }
         })
     },
     // 修改材质贴图
@@ -210,6 +174,42 @@ export function getMaterialByMatId(params) {
 export function resetMaterial(params,data) {
     return newRequest({
         url: '/material/resetMaterial',
+        method: 'post',
+        params,
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+// 修改材质参数
+export function updateMaterial(params,data) {
+    return newRequest({
+        url: '/material/updateMaterial',
+        method: 'post',
+        params,
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+// 添加材质到用户材质库
+export function addMaterialForUser(params,data) {
+    return newRequest({
+        url: '/material/addMaterialForUser',
+        method: 'post',
+        params,
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+// 指令更换材质
+export function changeMaterialByInstruction(params,data) {
+    return newRequest({
+        url: '/material/changeMaterialByInstruction',
         method: 'post',
         params,
         data,
