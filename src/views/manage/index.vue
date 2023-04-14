@@ -779,7 +779,7 @@ export default {
   },
   created() {
     this.GetList();
-    this.setGetdataIn();
+    // this.setGetdataIn();
   },
   methods: {
     // 是否预启动
