@@ -355,7 +355,7 @@ export default {
     this.time = setInterval(() => {
       this.showData()
       console.log('个人信息5秒更新一次')
-    }, 5000)
+    }, 30000)
   },
   // 路由跳转清除定时
   beforeRouteLeave (to, from, next) {
