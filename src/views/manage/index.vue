@@ -779,7 +779,7 @@ export default {
   },
   created() {
     this.GetList();
-    // this.setGetdataIn();
+    this.setGetdataIn();
   },
   methods: {
     // 是否预启动
@@ -1045,9 +1045,12 @@ export default {
     setGetdataIn() {
       this.timer = setInterval(() => {
         if (this.timerFlag) {
-          this.GetList();
+            let hasChange = this.itemList.some(e=>e.applidStatus==='1')
+            if(hasChange){
+                this.GetList();
+            }
         }
-      }, 2500);
+      }, 5000);
     },
 
     // 分页

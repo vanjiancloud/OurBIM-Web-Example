@@ -198,8 +198,6 @@ export default {
     return {  
         componentsList:[], // 自定义构件列表
         customColor:'#00aaf0',
-        pollingComps:true, // 是否开启轮询自定义构件
-        timerComp:null, // 轮询自定义构建的定时器
         addCompDialog:false, // 添加构件弹框
         selectRowInfo:{}, // 鼠标点击当前行的数据
         addNewGroupDialog:false, // 新建分组弹框
@@ -279,7 +277,6 @@ export default {
   },
   created() {
     this.getCompList();
-    this.setPollingComp();
   },
   methods: {
     fromSonFile(e){
@@ -463,14 +460,6 @@ export default {
         });
       }
     },
-    // 轮询自定义构件
-    setPollingComp(){
-      if(this.pollingComps === true){
-        this.timerComp = setInterval(()=>{
-          this.getCompList();
-        },2500)
-      }
-    },
     rowClick(e){
       if(e.isGroup==='0'){
         return;
@@ -571,9 +560,7 @@ export default {
     // -----------
 
   },
-  beforeDestroy(){
-    clearInterval(this.timerComp);
-  }
+  beforeDestroy(){}
 };
 </script>
 
