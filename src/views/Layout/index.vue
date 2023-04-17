@@ -598,7 +598,7 @@ export default {
     this.time = setInterval(() => {
       this.showData();
       // console.log('个人信息')
-    }, 30000);
+    }, 5000);
   },
   //页面实例销毁后清除定时
   destroyed() {

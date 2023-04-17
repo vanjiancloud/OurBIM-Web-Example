@@ -1050,7 +1050,7 @@ export default {
                 this.GetList();
             }
         }
-      }, 5000);
+      }, 20000);
     },
 
     // 分页
