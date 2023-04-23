@@ -58,6 +58,13 @@ const routes = [
                 }
             },
             {
+                path: 'CADList',
+                component: () => import('@/views/CADList/index.vue'),
+                meta: {
+                    title: '图纸管理'
+                }
+            },
+            {
                 path: 'found',
                 component: found,
                 meta: {
