@@ -2208,7 +2208,7 @@ export default {
          this.viewAngle = e
        }
       // 点击 材质编辑 开关
-      if(e.flag==='material'){
+      if(e.type===14){
         this.materialShow = e.state;
       }
     },
@@ -2649,6 +2649,9 @@ export default {
               this.materialAllInfo = this.topImgMaterial[0]; // 构件的第一个材质信息
               this.exchangeData.actorId = realData.rsInfo[0].actorId;
               this.getMaterialInfomation(this.getActiveMatid(this.activeMater)); // 默认先获取第一张图片材质信息
+              if(this.$refs.getFooter.imgList[11].state===0){
+                this.materialShow = true
+              }
           }else if(realData.id === "29"){
             if(this.topImgMaterial.length !== 0){
               this.topImgMaterial.forEach(item => {
@@ -3030,7 +3033,7 @@ export default {
     closeMaterialBtn(){
       this.activeMater = '';
       this.materialShow = false;
-      this.$refs['getFooter'].clickBtnMaterial('close');
+    //   this.$refs['getFooter'].clickBtnMaterial('close');
       this.topImgMaterial = [];
     },
     // 选中公共库或项目库的材质

@@ -639,7 +639,7 @@
                   </div>
               </el-tooltip>
               <!-- 材质编辑开关 -->
-              <el-tooltip
+              <!-- <el-tooltip
                   v-for="(item) in editMaterialBtn"
                   :key="item.content"
                   :enterable="false"
@@ -650,7 +650,7 @@
                   <div class="moveAxis moveAxis2">
                     <img @click="clickBtnMaterial('none')" :src="item.active ? item.activeImg : item.img" alt="">
                   </div>
-              </el-tooltip>
+              </el-tooltip> -->
             </div>
           </transition>
         </div>
@@ -2091,6 +2091,9 @@ export default {
      }
     },
     handleOrder(e) {
+        if(e=='14'){
+            this.clickBtnMaterial('none')
+        }
       // 除了漫游 以及 属性, 点击其他图标时 关闭漫游弹框---
       if(e != 0 && e != 11 ){ 
         if(this.imgList[0].state === 1){
@@ -2101,7 +2104,7 @@ export default {
         };
       }
       // 点击浏览器时 关闭漫游高亮---
-      if(e === 10){  
+      if(e === 10){
         if(this.imgList[0].state === 1){
           this.imgList[0].state = 0;
           let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[0].name}`);
@@ -2540,7 +2543,7 @@ export default {
       top: -117px;
       .moveAxis{
         position: absolute;
-        top: -69px;
+        top: -37px;
         left: 0;
         width: 100%;
         height: 35%;
