@@ -1,7 +1,7 @@
-<!-- 单个图片上传，没有统一的上传文件接口 -->
+<!-- 单个图片上传，没有统一的上传文件接口,自动上传的传url手动的emit  file文件回去， -->
 <template>
-    <el-upload action="#" :show-file-list="false" :accept="accept" :before-upload="beforeAvatarUpload" :auto-upload="true" :http-request="httpRequest">
-        <img v-if="value" :src="value" class="avatar" />
+    <el-upload action="#" :show-file-list="false" :accept="accept" :on-change="onChange" :before-upload="beforeAvatarUpload" :auto-upload="autoUpload" :http-request="httpRequest">
+        <img v-if="value" :src="autoUpload?value:changeImg(value)" class="avatar" />
         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
     </el-upload>
 </template>
@@ -17,7 +17,7 @@ export default {
     },
     props: {
         value: {
-            type: String,
+            type: [String,File],
             default: ''
         },
         accept: {
@@ -27,8 +27,12 @@ export default {
         url: {
             type: String,
             default: "",
-            required: true,
+            required: false,
         },
+        autoUpload:{
+            type: Boolean,
+            default: true,
+        }
     },
     data() {
         return {
@@ -44,6 +48,17 @@ export default {
     created() {},
     mounted() {},
     methods: {
+        changeImg(file){
+            if(typeof file === 'string'){
+                return file
+            }
+            return URL.createObjectURL(file)
+        },
+        onChange(file){
+            if(!this.autoUpload){
+                this.imageUrl = file.raw;
+            }
+        },
         beforeAvatarUpload(file) {
             const isJPG = this.accept.split(",").includes(file.type);
             const isLt2M = file.size / 1024 / 1024 < 2;

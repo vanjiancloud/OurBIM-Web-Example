@@ -2,10 +2,11 @@
     <div class="selfDialog">
           <el-form :style="{'width':'90%'}" :model="editForm" :rules="rulesEditForm" ref="editForm">
               <el-form-item label="名称:" label-width="100px" prop="name">
-                <el-input v-model="editForm.name"></el-input>
+                <el-input v-model="editForm.name" @keydown.native.stop></el-input>
               </el-form-item>
               <el-form-item label="贴图:" label-width="100px">
-                <uploadComImg ref="uploadPhoto" @sonFile="sonFile"></uploadComImg>
+                <!-- <uploadComImg ref="uploadPhoto" @sonFile="sonFile"></uploadComImg> -->
+                <Upload v-model="photoFile" accept="image/png" :autoUpload="false"/>
               </el-form-item>
               <el-form-item label="分组:" label-width="100px" class="btnMore">
                 <el-select v-model="editForm.selectVal" placeholder="请选择分组" ref="select">
@@ -26,13 +27,14 @@
 </template>
 
 <script>
+import Upload from '@/components/Upload/singleUpload.vue'
     import uploadComImg from '../public/imgUp.vue'
     import { Getuserid } from "@/store/index.js";
     import axios from "@/utils/request";
     import axios2 from 'axios'
     export default {
       components: {
-        uploadComImg
+        Upload
       },
       props:{
         personalTexureGroup:{
@@ -91,8 +93,8 @@
                     this.$message.success(res.data.message);
                     this.$refs.uploadPhoto.delFile();
                   }else {
-                    this.$emit('texureClose',false);
-                    this.clearForm();
+                    // this.$emit('texureClose',false);
+                    // this.clearForm();
                     this.$message.error(res.data.message);
                   }
                 }).catch(res => {
@@ -111,6 +113,7 @@
         // 清空表单
         clearForm(){
           this.editForm.name = '';
+          this.photoFile = null
           this.$refs['editForm'].resetFields();
         }
       }
