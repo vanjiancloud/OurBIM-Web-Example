@@ -100,11 +100,14 @@ const CHAILIAOAPI = {
         })
     },
     // 创建个人库材质贴图分组
-    CREATEMATERIALTEXTUREGROUP: params => {
+    CREATEMATERIALTEXTUREGROUP: data => {
         return request({
             url: '/material/createMaterialTextureGroup',
             method: 'post',
-            params,
+            data,
+            headers: {
+                "Content-Type": "multipart/form-data;"
+            },
         })
     },
     GETPAKIDBYAPPID: params => {

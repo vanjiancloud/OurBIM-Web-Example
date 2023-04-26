@@ -593,7 +593,7 @@
     <viewPhoto ref="viewPhoto" :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
     <!-- 上传贴图弹框 （材质库） -->
     <el-dialog :visible="addViewUpImgPost" @close="closeTexureDialog('none')" width="30%" center>
-      <viewUpimg :personalTexureGroup="personalTexureGroup" @texureClose="closeTexureDialog"></viewUpimg>
+      <viewUpimg :personalTexureGroup="personalPicMaterInfo" @texureClose="closeTexureDialog"></viewUpimg>
     </el-dialog>
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
@@ -3107,17 +3107,17 @@ export default {
       CHAILIAOAPI.GETMATERIALALLTEXTUREINFO(params).then((res)=>{
           if(res.data.code === 0){
             this.personalPicMaterInfo = res.data.data || [];
-            if(str === 'groupOrNot' && this.personalPicMaterInfo.length<=0){
-              this.createTextureGroup(); // 新用户没有分组 默认创建一个分组
-            }
-            if(this.personalTexureGroup.length<=0){
-              res.data.data.forEach(item=>{
-                let obj = {};
-                obj.value = item.groupId;
-                obj.label = item.groupName;
-                this.personalTexureGroup.push(obj);
-              })
-            }
+            // if(str === 'groupOrNot' && this.personalPicMaterInfo.length<=0){
+            //   this.createTextureGroup(); // 新用户没有分组 默认创建一个分组
+            // }
+            // if(this.personalTexureGroup.length<=0){
+            //     this.personalPicMaterInfo.forEach(item=>{
+            //     let obj = {};
+            //     obj.value = item.groupId;
+            //     obj.label = item.groupName;
+            //     this.personalTexureGroup.push(obj);
+            //   })
+            // }
           }
       }).catch(()=>{})
     },
