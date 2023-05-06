@@ -2093,6 +2093,9 @@ export default {
     handleOrder(e) {
         if(e=='14'){
             this.clickBtnMaterial('none')
+        }else{
+            this.clickBtnMaterial('close');
+            this.$parent.materialShow = false
         }
       // 除了漫游 以及 属性, 点击其他图标时 关闭漫游弹框---
       if(e != 0 && e != 11 ){ 
@@ -2116,9 +2119,9 @@ export default {
           let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[6].name}`);
           this.imgList[6].url = oldUrl;
         }
-        if(this.editMaterialBtn[0].active === true){
-          this.clickBtnMaterial('close'); // 打开浏览器 关闭材质编辑
-        }
+        // if(this.editMaterialBtn[0].active === true){
+        //   this.clickBtnMaterial('close'); // 打开浏览器 关闭材质编辑
+        // }
       }
       this.footerIconChange(e);
       // 功能未开放 模型动画
