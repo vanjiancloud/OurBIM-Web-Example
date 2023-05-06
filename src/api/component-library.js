@@ -11,16 +11,6 @@ import qsStringify from "qs-stringify"
 
 const COMPONENTLIBRARY = {
 
-    // 开启/关闭构件库操作
-    // /comControl/comAction
-    comSwitch: (params) => {
-        return request({
-            url: '/comControl/comAction',
-            method: 'POST',
-            data: qsStringify(params)
-        })
-    },
-
     // 获取构件列表
     getPublicComList: params => {
         return request({
@@ -101,6 +91,15 @@ export function addCom(params) {
             "Content-Type": "application/json"
         },
     });
+}
+
+// 开启/关闭构件库操作
+export function comSwitch(params) {
+    return request({
+        url: '/comControl/comAction',
+        method: 'POST',
+        params
+    })
 }
 
 

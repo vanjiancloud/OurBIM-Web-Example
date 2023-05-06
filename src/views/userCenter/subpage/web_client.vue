@@ -240,7 +240,7 @@
     <!-- 天气 -->
     <weatherSystem ref="weatherSystem" :appId="appId" :taskId="taskId" v-show="checkShow('renderingEnvironment')"></weatherSystem>
     <!-- 底部工具栏 -->
-    <Tool ref="Tool" v-model="activeToolArr" @onSuccess="toolSuccess" @close="closeTool"/>
+    <Tool ref="Tool" v-model="activeToolArr" :data="{ taskId, appId }" @onSuccess="toolSuccess" @close="closeTool"/>
   </div>
 </template>
 

@@ -13,12 +13,17 @@
 
 <script>
 import { EventBus } from '@/utils/bus.js'
+import { comSwitch } from '@/api/component-library.js'
 export default {
     components: {},
     props: {
         value: {
             type:Array,
             default:()=> []
+        },
+        data: {
+            type:Object,
+            default:()=> {}
         }
     },
     data() {
@@ -144,7 +149,10 @@ export default {
                 this.$set(item,'check',false)
                 this.$emit('close',item)
                 this.getChecks()
-
+                // 资源库关闭构件添加
+                if(item.key === 'resource'){
+                    this.comSwitch(false)
+                }
             }else{
                 switch (item.key) {
                     // 显示
@@ -190,6 +198,7 @@ export default {
                     // 资源库
                     case 'resource':
                         filterCheck(item.name,['componentInformation'])
+                        this.comSwitch(true)
                         break;
                     // 浏览器
                     case 'browser':
@@ -228,6 +237,11 @@ export default {
             console.log('🚀🚀🚀check=true',result);
             this.$emit("input", result);
             return result
+        },
+        // 打开构件库添加构件
+        comSwitch(flag) {
+            console.log('🚀🚀🚀',this.data);
+            comSwitch({taskId: this.data.taskId,flag})
         }
     }
 }
