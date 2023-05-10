@@ -963,9 +963,12 @@ export default {
     setGetModelListTimer () {
       this.timer = setInterval(() => {
         if (this.timerFlag) {
-          this.getAllModelList()
+            let hasChange = this.allModelData.some(e=>e.applidStatus==='1')
+            if(hasChange){
+                this.getAllModelList();
+            }
         }
-      }, 30000)
+      }, 20000);
     },
 
     // 分页
