@@ -394,9 +394,7 @@
           </div>
           <!--主体区域二级路由组件渲染的地方-->
           <div class="content">
-            <router-view
-              @handleCreateProjectDialog="handleCreateProjectDialog"
-            ></router-view>
+            <router-view></router-view>
           </div>
         </div>
       </div>
@@ -422,16 +420,6 @@
         </div>
       </div>
     </el-footer>
-    <!-- 上传项目对话框 -->
-    <el-dialog :visible.sync="createPeojectDialogVisible" width="50%" center>
-      <create-project @handleCreateProjectDialog="handleCreateProjectDialog" />
-      <!-- <span slot="footer" class="dialog-footer">
-        <el-button @click="createPeojectDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="createPeojectDialogVisible = false"
-          >确 定</el-button
-        >
-      </span> -->
-    </el-dialog>
   </el-container>
 </template>
 
@@ -440,12 +428,9 @@ import { showDetail } from "@/api/my.js";
 import { Getuserid } from "@/store/index.js";
 import { Deluserid } from "@/store/index.js";
 
-import createProject from "../found/createProj.vue";
+
 export default {
   name: "myHeader",
-  components: {
-    createProject,
-  },
   data() {
     return {
       time: null, //定时器
@@ -465,7 +450,6 @@ export default {
       currentCountSpace: "", //当前用户已使用的存储率
       countBF: "", //当前用户的并发总数最大值
       currentCountBF: "", //当前用户的并发数
-      createPeojectDialogVisible: false,
     };
   },
   created() {
@@ -564,10 +548,6 @@ export default {
     // 去往账户管理
     toBill() {
       this.$router.push("../bill");
-    },
-
-    handleCreateProjectDialog(e) {
-      this.createPeojectDialogVisible = e;
     },
   },
   computed: {

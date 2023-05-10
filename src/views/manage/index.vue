@@ -170,15 +170,6 @@
               </div>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
-                  command="upgrade"
-                  v-if="
-                    scope.row.currVersion !== 'V5' &&
-                    scope.row.applidStatus === '2' &&
-                    scope.row.appType === '0'
-                  "
-                  >升级</el-dropdown-item
-                >
-                <el-dropdown-item
                   command="share"
                   v-if="scope.row.applidStatus === '2'"
                   >分享</el-dropdown-item
@@ -193,6 +184,7 @@
                   v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false') &&scope.row.fileSize!='0'"
                   >下载</el-dropdown-item
                 >
+                <el-dropdown-item command="reconversion" v-if="scope.row.appType === '0'&&scope.row.applidStatus === '2'&&scope.row.fileSize!='0'">重新转换</el-dropdown-item>
                 <el-dropdown-item
                   command="delete"
                   v-if="scope.row.applidStatus !== '5'"
@@ -207,6 +199,7 @@
     </div>
     <!-- 分享dialog框 -->
     <Share :visible.sync="dialogFormVisibleOne" :appid="formShare.appid" :isGis="form.isGis"></Share>
+    <DialogsConversion ref="DialogsConversion"/>
     <!-- 编辑dialog框 -->
     <el-dialog
       title="编辑项目"
@@ -514,6 +507,30 @@
         >
       </span>
     </el-dialog>
+    <DragUpload ref="DragUpload" numType="uploadingNum" accept=".rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.fbx,.FBX,.obj,.stp,.xyz,.txt,.pts,.las"
+    @getFile="getFileDrag" @onSuccess="getAllModelList" @beforeUpload="beforeUpload">
+        <template v-slot:append>
+            <el-form :model="conversionForm" :rules="conversionRules" ref="conversionForm" label-width="0" class="conversionForm">
+                <el-form-item prop="modelActorLimitNum">
+                    <el-checkbox label="模型体量优化" v-model="conversionForm.NumChecked"></el-checkbox>
+                    <span class="text">模型构件数阈值</span>
+                    <el-input v-model="conversionForm.modelActorLimitNum" placeholder="请输入" style="width:150px;" v-only-number="{min:0}"></el-input>
+                </el-form-item>
+                <el-form-item prop="singleActorLimitNum">
+                    <el-checkbox label="模型材质优化" v-model="conversionForm.ActorChecked"></el-checkbox>
+                    <span class="text">单构件面数阈值</span>
+                    <el-input v-model="conversionForm.singleActorLimitNum" placeholder="请输入" style="width:150px;" v-only-number="{min:0}"></el-input>
+                </el-form-item>
+                <el-form-item prop="platform" label-width="110px" label="解析模型版本">
+                    <el-radio-group v-model="conversionForm.platform" disabled>
+                        <el-radio label="Windows">服务端版</el-radio>
+                        <el-radio label="Android">Android版</el-radio>
+                        <el-radio label="IOS">IOS版</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+        </template>
+    </DragUpload>
   </div>
 </template>
 
@@ -523,17 +540,17 @@ import {
   getGISProjectList,
   deleteProject,
   updateProject,
-  upgradeModle,
 } from "@/api/my.js";
 import MODELAPI from "@/api/model_api";
 import { Getuserid } from "@/store/index.js";
-import axios from "@/utils/request";
 import newRequest from "@/utils/newRequest.js";
 import qs from "qs";
 import Pagination from "@/components/Pagination"
 import Share from "./share.vue"
 import Transfer from "./transfer/main.vue"
 import SingleUpload from "@/components/Upload/singleUpload.vue"
+import DialogsConversion from "./dialogsConversion.vue"
+import DragUpload from "@/components/Upload/dragUpload.vue";
 
 export default {
   name: "manage",
@@ -541,7 +558,9 @@ export default {
     Pagination,
     SingleUpload,
     Transfer,
-    Share
+    Share,
+    DialogsConversion,
+    DragUpload
   },
   data() {
     const validaLongitude = (rule, value, callback) => {
@@ -564,6 +583,20 @@ export default {
         callback()
       }
     }
+    var validateModelActorLimitNum = (rule, value, callback) => {
+        if (this.conversionForm.NumChecked&&!value) {
+            callback(new Error('请输入模型构件数阈值'));
+        } else {
+            callback();
+        }
+    };
+    var validateSingleActorLimitNum = (rule, value, callback) => {
+        if (this.conversionForm.ActorChecked&&!value) {
+            callback(new Error('请输入单构件面数阈值'));
+        } else {
+            callback();
+        }
+    };
     return {
       gisInfoRules: {
         longitude: [{ required: true, validator: validaLongitude, trigger: ['change', 'blur'] }],
@@ -700,7 +733,38 @@ export default {
       pages: {
         pageNo: 1,
         pageSize: 20
-      }
+      },
+    //   上传模型转换
+        conversionForm: {
+            NumChecked:true,
+            ActorChecked:true,
+            platform: 'Windows',
+            modelActorLimitNum:'15000',
+            singleActorLimitNum:'500'
+        },
+        conversionRules: {
+            modelActorLimitNum: [
+                {
+                    required: true,
+                    validator: validateModelActorLimitNum,
+                    trigger: 'blur'
+                }
+            ],
+            singleActorLimitNum: [
+                {
+                    required: true,
+                    validator: validateSingleActorLimitNum,
+                    trigger: 'blur'
+                }
+            ],
+            platform: [
+                {
+                    required: true,
+                    message:'请选择解析模型版本',
+                    trigger: 'blur'
+                }
+            ],
+        },
     }
   },
   computed: {
@@ -785,7 +849,8 @@ export default {
     },
 
     handleCreateProjectDialog () {
-      this.$emit("handleCreateProjectDialog", true)
+        this.conversionForm = this.$options.data().conversionForm
+        this.$refs.DragUpload.show('上传模型')
     },
 
     SubmitIntegrate () {
@@ -948,25 +1013,6 @@ export default {
       return statusObj[status]
     },
 
-    upgrade(row) {
-      this.$confirm("此操作将升级该应用, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(async (res) => {
-          const { data: upRes } = await upgradeModle({
-            userId: Getuserid(),
-            appId: row.appid
-          })
-          if (upRes.code === 0) {
-            this.$message.success(upRes.message);
-          } else {
-            this.$message.error(upRes.message);
-          }
-        })
-        .catch((res) => {});
-    },
     // 分享按钮
     share(e) {
       this.formShare.appid = e.appid;
@@ -1051,6 +1097,9 @@ export default {
         case "delete":
           this.remove(item);
           break;
+        case "reconversion":
+            this.$refs.DialogsConversion.show(item)
+            break;
         default:
           break;
       }
@@ -1430,7 +1479,26 @@ export default {
         this.modelListFlag = true
       }
     },
-    
+    // 上传模型参数
+    getFileDrag(file, callback) {
+        callback({
+            platform: this.conversionForm.platform,
+            modelActorLimitNum: this.conversionForm.modelActorLimitNum,
+            singleActorLimitNum: this.conversionForm.singleActorLimitNum,
+            fileUpload: file,
+            userId: Getuserid(),
+            url: "/appli/addProject",
+        });
+    },
+    // 上传GIS数据验证
+    beforeUpload(callback){
+        this.$refs.conversionForm.validate((valid) => {
+            if (!valid){
+                callback(true)
+                return false;
+            }
+        })
+    },
   },
   mounted() {
     //禁用返回键
@@ -1829,5 +1897,15 @@ export default {
 }
 ::v-deep .startNumber .el-input {
   margin-left: 9px;
+}
+
+.conversionForm{
+    border-bottom: 1px solid #f5f5f5;
+    border-top: 1px solid #f5f5f5;
+    padding-top: 20px;
+    margin: 20px 0;
+    .text {
+        padding: 0 30px;
+    }
 }
 </style>
