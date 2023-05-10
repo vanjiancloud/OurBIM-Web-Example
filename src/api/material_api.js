@@ -193,6 +193,14 @@ const CHAILIAOAPI = {
             params,
         })
     },
+    // 删除贴图分组或贴图
+    deleteMaterialTexture: params => {
+        return request({
+            url: '/material/deleteMaterialTextureInfo',
+            method: 'post',
+            params,
+        })
+    },
 }
 
 export default CHAILIAOAPI

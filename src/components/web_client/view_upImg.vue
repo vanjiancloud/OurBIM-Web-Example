@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { throttle } from 'lodash'
 import Upload from '@/components/Upload/singleUpload.vue'
 import DialogChartletGroup from './DialogChartletGroup.vue'
     import { Getuserid } from "@/store/index.js";
@@ -71,13 +72,14 @@ import DialogChartletGroup from './DialogChartletGroup.vue'
       },
       methods:{
         // 上传贴图确定
-        editSubmit(editForm){
+        editSubmit:throttle(function(editForm){
           // console.log('确定',this.editForm);
+          const {userId} = this.$route.query;
             this.$refs[editForm].validate((valid) => {
               if(valid){
                 let fd = new FormData();
                 fd.append('fileUpload',this.editForm.photoFile);
-                fd.append('userId', Getuserid());
+                fd.append('userId', userId || Getuserid() || 'travelss');
                 fd.append('textureName', this.editForm.name);
                 fd.append('groupId', this.editForm.selectVal);  
                 let config = {
@@ -102,8 +104,8 @@ import DialogChartletGroup from './DialogChartletGroup.vue'
               }else{
                 return false
               }
-            });
-        },
+            },1000);
+        }),
         // 关闭
         closeEditCom(){
             this.$emit('texureClose',false);

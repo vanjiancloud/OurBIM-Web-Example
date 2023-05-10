@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import { throttle } from 'lodash'
 import CHAILIAOAPI from "@/api/material_api";
 import SingleUpload from "@/components/Upload/singleUpload.vue"
 // import { addChartletGroup } from "@/api/material_api";
@@ -54,7 +55,7 @@ export default {
         hide() {
             this.dialogVisible = false;
         },
-        submit() {
+        submit:throttle(function() {
             this.$refs.form.validate((valid) => {
                 if (!valid) return false;
                 if(this.form.groupId){
@@ -76,7 +77,7 @@ export default {
                     });
                 }
             })
-        },
+        },1000),
     },
 };
 </script>

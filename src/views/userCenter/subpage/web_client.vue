@@ -390,11 +390,11 @@
                   <div class="singleImg" v-for="(item,index) in topImgMaterial" :key="index">
                     <div class="imgPic" @click="photoSelect(item,index)" :class="{activeBorder: activeMater === index}">
                         <img :src="item.photoUrl||require('@/assets/caizhi.jpg')" alt="">
-                        <div v-if="middleMaterInfo[0].nameInfo.length>0 && activeMater === index" class="resetMaterial" @click.stop="resetClick(item,index)"><i class="el-icon-refresh-left resetIcon"></i></div>
+                        <div v-if="item.matId!='RESET'&&matParam.colorList&&matParam.colorList.length&& activeMater === index" class="resetMaterial" @click.stop="resetClick(item,index)"><i class="el-icon-refresh-left resetIcon"></i></div>
                     </div> 
                   </div>
                 </div>
-                <div class="materEditMain" v-if="matParam.colorList&&matParam.colorList.length&& activeMater !== ''">
+                <div class="materEditMain" v-if="(topImgMaterial[activeMater]&&topImgMaterial[activeMater].matId!='RESET')&&matParam.colorList&&matParam.colorList.length&& activeMater !== ''">
                     <div class="topEditMain">
                         <div class="yanse">
                             <div class="yanseName">颜色</div>
@@ -505,7 +505,10 @@
                                       class="flexDivInde"
                                       :style="{'width':'90px','height':'11.3vh'}"
                                     >           
-                                      <div @click="texturePhotoSelect(listItem)" :class="{activeBorder: activeTexTurePerson === listItem.textureId}" :style="{'width':'90px','height':'9.3vh'}"><img :src="listItem.imgPath" alt="" :style="{'width':'100%','height':'100%'}"></div>
+                                      <div @click="texturePhotoSelect(listItem)" :class="{activeBorder: activeTexTurePerson === listItem.textureId}" :style="{'width':'90px','height':'9.3vh'}">
+                                        <img :src="listItem.imgPath" alt="" :style="{'width':'100%','height':'100%'}">
+                                        <el-button type="danger" icon="el-icon-delete" size="mini" circle class="deleteTexture" @click.stop="deleteTexture(listItem.textureId)"></el-button>
+                                    </div>
                                       <div class="textureTitle"><span>{{listItem.textureName}}</span></div>
                                     </div>
                                   </div>  
@@ -3053,7 +3056,7 @@ export default {
     // 选中材质编辑中的 构件材质图片
     photoSelect(e,num){
         this.matEditIndex = num; // 选中的材质编辑图片的下标
-        this.materialAllInfo = e; 
+        this.materialAllInfo = e;
         if(this.activeMater === num){
           this.activeMater = ''
         }else{
@@ -3102,7 +3105,7 @@ export default {
     getPersonPhoto(str){
       const {userId} = this.$route.query;
       let params = {
-          userId:userId || JSON.parse(sessionStorage.getItem("userid"))
+          userId:userId || JSON.parse(sessionStorage.getItem("userid")) || 'travelss'
       }
       CHAILIAOAPI.GETMATERIALALLTEXTUREINFO(params).then((res)=>{
           if(res.data.code === 0){
@@ -3462,6 +3465,27 @@ export default {
     closeSystemDrawer(){
       this.weatherDrawer = false;
       this.closePart(9);
+    },
+    // 删除贴图
+    deleteTexture(id){
+        this.$confirm('此操作将永久删除贴图, 是否继续?', '删除', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            closeOnClickModal:false
+        }).then(() => {
+            const { userId } = this.$route.query;
+            let params = {
+                userId: userId || JSON.parse(sessionStorage.getItem("userid")) || 'travels',
+                textureId:id
+            }
+            CHAILIAOAPI.deleteMaterialTexture(params).then((res)=>{
+                if(res.data.code===0){
+                    this.$message.success('删除成功')
+                    this.getPersonPhoto();
+                }
+            }).catch(()=>{})
+        }).catch(() => {});
     }
   },
 };
@@ -4324,6 +4348,13 @@ export default {
           box-sizing: border-box;
           width: 100%;
           height: 34vh;
+          
+          .deleteTexture{
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: none;
+          }
           ::v-deep .el-tabs .el-tabs__content{
             overflow-y: hidden;
           }
@@ -4402,6 +4433,8 @@ export default {
             flex-wrap: wrap;
             .flexDivInde{
               margin: 0 13px 5px 0;
+              position: relative;
+              cursor: pointer;
               .textureTitle{
                 width: 100%;
                 height: 2.3vh;
@@ -4417,6 +4450,9 @@ export default {
                   font-size: 14px;
                   color: #fff;
                 }
+              }
+              &:hover .deleteTexture{
+                display: block;
               }
             }
           }
