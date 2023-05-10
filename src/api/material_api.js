@@ -100,11 +100,14 @@ const CHAILIAOAPI = {
         })
     },
     // 创建个人库材质贴图分组
-    CREATEMATERIALTEXTUREGROUP: params => {
+    CREATEMATERIALTEXTUREGROUP: data => {
         return request({
             url: '/material/createMaterialTextureGroup',
             method: 'post',
-            params,
+            data,
+            headers: {
+                "Content-Type": "multipart/form-data;"
+            },
         })
     },
     GETPAKIDBYAPPID: params => {
@@ -187,6 +190,14 @@ const CHAILIAOAPI = {
         return request({
             url: '/weather/getCurrWeatherId',
             method: 'get',
+            params,
+        })
+    },
+    // 删除贴图分组或贴图
+    deleteMaterialTexture: params => {
+        return request({
+            url: '/material/deleteMaterialTextureInfo',
+            method: 'post',
             params,
         })
     },

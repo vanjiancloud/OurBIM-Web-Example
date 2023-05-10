@@ -390,11 +390,11 @@
                   <div class="singleImg" v-for="(item,index) in topImgMaterial" :key="index">
                     <div class="imgPic" @click="photoSelect(item,index)" :class="{activeBorder: activeMater === index}">
                         <img :src="item.photoUrl||require('@/assets/caizhi.jpg')" alt="">
-                        <div v-if="middleMaterInfo[0].nameInfo.length>0 && activeMater === index" class="resetMaterial" @click.stop="resetClick(item,index)"><i class="el-icon-refresh-left resetIcon"></i></div>
+                        <div v-if="item.matId!='RESET'&&matParam.colorList&&matParam.colorList.length&& activeMater === index" class="resetMaterial" @click.stop="resetClick(item,index)"><i class="el-icon-refresh-left resetIcon"></i></div>
                     </div> 
                   </div>
                 </div>
-                <div class="materEditMain" v-if="matParam.colorList&&matParam.colorList.length&& activeMater !== ''">
+                <div class="materEditMain" v-if="(topImgMaterial[activeMater]&&topImgMaterial[activeMater].matId!='RESET')&&matParam.colorList&&matParam.colorList.length&& activeMater !== ''">
                     <div class="topEditMain">
                         <div class="yanse">
                             <div class="yanseName">颜色</div>
@@ -407,7 +407,7 @@
                             <div class="yanse">
                                 <div class="yanseName">基础颜色贴图</div>
                                 <div class="yanseBody stickPic" @click="photoStore('基础')" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === '基础'}">
-                                  <img v-if="getTextType('BaseColorMap')" :src="getTextType('BaseColorMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
+                                  <img v-if="getTextType('BaseColorMap').paramValue" :src="getTextType('BaseColorMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
                                   <i v-else class="el-icon-plus plusIcon"></i>
                                   <div class="deleteIcon" @click.stop="deleteStickPic('BaseColorMap')" v-if="getTextType('BaseColorMap').paramValue"><i class="el-icon-delete"></i></div>
                                 </div>
@@ -415,7 +415,7 @@
                             <div class="yanse">
                                 <div class="yanseName">法线贴图</div>
                                 <div class="yanseBody stickPic" @click="photoStore('法线')" :style="{'cursor':'pointer'}" :class="{activeBorder: photoStoreFlag === '法线'}">
-                                  <img v-if="getTextType('NormalMap')" :src="getTextType('NormalMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
+                                  <img v-if="getTextType('NormalMap').paramValue" :src="getTextType('NormalMap').paramValue" alt="" :style="{'width':'100%','height':'100%'}">
                                   <i v-else class="el-icon-plus plusIcon"></i>
                                   <div class="deleteIcon" @click.stop="deleteStickPic('NormalMap')" v-if="getTextType('NormalMap').paramValue"><i class="el-icon-delete"></i></div>
                                 </div>
@@ -449,8 +449,8 @@
                                         </el-switch>
                                       </div>
                                       <div class="editInfoListPercent"></div>
-                                  </div>       
-                                  <div class="editInfoList" v-if="listItem.label !== '等比缩放'">
+                                  </div>
+                                  <div class="editInfoList" v-else-if="listItem.label !== '等比缩放' && (((filterTexturesList('等比缩放')==1&&listItem.label!=='纵向缩放'&&listItem.label!=='横向缩放') || (filterTexturesList('等比缩放')==0&&listItem.label!=='缩放')))">
                                       <div class="editInfoListName">{{ listItem.label }}</div>
                                       <div class="editInfoListNum">
                                         <el-slider @change="materialSliderChange(listItem.paramValue1,index,index1)" v-model="listItem.paramValue1"
@@ -505,7 +505,10 @@
                                       class="flexDivInde"
                                       :style="{'width':'90px','height':'11.3vh'}"
                                     >           
-                                      <div @click="texturePhotoSelect(listItem)" :class="{activeBorder: activeTexTurePerson === listItem.textureId}" :style="{'width':'90px','height':'9.3vh'}"><img :src="listItem.imgPath" alt="" :style="{'width':'100%','height':'100%'}"></div>
+                                      <div @click="texturePhotoSelect(listItem)" :class="{activeBorder: activeTexTurePerson === listItem.textureId}" :style="{'width':'90px','height':'9.3vh'}">
+                                        <img :src="listItem.imgPath" alt="" :style="{'width':'100%','height':'100%'}">
+                                        <el-button type="danger" icon="el-icon-delete" size="mini" circle class="deleteTexture" @click.stop="deleteTexture(listItem.textureId)"></el-button>
+                                    </div>
                                       <div class="textureTitle"><span>{{listItem.textureName}}</span></div>
                                     </div>
                                   </div>  
@@ -597,7 +600,7 @@
     <viewPhoto ref="viewPhoto" :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
     <!-- 上传贴图弹框 （材质库） -->
     <el-dialog :visible="addViewUpImgPost" @close="closeTexureDialog('none')" width="30%" center>
-      <viewUpimg :personalTexureGroup="personalTexureGroup" @texureClose="closeTexureDialog"></viewUpimg>
+      <viewUpimg :personalTexureGroup="personalPicMaterInfo" @texureClose="closeTexureDialog"></viewUpimg>
     </el-dialog>
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
@@ -2226,7 +2229,7 @@ export default {
          this.viewAngle = e
        }
       // 点击 材质编辑 开关
-      if(e.flag==='material'){
+      if(e.type===14){
         this.materialShow = e.state;
       }
     },
@@ -2667,6 +2670,9 @@ export default {
               this.materialAllInfo = this.topImgMaterial[0]; // 构件的第一个材质信息
               this.exchangeData.actorId = realData.rsInfo[0].actorId;
               this.getMaterialInfomation(this.getActiveMatid(this.activeMater)); // 默认先获取第一张图片材质信息
+              if(this.$refs.getFooter.imgList[11].state===0){
+                this.materialShow = true
+              }
           }else if(realData.id === "29"){
             if(this.topImgMaterial.length !== 0){
               this.topImgMaterial.forEach(item => {
@@ -2967,7 +2973,7 @@ export default {
       if(e._props.name === 'second'){
         const {userId} = this.$route.query;
         let params = {
-          userId: userId
+          userId: userId || JSON.parse(sessionStorage.getItem("userid"))
         }
         MODELAPI.GETALLCOM(params).then((res)=>{
           if(res.data.code === 0){
@@ -3048,7 +3054,7 @@ export default {
     closeMaterialBtn(){
       this.activeMater = '';
       this.materialShow = false;
-      this.$refs['getFooter'].clickBtnMaterial('close');
+    //   this.$refs['getFooter'].clickBtnMaterial('close');
       this.topImgMaterial = [];
     },
     // 选中公共库或项目库的材质
@@ -3068,7 +3074,7 @@ export default {
     // 选中材质编辑中的 构件材质图片
     photoSelect(e,num){
         this.matEditIndex = num; // 选中的材质编辑图片的下标
-        this.materialAllInfo = e; 
+        this.materialAllInfo = e;
         if(this.activeMater === num){
           this.activeMater = ''
         }else{
@@ -3117,22 +3123,22 @@ export default {
     getPersonPhoto(str){
       const {userId} = this.$route.query;
       let params = {
-          userId:userId
+          userId:userId || JSON.parse(sessionStorage.getItem("userid")) || 'travelss'
       }
       CHAILIAOAPI.GETMATERIALALLTEXTUREINFO(params).then((res)=>{
           if(res.data.code === 0){
             this.personalPicMaterInfo = res.data.data || [];
-            if(str === 'groupOrNot' && this.personalPicMaterInfo.length<=0){
-              this.createTextureGroup(); // 新用户没有分组 默认创建一个分组
-            }
-            if(this.personalTexureGroup.length<=0){
-              res.data.data.forEach(item=>{
-                let obj = {};
-                obj.value = item.groupId;
-                obj.label = item.groupName;
-                this.personalTexureGroup.push(obj);
-              })
-            }
+            // if(str === 'groupOrNot' && this.personalPicMaterInfo.length<=0){
+            //   this.createTextureGroup(); // 新用户没有分组 默认创建一个分组
+            // }
+            // if(this.personalTexureGroup.length<=0){
+            //     this.personalPicMaterInfo.forEach(item=>{
+            //     let obj = {};
+            //     obj.value = item.groupId;
+            //     obj.label = item.groupName;
+            //     this.personalTexureGroup.push(obj);
+            //   })
+            // }
           }
       }).catch(()=>{})
     },
@@ -3140,7 +3146,7 @@ export default {
     createTextureGroup(){
       const {userId} = this.$route.query;
       let params = {
-        userId:userId,
+        userId:userId || JSON.parse(sessionStorage.getItem("userid")),
         groupName:'我的分组'
       }
       CHAILIAOAPI.CREATEMATERIALTEXTUREGROUP(params).then(res=>{
@@ -3171,6 +3177,10 @@ export default {
         let res = this.matParam.texturesList.filter(e=>{return e.paramName===type})
         return res.length&&res[0]
     },
+    filterTexturesList(type){
+        let res = this.middleMaterInfo[0].nameInfo.filter(e=>{return e.label===type})
+        return Number(res.length&&res[0].paramValue)
+    },
     // 获取材质信息
     getMaterialInfomation(e,str){
       if(e === 'RESET'){  // 重置过的材质就不要再获取材质信息了
@@ -3187,7 +3197,30 @@ export default {
         if(res.data.code === 0){
           this.matParam = JSON.parse(res.data.data.matParam);
           // this.materialMatId = res.data.data.matId; // 选中材质编辑的材质的matId
-          this.$set(this.middleMaterInfo[0],'nameInfo',this.strToNumber(this.matParam.textureParamsList),'texture')
+        //   为了排序start
+          let imgData = this.strToNumber(this.matParam.textureParamsList)
+          let reSort = []
+          imgData.forEach((e,i)=>{
+            if(e.label==='等比缩放'){
+                e.paramValue = Number(e.paramValue).toString()
+                reSort.unshift(e)
+            }
+            if(e.label==='横向缩放'){
+                reSort.push(e)
+            }
+            if(e.label==='纵向缩放'){
+                reSort.push(e)
+            }
+            if(e.label==='缩放'){
+                reSort.push(e)
+            }
+          })
+          let seen = new Map();
+            let uniqueArr = reSort.concat(imgData).filter((item) => {
+                return !seen.has(JSON.stringify(item)) && seen.set(JSON.stringify(item), 1);
+            });
+            // end
+          this.$set(this.middleMaterInfo[0],'nameInfo',uniqueArr,'texture')
           this.$set(this.middleMaterInfo[1],'nameInfo',this.strToNumber(this.matParam.baseParamsList))
           this.color1 = this.arrToRgb(this.matParam.colorList.length>0 ? this.matParam.colorList[0].paramValue : []);
           this.spreadCircle(this.middleMaterInfo,'0'); // 折叠面板
@@ -3205,7 +3238,6 @@ export default {
             // arr.photoUrl = res.data.data.matImgPath;
             this.$set(this.topImgMaterial,this.matEditIndex,arr);
             this.activeMater = this.matEditIndex;
-            console.log('🚀🚀🚀',this.topImgMaterial,arr,res.data);
           }
         }else if(res.data.code === 1){
             this.$message.error(res.data.message)
@@ -3267,7 +3299,7 @@ export default {
     addMaterialToUser(id,str){
       const {userId} = this.$route.query;
       let params = {
-        userId:userId || 'travels',
+        userId:userId || JSON.parse(sessionStorage.getItem("userid")) || 'travels',
         matId:id,
         isPublic: str ==='textureChange' ? false : true,
         baseColorTextureId:this.photoStoreFlag==='基础'?this.activeTexTurePerson:'',
@@ -3363,7 +3395,7 @@ export default {
     arrToRgb(arr){
       let str = '';
       if(arr.length>0){
-        str = `rgba(${arr[0]},${arr[1]},${arr[2]},${arr[3]})`
+        str = `rgba(${arr[0]},${arr[1]},${arr[2]},${arr[3]/255})`
       }else{
         str = null
       }
@@ -3451,6 +3483,27 @@ export default {
     closeSystemDrawer(){
       this.weatherDrawer = false;
       this.closePart(9);
+    },
+    // 删除贴图
+    deleteTexture(id){
+        this.$confirm('此操作将永久删除贴图, 是否继续?', '删除', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
+            closeOnClickModal:false
+        }).then(() => {
+            const { userId } = this.$route.query;
+            let params = {
+                userId: userId || JSON.parse(sessionStorage.getItem("userid")) || 'travels',
+                textureId:id
+            }
+            CHAILIAOAPI.deleteMaterialTexture(params).then((res)=>{
+                if(res.data.code===0){
+                    this.$message.success('删除成功')
+                    this.getPersonPhoto();
+                }
+            }).catch(()=>{})
+        }).catch(() => {});
     }
   },
 };
@@ -4313,6 +4366,13 @@ export default {
           box-sizing: border-box;
           width: 100%;
           height: 34vh;
+          
+          .deleteTexture{
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: none;
+          }
           ::v-deep .el-tabs .el-tabs__content{
             overflow-y: hidden;
           }
@@ -4391,6 +4451,8 @@ export default {
             flex-wrap: wrap;
             .flexDivInde{
               margin: 0 13px 5px 0;
+              position: relative;
+              cursor: pointer;
               .textureTitle{
                 width: 100%;
                 height: 2.3vh;
@@ -4406,6 +4468,9 @@ export default {
                   font-size: 14px;
                   color: #fff;
                 }
+              }
+              &:hover .deleteTexture{
+                display: block;
               }
             }
           }
