@@ -14,11 +14,15 @@
             <el-table-column prop="fileName" label="图纸名称" />
             <el-table-column prop="userFileId" label="图纸ID" />
             <el-table-column prop="addTime" label="上传日期" />
-            <el-table-column prop="fileSize" label="大小" />
+            <el-table-column prop="fileSize" label="大小">
+                <template slot-scope="scope">
+                    <span>{{ scope.row.fileSize }} M</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="extand" label="图纸类型" />
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
-                    <span class="status" :class="{'status1':scope.row.status==1,'status2':scope.row.status==2,'status3':scope.row.status==3,'status4':scope.row.status==4,'status5':scope.row.status==5}">{{ status[scope.row.status] }}</span>
+                    <span class="status" :class="scope.row.fileStatus === '1' ? 'status' : 'status3'">{{ status[scope.row.fileStatus] }}</span>
                 </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="160">
@@ -88,7 +92,7 @@ import { getDict } from "@/api/dict.js"
 import { Getuserid } from "@/store/index.js";
 import { getList, deleteList } from "@/api/CADList.js";
 import DialogsProject from "./dialogsProject.vue";
-import DragUpload from "@/components/Upload/dragUpload.vue";
+import DragUpload from "@/components/Upload/dragUploadCAD.vue";
 import Pagination from "@/components/Pagination";
 export default {
     components: { DragUpload, Pagination, DialogsProject },
@@ -103,11 +107,11 @@ export default {
                 pageSize: 20,
             },
             status: {
-                1: "发布中",
-                2: "发布完成",
-                3: "发布失败",
-                4: "删除中",
-                5: "删除失败",
+                0: "转换中",
+                1: "转换完成",
+                2: "转换失败",
+                // 4: "删除中",
+                // 5: "删除失败",
             },
             layerTypeList: [],
             form:{},
@@ -188,12 +192,16 @@ export default {
             this.loading = true
             const params = {
                 ...this.pages,
-                // userId: Getuserid()
-                userId: '123456', // 测试先写死
+                userId: Getuserid()
             }
             getList(params).then((res) => {
-                this.tableData = res.data
-                this.total = res.data.length
+                if (res.data.code === 200) {
+                    this.tableData = res.data.data
+                    this.total = this.tableData.length
+                } else {
+                    this.tableData = []
+                    this.total = 0
+                }
                 this.loading = false
             }).catch(()=>{
                 this.loading = false
@@ -210,9 +218,8 @@ export default {
             callback({
                 ...this.form,
                 fileUpload: file,
-                // userId: Getuserid(),
-                userId: '123456',
-                toType: 'svg',
+                userId: Getuserid(),
+                toType: 'dxf',
                 url: "/CADFile/uploadFile",
             });
         },
@@ -239,8 +246,7 @@ export default {
             }).then(() => {
                 const params = {
                     userFileId: row.userFileId,
-                    // userId: Getuserid()
-                    userId: '123456'
+                    userId: Getuserid()
                 }
                 deleteList(params).then(()=>{
                     this.$message.success("删除成功！");
@@ -249,8 +255,10 @@ export default {
             }).catch(() => {});
         },
         toProject(row){
-            console.log('🚀🚀🚀',row);
-            const url = `http://127.0.0.1:5174/?file=${row.fileName}`
+            // console.log('🚀🚀🚀',row);
+            const splitArr = row.filePath.split('/')
+            const fileName = splitArr[splitArr.length - 1]
+            const url = `https://www.ourbim.com/bim_CAD/?file=${fileName}`
             window.open(url)
         }
     },

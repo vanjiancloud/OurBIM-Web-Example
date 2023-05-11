@@ -13,16 +13,16 @@
             <el-input v-model="form.fileName" placeholder="请输入"></el-input>
           </el-form-item>
           <el-form-item label="图纸ID：" prop="userFileId">
-            <el-input v-model="form.userFileId" placeholder="请输入"></el-input>
+            <el-input v-model="form.userFileId" disabled placeholder="请输入"></el-input>
           </el-form-item>
           <el-form-item label="上传日期：" prop="addTime">
-            <el-input v-model="form.addTime" placeholder="请输入"></el-input>
+            <el-input v-model="form.addTime" disabled placeholder="请输入"></el-input>
           </el-form-item>
           <el-form-item label="大小：" prop="fileSize">
-            <el-input v-model="form.fileSize" placeholder="请输入"></el-input>
+            <el-input v-model="form.fileSize" disabled placeholder="请输入"></el-input>
           </el-form-item>
           <el-form-item label="图纸类型：" prop="extand">
-            <el-input v-model="form.extand" placeholder="请输入"></el-input>
+            <el-input v-model="form.extand" disabled placeholder="请输入"></el-input>
           </el-form-item>
         </el-form>
   

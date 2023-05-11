@@ -358,7 +358,7 @@
                   $t("modelmanage")
                 }}</el-menu-item>
                 <!-- GIS数据服务 -->
-                <el-menu-item index="/GISList">GIS数据服务</el-menu-item>
+                <!-- <el-menu-item index="/GISList">GIS数据服务</el-menu-item> -->
                 <!-- 图纸管理 -->
                 <el-menu-item index="/CADList">图纸管理</el-menu-item>
                 <!-- 文档管理 -->
