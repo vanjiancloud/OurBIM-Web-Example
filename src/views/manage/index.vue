@@ -184,7 +184,7 @@
                   v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false') &&scope.row.fileSize!='0'"
                   >下载</el-dropdown-item
                 >
-                <el-dropdown-item command="reconversion" v-if="scope.row.appType === '0'&&scope.row.applidStatus === '2'&&scope.row.fileSize!='0'">重新转换</el-dropdown-item>
+                <!-- <el-dropdown-item command="reconversion" v-if="scope.row.appType === '0'&&scope.row.applidStatus === '2'&&scope.row.fileSize!='0'">重新转换</el-dropdown-item> -->
                 <el-dropdown-item
                   command="delete"
                   v-if="scope.row.applidStatus !== '5'"
@@ -509,7 +509,7 @@
     </el-dialog>
     <DragUpload ref="DragUpload" numType="uploadingNum" accept=".rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.fbx,.FBX,.obj,.stp,.xyz,.txt,.pts,.las"
     @getFile="getFileDrag" @onSuccess="getAllModelList" @beforeUpload="beforeUpload">
-        <template v-slot:append>
+        <!-- <template v-slot:append>
             <el-form :model="conversionForm" :rules="conversionRules" ref="conversionForm" label-width="0" class="conversionForm">
                 <el-form-item prop="modelActorLimitNum">
                     <el-checkbox label="模型体量优化" v-model="conversionForm.NumChecked"></el-checkbox>
@@ -529,7 +529,7 @@
                     </el-radio-group>
                 </el-form-item>
             </el-form>
-        </template>
+        </template> -->
     </DragUpload>
   </div>
 </template>
@@ -1485,9 +1485,9 @@ export default {
     // 上传模型参数
     getFileDrag(file, callback) {
         callback({
-            platform: this.conversionForm.platform,
-            modelActorLimitNum: this.conversionForm.modelActorLimitNum,
-            singleActorLimitNum: this.conversionForm.singleActorLimitNum,
+            // platform: this.conversionForm.platform,
+            // modelActorLimitNum: this.conversionForm.modelActorLimitNum,
+            // singleActorLimitNum: this.conversionForm.singleActorLimitNum,
             fileUpload: file,
             userId: Getuserid(),
             url: "/appli/addProject",
@@ -1495,12 +1495,12 @@ export default {
     },
     // 上传GIS数据验证
     beforeUpload(callback){
-        this.$refs.conversionForm.validate((valid) => {
-            if (!valid){
-                callback(true)
-                return false;
-            }
-        })
+        // this.$refs.conversionForm.validate((valid) => {
+        //     if (!valid){
+        //         callback(true)
+        //         return false;
+        //     }
+        // })
     },
   },
   mounted() {
