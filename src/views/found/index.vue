@@ -145,7 +145,7 @@
           <el-input v-model="editForm.name"></el-input>
         </el-form-item>
         <el-form-item label="缩略图:" label-width="100px" v-if="breadArr.length !== 0">
-          <uploadComImg v-model="editForm.comUrl" ref="uploadPhoto" @fromSonFile="fromSonFile"></uploadComImg>
+          <SingleUpload v-model="editForm.comUrl" :autoUpload="false"/>
         </el-form-item>
         <el-form-item label="换组:" label-width="100px" class="btnMore" v-if="breadArr.length">
           <el-select v-model="selectVal" placeholder="请选择分组" size="mini" ref="select" @clear="clearValue" clearable :disabled="!breadArr.length">
@@ -182,24 +182,20 @@ import { Getuserid } from "@/store/index.js";
 import axios from "@/utils/request";
 import qs from "qs";
 import { updateJudgeMsg } from '../../api/my';
-
+import SingleUpload from "@/components/Upload/singleUpload.vue"
 import addComps from './components/addComps.vue'
-import uploadComImg from './components/uploadComImg.vue'
 import axios2 from 'axios'
-// import request from '../utils/request'
 
 export default {
   name: "manage",
   components: {
     addComps,
-    uploadComImg
+    SingleUpload
   },
   data() {
     return {  
         componentsList:[], // 自定义构件列表
         customColor:'#00aaf0',
-        pollingComps:true, // 是否开启轮询自定义构件
-        timerComp:null, // 轮询自定义构建的定时器
         addCompDialog:false, // 添加构件弹框
         selectRowInfo:{}, // 鼠标点击当前行的数据
         addNewGroupDialog:false, // 新建分组弹框
@@ -228,19 +224,6 @@ export default {
             {
               required: true, message: '必填项', trigger: 'blur'
             },
-            // {
-            //   validator:(rules,value,callback) =>{
-            //     const resBol = this.componentsList.some(item=>{
-            //       if(item.isGroup === '1'){
-            //         return item.groupName === value
-            //       }else{
-            //         return item.ourbimComponentInfo.comName === value;
-            //       }
-            //     })
-            //     resBol ? callback(new Error('名称重复')) : callback()
-            //   },
-            //   trigger:'change'            
-            // }
           ]
         },
         rulesEditForm:{
@@ -249,25 +232,11 @@ export default {
             message:'请输入名称',
             trigger:'blur'
           },
-          // {
-          //   validator:(rules,value,callback) =>{
-          //     const resBol = this.componentsList.some(item=>{
-          //       if(item.isGroup === '1'){
-          //         return item.groupName === value && item.id !== this.selectRowInfo.id;
-          //       }else{
-          //         return item.ourbimComponentInfo.comName === value && item.ourbimComponentInfo.comId !== this.selectRowInfo.comId;
-          //       }
-          //     })
-          //     resBol ? callback(new Error('名称重复')) : callback()
-          //   },
-          //   trigger:'change'
-          //  }
           ]
          },
          nextBread:'',   // 控制是否有下一级的面包屑 
          nextBreadFlag:false,
          idFirst:'',  // 新建分组要传递的父id
-         photoFile:'',
          baseURL: axios.defaults.baseURL,
          picUpload:''
     };
@@ -279,12 +248,8 @@ export default {
   },
   created() {
     this.getCompList();
-    this.setPollingComp();
   },
   methods: {
-    fromSonFile(e){
-      this.photoFile = e;
-    },
     // ------------
     // 获取自定义构件列表
     getCompList(){
@@ -388,7 +353,6 @@ export default {
     },
     // 编辑自定义构件
     editCom(e){
-      console.log('edit',e);
       this.editComDialog = true;
       this.editForm.name = e.isGroup === '1' ? e.groupName : e.ourbimComponentInfo.comName;
       this.editForm.comUrl = e.ourbimComponentInfo.comUrl
@@ -405,12 +369,11 @@ export default {
     },
     // 编辑自定义构件确定
     editSubmit(editForm){
-      // console.log('确定',this.editForm);
       if(this.breadArr.length !== 0){
         this.$refs[editForm].validate((valid) => {
           if(valid){
             let fd = new FormData();
-              fd.append('fileUpload',this.photoFile);
+              fd.append('fileUpload',this.editForm.comUrl);
               fd.append('userId', Getuserid());
               fd.append('comId', this.selectRowInfo.comId);
               fd.append('comName', this.editForm.name);
@@ -463,14 +426,6 @@ export default {
         });
       }
     },
-    // 轮询自定义构件
-    setPollingComp(){
-      if(this.pollingComps === true){
-        this.timerComp = setInterval(()=>{
-          this.getCompList();
-        },2500)
-      }
-    },
     rowClick(e){
       if(e.isGroup==='0'){
         return;
@@ -506,20 +461,9 @@ export default {
           }
       });
     },
-    // 点击面包屑
-    // clickBread(e,index){
-    //   if(index === this.breadArr.length -1){
-    //     return;
-    //   }
-    //   let arr = this.breadArr.slice(0,index+1);
-    //   this.breadArr = arr;
-    //   this.pageParentId = e.id;
-    //   this.getCompList();
-    // },
     // 点击面包屑导航的第一个
     clickBreadFirst(){
       this.breadArr = [];
-      // this.$router.push({path: '/found'});
       this.pageParentId = 'god';
       this.getCompList();
       console.log('999',this.breadArr);
@@ -534,7 +478,6 @@ export default {
     handleNodeClick(data) {
       this.selectVal = data.id; // select绑定值为点击的选项的value
       this.selectName = data.groupName; // input中显示值为label
-      // this.treeFilter = ""; // 点击后搜索框清空
       this.$refs.select.blur(); // 点击后关闭下拉框，因为点击树形控件后select不会自动折叠
     },
 
@@ -571,9 +514,7 @@ export default {
     // -----------
 
   },
-  beforeDestroy(){
-    clearInterval(this.timerComp);
-  }
+  beforeDestroy(){}
 };
 </script>
 

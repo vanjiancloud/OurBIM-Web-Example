@@ -185,8 +185,6 @@ export default {
     return {  
         docuList:[], // 自定义构件列表
         customColor:'#00aaf0',
-        pollingComps:true, // 是否开启轮询自定义构件
-        timerComp:null, // 轮询自定义构建的定时器
         addCompDialog:false, // 上传弹框
         currentSelect:{},  // 选中的当前文档信息
         dialogFormVisibleOne:false, // 分享dialog
@@ -206,7 +204,6 @@ export default {
   },
   created() {
     this.getCloudDocList();
-    this.setPollingDoc();
   },
   methods: {
     // ------------
@@ -226,14 +223,6 @@ export default {
             }
         }
      }).catch(()=>{})
-    },
-    // 轮询自定义构件
-    setPollingDoc(){
-      if(this.pollingComps === true){
-        this.timerComp = setInterval(()=>{
-          this.getCloudDocList();
-        },2500)
-      }
     },
     handleCommand(command){
       const item = this.currentSelect;
@@ -429,9 +418,7 @@ export default {
   watch: {
     
   },
-  beforeDestroy(){
-    clearInterval(this.timerComp);
-  }
+  beforeDestroy(){}
 };
 </script>
 

@@ -409,7 +409,7 @@
         },
           radioChange(val){
               if(val == 2){
-                if(this.isGis){
+                if(!this.isGis){
                     this.changeWea(this.getTwoIds('parameter'));
                 }else{
                     this.getWeatherParams('need');

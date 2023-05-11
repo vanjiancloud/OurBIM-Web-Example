@@ -154,7 +154,6 @@
             </div>
           </div>
         </div>
-
         <!-- 二维码 -->
         <qrcode-part
           v-if="isQrcode"

@@ -40,6 +40,17 @@ const CHAILIAOAPI = {
             data: formData,
         })
     },
+    // 创建个人库材质贴图分组
+    CREATEMATERIALTEXTUREGROUP: data => {
+        return request({
+            url: '/material/createMaterialTextureGroup',
+            method: 'post',
+            data,
+            headers: {
+                "Content-Type": "multipart/form-data;"
+            },
+        })
+    },
     GETPAKIDBYAPPID: params => {
         return request({
             url: '/appli/getPakIdByAppId',
@@ -108,6 +119,14 @@ const CHAILIAOAPI = {
         return request({
             url: '/weather/getCurrWeatherId',
             method: 'get',
+            params,
+        })
+    },
+    // 删除贴图分组或贴图
+    deleteMaterialTexture: params => {
+        return request({
+            url: '/material/deleteMaterialTextureInfo',
+            method: 'post',
             params,
         })
     },
