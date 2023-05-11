@@ -361,18 +361,18 @@
           }
       },
       created(){
-          this.getWeatherList();
           this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
-      },
+        },
       mounted(){
-          this.changeColor(this.color1);
           if(this.isGis){
-           document.querySelector('.weatherClassify').style.height = '200px';
-          }
-      },
+              document.querySelector('.weatherClassify').style.height = '200px';
+            }
+        },
       methods:{
         show() {
             this.$refs.Drawer.show()
+            this.getWeatherList();
+            this.changeColor(this.color1);
         },
         close(){
             this.$refs.Drawer.hide()

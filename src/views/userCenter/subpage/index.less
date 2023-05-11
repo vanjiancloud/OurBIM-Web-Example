@@ -33,6 +33,9 @@
             margin-left: 16px;
             padding: 6px 6px;
         }
+        .searchInput{
+            flex: 1;
+        }
     }
 
     .comTitle {
@@ -86,5 +89,20 @@
     .el-checkbox__input.is-indeterminate .el-checkbox__inner {
         background-color: #20c6ff;
         border-color: #20c6ff;
+    }
+    .el-tree{
+        background: none;
+    }
+    .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content{
+        background: none;
+    }
+    .el-tree-node__content:hover,.el-tree-node__content:focus{
+        background: #28292E;
+    }
+    .el-tree-node{
+        background: none;
+    }
+    .el-tree-node:focus,.is-current:focus{
+        background: none;
     }
 }

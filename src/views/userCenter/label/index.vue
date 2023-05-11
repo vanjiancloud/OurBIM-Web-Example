@@ -3,19 +3,12 @@
  * @Date: 2021-05-06 09:20:40
  * @LastEditors: zk
  * @LastEditTime: 2021-09-07 15:51:00
- * @description: 
+ * @description: 标签
 -->
 <template>
-  <div class="tag-tree" v-show="isTag">
-    <div class="tree-title" v-if="isColseBar">
-      <div class="" v-text="$t('webClient.labelBox.title')"></div>
-      <!-- 关闭 -->
-      <div class="close-part">
-        <i class="el-icon-close" @click="closeTag(false)"></i>
-      </div>
-    </div>
+<Drawer ref="Drawer" title="标签" direction="rtl" @onClose="close" class="tag-tree">
     <!-- 操作 -->
-    <div class="handle-part">
+    <div class="handle-part search">
       <el-input
         class="search-tag"
         placeholder="请输入你要搜索的内容"
@@ -23,11 +16,16 @@
         @change="changeTag"
         @keyup.enter.native="changeTag"
         v-model="modelTag"
+        size="mini"
       >
         <i slot="prefix" class="el-input__icon el-icon-search"></i>
       </el-input>
-      <img src="../../assets/images/tag/1.png" @click="saveTag(0)" alt="" />
-      <img src="../../assets/images/tag/2.png" @click="saveTag(1)" alt="" />
+      <el-tooltip class="item" effect="dark" content="添加标签" placement="top">
+        <img src="@/assets/images/tag/1.png" @click="saveTag(0)" alt="" />
+      </el-tooltip>
+      <el-tooltip class="item" effect="dark" content="添加标签组文件" placement="top">
+        <img src="@/assets/images/tag/2.png" @click="saveTag(1)" alt="" />
+      </el-tooltip>
     </div>
     <!-- 标签树 -->
     <div class="tree-content" v-if="getProps">
@@ -58,18 +56,18 @@
           <div class="label-tag" @click="handleTag(node)">{{ node.label }}</div>
           <div class="handle-tag">
             <img
-              src="../../assets/images/tag/5.png"
+              src="@/assets/images/tag/5.png"
               @click="editTag(node)"
               alt=""
             />
             <img
               v-if="node.data.isFolder === '0'"
               @click="locationTag(node)"
-              src="../../assets/images/tag/7.png"
+              src="@/assets/images/tag/7.png"
               alt=""
             />
             <img
-              src="../../assets/images/tag/6.png"
+              src="@/assets/images/tag/6.png"
               @click="removeTag(node)"
               alt=""
             />
@@ -181,23 +179,22 @@
       :on-change="changeUpload"
     >
     </el-upload>
-  </div>
+</Drawer>
 </template>
 
 <script>
-import TAGTREE from "../../api/tag_tree";
-import BASE from "../../utils/request";
+import { EventBus } from '@/utils/bus.js'
+import Drawer from '@/components/Drawer/index.vue'
+import TAGTREE from "@/api/tag_tree";
+import BASE from "@/utils/request";
 import axios from "axios";
 
 export default {
+    components: { Drawer },
   props: {
     setProps: {
       type: Object,
       default: () => {},
-    },
-    taskId: {
-      type: String,
-      default: "",
     },
   },
   watch: {
@@ -217,6 +214,7 @@ export default {
   mounted() {},
   data() {
     return {
+        showDrawer: false,//是否显示
       DataTagTree: [],
       realTreeList: [],
       loading: {
@@ -291,6 +289,18 @@ export default {
     };
   },
   methods: {
+    show() {
+        this.showDrawer = true
+        this.$refs.Drawer.show()
+        this.listTag()
+    },
+    close() {
+        this.showDrawer = false
+        this.$refs.Drawer.hide()
+        if(!this.$parent.$refs.TagLibrary.showDrawer){
+            EventBus.$emit('eventTool', 'label')
+        }
+    },
     UploadImage(res) {
       /**
        * @Author: zk
@@ -612,7 +622,7 @@ export default {
               this.realTreeList = res;
               this.reloadTree(2);
               this.closePart(false);
-              this.$emit("setAddTag");
+              this.$parent.hideTool(true);
             });
           })
           .catch((err) => {
@@ -782,53 +792,31 @@ export default {
        */
       this.isColseBar = false;
     },
-    closeTag(e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-05-06 10:12:15
-       * @description: 控制显示隐藏
-       */
-      this.closePart(e);
-      this.$emit("closeTag", e);
-    },
   },
 };
 </script>
 
 <style lang="less" scoped>
 .tag-tree {
-  position: absolute;
-  z-index: 9;
-  height: 50vh;
-  top: 0;
-  width: 400px;
-  margin: 2vh 0 0 20px;
-  border-radius: 10px;
-  background-color: rgba(17,17,17,0.88);
-  .tree-title {
-    display: flex;
-    padding: 20px 15px 0 15px;
-    color: #ffffff;
-    .close-part {
-      margin-left: auto;
-      cursor: pointer;
+    /deep/.el-tree-node{
+        margin-bottom: 10px;           
     }
-  }
   // 操作
   .handle-part {
     display: flex;
     align-items: center;
-    padding: 10px;
+    padding: 16px 0 0 0;
 
     img {
       margin-left: 10px;
       width: 20px;
       height: 20px;
+      cursor: pointer;
     }
   }
   .tree-content {
     margin: 0 auto;
-    height: ~"calc(100% - 110px)";
+    height: ~"calc(100% - 130px)";
     width: ~"calc(100% - 20px)";
     overflow-x: hidden;
     overflow-y: auto;

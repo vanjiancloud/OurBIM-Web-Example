@@ -1,9 +1,6 @@
 <template>
+<Drawer ref="Drawer" title="漫游导航" @onClose="close">
     <div class="roam_navigate">
-        <div class="romaHead">
-            <span class="title">漫游导航</span>
-            <span @click="closeRoam(0)" class="el-icon-close closeIcon"></span>
-        </div>
         <div class="middle">
             <el-radio-group v-model="radio" class="singleSelect" @change="changeRadio">
                 <el-radio :label="2" class="needBlock" v-if="!isGis"><span class="viewModel">{{personView[0].name}}</span></el-radio>
@@ -58,12 +55,15 @@
             </el-checkbox-group>
         </div>
     </div>
+</Drawer>
 </template>
 
 <script>
 import MODELAPI from '../../api/model_api';
-
+import { EventBus } from '@/utils/bus.js'
+import Drawer from '@/components/Drawer/index.vue'
 export default {
+    components: { Drawer },
     props:{
         taskId:{
           type: String,
@@ -251,6 +251,13 @@ export default {
         }
     },
     methods:{
+        show() {
+            this.$refs.Drawer.show()
+        },
+        close() {
+            this.$refs.Drawer.hide()
+            EventBus.$emit('eventTool', 'roaming')
+        },
         threeView(){
           let par = {
             taskid: this.taskId,
@@ -265,9 +272,6 @@ export default {
                     this.$message.error(res.data.message);
                 }
            }).catch(()=>{})
-        },
-        closeRoam(val){
-            this.$emit('closePart',val);
         },
         requestFun(){
             MODELAPI.UPDATEORDER(this.params).then((res)=>{
@@ -387,28 +391,37 @@ export default {
         changeBottom(){
             // 地图
             if(this.checkListBottom.includes(this.checkBottomWords[0].name)){
-                 this.$emit("listenTodo", {
-                    state: 1,
-                    type: 5,
-                });
+                this.roamMap('on')
             }else{
-               this.$emit("listenTodo", {
-                    state: 0,
-                    type: 5,
-                });
+                this.roamMap('off')
             }
             // viewCube
              if(this.checkListBottom.includes(this.checkBottomWords[1].name)){
-                 this.$emit("listenTodo", {
-                    name: 'viewCube',
-                    flag: true,
-                });
+                this.$parent.controllerInfo.viewCube = true
             }else{
-               this.$emit("listenTodo", {
-                    name: 'viewCube',
-                    flag: false,
-                });
+                this.$parent.controllerInfo.viewCube = false
             }
+        },
+        // 导航地图
+        roamMap(Switch){
+            let params = {
+                taskid: this.taskId,
+                action:'minimapSethidden',
+                Switch
+            }
+            MODELAPI.UPDATEORDER(params).then((res) => {
+                if (res.data.code === 0) {
+                    this.$message({
+                        message: '指令下发成功',
+                        type: "success",
+                    });
+                } else {
+                    this.$message({
+                        message: res.data.message,
+                        type: "error",
+                    });
+                }
+            })
         }
     }
 }
@@ -420,31 +433,7 @@ export default {
 //     height: 200px !important;
 //  }           
 .roam_navigate {
-  position: absolute;
-  z-index: 9;
-  height: 450px;
-  top: 0;
-  width: 400px;
-  color: white;
-  margin: 2vh 0 0 20px;
-  border-radius: 10px;
-  background-color: rgba(17,17,17,0.88);
-  .romaHead{
-    width: 400px;
-    height: 54px;
-    font-size: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px rgb(79, 79, 79) solid;
-    .title{
-      margin-left: 16px;
-    }
-    .closeIcon{
-      margin-right: 16px;
-      cursor: pointer;
-    }
-  }
+
   // 中间
   .middle{
     padding: 16px 23px 0 23px;
@@ -460,7 +449,7 @@ export default {
         }
         ::v-deep .selfView .el-radio__label{
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             justify-content: space-around;
             margin-bottom: 16px;
             .turnHeight input{
@@ -497,7 +486,7 @@ export default {
                     margin: 0 0 14px 20px;
                 }
             .putDown{
-                margin-left: 120px;
+                text-align: center;
             }
             .show-speed{
                 margin-bottom: 10px;

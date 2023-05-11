@@ -7,6 +7,7 @@
  */
   import request from '../utils/request'
   import qsStringify from "qs-stringify"
+  import newRequest from '@/utils/newRequest.js'
 
   const TAGTREE = {
         // 获取标签列表
@@ -70,3 +71,12 @@
   }
 
   export default TAGTREE
+
+
+export function getTagList(params) {
+    return newRequest({
+        url: '/tagControl/getTagList',
+        method: 'get',
+        params
+    })
+}

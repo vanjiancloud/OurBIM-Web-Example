@@ -200,24 +200,8 @@
         @handleType="handleType"
         ref="getCube"
       ></view-cube>
-      <!-- 标签树 -->
-      <tag-tree
-        @click.native.stop=""
-        @closeTag="closeTag"
-        @setListenClick="setListenClick"
-        @setAddTag="setAddTag"
-        @setTagClick="setTagClick"
-        :setProps="propsFooter"
-        ref="tagTree"
-      ></tag-tree>
     </div>
-    <!-- 漫游导航 -->
-    <roamNavigate
-    :taskId="taskId"
-    @listenTodo="listenTodo"
-    @closePart="closePart('roaming')"
-    v-if="viewAngle&&checkShow('roaming')"
-    ></roamNavigate>
+    
     <!-- (视图) -->
     <viewPhoto ref="viewPhoto" :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
     <!-- 协同模式弹窗 -->
@@ -232,14 +216,20 @@
       </div>
     </div>
     <EscDialogItem ref="EscDialogItem" />
+    <!-- 漫游导航 -->
+    <roamNavigate ref="roamNavigate" :taskId="taskId" v-show="checkShow('roaming')"></roamNavigate>
     <!-- 资源库 -->
     <ResourcePool ref="ResourcePool" :data="{ taskId, userId, selectPark, materialData, pakIdMapweb }" v-show="controllerInfo.tagUiBar&&checkShow('resource')"/>
     <!-- 构件信息 -->
     <ComponentInformation ref="ComponentInformation" :data="{ taskId, memberInfo, materialData, pakIdMapweb }" v-show="checkShow('componentInformation')"/>
     <!-- 天气 -->
-    <weatherSystem ref="weatherSystem" :appId="appId" :taskId="taskId" v-show="checkShow('renderingEnvironment')"></weatherSystem>
+    <weatherSystem ref="weatherSystem" :appId="appId" :taskId="taskId" v-show="checkShow('renderingEnvironment')"/>
+    <!-- 标签 -->
+    <Label ref="Label" v-show="controllerInfo.tagUiBar&&checkShow('label')" :setProps="{ taskId, appId }" @setTagClick="setTagClick" @setListenClick="setListenClick" />
+    <!-- 标签库 -->
+    <TagLibrary ref="TagLibrary" v-show="controllerInfo.tagUiBar&&checkShow('label')" :data="{ taskId, appId }"/>
     <!-- 底部工具栏 -->
-    <Tool ref="Tool" v-model="activeToolArr" :data="{ taskId, appId }" @onSuccess="toolSuccess" @close="closeTool"/>
+    <Tool ref="Tool" v-show="controllerInfo.tagUiBar" v-model="activeToolArr" :data="{ taskId, appId }" @onSuccess="toolSuccess" @close="closeTool"/>
   </div>
 </template>
 
@@ -248,9 +238,7 @@ import MODELAPI from "@/api/model_api";
 import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
 import TAGTREE from "@/api/tag_tree";
 import COMPONENTLIBRARY from "@/api/component-library";
-// import todoFooter from "@/components/web_client/todo_footer";
 import viewCube from "@/components/web_client/view_cube";
-import tagTree from "@/components/web_client/tag_tree";
 import roamNavigate from "@/components/web_client/roam_navigate";
 import viewPhoto from "@/components/web_client/view_photo";
 import progressBar from "@/components/web_client/progress_bar";
@@ -266,6 +254,8 @@ import { Getuserid } from "@/store/index.js"; // (自定义构件)
 import weatherSystem from "@/components/web_client/weather_system.vue"; // 天气系统
 import ResourcePool from "../resourcePool/index.vue"; // 资源库
 import ComponentInformation from "../componentInformation/index.vue"; //构件信息
+import Label from "../label/index.vue"; //标签
+import TagLibrary from "../label/tagLibrary.vue"; //标签库
 import Tool from "../Tool/index.vue"; //底部工具栏
 import { EventBus } from '@/utils/bus.js'
 
@@ -274,7 +264,6 @@ export default {
   layout: "reset",
   components: {
     viewCube,
-    tagTree,
     progressBar,
     qrcodePart,
     TeamworkDialog,
@@ -284,7 +273,9 @@ export default {
     weatherSystem,
     ResourcePool,
     ComponentInformation,
-    Tool
+    Tool,
+    Label,
+    TagLibrary
   },
   data() {
     return {
@@ -357,7 +348,6 @@ export default {
       websock: null,
       socketTimer: null,
       browserInfo: null, //模型浏览器
-      viewAngle:null,  // 漫游导航
       natureInfo: null,
       shadowType: null,
       listenTodoInfo: null,
@@ -504,7 +494,8 @@ export default {
                 break;
             // 漫游导航
             case 'roaming':
-                this.viewAngle = true
+                console.log('🚀🚀🚀',this.$refs.roamNavigate);
+                this.$refs.roamNavigate.show()
                 break;
             // 模型剖切
             case 'modelSectioning':
@@ -516,7 +507,8 @@ export default {
                 break;
             // 标签
             case 'label':
-                
+                this.$refs.Label.show()
+                this.$refs.TagLibrary.show()
                 break;
             // 视图
             case 'view':
@@ -556,9 +548,6 @@ export default {
             case 'browser':
                 this.browserInfo = false
                 break;
-            case 'roaming':
-                this.viewAngle = false
-                break;
         
             default:
                 break;
@@ -571,6 +560,7 @@ export default {
     // 操作esc的时候隐藏工具栏true隐藏，false显示
     hideTool(val = true){
         this.controllerInfo.tagUiBar = !val;//底部栏隐藏
+        this.controllerInfo.tagViewCube = !val;//右上角
         this.$refs.EscDialogItem.changeVisible(val);
     },
     outPic(url){
@@ -1569,29 +1559,9 @@ export default {
     //   if (e === 14) {
     //     this.listenTodoInfo = null;
     //   }
-    //   // 漫游导航---
-    //   if(e === 0){
-    //     this.viewAngle = null;
-    //   }
     //   if (this.$refs.getFooter) {
     //     this.$refs.getFooter.editTool(e);
     //   }
-    },
-    closeTag() {
-      /**
-       * @Author: zk
-       * @Date: 2021-05-06 10:13:08
-       * @description: 关闭标签组件
-       */
-      this.isTag = false;
-      this.listenTodoInfo = {
-        type: 4,
-        state: 0,
-      };
-      this.handleTagShow();
-      if (this.$refs.getFooter) {
-        this.$refs.getFooter.editTool(4);
-      }
     },
     setListenClick(e) {
       /**
@@ -1627,17 +1597,6 @@ export default {
         message: "",
       };
       this.sentParentIframe(messageInfo);
-    },
-    setAddTag() {
-      /**
-       * @Author: zk
-       * @Date: 2021-05-19 10:45:00
-       * @description: 添加标签
-       */
-      if (this.controllerInfo.uiBar) {
-        this.controllerInfo.tagUiBar = false;
-        this.controllerInfo.tagViewCube = false;
-      }
     },
     listenPerson(e) {
       /**
