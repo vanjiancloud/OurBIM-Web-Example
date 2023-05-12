@@ -323,36 +323,6 @@ const MODELAPI = {
             params
         })
     },
-    // 改变选中构件状态
-    UPDATEMEMBER: params => {
-        return request({
-            url: '/OurBim/conChoiceVisible',
-            method: 'get',
-            params
-        })
-    },
-    // params:{
-    //   taskId:''
-    // }
-    // 显示全部构件
-    displayAllActor: params => {
-        return request({
-            url: '/OurBim/displayAllActor',
-            method: 'post',
-            data: qsStringify(params)
-        })
-    },
-    // params:{
-    //   taskId:''
-    // }
-    // 隔离构件
-    invertHidden: params => {
-        return request({
-            url: '/OurBim/invertHidden',
-            method: 'post',
-            data: qsStringify(params)
-        })
-    },
     // 打开或者关闭(轴心)
     SETGIZMOAXIS: params => {
         return request({
@@ -364,12 +334,37 @@ const MODELAPI = {
 }
 // 设置太阳光、天空光照属性
 export function setWeatherSun(params,data) {
-    return request({
+    return newRequest({
       url: `/weather/setSunLightIntensityAndColor`,
       method: "post",
       params,
       data
     });
+}
+
+// 改变选中构件状态
+export function conChoiceVisible(params) {
+    return newRequest({
+        url: '/OurBim/conChoiceVisible',
+        method: 'get',
+        params
+    })
+}
+// 隔离构件
+export function invertHidden(params) {
+    return newRequest({
+        url: '/OurBim/invertHidden',
+        method: 'post',
+        params
+    })
+}
+// 显示全部构件
+export function displayAllActor(params) {
+    return newRequest({
+        url: '/OurBim/displayAllActor',
+        method: 'post',
+        params
+    })
 }
 
 export default MODELAPI

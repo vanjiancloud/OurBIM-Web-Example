@@ -66,6 +66,9 @@ export default {
     computed: {},
     created() {},
     mounted() {},
+    destroyed () {
+        EventBus.$off('eventTool')
+    },
     methods: {
         show() {
             this.showDrawer = true

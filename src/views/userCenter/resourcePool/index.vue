@@ -142,6 +142,9 @@ export default {
     },
     created() {},
     mounted() {},
+    destroyed () {
+        EventBus.$off('eventTool')
+    },
     methods: {
         show() {
             this.$refs.Drawer.show()

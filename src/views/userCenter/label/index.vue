@@ -202,9 +202,9 @@ export default {
       handler() {
         if (this.setProps.taskId) {
           this.getProps = this.setProps;
-          this.listTag().then((res) => {
-            this.defaultTag = res[0];
-          });
+        //   this.listTag().then((res) => {
+        //     this.defaultTag = res[0];
+        //   });
         }
       },
       // 代表在wacth里声明了firstName这个方法之后立即先去执行handler方法
@@ -287,6 +287,9 @@ export default {
       },
       treeEmpty: this.$t("webClient.browser.tips[0]"),
     };
+  },
+  destroyed () {
+    EventBus.$off('eventTool')
   },
   methods: {
     show() {

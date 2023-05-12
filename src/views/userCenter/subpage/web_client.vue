@@ -225,11 +225,11 @@
     <!-- 天气 -->
     <weatherSystem ref="weatherSystem" :appId="appId" :taskId="taskId" v-show="checkShow('renderingEnvironment')"/>
     <!-- 标签 -->
-    <Label ref="Label" v-show="controllerInfo.tagUiBar&&checkShow('label')" :setProps="{ taskId, appId }" @setTagClick="setTagClick" @setListenClick="setListenClick" />
+    <Label ref="Label" v-show="controllerInfo.tagUiBar&&checkShow('label')" :setProps="{ taskId, appId }" @setTagClick="setTagClick" />
     <!-- 标签库 -->
     <TagLibrary ref="TagLibrary" v-show="controllerInfo.tagUiBar&&checkShow('label')" :data="{ taskId, appId }"/>
     <!-- 底部工具栏 -->
-    <Tool ref="Tool" v-show="controllerInfo.tagUiBar" v-model="activeToolArr" :data="{ taskId, appId }" @onSuccess="toolSuccess" @close="closeTool"/>
+    <Tool ref="Tool" v-show="controllerInfo.tagUiBar" v-model="activeToolArr" :data="{ taskId, appId, selectPark }" @onSuccess="toolSuccess" @close="closeTool"/>
   </div>
 </template>
 
@@ -502,7 +502,6 @@ export default {
                 break;
             // 漫游导航
             case 'roaming':
-                console.log('🚀🚀🚀',this.$refs.roamNavigate);
                 this.$refs.roamNavigate.show()
                 break;
             // 模型剖切
@@ -786,24 +785,6 @@ export default {
        * @description: 搜索
        */
       this.$refs.setTree.filter(this.modelBrowser);
-    },
-
-    AddQrCode() {
-      /**
-       * @Author: zk
-       * @Date: 2021-07-30 14:25:42
-       * @description: 新增二维码
-       */
-      return;
-      let params = {
-        taskId: this.taskId,
-      };
-      COMPONENTLIBRARY.ADDCOMPONENT(params).then((res) => {
-        if (this.controllerInfo.uiBar) {
-          this.controllerInfo.tagUiBar = false;
-          this.controllerInfo.tagViewCube = false;
-        }
-      });
     },
 
     ExpandNode(e, data) {
@@ -1325,51 +1306,6 @@ export default {
           // 定位主视图
           params.action = "cameraPosAll";
           break;
-        case 11:
-          // 剖切
-          if (this.listenTodoInfo.state === 0) {
-            params.action = "end";
-          }
-          if (
-            this.listenTodoInfo.state === 1 &&
-            this.listenTodoInfo.data === undefined
-          ) {
-            params.action = "start";
-          }
-          if (
-            this.listenTodoInfo.state === 1 &&
-            this.listenTodoInfo.data !== undefined
-          ) {
-            switch (this.listenTodoInfo.data.id) {
-              case 0:
-                if (this.listenTodoInfo.data.state === "on") {
-                  params.action = "move";
-                } else {
-                  params.action = "cutBox";
-                }
-                break;
-              case 1:
-                if (this.listenTodoInfo.data.state === "on") {
-                  params.action = "rotate";
-                } else {
-                  params.action = "cutBox";
-                }
-                break;
-              case 2:
-                params.action = "invert";
-                params.Switch = this.listenTodoInfo.data.state;
-                break;
-              case 3:
-                params.action = "startItem";
-                break;
-              case 4:
-                params.action = "restoration";
-                break;
-              default:
-                break;
-            }
-          }
-          break;
         case 12:
           // 分解模型
           params.action = "splitModel";
@@ -1382,22 +1318,12 @@ export default {
         //   params.width = document.body.clientWidth;
         //   params.height = document.body.clientHeight;
         //   break;
-        case 14:
-          // 框选
-          params.action = "componentBoxSelection";
-          params.Switch = this.listenTodoInfo.state === 1 ? "on" : "off";
-          break;
         case 15:
           // 渲染环境
           // params.action = "Weather";
           // params.weahterId = this.listenTodoInfo.data.id;
           params.action = "switchWeather ";
           params.weahterId = this.listenTodoInfo.data.id;
-          break;
-        case 16:
-          // 渲染环境
-          params.action = "minimapSethidden";
-          params.Switch = this.listenTodoInfo.state === 0 ? "off" : "on";
           break;
         case 17:
           // 渲染环境
@@ -1618,24 +1544,6 @@ export default {
     },
     listenTodo(e) {
       
-    },
-    UpdateMemeberState() {
-      /**
-       * @Author: zk
-       * @Date: 2021-06-09 11:02:14
-       * @description: 更改选中构件状态
-       */
-      let params = {
-        taskid: this.taskId,
-        visible: this.listenTodoInfo.state === 0 ? true : false,
-      };
-
-      MODELAPI.UPDATEMEMBER(params).then((res) => {
-        this.$message({
-          message: this.$t("webClient.loadBox.message[2]"),
-          type: "success",
-        });
-      });
     },
     handleTagShow(flag) {
       /**
