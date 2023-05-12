@@ -1,38 +1,43 @@
-<!-- GIS数据服务 -->
+<!-- 图纸管理 -->
 <template>
     <div class="box" v-loading="loading">
         <div class="boxHeader">
             <div class="boxHeaderTitle">您共有<span>{{total}}</span>个项目</div>
             <div>
-                <el-button style="margin-right:20px" icon="el-icon-plus" class="bluePlainBtn" plain type="primary" @click="AddGISProgect('添加')">新建GIS服务项目</el-button>
                 <!-- 上传GIS数据的关闭弹窗后显示正在上传的个数  -->
                 <el-badge :value="uploadGISNum" :hidden="!uploadGISNum">
-                    <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="uploadGIS">上传GIS数据</el-button>
+                    <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="uploadGIS">上传图纸</el-button>
                 </el-badge>
             </div>
         </div>
         <el-table :data="tableData">
-            <el-table-column prop="gisServerName" label="项目名称" />
-            <el-table-column prop="gisId" label="项目ID" />
-            <el-table-column prop="createTime" label="上传日期" />
-            <el-table-column prop="fileSize" label="大小" />
-            <el-table-column prop="layerType" label="数据类型" />
+            <el-table-column prop="fileName" label="图纸名称" />
+            <el-table-column prop="userFileId" label="图纸ID" />
+            <el-table-column prop="addTime" label="上传日期" />
+            <el-table-column prop="fileSize" label="大小">
+                <template slot-scope="scope">
+                    <span>{{ scope.row.fileSize }} M</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="extand" label="图纸类型" />
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
-                    <span class="status" :class="{'status1':scope.row.status==1,'status2':scope.row.status==2,'status3':scope.row.status==3,'status4':scope.row.status==4,'status5':scope.row.status==5}">{{ status[scope.row.status] }}</span>
+                    <span class="status" :class="scope.row.fileStatus === '1' ? 'status' : 'status3'">{{ status[scope.row.fileStatus] }}</span>
                 </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="160">
                 <template slot-scope="scope">
                     <div class="operateBtn">
-                        <el-button class="blueBtn" type="primary" :disabled="scope.row.status!=2" @click="toProject(scope.row)">进入项目</el-button>
+                        <!-- :disabled="scope.row.status!=2" -->
+                        <el-button class="blueBtn" type="primary" @click="toProject(scope.row)">进入项目</el-button>
                         <el-dropdown>
                             <span class="el-dropdown-link">
                                 <i class="el-icon-arrow-down el-icon-more"></i>
                             </span>
                             <!-- scope.row.status==2只有发布完成才能操作 -->
                             <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item v-if="scope.row.status==2" @click.native="AddGISProgect('编辑',scope.row)">编辑</el-dropdown-item>
+                                <!-- v-if="scope.row.status==2" -->
+                                <el-dropdown-item @click.native="AddGISProgect('编辑',scope.row)">编辑</el-dropdown-item>
                                 <!-- isSingle=true单个GIS图层的时候才有url -->
                                 <el-dropdown-item v-if="scope.row.status==2&&scope.row.isSingle==='true'" @click.native="onCopy(scope.row.fileUrl)">复制URL</el-dropdown-item>
                                 <el-dropdown-item v-if="scope.row.status==2">分享</el-dropdown-item>
@@ -48,8 +53,8 @@
         <!-- 新建GIS服务项目 -->
         <DialogsProject ref="DialogsProject" />
         <!-- 上传GIS数据 -->
-        <DragUpload ref="DragUpload" :limit="1" numType="uploadGISNum" @getFile="getFileDrag" @onSuccess="getList" @beforeUpload="beforeUpload">
-            <template v-slot:append>
+        <DragUpload ref="DragUpload" :limit="1" accept=".dwg,.dxf,.svg"  numType="uploadCADNum" @getFile="getFileDrag" @onSuccess="getList">
+            <!-- <template v-slot:append>
                 <el-form :model="form" :rules="rules" ref="form" label-width="130px">
                     <el-form-item label="图层类型：" prop="layerType">
                         <el-select v-model="form.layerType " placeholder="请选择" style="width:100%">
@@ -77,7 +82,7 @@
                         <el-col class="GISMark" :span="1">m</el-col>
                     </el-form-item>
                 </el-form>
-            </template>
+            </template> -->
         </DragUpload>
     </div>
 </template>
@@ -85,12 +90,12 @@
 <script>
 import { getDict } from "@/api/dict.js"
 import { Getuserid } from "@/store/index.js";
-import { getList, deleteList } from "@/api/GISList.js";
+import { getList, deleteList } from "@/api/CADList.js";
 import DialogsProject from "./dialogsProject.vue";
-import DragUpload from "@/components/Upload/dragUpload.vue";
+import DragUpload from "@/components/Upload/dragUploadCAD.vue";
 import Pagination from "@/components/Pagination";
 export default {
-    components: { DialogsProject, DragUpload, Pagination },
+    components: { DragUpload, Pagination, DialogsProject },
     props: {},
     data() {
         return {
@@ -102,11 +107,11 @@ export default {
                 pageSize: 20,
             },
             status: {
-                1: "发布中",
-                2: "发布完成",
-                3: "发布失败",
-                4: "删除中",
-                5: "删除失败",
+                0: "转换中",
+                1: "转换完成",
+                2: "转换失败",
+                // 4: "删除中",
+                // 5: "删除失败",
             },
             layerTypeList: [],
             form:{},
@@ -180,14 +185,23 @@ export default {
         // 上传GIS数据
         uploadGIS() {
             this.form = this.$options.data().form
-            this.$refs.DragUpload.show("上传GIS");
+            this.$refs.DragUpload.show("上传图纸");
         },
         // 获取列表
         getList() {
             this.loading = true
-            getList({ ...this.pages, userId: Getuserid() }).then((res) => {
-                this.tableData = res.data.list;
-                this.total = res.data.total;
+            const params = {
+                ...this.pages,
+                userId: Getuserid()
+            }
+            getList(params).then((res) => {
+                if (res.data.code === 200) {
+                    this.tableData = res.data.data
+                    this.total = this.tableData.length
+                } else {
+                    this.tableData = []
+                    this.total = 0
+                }
                 this.loading = false
             }).catch(()=>{
                 this.loading = false
@@ -199,24 +213,17 @@ export default {
             this.pages.pageSize = data.pageSize;
             this.getList();
         },
-        // 上传GIS数据
+        // 上传图纸数据
         getFileDrag(file, callback) {
             callback({
                 ...this.form,
                 fileUpload: file,
                 userId: Getuserid(),
-                url: "/appli/uploadGISLayerFile",
+                toType: 'dxf',
+                url: "/CADFile/uploadFile",
             });
         },
-        // 上传GIS数据验证
-        beforeUpload(callback){
-            this.$refs.form.validate((valid) => {
-                if (!valid){
-                    callback(true)
-                    return false;
-                }
-            })
-        },
+        
         // 复制URL
         onCopy(url){
             this.$copyText(url).then(e=>{
@@ -231,20 +238,28 @@ export default {
         },
         // 删除
         deleteRow(row){
-            this.$confirm(`删除【${row.gisServerName}】项目后无法恢复，确认是否删除？`, '删除', {
+            this.$confirm(`删除【${row.fileName}】项目后无法恢复，确认是否删除？`, '删除', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 closeOnClickModal:false,
                 type: 'warning'
             }).then(() => {
-                deleteList({gisId:row.gisId,userId:Getuserid()}).then(()=>{
+                const params = {
+                    userFileId: row.userFileId,
+                    userId: Getuserid()
+                }
+                deleteList(params).then(()=>{
                     this.$message.success("删除成功！");
                     this.getList();
                 })
             }).catch(() => {});
         },
         toProject(row){
-            console.log('🚀🚀🚀',row);
+            // console.log('🚀🚀🚀',row);
+            const splitArr = row.filePath.split('/')
+            const fileName = splitArr[splitArr.length - 1]
+            const url = `https://www.ourbim.com/bim_CAD/?file=${fileName}`
+            window.open(url)
         }
     },
 };

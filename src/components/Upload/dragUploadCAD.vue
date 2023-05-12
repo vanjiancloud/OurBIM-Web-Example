@@ -10,6 +10,7 @@
 -->
 <template>
     <el-dialog :visible.sync="dialogVisible" width="50%" :before-close="hide" :close-on-click-modal="false">
+        <slot name="append"></slot>
         <div class="dragUpLoad">
             <div class="dragUpLoadTitle">
                 <img src="@/views/found/icon.png" alt="" />
@@ -21,7 +22,6 @@
                     <em>点击</em>或将文件拖拽到这里上传
                 </div>
                 <div class="el-upload__tip" slot="tip">
-                    <slot name="append"></slot>
                     <span style="color: red">* </span>文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
                 </div>
             </el-upload>
@@ -33,7 +33,8 @@
 </template>
 
 <script>
-import request from "@/utils/newRequest.js";
+import axios from 'axios'
+import { cadRequestUrl } from "@/api/CADList.js";
 export default {
     components: {},
     props: {
@@ -115,9 +116,9 @@ export default {
                         formData.append([key], data[key]);
                     }
                 }
-                request({
+                axios({
                     method: "post",
-                    url: data.url,
+                    url: `${cadRequestUrl}${data.url}`,
                     data: formData,
                     onUploadProgress: (progressEvent) => {
                         if(!progressEvent) return
@@ -194,11 +195,6 @@ export default {
         .blueBtn {
             width: 150px;
         }
-    }
-    .append{
-        border-bottom: 1px solid #f5f5f5;
-        border-top: 1px solid #f5f5f5;
-        margin: 20px 0;
     }
 }
 </style>

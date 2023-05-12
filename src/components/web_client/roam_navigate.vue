@@ -10,13 +10,15 @@
                         <el-checkbox @change="weight" v-model="checkWeight" :disabled="radio===1 ? false : true" class="firstSelect">{{checkListArr[0].name}}</el-checkbox>
                         <el-checkbox @change="broke" v-model="checkBroken" :disabled="radio===1 ? false : true">{{checkListArr[1].name}}</el-checkbox>
                     </div>
-                    <div class="turnHeight">
+                    <div class="turnHeight" style="padding-top: 15px;">
                         <span>{{words[0]}}</span>
-                        <input @blur="adjustHeight" class="oneHeight" type="number" :disabled="radio!==1 || this.checkWeight === false ? true : false"  value="1.72">
+                        <el-input @blur="adjustHeight" v-model="oneHeight" size="small" class="oneHeight" type="number" :disabled="radio!==1 || this.checkWeight === false ? true : false"></el-input>
                         <span>m</span>
                     </div>
-                </el-radio>
-                <el-radio :label="3" class="needBlock"><span class="viewModel">{{personView[2].name}}</span></el-radio>
+                </el-radio><br>
+
+                <!-- 跟随对象模式 -->
+                <el-radio :label="3" class="needBlock"><span class="viewModel">{{personView[2].name}}</span></el-radio><br>
                 <el-radio class="needNone followView" disabled>
                     <div class="upTwo">
                         <el-select @change="changeSelect" :disabled="radio===3 ? false : true" v-model="value" placeholder="请选择对象" size="mini">
@@ -27,13 +29,16 @@
                                 :value="item.value">
                             </el-option>
                         </el-select>
-                        <div class="turnHeight">
+                        <div class="turnHeight magin-left">
                             <span>{{words[0]}}</span>
-                            <input  class="twoHeight" type="number" :disabled="radio===3 ? false : true" value="1.72">
+                            <el-input  class="twoHeight" v-model="twoHeight" size="small" type="number" :disabled="radio===3 ? false : true"></el-input>
                             <span>m</span>
                         </div>
                     </div>
+
+                    <!-- 开启碰撞检测 -->
                     <div class="startTest"><el-checkbox :disabled="radio===3 ? false : true" @change="threeBroke" v-model="checkTest">{{words[1]}}</el-checkbox></div>
+                    
                     <div class="putDown"><el-button @click="putDown" :disabled="radio===3 ? false : true" type="primary" size="small">{{words[2]}}</el-button></div>
                     <div class="show-speed">
                        <span>{{words[3]}}</span>
@@ -68,7 +73,7 @@ export default {
         taskId:{
           type: String,
           default: ""
-        }
+        },
     },
     data(){
         return {
@@ -101,6 +106,8 @@ export default {
                 }
             ],
             value:4, // 下拉框
+            oneHeight: 1.72,
+            twoHeight: 1.72,
             options:[            
                       {
                         value:4,
@@ -237,9 +244,7 @@ export default {
         this.params.viewMode = this.isGis?1:2
     //   this.threeView();
     },
-    mounted(){
-        this.changeRadio(this.radio)
-    },
+    beforeDestroy () {},
     watch:{
         radio:{
             handler(val,oldVal){
@@ -248,7 +253,7 @@ export default {
                 }
             },
             immediate:true
-        }
+        },
     },
     methods:{
         show() {
@@ -274,6 +279,7 @@ export default {
            }).catch(()=>{})
         },
         requestFun(){
+            // console.log('参数打印', this.params)
             MODELAPI.UPDATEORDER(this.params).then((res)=>{
                 if(res.data.code === 0){
                     this.$message.success(res.data.message);
@@ -296,7 +302,7 @@ export default {
                 this.params.viewMode = val;
                 this.params.enableGravity = true;
                 this.params.enableAllCollision = true;
-                this.params.characterHeight = document.querySelector('.oneHeight').value * 100;
+                this.params.characterHeight = this.oneHeight * 100;
                 this.params.speedLevel = this.speedValue;
                 this.requestFun();
             }
@@ -304,13 +310,7 @@ export default {
             if(val === 3){
                 // 默认开启碰撞
                 this.checkTest = true;
-                // 赋初值 调用接口
-                // let targetIn =  this.options.find((item)=>{
-                //   return item.value === this.value;
-                // })
-                // this.params.dollName = targetIn.English;
                 this.params.viewMode = val;
-                // this.params.dollHeight = document.querySelector('.twoHeight').value * 100;
                 this.params.enableAllCollision = true;
                 this.requestFun();
             }
@@ -336,7 +336,7 @@ export default {
         },
         // 第一人称中的视角高度
         adjustHeight(){
-            this.params.characterHeight = document.querySelector('.oneHeight').value * 100;
+            this.params.characterHeight = this.oneHeight * 100;
             this.requestFun();
         },
         // 跟随对象 碰撞 
@@ -356,7 +356,7 @@ export default {
             }else{
                 this.speedValue = 4
             }
-            document.querySelector('.twoHeight').value = selectIn.tall;
+            this.twoHeight = selectIn.tall;
             // 下拉赋值 调接口
             // if(this.putObj === 1){
             //     this.params.dollName === selectIn.English;
@@ -365,11 +365,7 @@ export default {
             //     this.requestFun();
             // }
         },
-        // 跟随对象 height
-        /*normalHeight(){
-            this.params.dollHeight = document.querySelector('.twoHeight').value * 100;
-            this.requestFun();
-        },*/
+        
         // 放置对象
         putDown(){
             this.putObj = 1;
@@ -378,8 +374,8 @@ export default {
               return item.value === this.value;
             })
             this.params.dollName = targetIn.English;
-            this.params.dollHeight = document.querySelector('.twoHeight').value * 100;
-             this.params.speedLevel = this.speedValue;
+            this.params.dollHeight = this.twoHeight * 100;
+            this.params.speedLevel = this.speedValue;
             this.requestFun();
         },
         // 速度
@@ -422,24 +418,35 @@ export default {
                     });
                 }
             })
-        }
+        },
     }
 }
 </script>
 
 <style lang="less" scoped>
-// 下拉框内部样式
-//  ::v-deep .el-select-dropdown .el-scrollbar{
-//     height: 200px !important;
-//  }           
+         
+/deep/ .turnHeight .el-input {
+    width: 95px;
+}
+/deep/ .turnHeight input.el-input__inner {
+    width: 80px;
+    height: 20px;
+    margin-left: 9px;
+}
+
+.turnHeight {
+    // margin: 0 0 0 0px;
+}
+/deep/ .el-radio-button__inner, /deep/ .el-radio-group{
+    display: block;
+}
 .roam_navigate {
 
   // 中间
   .middle{
     padding: 16px 23px 0 23px;
     .singleSelect{
-        display: flex;
-        flex-direction: column;
+        
        ::v-deep .needNone .el-radio__input{
             display: none;
         }
@@ -447,49 +454,44 @@ export default {
             color: #fff;
             margin-bottom: 16px;
         }
+        .magin-left {
+            margin: 0 0 0 10px;
+        }
         ::v-deep .selfView .el-radio__label{
             display: flex;
             flex-direction: column;
             justify-content: space-around;
             margin-bottom: 16px;
-            .turnHeight input{
-                width: 60px;
-                height: 17px;
-                margin-left: 9px;
-            }
-             .turnHeight span:first-of-type{
-                    margin-left: 10px;
-                }
+            
             .firstSelect{
-                margin: 0 6px 0 16px;
+                margin: 0 6px 0 0px;
             }
         }
         .followView {
+            width: 100%;
             .upTwo {
                 display: flex;
-                justify-content: space-around;
-                margin: -12px 0 14px 0;
+                margin: -12px 0 14px 8px;
                 ::v-deep .el-select .el-input .el-input__inner{
                     height: 22px !important;
-                    width: 160px;
+                    width: 110px;
                 }
                 ::v-deep .el-input--mini .el-input__icon{
                     line-height: 23px !important;
                 }
-                .turnHeight input{
-                    width: 60px;
-                    height: 17px;
-                    margin-left: 9px;
-                }
             }
-            ::v-deep .startTest .el-checkbox{
-                    margin: 0 0 14px 20px;
-                }
+            ::v-deep .startTest .el-checkbox {
+                margin: 0 0 14px 10px;
+            }
             .putDown{
                 text-align: center;
             }
-            .show-speed{
+            .show-speed {
+                width: 100%;
                 margin-bottom: 10px;
+            }
+            .speedView {
+                padding: 0 40px 0 0;
             }
         }
     }

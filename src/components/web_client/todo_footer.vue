@@ -78,46 +78,29 @@
             />
           </el-tooltip>
         </div>
+
         <!-- 漫游导航（视角） -->
         <div
           class="image-main"
           v-if="showBar(imgList[0].id) && showTodoIconObj.view"
         >
-          <!-- <el-tooltip
+          <el-tooltip
+            class="item"
+            effect="dark"
+            :enterable="false"
+            :content="imgList[0].title"
             placement="top"
-            v-model="personTool"
-            transition="el-fade-in-linear"
-            manual
           >
-            <div slot="content">
-              <div
-                class="person-list"
-                v-for="(item, index) in personList"
-                :key="index"
-              >
-                <div
-                  @click="changePerson(item.value)"
-                  :class="activePerson === item.value ? 'active-person' : ''"
-                  v-text="item.name"
-                ></div>
-              </div>
-            </div> -->
-            <el-tooltip
-              class="item"
-              effect="dark"
-              :enterable="false"
-              :content="imgList[0].title"
-              placement="top"
-            >
-              <img
-                class="footer-image"
-                :src="imgList[0].url"
-                @click.stop="handleOrder(0)"
-                mode=""
-              />
-            </el-tooltip>
-          <!-- </el-tooltip> -->
+          <!-- :src="imgList[0].state ? imgList[0].chekcUrl : imgList[0].url" -->
+            <img
+              class="footer-image"
+              :src="imgList[0].url"
+              @click.stop="handleOrder(0)"
+              mode=""
+            />
+          </el-tooltip>
         </div>
+
         <!-- 移动速度 -->
           <!-- v-if="showBar(imgList[1].id) && showTodoIconObj.speed" -->
         <div
@@ -584,7 +567,7 @@
             </div>
           </el-collapse-transition>
         </div>
-        <!-- 浏览器 -->
+        <!-- 构件树 -->
         <div
           class="image-main"
           v-if="showBar(imgList[10].id) && showTodoIconObj.componentTree"
@@ -923,6 +906,7 @@ export default {
         {
           state: 0,
           url: require("@/assets/images/todo/unchecked/visual_angle.png"),
+          chekcUrl: require("@/assets/images/todo/check/visual_angle.png"),
           name: "visual_angle.png",
           title: "视角",
           id: 1003,
@@ -1004,7 +988,7 @@ export default {
           state: 0,
           url: require("@/assets/images/todo/unchecked/tree.png"),
           name: "tree.png",
-          title: "浏览器",
+          title: "构件树",
           id: 1013,
         },
         {
@@ -1220,6 +1204,8 @@ export default {
       this.$t("webClient.tooltipList.toolPerson").forEach((item, index) => {
         this.personList[index].name = item;
       });
+
+      // 这里会重新去main.js去拿i18n的语言数据修改title
       this.$t("webClient.tooltipList.tool").forEach((item, index) => {
         this.imgList[index].title = item;
       });
@@ -1779,7 +1765,9 @@ export default {
     editTool(e) {
       let oldUrl = require(`@/assets/images/todo/unchecked/${this.imgList[e].name}`);
       this.imgList[e].url = oldUrl;
-      this.imgList[e].state = 0;
+      setTimeout(() => {
+        this.imgList[e].state = 0
+      })
     },
     resetPerson(e) {
       /**
@@ -2031,6 +2019,7 @@ export default {
     },
     // 移动 旋转 缩放 显示隐藏
     noneBlock(){
+        console.log('🚀🚀🚀',this.contentLogo,this.lockState);
      if(this.contentLogo===false && this.lockState === false){
         this.totalLogo = false
       }else if(this.contentLogo===true || this.lockState === true){
@@ -2045,7 +2034,7 @@ export default {
             this.$parent.materialShow = false
         }
       // 除了漫游 以及 属性, 点击其他图标时 关闭漫游弹框---
-      if(e != 0 && e != 11 ){ 
+      if(e != 0 && e != 11 && e != 7 ){
         if(this.imgList[0].state === 1){
            this.$emit("listenTodo", {
             state: 0,
@@ -2215,9 +2204,10 @@ export default {
         this.personTool = this.imgList[e].state === 1 ? true : false;
         // 漫游导航---
         this.$emit("listenTodo", {
-            state: this.imgList[0].state,
-            type: 0,
-          });
+          state: this.imgList[0].state,
+          type: 0
+        })
+
         // 打开漫游导航时 关闭浏览器---
         if (this.imgList[10].state === 1) {
           this.imgList[10].state = 0;
@@ -2227,9 +2217,9 @@ export default {
             state: this.imgList[10].state,
             type: 10,
           });
-         }
+        }
       }
-      // 标签 重置模型浏览器
+      // 标签 重置模型构件树
       if (e === 4) {
         if (this.imgList[10].state === 1) {
           this.imgList[10].state = 0;
@@ -2251,7 +2241,7 @@ export default {
           this.imgList[4].url = oldUrl;
         }
       }
-      // 模型浏览器 重置标签
+      // 模型构件树 重置标签
       if (this.oldState === 4 && this.oldState !== e) {
         if (e === 10) {
           if (this.imgList[4].state === 1) {

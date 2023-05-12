@@ -60,7 +60,7 @@
     
     <!-- runTimeCode 1:mobile  0 ：PC  -->
     <div v-if="runTimeCode === 0">
-      <!-- 模型浏览器 -->
+      <!-- 模型构件树 -->
       <div class="mutual-bim">
         <div
           class="tree-main"
@@ -281,6 +281,11 @@ export default {
     return {
         userId: this.$route.query.userId || JSON.parse(sessionStorage.getItem("userid")),//用户id：链接可能没有用户id取缓存的
         activeToolArr: [],//工具栏打开的内容
+      isGis: false,
+      // threeLogo:false,
+      // myProjectId:'',
+      // modeData:[], // 树形结构数据
+      // lockLogo:false, // 锁的打开和关闭
       showViewPicture:'0', // 传递给 viewPhoto 控制视图列表的显示 (视图)
       maxNodes:false,
       envProgress:0,   // 环境加载
@@ -446,6 +451,9 @@ export default {
   //        this.isFade = false;
   //        this.isProgress =false;
   //   }
+
+    // appType  0:普通模型(isGis: GIS模型)   1:漫游模型   3:链接模型(isGis: GIS链接模型)  4:示例模型    5:云应用
+    this.isGis = (this.appType === '0' && this.lockView === 'true') || (this.appType === '3' && this.lockView === 'true')
   },
   mounted() {
     document
@@ -762,7 +770,7 @@ export default {
       /**
        * @Author: zk
        * @Date: 2021-09-01 10:49:56
-       * @description: 筛选模型浏览器
+       * @description: 筛选模型构件树
        */
       if (!value) return true;
       const reamVal = data.name.indexOf(value) !== -1;
