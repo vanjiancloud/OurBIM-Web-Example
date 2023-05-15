@@ -52,14 +52,6 @@
                 data: qsStringify(params)
               })
         },
-        // 显示隐藏
-        UPDATASHOWTAG: params => {
-            return request({
-                url: '/tagControl/controlTagShow',
-                method: 'POST',
-                data: qsStringify(params)
-              })
-        },
         // focus
         UPDATAFOCUSTAG: params => {
           return request({
@@ -79,4 +71,12 @@ export function getTagList(params) {
         method: 'get',
         params
     })
+}
+// 标签显示隐藏
+export function controlTagShow(params) {
+    return request({
+        url: '/tagControl/controlTagShow',
+        method: 'POST',
+        params
+      })
 }

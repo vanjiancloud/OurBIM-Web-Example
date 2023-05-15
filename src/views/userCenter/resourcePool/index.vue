@@ -2,6 +2,7 @@
     同一种类型接口返回的数据格式全部不一样。。。。。。。
 -->
 <template>
+<div>
     <Drawer ref="Drawer" title="资源库" @onClose="close">
         <template v-slot="{ drawer }">
             <Tab v-model="levelName.tab1Index" v-show="levelName.level ===1" :data="tabList" @onTab="onTab" />
@@ -34,26 +35,29 @@
             </div>
             <!-- 二级才显示分页 -->
             <Pagination v-if="levelName.level ===2" class="modelPage" layout="prev, pager, next" :pagerCount="5" :limit.sync="pages.pageSize" :total="contentLevel2List.length" :page="pages.page" @pagination="pagination" />
-            <!-- 弹出图标 -->
+            
+            
+            <!-- 构件操作图标 -->
             <div class="toolList" v-if="drawer">
                 <el-tooltip v-for="(item,index) in toolIcons" :key="index" effect="dark" :content="item.name" placement="bottom">
                     <img :src="item.check?item.checkUrl:item.url" @click="onOprate(item)" />
                 </el-tooltip>
             </div>
         
-            <!-- 新建分组弹框 -->
-            <DialogChartletGroup ref="DialogChartletGroup" />
-            <!-- 上传贴图弹框 -->
-            <DialogChartlet ref="DialogChartlet" :groupList="contentList[1]"/>
         </template>
     </Drawer>
+    <!-- 新建分组弹框 -->
+    <DialogChartletGroup ref="DialogChartletGroup" />
+    <!-- 上传贴图弹框 -->
+    <DialogChartlet ref="DialogChartlet" :groupList="contentList[1]" @onSuccess="onSuccessChartlet"/>
+</div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import { EventBus } from '@/utils/bus.js'
-import CHAILIAOAPI, { getChartletList, getMaterialByGroup, addMaterialForUser, changeMaterialByInstruction, getMaterialByMatId } from "@/api/material_api";
-import MODELAPI from "@/api/model_api";
+import CHAILIAOAPI, { getChartletList, getMaterialByGroup, addMaterialForUser, changeMaterialByInstruction, getMaterialByMatId,deleteMaterialTexture } from "@/api/material_api";
+import MODELAPI, { setGizmoMode } from "@/api/model_api";
 import COMPONENTLIBRARY, { addCom } from "@/api/component-library";
 import Tab from "@/components/Tab/index.vue";
 import Pagination from "@/components/Pagination/index.vue";
@@ -110,27 +114,32 @@ export default {
                 {
                     url:require('@/assets/images/todo/unchecked/com/move1.png'),
                     checkUrl:require('@/assets/images/todo/check/com/move1.png'),
-                    name:'缩放'
+                    name:'缩放',
+                    check:false
                 },
                 {
                     url:require('@/assets/images/todo/unchecked/com/move2.png'),
                     checkUrl:require('@/assets/images/todo/check/com/move2.png'),
-                    name:'旋转'
+                    name:'旋转',
+                    check:false
                 },
                 {
                     url:require('@/assets/images/todo/unchecked/com/move3.png'),
                     checkUrl:require('@/assets/images/todo/check/com/move3.png'),
-                    name:'移动'
+                    name:'移动',
+                    check:false
                 },
                 {
                     url:require('@/assets/images/todo/unchecked/com/move4.png'),
                     checkUrl:require('@/assets/images/todo/check/com/move4.png'),
-                    name:'轴心'
+                    name:'轴心',
+                    check:false
                 },
                 {
                     url:require('@/assets/images/todo/unchecked/com/move5.png'),
                     checkUrl:require('@/assets/images/todo/check/com/move5.png'),
-                    name:'笔刷'
+                    name:'笔刷',
+                    check:false
                 },
             ],
             openMater:false //是否打开材质编辑
@@ -148,7 +157,21 @@ export default {
     methods: {
         show() {
             this.$refs.Drawer.show()
-            this.content();
+            switch (this.levelName.tab1Index) {
+                case 0:
+                    this.content();
+                    break;
+                case 1:
+                    this.typeList = this.typeList.slice(0, 1);
+                    this.getMaterials();
+                    break;
+                case 2:
+                    this.getChartletList();
+                    break;
+
+                default:
+                    break;
+            }
         },
         close(){
             this.$refs.Drawer.hide()
@@ -234,10 +257,7 @@ export default {
                         break;
                 }
                 // 后端返回全部数据，前端做数据分页
-                this.contentLevel2ListPage = this.contentLevel2List.slice(
-                    (this.pages.page - 1) * this.pages.pageSize,
-                    this.pages.page * this.pages.pageSize
-                );
+                this.level2page()
                 return
             }
             /*  
@@ -269,6 +289,9 @@ export default {
                         this.getMaterial(item.matId)
                         break;
                     case 2:
+                        if(!this.material.openTexture){
+                            return this.$message.warning('请选择要替换的贴图类型！')
+                        }
                         this.addMaterial({textureId:item.textureId,isPublic:false})
                         break;
                     default:
@@ -295,6 +318,9 @@ export default {
         },
         // 添加材质
         addMaterial({matId, matParam, isPublic = true, textureId }){
+            if(!matParam && !this.materialAllInfo.matParam){
+                return this.$message.warning('请选择要替换的构件！')
+            }
             let params = {
                 userId: this.$route.query.userId || JSON.parse(sessionStorage.getItem("userid")) || 'travels',
                 matId: matId || this.materialAllInfo.matId,
@@ -400,20 +426,29 @@ export default {
                 e.pageIndex * e.pageSize
             );
         },
+        // 分页
+        level2page(){
+            // 后端返回全部数据，前端做数据分页
+            this.contentLevel2ListPage = this.contentLevel2List.slice(
+                (this.pages.page - 1) * this.pages.pageSize,
+                this.pages.page * this.pages.pageSize
+            );
+        },
         createGroup(title, row = {}) {
+            let newRow = JSON.parse(JSON.stringify(row))
             switch (title) {
                 case '新建分组': case '编辑分组':                   
-                    this.$refs.DialogChartletGroup.show(title, row);
+                    this.$refs.DialogChartletGroup.show(title, newRow);
                     break;
                 case '上传贴图': case '编辑贴图':                   
-                    this.$refs.DialogChartlet.show(title, {...row,groupId:this.levelName.groupId});
+                    this.$refs.DialogChartlet.show(title, {...newRow,groupId:this.levelName.groupId});
                     break;
             
                 default:
                     break;
             }
         },
-        // 删除贴图库组
+        // 删除贴图库组/贴图
         deleteGroup(level,row) {
             this.$confirm(
                 `删除【${row.comName}】后无法恢复，确认是否删除？`,
@@ -426,13 +461,46 @@ export default {
                 }
             )
                 .then(() => {
+                    let userId = this.$route.query.userId || JSON.parse(sessionStorage.getItem("userid")) || 'travels'
                     if(level===1){
-
+                        let params = {
+                            userId,
+                            groupId:row.groupId
+                        }
+                        deleteMaterialTexture(params).then(()=>{
+                            this.getChartletList()
+                            this.$message.success('删除成功！')
+                        })
                     }else{
-
+                        let params = {
+                            userId,
+                            textureId:row.textureId
+                        }
+                        deleteMaterialTexture(params).then(()=>{
+                            this.$message.success('删除成功！')
+                            this.getChartletList()
+                            this.contentLevel2List = this.contentLevel2List.filter((e)=> {
+                                return e.textureId !== row.textureId
+                            })
+                            this.level2page()
+                        })
                     }
                 })
                 .catch(() => {});
+        },
+        // 上传或者编辑贴图成功
+        onSuccessChartlet(row){
+            setTimeout(()=>{
+                let findContent = this.contentList[1].find((e)=>{return e.groupId == row.groupId})
+                this.contentLevel2List = findContent.rsTextureList.map((e) => {
+                    return {
+                        comName: e.textureName,
+                        comUrl: e.imgPath,
+                        ...e,
+                    };
+                });
+                this.level2page()
+            },1000)
         },
         // 那五个操作
         onOprate(item){
@@ -458,13 +526,13 @@ export default {
             this.$forceUpdate()
             switch (item.name) {
                 case '缩放':
-                    
+                    this.setGizmoMode('rotate')
                     break;
                 case '旋转':
-                    
+                    this.setGizmoMode('scale')
                     break;
                 case '移动':
-                    
+                    this.setGizmoMode('translate')
                     break;
                 case '轴心':
                     
@@ -476,6 +544,15 @@ export default {
                 default:
                     break;
             }
+        },
+        setGizmoMode(mode){
+            let params ={
+                taskId: this.data.taskId,
+                mode
+            }
+            setGizmoMode(params).then(()=>{
+                this.$message.success('指令下发成功！')
+            })
         }
     },
 };

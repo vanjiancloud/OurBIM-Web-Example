@@ -120,8 +120,12 @@
             <div class="materialList">
                 <div class="materialListCon" :style="{'height':isOpen?'auto':'90px'}">
                     <div class="materialItem" :class="{activeMaterial:activeMaterialIndex===index}" v-for="(item,index) in componentAllInfo.matList" :key="index" @click="onMaterial(item,index)">
-                        <el-image class="img" :src="item.imgPath" lazy></el-image>
-                        <div class="materialReset" @click.stop="resetMaterial(item,index)"><i class="el-icon-refresh-right"></i></div>
+                        <el-image class="img" :src="item.imgPath" lazy placeholder="加载中...">
+                            <div slot="error" class="image-slot">
+                                <i class="el-icon-picture-outline"></i>
+                            </div>
+                        </el-image>
+                        <div class="materialReset" @click.stop="resetMaterial(item,index)" v-if="materialAllInfo.matParam && materialAllInfo.matParam.colorList.length"><i class="el-icon-refresh-right"></i></div>
                     </div>
                 </div>
                 <!-- 是否展开和收缩 -->
@@ -185,7 +189,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { materialEditorControl, getMaterialByMatId, resetMaterial, updateMaterial } from "@/api/material_api";
+import { getMaterialByMatId, resetMaterial, updateMaterial } from "@/api/material_api";
 import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";
 import Tab from "@/components/Tab/index.vue";
@@ -256,8 +260,6 @@ export default {
         },
         async onTab(e){
             this.activeTab = e.index
-            // 打开或关闭材质编辑
-            await materialEditorControl({taskId: this.data.taskId,flag:this.activeTab===2?'on':'off'})
             this.changeSetting({ key: "openMaterial", value: this.activeTab===2 })
         },
         // 去掉rgba

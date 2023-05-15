@@ -122,14 +122,6 @@ const CHAILIAOAPI = {
             params,
         })
     },
-    // 删除贴图分组或贴图
-    deleteMaterialTexture: params => {
-        return request({
-            url: '/material/deleteMaterialTextureInfo',
-            method: 'post',
-            params,
-        })
-    },
 }
 
 
@@ -234,6 +226,33 @@ export function changeMaterialByInstruction(params,data) {
         data,
         headers: {
             'Content-Type': 'application/json'
+        }
+    })
+}
+// 删除贴图分组或贴图
+export function deleteMaterialTexture(params) {
+    return newRequest({
+        url: '/material/deleteMaterialTextureInfo',
+        method: 'post',
+        params,
+    })
+}
+// 编辑贴图分组
+export function updateMaterialTextureGroup(params) {
+    return newRequest({
+        url: '/material/updateMaterialTextureGroup',
+        method: 'post',
+        params,
+    })
+}
+// 编辑贴图
+export function updateMaterialTexture(data) {
+    return newRequest({
+        url: '/material/updateMaterialTexture',
+        method: 'post',
+        data,
+        headers: {
+            'Content-Type': 'multipart/form-data;'
         }
     })
 }

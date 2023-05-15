@@ -72,14 +72,6 @@ const MODELAPI = {
             params
         })
     },
-    // 浏览器上面的 旋转 移动 缩放 按钮
-    BROWSERBUTTON: params => {
-        return request({
-            url: '/OurBim/setGizmoMode',
-            method: 'post',
-            params
-        })
-    },
     // 获取关注视角
     LISTFOLLOWPOINT: params => {
         return request({
@@ -362,6 +354,14 @@ export function invertHidden(params) {
 export function displayAllActor(params) {
     return newRequest({
         url: '/OurBim/displayAllActor',
+        method: 'post',
+        params
+    })
+}
+// 浏览器上面的 旋转 移动 缩放 按钮
+export function setGizmoMode(params) {
+    return newRequest({
+        url: '/OurBim/setGizmoMode',
         method: 'post',
         params
     })

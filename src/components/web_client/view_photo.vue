@@ -254,6 +254,7 @@
 </template>
 
 <script>
+import { EventBus } from '@/utils/bus.js'
   import draggable from 'vuedraggable'
   import MODELAPI from "@/api/model_api";
   import viewDialog from "@/components/web_client/view_dialog";
@@ -577,16 +578,18 @@ import { log } from 'console';
                 this.$emit('closeClick','0');
                 this.active = -1;
                 this.num= 0;
-                this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
+                // this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
                 this.dialogFlag = false; 
-                this.delFlag = false; 
+                this.delFlag = false;
+                EventBus.$emit('eventTool', 'view')
             },
             viewClose2(){
                 this.$emit('closeClick','0');
                 this.activeAnimation= -1;
                 this.num2= 0;
-                this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
+                // this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
                 this.logoClick('stop'); // 停止视图动画
+                EventBus.$emit('eventTool', 'view')
             },
             runListPoint(){
                 this.ListPoint();

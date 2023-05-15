@@ -3,7 +3,7 @@
     <el-dialog :title="title" :visible.sync="dialogVisible" :close-on-click-modal="false" append-to-body width="460px" :before-close="hide">
         <el-form ref="form" :style="{'width':'90%'}" :model="form" :rules="rules" label-width="100px">
             <el-form-item label="分组名称:" prop="groupName">
-                <el-input v-model="form.groupName"></el-input>
+                <el-input v-model="form.groupName" @keydown.native.stop></el-input>
             </el-form-item>
             <el-form-item label="缩略图:" prop="fileUpload">
                 <SingleUpload v-model="form.fileUpload" :autoUpload="false"></SingleUpload>
@@ -18,7 +18,7 @@
 
 <script>
 import SingleUpload from "@/components/Upload/singleUpload.vue"
-import { addChartletGroup } from "@/api/material_api";
+import { addChartletGroup, updateMaterialTextureGroup } from "@/api/material_api";
 export default {
     components: { SingleUpload },
     props: {},
@@ -57,7 +57,15 @@ export default {
             this.$refs.form.validate((valid) => {
                 if (!valid) return false;
                 if(this.form.groupId){
-
+                    let data = {
+                        userId: this.$route.query.userId,
+                        groupId:this.form.groupId,
+                        groupName:this.form.groupName
+                    };
+                    updateMaterialTextureGroup(data).then(() => {
+                        this.hide();
+                        this.$parent.getChartletList();
+                    });
                 }else{
                     let data = {
                         userId: this.$route.query.userId,

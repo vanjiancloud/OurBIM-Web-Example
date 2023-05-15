@@ -3,7 +3,7 @@
     <el-dialog :title="title" :visible.sync="dialogVisible" :close-on-click-modal="false" append-to-body width="460px" :before-close="hide">
         <el-form ref="form" :style="{'width':'90%'}" :model="form" :rules="rules" label-width="100px">
             <el-form-item label="贴图名称:" prop="textureName">
-                <el-input v-model="form.textureName"></el-input>
+                <el-input v-model="form.textureName" @keydown.native.stop></el-input>
             </el-form-item>
             <el-form-item label="选择分组:" prop="groupId">
                 <el-select v-model="form.groupId" placeholder="请选择分组" style="width:100%">
@@ -12,7 +12,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="贴图文件:" prop="fileUpload">
-                <SingleUpload v-model="form.fileUpload" :autoUpload="false"></SingleUpload>
+                <SingleUpload v-model="form.fileUpload" :autoUpload="false" accept="image/png"></SingleUpload>
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -24,7 +24,7 @@
 
 <script>
 import SingleUpload from '@/components/Upload/singleUpload.vue'
-import { addChartlet } from '@/api/material_api'
+import { addChartlet,updateMaterialTexture } from '@/api/material_api'
 export default {
     components: { SingleUpload },
     props: {
@@ -60,7 +60,6 @@ export default {
             this.dialogVisible = true
             this.$nextTick(() => {
                 this.$refs.form.clearValidate()
-                console.log('🚀🚀🚀', row, this.groupList)
                 if (row.groupId) {
                     this.form = row
                     this.$set(this.form, 'fileUpload', row.imgPath)
@@ -73,8 +72,21 @@ export default {
         submit() {
             this.$refs.form.validate((valid) => {
                 if (!valid) return false
-                // if (this.form.groupId) {
-                // } else {
+                if (this.form.textureId) {
+                    let data = {
+                        userId: this.$route.query.userId,
+                        ...this.form
+                    }
+                    let formData = new FormData()
+                    for (const key in data) {
+                        formData.append([key], data[key])
+                    }
+                    updateMaterialTexture(formData).then(() => {
+                        this.hide()
+                        this.$parent.getChartletList()
+                        this.$emit('onSuccess',this.form)
+                    })
+                } else {
                     let data = {
                         userId: this.$route.query.userId,
                         ...this.form
@@ -86,8 +98,9 @@ export default {
                     addChartlet(formData).then(() => {
                         this.hide()
                         this.$parent.getChartletList()
+                        this.$emit('onSuccess',this.form)
                     })
-                // }
+                }
             })
         }
     }

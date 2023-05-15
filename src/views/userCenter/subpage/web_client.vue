@@ -61,20 +61,10 @@
     <!-- runTimeCode 1:mobile  0 ：PC  -->
     <div v-if="runTimeCode === 0">
       <!-- 模型构件树 -->
-      <div class="mutual-bim">
+        <Drawer ref="browserDrawer" title="模型浏览器" direction="ltr" @onClose="closeMutual" v-show="controllerInfo.tagUiBar && checkShow('browser')">
         <div
           class="tree-main"
-          v-show="controllerInfo.tagUiBar && browserInfo && checkShow('browser')"
         >
-          <div class="tree-title">
-            <div class="" v-text="$t('webClient.browser.title')"></div>
-            <div class="close-part">
-              <i
-                class="el-icon-close"
-                @click.stop="closePart('browser')"
-              ></i>
-            </div>
-          </div>
           <!-- 操作 -->
           <div class="handle-part">
             <el-input
@@ -154,6 +144,8 @@
             </div>
           </div>
         </div>
+        </Drawer>
+        <div class="mutual-bim">
         <!-- 二维码 -->
         <qrcode-part
           v-if="isQrcode"
@@ -162,6 +154,7 @@
           @setListenClick="setListenClick"
         ></qrcode-part>
       </div>
+      
 
       <transition name="el-fade-in-linear">
         <progress-bar
@@ -200,10 +193,8 @@
         @handleType="handleType"
         ref="getCube"
       ></view-cube>
-    </div>
     
-    <!-- (视图) -->
-    <viewPhoto ref="viewPhoto" :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
+    
     <!-- 协同模式弹窗 -->
     <teamwork-dialog
       ref="teamworkDialogRef"
@@ -216,27 +207,31 @@
       </div>
     </div>
     <EscDialogItem ref="EscDialogItem" />
-    <!-- 漫游导航 -->
-    <roamNavigate ref="roamNavigate" :taskId="taskId" v-show="checkShow('roaming')"></roamNavigate>
-    <!-- 资源库 -->
-    <ResourcePool ref="ResourcePool" :data="{ taskId, userId, selectPark, materialData, pakIdMapweb }" v-show="controllerInfo.tagUiBar&&checkShow('resource')"/>
-    <!-- 构件信息 -->
-    <ComponentInformation ref="ComponentInformation" :data="{ taskId, memberInfo, materialData, pakIdMapweb }" v-show="checkShow('componentInformation')"/>
-    <!-- 天气 -->
-    <weatherSystem ref="weatherSystem" :appId="appId" :taskId="taskId" v-show="checkShow('renderingEnvironment')"/>
-    <!-- 标签 -->
-    <Label ref="Label" v-show="controllerInfo.tagUiBar&&checkShow('label')" :setProps="{ taskId, appId }" @setTagClick="setTagClick" />
-    <!-- 标签库 -->
-    <TagLibrary ref="TagLibrary" v-show="controllerInfo.tagUiBar&&checkShow('label')" :data="{ taskId, appId }"/>
-    <!-- 底部工具栏 -->
-    <Tool ref="Tool" v-show="controllerInfo.tagUiBar" v-model="activeToolArr" :data="{ taskId, appId, selectPark }" @onSuccess="toolSuccess" @close="closeTool"/>
+        <!-- 漫游导航 -->
+        <roamNavigate ref="roamNavigate" :taskId="taskId" v-show="checkShow('roaming')"></roamNavigate>
+        <!-- 资源库 -->
+        <ResourcePool ref="ResourcePool" :data="{ taskId, userId, selectPark, materialData, pakIdMapweb }" v-show="controllerInfo.tagUiBar&&checkShow('resource')"/>
+        <!-- 构件信息 -->
+        <ComponentInformation ref="ComponentInformation" :data="{ taskId, memberInfo, materialData, pakIdMapweb }" v-show="checkShow('componentInformation')"/>
+        <!-- 天气 -->
+        <weatherSystem ref="weatherSystem" :appId="appId" :taskId="taskId" v-show="checkShow('renderingEnvironment')"/>
+        <!-- 标签 -->
+        <Label ref="Label" v-show="controllerInfo.tagUiBar&&checkShow('label')" :setProps="{ taskId, appId }" @setTagClick="setTagClick" />
+        <!-- 标签库 -->
+        <TagLibrary ref="TagLibrary" v-show="controllerInfo.tagUiBar&&checkShow('label')" :data="{ taskId, appId }"/>
+        <!-- (视图) -->
+        <viewPhoto ref="viewPhoto" v-show="controllerInfo.tagUiBar&&checkShow('view')" :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
+        <!-- 底部工具栏 -->
+        <Tool ref="Tool" v-show="controllerInfo.tagUiBar" v-model="activeToolArr" :data="{ taskId, appId, selectPark }" @onSuccess="toolSuccess" @close="closeTool"/>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import Drawer from '@/components/Drawer/index.vue'
 import MODELAPI from "@/api/model_api";
 import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
-import TAGTREE from "@/api/tag_tree";
 import COMPONENTLIBRARY from "@/api/component-library";
 import viewCube from "@/components/web_client/view_cube";
 import roamNavigate from "@/components/web_client/roam_navigate";
@@ -275,17 +270,14 @@ export default {
     ComponentInformation,
     Tool,
     Label,
-    TagLibrary
+    TagLibrary,
+    Drawer
   },
   data() {
     return {
         userId: this.$route.query.userId || JSON.parse(sessionStorage.getItem("userid")),//用户id：链接可能没有用户id取缓存的
         activeToolArr: [],//工具栏打开的内容
       isGis: false,
-      // threeLogo:false,
-      // myProjectId:'',
-      // modeData:[], // 树形结构数据
-      // lockLogo:false, // 锁的打开和关闭
       showViewPicture:'0', // 传递给 viewPhoto 控制视图列表的显示 (视图)
       maxNodes:false,
       envProgress:0,   // 环境加载
@@ -352,16 +344,11 @@ export default {
       hiddenState: 0,
       websock: null,
       socketTimer: null,
-      browserInfo: null, //模型浏览器
       natureInfo: null,
       shadowType: null,
       listenTodoInfo: null,
       isUiBar: true,
       uaInfo: null,
-      gaugeInfo: {
-        unit: "m",
-        accuracy: 0.01,
-      },
       treeEmpty: this.$t("webClient.browser.tips[0]"),
       TreePageNo: 2,
       ScrollDistance: 0,
@@ -380,7 +367,9 @@ export default {
       pakAndAppid:[], 
     };
   },
-
+  computed: {
+    ...mapGetters(["componentAllInfo", "materialAllInfo"]),
+  },
   watch: {
     // 监听 浏览器 是否处于关闭状态 是 就将小锁关闭 并 关闭轴
     browerLogo:{
@@ -539,7 +528,7 @@ export default {
                 break;
             // 浏览器
             case 'browser':
-                this.browserInfo = true
+                this.$refs.browserDrawer.show()
                 break;
             // 构件信息memberInfo:属性信息
             case 'componentInformation':
@@ -553,7 +542,7 @@ export default {
     closeTool(e){
         switch (e.key) {
             case 'browser':
-                this.browserInfo = false
+                // this.browserInfo = false
                 break;
         
             default:
@@ -603,6 +592,7 @@ export default {
     // 用于给 viewphoto组件传值 （视图）
     showViewPic(valModel){
       this.showViewPicture = valModel;
+      console.log('🚀🚀🚀this.showViewPicture',this.showViewPicture);
     },
     // 点击锁
     handleToggleLock(node, data, i){
@@ -679,8 +669,8 @@ export default {
             } else if (e.data.type === 2002) {
               this.controllerInfo.memberAvttribute = e.data.data;
             } else if (e.data.type === 2003) {
-              this.$refs.tagTree.closePart(e.data.data);
-              this.$refs.tagTree.closeIcon();
+            //   this.$refs.tagTree.closePart(e.data.data);
+            //   this.$refs.tagTree.closeIcon();
             } else if (e.data.type === 2004) {
               this.controllerInfo.componentLibrary = e.data.data;
             }
@@ -1254,18 +1244,6 @@ export default {
           } else if (this.listenTodoInfo.data === 2) {
             // 角度
             params.action = "angle";
-          } else if (this.listenTodoInfo.data === 3) {
-            // 设置单位
-            params.action = "changePrecisionOrUnit";
-
-            params.unit = this.listenTodoInfo.set;
-            params.precision = this.gaugeInfo.accuracy;
-          } else if (this.listenTodoInfo.data === 4) {
-            // 设置精度
-
-            params.action = "changePrecisionOrUnit";
-            params.precision = this.listenTodoInfo.set;
-            params.unit = this.gaugeInfo.unit;
           }
           break;
         case 5:
@@ -1544,33 +1522,6 @@ export default {
     },
     listenTodo(e) {
       
-    },
-    handleTagShow(flag) {
-      /**
-       * @Author: zk
-       * @Date: 2021-05-12 16:05:22
-       * @description: 标签显示/隐藏
-       */
-      let params = {
-        taskId: this.taskId,
-        lableVisibility: this.listenTodoInfo.state === 0 ? false : true,
-      };
-      if (flag !== undefined) {
-        params.lableVisibility = flag;
-      }
-      TAGTREE.UPDATASHOWTAG(params)
-        .then(() => {
-          this.$message({
-            message: this.$t("webClient.loadBox.message[2]"),
-            type: "success",
-          });
-        })
-        .catch(() => {
-          this.$message({
-            message: this.$t("webClient.loadBox.message[3]"),
-            type: "error",
-          });
-        });
     },
     updateComTreeAfterAddComs() {
       if (this.appType === "3") {
@@ -1892,16 +1843,17 @@ export default {
               this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: realData.rsInfo.length&&realData.rsInfo[0] || {} })
               this.materialData.matList?.length&&this.materialData.matList.forEach(item=>{
                 try {
-                    this.materialData.rsInfo.forEach(e=>{
-                      if(item.matId === e.matId){
-                        item.imgPath = e.imgPath;
-                        throw new Error()
-                      }
-                    })             
-                } catch (error) {}
-            })
+                     this.materialData.rsInfo.forEach(e=>{
+                        if(item.matId === e.matId){
+                              this.$set(item,'imgPath',e.imgPath)
+                              throw new Error()
+                            }
+                        })             
+                    } catch (error) {}
+                })
             this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: this.materialData.matList[0] })
             this.$refs.ComponentInformation.getMaterial(this.materialData.matList[0].matId)
+            this.$refs.ComponentInformation.show()
           }else if(realData.id === "29"){
             // 材质信息图片
             this.$set(this.materialData,'rsInfo',realData.rsInfo)
@@ -1909,7 +1861,7 @@ export default {
                 try {
                     this.materialData.rsInfo.forEach(e=>{
                       if(item.matId === e.matId){
-                        item.imgPath = e.imgPath;
+                        this.$set(item,'imgPath',e.imgPath)
                         throw new Error()
                       }
                     })             
@@ -2217,41 +2169,17 @@ export default {
       console.log('🚀🚀🚀',this.pakAndAppid);
       return componentAppId;
     },
+    // 关闭模型浏览器
+    closeMutual(){
+        this.$refs.browserDrawer.hide()
+        EventBus.$emit('eventTool', 'browser')
+    }
   },
 };
 </script>
 
 <style lang="less" scoped>
-@font-c: center;
 @-webkit-keyframes fadeIt {
-  0% {
-    background-color: #092b4c;
-  }
-
-  50% {
-    background-color: #2a4663;
-  }
-
-  100% {
-    background-color: none;
-  }
-}
-
-@-moz-keyframes fadeIt {
-  0% {
-    background-color: #092b4c;
-  }
-
-  50% {
-    background-color: #2a4663;
-  }
-
-  100% {
-    background-color: none;
-  }
-}
-
-@-o-keyframes fadeIt {
   0% {
     background-color: #092b4c;
   }
@@ -2504,72 +2432,57 @@ export default {
       pointer-events: auto;
     }
 
-    .tree-main {
-      pointer-events: auto;
-      height: 50vh;
-      width: 400px;
-      margin: 2vh 0 0 20px;
+}
+.tree-main {
+  height: 100%;
+  .handle-part {
+    padding: 1vh 15px 10px 15px;
+  }
+  .tree-part {
+    height: calc(100% - 110px);
+    overflow: hidden;
+  }
+  .tree-content {
+    margin-top: 1vh;
+    width: 99.5%;
+    height: calc(100% - 30px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+      /*滚动条整体样式*/
+      width: 6px;
+      /*高宽分别对应横竖滚动条的尺寸*/
+      height: 1px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      /*滚动条里面小方块*/
       border-radius: 10px;
-      background-color: rgba(17, 17, 17, 0.88);
+      background: rgba(0, 0, 0, 0.3);
+    }
 
-      .tree-title {
-        display: flex;
-        padding: 20px 15px 0 15px;
-        color: #ffffff;
-        .close-part {
-          margin-left: auto;
-          cursor: pointer;
-        }
-      }
-      .handle-part {
-        padding: 1vh 15px 10px 15px;
-      }
-      .tree-part {
-        height: calc(100% - 110px);
+    &::-webkit-scrollbar-track {
+      /*滚动条里面轨道*/
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.295);
+    }
+    .custom-tree-node {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-right: 8px;
+      width: calc(100% - 50px);
+      .label-span {
+        padding-left: 5px;
+        width: calc(100% - 30px);
         overflow: hidden;
-      }
-      .tree-content {
-        margin-top: 1vh;
-        width: 99.5%;
-        height: calc(100% - 1vh);
-        overflow-x: hidden;
-        overflow-y: auto;
-        &::-webkit-scrollbar {
-          /*滚动条整体样式*/
-          width: 6px;
-          /*高宽分别对应横竖滚动条的尺寸*/
-          height: 1px;
-        }
-
-        &::-webkit-scrollbar-thumb {
-          /*滚动条里面小方块*/
-          border-radius: 10px;
-          background: rgba(0, 0, 0, 0.3);
-        }
-
-        &::-webkit-scrollbar-track {
-          /*滚动条里面轨道*/
-          border-radius: 10px;
-          background: rgba(255, 255, 255, 0.295);
-        }
-        .custom-tree-node {
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding-right: 8px;
-          width: calc(100% - 50px);
-          .label-span {
-            padding-left: 5px;
-            width: calc(100% - 30px);
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-          }
-        }
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
   }
+}
 
   #show-bim {
     height: 100vh;
@@ -2650,17 +2563,7 @@ export default {
   }
 }
 
-.dasdasdsad {
-  position: fixed;
-  top: 0;
-  left: 0;
-}
 
-.moreList {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-}
 .publicList{
   padding-top: 10px;
 }
