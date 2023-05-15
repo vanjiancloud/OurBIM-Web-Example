@@ -22,7 +22,7 @@
                     <em>点击</em>或将文件拖拽到这里上传
                 </div>
                 <div class="el-upload__tip" slot="tip">
-                    <span style="color: red">* </span>文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
+                    <!-- <span style="color: red">* </span>文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。 -->
                 </div>
             </el-upload>
             <div slot="footer" class="dialog-footer">
@@ -97,7 +97,7 @@ export default {
         },
         httpRequest(param) {
             this.$notify({
-                title: "警告",
+                title: "提示",
                 message: "正在上传，上传过程请勿关闭或刷新页面!",
                 type: "warning",
             });
