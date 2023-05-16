@@ -300,7 +300,7 @@ export default {
     close() {
         this.showDrawer = false
         this.$refs.Drawer.hide()
-        if(!this.$parent.$refs.TagLibrary.showDrawer){
+        if(!this.$parent.$refs.TagLibrary || !this.$parent.$refs.TagLibrary.showDrawer){
             EventBus.$emit('eventTool', 'label')
         }
     },

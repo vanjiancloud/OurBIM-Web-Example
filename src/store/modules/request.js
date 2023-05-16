@@ -1,5 +1,6 @@
 
 // 取消请求，中断请求
+// 使用方式：在vue页面中需要的地方this.cancel&&this.cancel()
 const state = {
     cancel: null,
 };

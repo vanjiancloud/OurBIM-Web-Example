@@ -4,15 +4,16 @@
         <Tab v-model="activeTab" :data="tabList" @onTab="onTab" />
         <!-- 属性信息 -->
         <div class="attribute" v-if="activeTab===0">
-            <el-row :gutter="20" v-for="(item,index) in data.memberInfo" :key="index">
-                <el-col :span="8">{{item.name}}</el-col>
-                <el-col :span="16">{{item.value}}</el-col>
+            <el-row :gutter="16" v-for="(item,index) in data.memberInfo" :key="index">
+                <el-col :span="9">{{item.name}}</el-col>
+                <el-col :span="15">{{item.value}}</el-col>
             </el-row>
-            <el-empty :image-size="100" v-if="!data.memberInfo.length"></el-empty>
+            <el-empty :image="require('@/assets/noData.png')" :image-size="100" v-if="!data.memberInfo.length"></el-empty>
         </div>
-        <!-- 几何信息 -->
+        <!-- 几何信息(未上线) -->
         <div class="geometry" v-if="activeTab===1">
-            <div class="coordinate geometryItem">          
+            <el-empty :image="require('@/assets/noData.png')" :image-size="100"></el-empty>
+            <!-- <div class="coordinate geometryItem">          
                 <div class="comTitle"><img src="@/assets/images/component/title1.png"/>圆管</div>
                 <div class="coordinateTitle">坐标：</div>
                 <div class="coordinateItemInput">
@@ -35,9 +36,9 @@
                     Z<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
                     <i class="el-icon-refresh-right"></i>
                 </div>
-            </div>
+            </div> -->
             <!-- 参数化尺寸参数 -->
-            <div class="parameter geometryItem">
+            <!-- <div class="parameter geometryItem">
                 <div class="comTitle"><img src="@/assets/images/component/title2.png"/>参数化尺寸参数</div>
                 <div class="parameterItem">
                     <span>内半径</span>
@@ -54,9 +55,9 @@
                     <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
                     <i class="el-icon-refresh-right"></i>
                 </div>
-            </div>
+            </div> -->
             <!-- 光源参数 -->
-            <div class="light geometryItem">
+            <!-- <div class="light geometryItem">
                 <div class="comTitle"><img src="@/assets/images/component/title2.png"/>光源参数</div>
                 <div class="switchBox" style="margin-bottom: 26px;"><span>反射开关</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch></div>
                 <div class="CubeMap">
@@ -65,9 +66,9 @@
                 </div>
                 <div class="sliderBox"><span>影响范围</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
                 <div class="sliderBox"><span>反射强度</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">0.4</span></div>
-            </div>
+            </div> -->
             <!-- 点光源 -->
-            <div class="pointolite geometryItem">
+            <!-- <div class="pointolite geometryItem">
                 <div class="comTitle"><img src="@/assets/images/component/title3.png"/>点光源</div>
                 <div class="switchBox">
                     <span>灯光开关</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch>
@@ -80,9 +81,9 @@
                 <div class="sliderBox"><span>衰减半径</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
                 <div class="sliderBox"><span>光源半径</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
                 <div class="sliderBox"><span>光源长度</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
-            </div>
+            </div> -->
             <!-- 文字信息 -->
-            <div class="word">
+            <!-- <div class="word">
                 <div class="wordTextarea">
                     <span>文字内容</span>
                     <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 8}" placeholder="请输入内容" v-model="form.textarea2"></el-input>
@@ -113,11 +114,12 @@
                     <div><el-color-picker v-model="form.color" show-alpha></el-color-picker><span>{{formatColor(form.color)}}</span></div>
                     <i class="el-icon-refresh-right"></i>
                 </div>
-            </div>
+            </div> -->
         </div>
         <!-- 材质信息 -->
         <div class="material" v-if="activeTab===2">
-            <div class="materialList">
+            <el-empty :image="require('@/assets/noData.png')" description="暂无材质信息，请打开资源库点击构件" :image-size="100" v-if="!componentAllInfo.matList?.length"></el-empty>
+            <div class="materialList" v-if="componentAllInfo.matList?.length">
                 <div class="materialListCon" :style="{'height':isOpen?'auto':'90px'}">
                     <div class="materialItem" :class="{activeMaterial:activeMaterialIndex===index}" v-for="(item,index) in componentAllInfo.matList" :key="index" @click="onMaterial(item,index)">
                         <el-image class="img" :src="item.imgPath" lazy placeholder="加载中...">
@@ -131,7 +133,7 @@
                 <!-- 是否展开和收缩 -->
                 <div class="isOpen" @click="isOpen=!isOpen"><i :class="{'el-icon-caret-top':isOpen,'el-icon-caret-bottom':!isOpen}"></i></div>
             </div>
-            <template v-if="materialAllInfo.matParam && materialAllInfo.matParam.colorList.length">
+            <template v-if="materialAllInfo.matParam && materialAllInfo.matParam?.colorList?.length">
                 <div class="materialImg">
                     <span>颜色</span>
                     <el-color-picker v-model="form.color" show-alpha @change="updateMaterial()"></el-color-picker>
@@ -178,10 +180,10 @@
                         </div>
                     </div>
                 </template>
-                <div>
+                <!-- <div>
                     <el-checkbox v-model="form.checked">双面材质</el-checkbox>
                     <el-checkbox v-model="form.checked">替换所有相同材质</el-checkbox>
-                </div>
+                </div> -->
             </template>
         </div>
     </Drawer>
@@ -237,6 +239,7 @@ export default {
     },
     created() {
         this.$store.watch((state) => state.material.materialAllInfo.matParam,(newValue, oldValue) => {
+            if(!newValue.baseParamsList) return
             this.materialChartlet.textureParamsList = this.formatBaseParams(this.getChartletParams())
             this.materialChartlet.baseParamsList = this.formatBaseParams(newValue.baseParamsList)
             this.formatColors(newValue.colorList)
@@ -448,6 +451,7 @@ export default {
 }
 .componentTitle{
     font-weight: 500;
+    margin-bottom: 20px;
 }
 
 .attribute,.geometry,.material{
@@ -460,7 +464,7 @@ export default {
     /deep/ .el-row{
         color: #ffffff;
         letter-spacing: 2px;
-        font-size: 14px;
+        font-size: 12px;
         border-bottom: 1px solid #484A4E;
         padding: 10px 0px;
         >div{

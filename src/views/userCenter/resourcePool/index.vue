@@ -32,6 +32,7 @@
                         <i class="el-icon-delete greyIcon" @click.stop="deleteGroup(levelName.level,item)"></i>
                     </div>
                 </div>
+                <el-empty :image="require('@/assets/noData.png')" :image-size="100" v-if="levelName.level ===2 ? !contentLevel2ListPage?.length:!contentList[levelName.tab2Index]?.length"></el-empty>
             </div>
             <!-- 二级才显示分页 -->
             <Pagination v-if="levelName.level ===2" class="modelPage" layout="prev, pager, next" :pagerCount="5" :limit.sync="pages.pageSize" :total="contentLevel2List.length" :page="pages.page" @pagination="pagination" />
@@ -139,12 +140,12 @@ export default {
                     name:'轴心',
                     check:false
                 },
-                {
-                    url:require('@/assets/images/todo/unchecked/com/move5.png'),
-                    checkUrl:require('@/assets/images/todo/check/com/move5.png'),
-                    name:'笔刷',
-                    check:false
-                },
+                // {
+                //     url:require('@/assets/images/todo/unchecked/com/move5.png'),
+                //     checkUrl:require('@/assets/images/todo/check/com/move5.png'),
+                //     name:'笔刷',
+                //     check:false
+                // },
             ],
             openMater:false //是否打开材质编辑
         };

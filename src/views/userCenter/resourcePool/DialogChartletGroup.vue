@@ -5,7 +5,7 @@
             <el-form-item label="分组名称:" prop="groupName">
                 <el-input v-model="form.groupName" @keydown.native.stop></el-input>
             </el-form-item>
-            <el-form-item label="缩略图:" prop="fileUpload">
+            <el-form-item label="缩略图:">
                 <SingleUpload v-model="form.fileUpload" :autoUpload="false"></SingleUpload>
             </el-form-item>
         </el-form>

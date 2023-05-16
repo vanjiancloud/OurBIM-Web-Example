@@ -217,12 +217,12 @@
         <weatherSystem ref="weatherSystem" :appId="appId" :taskId="taskId" v-show="checkShow('renderingEnvironment')"/>
         <!-- 标签 -->
         <Label ref="Label" v-show="controllerInfo.tagUiBar&&checkShow('label')" :setProps="{ taskId, appId }" @setTagClick="setTagClick" />
-        <!-- 标签库 -->
-        <TagLibrary ref="TagLibrary" v-show="controllerInfo.tagUiBar&&checkShow('label')" :data="{ taskId, appId }"/>
+        <!-- 标签库(未上线) -->
+        <!-- <TagLibrary ref="TagLibrary" v-show="controllerInfo.tagUiBar&&checkShow('label')" :data="{ taskId, appId }"/> -->
         <!-- (视图) -->
         <viewPhoto ref="viewPhoto" v-show="controllerInfo.tagUiBar&&checkShow('view')" :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
         <!-- 底部工具栏 -->
-        <Tool ref="Tool" v-show="controllerInfo.tagUiBar" v-model="activeToolArr" :data="{ taskId, appId, selectPark }" @onSuccess="toolSuccess" @close="closeTool"/>
+        <Tool ref="Tool" v-show="controllerInfo.tagUiBar && controllerInfo.uiBar && !isFade" v-model="activeToolArr" :data="{ taskId, appId, selectPark }" @onSuccess="toolSuccess" @close="closeTool"/>
     </div>
   </div>
 </template>
@@ -504,7 +504,7 @@ export default {
             // 标签
             case 'label':
                 this.$refs.Label.show()
-                this.$refs.TagLibrary.show()
+                // this.$refs.TagLibrary.show()
                 break;
             // 视图
             case 'view':
@@ -1092,7 +1092,7 @@ export default {
       if(e.data?.dynamicData?.length){
         e.data.dynamicData = [{name:'构件ID',value:e.data.revitCode},{name:'构件名称',value:e.data.name}].concat(e.data.dynamicData)
       }
-      this.memberInfo = e.data
+      this.memberInfo = e.data.dynamicData || []
       this.leafInfo = e;
       this.handleState = 9;
 
@@ -1852,7 +1852,16 @@ export default {
                 })
             this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: this.materialData.matList[0] })
             this.$refs.ComponentInformation.getMaterial(this.materialData.matList[0].matId)
+            // 显示构件信息和打开图标选中
             this.$refs.ComponentInformation.show()
+            if(this.$refs.Tool){
+                this.$refs.Tool.list.forEach(e=>{
+                    if(e.key==='componentInformation'){
+                        e.check = true
+                    }
+                })
+                this.$refs.Tool.getChecks()
+            }
           }else if(realData.id === "29"){
             // 材质信息图片
             this.$set(this.materialData,'rsInfo',realData.rsInfo)
@@ -2543,11 +2552,11 @@ export default {
     margin: 0 auto;
     width: 100%;
     .el-progress-bar__outer {
-      background-color: #00a8f054;
+      background-color: #00a8f054!important;
     }
     .el-progress-bar__inner {
       line-height: 0;
-      background-color: #00aaf0;
+      background-color: #00aaf0!important;
     }
   }
   .load-tip {
