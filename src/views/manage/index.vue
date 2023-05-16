@@ -944,18 +944,22 @@ export default {
 
     showLinkModelDialog() {
       this.linkModelDialog = true
-      getProjectList({
-        userid: Getuserid(),
-        isHandle: 1,
-        appType: 0
-      }).then(res => {
-        if (res.data.code === 0) {
-          let resData = res.data.data.list
-          this.ListLinkModel = resData.filter(item => item.appType !== '4')
-        } else {
-          this.ListLinkModel = []
-        }
-      })
+      this.getModelList()
+    },
+    // 获取模型列表
+    getModelList(){
+        getProjectList({
+            userid: Getuserid(),
+            isHandle: 1,
+            appType: 0
+        }).then(res => {
+            if (res.data.code === 0) {
+            let resData = res.data.data.list
+            this.ListLinkModel = resData.filter(item => item.appType !== '4')
+            } else {
+            this.ListLinkModel = []
+            }
+        })
     },
 
     // 这里增加定时器轮询是为了获取最新的数据状态
@@ -1235,6 +1239,7 @@ export default {
         this.fileList[index].url = e.screenImg;
       }
       this.editDialogFormVisible = true;
+      this.getModelList()
     },
 
     validaGISInputForm () {
