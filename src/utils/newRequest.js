@@ -1,15 +1,19 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
-// import store from '@/store'
+import store from '@/store/vuex.js'
 import { Getuserid } from '@/store/index.js'
 
 export const BASEURL = process.env.VUE_APP_REQUEST_URL
 // create an axios instance
+const CancelToken = axios.CancelToken;
 const service = axios.create({
   // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   baseURL: BASEURL,
   // withCredentials: true, // send cookies when cross-domain requests
   // timeout: 10000 // request timeout
+  cancelToken: new CancelToken(function executor(c){
+    store.commit("request/SET_CANCEL", c);
+  })
 })
 
 // request interceptor

@@ -1,6 +1,7 @@
 import Vue from "vue"
 import Vuex from "vuex"
 import material from './modules/material'
+import request from './modules/request'
 import getters from './getters'
 
 // 挂载Vue
@@ -21,7 +22,8 @@ export default new Vuex.Store({
         }
     },
     modules: {
-        material
+        material,
+        request
     },
     getters
 })

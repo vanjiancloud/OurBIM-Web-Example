@@ -315,14 +315,6 @@ const MODELAPI = {
             params
         })
     },
-    // 打开或者关闭(轴心)
-    SETGIZMOAXIS: params => {
-        return request({
-            url: '/OurBim/setGizmoModeType',
-            method: 'post',
-            params
-        })
-    },
 }
 // 设置太阳光、天空光照属性
 export function setWeatherSun(params,data) {
@@ -362,6 +354,14 @@ export function displayAllActor(params) {
 export function setGizmoMode(params) {
     return newRequest({
         url: '/OurBim/setGizmoMode',
+        method: 'post',
+        params
+    })
+}
+// 打开或者关闭(轴心)
+export function setGizmoModeType(params) {
+    return newRequest({
+        url: '/OurBim/setGizmoModeType',
         method: 'post',
         params
     })

@@ -1788,10 +1788,9 @@ export default {
             }
           } else if (realData.id === "15") {
             this.selectPark = realData //选择构件
-              if(this.$refs.getFooter){
-                this.$refs.getFooter.handleComOperateIcon(realData);
-              }else{
-                return false;
+              if(this.$refs.ResourcePool){
+                // 点击构件打开坐标轴
+                this.$refs.ResourcePool.checkOprate(realData);
               }
           } else if (realData.id === "16") {
             // 距离上一次操作时长

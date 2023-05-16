@@ -70,14 +70,6 @@ const COMPONENTLIBRARY = {
             params
         })
     },
-    // 关闭构件库轴
-    closeComEdit: id => {
-        return request({
-            url: '/comControl/comEditorAction',
-            method: 'POST',
-            data: qsStringify({ taskId: id })
-        })
-    },
 }
 
 
@@ -95,8 +87,16 @@ export function addCom(params) {
 
 // 开启/关闭构件库操作
 export function comSwitch(params) {
-    return request({
+    return newRequest({
         url: '/comControl/comAction',
+        method: 'POST',
+        params
+    })
+}
+// 关闭构件库轴
+export function closeComEdit(params) {
+    return newRequest({
+        url: '/comControl/comEditorAction',
         method: 'POST',
         params
     })
