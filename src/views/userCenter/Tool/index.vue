@@ -622,7 +622,12 @@ export default {
         },
         // 打开或关闭材质编辑  'on':'off'
         materialEditor(flag){
-            materialEditorControl({taskId: this.data.taskId,flag})
+            materialEditorControl({taskId: this.data.taskId,flag}).then(()=>{
+                if(flag==='off'){
+                    this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: { matList:[] } })
+                    this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: { matParam:{} } })
+                }
+            })
         },
         // 标签打开和关闭lableVisibility:true/false
         controlTagShow(lableVisibility){
