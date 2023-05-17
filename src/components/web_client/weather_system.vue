@@ -359,7 +359,9 @@
               isGis: false,
               form:{
                 sunLightIntensity:4.65,
-                sunLightColor: ''
+                sunLightColor: '',
+                sky:true,//天空光阴影
+                direction:true//方向光阴影
               }
           }
       },
