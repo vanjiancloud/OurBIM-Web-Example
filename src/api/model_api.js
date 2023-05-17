@@ -364,11 +364,19 @@ const MODELAPI = {
 }
 // 设置太阳光、天空光照属性
 export function setWeatherSun(params,data) {
-    return request({
+    return newRequest({
       url: `/weather/setSunLightIntensityAndColor`,
       method: "post",
       params,
       data
+    });
+}
+// 设置太阳光、天空光照属性
+export function setWeatherLight(params) {
+    return newRequest({
+      url: `/weather/setWeatherLight`,
+      method: "post",
+      params
     });
 }
 

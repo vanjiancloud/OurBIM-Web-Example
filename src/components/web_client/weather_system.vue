@@ -115,6 +115,14 @@
                 <el-slider v-model.number="form.sunLightIntensity" :min="0" :max="10" @change="colorChange"></el-slider>
             </div>
         </div>
+        <!-- <div class="sun">
+            <div>
+                <span>天空光阴影</span>
+                <el-switch v-model="form.sky" active-color="#409eff" inactive-color="#191a1c" @change="lightTypeChange($event,'sky')"></el-switch>
+                <span style="margin-left:15px">方向光阴影</span>
+                <el-switch v-model="form.direction" active-color="#409eff" inactive-color="#191a1c" @change="lightTypeChange($event,'direction')"></el-switch>
+            </div>
+        </div> -->
           <div class="titleWeather">天气</div>
           <div class="cloude">
               <div class="cloudeSelect">
@@ -270,7 +278,7 @@
   </template>
   
   <script>
-  import MODELAPI, { setWeatherSun } from "@/api/model_api";
+  import MODELAPI, { setWeatherSun, setWeatherLight } from "@/api/model_api";
   import CHAILIAOAPI from "@/api/material_api";
   import moment from 'moment'
   import { runInThisContext } from "vm";
@@ -385,12 +393,25 @@
             }
             return str;
         },
+        // 太阳光颜色和强度
         colorChange(){
             let data = {
                 taskId: this.taskId,
                 sunLightIntensity:this.form.sunLightIntensity
             }
             setWeatherSun(data,this.rgbaToArr(this.form.sunLightColor)).then(()=>{
+                this.$message.success('修改成功')
+                this.getWeatherParams()
+            })
+        },
+        // 天气光参数设置------天空光和方向光阴影
+        lightTypeChange(e,value){
+            let params = {
+                taskId: this.taskId,
+                lightType:value,
+                castsShadows:e?'enable':'disable'
+            }
+            setWeatherLight(params).then(()=>{
                 this.$message.success('修改成功')
                 this.getWeatherParams()
             })
@@ -523,6 +544,14 @@
                                 this.form[e.key] = e.value
                             }
                         })
+                      }
+                    //   方向光阴影
+                      if(allData.setDirectionLight){
+                        this.form.direction = allData.setDirectionLight.value==='enable'?true:false
+                      }
+                    //   天空光阴影
+                      if(allData.setSkyLight){
+                        this.form.sky = allData.setSkyLight.value==='enable'?true:false
                       }
                       if(flag==='need'){
                         setTimeout(()=>{
@@ -1015,10 +1044,13 @@
   
   <style lang="less" scoped>
   .sun{
-    border-bottom: 1px solid #464646;
+    background: rgba(51,51,51,0.7);
+    border-radius: 6px;
+    border: 1px solid #575A62;
     color: rgba(255, 255, 255, 0.7);
     font-size: 14px;
     margin-bottom: 10px;
+    padding: 8px;
     >div{
         display: flex;
         align-items: center;
