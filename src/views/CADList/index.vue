@@ -29,7 +29,7 @@
                 <template slot-scope="scope">
                     <div class="operateBtn">
                         <!-- :disabled="scope.row.status!=2" -->
-                        <el-button class="blueBtn" type="primary" @click="toProject(scope.row)">进入项目</el-button>
+                        <el-button class="blueBtn" type="primary" v-if="scope.row.fileStatus === '1'" @click="toProject(scope.row)">进入项目</el-button>
                         <el-dropdown>
                             <span class="el-dropdown-link">
                                 <i class="el-icon-arrow-down el-icon-more"></i>
@@ -53,7 +53,7 @@
         <!-- 新建GIS服务项目 -->
         <DialogsProject ref="DialogsProject" />
         <!-- 上传GIS数据 -->
-        <DragUpload ref="DragUpload" :limit="1" accept=".dwg,.dxf,.svg"  numType="uploadCADNum" @getFile="getFileDrag" @onSuccess="getList">
+        <DragUpload ref="DragUpload" :limit="null" accept=".dwg,.dxf,.svg"  numType="uploadCADNum" @getFile="getFileDrag" @onSuccess="getList">
             <!-- <template v-slot:append>
                 <el-form :model="form" :rules="rules" ref="form" label-width="130px">
                     <el-form-item label="图层类型：" prop="layerType">
@@ -259,6 +259,7 @@ export default {
             const splitArr = row.filePath.split('/')
             const fileName = splitArr[splitArr.length - 1]
             const url = `https://www.ourbim.com/bim_CAD/?file=${fileName}`
+            // const url = `http://127.0.0.1:5174/bim_CAD/?file=${fileName}`
             window.open(url)
         }
     },

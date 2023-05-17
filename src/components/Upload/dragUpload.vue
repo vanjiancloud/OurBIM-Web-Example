@@ -96,7 +96,7 @@ export default {
         },
         httpRequest(param) {
             this.$notify({
-                title: "警告",
+                title: "提示",
                 message: "正在上传，上传过程请勿关闭或刷新页面!",
                 type: "warning",
             });

@@ -325,6 +325,14 @@ export function setWeatherSun(params,data) {
       data
     });
 }
+// 设置太阳光、天空光照属性
+export function setWeatherLight(params) {
+    return newRequest({
+      url: `/weather/setWeatherLight`,
+      method: "post",
+      params
+    });
+}
 
 // 改变选中构件状态
 export function conChoiceVisible(params) {
