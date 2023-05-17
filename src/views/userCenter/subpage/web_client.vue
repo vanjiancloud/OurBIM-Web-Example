@@ -1839,7 +1839,6 @@ export default {
               }
             // 选中的构件信息
               this.$set(this.materialData,'matList',realData.rsInfo.length&&realData.rsInfo[0].matList || [])
-              this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: realData.rsInfo.length&&realData.rsInfo[0] || {} })
               this.materialData.matList?.length&&this.materialData.matList.forEach(item=>{
                 try {
                      this.materialData.rsInfo.forEach(e=>{
@@ -1850,6 +1849,7 @@ export default {
                         })             
                     } catch (error) {}
                 })
+            this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {...realData.rsInfo.length&&realData.rsInfo[0],matList:this.materialData.matList} || {} })
             this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: this.materialData.matList[0] })
             this.$refs.ComponentInformation.getMaterial(this.materialData.matList[0].matId)
             // 显示构件信息和打开图标选中
@@ -1875,6 +1875,7 @@ export default {
                     })             
                 } catch (error) {}
             })
+            this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {matList:this.materialData.matList} || {} })
           }else if(realData.id === "33"){
             // 视点动画播放
             this.$refs.viewPhoto.WebSocketData = realData
@@ -2564,7 +2565,7 @@ export default {
     display: flex;
     margin: 20px 0;
     letter-spacing: 2px;
-    color: #00aaf0;
+    color: #00aaf0!important;
     div {
       margin-left: auto;
     }

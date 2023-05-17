@@ -56,7 +56,7 @@
         <div class="bottom">
             <el-checkbox-group v-model="checkListBottom" @change="changeBottom">
                 <el-checkbox :label="checkBottomWords[0].name"></el-checkbox>
-                <el-checkbox :label="checkBottomWords[1].name"></el-checkbox>
+                <el-checkbox :label="checkBottomWords[1].name" v-if="$parent.controllerInfo.tagViewCube"></el-checkbox>
             </el-checkbox-group>
         </div>
     </div>

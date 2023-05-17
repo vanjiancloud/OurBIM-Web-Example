@@ -122,9 +122,12 @@
             <div class="materialList" v-if="componentAllInfo.matList?.length">
                 <div class="materialListCon" :style="{'height':isOpen?'auto':'90px'}">
                     <div class="materialItem" :class="{activeMaterial:activeMaterialIndex===index}" v-for="(item,index) in componentAllInfo.matList" :key="index" @click="onMaterial(item,index)">
-                        <el-image class="img" :src="item.imgPath" lazy placeholder="加载中...">
+                        <el-image class="img" :src="item.imgPath" lazy>
+                            <div slot="placeholder" class="image-slot">
+                                <img src="@/assets/default/material.png"/>
+                            </div>
                             <div slot="error" class="image-slot">
-                                <i class="el-icon-picture-outline"></i>
+                                <img src="@/assets/default/material.png"/>
                             </div>
                         </el-image>
                         <div class="materialReset" @click.stop="resetMaterial(item,index)" v-if="materialAllInfo.matParam && materialAllInfo.matParam.colorList.length"><i class="el-icon-refresh-right"></i></div>
@@ -205,7 +208,7 @@ export default {
     },
     data() {
         return {
-            activeTab:0,//tab栏
+            activeTab:2,//tab栏
             tabList: [
                 {
                     name: '属性信息'

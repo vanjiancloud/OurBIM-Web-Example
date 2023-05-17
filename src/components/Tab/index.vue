@@ -1,6 +1,6 @@
 <template>
     <div class="tab">
-        <div v-for="(item, index) in data" :key="index" class="tab_item" :class="{ acticleTab: (acticleTab === index) }" @click="onTab(item, index)">
+        <div v-for="(item, index) in data" :key="index" class="tab_item" :class="{ acticleTab: (value === index) }" @click="onTab(item, index)">
             {{ item.name }}
         </div>
     </div>
@@ -25,12 +25,12 @@ export default {
         },
     },
     watch: {
-        acticleTab(val) {
-            this.$emit("input", val);
-        },
-        value(val){
-            this.acticleTab = val
-        }
+        // acticleTab(val) {
+        //     this.$emit("input", val);
+        // },
+        // value(val){
+        //     this.acticleTab = val
+        // }
     },
     data() {
         return {
@@ -40,7 +40,7 @@ export default {
     created() {},
     methods: {
         onTab(item, index) {
-            this.acticleTab = index;
+            // this.acticleTab = index;
             this.$emit("input", index);
             this.$emit("onTab", { index, ...item });
         },

@@ -24,7 +24,18 @@
             <!-- 内容资源 -->
             <div class="content">
                 <div class="contentItem" v-for="(item,index) in (levelName.level ===2 ? contentLevel2ListPage:contentList[levelName.tab2Index])" :key="index" @click="toLevel2(item)">
-                    <el-image class="img" :src="item.comUrl" lazy></el-image>
+                    <el-image class="img" :src="item.comUrl" lazy>
+                        <div slot="placeholder" class="image-slot">
+                            <img src="@/assets/default/component.png" v-if="levelName.tab1Index ===0"/>
+                            <img src="@/assets/default/material.png" v-if="levelName.tab1Index ===1"/>
+                            <img src="@/assets/default/charlet.png" v-if="levelName.tab1Index ===2"/>
+                        </div>
+                        <div slot="error" class="image-slot">
+                            <img src="@/assets/default/component.png" v-if="levelName.tab1Index ===0"/>
+                            <img src="@/assets/default/material.png" v-if="levelName.tab1Index ===1"/>
+                            <img src="@/assets/default/charlet.png" v-if="levelName.tab1Index ===2"/>
+                        </div>
+                    </el-image>
                     <div>{{item.comName}}</div>
                     <!-- 贴图-个人图的编辑删除 -->
                     <div class="iconBottom" v-if="levelName.tab1Index ===2 && levelName.tab2Index ===1">
@@ -116,8 +127,8 @@ export default {
                 {
                     url:require('@/assets/images/todo/unchecked/com/move1.png'),
                     checkUrl:require('@/assets/images/todo/check/com/move1.png'),
-                    name:'缩放',
-                    key:'scale',
+                    name:'移动',
+                    key:'translate',
                     check:false
                 },
                 {
@@ -130,8 +141,8 @@ export default {
                 {
                     url:require('@/assets/images/todo/unchecked/com/move3.png'),
                     checkUrl:require('@/assets/images/todo/check/com/move3.png'),
-                    name:'移动',
-                    key:'translate',
+                    name:'缩放',
+                    key:'scale',
                     check:false
                 },
                 {

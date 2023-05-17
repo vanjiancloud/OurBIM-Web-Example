@@ -80,7 +80,7 @@ export default {
     .isShow {
         width: 20px;
         height: 64px;
-        background: rgba(16, 16, 16, 0.7);
+        background: rgba(16, 16, 16, 0.5);
         border-radius: 0px 14px 14px 0px;
         position: absolute;
         top: 0;
