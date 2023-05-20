@@ -107,11 +107,11 @@
         <div class="titleWeather">天空</div>
         <div class="sun">
             <div>
-                <span>太阳光颜色</span>
+                <span>天空光颜色</span>
                 <el-color-picker class="colorSelect" show-alpha v-model="form.sunLightColor" @change="colorChange"></el-color-picker>
             </div>
             <div>
-                <span>太阳光强度</span>
+                <span>天空光强度</span>
                 <el-slider v-model.number="form.sunLightIntensity" :min="0" :max="10" @change="colorChange"></el-slider>
             </div>
         </div>
@@ -119,7 +119,7 @@
             <div>
                 <span>天空光阴影</span>
                 <el-switch v-model="form.sky" active-color="#409eff" inactive-color="#191a1c" @change="lightTypeChange($event,'sky')"></el-switch>
-                <span style="margin-left:15px">方向光阴影</span>
+                <span style="margin-left:15px">太阳光阴影</span>
                 <el-switch v-model="form.direction" active-color="#409eff" inactive-color="#191a1c" @change="lightTypeChange($event,'direction')"></el-switch>
             </div>
         </div> -->
@@ -361,7 +361,7 @@
                 sunLightIntensity:4.65,
                 sunLightColor: '',
                 sky:true,//天空光阴影
-                direction:true//方向光阴影
+                direction:true//太阳光阴影
               }
           }
       },
@@ -395,7 +395,7 @@
             }
             return str;
         },
-        // 太阳光颜色和强度
+        // 天空光颜色和强度
         colorChange(){
             let data = {
                 taskId: this.taskId,
@@ -406,7 +406,7 @@
                 this.getWeatherParams()
             })
         },
-        // 天气光参数设置------天空光和方向光阴影
+        // 天气光参数设置------天空光和太阳光阴影
         lightTypeChange(e,value){
             let params = {
                 taskId: this.taskId,
@@ -547,7 +547,7 @@
                             }
                         })
                       }
-                    //   方向光阴影
+                    //   太阳光阴影
                       if(allData.setDirectionLight){
                         this.form.direction = allData.setDirectionLight.value==='enable'?true:false
                       }
