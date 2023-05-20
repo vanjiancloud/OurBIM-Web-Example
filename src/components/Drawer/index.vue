@@ -77,6 +77,7 @@ export default {
     position: fixed;
     top: 0;
     background: rgba(16,16,16,0.7);
+    z-index: 1001;
     .isShow {
         width: 20px;
         height: 64px;

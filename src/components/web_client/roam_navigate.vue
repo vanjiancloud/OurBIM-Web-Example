@@ -357,13 +357,6 @@ export default {
                 this.speedValue = 4
             }
             this.twoHeight = selectIn.tall;
-            // 下拉赋值 调接口
-            // if(this.putObj === 1){
-            //     this.params.dollName === selectIn.English;
-            //     this.params.dollHeight = selectIn.tall * 100;
-            //     this.params.speedLevel = this.speedValue;
-            //     this.requestFun();
-            // }
         },
         
         // 放置对象
@@ -381,7 +374,23 @@ export default {
         // 速度
         speedChange(val){
             this.params.speedLevel = val;
-            this.requestFun();
+            this.updateEdit({ action: 'setSpeedLevel', speedLevel: val });
+        },
+        // action事件
+        updateEdit(obj) {
+            let params = {
+                taskid: this.taskId,
+                ...obj
+            }
+            MODELAPI.UPDATEORDER(params)
+                .then((res) => {
+                    if (res.data.code === 0) {
+                        this.$message.success(res.data.message)
+                    } else {
+                        this.$message.error(res.data.message)
+                    }
+                })
+                .catch(() => {})
         },
         // 底部多选框
         changeBottom(){

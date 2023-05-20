@@ -102,5 +102,26 @@ export function closeComEdit(params) {
     })
 }
 
+// 修改光源信息
+export function modifyComParams(params,data) {
+    return newRequest({
+        url: '/comControl/modifyComParams',
+        method: 'POST',
+        params,
+        data
+    })
+}
+
+// 修改自定义构件坐标
+export function updateComsCoordinate(params,data) {
+    return newRequest({
+        url: '/comControl/updateComs',
+        method: 'POST',
+        params,
+        data
+    })
+}
+
+
 
 export default COMPONENTLIBRARY

@@ -212,7 +212,7 @@
         <!-- 资源库 -->
         <ResourcePool ref="ResourcePool" :data="{ taskId, userId, selectPark, materialData, pakIdMapweb }" v-show="controllerInfo.tagUiBar&&checkShow('resource')"/>
         <!-- 构件信息 -->
-        <ComponentInformation ref="ComponentInformation" :data="{ taskId, memberInfo, materialData, pakIdMapweb }" v-show="checkShow('componentInformation')"/>
+        <ComponentInformation ref="ComponentInformation" :data="{ taskId, memberInfo, materialData, pakIdMapweb, selectPark }" v-show="checkShow('componentInformation')"/>
         <!-- 天气 -->
         <weatherSystem ref="weatherSystem" :appId="appId" :taskId="taskId" v-show="checkShow('renderingEnvironment')"/>
         <!-- 标签 -->
@@ -222,7 +222,7 @@
         <!-- (视图) -->
         <viewPhoto ref="viewPhoto" v-show="controllerInfo.tagUiBar&&checkShow('view')" :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
         <!-- 底部工具栏 -->
-        <Tool ref="Tool" v-show="controllerInfo.tagUiBar && controllerInfo.uiBar && !isFade" v-model="activeToolArr" :data="{ taskId, appId, selectPark }" @onSuccess="toolSuccess" @close="closeTool"/>
+        <Tool ref="Tool" v-show="controllerInfo.tagUiBar && controllerInfo.uiBar && !isFade" v-model="activeToolArr" :data="{ taskId, appId, selectPark }" @onSuccess="toolSuccess"/>
     </div>
   </div>
 </template>
@@ -287,7 +287,6 @@ export default {
       lockObj:{},   // 锁开那一项的信息
       lockView:'', // 锁的显示
       shareCode: null,
-      showTodoIconObj: {},
       socketData: {},
       modelBrowser: null,
       openNode: null,
@@ -425,8 +424,6 @@ export default {
       this.$route.query.uibar === undefined || this.$route.query.uibar === true
         ? true
         : false;
-
-    this.handleTodoIcon(this.$route.query);
     if (this.$route.query.appType) {
       this.appType = this.$route.query.appType;
       // 如果是云应用就去掉遮罩层和操作栏以及加载进度---
@@ -508,7 +505,7 @@ export default {
                 break;
             // 视图
             case 'view':
-                
+                this.$refs.viewPhoto.hide()
                 break;
             // 模型动画
             case 'modelAnimation':
@@ -533,16 +530,6 @@ export default {
             // 构件信息memberInfo:属性信息
             case 'componentInformation':
                 this.$refs.ComponentInformation.show()
-                break;
-        
-            default:
-                break;
-        }
-    },
-    closeTool(e){
-        switch (e.key) {
-            case 'browser':
-                // this.browserInfo = false
                 break;
         
             default:
@@ -592,7 +579,6 @@ export default {
     // 用于给 viewphoto组件传值 （视图）
     showViewPic(valModel){
       this.showViewPicture = valModel;
-      console.log('🚀🚀🚀this.showViewPicture',this.showViewPicture);
     },
     // 点击锁
     handleToggleLock(node, data, i){
@@ -669,8 +655,7 @@ export default {
             } else if (e.data.type === 2002) {
               this.controllerInfo.memberAvttribute = e.data.data;
             } else if (e.data.type === 2003) {
-            //   this.$refs.tagTree.closePart(e.data.data);
-            //   this.$refs.tagTree.closeIcon();
+            
             } else if (e.data.type === 2004) {
               this.controllerInfo.componentLibrary = e.data.data;
             }
@@ -678,41 +663,6 @@ export default {
         },
         false
       );
-    },
-    comIconChang(val) {
-    //   this.comVisible = val;
-    },
-    handleTodoIcon(query) {
-      const arr = [
-        "show",
-        "select",
-        "view",
-        "speed",
-        "slice",
-        "measure",
-        "tag",
-        "map",
-        "camera",
-        "animation",
-        "decompose",
-        "weather",
-        "componentList",
-        "componentTree",
-        "attribute",
-      ];
-      let obj = {};
-      arr.map((v) => {
-        if (query[v] == "false") {  
-          obj[v] = false;
-        } else {
-          obj[v] = true;
-        }
-      });
-      // gis 和 分享 要隐藏天气渲染
-      // if(this.lockView === 'true' || this.lockView === undefined){
-      //   obj.weather = false;
-      // }
-      this.showTodoIconObj = obj;
     },
     listenWindowSize() {
       // 监听窗口大小变化 id=14 height
@@ -941,10 +891,6 @@ export default {
        * @Date: 2021-03-12 11:34:19
        * @description: 选择类型 e 0: 重置主视图 1: 透视投影 2: 正交投影 3 自定义主视图
        */
-      if (e === 2 && this.$refs.getFooter) {
-        // 上帝视角
-        this.$refs.getFooter.resetPerson(1);
-      }
       this.shadowType = e;
       if (e === 0) {
         this.handleState = 7;
@@ -1148,7 +1094,6 @@ export default {
        * @Date: 2021-07-30 16:28:24
        * @description: 打开二维码框
        */
-      this.$refs.getFooter.resetState();
       this.isQrcode = e;
     },
     handleOrder(e) {
@@ -1157,9 +1102,6 @@ export default {
        * @Date: 2021-03-08 10:40:10
        * @description: cube指令
        */
-      if (this.listenInfo === 0 && this.$refs.getFooter) {
-        this.$refs.getFooter.resetPerson(1);
-      }
       this.handleState = 6;
       this.cubeState = e;
       this.updateOrder();
@@ -1182,19 +1124,6 @@ export default {
         taskid: this.taskId,
       };
       switch (this.handleState) {
-        case 0:
-          // 一三人称
-          params.action = "switchViewMode";
-          params.viewMode = this.listenInfo === 0 ? 1 : 2;
-          if (this.listenInfo === 0) {
-            this.shadowType = 1;
-            this.$refs.getCube.resetActive(1);
-          }
-          params.projectionMode =
-            this.shadowType === 1 || this.shadowType === 2
-              ? this.shadowType
-              : 1;
-          break;
         case 1:
           // 模式切换
           params.action = "switchViewMode";
@@ -1217,38 +1146,6 @@ export default {
         case 2:
           // 自定义主视图
           params.action = "setGodPos";
-          break;
-        case 3:
-          // 移动速度
-          params.action = "setSpeedLevel";
-          params.speedLevel = this.listenTodoInfo.data;
-          break;
-        case 4:
-          if (
-            this.listenTodoInfo.data === 0 ||
-            this.listenTodoInfo.data === 1 ||
-            this.listenTodoInfo.data === 2
-          ) {
-            // 测量前先关闭其他测量（排他思想）
-            params.action = "endMeasure";
-            await MODELAPI.UPDATEORDER(params);
-          }
-          // 测量
-          if (this.listenTodoInfo.data === 0) {
-            // 坐标
-            params.action = "coordinate";
-            // params.status="begin"
-          } else if (this.listenTodoInfo.data === 1) {
-            // 距离
-            params.action = "distance";
-          } else if (this.listenTodoInfo.data === 2) {
-            // 角度
-            params.action = "angle";
-          }
-          break;
-        case 5:
-          // 关闭测量
-          params.action = "endMeasure";
           break;
         case 6:
           // 六面体
@@ -1284,11 +1181,6 @@ export default {
           // 定位主视图
           params.action = "cameraPosAll";
           break;
-        case 12:
-          // 分解模型
-          params.action = "splitModel";
-          params.splitValue = this.listenTodoInfo.data;
-          break;
         // case 13:
         //   // 启动应用
         //   params.action = "platform";
@@ -1296,18 +1188,6 @@ export default {
         //   params.width = document.body.clientWidth;
         //   params.height = document.body.clientHeight;
         //   break;
-        case 15:
-          // 渲染环境
-          // params.action = "Weather";
-          // params.weahterId = this.listenTodoInfo.data.id;
-          params.action = "switchWeather ";
-          params.weahterId = this.listenTodoInfo.data.id;
-          break;
-        case 17:
-          // 渲染环境
-          params.action = 51;
-          params.rate = this.listenTodoInfo.data ? this.listenTodoInfo.data : 6;
-          break;
         default:
           break;
       }
@@ -1324,15 +1204,7 @@ export default {
       await MODELAPI.UPDATEORDER(params)
         .then((res) => {
           if (res.data.code === 0) {
-            // 剖切 重置恢复
-            this.resetSection();
-
             if (params.action === "cameraPosAll" && res.data && res.data.data) {
-              // 切换到主视图 重置状态
-              if (this.$refs.getFooter) {
-                let realView = res.data.data.viewMode === "1" ? 0 : 1;
-                this.$refs.getFooter.resetPerson(realView);
-              }
               if (this.$refs.getCube) {
                 let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
                 this.$refs.getCube.resetActive(realProject);
@@ -1350,30 +1222,11 @@ export default {
           }
         })
         .catch(() => {
-          // 剖切 重置恢复
-          this.resetSection();
           this.$message({
             message: this.$t("webClient.loadBox.message[3]"),
             type: "error",
           });
         });
-    },
-    resetSection() {
-      /**
-       * @Author: zk
-       * @Date: 2021-09-03 17:40:45
-       * @description: 剖切 重置恢复
-       * @param {*} this
-       */
-      const realId =
-        this.listenTodoInfo &&
-        this.listenTodoInfo.data &&
-        this.listenTodoInfo.data.id
-          ? this.listenTodoInfo.data.id
-          : "";
-      if (this.handleState === 11 && realId === 4) {
-        this.$refs.getFooter.resetSection();
-      }
     },
 
     async getMyComList(node) {
@@ -1462,18 +1315,6 @@ export default {
     // 关闭模块
     closePart(type) {
         EventBus.$emit('eventTool', type)
-    //   if (e === 10) {
-    //     this.browserInfo = null;
-    //   }
-    //   if (e === 11) {
-    //     this.natureInfo = null;
-    //   }
-    //   if (e === 14) {
-    //     this.listenTodoInfo = null;
-    //   }
-    //   if (this.$refs.getFooter) {
-    //     this.$refs.getFooter.editTool(e);
-    //   }
     },
     setListenClick(e) {
       /**
@@ -1519,9 +1360,6 @@ export default {
       this.handleState = 0;
       this.listenInfo = e;
       this.updateOrder();
-    },
-    listenTodo(e) {
-      
     },
     updateComTreeAfterAddComs() {
       if (this.appType === "3") {
@@ -1724,14 +1562,6 @@ export default {
               message: "",
             };
             this.sentParentIframe(messageInfo);
-            // 判断原本标签有没有开启
-            if (
-              this.listenTodoInfo &&
-              this.listenTodoInfo.type === 4 &&
-              this.listenTodoInfo.state === 1
-            ) {
-              this.$refs.tagTree.closePart(true);
-            }
           } else if (realData.id === "11") {
             let messageInfo = {
               prex: "ourbimMessage",
@@ -1781,7 +1611,7 @@ export default {
           } else if (realData.id === "14") {
             // 添加构件，但是按了 ESC
             if (this.controllerInfo.uiBar) {
-            //   this.updateComTreeAfterAddComs();
+              this.updateComTreeAfterAddComs();
               this.controllerInfo.tagUiBar = true;
             //   this.controllerInfo.tagViewCube = true;
               this.$refs.EscDialogItem.changeVisible(false);
@@ -1991,16 +1821,10 @@ export default {
               } else {
                 this.controllerInfo.uiBar = false;
                 this.controllerInfo.viewCube = false;
-                if (this.$refs.tagTree) {
-                  this.$refs.tagTree.closePart(false);
-                }
               }
             } else {
               this.controllerInfo.uiBar = false;
               this.controllerInfo.viewCube = false;
-              if (this.$refs.tagTree) {
-                this.$refs.tagTree.closePart(false);
-              }
             }
           } else {
             this.$message({
@@ -2175,7 +1999,6 @@ export default {
           componentAppId = item.appId;
         }
       })
-      console.log('🚀🚀🚀',this.pakAndAppid);
       return componentAppId;
     },
     // 关闭模型浏览器

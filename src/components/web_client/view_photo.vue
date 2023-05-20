@@ -1,11 +1,12 @@
 <template>
     <div>
+        <Drawer ref="Drawer" :title="title" @onClose="close">
         <!-- 视图列表 -->
       <div class="view_photo" v-if="viewPic==='1'">
-        <div class="romaHead">
+        <!-- <div class="romaHead">
             <span class="title">视图列表</span>
             <span class="el-icon-close closeIcon" @click="viewClose"></span>
-        </div>
+        </div> -->
         <div class="search">
             <el-input
               @blur="inputBlur"
@@ -64,31 +65,13 @@
         >
         </viewDialog>
       </div>
-       <!-- 编辑视点的名称 -->
-        <el-dialog
-            title="编辑"
-            :visible="dialogVisible"
-            @close="dialogVisibleClose"
-            width="25%"
-            :append-to-body="true"
-            :close-on-click-modal="false"
-            >
-            <el-form :model="editForm" :rules="rules" ref="editForm">
-                <el-form-item label="名称:" label-width="80px" prop="inputName">
-                    <el-input v-model="editForm.inputName" placeholder="请输入内容" @keydown.native.stop></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisibleClose">取 消</el-button>
-                <el-button type="primary" @click="submitDialog">确 定</el-button>
-            </span>
-        </el-dialog>
+       
       <!-- 视点动画列表 -->
        <div class="view_photo view_animation" v-if="viewPic==='2'">
-        <div class="romaHead romaHead2">
+        <!-- <div class="romaHead romaHead2">
             <span class="title">视点动画列表</span>
             <span class="el-icon-close closeIcon" @click="viewClose2"></span>
-        </div>
+        </div> -->
         <div class="search">
             <el-input
               class="searchInput"
@@ -134,7 +117,7 @@
         </div>
       </div>
       <!-- 预览与编辑菜单栏 -->
-      <div class="proEdit" v-if="activeAnimation !== -1">
+      <div class="proEdit" v-if="activeAnimation !== -1&&viewPic==='2'">
         <div class="proEditMain">
             <div class="proEditTop" onselectstart="return false;">
                 <div class="component">
@@ -226,6 +209,26 @@
             </div>
         </div>
       </div>
+    </Drawer>
+      <!-- 编辑视点的名称 -->
+      <el-dialog
+            title="编辑"
+            :visible="dialogVisible"
+            @close="dialogVisibleClose"
+            width="25%"
+            :append-to-body="true"
+            :close-on-click-modal="false"
+            >
+            <el-form :model="editForm" :rules="rules" ref="editForm">
+                <el-form-item label="名称:" label-width="80px" prop="inputName">
+                    <el-input v-model="editForm.inputName" placeholder="请输入内容" @keydown.native.stop></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisibleClose">取 消</el-button>
+                <el-button type="primary" @click="submitDialog">确 定</el-button>
+            </span>
+        </el-dialog>
       <!-- 新建空的视点动画的名称（或改变视点间的时间） -->
         <el-dialog
             title="编辑"
@@ -254,16 +257,16 @@
 </template>
 
 <script>
+import Drawer from "@/components/Drawer/index.vue";
 import { EventBus } from '@/utils/bus.js'
   import draggable from 'vuedraggable'
   import MODELAPI from "@/api/model_api";
   import viewDialog from "@/components/web_client/view_dialog";
-  import { kMaxLength } from "buffer";
-import { log } from 'console';
   export default {
         components: {
          viewDialog,
          draggable,
+         Drawer
         },
         props:{
             viewPic:{ // 控制视图列表和视点动画框的显示
@@ -281,6 +284,7 @@ import { log } from 'console';
         },
         data() {
             return {
+                title:'视图列表',
                 WebSocketData: {},//websocket返回的数据
               proviewPic:false, // 图片预览弹框
               namePicDif:'', // 区分图片预览的名称
@@ -526,6 +530,17 @@ import { log } from 'console';
             
         },
         methods:{
+            show(title) {
+                this.title = title
+                this.$refs.Drawer.show()
+            },
+            hide(){
+                this.$refs.Drawer.hide()
+            },
+            close(){
+                this.$refs.Drawer.hide()
+                EventBus.$emit('eventTool', 'view')
+            },
              //开始拖拽事件
             onStart(e){
                 this.drag=true;
@@ -574,15 +589,15 @@ import { log } from 'console';
                 this.num = 0;
             },
             // 关闭视点列表 和 视点动画列表 时
-            viewClose(){
-                this.$emit('closeClick','0');
-                this.active = -1;
-                this.num= 0;
-                // this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
-                this.dialogFlag = false; 
-                this.delFlag = false;
-                EventBus.$emit('eventTool', 'view')
-            },
+            // viewClose(){
+            //     this.$emit('closeClick','0');
+            //     this.active = -1;
+            //     this.num= 0;
+            //     // this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
+            //     this.dialogFlag = false; 
+            //     this.delFlag = false;
+            //     EventBus.$emit('eventTool', 'view')
+            // },
             viewClose2(){
                 this.$emit('closeClick','0');
                 this.activeAnimation= -1;
@@ -1287,40 +1302,10 @@ import { log } from 'console';
     box-sizing: border-box;
 }      
 .view_photo {
-  position: absolute;
-  z-index: 9;
-  height: 580px;
-  top: 0;
-  width: 420px;
   color: white;
-  margin: 2vh 0 0 20px;
-  border-radius: 10px;
-  background-color: rgba(17,17,17,0.88);
-  .romaHead{
-    width: 420px;
-    height: 50px;
-    font-size: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #25282e;
-    .title{
-      margin-left: 18px;
-    }
-    .closeIcon{
-      font-size: 16px;
-      margin-right: 16px;
-      cursor: pointer;
-    }
-  }
   .search{
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: 100%;
-    height: 46px;
-    padding: 0 24px 0 16px;
-    border-bottom: 1px solid #25282e;
+    padding-top: 20px;
     ::v-deep .searchInput .el-input__inner{
         width: 200px;
         height: 28px;
@@ -1351,6 +1336,7 @@ import { log } from 'console';
             width: 24px;
             height: 24px;
             cursor: pointer;
+            margin: 0 2px;
         }
     }
   }
@@ -1360,9 +1346,9 @@ import { log } from 'console';
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
-    height: 484px;
+    height: calc(100vh - 125px);
     width: 100%;
-    padding-left: 16px;
+    padding-left: 25px;
     overflow: hidden;
     overflow-y:auto;
     .picBox{
@@ -1447,38 +1433,14 @@ import { log } from 'console';
     color: #a4a5a6;
     pointer-events: none;
   }
-   ::-webkit-scrollbar {
-    /* 对应纵向滚动条的宽度 */
-    width: 10px;
-    /* 对应横向滚动条的宽度 */
-    height: 10px;
-    }
-
-    /* 滚动条上的滚动滑块 */
-    ::-webkit-scrollbar-thumb {
-        background-color: #515560;
-        border-radius: 5px;
-    }
-
-    /* 滚动条轨道 */
-    ::-webkit-scrollbar-track {
-        background-color: #16191f;
-        border: 1px solid #41444D;
-        border-radius:2px;
-    }
 .view_animation{
-    height: 500px;
-    width: 400px;
-    .romaHead2{
-        width: 400px;
-    }
+    width: 100%;
     .threeLogo{
         justify-content: right !important;
     }
     .videos{
-        height: 405px;
+        height: calc(100vh - 125px);
         width: 100%;
-        // padding-left: 16px;
         padding: 7px 0 0 16px;
         overflow: hidden;
         overflow-y:auto;
@@ -1528,9 +1490,8 @@ import { log } from 'console';
 // 编辑预览框
 .proEdit{
     position: absolute;
-    bottom: 80px;
-    left: 0;
-    width: 100%;
+    bottom: 60px;
+    right: -1200px;
     height: 193px;
 }
 .proEditMain{

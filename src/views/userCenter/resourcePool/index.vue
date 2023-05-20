@@ -12,7 +12,7 @@
                 <span>{{levelName.groupName}} / <span class="level2Item">{{levelName.tabName}}</span></span>
             </div>
             <div class="search">
-                <el-input v-model="search" size="mini" placeholder="请输入您要搜索的内容" prefix-icon="el-icon-search">
+                <el-input v-model="search" size="mini" placeholder="请输入您要搜索的内容" prefix-icon="el-icon-search" @change="searchContent()" @keydown.native.stop>
                 </el-input>
                 <!-- 贴图按钮 -->
                 <el-button v-if="levelName.tab1Index ===2&&levelName.tab2Index===1" class="button" :class="{blueBtn1:levelName.level ===1,blueBtn1:levelName.level ===2}" type="primary" icon="el-icon-plus" size="mini"
@@ -107,6 +107,8 @@ export default {
                 },
             ],
             search: "",
+            searchToSaveList:[],//因为事前端搜，所以需要一个字段去保存原有的数据一级
+            searchToSaveList2:[],//因为事前端搜，所以需要一个字段去保存原有的数据二级
             contentList: [], //库，一级
             contentLevel2List: [], //二级
             contentLevel2ListPage: [], //分页数据
@@ -204,6 +206,7 @@ export default {
             this.levelName.tab2Index = 0;
             this.contentList = [];
             this.typeList = this.$options.data().typeList;
+            this.search = ''
             switch (e.index) {
                 case 0:
                     this.content();
@@ -227,12 +230,15 @@ export default {
         // 点击返回第一级
         back() {
             this.levelName.level = 1;
+            this.search = ''
+            this.searchContent()
         },
         // 点击去二级构件
         async toLevel2(item) {
             this.levelName.activeContent = item
             // 一级点击   0：构件库   1：材质库   2：贴图库
             if (this.levelName.level === 1) {
+                this.search = ''
                 this.pages = this.$options.data().pages;
                 this.levelName.level = 2;
                 this.levelName.groupName = item.comName;
@@ -251,6 +257,7 @@ export default {
                                 }
                             );
                         }
+                        this.searchToSaveList2 = JSON.parse(JSON.stringify(this.contentLevel2List))
                         break;
                     case 1:
                         let params = {
@@ -258,6 +265,7 @@ export default {
                             groupId: item.groupId,
                         };
                         this.contentLevel2List = (await getMaterialByGroup(params)).data.map(e=>{return{comName: e.matName,comUrl: e.matImgPath,...e,}})
+                        this.searchToSaveList2 = JSON.parse(JSON.stringify(this.contentLevel2List))
                         break;
                     case 2:
                         this.contentLevel2List = item.rsTextureList.map((e) => {
@@ -267,6 +275,7 @@ export default {
                                 ...e,
                             };
                         });
+                        this.searchToSaveList2 = JSON.parse(JSON.stringify(this.contentLevel2List))
                         break;
 
                     default:
@@ -403,6 +412,7 @@ export default {
                     };
                 });
             this.contentList = [publicList, selfList];
+            this.searchToSaveList = JSON.parse(JSON.stringify(this.contentList))
         },
         // 材质库
         getMaterials() {
@@ -417,6 +427,7 @@ export default {
                         };
                     });
                     this.contentList = [publicList];
+                    this.searchToSaveList = JSON.parse(JSON.stringify(this.contentList))
                 }
             );
         },
@@ -432,6 +443,7 @@ export default {
                         };
                     });
                     this.contentList = [[], data];
+                    this.searchToSaveList = JSON.parse(JSON.stringify(this.contentList))
                 }
             );
         },
@@ -613,6 +625,28 @@ export default {
             closeComEdit(params).then(()=>{
                 this.$message.success('暂时关闭自定义构件编辑')
             })
+        },
+        // 搜索内容----前端实现的
+        searchContent(){
+            let newContent = this.levelName.level ===2 ? this.searchToSaveList2:this.searchToSaveList[this.levelName.tab2Index]
+            if(this.search){
+                if(newContent.length){
+                    newContent = newContent.filter(e=>{ return e.comName.indexOf(this.search)>-1 })
+                    if(this.levelName.level === 2){
+                        this.contentLevel2List = newContent
+                        this.level2page()
+                    }else{
+                        this.contentList.splice(this.levelName.tab2Index,1,newContent)
+                    }
+                }
+            }else{
+                if(this.levelName.level ===2){
+                    this.contentLevel2List = this.searchToSaveList2
+                    this.level2page()
+                }else{
+                    this.contentList.splice(this.levelName.tab2Index,1,this.searchToSaveList[this.levelName.tab2Index])
+                }
+            }
         }
     },
 };

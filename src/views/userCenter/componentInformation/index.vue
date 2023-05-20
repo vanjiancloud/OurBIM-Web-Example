@@ -12,109 +12,118 @@
         </div>
         <!-- 几何信息(未上线) -->
         <div class="geometry" v-if="activeTab===1">
-            <el-empty :image="require('@/assets/noData.png')" :image-size="100"></el-empty>
-            <!-- <div class="coordinate geometryItem">          
-                <div class="comTitle"><img src="@/assets/images/component/title1.png"/>圆管</div>
-                <div class="coordinateTitle">坐标：</div>
-                <div class="coordinateItemInput">
-                    X<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                    Y<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                    Z<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                    <i class="el-icon-refresh-right"></i>
+            <el-empty :image="require('@/assets/noData.png')" :image-size="100" v-if="!geometryObjForm.id"></el-empty>
+            <template v-else>
+                <!-- 坐标 -->
+                <div class="coordinate geometryItem">          
+                    <div class="comTitle" v-if="geometryObjForm.lightType==='pointLight'"><img src="@/assets/images/component/title4.png"/>{{ geometryObjForm.name }}</div>
+                    <div class="comTitle" v-if="geometryObjForm.lightType==='spotLight'"><img src="@/assets/images/component/title3.png"/>{{ geometryObjForm.name }}</div>
+                    <div class="comTitle" v-if="geometryObjForm.lightType==='sphereReflectionCapture'"><img src="@/assets/images/component/title1.png"/>{{ geometryObjForm.name }}</div>
+                    <div class="coordinateTitle">坐标：</div>
+                    <div class="coordinateItemInput">
+                        X<el-input-number v-model="geometryObjForm.location.x" controls-position="right" size="mini" @keydown.native.stop @change="editCom()"/>
+                        Y<el-input-number v-model="geometryObjForm.location.y" controls-position="right" size="mini" @keydown.native.stop @change="editCom()"/>
+                        Z<el-input-number v-model="geometryObjForm.location.z" controls-position="right" size="mini" @keydown.native.stop @change="editCom()"/>
+                        <i class="el-icon-refresh-right"></i>
+                    </div>
+                    <div class="coordinateTitle">角度：</div>
+                    <div class="coordinateItemInput">
+                        P<el-input-number v-model="geometryObjForm.rotation.p" controls-position="right" size="mini" @keydown.native.stop @change="editCom()"/>
+                        Y<el-input-number v-model="geometryObjForm.rotation.y" controls-position="right" size="mini" @keydown.native.stop @change="editCom()"/>
+                        R<el-input-number v-model="geometryObjForm.rotation.r" controls-position="right" size="mini" @keydown.native.stop @change="editCom()"/>
+                        <i class="el-icon-refresh-right"></i>
+                    </div>
+                    <div class="coordinateTitle">比例：</div>
+                    <div class="coordinateItemInput">
+                        X<el-input-number v-model="geometryObjForm.scale.x" controls-position="right" size="mini" @keydown.native.stop @change="editCom()"/>
+                        Y<el-input-number v-model="geometryObjForm.scale.y" controls-position="right" size="mini" @keydown.native.stop @change="editCom()"/>
+                        Z<el-input-number v-model="geometryObjForm.scale.z" controls-position="right" size="mini" @keydown.native.stop @change="editCom()"/>
+                        <i class="el-icon-refresh-right"></i>
+                    </div>
                 </div>
-                <div class="coordinateTitle">角度：</div>
-                <div class="coordinateItemInput">
-                    X<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                    Y<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                    Z<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                    <i class="el-icon-refresh-right"></i>
+                <!-- 光源参数 -->
+                <div class="pointolite geometryItem" v-if="['spotLight','pointLight','areaLight'].includes(geometryObjForm.lightType)">
+                    <div class="comTitle"><img src="@/assets/images/component/title2.png"/>光源参数</div>
+                    <div class="switchBox">
+                        <span>灯光开关</span><el-switch @change="changeLight" v-model="geometryObjForm.affectsWorld" active-value="true" inactive-value="false" active-color="#409EFF" inactive-color="#727272"></el-switch>
+                        <span>阴影开关</span><el-switch @change="changeLight" v-model="geometryObjForm.castShadow" active-value="true" inactive-value="false" active-color="#409EFF" inactive-color="#727272"></el-switch>
+                    </div>
+                    <div class="colorBox"><span>光源颜色</span><div><el-color-picker @change="changeLight" v-model="geometryObjForm.lightColor" show-alpha></el-color-picker><span>{{geometryObjForm.lightColor&&formatColor(geometryObjForm.lightColor)}}</span></div></div>
+                    <div class="sliderBox"><span>光源强度</span><el-slider @change="changeLight" v-model="geometryObjForm.intensity"></el-slider><span class="sliderNum">{{geometryObjForm.intensity}}cd</span></div>
+                    <div class="sliderBox" v-if="['spotLight'].includes(geometryObjForm.lightType)"><span>内辐射角</span><el-slider @change="changeLight" v-model="geometryObjForm.radiationAngleOfInner"></el-slider><span class="sliderNum">{{geometryObjForm.radiationAngleOfInner}}°</span></div>
+                    <div class="sliderBox" v-if="['spotLight'].includes(geometryObjForm.lightType)"><span>外辐射角</span><el-slider @change="changeLight" v-model="geometryObjForm.radiationAngleOfOuter"></el-slider><span class="sliderNum">{{geometryObjForm.radiationAngleOfOuter}}°</span></div>
+                    <div class="sliderBox"><span>衰减半径</span><el-slider @change="changeLight" v-model="geometryObjForm.attenuationRadius"></el-slider><span class="sliderNum">{{geometryObjForm.attenuationRadius}}cm</span></div>
+                    <div class="sliderBox" v-if="['sphereReflectionCapture'].includes(geometryObjForm.lightType)"><span>影响半径</span><el-slider @change="changeLight" v-model="geometryObjForm.influenceRadius"></el-slider><span class="sliderNum">{{geometryObjForm.influenceRadius}}cm</span></div>
+                    <div class="sliderBox" v-if="['sphereReflectionCapture'].includes(geometryObjForm.lightType)"><span>反射强度</span><el-slider @change="changeLight" v-model="geometryObjForm.brightness" :min="0" :max="1" :step="0.1"></el-slider><span class="sliderNum">{{geometryObjForm.brightness}}</span></div>
+                    <div class="sliderBox" v-if="['spotLight','pointLight'].includes(geometryObjForm.lightType)"><span>光源半径</span><el-slider @change="changeLight" v-model="geometryObjForm.sourceRadius"></el-slider><span class="sliderNum">{{geometryObjForm.sourceRadius}}cm</span></div>
+                    <div class="sliderBox" v-if="['spotLight','pointLight'].includes(geometryObjForm.lightType)"><span>光源长度</span><el-slider @change="changeLight" v-model="geometryObjForm.sourceLength"></el-slider><span class="sliderNum">{{geometryObjForm.sourceLength}}cm</span></div>
+                    <div class="sliderBox" v-if="['areaLight'].includes(geometryObjForm.lightType)"><span>光源高度</span><el-slider @change="changeLight" v-model="geometryObjForm.sourceHeight"></el-slider><span class="sliderNum">{{geometryObjForm.sourceHeight}}cm</span></div>
+                    <div class="sliderBox" v-if="['areaLight'].includes(geometryObjForm.lightType)"><span>光源宽度</span><el-slider @change="changeLight" v-model="geometryObjForm.sourceWidth"></el-slider><span class="sliderNum">{{geometryObjForm.sourceWidth}}cm</span></div>
                 </div>
-                <div class="coordinateTitle">比例：</div>
-                <div class="coordinateItemInput">
-                    X<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                    Y<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                    Z<el-input-number v-model="form.num" controls-position="right" size="mini" @keydown.native.stop />
-                    <i class="el-icon-refresh-right"></i>
-                </div>
-            </div> -->
-            <!-- 参数化尺寸参数 -->
-            <!-- <div class="parameter geometryItem">
-                <div class="comTitle"><img src="@/assets/images/component/title2.png"/>参数化尺寸参数</div>
-                <div class="parameterItem">
-                    <span>内半径</span>
-                    <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
-                    <i class="el-icon-refresh-right"></i>
-                </div>
-                <div class="parameterItem">
-                    <span>外半径</span>
-                    <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
-                    <i class="el-icon-refresh-right"></i>
-                </div>
-                <div class="parameterItem">
-                    <span>长度</span>
-                    <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
-                    <i class="el-icon-refresh-right"></i>
-                </div>
-            </div> -->
-            <!-- 光源参数 -->
-            <!-- <div class="light geometryItem">
-                <div class="comTitle"><img src="@/assets/images/component/title2.png"/>光源参数</div>
-                <div class="switchBox" style="margin-bottom: 26px;"><span>反射开关</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch></div>
-                <div class="CubeMap">
-                    <div>CubeMap</div>
+                <!-- 参数化尺寸参数 -->
+                <!-- <div class="parameter geometryItem">
+                    <div class="comTitle"><img src="@/assets/images/component/title2.png"/>参数化尺寸参数</div>
+                    <div class="parameterItem">
+                        <span>内半径</span>
+                        <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
+                        <i class="el-icon-refresh-right"></i>
+                    </div>
+                    <div class="parameterItem">
+                        <span>外半径</span>
+                        <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
+                        <i class="el-icon-refresh-right"></i>
+                    </div>
+                    <div class="parameterItem">
+                        <span>长度</span>
+                        <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
+                        <i class="el-icon-refresh-right"></i>
+                    </div>
+                </div> -->
+                <!-- 光源参数 -->
+                <!-- <div class="light geometryItem">
+                    <div class="comTitle"><img src="@/assets/images/component/title2.png"/>光源参数</div>
+                    <div class="switchBox" style="margin-bottom: 26px;"><span>反射开关</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch></div>
+                    <div class="CubeMap">
+                        <div>CubeMap</div>
 
-                </div>
-                <div class="sliderBox"><span>影响范围</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
-                <div class="sliderBox"><span>反射强度</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">0.4</span></div>
-            </div> -->
-            <!-- 点光源 -->
-            <!-- <div class="pointolite geometryItem">
-                <div class="comTitle"><img src="@/assets/images/component/title3.png"/>点光源</div>
-                <div class="switchBox">
-                    <span>灯光开关</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch>
-                    <span>阴影开关</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch>
-                </div>
-                <div class="colorBox"><span>灯光颜色</span><div><el-color-picker v-model="form.color" show-alpha></el-color-picker><span>{{formatColor(form.color)}}</span></div></div>
-                <div class="sliderBox"><span>灯光强度</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cd</span></div>
-                <div class="sliderBox"><span>锥体内角</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200°</span></div>
-                <div class="sliderBox"><span>锥体外角</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200°</span></div>
-                <div class="sliderBox"><span>衰减半径</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
-                <div class="sliderBox"><span>光源半径</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
-                <div class="sliderBox"><span>光源长度</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
-            </div> -->
-            <!-- 文字信息 -->
-            <!-- <div class="word">
-                <div class="wordTextarea">
-                    <span>文字内容</span>
-                    <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 8}" placeholder="请输入内容" v-model="form.textarea2"></el-input>
-                </div>
-                <div class="componentTitle">大小字体</div>
-                <div class="wordDetail">
-                    <span>高度</span>
-                    <el-select v-model="form.value" placeholder="请选择" size="mini" style="width: 70px;">
-                        <el-option
-                        v-for="item in wordHeightList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                        </el-option>
-                    </el-select>
-                    <span>字体</span>
-                    <el-select v-model="form.value" placeholder="请选择" size="mini" style="width: 95px;">
-                        <el-option
-                        v-for="item in wordTypeList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value">
-                        </el-option>
-                    </el-select>
-                </div>
-                <div class="colorBox">
-                    <span>颜色</span>
-                    <div><el-color-picker v-model="form.color" show-alpha></el-color-picker><span>{{formatColor(form.color)}}</span></div>
-                    <i class="el-icon-refresh-right"></i>
-                </div>
-            </div> -->
+                    </div>
+                    <div class="sliderBox"><span>影响范围</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
+                    <div class="sliderBox"><span>反射强度</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">0.4</span></div>
+                </div> -->
+                <!-- 文字信息 -->
+                <!-- <div class="word">
+                    <div class="wordTextarea">
+                        <span>文字内容</span>
+                        <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 8}" placeholder="请输入内容" v-model="form.textarea2"></el-input>
+                    </div>
+                    <div class="componentTitle">大小字体</div>
+                    <div class="wordDetail">
+                        <span>高度</span>
+                        <el-select v-model="form.value" placeholder="请选择" size="mini" style="width: 70px;">
+                            <el-option
+                            v-for="item in wordHeightList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                            </el-option>
+                        </el-select>
+                        <span>字体</span>
+                        <el-select v-model="form.value" placeholder="请选择" size="mini" style="width: 95px;">
+                            <el-option
+                            v-for="item in wordTypeList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div class="colorBox">
+                        <span>颜色</span>
+                        <div><el-color-picker v-model="form.color" show-alpha></el-color-picker><span>{{formatColor(form.color)}}</span></div>
+                        <i class="el-icon-refresh-right"></i>
+                    </div>
+                </div> -->
+            </template>
         </div>
         <!-- 材质信息 -->
         <div class="material" v-if="activeTab===2">
@@ -195,6 +204,8 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getMaterialByMatId, resetMaterial, updateMaterial } from "@/api/material_api";
+import { updateComsCoordinate } from "@/api/component-library.js";
+import { modifyComParams } from "@/api/component-library";
 import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";
 import Tab from "@/components/Tab/index.vue";
@@ -220,9 +231,7 @@ export default {
                     name: '材质信息'
                 }
             ],
-            form:{},
-            wordHeightList: [], //字体高度
-            wordTypeList: [], //字体
+            // 材质start-----------------------
             isOpen:false,
             activeMaterialIndex: 0, //默认选中材质
             materialChartlet: {
@@ -230,19 +239,112 @@ export default {
                 baseParamsList: []
             }, //材质下面的信息,贴图，缩放
             activeChartlet: null,//贴图是否被选中
+            form: {},
+            // 材质end-----------------------
+
+            // 几何信息start-----------------------
+            geometryObjForm: {
+                id:'',//构件的id
+                name: '',//光源名称
+                lightType:'',//光源类型
+                location: { x:'', y:'', z:'' },//坐标
+                rotation: { p:'', y:'', r:'' },//角度
+                scale: { x:'', y:'', z:'' },//比例,缩放
+                affectsWorld: 'true',//灯光开关
+                castShadow:'true',//阴影开关
+                lightColor:'rgba(255,255,255,1)',//灯光颜色
+                intensity:1,//灯光强度
+                radiationAngleOfInner:44,//内辐射角
+                radiationAngleOfOuter:44,//外辐射角
+                attenuationRadius:100,//衰减半径
+                sourceRadius:10,//光源半径
+                sourceLength:200,//光源长度
+                influenceRadius:10,//影响半径
+                brightness:0.5,//光源亮度,反射强度
+                sourceHeight:1,//光源高度
+                sourceWidth:1//光源宽度
+            },
+            wordHeightList: [], //字体高度
+            wordTypeList: [], //字体
+            // 几何信息end-----------------------
+            isGis:false,//是否是gis模式下的
         }
     },
     watch: {
         activeMaterialIndex(val){
             this.changeSetting({ key: "activeMaterialIndex", value: val })
         },
+        // 点击选择构件
+        'data.selectPark'(val){
+            if(val.id!=='1') return
+            this.geometryObjForm = this.$options.data().geometryObjForm
+            if(val.object){
+                this.geometryObjForm.id = val.mN
+                // 处理光源信息
+                val.object.forEach(e=>{
+                    if(e.key==='name'){
+                        this.geometryObjForm.name = e.value
+                    }
+                    if(e.key==='lightType'){
+                        this.geometryObjForm.lightType = e.value
+                    }
+                    // 坐标
+                    if(e.key==='location'){
+                        let value = e.value.split(' ')
+                        this.geometryObjForm.location = {
+                            x: value[0].split('=')[1],
+                            y: value[1].split('=')[1],
+                            z: value[2].split('=')[1]
+                        }
+                    }
+                    // 角度
+                    if(e.key==='rotation'){
+                        let value = e.value.split(' ')
+                        this.geometryObjForm.rotation = {
+                            p: value[0].split('=')[1],
+                            y: value[1].split('=')[1],
+                            r: value[2].split('=')[1]
+                        }
+                    }
+                    //比例,缩放
+                    if(e.key==='scale'){
+                        let value = e.value.split(' ')
+                        this.geometryObjForm.scale = {
+                            x: value[0].split('=')[1],
+                            y: value[1].split('=')[1],
+                            z: value[2].split('=')[1]
+                        }
+                    }
+                    // 灯光开关
+                    if(e.key === 'affectsWorld'){
+                        this.geometryObjForm.affectsWorld = e.value
+                    }
+                    // 阴影开关
+                    if(e.key === 'castShadow'){
+                        this.geometryObjForm.castShadow = e.value
+                    }
+                    // 灯光颜色
+                    if(e.key === 'lightColor'){
+                        this.geometryObjForm.lightColor = this.arrToRgb(JSON.parse(e.value))
+                    }
+                    // 灯光强度,内辐射角,外辐射角,衰减半径,影响半径,光源半径,光源长度,光源亮度
+                    if(['brightness','sourceLength','sourceRadius','influenceRadius','intensity','radiationAngleOfInner','radiationAngleOfOuter','attenuationRadius'].includes(e.key)){
+                        this.geometryObjForm[e.key] = Number(e.value)
+                    }
+                })
+            }
+        }
     },
     computed: {
         ...mapGetters(["componentAllInfo", "materialAllInfo"]),
     },
     created() {
-        this.$store.watch((state) => state.material.materialAllInfo.matParam,(newValue, oldValue) => {
-            if(!newValue.baseParamsList) return
+        this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
+        this.unwatchToken = this.$store.watch((state) => state.material.materialAllInfo.matParam,(newValue, oldValue) => {
+            if(!newValue.baseParamsList){
+                this.unwatchToken()
+                return
+            }
             this.materialChartlet.textureParamsList = this.formatBaseParams(this.getChartletParams())
             this.materialChartlet.baseParamsList = this.formatBaseParams(newValue.baseParamsList)
             this.formatColors(newValue.colorList)
@@ -268,14 +370,14 @@ export default {
             this.activeTab = e.index
             this.changeSetting({ key: "openMaterial", value: this.activeTab===2 })
         },
-        // 去掉rgba
+        // 去掉rgba,去掉空格
         formatColor(color){
-            return color && color.slice(5,color.length-1)
+            return  color && color.slice(5,color.length-1).replace(/\s*/g, '')
         },
         // 颜色数组变rgba
         arrToRgb(arr){
             if(!arr || !arr.length) return null
-            return `rgba(${arr[0]},${arr[1]},${arr[2]},${Number(arr[3])/255})`
+            return `rgba(${Number(arr[0])},${Number(arr[1])},${Number(arr[2])},${Number(arr[3])/255})`
         },
         /* 
             处理贴图
@@ -440,6 +542,54 @@ export default {
                 })
             }).catch(() => {});
         },
+        // 改变光源信息
+        changeLight(){
+            let params = {
+                taskId: this.data.taskId,
+                comId: this.geometryObjForm.id
+            }
+            let { sourceWidth,sourceHeight, influenceRadius, lightType, affectsWorld, castShadow, lightColor, intensity, radiationAngleOfInner, radiationAngleOfOuter, attenuationRadius, sourceRadius, sourceLength, brightness } = this.geometryObjForm
+            let color = this.formatColor(lightColor)&&this.formatColor(lightColor).split(',')
+            let data = {
+                lightType,affectsWorld, castShadow, intensity, radiationAngleOfInner,
+                radiationAngleOfOuter, attenuationRadius, sourceRadius, sourceLength, brightness,influenceRadius,sourceHeight,sourceWidth,
+                lightColor: color ? [color[0],color[1],color[2],color[3]*255] : ['255','255','255','255']
+            }
+            modifyComParams(params, data).then(()=>{
+                this.$message.success('修改光源信息成功！')
+            })
+        },
+        // 修改构件坐标
+        editCom(){
+            let params = {
+                taskId: this.data.taskId
+            }
+            let data = []
+            if(this.isGis){
+                data = [
+                    {
+                        uuid: this.geometryObjForm.id,
+                        newLongLatHeight:{
+                            longitude:'',
+                            latitude:'',
+                            altitude:''
+                        }
+                    }
+                ]
+            }else{
+                data = [
+                    {
+                        uuid: this.geometryObjForm.id,
+                        newLocation:this.geometryObjForm.location,
+                        newRotation:this.geometryObjForm.rotation,
+                        newScale:this.geometryObjForm.scale
+                    }
+                ]
+            }
+            updateComsCoordinate(params, data).then(()=>{
+                this.$message.success('修改坐标成功！')
+            })
+        }
     }
 }
 </script>

@@ -589,9 +589,11 @@ export default {
                     })
                     item.check = !item.check
                     if(item.check){
+                        this.$parent.$refs.viewPhoto.show('视图列表')
                         this.$parent.showViewPic('1')
                     }else{
                         this.$parent.showViewPic(null)
+                        this.$parent.$refs.viewPhoto.hide()
                     }
                     break
                 // 视图子菜单--------视点动画
@@ -603,9 +605,11 @@ export default {
                     })
                     item.check = !item.check
                     if(item.check){
+                        this.$parent.$refs.viewPhoto.show('视点动画列表')
                         this.$parent.showViewPic('2')
                     }else{
                         this.$parent.showViewPic(null)
+                        this.$parent.$refs.viewPhoto.hide()
                     }
                     break
                 default:
@@ -637,7 +641,7 @@ export default {
         changeDecomposition(e){
             this.updateEdit({action:'splitModel',splitValue:e})
         },
-        // 打开或关闭框选功能
+        // action事件
         updateEdit(obj) {
             let params = {
                 taskid: this.data.taskId,
