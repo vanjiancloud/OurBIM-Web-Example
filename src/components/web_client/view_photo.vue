@@ -466,7 +466,6 @@ import { EventBus } from '@/utils/bus.js'
                 handler() {
                     if (this.setProps.taskId) {
                         this.getProps = this.setProps;
-                        this.ListPoint();
                     }
                 },
                 deep: true,
@@ -508,7 +507,6 @@ import { EventBus } from '@/utils/bus.js'
         created(){
             if (this.setProps.taskId) {
                 this.getProps = this.setProps;
-                this.ListPoint();
             }
             // document.addEventListener("click", function(e) {
             //     console.log('666 在');
@@ -533,6 +531,7 @@ import { EventBus } from '@/utils/bus.js'
             show(title) {
                 this.title = title
                 this.$refs.Drawer.show()
+                this.ListPoint();
             },
             hide(){
                 this.$refs.Drawer.hide()
@@ -1353,19 +1352,19 @@ import { EventBus } from '@/utils/bus.js'
     overflow-y:auto;
     .picBox{
          width: 120px;
-         height: 138px;
+        //  height: 138px;
          margin: 16px 10px 0 0;
         .boxPhoto{
             position: relative;
             width: 120px;
-            height: 96px;
+            // height: 96px;
             border-radius: 4px;
             // &:hover .bottom,&:hover .err{
             //     display: block;
             // }
             img{
                 width: 118px;
-                height: 94px;
+                height: 67.5px;
                 border-radius: 4px;
             }
             .bottom{

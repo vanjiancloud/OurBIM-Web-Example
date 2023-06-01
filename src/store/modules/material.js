@@ -5,7 +5,8 @@ const getDefaultState = () => {
         openMaterial: false, //是否打开材质信息
         openTexture: '', //选中的贴图
         materialAllInfo: {}, //当前材质的信息
-        componentAllInfo: {} //当前选中的构件信息
+        componentAllInfo: {}, //当前选中的构件信息
+        materialLevel1Tab: 0,//当前资源库的tab切换值
     }
 }
   

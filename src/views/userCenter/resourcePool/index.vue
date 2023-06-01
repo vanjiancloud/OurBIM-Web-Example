@@ -5,11 +5,10 @@
 <div>
     <Drawer ref="Drawer" title="资源库" @onClose="close">
         <template v-slot="{ drawer }">
-            <Tab v-model="levelName.tab1Index" v-show="levelName.level ===1" :data="tabList" @onTab="onTab" />
+            <Tab v-model="levelName.tab1Index" :data="tabList" @onTab="onTab($event,true)" />
             <!-- 点击到二级构件 -->
             <div class="level2" v-if="levelName.level ===2">
-                <i class="el-icon-arrow-left" @click="back"></i>
-                <span>{{levelName.groupName}} / <span class="level2Item">{{levelName.tabName}}</span></span>
+                <span @click="back" class="backLevel1"><i class="el-icon-arrow-left"></i>{{levelName.tabName}}</span> / <span class="level2Item">{{levelName.groupName}}</span>
             </div>
             <div class="search">
                 <el-input v-model="search" size="mini" placeholder="请输入您要搜索的内容" prefix-icon="el-icon-search" @change="searchContent()" @keydown.native.stop>
@@ -26,12 +25,14 @@
                 <div class="contentItem" v-for="(item,index) in (levelName.level ===2 ? contentLevel2ListPage:contentList[levelName.tab2Index])" :key="index" @click="toLevel2(item)">
                     <el-image class="img" :src="item.comUrl" lazy>
                         <div slot="placeholder" class="image-slot">
-                            <img src="@/assets/default/component.png" v-if="levelName.tab1Index ===0"/>
+                            <img src="@/assets/default/component.png" v-if="levelName.tab1Index ===0&&levelName.tab2Index ===1"/>
+                            <img src="@/assets/default/model.png" v-if="levelName.tab1Index ===0&&levelName.tab2Index ===0"/>
                             <img src="@/assets/default/material.png" v-if="levelName.tab1Index ===1"/>
                             <img src="@/assets/default/charlet.png" v-if="levelName.tab1Index ===2"/>
                         </div>
                         <div slot="error" class="image-slot">
-                            <img src="@/assets/default/component.png" v-if="levelName.tab1Index ===0"/>
+                            <img src="@/assets/default/component.png" v-if="levelName.tab1Index ===0&&levelName.tab2Index ===1"/>
+                            <img src="@/assets/default/model.png" v-if="levelName.tab1Index ===0&&levelName.tab2Index ===0"/>
                             <img src="@/assets/default/material.png" v-if="levelName.tab1Index ===1"/>
                             <img src="@/assets/default/charlet.png" v-if="levelName.tab1Index ===2"/>
                         </div>
@@ -113,6 +114,7 @@ export default {
             contentLevel2List: [], //二级
             contentLevel2ListPage: [], //分页数据
             levelName: {
+                isClickTab:false,//是否点击一级的tab
                 groupName: "",
                 tab1Index: 0,
                 tab2Index: 0,
@@ -169,7 +171,17 @@ export default {
         ...mapState(['cancel'])
     },
     created() {},
-    mounted() {},
+    mounted() {
+        // 点击材质信息监听tab切换
+        this.$store.watch((state) => state.material.materialLevel1Tab,(newValue, oldValue) => {
+            // isClickTab避免重复请求,点击材质信息会更新
+            if(!this.levelName.isClickTab){
+                this.onTab({index:newValue,name:this.tabList[newValue].name})
+            }else{
+                this.levelName.isClickTab = false
+            }
+        });
+    },
     destroyed () {
         EventBus.$off('eventTool')
     },
@@ -200,10 +212,15 @@ export default {
         //     // Object.assign(this.$data, this.$options.data());
         // },
         // 点击tab
-        onTab:throttle(function(e) {
+        onTab:throttle(function(e,isClick=false) {
+            this.levelName.isClickTab = isClick
+            if(isClick){
+                this.$store.dispatch('material/changeSetting',{ key: "materialLevel1Tab", value: this.levelName.tab1Index })
+            }
             this.levelName.tabName = e.name;
             this.levelName.tab1Index = e.index;
             this.levelName.tab2Index = 0;
+            this.levelName.level = 1
             this.contentList = [];
             this.typeList = this.$options.data().typeList;
             this.search = ''
@@ -665,13 +682,16 @@ export default {
     .level2Item {
         color: #706c65;
     }
+    .backLevel1{
+        cursor: pointer;
+    }
 }
 .content {
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
     gap: 10px;
-    height: calc(100vh - 200px);
+    height: calc(100vh - 252px);
     overflow: auto;
     padding: 0 12px;
     .contentItem {

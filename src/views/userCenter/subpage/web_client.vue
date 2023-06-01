@@ -162,31 +162,9 @@
           :propsProgress="propsProgress"
         ></progress-bar>
       </transition>
-<!-- 底部的工具栏 -->
-      <!-- <todo-footer
-        v-if="controllerInfo.singleList.length !== 13 && controllerInfo.uiBar && !isFade"
-        v-show="controllerInfo.tagUiBar"
-        ref="getFooter"
-        @listenTodo="listenTodo"
-        @listenPerson="listenPerson"
-        @listenFollow="listenFollow"
-        @updataModle="updataModle"
-        @comIconChang="comIconChang"
-        :setProps="propsFooter"
-        :singleList="controllerInfo.singleList"
-        :appId="appId"
-        :taskId="taskId"
-        :socketData="socketData"
-        :showTodoIconObj="showTodoIconObj"
-        @passContentLogo="passContentLogo"
-        @passBrowerLogo="passBrowerLogo"
-        :lockState="lockState" 
-        @showViewPhoto="showViewPic"
-      ></todo-footer> -->
       <!-- 右上角 -->
       <view-cube
-        v-if="controllerInfo.viewCube"
-        v-show="controllerInfo.tagViewCube"
+        v-if="controllerInfo.viewCube&&controllerInfo.tagUiBar"
         :userType="userType"
         @handleOrder="handleOrder"
         @goFront="goFront"
@@ -207,22 +185,24 @@
       </div>
     </div>
     <EscDialogItem ref="EscDialogItem" />
+      <div v-show="controllerInfo.tagUiBar">
         <!-- 漫游导航 -->
         <roamNavigate ref="roamNavigate" :taskId="taskId" v-show="checkShow('roaming')"></roamNavigate>
         <!-- 资源库 -->
-        <ResourcePool ref="ResourcePool" :data="{ taskId, userId, selectPark, materialData, pakIdMapweb }" v-show="controllerInfo.tagUiBar&&checkShow('resource')"/>
+        <ResourcePool ref="ResourcePool" :data="{ taskId, userId, selectPark, materialData, pakIdMapweb }" v-show="checkShow('resource')"/>
         <!-- 构件信息 -->
         <ComponentInformation ref="ComponentInformation" :data="{ taskId, memberInfo, materialData, pakIdMapweb, selectPark }" v-show="checkShow('componentInformation')"/>
         <!-- 天气 -->
         <weatherSystem ref="weatherSystem" :appId="appId" :taskId="taskId" v-show="checkShow('renderingEnvironment')"/>
         <!-- 标签 -->
-        <Label ref="Label" v-show="controllerInfo.tagUiBar&&checkShow('label')" :setProps="{ taskId, appId }" @setTagClick="setTagClick" />
+        <Label ref="Label" v-show="checkShow('label')" :setProps="{ taskId, appId }" @setTagClick="setTagClick" />
         <!-- 标签库(未上线) -->
-        <!-- <TagLibrary ref="TagLibrary" v-show="controllerInfo.tagUiBar&&checkShow('label')" :data="{ taskId, appId }"/> -->
+        <!-- <TagLibrary ref="TagLibrary" v-show="checkShow('label')" :data="{ taskId, appId }"/> -->
         <!-- (视图) -->
-        <viewPhoto ref="viewPhoto" v-show="controllerInfo.tagUiBar&&checkShow('view')" :viewPic="showViewPicture" :setProps="propsFooter" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
+        <viewPhoto ref="viewPhoto" v-show="checkShow('view')" :viewPic="showViewPicture" :setProps="{ taskId }" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
         <!-- 底部工具栏 -->
-        <Tool ref="Tool" v-show="controllerInfo.tagUiBar && controllerInfo.uiBar && !isFade" v-model="activeToolArr" :data="{ taskId, appId, selectPark }" @onSuccess="toolSuccess"/>
+        <Tool ref="Tool" v-show="controllerInfo.uiBar && !isFade" v-model="activeToolArr" :data="{ taskId, appId, selectPark }" @onSuccess="toolSuccess"/>
+      </div>
     </div>
   </div>
 </template>
@@ -275,24 +255,18 @@ export default {
   },
   data() {
     return {
-        userId: this.$route.query.userId || JSON.parse(sessionStorage.getItem("userid")),//用户id：链接可能没有用户id取缓存的
-        activeToolArr: [],//工具栏打开的内容
+      userId: this.$route.query.userId || JSON.parse(sessionStorage.getItem("userid")),//用户id：链接可能没有用户id取缓存的
+      activeToolArr: [],//工具栏打开的内容
       isGis: false,
       showViewPicture:'0', // 传递给 viewPhoto 控制视图列表的显示 (视图)
       maxNodes:false,
       envProgress:0,   // 环境加载
-      lockState:false,   // 最后点击的小锁的状态
-      browerLogo:false,  // 浏览器亮 true
       contentLogo:false, // 构件库亮 true
       lockObj:{},   // 锁开那一项的信息
       lockView:'', // 锁的显示
       shareCode: null,
-      socketData: {},
       modelBrowser: null,
       openNode: null,
-      propsFooter: {
-        taskId: null,
-      },
       propsProgress: {
         data: 0,
         loadData: 0,
@@ -310,16 +284,14 @@ export default {
           }
         },
       },
-    //   uiBar： ，viewCube：，tagUiBar：底部栏显示隐藏，tagViewCube：，modelClient：，memberAvttribute：，componentLibrary：，singleList：
+    //   uiBar： ，viewCube：导航里的viewCube，tagUiBar：底部栏显示隐藏，modelClient：，memberAvttribute：，componentLibrary：
       controllerInfo: {
         uiBar: true,
         viewCube: true,
         tagUiBar: true,
-        tagViewCube: true,
         modelClient: false,
         memberAvttribute: false,
-        componentLibrary: false,
-        singleList: [],
+        componentLibrary: false
       },
       webUrl: null,
       appId: null,
@@ -327,7 +299,6 @@ export default {
       locale: "zh",
       taskId: null,
       isFade: true,
-      isFollow: false,
       isTag: false,
       isQrCodeClick: false,
       handleState: 0,
@@ -345,7 +316,6 @@ export default {
       socketTimer: null,
       natureInfo: null,
       shadowType: null,
-      listenTodoInfo: null,
       isUiBar: true,
       uaInfo: null,
       treeEmpty: this.$t("webClient.browser.tips[0]"),
@@ -369,41 +339,7 @@ export default {
   computed: {
     ...mapGetters(["componentAllInfo", "materialAllInfo"]),
   },
-  watch: {
-    // 监听 浏览器 是否处于关闭状态 是 就将小锁关闭 并 关闭轴
-    browerLogo:{
-      handler(newVal,oldVal){
-        if(newVal === false && this.lockObj.num !== undefined){
-           const params = {
-              taskId: this.taskId,
-              flag: "off"
-            }
-           MODELAPI.LOCKOPENORCLOSE(params).then((res)=>{
-            if(res.data.code === 0){
-              // console.log('res');
-            }
-           })
-        }
-        if(this.lockObj.num !== undefined){
-          if(newVal === false){
-            this.$set(this.lockObj.data, [`lockView${this.lockObj.num}`], false);
-             // 锁的状态(false)
-            this.lockState = false;
-          }
-        }
-      }
-    },
-    // 监听 构件库关闭 关闭小锁
-    contentLogo:{
-       handler(newVal,oldVal){
-         if(newVal === false && this.lockObj.num !== undefined){
-            this.$set(this.lockObj.data, [`lockView${this.lockObj.num}`], false);
-            // 锁的状态(false)
-            this.lockState = false;
-         }
-       }
-    }
-  },
+  watch: {},
   created() {
     // 用定时器给 环境加载中进度条 赋假值 让其(不再只有0和100)
     let timerTime = null;
@@ -543,7 +479,6 @@ export default {
     // 操作esc的时候隐藏工具栏true隐藏，false显示
     hideTool(val = true){
         this.controllerInfo.tagUiBar = !val;//底部栏隐藏
-        this.controllerInfo.tagViewCube = !val;//右上角
         this.$refs.EscDialogItem.changeVisible(val);
     },
     outPic(url){
@@ -597,8 +532,6 @@ export default {
         this.lockObj.node = node;
         this.lockObj.data = data;
         this.lockObj.num = i;
-        // 锁的状态
-        this.lockState = data[`lockView${i}`];
         const params = {
           taskId: this.taskId,
           flag: data[`lockView${i}`] ? "on" : "off"
@@ -626,14 +559,6 @@ export default {
            });
           }
         });        
-      },
-      // 构件库 明 暗
-      passContentLogo(val){
-        this.contentLogo = val;
-      },
-      // 浏览器 明 暗
-      passBrowerLogo(val){
-        this.browerLogo = val;
       },
      addMessageEvent() {
       window.addEventListener(
@@ -695,15 +620,6 @@ export default {
         width: width,
       };
       MODELAPI.UPDATEORDER(params);
-    },
-    async updataModle(params) {
-      params.taskid = this.taskId;
-      const { data: res } = await MODELAPI.UPDATEORDER(params);
-      if (res.code === 0) {
-        this.$message.success(res.message);
-      } else {
-        this.$message.error(res.message);
-      }
     },
     filterNode(value, data) {
       /**
@@ -846,14 +762,6 @@ export default {
           }
         }
       });
-    },
-    listenFollow(e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-04-08 15:30:38
-       * @description: 监听关注视角是否打开
-       */
-      this.isFollow = e;
     },
     getError(e) {
       /**
@@ -1322,9 +1230,6 @@ export default {
        * @Date: 2021-05-07 09:54:23
        * @description: 设置监听点击状态
        */
-      if (this.$refs.getFooter) {
-        this.$refs.getFooter.setListenClick(e);
-      } else {
         if (e) {
           this.isTag = false;
           window.addEventListener("click", this.clickOthers);
@@ -1332,7 +1237,6 @@ export default {
           this.isTag = true;
           window.removeEventListener("click", this.clickOthers);
         }
-      }
     },
     clickOthers() {
       return;
@@ -1350,16 +1254,6 @@ export default {
         message: "",
       };
       this.sentParentIframe(messageInfo);
-    },
-    listenPerson(e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-03-16 18:06:24
-       * @description: 人称切换
-       */
-      this.handleState = 0;
-      this.listenInfo = e;
-      this.updateOrder();
     },
     updateComTreeAfterAddComs() {
       if (this.appType === "3") {
@@ -1455,7 +1349,6 @@ export default {
         if (e.data.length > 20) {
           this.isFade = false 
           let realData = JSON.parse(e.data);
-          this.socketData = realData;
           if (realData.id === "1") {
             this.$refs.ComponentInformation.activeMaterialIndex = 0 //切换点击构件默认选中为初始值
             this.selectPark = realData
@@ -1479,9 +1372,6 @@ export default {
               message: "",
             };
             this.sentParentIframe(messageInfo);
-            if (this.$refs.getFooter) {
-              this.$refs.getFooter.resetPointList(realData.object);
-            }
           } else if (realData.id === "5") {
             // 多选构件
             this.sentParentIframe({prex: "ourbimMessage",type: 20002,message: ""});
@@ -1613,7 +1503,6 @@ export default {
             if (this.controllerInfo.uiBar) {
               this.updateComTreeAfterAddComs();
               this.controllerInfo.tagUiBar = true;
-            //   this.controllerInfo.tagViewCube = true;
               this.$refs.EscDialogItem.changeVisible(false);
             }
           } else if (realData.id === "15") {
@@ -1735,7 +1624,6 @@ export default {
       this.$refs.EscDialogItem.changeVisible(false);
       if (this.controllerInfo.uiBar) {
         this.controllerInfo.tagUiBar = true;
-        this.controllerInfo.tagViewCube = true;
       }
     },
     exitMiniprogram(time) {
@@ -1791,7 +1679,6 @@ export default {
           if (res.data.code === 0 && res.data.data) {
             this.webUrl = res.data.data.url;
             this.taskId = res.data.data.taskId;
-            this.propsFooter.taskId = res.data.data.taskId;
             // 保存code
             if (res.data.data.code) {
               this.shareCode = res.data.data.code;
@@ -1924,7 +1811,7 @@ export default {
         // 关闭tool
         this.sendToIframe(10200, "false", "");
         document.addEventListener("keydown", (e) => {
-          if (this.isFollow || this.isTag || this.isQrCodeClick) {
+          if (this.isTag || this.isQrCodeClick) {
             return;
           }
           this.sendToIframe(
@@ -1937,7 +1824,7 @@ export default {
           );
         });
         document.addEventListener("keyup", (e) => {
-          if (this.isFollow || this.isTag || this.isQrCodeClick) {
+          if (this.isTag || this.isQrCodeClick) {
             return;
           }
           this.sendToIframe(

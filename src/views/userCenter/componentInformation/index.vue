@@ -209,6 +209,7 @@ import { modifyComParams } from "@/api/component-library";
 import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";
 import Tab from "@/components/Tab/index.vue";
+import { Getuserid } from "@/store/index.js"; 
 export default {
     components: { Tab, Drawer },
     props: {
@@ -249,7 +250,7 @@ export default {
                 lightType:'',//光源类型
                 location: { x:'', y:'', z:'' },//坐标
                 rotation: { p:'', y:'', r:'' },//角度
-                scale: { x:'', y:'', z:'' },//比例,缩放
+                scale: { x:1, y:1, z:1 },//比例,缩放
                 affectsWorld: 'true',//灯光开关
                 castShadow:'true',//阴影开关
                 lightColor:'rgba(255,255,255,1)',//灯光颜色
@@ -278,10 +279,10 @@ export default {
         'data.selectPark'(val){
             if(val.id!=='1') return
             this.geometryObjForm = this.$options.data().geometryObjForm
-            if(val.object){
+            if(val.rsInfo){
                 this.geometryObjForm.id = val.mN
                 // 处理光源信息
-                val.object.forEach(e=>{
+                val.rsInfo.forEach(e=>{
                     if(e.key==='name'){
                         this.geometryObjForm.name = e.value
                     }
@@ -292,27 +293,27 @@ export default {
                     if(e.key==='location'){
                         let value = e.value.split(' ')
                         this.geometryObjForm.location = {
-                            x: value[0].split('=')[1],
-                            y: value[1].split('=')[1],
-                            z: value[2].split('=')[1]
+                            x: +value[0].split('=')[1],
+                            y: +value[1].split('=')[1],
+                            z: +value[2].split('=')[1]
                         }
                     }
                     // 角度
                     if(e.key==='rotation'){
                         let value = e.value.split(' ')
                         this.geometryObjForm.rotation = {
-                            p: value[0].split('=')[1],
-                            y: value[1].split('=')[1],
-                            r: value[2].split('=')[1]
+                            p: +value[0].split('=')[1],
+                            y: +value[1].split('=')[1],
+                            r: +value[2].split('=')[1]
                         }
                     }
                     //比例,缩放
                     if(e.key==='scale'){
                         let value = e.value.split(' ')
                         this.geometryObjForm.scale = {
-                            x: value[0].split('=')[1],
-                            y: value[1].split('=')[1],
-                            z: value[2].split('=')[1]
+                            x: +value[0].split('=')[1],
+                            y: +value[1].split('=')[1],
+                            z: +value[2].split('=')[1]
                         }
                     }
                     // 灯光开关
@@ -357,6 +358,7 @@ export default {
     methods: {
         show() {
             this.$refs.Drawer.show()
+            this.settingMaterialTab()
         },
         close(){
             this.$refs.Drawer.hide()
@@ -369,6 +371,13 @@ export default {
         async onTab(e){
             this.activeTab = e.index
             this.changeSetting({ key: "openMaterial", value: this.activeTab===2 })
+            this.settingMaterialTab()
+        },
+        // 点击材质信息资源库跳到材质库
+        settingMaterialTab(){
+            if(this.activeTab === 2){
+                this.$store.dispatch('material/changeSetting',{ key: "materialLevel1Tab", value: 1 })
+            }
         },
         // 去掉rgba,去掉空格
         formatColor(color){
@@ -569,6 +578,7 @@ export default {
                 data = [
                     {
                         uuid: this.geometryObjForm.id,
+                        comName: this.geometryObjForm.name,
                         newLongLatHeight:{
                             longitude:'',
                             latitude:'',
@@ -580,6 +590,7 @@ export default {
                 data = [
                     {
                         uuid: this.geometryObjForm.id,
+                        comName: this.geometryObjForm.name,
                         newLocation:this.geometryObjForm.location,
                         newRotation:this.geometryObjForm.rotation,
                         newScale:this.geometryObjForm.scale
