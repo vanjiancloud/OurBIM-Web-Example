@@ -78,7 +78,6 @@
               type="text"
               v-model="inputTwo" 
               placeholder="请输入视点动画名称"
-              @blur="animBlur"
               @keyup.enter.native="searchAnim"  
             >
                 <div slot="prefix"><i class="el-icon-search" @click="searchAnim"></i></div>
@@ -813,22 +812,24 @@ import { EventBus } from '@/utils/bus.js'
             // 视点动画列表搜索
             searchAnim(){
                 if(this.inputTwo.trim() !== ''){
-                    let newArrSear = this.viewPointLists.filter((item)=>{
+                    let newArrSear = this.animNewarr.filter((item)=>{
                         if(item.name.indexOf(this.inputTwo.trim())>-1){
                             return item;
                         }
                     })
                     this.viewPointLists = newArrSear;
+                }else{
+                  this.viewPointLists = this.animNewarr;
                 }
             },
             // 视点动画列表搜索框失去焦点
-            animBlur(){
-                if(this.inputTwo === ''){
-                   this.viewPointLists = this.animNewarr;
-                }
-                this.activeAnimation = -1;
-                this.num2 = 0;
-            },
+            // animBlur(){
+            //     if(this.inputTwo === ''){
+            //        this.viewPointLists = this.animNewarr;
+            //     }
+            //     this.activeAnimation = -1;
+            //     this.num2 = 0;
+            // },
             // 点击 创建视点动画
             plusProEdit(){
                 // this.proEditFlag = true;

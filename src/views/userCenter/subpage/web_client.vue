@@ -284,14 +284,13 @@ export default {
           }
         },
       },
-    //   uiBar： ，viewCube：导航里的viewCube，tagUiBar：底部栏显示隐藏，modelClient：，memberAvttribute：，componentLibrary：
+    //   uiBar： ，viewCube：导航里的viewCube，tagUiBar：底部栏显示隐藏，modelClient：，memberAvttribute：，
       controllerInfo: {
         uiBar: true,
         viewCube: true,
         tagUiBar: true,
         modelClient: false,
         memberAvttribute: false,
-        componentLibrary: false
       },
       webUrl: null,
       appId: null,
@@ -582,7 +581,7 @@ export default {
             } else if (e.data.type === 2003) {
             
             } else if (e.data.type === 2004) {
-              this.controllerInfo.componentLibrary = e.data.data;
+              
             }
           }
         },
@@ -1568,8 +1567,10 @@ export default {
                         })             
                     } catch (error) {}
                 })
-            this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {...realData.rsInfo.length&&realData.rsInfo[0],matList:this.materialData.matList} || {} })
-            this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: this.materialData.matList[0] })
+            if(this.checkShow('resource')){
+              this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {...realData.rsInfo.length&&realData.rsInfo[0],matList:this.materialData.matList} || {} })
+              this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: this.materialData.matList[0] })
+            }
             this.$refs.ComponentInformation.getMaterial(this.materialData.matList[0].matId)
             // 显示构件信息和打开图标选中
             this.$refs.ComponentInformation.show()
@@ -1594,7 +1595,9 @@ export default {
                     })             
                 } catch (error) {}
             })
-            this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {matList:this.materialData.matList} || {} })
+            if(this.checkShow('resource')){
+              this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {matList:this.materialData.matList} || {} })
+            }
           }else if(realData.id === "33"){
             // 视点动画播放
             this.$refs.viewPhoto.WebSocketData = realData
@@ -1894,6 +1897,11 @@ export default {
         EventBus.$emit('eventTool', 'browser')
     }
   },
+  destroyed(){
+    if(this.websock){
+      this.websock.close()
+    }
+  }
 };
 </script>
 

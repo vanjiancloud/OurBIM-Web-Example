@@ -66,7 +66,7 @@
           :on-exceed="exceed"
           :on-remove="onremove"
           :before-upload="beforeModelUpload"
-          accept=".rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.c4d,.fbx,.FBX,.obj,.stp,.xyz,.txt,.pts,.las"
+          accept=".rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.fbx,.FBX,.obj,.stp,.xyz,.txt,.pts,.las"
           ref="bimupload"
           :auto-upload="false"
         >

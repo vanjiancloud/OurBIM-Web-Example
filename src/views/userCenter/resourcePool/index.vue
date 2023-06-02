@@ -44,7 +44,7 @@
                         <i class="el-icon-delete greyIcon" @click.stop="deleteGroup(levelName.level,item)"></i>
                     </div>
                 </div>
-                <el-empty :image="require('@/assets/noData.png')" :image-size="100" v-if="levelName.level ===2 ? !contentLevel2ListPage?.length:!contentList[levelName.tab2Index]?.length"></el-empty>
+                <el-empty :image="require('@/assets/noData.png')" :image-size="100" v-if="levelName.level ===2 ? !contentLevel2ListPage.length:(!contentList[levelName.tab2Index]||!contentList[levelName.tab2Index].length)"></el-empty>
             </div>
             <!-- 二级才显示分页 -->
             <Pagination v-if="levelName.level ===2" class="modelPage" layout="prev, pager, next" :pagerCount="5" :limit.sync="pages.pageSize" :total="contentLevel2List.length" :page="pages.page" @pagination="pagination" />

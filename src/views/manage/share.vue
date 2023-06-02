@@ -63,6 +63,7 @@
 </template>
 
 <script>
+import { urlToblob } from "@/utils/file.js";
 import { Getuserid } from "@/store/index.js";
 import { getWebUrl } from "@/api/my.js";
 export default {
@@ -100,7 +101,6 @@ export default {
         userid: Getuserid()
       })
         .then(res => {
-          console.log("分享", res, this.appid);
           if (res.data.code === 0) {
             this.isShow = 2;
             this.formShare.qrurl = res.data.data.qrurl;

@@ -127,8 +127,8 @@
         </div>
         <!-- 材质信息 -->
         <div class="material" v-if="activeTab===2">
-            <el-empty :image="require('@/assets/noData.png')" description="暂无材质信息，请打开资源库点击构件" :image-size="100" v-if="!componentAllInfo.matList?.length"></el-empty>
-            <div class="materialList" v-if="componentAllInfo.matList?.length">
+            <el-empty :image="require('@/assets/noData.png')" description="暂无材质信息，请打开资源库点击构件" :image-size="100" v-if="!(componentAllInfo.matList&&componentAllInfo.matList.length)"></el-empty>
+            <div class="materialList" v-if="componentAllInfo.matList&&componentAllInfo.matList.length">
                 <div class="materialListCon" :style="{'height':isOpen?'auto':'90px'}">
                     <div class="materialItem" :class="{activeMaterial:activeMaterialIndex===index}" v-for="(item,index) in componentAllInfo.matList" :key="index" @click="onMaterial(item,index)">
                         <el-image class="img" :src="item.imgPath" lazy>
@@ -139,13 +139,13 @@
                                 <img src="@/assets/default/material.png"/>
                             </div>
                         </el-image>
-                        <div class="materialReset" @click.stop="resetMaterial(item,index)" v-if="materialAllInfo.matParam && materialAllInfo.matParam.colorList.length"><i class="el-icon-refresh-right"></i></div>
+                        <div class="materialReset" @click.stop="resetMaterial(item,index)" v-if="materialAllInfo.matParam && materialAllInfo.matParam.colorList && materialAllInfo.matParam.colorList.length"><i class="el-icon-refresh-right"></i></div>
                     </div>
                 </div>
                 <!-- 是否展开和收缩 -->
                 <div class="isOpen" @click="isOpen=!isOpen"><i :class="{'el-icon-caret-top':isOpen,'el-icon-caret-bottom':!isOpen}"></i></div>
             </div>
-            <template v-if="materialAllInfo.matParam && materialAllInfo.matParam?.colorList?.length">
+            <template v-if="materialAllInfo.matParam && materialAllInfo.matParam.colorList && materialAllInfo.matParam.colorList.length">
                 <div class="materialImg">
                     <span>颜色</span>
                     <el-color-picker v-model="form.color" show-alpha @change="updateMaterial()"></el-color-picker>
@@ -359,6 +359,7 @@ export default {
         show() {
             this.$refs.Drawer.show()
             this.settingMaterialTab()
+            this.changeSetting({ key: "openMaterial", value: this.activeTab===2 })
         },
         close(){
             this.$refs.Drawer.hide()
@@ -734,6 +735,7 @@ export default {
         }
         .coordinateItemInput{
             text-align: center;
+            font-size: 12px;
         }
     }
     .parameter{
