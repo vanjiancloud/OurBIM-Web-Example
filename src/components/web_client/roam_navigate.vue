@@ -280,7 +280,7 @@ export default {
         },
         requestFun(){
             // console.log('参数打印', this.params)
-            MODELAPI.UPDATEORDER(this.params).then((res)=>{
+            MODELAPI.UPDATEORDER({...this.params,taskid:this.taskId}).then((res)=>{
                 if(res.data.code === 0){
                     this.$message.success(res.data.message);
                 }else{

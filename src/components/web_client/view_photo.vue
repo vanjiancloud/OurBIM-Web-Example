@@ -1,6 +1,7 @@
 <template>
     <div>
         <Drawer ref="Drawer" :title="title" @onClose="close">
+            <template v-slot="{ isShow }">
         <!-- 视图列表 -->
       <div class="view_photo" v-if="viewPic==='1'">
         <!-- <div class="romaHead">
@@ -56,7 +57,7 @@
         </div>
         <!-- 图片预览弹框 -->
         <el-dialog class="picProview" :title="namePicDif==='1' ? '图片预览' : '全景图预览'" :visible="proviewPic" @close="proviewPic=false" :append-to-body="true" width="70%">
-            <img :src="this.proLookPic" alt="" :style="{'width':'100%','height':'100%'}">
+            <img :src="proLookPic" alt="" :style="{'width':'100%','height':'100%'}">
         </el-dialog>
         <!-- 视图导出弹窗 -->
        <viewDialog :item="dialogFlag" @closeDia="closeDia2" @noBorder="noBorder" 
@@ -116,7 +117,7 @@
         </div>
       </div>
       <!-- 预览与编辑菜单栏 -->
-      <div class="proEdit" v-if="activeAnimation !== -1&&viewPic==='2'">
+      <div class="proEdit" v-if="activeAnimation !== -1&&viewPic==='2'" :style="{width:isShow?'calc(100vw - 300px)':'100vw',right:isShow?'calc(-100vw + 300px)':'-100vw'}">
         <div class="proEditMain">
             <div class="proEditTop" onselectstart="return false;">
                 <div class="component">
@@ -175,7 +176,7 @@
                     <el-progress :percentage="90"  :color="customColor"></el-progress>
                 </div>
                 <!-- 播放条 -->
-                <div class="startPost" v-if="animaViewPointer.length>=2" :class="this.playFlags==='2' ? 'noAllowed' : ''" style="left: 6px;">
+                <div class="startPost" v-if="animaViewPointer.length>=2" :class="playFlags==='2' ? 'noAllowed' : ''" style="left: 6px;">
                         <div class="outCircle">
                         </div>
                         <div class="bigCircle" @mousedown="pushMouse" @mouseup="releaseMouse">
@@ -208,6 +209,7 @@
             </div>
         </div>
       </div>
+    </template>
     </Drawer>
       <!-- 编辑视点的名称 -->
       <el-dialog
@@ -1491,14 +1493,13 @@ import { EventBus } from '@/utils/bus.js'
 .proEdit{
     position: absolute;
     bottom: 60px;
-    right: -1200px;
     height: 193px;
+    width: calc(100vw - 300px);
+    right: calc(-100vw + 300px);
 }
 .proEditMain{
-    min-width: 1200px;
-    width: 70%;
+    width: 100%;
     height: 100%;
-    margin: 0 auto;
     background-color:rgba(16,16,16,0.9);
     border-radius: 6px;
     .proEditTop{
@@ -1657,7 +1658,7 @@ import { EventBus } from '@/utils/bus.js'
     .proEditDown{
         position: relative;
         display: flex;
-        width: 100%;
+        width: auto;
         height: 143px;
         padding: 0 0 0 12px;
         transform: scaleY(-1); // 利用翻转 将滚动条放到上方

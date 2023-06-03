@@ -1074,7 +1074,7 @@
   }
       .systemWeather{
           width: 100%;
-          height: 100%;
+          height: calc(100% - 53px);
           overflow-x: hidden;
           overflow-y: auto;
           &::-webkit-scrollbar {

@@ -184,7 +184,7 @@
         <img src="./friend.png" alt="" /> 邀请成员
       </div>
     </div>
-    <EscDialogItem ref="EscDialogItem" />
+    <EscDialogItem ref="EscDialogItem" :title="escTitle" />
       <div v-show="controllerInfo.tagUiBar">
         <!-- 漫游导航 -->
         <roamNavigate ref="roamNavigate" :taskId="taskId" v-show="checkShow('roaming')"></roamNavigate>
@@ -255,7 +255,7 @@ export default {
   },
   data() {
     return {
-      userId: this.$route.query.userId || JSON.parse(sessionStorage.getItem("userid")),//用户id：链接可能没有用户id取缓存的
+      userId: this.$route.query.userId || Getuserid() || 'travels',//用户id：链接可能没有用户id取缓存的
       activeToolArr: [],//工具栏打开的内容
       isGis: false,
       showViewPicture:'0', // 传递给 viewPhoto 控制视图列表的显示 (视图)
@@ -332,7 +332,8 @@ export default {
       // 贴图库 公共库的信息
       modelIsLink:null, // 是否是链接模型
       pakIdMapweb:'', // 区分点击的是自定义构件还是模型自带的构件
-      pakAndAppid:[], 
+      pakAndAppid:[],
+      escTitle: '',//esc显示名称
     };
   },
   computed: {
@@ -478,6 +479,9 @@ export default {
     // 操作esc的时候隐藏工具栏true隐藏，false显示
     hideTool(val = true){
         this.controllerInfo.tagUiBar = !val;//底部栏隐藏
+        if(!val){
+          this.escTitle = ''
+        }
         this.$refs.EscDialogItem.changeVisible(val);
     },
     outPic(url){
@@ -1502,7 +1506,7 @@ export default {
             if (this.controllerInfo.uiBar) {
               this.updateComTreeAfterAddComs();
               this.controllerInfo.tagUiBar = true;
-              this.$refs.EscDialogItem.changeVisible(false);
+              this.hideTool(false)
             }
           } else if (realData.id === "15") {
             this.selectPark = realData //选择构件
@@ -1567,10 +1571,8 @@ export default {
                         })             
                     } catch (error) {}
                 })
-            if(this.checkShow('resource')){
-              this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {...realData.rsInfo.length&&realData.rsInfo[0],matList:this.materialData.matList} || {} })
-              this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: this.materialData.matList[0] })
-            }
+            this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {...realData.rsInfo.length&&realData.rsInfo[0],matList:this.materialData.matList} || {} })
+            this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: this.materialData.matList[0] })
             this.$refs.ComponentInformation.getMaterial(this.materialData.matList[0].matId)
             // 显示构件信息和打开图标选中
             this.$refs.ComponentInformation.show()
@@ -1595,9 +1597,7 @@ export default {
                     })             
                 } catch (error) {}
             })
-            if(this.checkShow('resource')){
-              this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {matList:this.materialData.matList} || {} })
-            }
+            this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {matList:this.materialData.matList} || {} })
           }else if(realData.id === "33"){
             // 视点动画播放
             this.$refs.viewPhoto.WebSocketData = realData
@@ -1624,7 +1624,7 @@ export default {
     },
     showUiBar() {
       // 显示面板
-      this.$refs.EscDialogItem.changeVisible(false);
+      this.hideTool(false)
       if (this.controllerInfo.uiBar) {
         this.controllerInfo.tagUiBar = true;
       }
@@ -1899,7 +1899,7 @@ export default {
   },
   destroyed(){
     if(this.websock){
-      this.websock.close()
+      // this.websock.close()
     }
   }
 };

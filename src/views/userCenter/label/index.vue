@@ -626,9 +626,11 @@ export default {
               this.reloadTree(2);
               this.closePart(false);
               this.$parent.hideTool(true);
+              this.$parent.escTitle = '结束添加标签'
             });
           })
           .catch((err) => {
+            this.$parent.hideTool(false);
             this.$message({
               message: this.$t("webClient.loadBox.message[4]"),
               type: "error",

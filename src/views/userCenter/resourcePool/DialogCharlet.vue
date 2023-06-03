@@ -23,6 +23,7 @@
 </template>
 
 <script>
+import { Getuserid } from "@/store/index.js";
 import SingleUpload from '@/components/Upload/singleUpload.vue'
 import { addChartlet,updateMaterialTexture } from '@/api/material_api'
 export default {
@@ -74,7 +75,7 @@ export default {
                 if (!valid) return false
                 if (this.form.textureId) {
                     let data = {
-                        userId: this.$route.query.userId,
+                        userId: this.$route.query.userId || Getuserid() || 'travels',
                         ...this.form
                     }
                     let formData = new FormData()
@@ -88,7 +89,7 @@ export default {
                     })
                 } else {
                     let data = {
-                        userId: this.$route.query.userId,
+                        userId: this.$route.query.userId || Getuserid() || 'travels',
                         ...this.form
                     }
                     let formData = new FormData()

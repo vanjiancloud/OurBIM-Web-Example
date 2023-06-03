@@ -15,7 +15,7 @@
             <el-empty :image="require('@/assets/noData.png')" :image-size="100" v-if="!geometryObjForm.id"></el-empty>
             <template v-else>
                 <!-- 坐标 -->
-                <div class="coordinate geometryItem">          
+                <div class="coordinate geometryItem" v-if="data.pakIdMapweb">          
                     <div class="comTitle" v-if="geometryObjForm.lightType==='pointLight'"><img src="@/assets/images/component/title4.png"/>{{ geometryObjForm.name }}</div>
                     <div class="comTitle" v-if="geometryObjForm.lightType==='spotLight'"><img src="@/assets/images/component/title3.png"/>{{ geometryObjForm.name }}</div>
                     <div class="comTitle" v-if="geometryObjForm.lightType==='sphereReflectionCapture'"><img src="@/assets/images/component/title1.png"/>{{ geometryObjForm.name }}</div>
