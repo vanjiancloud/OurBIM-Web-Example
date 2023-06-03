@@ -185,7 +185,7 @@
       </div>
     </div>
     <EscDialogItem ref="EscDialogItem" :title="escTitle" />
-      <div v-show="controllerInfo.tagUiBar">
+      <div v-show="controllerInfo.tagUiBar" v-if="isUiBar">
         <!-- 漫游导航 -->
         <roamNavigate ref="roamNavigate" :taskId="taskId" v-show="checkShow('roaming')"></roamNavigate>
         <!-- 资源库 -->
@@ -201,7 +201,7 @@
         <!-- (视图) -->
         <viewPhoto ref="viewPhoto" v-show="checkShow('view')" :viewPic="showViewPicture" :setProps="{ taskId }" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
         <!-- 底部工具栏 -->
-        <Tool ref="Tool" v-show="controllerInfo.uiBar && !isFade" v-model="activeToolArr" :data="{ taskId, appId, selectPark }" @onSuccess="toolSuccess"/>
+        <Tool ref="Tool" v-show="!isFade" v-model="activeToolArr" :data="{ taskId, appId, selectPark }" @onSuccess="toolSuccess"/>
       </div>
     </div>
   </div>
@@ -1899,7 +1899,7 @@ export default {
   },
   destroyed(){
     if(this.websock){
-      // this.websock.close()
+      this.websock.close()
     }
   }
 };
