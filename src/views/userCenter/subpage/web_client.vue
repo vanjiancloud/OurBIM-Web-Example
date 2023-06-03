@@ -201,7 +201,7 @@
         <!-- (视图) -->
         <viewPhoto ref="viewPhoto" v-show="checkShow('view')" :viewPic="showViewPicture" :setProps="{ taskId }" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
         <!-- 底部工具栏 -->
-        <Tool ref="Tool" v-show="!isFade" v-model="activeToolArr" :data="{ taskId, appId, selectPark }" @onSuccess="toolSuccess"/>
+        <Tool ref="Tool" v-show="!isFade" v-model="activeToolArr" :data="{ taskId, appId, selectPark, isGis }" @onSuccess="toolSuccess"/>
       </div>
     </div>
   </div>
@@ -1353,7 +1353,9 @@ export default {
           this.isFade = false 
           let realData = JSON.parse(e.data);
           if (realData.id === "1") {
-            this.$refs.ComponentInformation.activeMaterialIndex = 0 //切换点击构件默认选中为初始值
+            if(this.$refs.ComponentInformation){
+              this.$refs.ComponentInformation.activeMaterialIndex = 0 //切换点击构件默认选中为初始值
+            }
             this.selectPark = realData
             // 不知道构件为啥返回的格式不一样，有dynamicData的需要新增俩个属性放在最前面
             if(realData.data?.dynamicData?.length){
@@ -1573,9 +1575,11 @@ export default {
                 })
             this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {...realData.rsInfo.length&&realData.rsInfo[0],matList:this.materialData.matList} || {} })
             this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: this.materialData.matList[0] })
-            this.$refs.ComponentInformation.getMaterial(this.materialData.matList[0].matId)
-            // 显示构件信息和打开图标选中
-            this.$refs.ComponentInformation.show()
+            if(this.$refs.ComponentInformation){
+              this.$refs.ComponentInformation.getMaterial(this.materialData.matList[0].matId)
+              // 显示构件信息和打开图标选中
+              this.$refs.ComponentInformation.show()
+            }
             if(this.$refs.Tool){
                 this.$refs.Tool.list.forEach(e=>{
                     if(e.key==='componentInformation'){
@@ -1600,7 +1604,9 @@ export default {
             this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {matList:this.materialData.matList} || {} })
           }else if(realData.id === "33"){
             // 视点动画播放
-            this.$refs.viewPhoto.WebSocketData = realData
+            if(this.$refs.viewPhoto){
+              this.$refs.viewPhoto.WebSocketData = realData
+            }
           }
         }
       };
@@ -1899,7 +1905,7 @@ export default {
   },
   destroyed(){
     if(this.websock){
-      this.websock.close()
+      // this.websock.close()
     }
   }
 };

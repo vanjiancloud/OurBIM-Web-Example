@@ -467,6 +467,10 @@ export default {
                     Switch: 'off'
                 })
             }
+            if (key === 'roaming') {
+                // 关闭导航切回默认状态
+                this.updateEdit({ action: 'switchViewMode', viewMode: this.data.isGis ? 1 : 2, projectionMode: 1 })
+            }
             if (key === 'modelSectioning') {
                 // 关闭模型刨切功能
                 this.updateEdit({ action: 'end' })

@@ -150,18 +150,24 @@
                     <span>颜色</span>
                     <el-color-picker v-model="form.color" show-alpha @change="updateMaterial()"></el-color-picker>
                     <div class="chartlet">
-                        <span>基础颜色贴图</span>
-                        <el-image class="img" :class="{activeChartlet:activeChartlet==='基础'}" :src="getChartletType('BaseColorMap')" lazy @click.native="onChartlet('基础')">
-                            <div slot="error" class="image-slot">
-                                <i class="el-icon-plus plusIcon"></i>
-                            </div>
-                        </el-image>
-                        <span>法线贴图</span>
-                        <el-image class="img" :class="{activeChartlet:activeChartlet==='法线'}" :src="getChartletType('NormalMap')" lazy @click.native="onChartlet('法线')">
-                            <div slot="error" class="image-slot">
-                                <i class="el-icon-plus plusIcon"></i>
-                            </div>
-                        </el-image>
+                        <div class="chartletItem">                            
+                            <span>基础颜色贴图</span>
+                            <el-image class="img" :class="{activeChartlet:activeChartlet==='基础'}" :src="getChartletType('BaseColorMap')" lazy @click.native="onChartlet('基础')">
+                                <div slot="error" class="image-slot">
+                                    <i class="el-icon-plus plusIcon"></i>
+                                </div>
+                            </el-image>
+                            <div v-if="getChartletType('BaseColorMap')" class="deleteChartlet" @click="deleteChartlet('BaseColorMap')"><i class="el-icon-delete"></i></div>
+                        </div>
+                        <div class="chartletItem" style="margin-left: 18px;">                           
+                            <span>法线贴图</span>
+                            <el-image class="img" :class="{activeChartlet:activeChartlet==='法线'}" :src="getChartletType('NormalMap')" lazy @click.native="onChartlet('法线')">
+                                <div slot="error" class="image-slot">
+                                    <i class="el-icon-plus plusIcon"></i>
+                                </div>
+                            </el-image>
+                            <div v-if="getChartletType('NormalMap')" class="deleteChartlet" @click="deleteChartlet('NormalMap')"><i class="el-icon-delete"></i></div>
+                        </div>
                     </div>
                 </div>
                 <div class="componentTitle">贴图位置</div>
@@ -520,6 +526,19 @@ export default {
             this.activeChartlet = type
             this.changeSetting({ key: "openTexture", value: type })
         },
+        // 删除贴图
+        deleteChartlet(key){
+            this.$confirm('您要删除此贴图, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).then(async () => {
+                    this.getChartletType(key)
+                    let index = this.materialAllInfo.matParam.texturesList.findIndex(e=>{return e.paramName===key})
+                    this.materialAllInfo.matParam.texturesList[index].paramValue = ''
+                    this.updateMaterial()
+                }).catch(() => {});
+        },
         // 恢复材质按钮,公共构件appId不用传；pakIdMapweb：是否是公共构件
         resetMaterial(item,i){
             this.$confirm('您将重置此材质, 是否继续?', '提示', {
@@ -843,23 +862,46 @@ export default {
             vertical-align: middle;
         }
         .chartlet{
+            margin-top: 20px;
             display: flex;
             align-items: center;
-            margin-top: 20px;
-            .img{
-                width: 40px;
-                height: 40px;
-                object-fit: cover;
-                cursor: pointer;
-                border-radius: 6px;
-            }
-            /deep/ .image-slot{
+            .chartletItem{
+                position: relative;
                 display: flex;
                 align-items: center;
-                justify-content: center;
-                background-color: #cccccc;
-                height: 100%;
-                width: 100%;
+                &:hover .deleteChartlet{
+                    display: block !important;
+                }
+                .deleteChartlet{
+                    position: absolute;
+                    right: -10px;
+                    top: -10px;
+                    background: rgba(255,255,255,0.3);
+                    border-radius: 100%;
+                    width: 20px;
+                    height: 20px;
+                    text-align: center;
+                    cursor: pointer;
+                    display: none;
+                    &:hover{
+                        background: #c8550e;
+                    }
+                }
+                .img{
+                    width: 40px;
+                    height: 40px;
+                    object-fit: cover;
+                    cursor: pointer;
+                    border-radius: 6px;
+                }
+                /deep/ .image-slot{
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: #cccccc;
+                    height: 100%;
+                    width: 100%;
+                }
             }
             .activeChartlet{
                 border: 2px solid #00c9fd;

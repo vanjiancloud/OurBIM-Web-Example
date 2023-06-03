@@ -90,8 +90,8 @@
         <div class="videos">
             <div class="videosList"  v-for="(item,index) in viewPointLists" :key="index">
                 <div class="frontCover">
-                    <img v-if="item.imagePath" @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="item.imagePath" alt="" :style="{'width':'100%','height':'100%','cursor':'pointer','border-radius':'4px' }">
-                    <img v-else @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="require('@/assets/images/view/picFirst.png')" alt="" :style="{'width':'100%','height':'100%','cursor':'pointer','border-radius':'4px','border':'1px #fff solid' }">
+                    <img v-if="item.imagePath" @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="item.imagePath" alt="">
+                    <img v-else @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="require('@/assets/images/view/picFirst.png')" alt="" :style="{'border':'1px #fff solid' }">
                 </div>
                 <div class="videoDes">
                     <div class="upWordes">
@@ -707,8 +707,11 @@ import { EventBus } from '@/utils/bus.js'
                     MODELAPI.LISTFOLLOWPOINT(params)  
                     .then((res) => {
                         if (res.data.code === 0) {
-                         this.pointList = res.data.data;
-                         this.searchPoint = res.data.data;
+                         this.pointList = res.data.data || [];
+                         this.searchPoint = res.data.data || [];
+                        }else{
+                            this.pointList = []
+                            this.searchPoint = []
                         }
                     })
                     .catch((err) => {});
@@ -1443,25 +1446,31 @@ import { EventBus } from '@/utils/bus.js'
     .videos{
         height: calc(100vh - 125px);
         width: 100%;
-        padding: 7px 0 0 16px;
+        padding: 7px 16px 0 16px;
         overflow: hidden;
         overflow-y:auto;
         .videosList{
             display: flex;
-            width: 372px;
+            width: 100%;
             height: 55px;
             margin-top: 8px;
             .frontCover{
-                width: 84px;
-                height: 55px;
-                margin-right: 16px;
+                width: 80px;
+                height: 51px;
+                margin-right: 12px;
                 border-radius: 4px;
+                img{
+                    width: 80px;
+                    height: 100%;
+                    cursor: pointer;
+                    border-radius:4px
+                }
             }
             .videoDes{
                 display: flex;
                 flex-direction: column;
                 justify-content: space-around;
-                width: 187px;
+                width: 40%;
                 height: 55px;
                 font-size: 14px;
                 color: rgba(255,255,255,0.7000);
@@ -1475,12 +1484,12 @@ import { EventBus } from '@/utils/bus.js'
             .videosEdit{
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
-                width: 44px;
+                justify-content: end;
+                width: 60px;
                 height: 55px;
                 i{
                     cursor:pointer;
-                    margin: 0 5px;
+                    margin: 0 2px;
                 }
             }
         }
