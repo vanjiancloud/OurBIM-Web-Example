@@ -232,7 +232,7 @@
         </el-dialog>
       <!-- 新建空的视点动画的名称（或改变视点间的时间） -->
         <el-dialog
-            title="编辑"
+            title="动画分组"
             :visible.sync="newBlockView"
             :close-on-click-modal="false"
             @close="closeNewView"

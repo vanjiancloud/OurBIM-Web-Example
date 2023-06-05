@@ -89,6 +89,7 @@
         :rules="rulesTag"
         ref="rulesTag"
         @keyup.enter.native="updateTag"
+        @submit.native.prevent
       >
         <el-form-item
           :label="dialogPointData.label"
@@ -99,6 +100,7 @@
             v-model="tagInfo.fileName"
             ref="focusName"
             autofocus="true"
+            @keydown.native.stop
           ></el-input>
         </el-form-item>
       </el-form>

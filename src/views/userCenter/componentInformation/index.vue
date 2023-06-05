@@ -481,7 +481,7 @@ export default {
         // 获取材质信息
         getMaterial(matId){
             getMaterialByMatId({ matId: matId || this.materialAllInfo.matId, isPublic: false }).then(res=>{
-                let materialAllInfo = {...res.data,matParam:JSON.parse(res.data.matParam)}
+                let materialAllInfo = {...this.componentAllInfo.matList[this.activeMaterialIndex],...res.data,matParam:JSON.parse(res.data.matParam)}
                 this.changeSetting({ key: "materialAllInfo", value: materialAllInfo })
                 this.formatColors(materialAllInfo.matParam.colorList)
                 this.getChartletParams()
