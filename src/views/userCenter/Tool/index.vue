@@ -2,71 +2,81 @@
 <template>
     <div class="tool">
         <div class="toolBox">
-            <div class="toolItem" v-for="(item,index) in list" :key="index">
-                <el-tooltip effect="dark" :content="item.name" placement="top">
-                    <img :src="item.check?item.checkUrl:item.url" @click="onTool(item)" />
-                </el-tooltip>
+            <template v-for="(item,index) in list">
+                <div class="toolItem" v-if="hideTag(item.key)" :key="index">
+                    <el-tooltip effect="dark" :content="item.name" placement="top">
+                        <img :src="item.check?item.checkUrl:item.url" @click="onTool(item)" />
+                    </el-tooltip>
 
-                <transition name="el-zoom-in-bottom">
-                    <!-- 显示子菜单 -->
-                    <div class="subTool" v-if="item.key==='show'&&item.check">
-                        <div v-for="item in showSubList" :key="item.key" class="subToolItem" @click="onSubTool(item)">
-                            <el-tooltip effect="dark" :content="item.name" placement="left">
-                                <span>
-                                    <el-image :src="item.url" class="url"></el-image>
-                                    <el-image :src="item.checkUrl" class="checkUrl"></el-image>
-                                </span>
-                            </el-tooltip>
+                    <transition name="el-zoom-in-bottom">
+                        <!-- 显示子菜单 -->
+                        <div class="subTool" v-if="item.key==='show'&&item.check">
+                            <template v-for="item in showSubList">
+                                <div v-if="hideTag(item.key)" :key="item.key" class="subToolItem" @click="onSubTool(item)">
+                                    <el-tooltip effect="dark" :content="item.name" placement="left">
+                                        <span>
+                                            <el-image :src="item.url" class="url"></el-image>
+                                            <el-image :src="item.checkUrl" class="checkUrl"></el-image>
+                                        </span>
+                                    </el-tooltip>
+                                </div>
+                            </template>
                         </div>
-                    </div>
-                    <!-- 模型剖切子菜单 -->
-                    <div class="subTool" v-if="item.key==='modelSectioning'&&item.check">
-                        <div v-for="item in sectioningSubList" :key="item.key" class="subToolItem" @click="onSubTool(item)">
-                            <el-tooltip effect="dark" :content="item.name" placement="left">
-                                <img :src="item.check?item.checkUrl:item.url" />
-                            </el-tooltip>
+                        <!-- 模型剖切子菜单 -->
+                        <div class="subTool" v-if="item.key==='modelSectioning'&&item.check">
+                            <template v-for="item in sectioningSubList">
+                                <div v-if="hideTag(item.key)" :key="item.key" class="subToolItem" @click="onSubTool(item)">
+                                    <el-tooltip effect="dark" :content="item.name" placement="left">
+                                        <img :src="item.check?item.checkUrl:item.url" />
+                                    </el-tooltip>
+                                </div>
+                            </template>
                         </div>
-                    </div>
-                    <!-- 测量子菜单 -->
-                    <div class="subTool" v-if="item.key==='measure'&&item.check">
-                        <div v-for="item in measureSubList" :key="item.key" class="subToolItem" @click="onSubTool(item)">
-                            <el-tooltip effect="dark" :content="item.name" placement="left" v-if="item.key!=='settingMeasure'">
-                                <img :src="item.check?item.checkUrl:item.url" />
-                            </el-tooltip>
-                            <!-- 设置 -->
-                            <el-popover placement="right" width="200" trigger="click" popper-class="measurePopover" v-else>
-                                <el-tooltip slot="reference" effect="dark" :content="item.name" placement="left">
-                                    <img :src="item.check?item.checkUrl:item.url" />
-                                </el-tooltip>
-                                <el-form class="set-form" ref="setForm" :model="setForm" label-position="top">
-                                    <el-form-item label="单位">
-                                        <el-select size="mini" popper-class="popper-bgi" @change="changeGauge('单位')" v-model="setForm.unit">
-                                            <el-option :label="item" :value="item" v-for="item in unitList" :key="item"></el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                    <el-form-item label="精度">
-                                        <el-select size="mini" popper-class="popper-bgi" @change="changeGauge('精度')" v-model="setForm.precision">
-                                            <el-option :label="item" :value="item" v-for="item in accuracyList" :key="item"></el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                </el-form>
-                            </el-popover>
+                        <!-- 测量子菜单 -->
+                        <div class="subTool" v-if="item.key==='measure'&&item.check">
+                            <template v-for="item in measureSubList">
+                                <div v-if="hideTag(item.key)" :key="item.key" class="subToolItem" @click="onSubTool(item)">
+                                    <el-tooltip effect="dark" :content="item.name" placement="left" v-if="item.key!=='settingMeasure'">
+                                        <img :src="item.check?item.checkUrl:item.url" />
+                                    </el-tooltip>
+                                    <!-- 设置 -->
+                                    <el-popover placement="right" width="200" trigger="click" popper-class="measurePopover" v-else>
+                                        <el-tooltip slot="reference" effect="dark" :content="item.name" placement="left">
+                                            <img :src="item.check?item.checkUrl:item.url" />
+                                        </el-tooltip>
+                                        <el-form class="set-form" ref="setForm" :model="setForm" label-position="top">
+                                            <el-form-item label="单位">
+                                                <el-select size="mini" popper-class="popper-bgi" @change="changeGauge('单位')" v-model="setForm.unit">
+                                                    <el-option :label="item" :value="item" v-for="item in unitList" :key="item"></el-option>
+                                                </el-select>
+                                            </el-form-item>
+                                            <el-form-item label="精度">
+                                                <el-select size="mini" popper-class="popper-bgi" @change="changeGauge('精度')" v-model="setForm.precision">
+                                                    <el-option :label="item" :value="item" v-for="item in accuracyList" :key="item"></el-option>
+                                                </el-select>
+                                            </el-form-item>
+                                        </el-form>
+                                    </el-popover>
+                                </div>
+                            </template>
                         </div>
-                    </div>
-                    <!-- 视图子菜单 -->
-                    <div class="subTool" v-if="item.key==='view'&&item.check">
-                        <div v-for="item in viewSubList" :key="item.key" class="subToolItem" @click="onSubTool(item)">
-                            <el-tooltip effect="dark" :content="item.name" placement="left">
-                                <img :src="item.check?item.checkUrl:item.url" />
-                            </el-tooltip>
+                        <!-- 视图子菜单 -->
+                        <div class="subTool" v-if="item.key==='view'&&item.check">
+                            <template v-for="item in viewSubList">
+                                <div v-if="hideTag(item.key)" :key="item.key" class="subToolItem" @click="onSubTool(item)">
+                                    <el-tooltip effect="dark" :content="item.name" placement="left">
+                                        <img :src="item.check?item.checkUrl:item.url" />
+                                    </el-tooltip>
+                                </div>
+                            </template>
                         </div>
-                    </div>
-                    <!-- 分解模型-------滑块 -->
-                    <div class="decompositionSubTool" v-if="item.key==='decompositionModel'&&item.check">
-                        <el-slider v-model="splitValue" :min="0" :max="10" :step="1" @change="changeDecomposition"></el-slider>
-                    </div>
-                </transition>
-            </div>
+                        <!-- 分解模型-------滑块 -->
+                        <div class="decompositionSubTool" v-if="item.key==='decompositionModel'&&item.check">
+                            <el-slider v-model="splitValue" :min="0" :max="10" :step="1" @change="changeDecomposition"></el-slider>
+                        </div>
+                    </transition>
+                </div>
+            </template>
         </div>
     </div>
 </template>
@@ -666,6 +676,10 @@ export default {
                     }
                 })
                 .catch(() => {})
+        },
+        // 通过postMessage显示和隐藏工具栏
+        hideTag(key){
+            return !this.data.singleTags.includes(key)
         }
     }
 }

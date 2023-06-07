@@ -201,7 +201,7 @@
         <!-- (视图) -->
         <viewPhoto ref="viewPhoto" v-show="checkShow('view')" :viewPic="showViewPicture" :setProps="{ taskId }" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
         <!-- 底部工具栏 -->
-        <Tool ref="Tool" v-show="!isFade" v-model="activeToolArr" :data="{ taskId, appId, selectPark, isGis }" @onSuccess="toolSuccess"/>
+        <Tool ref="Tool" v-show="!isFade" v-model="activeToolArr" :data="{ taskId, appId, selectPark, isGis, singleTags: controllerInfo.singleTags }" @onSuccess="toolSuccess"/>
       </div>
     </div>
   </div>
@@ -284,13 +284,12 @@ export default {
           }
         },
       },
-    //   uiBar： ，viewCube：导航里的viewCube，tagUiBar：底部栏显示隐藏，modelClient：，memberAvttribute：，
+    //   uiBar： ，viewCube：导航里的viewCube，tagUiBar：底部栏显示隐藏，
       controllerInfo: {
         uiBar: true,
         viewCube: true,
         tagUiBar: true,
-        modelClient: false,
-        memberAvttribute: false,
+        singleTags: [],//选择性隐藏工具栏数组
       },
       webUrl: null,
       appId: null,
@@ -563,6 +562,7 @@ export default {
           }
         });        
       },
+      // 监听工具栏隐藏和显示
      addMessageEvent() {
       window.addEventListener(
         "message",
@@ -573,19 +573,14 @@ export default {
           if (e.data.prex === "ourbimMessage") {
             // 控制栏显示隐藏
             if (e.data.type === 1001) {
-              this.controllerInfo.uiBar = e.data.data;
+              this.isUiBar = e.data.data;
               this.controllerInfo.viewCube = e.data.data;
             } else if (e.data.type === 1015) {
+              // viewCube的显示/隐藏
               this.controllerInfo.viewCube = e.data.data;
-            } else if (e.data.type === 2001) {
-              // 构件树的显示隐藏
-              this.controllerInfo.modelClient = e.data.data;
-            } else if (e.data.type === 2002) {
-              this.controllerInfo.memberAvttribute = e.data.data;
-            } else if (e.data.type === 2003) {
-            
-            } else if (e.data.type === 2004) {
-              
+            } else if (e.data.type === 1002) {
+              // 选择工具栏的显示/隐藏
+              this.controllerInfo.singleTags = e.data.data || []
             }
           }
         },
@@ -1365,7 +1360,7 @@ export default {
             let messageInfo = {
               prex: "ourbimMessage",
               type: 20001,
-              data: realData.data,
+              data: realData.data ? {...realData.data,pakId:realData.pakId} : { uuid:realData.mN, pakId:realData.pakId, dynamicData:realData.rsInfo },
               message: "",
             };
             this.sentParentIframe(messageInfo);
