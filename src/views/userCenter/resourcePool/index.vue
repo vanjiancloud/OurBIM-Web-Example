@@ -422,7 +422,7 @@ export default {
                 selfList.length &&
                 selfList[0].data.map((e) => {
                     return {
-                        comUrl: e.data?.[0]?.ourbimComponentInfo.comUrl,
+                        comUrl: e.data?.[0]?.ourbimComponentInfo?.comUrl,
                         comName: e.groupName,
                         rsComponent: e.data,
                         ...e,

@@ -1900,7 +1900,7 @@ export default {
   },
   destroyed(){
     if(this.websock){
-      // this.websock.close()
+      this.websock.close()
     }
   }
 };
