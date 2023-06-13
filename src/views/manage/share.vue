@@ -104,12 +104,7 @@ export default {
           if (res.data.code === 0) {
             this.isShow = 2;
             this.formShare.qrurl = res.data.data.qrurl;
-            this.formShare.webShareUrl =
-              res.data.data.webShareUrl +
-              "&weatherBin=" +
-              this.isGis +
-              "&userId=" +
-              Getuserid();
+            this.formShare.webShareUrl = res.data.data.webShareUrl;
             this.$message.success(res.data.message);
           } else {
             this.$message.error(res.data.message);
