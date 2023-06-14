@@ -117,7 +117,7 @@
         </div>
       </div>
       <!-- 预览与编辑菜单栏 -->
-      <div class="proEdit" v-if="activeAnimation !== -1&&viewPic==='2'" :style="{width:isShow?'calc(100vw - 300px)':'100vw',right:isShow?'calc(-100vw + 300px)':'-100vw'}">
+      <div class="proEdit" v-if="activeAnimation !== -1&&viewPic==='2'" :style="{right:isShow?'calc(-100vw + 600px)':'calc(-100vw + 300px)'}">
         <div class="proEditMain">
             <div class="proEditTop" onselectstart="return false;">
                 <div class="component">
@@ -1503,7 +1503,7 @@ import { EventBus } from '@/utils/bus.js'
     position: absolute;
     bottom: 60px;
     height: 193px;
-    width: calc(100vw - 300px);
+    width: calc(100vw - 600px);
     right: calc(-100vw + 300px);
 }
 .proEditMain{

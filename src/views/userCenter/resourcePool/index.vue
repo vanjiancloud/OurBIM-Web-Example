@@ -419,7 +419,7 @@ export default {
             // 获取个人库
             let selfList = (await MODELAPI.GETALLCOM({ userId: this.data.userId })).data.data;
             selfList =
-                selfList.length &&
+                selfList?.length &&
                 selfList[0].data.map((e) => {
                     return {
                         comUrl: e.data?.[0]?.ourbimComponentInfo?.comUrl,
@@ -427,7 +427,7 @@ export default {
                         rsComponent: e.data,
                         ...e,
                     };
-                });
+                }) || [];
             this.contentList = [publicList, selfList];
             this.searchToSaveList = JSON.parse(JSON.stringify(this.contentList))
         },
