@@ -15,7 +15,7 @@
             <el-empty :image="require('@/assets/noData.png')" :image-size="100" v-if="!geometryObjForm.id"></el-empty>
             <template v-else>
                 <!-- 坐标 -->
-                <div class="coordinate geometryItem" v-if="data.pakIdMapweb">          
+                <div class="coordinate geometryItem" v-if="geometryObjForm.id&&geometryObjForm.public">          
                     <div class="comTitle" v-if="geometryObjForm.lightType==='pointLight'"><img src="@/assets/images/component/title4.png"/>{{ geometryObjForm.name }}</div>
                     <div class="comTitle" v-if="geometryObjForm.lightType==='spotLight'"><img src="@/assets/images/component/title3.png"/>{{ geometryObjForm.name }}</div>
                     <div class="comTitle" v-if="geometryObjForm.lightType==='sphereReflectionCapture'"><img src="@/assets/images/component/title1.png"/>{{ geometryObjForm.name }}</div>
@@ -78,17 +78,6 @@
                         <el-input v-model="form.input" placeholder="内容" size="mini" @keydown.native.stop/>mm
                         <i class="el-icon-refresh-right"></i>
                     </div>
-                </div> -->
-                <!-- 光源参数 -->
-                <!-- <div class="light geometryItem">
-                    <div class="comTitle"><img src="@/assets/images/component/title2.png"/>光源参数</div>
-                    <div class="switchBox" style="margin-bottom: 26px;"><span>反射开关</span><el-switch v-model="form.value" active-color="#409EFF" inactive-color="#727272"></el-switch></div>
-                    <div class="CubeMap">
-                        <div>CubeMap</div>
-
-                    </div>
-                    <div class="sliderBox"><span>影响范围</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">200cm</span></div>
-                    <div class="sliderBox"><span>反射强度</span><el-slider v-model="form.value1"></el-slider><span class="sliderNum">0.4</span></div>
                 </div> -->
                 <!-- 文字信息 -->
                 <!-- <div class="word">
@@ -251,6 +240,7 @@ export default {
 
             // 几何信息start-----------------------
             geometryObjForm: {
+                public:false,//是否是自定义构件
                 id:'',//构件的id
                 name: '',//光源名称
                 lightType:'',//光源类型
@@ -283,8 +273,13 @@ export default {
         },
         // 点击选择构件
         'data.selectPark'(val){
-            if(val.id!=='1') return
-            this.geometryObjForm = this.$options.data().geometryObjForm
+            if(!val || ['1','7'].includes(val.id)){
+                this.geometryObjForm = this.$options.data().geometryObjForm
+            }
+            if(!val||val.id!=='1'){
+                return
+            }
+            this.geometryObjForm.public = !!val.rsInfo
             if(val.rsInfo){
                 this.geometryObjForm.id = val.mN
                 // 处理光源信息
@@ -339,6 +334,7 @@ export default {
                         this.geometryObjForm[e.key] = Number(e.value)
                     }
                 })
+                this.$forceUpdate()
             }
         }
     },
@@ -348,7 +344,7 @@ export default {
     created() {
         this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
         this.unwatchToken = this.$store.watch((state) => state.material.materialAllInfo.matParam,(newValue, oldValue) => {
-            if(!newValue.baseParamsList){
+            if(!newValue || !newValue.baseParamsList){
                 this.unwatchToken()
                 return
             }
@@ -388,7 +384,7 @@ export default {
         },
         // 去掉rgba,去掉空格
         formatColor(color){
-            return  color && color.slice(5,color.length-1).replace(/\s*/g, '')
+            return  color && color.slice(5,color.length-1).replace(/\s*/g, '') || ''
         },
         // 颜色数组变rgba
         arrToRgb(arr){
@@ -407,7 +403,7 @@ export default {
                     try {
                         colorList.forEach(e=>{
                             if(e.paramName==='BaseColor' || e.paramName==='Color' || e.paramName==='GlowColor' || e.paramName==='BaseColor1' || e.paramName==='BaseColor2'){
-                                e.paramValue = this.formatColor(this.form.color).split(',')
+                                e.paramValue = this.form.color?this.formatColor(this.form.color).split(','):[]
                                 throw new Error()
                             }
                         })
@@ -524,6 +520,7 @@ export default {
         // 点击贴图
         onChartlet(type){
             this.activeChartlet = type
+            this.$store.dispatch('material/changeSetting',{ key: "materialLevel1Tab", value: 2 })//点击贴图切换到贴图管理
             this.changeSetting({ key: "openTexture", value: type })
         },
         // 删除贴图

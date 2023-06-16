@@ -7,6 +7,7 @@
         {{ $t("project") }}
       </div>
       <div class="right">
+        <!-- <el-button type="primary" @click="createProject()">新建项目</el-button> -->
         <el-button
           :type="timerFlag ? 'primary' : 'info'"
           @click="handleCreateProjectDialog"
@@ -1508,6 +1509,10 @@ export default {
         //     }
         // })
     },
+    // 新建项目
+    createProject(){
+      this.$refs.DragUpload.show('新建项目')
+    }
   },
   mounted() {
     //禁用返回键

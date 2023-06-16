@@ -836,6 +836,7 @@ export default {
     },
     updateComTreeAfterDeleteByUuid(uuid) {
       // 获取自定义构件父级node
+      if(!this.$refs.setTree) return
       const nodeParent = this.$refs.setTree.getNode(uuid).parent;
       this.$refs.setTree.remove(uuid);
       if (nodeParent.childNodes.length === 0) {
@@ -1379,6 +1380,11 @@ export default {
             this.isFade = false
           } 
           else if (realData.id === "7") {
+            // 点击空白地方初始化
+            this.memberInfo = []
+            this.selectPark = null
+            this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {} })
+            this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: {} })
             this.activeLeaf = false;
             let messageInfo = {
               prex: "ourbimMessage",
