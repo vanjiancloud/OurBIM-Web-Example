@@ -755,63 +755,63 @@ export default {
       },
       uiList: [],
       sliceList: [
-        {
-          content: null,
-          img: require("@/assets/images/todo/unchecked/slice/move.png"),
-          activeImg: require("@/assets/images/todo/check/slice/move.png"),
-        },
-        {
-          content: null,
-          img: require("@/assets/images/todo/unchecked/slice/rotate.png"),
-          activeImg: require("@/assets/images/todo/check/slice/rotate.png"),
-        },
-        {
-          content: null,
-          img: require("@/assets/images/todo/unchecked/slice/reverse.png"),
-          activeImg: require("@/assets/images/todo/check/slice/reverse.png"),
-        },
-        {
-          content: null,
-          img: require("@/assets/images/todo/unchecked/slice/appoint.png"),
-          activeImg: require("@/assets/images/todo/check/slice/appoint.png"),
-        },
-        {
-          content: null,
-          img: require("@/assets/images/todo/unchecked/slice/reset.png"),
-          activeImg: require("@/assets/images/todo/check/slice/reset.png"),
-        },
+        // {
+        //   content: null,
+        //   img: require("@/assets/images/todo/unchecked/slice/move.png"),
+        //   activeImg: require("@/assets/images/todo/check/slice/move.png"),
+        // },
+        // {
+        //   content: null,
+        //   img: require("@/assets/images/todo/unchecked/slice/rotate.png"),
+        //   activeImg: require("@/assets/images/todo/check/slice/rotate.png"),
+        // },
+        // {
+        //   content: null,
+        //   img: require("@/assets/images/todo/unchecked/slice/reverse.png"),
+        //   activeImg: require("@/assets/images/todo/check/slice/reverse.png"),
+        // },
+        // {
+        //   content: null,
+        //   img: require("@/assets/images/todo/unchecked/slice/appoint.png"),
+        //   activeImg: require("@/assets/images/todo/check/slice/appoint.png"),
+        // },
+        // {
+        //   content: null,
+        //   img: require("@/assets/images/todo/unchecked/slice/reset.png"),
+        //   activeImg: require("@/assets/images/todo/check/slice/reset.png"),
+        // },
       ],
       comIconList: [
-        {
-          content: "旋转",
-          name: "rotate",
-          img: require("@/assets/images/todo/unchecked/com/rotate.png"),
-          activeImg: require("@/assets/images/todo/check/com/rotate.png"),
-          active: false,
-        },
-        {
-          content: "移动",
-          name: "translate",
-          img: require("@/assets/images/todo/unchecked/com/move.png"),
-          activeImg: require("@/assets/images/todo/check/com/move.png"),
-          active: false,
-        },
-        {
-          content: "缩放",
-          name: "scale",
-          img: require("@/assets/images/todo/unchecked/com/zoom.png"),
-          activeImg: require("@/assets/images/todo/check/com/zoom.png"),
-          active: false,
-        },
+        // {
+        //   content: "旋转",
+        //   name: "rotate",
+        //   img: require("@/assets/images/todo/unchecked/com/rotate.png"),
+        //   activeImg: require("@/assets/images/todo/check/com/rotate.png"),
+        //   active: false,
+        // },
+        // {
+        //   content: "移动",
+        //   name: "translate",
+        //   img: require("@/assets/images/todo/unchecked/com/move.png"),
+        //   activeImg: require("@/assets/images/todo/check/com/move.png"),
+        //   active: false,
+        // },
+        // {
+        //   content: "缩放",
+        //   name: "scale",
+        //   img: require("@/assets/images/todo/unchecked/com/zoom.png"),
+        //   activeImg: require("@/assets/images/todo/check/com/zoom.png"),
+        //   active: false,
+        // },
       ],
       axisList:[
-                {
-                  content: "轴心",
-                  name: "scale",
-                  img: require("@/assets/images/todo/unchecked/com/axis.png"),
-                  activeImg: require("@/assets/images/todo/check/com/axis.png"),
-                  active: false,
-                }
+                // {
+                //   content: "轴心",
+                //   name: "scale",
+                //   img: require("@/assets/images/todo/unchecked/com/axis.png"),
+                //   activeImg: require("@/assets/images/todo/check/com/axis.png"),
+                //   active: false,
+                // }
       ],
       editMaterialBtn:[
         {
@@ -995,7 +995,7 @@ export default {
           state: 0,
           url: require("@/assets/images/todo/unchecked/attribute.png"),
           name: "attribute.png",
-          title: "属性",
+          title: "构件信息",
           id: 1014,
         },
         {
@@ -1340,59 +1340,6 @@ export default {
           this.$message.error(res.data.message);
         });
     },
-     // 移动 旋转 (原有的  构件库的)
-    // comItemClick(item) {
-    //   let isSame = false;
-    //   this.comIconList.forEach((row) => {
-    //     if (item.content === row.content) {
-    //       if (row.active) {
-    //         // 如果图标原本就是亮着，灭掉它
-    //         // 发关闭轴的指令
-    //         isSame = true;
-    //         COMPONENTLIBRARY.closeComEdit(this.taskId).then((res) => {
-    //           this.$resMsg(res.data);
-    //           if (res.data.code === 0) {
-    //             row.active = false;
-    //           }
-    //         });
-    //       }
-    //       row.active = true;
-    //     } else {
-    //       row.active = false;
-    //     }
-    //   });
-    //   if (isSame) {
-    //     return;
-    //   }
-    //   let action = "";
-    //   switch (item.content) {
-    //     case "旋转":
-    //       action = "rotate";
-    //       break;
-    //     case "移动":
-    //       action = "translate";
-    //       break;
-    //     case "缩放":
-    //       action = "scale";
-    //       break;
-    //     default:
-    //       break;
-    //   }
-    //   const params = {
-    //     comId: this.socketData.mN || null,
-    //     taskId: this.taskId,
-    //     action, //translate、rotate、scale
-    //   };
-    //   COMPONENTLIBRARY.operateCom(params)
-    //     .then((res) => {
-    //       if (res.data.code === 0) {
-    //         this.$message.success(res.data.message);
-    //       } else {
-    //         this.$message.error(res.data.message);
-    //       }
-    //     })
-    //     .catch((res) => {});
-    // },
     // 移动 旋转  浏览器的
     browerClick(item) {
       let isSame = false;

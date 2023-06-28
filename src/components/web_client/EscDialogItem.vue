@@ -2,12 +2,18 @@
   <div class="box-wrap" v-show="visible">
     <div>按</div>
     <div class="btn">ESC</div>
-    <div>结束添加构件</div>
+    <div>{{title||'结束添加构件'}}</div>
   </div>
 </template>
 
 <script>
 export default {
+  props:{
+    title:{
+      type:String,
+      default:'结束添加构件'
+    }
+  },
   data() {
     return {
       visible: false,

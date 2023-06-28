@@ -1,3 +1,4 @@
+import newRequest from '@/utils/newRequest'
 import request from '../utils/request'
 import qsStringify from "qs-stringify"
 
@@ -8,46 +9,6 @@ const CHAILIAOAPI = {
     GETPROJECTMATERIALINFO: params => {
         return request({
             url: '/material/getProjectMaterialInfo',
-            method: 'get',
-            params
-        })
-    },
-    // 指令更换材质
-    CHANGEMATERIALBYINSTRUCTION: (params, data) => {
-        return request({
-            url: '/material/changeMaterialByInstruction',
-            method: 'post',
-            params,
-            data,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-    },
-    // 添加材质到用户材质库
-    ADDMATERIALFORUSER: (params, data) => {
-        return request({
-            url: '/material/addMaterialForUser',
-            method: 'post',
-            params,
-            data,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-    },
-    // 获取 个人库 贴图
-    GETMATERIALALLTEXTUREINFO: params => {
-        return request({
-            url: '/material/getAllMaterialTextureInfo',
-            method: 'get',
-            params
-        })
-    },
-    // 材质编辑模式开关
-    MATERIALEDITORCONTROL: params => {
-        return request({
-            url: '/material/materialEditorControl',
             method: 'get',
             params
         })
@@ -66,26 +27,6 @@ const CHAILIAOAPI = {
             url: '/material/getOurBIMMaterialGroup',
             method: 'get',
             params
-        })
-    },
-    // 获取OurBIM材质库某分组下的材质
-    GETOURBIMMATERIALBYGROUP: params => {
-        return request({
-            url: '/material/getOurBIMMaterialByGroup',
-            method: 'get',
-            params
-        })
-    },
-    // 修改材质参数
-    UPDATEMATERIAL: (params, data) => {
-        return request({
-            url: '/material/updateMaterial',
-            method: 'post',
-            params,
-            data,
-            headers: {
-                'Content-Type': 'application/json'
-            }
         })
     },
     // 修改材质贴图
@@ -115,18 +56,6 @@ const CHAILIAOAPI = {
             url: '/appli/getPakIdByAppId',
             method: 'get',
             params
-        })
-    },
-    // 重置材质
-    RESETMATERIAL: (params, data) => {
-        return request({
-            url: '/material/resetMaterial',
-            method: 'post',
-            params,
-            data,
-            headers: {
-                'Content-Type': 'application/json'
-            }
         })
     },
     // 设置天气颜色
@@ -193,14 +122,140 @@ const CHAILIAOAPI = {
             params,
         })
     },
-    // 删除贴图分组或贴图
-    deleteMaterialTexture: params => {
-        return request({
-            url: '/material/deleteMaterialTextureInfo',
-            method: 'post',
-            params,
-        })
-    },
 }
+
+
+// 创建贴图分组
+export function addChartletGroup(data) {
+    return newRequest({
+        url: "/material/createMaterialTextureGroup",
+        method: "post",
+        data,
+        headers: {
+            "Content-Type": "multipart/form-data;"
+        },
+    });
+}
+
+// 获取 个人库 贴图
+export function getChartletList(params) {
+    return newRequest({
+        url: "/material/getAllMaterialTextureInfo",
+        method: "get",
+        params
+    });
+}
+
+// 上传贴图
+export function addChartlet(data) {
+    return newRequest({
+        url: "/material/uploadMaterialTextures",
+        method: "post",
+        data,
+        headers: {
+            "Content-Type": "multipart/form-data;"
+        },
+    });
+}
+// 获取OurBIM材质库某分组下的材质
+export function getMaterialByGroup(params) {
+    return newRequest({
+        url: '/material/getOurBIMMaterialByGroup',
+        method: 'get',
+        params
+    })
+}
+// 材质编辑模式开关
+export function materialEditorControl(params) {
+    return newRequest({
+        url: '/material/materialEditorControl',
+        method: 'get',
+        params
+    })
+}
+// 获取材质的信息（替换过的材质才有信息）
+export function getMaterialByMatId(params) {
+    return newRequest({
+        url: '/material/getMaterialByMatId',
+        method: 'get',
+        params
+    })
+}
+// 重置材质
+export function resetMaterial(params,data) {
+    return newRequest({
+        url: '/material/resetMaterial',
+        method: 'post',
+        params,
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+// 修改材质参数
+export function updateMaterial(params,data) {
+    return newRequest({
+        url: '/material/updateMaterial',
+        method: 'post',
+        params,
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+// 添加材质到用户材质库
+export function addMaterialForUser(params,data) {
+    return newRequest({
+        url: '/material/addMaterialForUser',
+        method: 'post',
+        params,
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+// 指令更换材质
+export function changeMaterialByInstruction(params,data) {
+    return newRequest({
+        url: '/material/changeMaterialByInstruction',
+        method: 'post',
+        params,
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+// 删除贴图分组或贴图
+export function deleteMaterialTexture(params) {
+    return newRequest({
+        url: '/material/deleteMaterialTextureInfo',
+        method: 'post',
+        params,
+    })
+}
+// 编辑贴图分组
+export function updateMaterialTextureGroup(params) {
+    return newRequest({
+        url: '/material/updateMaterialTextureGroup',
+        method: 'post',
+        params,
+    })
+}
+// 编辑贴图
+export function updateMaterialTexture(data) {
+    return newRequest({
+        url: '/material/updateMaterialTexture',
+        method: 'post',
+        data,
+        headers: {
+            'Content-Type': 'multipart/form-data;'
+        }
+    })
+}
+
 
 export default CHAILIAOAPI

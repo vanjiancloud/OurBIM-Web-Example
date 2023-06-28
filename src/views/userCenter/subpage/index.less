@@ -1,0 +1,148 @@
+/* 设置滚动条的样式 */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+/* 滚动条滑块 */
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #505561;
+}
+
+.drawerBox {
+
+    // 输入框
+    .search {
+        margin: 0 16px 16px 16px;
+        display: flex;
+
+        .el-input__inner {
+            background: #28292E;
+            border-radius: 14px;
+            border: 0;
+            padding: 0 0 0 35px;
+        }
+
+        .el-input__prefix {
+            font-size: 20px;
+            left: 8px;
+        }
+
+        .button {
+            margin-left: 16px;
+            padding: 6px 6px;
+        }
+        .searchInput{
+            flex: 1;
+        }
+    }
+
+    .comTitle {
+        font-size: 16px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: 500;
+        color: #00AAF0;
+        margin: 15px 0;
+
+        img {
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+    }
+    .el-input__inner {
+        background: #24262b;
+        color: #ffffff;
+        border: 1px solid #727272;
+    }
+
+    .el-input-number--mini {
+        width: 60px;
+        margin: 0 3px 0 6px;
+
+        .el-input__inner {
+            padding-right: 14px;
+            padding-left: 5px;
+        }
+
+        .el-input-number__decrease,
+        .el-input-number__increase {
+            width: 12px;
+            background: none;
+            border: none;
+            color: #ffffff;
+            right: 4px;
+        }
+    }
+    .el-textarea__inner {
+        background: #24262b;
+        border: 1px solid #727272;
+        color: #ffffff;
+    }
+    .el-checkbox {
+        color: #ffffff;
+    }
+    .el-checkbox__input.is-checked + .el-checkbox__label {
+        color: #20c6ff;
+    }
+    .el-checkbox__input.is-checked .el-checkbox__inner,
+    .el-checkbox__input.is-indeterminate .el-checkbox__inner {
+        background-color: #20c6ff;
+        border-color: #20c6ff;
+    }
+    .el-checkbox__input.is-disabled+span.el-checkbox__label{
+        color: #C0C4CC!important;
+    }
+    .el-checkbox__input.is-disabled.is-checked .el-checkbox__inner{
+        background-color: #F2F6FC;
+        border-color: #DCDFE6;
+    }
+    .el-tree{
+        background: none;
+    }
+    .el-tree--highlight-current .el-tree-node.is-current>.el-tree-node__content{
+        background: none;
+    }
+    .el-tree-node__content:hover,.el-tree-node__content:focus{
+        background: #28292E;
+    }
+    .el-tree-node{
+        background: none;
+    }
+    .el-tree-node:focus,.is-current:focus{
+        background: none;
+    }
+}
+.el-popper{
+    background: rgba(13,22,40,1);
+    border: 1px solid rgba(13,22,40,0.7);
+    .el-select-dropdown__item{
+        color: #ffffff;
+    }
+    .el-select-dropdown__item.hover, .el-select-dropdown__item:hover{
+        background: rgb(66 74 90 / 70%);
+    }
+    .el-select-dropdown__item.selected{
+        color: #409EFF;
+    }
+}
+.el-popper[x-placement^=right] .popper__arrow::after{
+    border-right-color: rgba(13,22,40,0.7);
+}
+.el-popper[x-placement^=right] .popper__arrow{
+    border-right-color: rgba(13,22,40,0.7);
+}
+.el-popper[x-placement^=top] .popper__arrow,.el-popper[x-placement^=top] .popper__arrow::after{
+    border-top-color: rgb(66 74 90 / 70%);
+}
+.el-popper[x-placement^=bottom] .popper__arrow,.el-popper[x-placement^=bottom] .popper__arrow::after{
+    border-bottom-color: rgb(66 74 90 / 70%);
+}
+.measurePopover {
+    height: 160px;
+    top: 688px !important;
+    left:622px !important;
+    .popper__arrow{
+        top: 158px !important;
+    }
+}

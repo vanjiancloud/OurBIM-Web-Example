@@ -7,6 +7,7 @@
         {{ $t("project") }}
       </div>
       <div class="right">
+        <!-- <el-button type="primary" @click="createProject()">新建项目</el-button> -->
         <el-button
           :type="timerFlag ? 'primary' : 'info'"
           @click="handleCreateProjectDialog"
@@ -181,7 +182,7 @@
                 >
                 <el-dropdown-item
                   command="downloadModel"
-                  v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false') &&scope.row.fileSize!='0'"
+                  v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false') && scope.row.fileSize!='0'"
                   >下载</el-dropdown-item
                 >
                 <!-- <el-dropdown-item command="reconversion" v-if="scope.row.appType === '0'&&scope.row.applidStatus === '2'&&scope.row.fileSize!='0'">重新转换</el-dropdown-item> -->
@@ -544,6 +545,7 @@ import {
 import MODELAPI from "@/api/model_api";
 import { Getuserid } from "@/store/index.js";
 import newRequest from "@/utils/newRequest.js";
+import { urlToblob } from "@/utils/file.js";
 import qs from "qs";
 import Pagination from "@/components/Pagination"
 import Share from "./share.vue"
@@ -1507,6 +1509,10 @@ export default {
         //     }
         // })
     },
+    // 新建项目
+    createProject(){
+      this.$refs.DragUpload.show('新建项目')
+    }
   },
   mounted() {
     //禁用返回键

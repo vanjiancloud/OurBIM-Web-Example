@@ -5,7 +5,7 @@
             <el-form-item label="分组名称:" prop="groupName">
                 <el-input v-model="form.groupName" @keydown.native.stop></el-input>
             </el-form-item>
-            <el-form-item label="缩略图:" prop="fileUpload">
+            <el-form-item label="缩略图:">
                 <SingleUpload v-model="form.fileUpload" :autoUpload="false"></SingleUpload>
             </el-form-item>
         </el-form>
@@ -17,10 +17,8 @@
 </template>
 
 <script>
-import { throttle } from 'lodash'
-import CHAILIAOAPI from "@/api/material_api";
 import SingleUpload from "@/components/Upload/singleUpload.vue"
-// import { addChartletGroup } from "@/api/material_api";
+import { addChartletGroup, updateMaterialTextureGroup } from "@/api/material_api";
 export default {
     components: { SingleUpload },
     props: {},
@@ -40,7 +38,7 @@ export default {
     created() {},
     mounted() {},
     methods: {
-        show(title, row = {}) {
+        show(title, row) {
             this.title = title
             this.form = this.$options.data().form
             this.dialogVisible = true;
@@ -55,11 +53,19 @@ export default {
         hide() {
             this.dialogVisible = false;
         },
-        submit:throttle(function() {
+        submit() {
             this.$refs.form.validate((valid) => {
                 if (!valid) return false;
                 if(this.form.groupId){
-
+                    let data = {
+                        userId: this.$route.query.userId,
+                        groupId:this.form.groupId,
+                        groupName:this.form.groupName
+                    };
+                    updateMaterialTextureGroup(data).then(() => {
+                        this.hide();
+                        this.$parent.getChartletList();
+                    });
                 }else{
                     let data = {
                         userId: this.$route.query.userId,
@@ -69,15 +75,13 @@ export default {
                     for (const key in data) {
                         formData.append([key], data[key]);
                     }
-                    CHAILIAOAPI.CREATEMATERIALTEXTUREGROUP(formData).then((res) => {
-                        if(res.data.code === 0){
-                            this.hide();
-                            this.$emit('success')
-                        }
+                    addChartletGroup(formData).then(() => {
+                        this.hide();
+                        this.$parent.getChartletList();
                     });
                 }
             })
-        },1000),
+        },
     },
 };
 </script>

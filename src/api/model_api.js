@@ -72,14 +72,6 @@ const MODELAPI = {
             params
         })
     },
-    // 浏览器上面的 旋转 移动 缩放 按钮
-    BROWSERBUTTON: params => {
-        return request({
-            url: '/OurBim/setGizmoMode',
-            method: 'post',
-            params
-        })
-    },
     // 获取关注视角
     LISTFOLLOWPOINT: params => {
         return request({
@@ -323,44 +315,6 @@ const MODELAPI = {
             params
         })
     },
-    // 改变选中构件状态
-    UPDATEMEMBER: params => {
-        return request({
-            url: '/OurBim/conChoiceVisible',
-            method: 'get',
-            params
-        })
-    },
-    // params:{
-    //   taskId:''
-    // }
-    // 显示全部构件
-    displayAllActor: params => {
-        return request({
-            url: '/OurBim/displayAllActor',
-            method: 'post',
-            data: qsStringify(params)
-        })
-    },
-    // params:{
-    //   taskId:''
-    // }
-    // 隔离构件
-    invertHidden: params => {
-        return request({
-            url: '/OurBim/invertHidden',
-            method: 'post',
-            data: qsStringify(params)
-        })
-    },
-    // 打开或者关闭(轴心)
-    SETGIZMOAXIS: params => {
-        return request({
-            url: '/OurBim/setGizmoModeType',
-            method: 'post',
-            params
-        })
-    },
 }
 // 设置太阳光、天空光照属性
 export function setWeatherSun(params,data) {
@@ -378,6 +332,47 @@ export function setWeatherLight(params) {
       method: "post",
       params
     });
+}
+
+// 改变选中构件状态
+export function conChoiceVisible(params) {
+    return newRequest({
+        url: '/OurBim/conChoiceVisible',
+        method: 'get',
+        params
+    })
+}
+// 隔离构件
+export function invertHidden(params) {
+    return newRequest({
+        url: '/OurBim/invertHidden',
+        method: 'post',
+        params
+    })
+}
+// 显示全部构件
+export function displayAllActor(params) {
+    return newRequest({
+        url: '/OurBim/displayAllActor',
+        method: 'post',
+        params
+    })
+}
+// 浏览器上面的 旋转 移动 缩放 按钮
+export function setGizmoMode(params) {
+    return newRequest({
+        url: '/OurBim/setGizmoMode',
+        method: 'post',
+        params
+    })
+}
+// 打开或者关闭(轴心)
+export function setGizmoModeType(params) {
+    return newRequest({
+        url: '/OurBim/setGizmoModeType',
+        method: 'post',
+        params
+    })
 }
 
 export default MODELAPI

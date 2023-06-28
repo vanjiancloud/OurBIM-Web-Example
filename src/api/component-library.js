@@ -5,31 +5,11 @@
  * @LastEditTime: 2021-08-17 16:15:29
  * @description: 构件库
  */
+import newRequest from '@/utils/newRequest'
 import request from '../utils/request'
 import qsStringify from "qs-stringify"
 
 const COMPONENTLIBRARY = {
-
-    // 开启/关闭构件库操作
-    // /comControl/comAction
-    comSwitch: (params) => {
-        return request({
-            url: '/comControl/comAction',
-            method: 'POST',
-            data: qsStringify(params)
-        })
-    },
-    // 添加构件
-    addCom: params => {
-        return request({
-            url: '/comControl/addCom',
-            method: 'POST',
-            params,
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-    },
 
     // 获取构件列表
     getPublicComList: params => {
@@ -90,14 +70,58 @@ const COMPONENTLIBRARY = {
             params
         })
     },
-    // 关闭构件库轴
-    closeComEdit: id => {
-        return request({
-            url: '/comControl/comEditorAction',
-            method: 'POST',
-            data: qsStringify({ taskId: id })
-        })
-    },
 }
+
+
+// 添加构件
+export function addCom(params) {
+    return newRequest({
+        url: "/comControl/addCom",
+        method: "post",
+        params,
+        headers: {
+            "Content-Type": "application/json"
+        },
+    });
+}
+
+// 开启/关闭构件库操作
+export function comSwitch(params) {
+    return newRequest({
+        url: '/comControl/comAction',
+        method: 'POST',
+        params
+    })
+}
+// 关闭构件库轴
+export function closeComEdit(params) {
+    return newRequest({
+        url: '/comControl/comEditorAction',
+        method: 'POST',
+        params
+    })
+}
+
+// 修改光源信息
+export function modifyComParams(params,data) {
+    return newRequest({
+        url: '/comControl/modifyComParams',
+        method: 'POST',
+        params,
+        data
+    })
+}
+
+// 修改自定义构件坐标
+export function updateComsCoordinate(params,data) {
+    return newRequest({
+        url: '/comControl/updateComs',
+        method: 'POST',
+        params,
+        data
+    })
+}
+
+
 
 export default COMPONENTLIBRARY

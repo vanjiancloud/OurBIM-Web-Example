@@ -55,7 +55,7 @@ export default {
   }
   .el-progress-bar__outer {
       // height: 6px!important;
-      background-color: rgba(0, 0, 0, 0.6);
+      background-color: rgba(0, 0, 0, 0.6)!important;
     }
     .el-progress-bar__inner {
       line-height: 0;

@@ -1,11 +1,13 @@
 <template>
     <div>
+        <Drawer ref="Drawer" :title="title" @onClose="close">
+            <template v-slot="{ isShow }">
         <!-- 视图列表 -->
       <div class="view_photo" v-if="viewPic==='1'">
-        <div class="romaHead">
+        <!-- <div class="romaHead">
             <span class="title">视图列表</span>
             <span class="el-icon-close closeIcon" @click="viewClose"></span>
-        </div>
+        </div> -->
         <div class="search">
             <el-input
               @blur="inputBlur"
@@ -55,7 +57,7 @@
         </div>
         <!-- 图片预览弹框 -->
         <el-dialog class="picProview" :title="namePicDif==='1' ? '图片预览' : '全景图预览'" :visible="proviewPic" @close="proviewPic=false" :append-to-body="true" width="70%">
-            <img :src="this.proLookPic" alt="" :style="{'width':'100%','height':'100%'}">
+            <img :src="proLookPic" alt="" :style="{'width':'100%','height':'100%'}">
         </el-dialog>
         <!-- 视图导出弹窗 -->
        <viewDialog :item="dialogFlag" @closeDia="closeDia2" @noBorder="noBorder" 
@@ -64,38 +66,19 @@
         >
         </viewDialog>
       </div>
-       <!-- 编辑视点的名称 -->
-        <el-dialog
-            title="编辑"
-            :visible="dialogVisible"
-            @close="dialogVisibleClose"
-            width="25%"
-            :append-to-body="true"
-            :close-on-click-modal="false"
-            >
-            <el-form :model="editForm" :rules="rules" ref="editForm">
-                <el-form-item label="名称:" label-width="80px" prop="inputName">
-                    <el-input v-model="editForm.inputName" placeholder="请输入内容" @keydown.native.stop></el-input>
-                </el-form-item>
-            </el-form>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisibleClose">取 消</el-button>
-                <el-button type="primary" @click="submitDialog">确 定</el-button>
-            </span>
-        </el-dialog>
+       
       <!-- 视点动画列表 -->
        <div class="view_photo view_animation" v-if="viewPic==='2'">
-        <div class="romaHead romaHead2">
+        <!-- <div class="romaHead romaHead2">
             <span class="title">视点动画列表</span>
             <span class="el-icon-close closeIcon" @click="viewClose2"></span>
-        </div>
+        </div> -->
         <div class="search">
             <el-input
               class="searchInput"
               type="text"
               v-model="inputTwo" 
               placeholder="请输入视点动画名称"
-              @blur="animBlur"
               @keyup.enter.native="searchAnim"  
             >
                 <div slot="prefix"><i class="el-icon-search" @click="searchAnim"></i></div>
@@ -107,8 +90,8 @@
         <div class="videos">
             <div class="videosList"  v-for="(item,index) in viewPointLists" :key="index">
                 <div class="frontCover">
-                    <img v-if="item.imagePath" @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="item.imagePath" alt="" :style="{'width':'100%','height':'100%','cursor':'pointer','border-radius':'4px' }">
-                    <img v-else @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="require('@/assets/images/view/picFirst.png')" alt="" :style="{'width':'100%','height':'100%','cursor':'pointer','border-radius':'4px','border':'1px #fff solid' }">
+                    <img v-if="item.imagePath" @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="item.imagePath" alt="">
+                    <img v-else @click="picAnimation(item,index)" :class="{'animationBorder':activeAnimation === index}" :src="require('@/assets/images/view/picFirst.png')" alt="" :style="{'border':'1px #fff solid' }">
                 </div>
                 <div class="videoDes">
                     <div class="upWordes">
@@ -134,7 +117,7 @@
         </div>
       </div>
       <!-- 预览与编辑菜单栏 -->
-      <div class="proEdit" v-if="activeAnimation !== -1">
+      <div class="proEdit" v-if="activeAnimation !== -1&&viewPic==='2'" :style="{right:isShow?'calc(-100vw + 600px)':'calc(-100vw + 300px)'}">
         <div class="proEditMain">
             <div class="proEditTop" onselectstart="return false;">
                 <div class="component">
@@ -193,7 +176,7 @@
                     <el-progress :percentage="90"  :color="customColor"></el-progress>
                 </div>
                 <!-- 播放条 -->
-                <div class="startPost" v-if="animaViewPointer.length>=2" :class="this.playFlags==='2' ? 'noAllowed' : ''" style="left: 6px;">
+                <div class="startPost" v-if="animaViewPointer.length>=2" :class="playFlags==='2' ? 'noAllowed' : ''" style="left: 6px;">
                         <div class="outCircle">
                         </div>
                         <div class="bigCircle" @mousedown="pushMouse" @mouseup="releaseMouse">
@@ -226,9 +209,30 @@
             </div>
         </div>
       </div>
+    </template>
+    </Drawer>
+      <!-- 编辑视点的名称 -->
+      <el-dialog
+            title="编辑"
+            :visible="dialogVisible"
+            @close="dialogVisibleClose"
+            width="25%"
+            :append-to-body="true"
+            :close-on-click-modal="false"
+            >
+            <el-form :model="editForm" :rules="rules" ref="editForm">
+                <el-form-item label="名称:" label-width="80px" prop="inputName">
+                    <el-input v-model="editForm.inputName" placeholder="请输入内容" @keydown.native.stop></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisibleClose">取 消</el-button>
+                <el-button type="primary" @click="submitDialog">确 定</el-button>
+            </span>
+        </el-dialog>
       <!-- 新建空的视点动画的名称（或改变视点间的时间） -->
         <el-dialog
-            title="编辑"
+            title="动画分组"
             :visible.sync="newBlockView"
             :close-on-click-modal="false"
             @close="closeNewView"
@@ -254,15 +258,16 @@
 </template>
 
 <script>
+import Drawer from "@/components/Drawer/index.vue";
+import { EventBus } from '@/utils/bus.js'
   import draggable from 'vuedraggable'
   import MODELAPI from "@/api/model_api";
   import viewDialog from "@/components/web_client/view_dialog";
-  import { kMaxLength } from "buffer";
-import { log } from 'console';
   export default {
         components: {
          viewDialog,
          draggable,
+         Drawer
         },
         props:{
             viewPic:{ // 控制视图列表和视点动画框的显示
@@ -280,6 +285,7 @@ import { log } from 'console';
         },
         data() {
             return {
+                title:'视图列表',
                 WebSocketData: {},//websocket返回的数据
               proviewPic:false, // 图片预览弹框
               namePicDif:'', // 区分图片预览的名称
@@ -461,7 +467,6 @@ import { log } from 'console';
                 handler() {
                     if (this.setProps.taskId) {
                         this.getProps = this.setProps;
-                        this.ListPoint();
                     }
                 },
                 deep: true,
@@ -503,7 +508,6 @@ import { log } from 'console';
         created(){
             if (this.setProps.taskId) {
                 this.getProps = this.setProps;
-                this.ListPoint();
             }
             // document.addEventListener("click", function(e) {
             //     console.log('666 在');
@@ -525,6 +529,18 @@ import { log } from 'console';
             
         },
         methods:{
+            show(title) {
+                this.title = title
+                this.$refs.Drawer.show()
+                this.ListPoint();
+            },
+            hide(){
+                this.$refs.Drawer.hide()
+            },
+            close(){
+                this.$refs.Drawer.hide()
+                EventBus.$emit('eventTool', 'view')
+            },
              //开始拖拽事件
             onStart(e){
                 this.drag=true;
@@ -573,20 +589,22 @@ import { log } from 'console';
                 this.num = 0;
             },
             // 关闭视点列表 和 视点动画列表 时
-            viewClose(){
-                this.$emit('closeClick','0');
-                this.active = -1;
-                this.num= 0;
-                this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
-                this.dialogFlag = false; 
-                this.delFlag = false; 
-            },
+            // viewClose(){
+            //     this.$emit('closeClick','0');
+            //     this.active = -1;
+            //     this.num= 0;
+            //     // this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
+            //     this.dialogFlag = false; 
+            //     this.delFlag = false;
+            //     EventBus.$emit('eventTool', 'view')
+            // },
             viewClose2(){
                 this.$emit('closeClick','0');
                 this.activeAnimation= -1;
                 this.num2= 0;
-                this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
+                // this.$EventBus.$emit('okok',false); // 传递给 todo-footer关闭 视图图标
                 this.logoClick('stop'); // 停止视图动画
+                EventBus.$emit('eventTool', 'view')
             },
             runListPoint(){
                 this.ListPoint();
@@ -689,8 +707,11 @@ import { log } from 'console';
                     MODELAPI.LISTFOLLOWPOINT(params)  
                     .then((res) => {
                         if (res.data.code === 0) {
-                         this.pointList = res.data.data;
-                         this.searchPoint = res.data.data;
+                         this.pointList = res.data.data || [];
+                         this.searchPoint = res.data.data || [];
+                        }else{
+                            this.pointList = []
+                            this.searchPoint = []
                         }
                     })
                     .catch((err) => {});
@@ -796,22 +817,24 @@ import { log } from 'console';
             // 视点动画列表搜索
             searchAnim(){
                 if(this.inputTwo.trim() !== ''){
-                    let newArrSear = this.viewPointLists.filter((item)=>{
+                    let newArrSear = this.animNewarr.filter((item)=>{
                         if(item.name.indexOf(this.inputTwo.trim())>-1){
                             return item;
                         }
                     })
                     this.viewPointLists = newArrSear;
+                }else{
+                  this.viewPointLists = this.animNewarr;
                 }
             },
             // 视点动画列表搜索框失去焦点
-            animBlur(){
-                if(this.inputTwo === ''){
-                   this.viewPointLists = this.animNewarr;
-                }
-                this.activeAnimation = -1;
-                this.num2 = 0;
-            },
+            // animBlur(){
+            //     if(this.inputTwo === ''){
+            //        this.viewPointLists = this.animNewarr;
+            //     }
+            //     this.activeAnimation = -1;
+            //     this.num2 = 0;
+            // },
             // 点击 创建视点动画
             plusProEdit(){
                 // this.proEditFlag = true;
@@ -1284,40 +1307,10 @@ import { log } from 'console';
     box-sizing: border-box;
 }      
 .view_photo {
-  position: absolute;
-  z-index: 9;
-  height: 580px;
-  top: 0;
-  width: 420px;
   color: white;
-  margin: 2vh 0 0 20px;
-  border-radius: 10px;
-  background-color: rgba(17,17,17,0.88);
-  .romaHead{
-    width: 420px;
-    height: 50px;
-    font-size: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #25282e;
-    .title{
-      margin-left: 18px;
-    }
-    .closeIcon{
-      font-size: 16px;
-      margin-right: 16px;
-      cursor: pointer;
-    }
-  }
   .search{
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    width: 100%;
-    height: 46px;
-    padding: 0 24px 0 16px;
-    border-bottom: 1px solid #25282e;
+    padding-top: 20px;
     ::v-deep .searchInput .el-input__inner{
         width: 200px;
         height: 28px;
@@ -1348,6 +1341,7 @@ import { log } from 'console';
             width: 24px;
             height: 24px;
             cursor: pointer;
+            margin: 0 2px;
         }
     }
   }
@@ -1357,26 +1351,26 @@ import { log } from 'console';
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
-    height: 484px;
+    height: calc(100vh - 125px);
     width: 100%;
-    padding-left: 16px;
+    padding-left: 25px;
     overflow: hidden;
     overflow-y:auto;
     .picBox{
          width: 120px;
-         height: 138px;
+        //  height: 138px;
          margin: 16px 10px 0 0;
         .boxPhoto{
             position: relative;
             width: 120px;
-            height: 96px;
+            // height: 96px;
             border-radius: 4px;
             // &:hover .bottom,&:hover .err{
             //     display: block;
             // }
             img{
                 width: 118px;
-                height: 94px;
+                height: 67.5px;
                 border-radius: 4px;
             }
             .bottom{
@@ -1444,57 +1438,39 @@ import { log } from 'console';
     color: #a4a5a6;
     pointer-events: none;
   }
-   ::-webkit-scrollbar {
-    /* 对应纵向滚动条的宽度 */
-    width: 10px;
-    /* 对应横向滚动条的宽度 */
-    height: 10px;
-    }
-
-    /* 滚动条上的滚动滑块 */
-    ::-webkit-scrollbar-thumb {
-        background-color: #515560;
-        border-radius: 5px;
-    }
-
-    /* 滚动条轨道 */
-    ::-webkit-scrollbar-track {
-        background-color: #16191f;
-        border: 1px solid #41444D;
-        border-radius:2px;
-    }
 .view_animation{
-    height: 500px;
-    width: 400px;
-    .romaHead2{
-        width: 400px;
-    }
+    width: 100%;
     .threeLogo{
         justify-content: right !important;
     }
     .videos{
-        height: 405px;
+        height: calc(100vh - 125px);
         width: 100%;
-        // padding-left: 16px;
-        padding: 7px 0 0 16px;
+        padding: 7px 16px 0 16px;
         overflow: hidden;
         overflow-y:auto;
         .videosList{
             display: flex;
-            width: 372px;
+            width: 100%;
             height: 55px;
             margin-top: 8px;
             .frontCover{
-                width: 84px;
-                height: 55px;
-                margin-right: 16px;
+                width: 80px;
+                height: 51px;
+                margin-right: 12px;
                 border-radius: 4px;
+                img{
+                    width: 80px;
+                    height: 100%;
+                    cursor: pointer;
+                    border-radius:4px
+                }
             }
             .videoDes{
                 display: flex;
                 flex-direction: column;
                 justify-content: space-around;
-                width: 187px;
+                width: 40%;
                 height: 55px;
                 font-size: 14px;
                 color: rgba(255,255,255,0.7000);
@@ -1508,12 +1484,12 @@ import { log } from 'console';
             .videosEdit{
                 display: flex;
                 align-items: center;
-                justify-content: space-between;
-                width: 44px;
+                justify-content: end;
+                width: 60px;
                 height: 55px;
                 i{
                     cursor:pointer;
-                    margin: 0 5px;
+                    margin: 0 2px;
                 }
             }
         }
@@ -1525,16 +1501,14 @@ import { log } from 'console';
 // 编辑预览框
 .proEdit{
     position: absolute;
-    bottom: 80px;
-    left: 0;
-    width: 100%;
+    bottom: 60px;
     height: 193px;
+    width: calc(100vw - 600px);
+    right: calc(-100vw + 300px);
 }
 .proEditMain{
-    min-width: 1200px;
-    width: 70%;
+    width: 100%;
     height: 100%;
-    margin: 0 auto;
     background-color:rgba(16,16,16,0.9);
     border-radius: 6px;
     .proEditTop{
@@ -1693,7 +1667,7 @@ import { log } from 'console';
     .proEditDown{
         position: relative;
         display: flex;
-        width: 100%;
+        width: auto;
         height: 143px;
         padding: 0 0 0 12px;
         transform: scaleY(-1); // 利用翻转 将滚动条放到上方

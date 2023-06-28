@@ -1,9 +1,6 @@
 <template>
+<Drawer ref="Drawer" title="漫游导航" @onClose="close">
     <div class="roam_navigate">
-        <div class="romaHead">
-            <span class="title">漫游导航</span>
-            <span @click="closeRoam(0)" class="el-icon-close closeIcon"></span>
-        </div>
         <div class="middle">
             <el-radio-group v-model="radio" class="singleSelect" @change="changeRadio">
                 <el-radio :label="2" class="needBlock" v-if="!isGis"><span class="viewModel">{{personView[0].name}}</span></el-radio>
@@ -13,7 +10,7 @@
                         <el-checkbox @change="weight" v-model="checkWeight" :disabled="radio===1 ? false : true" class="firstSelect">{{checkListArr[0].name}}</el-checkbox>
                         <el-checkbox @change="broke" v-model="checkBroken" :disabled="radio===1 ? false : true">{{checkListArr[1].name}}</el-checkbox>
                     </div>
-                    <div class="turnHeight">
+                    <div class="turnHeight" style="padding-top: 15px;">
                         <span>{{words[0]}}</span>
                         <el-input @blur="adjustHeight" v-model="oneHeight" size="small" class="oneHeight" type="number" :disabled="radio!==1 || this.checkWeight === false ? true : false"></el-input>
                         <span>m</span>
@@ -59,37 +56,24 @@
         <div class="bottom">
             <el-checkbox-group v-model="checkListBottom" @change="changeBottom">
                 <el-checkbox :label="checkBottomWords[0].name"></el-checkbox>
-                <el-checkbox :label="checkBottomWords[1].name"></el-checkbox>
+                <el-checkbox :label="checkBottomWords[1].name" v-if="$parent.controllerInfo.tagUiBar"></el-checkbox>
             </el-checkbox-group>
         </div>
     </div>
+</Drawer>
 </template>
 
 <script>
 import MODELAPI from '../../api/model_api';
-
+import { EventBus } from '@/utils/bus.js'
+import Drawer from '@/components/Drawer/index.vue'
 export default {
+    components: { Drawer },
     props:{
         taskId:{
           type: String,
           default: ""
         },
-        showViewCube: {
-            type: Boolean,
-            default: false
-        },
-        showNavMap: {
-            type: Boolean,
-            default: false
-        },
-        viewAngleData: {
-            type: Object,
-            default: () => {}
-        },
-        isGis: {
-            type: Boolean,
-            default: false
-        }
     },
     data(){
         return {
@@ -231,12 +215,12 @@ export default {
             checkTest:false, // 碰撞检测
             words:['高度','开启碰撞检测','放置对象','速度'],
             speedValue:2,  // 速度
-            checkListBottom:['viewCube'], //底部的两个选框
+            checkListBottom:['ViewCube'], //底部的两个选框
             checkBottomWords:[{
                 name: "导航地图",
                 value: 1,
             },{
-                name: "viewCube",
+                name: "ViewCube",
                 value: 2,
             }],
             params:{
@@ -256,13 +240,10 @@ export default {
     },
     created(){
         this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
-        this.radio = this.isGis?1:2
         this.params.viewMode = this.isGis?1:2
     //   this.threeView();
     },
-    beforeDestroy () {
-        this.watchAngleData()
-    },
+    beforeDestroy () {},
     watch:{
         radio:{
             handler(val,oldVal){
@@ -272,14 +253,16 @@ export default {
             },
             immediate:true
         },
-        showViewCube (newVal, oldVal) {
-            this.watchStatus()
-        },
-        showNavMap (newVal, oldVal) {
-            this.watchStatus()
-        }
     },
     methods:{
+        show() {
+            this.radio = this.isGis?1:2
+            this.$refs.Drawer.show()
+        },
+        close() {
+            this.$refs.Drawer.hide()
+            EventBus.$emit('eventTool', 'roaming')
+        },
         threeView(){
           let par = {
             taskid: this.taskId,
@@ -295,12 +278,9 @@ export default {
                 }
            }).catch(()=>{})
         },
-        closeRoam(val){
-            this.$emit('closePart',val);
-        },
         requestFun(){
             // console.log('参数打印', this.params)
-            MODELAPI.UPDATEORDER(this.params).then((res)=>{
+            MODELAPI.UPDATEORDER({...this.params,taskid:this.taskId}).then((res)=>{
                 if(res.data.code === 0){
                     this.$message.success(res.data.message);
                 }else{
@@ -377,13 +357,6 @@ export default {
                 this.speedValue = 4
             }
             this.twoHeight = selectIn.tall;
-            // 下拉赋值 调接口
-            // if(this.putObj === 1){
-            //     this.params.dollName === selectIn.English;
-            //     this.params.dollHeight = selectIn.tall * 100;
-            //     this.params.speedLevel = this.speedValue;
-            //     this.requestFun();
-            // }
         },
         
         // 放置对象
@@ -401,111 +374,60 @@ export default {
         // 速度
         speedChange(val){
             this.params.speedLevel = val;
-            this.requestFun();
+            this.updateEdit({ action: 'setSpeedLevel', speedLevel: val });
+        },
+        // action事件
+        updateEdit(obj) {
+            let params = {
+                taskid: this.taskId,
+                ...obj
+            }
+            MODELAPI.UPDATEORDER(params)
+                .then((res) => {
+                    if (res.data.code === 0) {
+                        this.$message.success(res.data.message)
+                    } else {
+                        this.$message.error(res.data.message)
+                    }
+                })
+                .catch(() => {})
         },
         // 底部多选框
         changeBottom(){
             // 地图
             if(this.checkListBottom.includes(this.checkBottomWords[0].name)){
-                 this.$emit("listenTodo", {
-                    state: 1,
-                    type: 5,
-                });
+                this.roamMap('on')
             }else{
-               this.$emit("listenTodo", {
-                    state: 0,
-                    type: 5,
-                });
+                this.roamMap('off')
             }
             // viewCube
              if(this.checkListBottom.includes(this.checkBottomWords[1].name)){
-                 this.$emit("listenTodo", {
-                    name: 'viewCube',
-                    flag: true,
-                });
+                this.$parent.controllerInfo.viewCube = true
             }else{
-               this.$emit("listenTodo", {
-                    name: 'viewCube',
-                    flag: false,
-                });
+                this.$parent.controllerInfo.viewCube = false
             }
         },
-
-        watchStatus () {
-            this.checkListBottom = []
-            if (this.showViewCube) {
-                this.checkListBottom.push('viewCube')
+        // 导航地图
+        roamMap(Switch){
+            let params = {
+                taskid: this.taskId,
+                action:'minimapSethidden',
+                Switch
             }
-            if (this.showNavMap) {
-                this.checkListBottom.push('导航地图')
-            }
+            MODELAPI.UPDATEORDER(params).then((res) => {
+                if (res.data.code === 0) {
+                    this.$message({
+                        message: '指令下发成功',
+                        type: "success",
+                    });
+                } else {
+                    this.$message({
+                        message: res.data.message,
+                        type: "error",
+                    });
+                }
+            })
         },
-
-        dealAngleData () {
-            // console.log('初始化的视角数据', this.viewAngleData)
-            this.params.taskid = this.taskId
-            const { angle, angleData } = this.viewAngleData
-            this.radio = angle
-            if (angle === 1 && angleData) {
-                this.oneHeight = angleData.oneHeight
-                this.checkWeight = angleData.checkWeight
-                this.checkBroken = angleData.checkBroken
-                this.speedValue = angleData.speedValue
-
-                this.params.viewMode = angle
-                this.params.enableGravity = angleData.checkWeight
-                this.params.enableAllCollision = angleData.checkBroken
-                this.params.characterHeight = this.oneHeight * 100
-                this.params.speedLevel = angleData.speedValue
-
-            } else if (angle === 3 && angleData) {
-                this.value = angleData.value
-                this.checkTest = angleData.checkTest
-                this.twoHeight = angleData.twoHeight
-                this.speedValue = angleData.speedValue
-
-                this.params.viewMode = angle
-                this.params.enableAllCollision = angleData.checkTest
-                this.params.speedLevel = angleData.speedValue
-                this.params.dollHeight = angleData.twoHeight * 100
-                let targetIn =  this.options.find(item => {
-                    return item.value === this.value
-                })
-                this.params.dollName = targetIn.English
-            }
-        },
-
-        watchAngleData () {
-            let viewAngleData = {}
-            if (this.radio === 1) {
-                viewAngleData = {
-                    angle: 1,
-                    angleData: {
-                        checkWeight: this.checkWeight,
-                        checkBroken: this.checkBroken,
-                        oneHeight: this.oneHeight,
-                        speedValue: this.speedValue
-                    }
-                }
-            } else if (this.radio === 2) {
-                viewAngleData = {
-                    angle: 2,
-                    angleData: {}
-                }
-            } else if (this.radio === 3) {
-                viewAngleData = {
-                    angle: 3,
-                    angleData: {
-                        value: this.value,
-                        checkTest: this.checkTest,
-                        twoHeight: this.twoHeight,
-                        speedValue: this.speedValue
-                    }
-                }
-            }
-            // console.log('数据', viewAngleData)
-            this.$emit('update:viewAngleData', viewAngleData)
-        }
     }
 }
 </script>
@@ -522,39 +444,18 @@ export default {
 }
 
 .turnHeight {
-    margin: 0 0 0 10px;
+    // margin: 0 0 0 0px;
 }
- 
+/deep/ .el-radio-button__inner, /deep/ .el-radio-group{
+    display: block;
+}
 .roam_navigate {
-  position: absolute;
-  z-index: 9;
-  height: 450px;
-  top: 0;
-  width: 400px;
-  color: white;
-  margin: 2vh 0 0 20px;
-  border-radius: 10px;
-  background-color: rgba(17,17,17,0.88);
-  .romaHead{
-    width: 400px;
-    height: 54px;
-    font-size: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px rgb(79, 79, 79) solid;
-    .title{
-      margin-left: 16px;
-    }
-    .closeIcon{
-      margin-right: 16px;
-      cursor: pointer;
-    }
-  }
+
   // 中间
   .middle{
     padding: 16px 23px 0 23px;
     .singleSelect{
+        
        ::v-deep .needNone .el-radio__input{
             display: none;
         }
@@ -563,36 +464,36 @@ export default {
             margin-bottom: 16px;
         }
         .magin-left {
-            margin: 0 0 0 45px;
+            margin: 0 0 0 10px;
         }
         ::v-deep .selfView .el-radio__label{
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             justify-content: space-around;
             margin-bottom: 16px;
             
             .firstSelect{
-                margin: 0 6px 0 16px;
+                margin: 0 6px 0 0px;
             }
         }
         .followView {
             width: 100%;
             .upTwo {
                 display: flex;
-                margin: -12px 0 14px 25px;
+                margin: -12px 0 14px 8px;
                 ::v-deep .el-select .el-input .el-input__inner{
                     height: 22px !important;
-                    width: 160px;
+                    width: 110px;
                 }
                 ::v-deep .el-input--mini .el-input__icon{
                     line-height: 23px !important;
                 }
             }
             ::v-deep .startTest .el-checkbox {
-                margin: 0 0 14px 25px;
+                margin: 0 0 14px 10px;
             }
             .putDown{
-                margin-left: 120px;
+                text-align: center;
             }
             .show-speed {
                 width: 100%;

@@ -1,4 +1,5 @@
 <template>
+    <Drawer ref="Drawer" title="天气环境" direction="rtl" @onClose="close">
     <div class="systemWeather">
       <div class="weatherClassify">
           <div class="selectGroup">
@@ -275,15 +276,17 @@
           </div>
       </div>
     </div>
+    </Drawer>
   </template>
   
   <script>
+  import { EventBus } from '@/utils/bus.js'
+  import Drawer from "@/components/Drawer/index.vue";
   import MODELAPI, { setWeatherSun, setWeatherLight } from "@/api/model_api";
   import CHAILIAOAPI from "@/api/material_api";
   import moment from 'moment'
-  import { runInThisContext } from "vm";
-  import { log } from 'console';
   export default {
+    components: { Drawer },
       props:{
           appId: {
               type: String,
@@ -366,16 +369,23 @@
           }
       },
       created(){
-          this.getWeatherList();
           this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
-      },
+        },
       mounted(){
-          this.changeColor(this.color1);
           if(this.isGis){
-           document.querySelector('.weatherClassify').style.height = '200px';
-          }
-      },
+              document.querySelector('.weatherClassify').style.height = '200px';
+            }
+        },
       methods:{
+        show() {
+            this.$refs.Drawer.show()
+            this.getWeatherList();
+            this.changeColor(this.color1);
+        },
+        close(){
+            this.$refs.Drawer.hide()
+            EventBus.$emit('eventTool', 'renderingEnvironment')
+        },
         rgbaToArr(color) {
             var arr = []
             if(color){
@@ -1066,7 +1076,7 @@
   }
       .systemWeather{
           width: 100%;
-          height: 100%;
+          height: calc(100% - 53px);
           overflow-x: hidden;
           overflow-y: auto;
           &::-webkit-scrollbar {

@@ -82,3 +82,33 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.modelPage {
+    margin: 15px 0!important;
+    .el-pagination.is-background .el-pager li:not(.disabled).active{
+        background: none;
+    }
+    .el-pagination__sizes{
+        margin: 0 10px 0 10%;
+        .el-input__inner,.el-input__inner:hover, .el-input__inner:focus{
+            border: none !important;
+        }
+    }
+    .el-pager li{
+        min-width: auto!important;
+        margin: 0 2px!important;
+    }
+}
+
+// 图片未加载完的提示
+.image-slot{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.el-empty{
+    width: 100%;
+}

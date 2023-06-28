@@ -7,6 +7,7 @@
  */
   import request from '../utils/request'
   import qsStringify from "qs-stringify"
+  import newRequest from '@/utils/newRequest.js'
 
   const TAGTREE = {
         // 获取标签列表
@@ -51,14 +52,6 @@
                 data: qsStringify(params)
               })
         },
-        // 显示隐藏
-        UPDATASHOWTAG: params => {
-            return request({
-                url: '/tagControl/controlTagShow',
-                method: 'POST',
-                data: qsStringify(params)
-              })
-        },
         // focus
         UPDATAFOCUSTAG: params => {
           return request({
@@ -70,3 +63,20 @@
   }
 
   export default TAGTREE
+
+
+export function getTagList(params) {
+    return newRequest({
+        url: '/tagControl/getTagList',
+        method: 'get',
+        params
+    })
+}
+// 标签显示隐藏
+export function controlTagShow(params) {
+    return request({
+        url: '/tagControl/controlTagShow',
+        method: 'POST',
+        params
+      })
+}
