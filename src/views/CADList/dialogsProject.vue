@@ -49,18 +49,10 @@
           // gisServerName: [{ required: true, message: "请输入项目名称", trigger: "blur" }],
           // ourGISLayerList: [{ required: true, message: "请添加图层", trigger: "blur" }],
           // gisCoordinateType: [{ required: true, message: "请选择GIS坐标系", trigger: "blur" }],
-        },
-        doMouseList:[], //鼠标操作模式
-        displayWindowList: [], //窗口显示模式
-        gisCoordinateTypeList: [],//GIS坐标系
-      };
+        }
+      }
     },
-    watch: {},
-    computed: {},
-    created() {},
-    mounted() {
-      this.getType()
-    },
+    
     methods: {
       show(title,row) {
         this.title = title
@@ -74,26 +66,9 @@
           }
         })
       },
+
       hide() {
         this.dialogVisible = false;
-      },
-      async getType(){
-        this.doMouseList = (await getDict('doMouse')).data
-        this.displayWindowList = (await getDict('displayWindow')).data
-        this.gisCoordinateTypeList = (await getDict('gisCoordinateType')).data
-      },
-      //添加、编辑图层
-      addLayer(title,row = {},i){
-        this.$refs.DialogsLayser.show(title,{...row,index:i})
-      },
-      // 图层添加到列表里面
-      onLayerSuccess(data){
-        if(data.index>=0){
-          this.$set(this.form.ourGISLayerList,data.index,data)
-          this.$forceUpdate()
-        }else{
-          this.form.ourGISLayerList.push(data)
-        }
       },
 
       submit(){
@@ -117,10 +92,10 @@
                   this.hide()
               })
           }
-        });
-      },
-    },
-  };
+        })
+      }
+    }
+  }
   </script>
   <style lang="less" scoped>
   .GISLayer{
