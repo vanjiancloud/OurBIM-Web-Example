@@ -374,5 +374,14 @@ export function setGizmoModeType(params) {
         params
     })
 }
+// 模型背景设置
+export function backgroundSetting(params, data) {
+    return newRequest({
+      url: `/appli/modelBackgroundSetting`,
+      method: 'post',
+      params,
+      data
+    })
+  }
 
 export default MODELAPI

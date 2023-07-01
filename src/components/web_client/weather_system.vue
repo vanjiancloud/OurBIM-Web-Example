@@ -275,14 +275,27 @@
               </div>
           </div>
       </div>
+        <!-- 环境背景 -->
+        <div class="background">            
+            <div class="row-box">
+                <el-checkbox v-model="backgroundSetting.groundCheck" label="环境背景" @change="changeBackground"/>
+            </div>
+            <div class="row-box" v-if="backgroundSetting.groundCheck" style="margin-left:5%">
+                <el-radio-group v-model="backgroundSetting.modelBackgroundRingType" @change="changeBackground">
+                    <el-radio label="bshow">网格线</el-radio>
+                    <el-radio label="city" v-for="(item,index) in bgType" :key="index">{{ item.note }} </el-radio>
+                </el-radio-group>
+            </div>
+        </div>
     </div>
     </Drawer>
   </template>
   
   <script>
+  import { getDict } from "@/api/dict.js"
   import { EventBus } from '@/utils/bus.js'
   import Drawer from "@/components/Drawer/index.vue";
-  import MODELAPI, { setWeatherSun, setWeatherLight } from "@/api/model_api";
+  import MODELAPI, { setWeatherSun, setWeatherLight, backgroundSetting } from "@/api/model_api";
   import CHAILIAOAPI from "@/api/material_api";
   import moment from 'moment'
   export default {
@@ -365,7 +378,16 @@
                 sunLightColor: '',
                 sky:true,//天空光阴影
                 direction:true//太阳光阴影
-              }
+              },
+            //   环境背景
+            backgroundSetting: {
+                bshow:false,
+                lineBaseColor:'',
+                groundCheck: false,
+                modelBackgroundRingType:'bshow',
+                modelBackgroundType:''
+            },
+            bgType: [],//环境背景类型
           }
       },
       created(){
@@ -381,6 +403,7 @@
             this.$refs.Drawer.show()
             this.getWeatherList();
             this.changeColor(this.color1);
+            this.getDictList()
         },
         close(){
             this.$refs.Drawer.hide()
@@ -1049,8 +1072,52 @@
               setTimeout(()=>{
                   this.messageFlag = true;
               },3000)
-          }
-      }
+          },
+        // 环境背景,网格线
+        changeBackground(){
+            let params = {
+                taskId:this.taskId,
+                appId:this.appId
+            }
+            let data = {}
+            let check = this.backgroundSetting.groundCheck
+            // 关闭就清空选项
+            if(!this.backgroundSetting.modelBackgroundRingType) return
+            const settingFuntion = (params,data)=>{
+                backgroundSetting(params,data).then(()=>{
+                    this.$message.success('修改成功')
+                    this.backgroundSetting.modelBackgroundRingType = check ? this.backgroundSetting.modelBackgroundRingType : ''
+                })
+            }
+            if(this.backgroundSetting.modelBackgroundRingType==='bshow'){
+                settingFuntion(params,{modelBackgroundType: 'ring',modelBackgroundRingType: 'city',visibility: false})
+                // 环境背景
+                data = {
+                    bshow: check,
+                    modelBackgroundType: 'gridLine',
+                    modelBackgroundRingType: 'city'
+                }
+            }else{
+                // 关闭网格线
+                settingFuntion(params,{bshow:false,modelBackgroundType: 'gridLine',modelBackgroundRingType: 'city'})
+                // 其他环境背景
+                data = {
+                    modelBackgroundType: 'ring',
+                    modelBackgroundRingType: this.backgroundSetting.modelBackgroundRingType,
+                    visibility: check
+                }
+            }
+            setTimeout(()=>{
+                settingFuntion(params,data)
+            },200)
+        },
+        // 获取城市字典
+        getDictList(){
+            getDict('modelBackgroundRingType').then(res=>{
+                this.bgType = res.data.slice(0,1)
+            })
+        }
+    }
   }
   </script>
   
@@ -1099,9 +1166,8 @@
           }
           .weatherClassify{
               width: 272px;
-              height: 300px;
+            //   height: 300px;
               margin: 0 0 14px 15px;
-            //   border-bottom: 1px solid #464646;
               .selectGroup{
                   .singleSelect{  // 单选组
                       display: flex;
@@ -1577,11 +1643,6 @@
                   background-color: #409EFF;
               }
           }
-          // .lineColor{ // 轮廓线颜色
-          //     width: 200px;
-          //     height: 32px;
-          //     margin-left: 15px;
-          // }
           .boxSolidBackground.lineColor{
                               display: flex;
                               align-items: center;
@@ -1638,5 +1699,11 @@
                               }
                           }
       }
+.background{
+    padding: 0 0 15px 16px;
+    .row-box{
+        margin-bottom: 10px;
+    }
+}
   </style>
   
