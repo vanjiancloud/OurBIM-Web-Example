@@ -25,6 +25,7 @@ window.addEventListener("message", function(e) {
     * e.data.type 为消息类型
     * e.data.data 为消息的详细信息
     * e.data.message 为附加信息
+    10000:全部的通信，和WebSocket一致
     * 模型加载
     * 10001: 已获取平台资源，开始初始化
     * data: {
@@ -34,25 +35,16 @@ window.addEventListener("message", function(e) {
     * 10003：bim模型加载中 [0, 1]
     
     * 构件相关
-    * 20001：单击构件
-    * 20002: 框选构件
-    * 20003：点击空白
+    * 20001：单击模型浏览器构件
 
     * 标签相关
-    * 30001：点击标签
+    * 30001：点击标签列表
     * data: {
     *    state: true // 是否选中
     *    tagId: "111" // 标签ID
     *    tagType: 0/1 // 标签类型 0 标签 1 标签组
     *}
-    * 30002: 构件新建成功
-    * data: {
-    *    tagId: "" // 标签ID
-    * }
-    * 30003: 删除构件
-    * data: {
-    *   tagId: "" // 标签ID
-    * }
+    shareCode：分享链接协同操作code
 */
 
 

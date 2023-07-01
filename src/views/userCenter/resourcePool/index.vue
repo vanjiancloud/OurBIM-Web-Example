@@ -5,49 +5,52 @@
 <div>
     <Drawer ref="Drawer" title="资源库" @onClose="close">
         <template v-slot="{ drawer }">
-            <Tab v-model="levelName.tab1Index" :data="tabList" @onTab="onTab($event,true)" />
+            <Tab v-model="levels.tab1Index" :data="tabList" @onTab="onTab($event,true)" />
             <!-- 点击到二级构件 -->
-            <div class="level2" v-if="levelName.level ===2">
-                <span @click="back" class="backLevel1"><i class="el-icon-arrow-left"></i>{{levelName.tabName}}</span> / <span class="level2Item">{{levelName.groupName}}</span>
+            <div class="level2" v-if="levels.level ===2">
+                <span @click="back" class="backLevel1"><i class="el-icon-arrow-left"></i>{{levels.tabName}}</span> / <span class="level2Item">{{levels.groupName}}</span>
             </div>
-            <div class="search">
+            <div class="search" v-if="!levels.hideContent">
                 <el-input v-model="search" size="mini" placeholder="请输入您要搜索的内容" prefix-icon="el-icon-search" @change="searchContent()" @keydown.native.stop>
                 </el-input>
                 <!-- 贴图按钮 -->
-                <el-button v-if="levelName.tab1Index ===2&&levelName.tab2Index===1" class="button" :class="{blueBtn1:levelName.level ===1,blueBtn1:levelName.level ===2}" type="primary" icon="el-icon-plus" size="mini"
-                            @click="createGroup(levelName.level ===1?'新建分组':'上传贴图')">{{levelName.level ===1?'新建分组':'上传贴图'}}</el-button>
+                <el-button v-if="levels.tab1Index ===2&&levels.tab2Index===1" class="button" :class="{blueBtn1:levels.level ===1,blueBtn1:levels.level ===2}" type="primary" icon="el-icon-plus" size="mini"
+                            @click="createGroup(levels.level ===1?'新建分组':'上传贴图')">{{levels.level ===1?'新建分组':'上传贴图'}}</el-button>
             </div>
-            <Tab v-model="levelName.tab2Index" v-show="levelName.level ===1" class="roundTab" :data="typeList" @onTab="onTypeTab" />
+            <Tab v-model="levels.tab2Index" v-show="levels.level ===1" class="roundTab" :data="typeList" @onTab="onTypeTab" />
             
-            
-            <!-- 内容资源 -->
-            <div class="content">
-                <div class="contentItem" v-for="(item,index) in (levelName.level ===2 ? contentLevel2ListPage:contentList[levelName.tab2Index])" :key="index" @click="toLevel2(item)">
-                    <el-image class="img" :src="item.comUrl" lazy>
-                        <div slot="placeholder" class="image-slot">
-                            <img src="@/assets/default/component.png" v-if="levelName.tab1Index ===0&&levelName.tab2Index ===1"/>
-                            <img src="@/assets/default/model.png" v-if="levelName.tab1Index ===0&&levelName.tab2Index ===0"/>
-                            <img src="@/assets/default/material.png" v-if="levelName.tab1Index ===1"/>
-                            <img src="@/assets/default/charlet.png" v-if="levelName.tab1Index ===2"/>
+            <div class="contentWrap">               
+                <!-- 导入图纸 -->
+                <Drawing ref="Drawing" :levels="levels" :data="{taskId:data.taskId}" @toDrawLevel="toDrawLevel" />
+                <!-- 内容资源 -->
+                <div class="content" v-if="!levels.hideContent">
+                    <div class="contentItem" v-for="(item,index) in (levels.level ===2 ? contentLevel2ListPage:contentList[levels.tab2Index])" :key="index" @click="toLevel2(item)">
+                        <el-image class="img" :src="item.comUrl" lazy>
+                            <div slot="placeholder" class="image-slot">
+                                <img src="@/assets/default/component.png" v-if="levels.tab1Index ===0&&levels.tab2Index ===1"/>
+                                <img src="@/assets/default/model.png" v-if="levels.tab1Index ===0&&levels.tab2Index ===0"/>
+                                <img src="@/assets/default/material.png" v-if="levels.tab1Index ===1"/>
+                                <img src="@/assets/default/charlet.png" v-if="levels.tab1Index ===2"/>
+                            </div>
+                            <div slot="error" class="image-slot">
+                                <img src="@/assets/default/component.png" v-if="levels.tab1Index ===0&&levels.tab2Index ===1"/>
+                                <img src="@/assets/default/model.png" v-if="levels.tab1Index ===0&&levels.tab2Index ===0"/>
+                                <img src="@/assets/default/material.png" v-if="levels.tab1Index ===1"/>
+                                <img src="@/assets/default/charlet.png" v-if="levels.tab1Index ===2"/>
+                            </div>
+                        </el-image>
+                        <div>{{item.comName}}</div>
+                        <!-- 贴图-个人图的编辑删除 -->
+                        <div class="iconBottom" v-if="levels.tab1Index ===2 && levels.tab2Index ===1">
+                            <i class="el-icon-edit editIcon" @click.stop="createGroup(levels.level ===1?'编辑分组':'编辑贴图',item)"></i>
+                            <i class="el-icon-delete greyIcon" @click.stop="deleteGroup(levels.level,item)"></i>
                         </div>
-                        <div slot="error" class="image-slot">
-                            <img src="@/assets/default/component.png" v-if="levelName.tab1Index ===0&&levelName.tab2Index ===1"/>
-                            <img src="@/assets/default/model.png" v-if="levelName.tab1Index ===0&&levelName.tab2Index ===0"/>
-                            <img src="@/assets/default/material.png" v-if="levelName.tab1Index ===1"/>
-                            <img src="@/assets/default/charlet.png" v-if="levelName.tab1Index ===2"/>
-                        </div>
-                    </el-image>
-                    <div>{{item.comName}}</div>
-                    <!-- 贴图-个人图的编辑删除 -->
-                    <div class="iconBottom" v-if="levelName.tab1Index ===2 && levelName.tab2Index ===1">
-                        <i class="el-icon-edit editIcon" @click.stop="createGroup(levelName.level ===1?'编辑分组':'编辑贴图',item)"></i>
-                        <i class="el-icon-delete greyIcon" @click.stop="deleteGroup(levelName.level,item)"></i>
                     </div>
+                    <el-empty :image="require('@/assets/noData.png')" :image-size="100" v-if="levels.level ===2 ? !contentLevel2ListPage.length:(!contentList[levels.tab2Index]||!contentList[levels.tab2Index].length)"></el-empty>
                 </div>
-                <el-empty :image="require('@/assets/noData.png')" :image-size="100" v-if="levelName.level ===2 ? !contentLevel2ListPage.length:(!contentList[levelName.tab2Index]||!contentList[levelName.tab2Index].length)"></el-empty>
             </div>
             <!-- 二级才显示分页 -->
-            <Pagination v-if="levelName.level ===2" class="modelPage" layout="prev, pager, next" :pagerCount="5" :limit.sync="pages.pageSize" :total="contentLevel2List.length" :page="pages.page" @pagination="pagination" />
+            <Pagination v-if="levels.level ===2&&!levels.hideContent" class="modelPage" layout="prev, pager, next" :pagerCount="5" :limit.sync="pages.pageSize" :total="contentLevel2List.length" :page="pages.page" @pagination="pagination" />
             
             
             <!-- 构件操作图标 -->
@@ -78,8 +81,9 @@ import Pagination from "@/components/Pagination/index.vue";
 import DialogChartletGroup from "./DialogChartletGroup.vue"; // 新建分组弹框
 import DialogChartlet from "./DialogCharlet.vue"; // 上传贴图弹框
 import Drawer from "@/components/Drawer/index.vue";
+import Drawing from "./drawing.vue"; //导入图纸
 export default {
-    components: { Tab, Pagination, DialogChartletGroup, DialogChartlet, Drawer },
+    components: { Tab, Pagination, DialogChartletGroup, DialogChartlet, Drawer, Drawing },
     props: {
         data: {
             type: Object,
@@ -113,7 +117,7 @@ export default {
             contentList: [], //库，一级
             contentLevel2List: [], //二级
             contentLevel2ListPage: [], //分页数据
-            levelName: {
+            levels: {
                 isClickTab:false,//是否点击一级的tab
                 groupName: "",
                 tab1Index: 0,
@@ -121,7 +125,8 @@ export default {
                 tabName: "构件库",
                 level: 1,
                 groupId:null,//组id
-                activeContent: null
+                activeContent: null,
+                hideContent: false //隐藏content
             }, //构件组名称,tab名称,默认一级
             pages: {
                 page: 1, //分页，第几页
@@ -162,7 +167,7 @@ export default {
                 //     check:false
                 // },
             ],
-            openMater:false //是否打开材质编辑
+            openMater:false, //是否打开材质编辑
         };
     },
     watch: {},
@@ -175,10 +180,10 @@ export default {
         // 点击材质信息监听tab切换
         this.$store.watch((state) => state.material.materialLevel1Tab,(newValue, oldValue) => {
             // isClickTab避免重复请求,点击材质信息会更新
-            if(!this.levelName.isClickTab){
+            if(!this.levels.isClickTab){
                 this.onTab({index:newValue,name:this.tabList[newValue].name})
             }else{
-                this.levelName.isClickTab = false
+                this.levels.isClickTab = false
             }
         });
     },
@@ -187,8 +192,9 @@ export default {
     },
     methods: {
         show() {
+            this.$refs.Drawing.drawingList = this.$refs.Drawing.$options.data().drawingList//图纸数据初始化
             this.$refs.Drawer.show()
-            switch (this.levelName.tab1Index) {
+            switch (this.levels.tab1Index) {
                 case 0:
                     this.content();
                     break;
@@ -213,14 +219,15 @@ export default {
         // },
         // 点击tab
         onTab:throttle(function(e,isClick=false) {
-            this.levelName.isClickTab = isClick
+            this.levels = this.$options.data().levels
+            this.levels.isClickTab = isClick
             if(isClick){
-                this.$store.dispatch('material/changeSetting',{ key: "materialLevel1Tab", value: this.levelName.tab1Index })
+                this.$store.dispatch('material/changeSetting',{ key: "materialLevel1Tab", value: this.levels.tab1Index })
             }
-            this.levelName.tabName = e.name;
-            this.levelName.tab1Index = e.index;
-            this.levelName.tab2Index = 0;
-            this.levelName.level = 1
+            this.levels.tabName = e.name;
+            this.levels.tab1Index = e.index;
+            this.levels.tab2Index = 0;
+            this.levels.level = 1
             this.contentList = [];
             this.typeList = this.$options.data().typeList;
             this.search = ''
@@ -242,25 +249,26 @@ export default {
         },800),
         // 点击库类型
         onTypeTab(e) {
-            this.levelName.tab2Index = e.index;
+            this.levels.tab2Index = e.index;
         },
         // 点击返回第一级
         back() {
-            this.levelName.level = 1;
+            this.levels.level = 1;
+            this.levels.hideContent = false
             this.search = ''
             this.searchContent()
         },
         // 点击去二级构件
         async toLevel2(item) {
-            this.levelName.activeContent = item
+            this.levels.activeContent = item
             // 一级点击   0：构件库   1：材质库   2：贴图库
-            if (this.levelName.level === 1) {
+            if (this.levels.level === 1) {
                 this.search = ''
                 this.pages = this.$options.data().pages;
-                this.levelName.level = 2;
-                this.levelName.groupName = item.comName;
-                this.levelName.groupId = item.groupId
-                switch (this.levelName.tab1Index) {
+                this.levels.level = 2;
+                this.levels.groupName = item.comName;
+                this.levels.groupId = item.groupId
+                switch (this.levels.tab1Index) {
                     case 0:
                         this.contentLevel2List = item.rsComponent;
                         if (item.data && item.data.length) {
@@ -304,15 +312,15 @@ export default {
             }
             /*  
               *  二级点击
-              * this.levelName.tab2Index === 1  个人库
+              * this.levels.tab2Index === 1  个人库
             */
-            if (this.levelName.level === 2) {
-                switch (this.levelName.tab1Index) {
+            if (this.levels.level === 2) {
+                switch (this.levels.tab1Index) {
                     case 0:
                         let data = {
                             taskId: this.data.taskId,
                             comName: item.comName,
-                            comId: this.levelName.tab2Index === 1 ? item.ourbimComponentInfo.comId : item.id,
+                            comId: this.levels.tab2Index === 1 ? item.ourbimComponentInfo.comId : item.id,
                             userId: item.userId
                         }
                         addCom(data).then(res=>{
@@ -348,11 +356,11 @@ export default {
                 if(isPublic){
                     this.addMaterial({matId:res.data.matId,matParam:JSON.parse(res.data.matParam)})
                 }else{
-                    this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: { ...res.data,matParam:JSON.parse(res.data.matParam),matImgPath:this.levelName.activeContent.comUrl} })
+                    this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: { ...res.data,matParam:JSON.parse(res.data.matParam),matImgPath:this.levels.activeContent.comUrl} })
                     // 构件库替换构件的时候更新右边构件信息的图片
-                    if(this.levelName.tab1Index === 1 && this.levelName.level === 2){
+                    if(this.levels.tab1Index === 1 && this.levels.level === 2){
                         let matList = JSON.parse(JSON.stringify(this.componentAllInfo.matList))
-                        matList[this.material.activeMaterialIndex].imgPath = this.levelName.activeContent.comUrl
+                        matList[this.material.activeMaterialIndex].imgPath = this.levels.activeContent.comUrl
                         this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {matList} })
                     }
                 }
@@ -488,7 +496,7 @@ export default {
                     this.$refs.DialogChartletGroup.show(title, newRow);
                     break;
                 case '上传贴图': case '编辑贴图':                   
-                    this.$refs.DialogChartlet.show(title, {...newRow,groupId:this.levelName.groupId});
+                    this.$refs.DialogChartlet.show(title, {...newRow,groupId:this.levels.groupId});
                     break;
             
                 default:
@@ -645,25 +653,33 @@ export default {
         },
         // 搜索内容----前端实现的
         searchContent(){
-            let newContent = this.levelName.level ===2 ? this.searchToSaveList2:this.searchToSaveList[this.levelName.tab2Index]
+            let newContent = this.levels.level ===2 ? this.searchToSaveList2:this.searchToSaveList[this.levels.tab2Index]
             if(this.search){
                 if(newContent.length){
                     newContent = newContent.filter(e=>{ return e.comName.indexOf(this.search)>-1 })
-                    if(this.levelName.level === 2){
+                    if(this.levels.level === 2){
                         this.contentLevel2List = newContent
                         this.level2page()
                     }else{
-                        this.contentList.splice(this.levelName.tab2Index,1,newContent)
+                        this.contentList.splice(this.levels.tab2Index,1,newContent)
                     }
                 }
             }else{
-                if(this.levelName.level ===2){
+                if(this.levels.level ===2){
                     this.contentLevel2List = this.searchToSaveList2
                     this.level2page()
                 }else{
-                    this.contentList.splice(this.levelName.tab2Index,1,this.searchToSaveList[this.levelName.tab2Index])
+                    this.contentList.splice(this.levels.tab2Index,1,this.searchToSaveList[this.levels.tab2Index])
                 }
             }
+        },
+        // 点击图纸
+        toDrawLevel(val){
+            this.search = ''
+            this.pages = this.$options.data().pages;
+            this.levels.level = val.level;
+            this.levels.groupName = val.name;
+            this.levels.hideContent = true
         }
     },
 };
@@ -686,14 +702,16 @@ export default {
         cursor: pointer;
     }
 }
+.contentWrap{
+    padding: 0 12px;
+    height: calc(100vh - 252px);
+    overflow: auto;
+}
 .content {
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
     gap: 10px;
-    height: calc(100vh - 252px);
-    overflow: auto;
-    padding: 0 12px;
     .contentItem {
         width: (92/3%);
         font-size: 12px;

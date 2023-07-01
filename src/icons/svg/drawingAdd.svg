@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="26px" height="26px" viewBox="0 0 26 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>添加</title>
+    <g id="2.6版本" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="2.6版本-资源库-图纸二级" transform="translate(-74.000000, -151.000000)">
+            <g id="编组-9" transform="translate(39.000000, 112.000000)">
+                <g id="添加" transform="translate(35.000000, 39.000000)">
+                    <circle id="椭圆形" fill="#00B3F3" cx="13" cy="13" r="13"></circle>
+                    <line x1="6.8827892" y1="13.4221394" x2="18.700971" y2="13.4221394" id="直线-2" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></line>
+                    <line x1="12.7918801" y1="19.3312303" x2="12.7918801" y2="7.51304851" id="直线-2" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"></line>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

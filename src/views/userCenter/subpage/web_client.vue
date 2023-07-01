@@ -185,7 +185,7 @@
       </div>
     </div>
     <EscDialogItem ref="EscDialogItem" :title="escTitle" />
-      <div v-show="controllerInfo.tagUiBar" v-if="isUiBar">
+      <div v-show="controllerInfo.tagUiBar&&!isFade" v-if="isUiBar">
         <!-- 漫游导航 -->
         <roamNavigate ref="roamNavigate" :taskId="taskId" v-show="checkShow('roaming')"></roamNavigate>
         <!-- 资源库 -->
@@ -201,7 +201,9 @@
         <!-- (视图) -->
         <viewPhoto ref="viewPhoto" v-show="checkShow('view')" :viewPic="showViewPicture" :setProps="{ taskId }" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
         <!-- 底部工具栏 -->
-        <Tool ref="Tool" v-show="!isFade" v-model="activeToolArr" :data="{ taskId, appId, selectPark, isGis, singleTags: controllerInfo.singleTags }" @onSuccess="toolSuccess"/>
+        <Tool ref="Tool" v-model="activeToolArr" :data="{ taskId, appId, selectPark, isGis, singleTags: controllerInfo.singleTags }" @onSuccess="toolSuccess"/>
+        <!-- 设置比例尺弹窗 -->
+        <DialogScale ref="DialogScale" :data="copyingPictures" />
       </div>
     </div>
   </div>
@@ -210,7 +212,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Drawer from '@/components/Drawer/index.vue'
-import MODELAPI from "@/api/model_api";
+import MODELAPI,{ doAction } from "@/api/model_api";
 import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
 import COMPONENTLIBRARY from "@/api/component-library";
 import viewCube from "@/components/web_client/view_cube";
@@ -218,13 +220,9 @@ import roamNavigate from "@/components/web_client/roam_navigate";
 import viewPhoto from "@/components/web_client/view_photo";
 import progressBar from "@/components/web_client/progress_bar";
 import qrcodePart from "@/components/web_client/qrcode-part.vue";
-
 import resMessage from "../../../utils/res-message";
-
 import TeamworkDialog from "../../manage/TeamworkDialog.vue";
-
 import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
-
 import { Getuserid } from "@/store/index.js"; // (自定义构件)
 import weatherSystem from "@/components/web_client/weather_system.vue"; // 天气系统
 import ResourcePool from "../resourcePool/index.vue"; // 资源库
@@ -232,6 +230,7 @@ import ComponentInformation from "../componentInformation/index.vue"; //构件�
 import Label from "../label/index.vue"; //标签
 import TagLibrary from "../label/tagLibrary.vue"; //标签库
 import Tool from "../Tool/index.vue"; //底部工具栏
+import DialogScale from "@/views/userCenter/resourcePool/DialogScale.vue"; //底部工具栏
 import { EventBus } from '@/utils/bus.js'
 
 export default {
@@ -251,7 +250,8 @@ export default {
     Tool,
     Label,
     TagLibrary,
-    Drawer
+    Drawer,
+    DialogScale
   },
   data() {
     return {
@@ -333,6 +333,7 @@ export default {
       pakIdMapweb:'', // 区分点击的是自定义构件还是模型自带的构件
       pakAndAppid:[],
       escTitle: '',//esc显示名称
+      copyingPictures: {},//临摹图信息
     };
   },
   computed: {
@@ -617,7 +618,7 @@ export default {
         height: height,
         width: width,
       };
-      MODELAPI.UPDATEORDER(params);
+      doAction(params)
     },
     filterNode(value, data) {
       /**
@@ -1108,12 +1109,11 @@ export default {
         return;
       }
       //模型操作
-      await MODELAPI.UPDATEORDER(params)
+      await doAction(params)
         .then((res) => {
-          if (res.data.code === 0) {
-            if (params.action === "cameraPosAll" && res.data && res.data.data) {
+            if (params.action === "cameraPosAll" && res && res.data) {
               if (this.$refs.getCube) {
-                let realProject = res.data.data.projectionMode === "1" ? 1 : 2;
+                let realProject = res.data.projectionMode === "1" ? 1 : 2;
                 this.$refs.getCube.resetActive(realProject);
               }
             }
@@ -1121,19 +1121,7 @@ export default {
               message: this.$t("webClient.loadBox.message[2]"),
               type: "success",
             });
-          } else {
-            this.$message({
-              message: res.data.message,
-              type: "error",
-            });
-          }
         })
-        .catch(() => {
-          this.$message({
-            message: this.$t("webClient.loadBox.message[3]"),
-            type: "error",
-          });
-        });
     },
 
     async getMyComList(node) {
@@ -1346,8 +1334,16 @@ export default {
           this.sendToIframe(10200,'false',"");
         }
         if (e.data.length > 20) {
-          this.isFade = false 
+          this.isFade = false
           let realData = JSON.parse(e.data);
+          // 添加外部网站和ourbim的全部通信，有些为了兼容之前的使用请不要删除其他的通信
+          let allInfo = {
+            prex: "ourbimMessage",
+            type: 10000,
+            data: realData,
+            message: realData.name,
+          };
+          this.sentParentIframe(allInfo);
           if (realData.id === "1") {
             if(this.$refs.ComponentInformation){
               this.$refs.ComponentInformation.activeMaterialIndex = 0 //切换点击构件默认选中为初始值
@@ -1375,7 +1371,6 @@ export default {
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "5") {
             // 多选构件
-            this.sentParentIframe({prex: "ourbimMessage",type: 20002,message: ""});
           } else if(realData.id === "6"){
             this.isFade = false
           } 
@@ -1386,13 +1381,6 @@ export default {
             this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {} })
             this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: {} })
             this.activeLeaf = false;
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 20003,
-              data: "",
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
           } else if (realData.id === "8") {
             // 加载过程
             let messageInfo = {
@@ -1419,10 +1407,7 @@ export default {
               if (progress === 100) {
                 // 定位主视图
                 setTimeout(() => {
-                  MODELAPI.UPDATEORDER({
-                    taskid: this.taskId,
-                    action: "cameraPosAll",
-                  });
+                  doAction({taskid: this.taskId,action: "cameraPosAll"})
                 }, 1000);
               }
             }
@@ -1436,38 +1421,11 @@ export default {
               }, 1000);
             }
           } else if (realData.id === "9") {
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 30001,
-              data: {
-                state: true,
-                tagId: realData.tagId,
-                tagType: 0,
-              },
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
+            
           } else if (realData.id === "10") {
             this.showUiBar();
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 30002,
-              data: {
-                tagId: realData.tagId,
-              },
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
           } else if (realData.id === "11") {
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 30003,
-              data: {
-                tagId: realData.tagId,
-              },
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
+            
           } else if (realData.id === "12") {
             // 判断是否是链接模型
             if(realData.isLink === "true"){
@@ -1539,19 +1497,16 @@ export default {
             // 构件新建失败
             // 提示判断添加构建失败
             this.showUiBar();
-            // this.$message.error(realData.name);
             this.$message.error('指令下发失败');
-          }else if(realData.id === "21"){  // 坐标位置 (增)
-            let messageInfo = {
-              prex:"ourbimMessage",
-              type: 30004,
-              data:{
-                tagId:realData.tagId,
-                data:realData.data,
-              },
-              message:"",
-            };
-            this.sentParentIframe(messageInfo);
+          }else if(realData.id === "21"){  // 测量结果
+            // 资源库图纸打开情况下数据返回成功弹出设置比例尺弹窗
+            if(this.$refs.DialogScale && this.checkShow('resource')){
+              this.copyingPictures['measureValue'] = realData.rsInfo.value
+              if(!this.copyingPictures.id){
+                return this.$message.warning('请选择图纸测量！')
+              }
+              this.$refs.DialogScale.show()
+            }
           }else if(realData.id === "30"){
               if(realData.object){
                 this.$message.success('开始下载');
@@ -1608,6 +1563,9 @@ export default {
             if(this.$refs.viewPhoto){
               this.$refs.viewPhoto.WebSocketData = realData
             }
+          }else if(realData.id === "42"){
+            // 临摹图信息
+            this.copyingPictures = realData
           }
         }
       };
@@ -1626,7 +1584,7 @@ export default {
           action: "initWorldParam",
           zoomSpeed: "0.02",
         };
-        MODELAPI.UPDATEORDER(params);
+        doAction(params)
       }
     },
     showUiBar() {
@@ -1645,7 +1603,6 @@ export default {
             this.hiddenState = 1;
             this.clearTimePass();
             this.closeWebSocket();
-            // wx.miniProgram.redirectTo({ url: "/pages/home/home" });
           }
         });
       }

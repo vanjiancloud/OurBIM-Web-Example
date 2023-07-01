@@ -47,15 +47,6 @@ const MODELAPI = {
         })
     },
 
-    // 指令下发
-    UPDATEORDER: params => {
-
-        return request({
-            url: '/OurBim/doAction',
-            method: 'get',
-            params
-        })
-    },
     // 浏览器中 锁的打开与关闭
     LOCKOPENORCLOSE: params => {
         return request({
@@ -371,6 +362,15 @@ export function setGizmoModeType(params) {
     return newRequest({
         url: '/OurBim/setGizmoModeType',
         method: 'post',
+        params
+    })
+}
+
+// 指令下发
+export function doAction(params) {
+    return newRequest({
+        url: '/OurBim/doAction',
+        method: 'get',
         params
     })
 }

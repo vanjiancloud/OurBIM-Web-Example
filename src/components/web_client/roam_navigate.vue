@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import MODELAPI from '../../api/model_api';
+import MODELAPI,{ doAction } from '../../api/model_api';
 import { EventBus } from '@/utils/bus.js'
 import Drawer from '@/components/Drawer/index.vue'
 export default {
@@ -270,23 +270,14 @@ export default {
             viewMode: this.isGis ?1:2,
             projectionMode: 1
            }
-           MODELAPI.UPDATEORDER(par).then((res)=>{
-                if(res.data.code === 0){
-                    this.$message.success(res.data.message);
-                }else{
-                    this.$message.error(res.data.message);
-                }
-           }).catch(()=>{})
+            doAction(par).then((res)=>{
+               this.$message.success(res.message);
+            })
         },
         requestFun(){
-            // console.log('参数打印', this.params)
-            MODELAPI.UPDATEORDER({...this.params,taskid:this.taskId}).then((res)=>{
-                if(res.data.code === 0){
-                    this.$message.success(res.data.message);
-                }else{
-                    this.$message.error(res.data.message);
-                }
-            }).catch(()=>{})
+            doAction({...this.params,taskid:this.taskId}).then((res)=>{
+               this.$message.success(res.message);
+            })
         },
         // 单选框的radio的值变化时触发
         changeRadio(val){
@@ -382,15 +373,9 @@ export default {
                 taskid: this.taskId,
                 ...obj
             }
-            MODELAPI.UPDATEORDER(params)
-                .then((res) => {
-                    if (res.data.code === 0) {
-                        this.$message.success(res.data.message)
-                    } else {
-                        this.$message.error(res.data.message)
-                    }
-                })
-                .catch(() => {})
+            doAction(params).then((res)=>{
+               this.$message.success(res.message);
+            })
         },
         // 底部多选框
         changeBottom(){
@@ -414,18 +399,8 @@ export default {
                 action:'minimapSethidden',
                 Switch
             }
-            MODELAPI.UPDATEORDER(params).then((res) => {
-                if (res.data.code === 0) {
-                    this.$message({
-                        message: '指令下发成功',
-                        type: "success",
-                    });
-                } else {
-                    this.$message({
-                        message: res.data.message,
-                        type: "error",
-                    });
-                }
+            doAction(params).then((res)=>{
+               this.$message.success('指令下发成功');
             })
         },
     }

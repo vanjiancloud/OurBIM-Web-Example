@@ -257,5 +257,15 @@ export function updateMaterialTexture(data) {
     })
 }
 
+// 调整临摹图比例尺
+export function updateScale(params, data) {
+    return newRequest({
+        url: `/buildSystem/blueprintSetting`,
+        method: 'post',
+        params: params,
+        data: data
+    })
+}
+
 
 export default CHAILIAOAPI
