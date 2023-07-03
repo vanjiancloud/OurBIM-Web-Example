@@ -37,26 +37,9 @@ const COMPONENTLIBRARY = {
         })
     },
 
-    /* 
- 构件操作 
-  params:{
-    comId:'',
-    taskId:'',
-    action:'',//translate、rotate、scale
-  }
-  */
-
     operateCom: params => {
         return request({
             url: '/comControl/operateCom',
-            method: 'POST',
-            params
-        })
-    },
-    // 自定义构件显示隐藏
-    controlComShowOrHide: params => {
-        return request({
-            url: '/comControl/controlComShowOrHide',
             method: 'POST',
             params
         })
@@ -72,6 +55,15 @@ const COMPONENTLIBRARY = {
     },
 }
 
+
+// 自定义构件显示隐藏
+export function controlComShowOrHide(params) {
+    return newRequest({
+        url: '/comControl/controlComShowOrHide',
+        method: 'POST',
+        params
+    })
+}
 
 // 添加构件
 export function addCom(params) {

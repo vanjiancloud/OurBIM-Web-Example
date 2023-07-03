@@ -60,91 +60,6 @@
     
     <!-- runTimeCode 1:mobile  0 ：PC  -->
     <div v-if="runTimeCode === 0">
-      <!-- 模型构件树 -->
-        <Drawer ref="browserDrawer" title="模型浏览器" direction="ltr" @onClose="closeMutual" v-show="controllerInfo.tagUiBar && checkShow('browser')">
-        <div
-          class="tree-main"
-        >
-          <!-- 操作 -->
-          <div class="handle-part">
-            <el-input
-              class="search-tag"
-              placeholder="请输入你要搜索的内容"
-              @click.native.stop
-              @change="changeBrowser"
-              @keyup.enter.native="changeBrowser"
-              v-model="modelBrowser"
-            >
-              <i slot="prefix" class="el-input__icon el-icon-search"></i>
-            </el-input>
-          </div>
-          <div class="tree-part">
-            <div class="tree-content" id="tree-content">
-              <!-- 构件树开始 -->
-              <el-tree
-                class="set-tree"
-                ref="setTree"
-                @check="checkTree"
-                :empty-text="treeEmpty"
-                @node-expand="ExpandNode"
-                :props="propsMember"
-                :expand-on-click-node="false"
-                :load="loadNode"
-                :filter-node-method="filterNode"
-                show-checkbox
-                highlight-current
-                node-key="uuid"
-                lazy
-              >
-                <span
-                  class="custom-tree-node"
-                  :class="
-                    activeTree &&
-                    node.data.uuid === activeTree.uuid &&
-                    activeLeaf
-                      ? 'tree-select'
-                      : ''
-                  "
-                  slot-scope="{ node,data}"
-                  @click="handleTree(node, 0)"
-                >
-                  <span class="label-span">{{ node.label }}</span>
-                  <!-- 合模 -->
-                  <img
-                    src="@/assets/images/tag/6.png"
-                    @click.stop="deleteCom(node)"
-                    class="delect-com-icon"
-                    v-if="
-                      appType === '3' &&
-                      node.data.typeId === 'comp' &&
-                      checkedNodeVanjian(node)
-                    "
-                  />
-                  <!-- 非合模 -->
-                  <img
-                    src="@/assets/images/tag/6.png"
-                    @click.stop="deleteCom(node)"
-                    class="delect-com-icon"
-                    v-if="appType !== '3' && node.data.typeId === 'comp'"
-                  />
-                  <span v-if="node.level === 1 && (appType==='3' || appType==='0') && node.data.name != '自定义构件'">
-                    <!-- 开锁和闭锁 -->
-                    <i class="iconfont icon-24gl-lock2 lockLock" v-if="!data[`lockView${+node.id}`]" @click.stop="handleToggleLock(node, data, node.id)"></i>
-                    <i v-else class="iconfont icon-24gl-unlock4 lockLock" @click.stop="handleToggleLock(node, data, node.id)"></i> 
-                  </span> 
-                  <span>
-                    <!-- <span v-if="node.data.typeId !== 'comp'"> -->
-                    <!-- 显示状态 -->
-                    <i class="iconfont icon-xianshi2" v-if="!node.checked"></i>
-                    <i v-else class="iconfont icon-yincang1"></i>
-                  </span>
-                </span>
-              </el-tree>
-              <!-- 构件树结束 -->
-            </div>
-          </div>
-        </div>
-        </Drawer>
         <div class="mutual-bim">
         <!-- 二维码 -->
         <qrcode-part
@@ -200,6 +115,8 @@
         <!-- <TagLibrary ref="TagLibrary" v-show="checkShow('label')" :data="{ taskId, appId }"/> -->
         <!-- (视图) -->
         <viewPhoto ref="viewPhoto" v-show="checkShow('view')" :viewPic="showViewPicture" :setProps="{ taskId }" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
+        <!-- 模型浏览器，构件管理 -->
+        <ComponentTree ref="ComponentTree" v-show="checkShow('browser')"/>
         <!-- 底部工具栏 -->
         <Tool ref="Tool" v-show="!isFade" v-model="activeToolArr" :data="{ taskId, appId, selectPark, isGis, singleTags: controllerInfo.singleTags }" @onSuccess="toolSuccess"/>
       </div>
@@ -231,6 +148,7 @@ import ResourcePool from "../resourcePool/index.vue"; // 资源库
 import ComponentInformation from "../componentInformation/index.vue"; //构件信息
 import Label from "../label/index.vue"; //标签
 import TagLibrary from "../label/tagLibrary.vue"; //标签库
+import ComponentTree from "../componentManage/componentTree.vue"; //标签库
 import Tool from "../Tool/index.vue"; //底部工具栏
 import { EventBus } from '@/utils/bus.js'
 
@@ -251,6 +169,7 @@ export default {
     Tool,
     Label,
     TagLibrary,
+    ComponentTree,
     Drawer
   },
   data() {
@@ -460,7 +379,7 @@ export default {
                 break;
             // 浏览器
             case 'browser':
-                this.$refs.browserDrawer.show()
+                this.$refs.ComponentTree.show()
                 break;
             // 构件信息memberInfo:属性信息
             case 'componentInformation':
@@ -1898,11 +1817,6 @@ export default {
       })
       return componentAppId;
     },
-    // 关闭模型浏览器
-    closeMutual(){
-        this.$refs.browserDrawer.hide()
-        EventBus.$emit('eventTool', 'browser')
-    }
   },
   destroyed(){
     if(this.websock){
