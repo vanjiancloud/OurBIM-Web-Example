@@ -295,7 +295,7 @@
   import { getDict } from "@/api/dict.js"
   import { EventBus } from '@/utils/bus.js'
   import Drawer from "@/components/Drawer/index.vue";
-  import MODELAPI, { setWeatherSun, setWeatherLight, backgroundSetting } from "@/api/model_api";
+  import MODELAPI, { setWeatherSun, setWeatherLight, doAction } from "@/api/model_api";
   import CHAILIAOAPI from "@/api/material_api";
   import moment from 'moment'
   export default {
@@ -654,11 +654,10 @@
                   action:'switchWeather',
                   weahterId:weatherId
               }
-              MODELAPI.UPDATEORDER(parasm).then(res =>{
-                  if(res.data.code === 0){
+              doAction(parasm).then(res =>{
                       if(this.messageFlag){ // 防止重复提示
                           this.messageFlag = false;
-                          this.$message.success(res.data.message);
+                          this.$message.success(res.message);
                           this.messageChange()
                       }
                       this.optionsTemplate.forEach(item=>{
@@ -673,9 +672,6 @@
                               }
                           }
                       })
-                  }else{
-                      this.$message.error('天气切换失败');
-                  }
               }).catch(()=>{})
           },
           changeColor(val){ // 纯色 颜色改变时

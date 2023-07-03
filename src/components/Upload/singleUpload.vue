@@ -2,7 +2,9 @@
 <template>
     <el-upload action="#" :show-file-list="false" :accept="accept" :on-change="onChange" :before-upload="beforeAvatarUpload" :auto-upload="autoUpload" :http-request="httpRequest">
         <img v-if="value" :src="autoUpload?value:changeImg(value)" class="avatar" />
-        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        <slot name="icon" v-else>
+            <i class="el-icon-plus avatar-uploader-icon"></i>           
+        </slot>
     </el-upload>
 </template>
 
@@ -32,6 +34,11 @@ export default {
         autoUpload:{
             type: Boolean,
             default: true,
+        },
+        // 当其他上传接口用的参数不是默认的参数时，可以用该字段自定义
+        params:{
+            type: Object,
+            default:()=> {},
         }
     },
     data() {
@@ -76,8 +83,14 @@ export default {
         httpRequest(param) {
             // 接口不是统一的
             const formData = new FormData();
-            formData.append("fileUpload", param.file);
-            formData.append("userId", Getuserid());
+            if(Object.keys(this.params).length){
+                for (const key in this.params) {
+                    formData.append([key], ["fileUpload"].includes(key) ? param.file : this.params[key]);
+                }
+            }else{
+                formData.append("fileUpload", param.file);
+                formData.append("userId", Getuserid());
+            }
             request({
                 method: "post",
                 url: this.url,

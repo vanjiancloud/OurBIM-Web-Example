@@ -261,7 +261,7 @@
 import Drawer from "@/components/Drawer/index.vue";
 import { EventBus } from '@/utils/bus.js'
   import draggable from 'vuedraggable'
-  import MODELAPI from "@/api/model_api";
+  import MODELAPI,{ doAction } from "@/api/model_api";
   import viewDialog from "@/components/web_client/view_dialog";
   export default {
         components: {
@@ -718,19 +718,12 @@ import { EventBus } from '@/utils/bus.js'
                 }, 1500);
             },
             async UpdateOrder(e) {
-                await MODELAPI.UPDATEORDER(e)
+                await doAction(e)
                     .then((res) => {
-                    if (res.data.code === 0) {
                         this.$message({
                             message: '指令下发成功',
                             type: "success",
                         });
-                    } else {
-                        this.$message({
-                            message: '指令下发失败',
-                            type: "error",
-                        });
-                    }
                     })
                     .catch(() => {});
             },

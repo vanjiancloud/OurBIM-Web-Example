@@ -85,10 +85,11 @@
 import { EventBus } from '@/utils/bus.js'
 import { comSwitch } from '@/api/component-library.js'
 import { controlTagShow } from '@/api/tag_tree.js'
-import MODELAPI, {
+import {
     conChoiceVisible,
     invertHidden,
-    displayAllActor
+    displayAllActor,
+    doAction
 } from '@/api/model_api.js'
 import { materialEditorControl } from "@/api/material_api";
 export default {
@@ -490,6 +491,8 @@ export default {
                 this.comSwitch(false)
                 // 关闭材质编辑
                 this.materialEditor('off')
+                // 调整图纸比例尺关闭
+                this.updateEdit({ action: 'endMeasure' })
             }
             if (key === 'measure') {
                 // 测量关闭
@@ -661,21 +664,15 @@ export default {
                 taskid: this.data.taskId,
                 ...obj
             }
-            MODELAPI.UPDATEORDER(params)
-                .then((res) => {
-                    if (res.data.code === 0) {
-                        this.$message.success(res.data.message)
-                        // 模型剖切子菜单---------重置，移除模型剖切子菜单所有选项
-                        if (obj.action === 'restoration') {
-                            this.sectioningSubList.map((e) => {
-                                e.check = false
-                            })
-                        }
-                    } else {
-                        this.$message.error(res.data.message)
-                    }
-                })
-                .catch(() => {})
+            doAction(params).then((res) => {
+                this.$message.success(res.message)
+                // 模型剖切子菜单---------重置，移除模型剖切子菜单所有选项
+                if (obj.action === 'restoration') {
+                    this.sectioningSubList.map((e) => {
+                        e.check = false
+                    })
+                }
+            })
         },
         // 通过postMessage显示和隐藏工具栏
         hideTag(key){

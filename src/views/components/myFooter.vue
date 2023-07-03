@@ -3,7 +3,7 @@
     <div class="container">
       <div class="wenzi">
         <div>
-          Copyright © 2021 www.OurBIM.com, All Rights Reserved.
+          Copyright © 2023 www.OurBIM.com, All Rights Reserved.
         </div>
         <div>022-8633-0370</div>
         <div class="last">
