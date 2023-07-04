@@ -89,7 +89,7 @@
       </div>
     </div>
     <EscDialogItem ref="EscDialogItem" :title="escTitle" />
-      <div v-show="controllerInfo.tagUiBar&&!isFade" v-if="isUiBar">
+      <div v-show="controllerInfo.tagUiBar" v-if="isUiBar&&!isFade">
         <!-- 漫游导航 -->
         <roamNavigate ref="roamNavigate" :taskId="taskId" v-show="checkShow('roaming')"></roamNavigate>
         <!-- 资源库 -->
@@ -105,7 +105,7 @@
         <!-- (视图) -->
         <viewPhoto ref="viewPhoto" v-show="checkShow('view')" :viewPic="showViewPicture" :setProps="{ taskId }" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
         <!-- 浏览器构件树，构件管理 -->
-        <ComponentTree ref="ComponentTree" v-show="checkShow('browser')" :data="{ taskId }"/>
+        <ComponentTree ref="ComponentTree" v-show="checkShow('browser')" :memberInfo.sync="memberInfo" :data="{ taskId, appId }"/>
         <!-- 底部工具栏 -->
         <Tool ref="Tool" v-model="activeToolArr" :data="{ taskId, appId, selectPark, isGis, singleTags: controllerInfo.singleTags }" @onSuccess="toolSuccess"/>
         <!-- 设置比例尺弹窗 -->
@@ -120,12 +120,10 @@ import { mapGetters } from 'vuex'
 import Drawer from '@/components/Drawer/index.vue'
 import MODELAPI,{ doAction } from "@/api/model_api";
 import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
-import COMPONENTLIBRARY from "@/api/component-library";
 import viewCube from "@/components/web_client/view_cube";
 import roamNavigate from "@/components/web_client/roam_navigate";
 import viewPhoto from "@/components/web_client/view_photo";
 import progressBar from "@/components/web_client/progress_bar";
-import resMessage from "../../../utils/res-message";
 import TeamworkDialog from "../../manage/TeamworkDialog.vue";
 import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
 import { Getuserid } from "@/store/index.js"; // (自定义构件)
@@ -166,29 +164,13 @@ export default {
       isGis: false,
       showViewPicture:'0', // 传递给 viewPhoto 控制视图列表的显示 (视图)
       maxNodes:false,
-      envProgress:0,   // 环境加载
-      contentLogo:false, // 构件库亮 true
-      lockObj:{},   // 锁开那一项的信息
-      lockView:'', // 锁的显示
       shareCode: null,
-      openNode: null,
       propsProgress: {
         data: 0,
         loadData: 0,
       },
 
       isProgress: true,
-      propsMember: {
-        label: "name",
-        isLeaf: (e) => {
-          if (e.haveChild === "1") {
-            return false;
-          }
-          if (e.haveChild === "0") {
-            return true;
-          }
-        },
-      },
     //   uiBar： ，viewCube：导航里的viewCube，tagUiBar：底部栏显示隐藏，
       controllerInfo: {
         uiBar: true,
@@ -202,30 +184,20 @@ export default {
       locale: "zh",
       taskId: null,
       isFade: true,
-      isTag: false,
       isQrCodeClick: false,
       handleState: 0,
-      activeTree: null,
       listenInfo: null,
       cubeState: 6,
       runTimeCode: 0,
-      timerInfo: null,
       memberInfo: [], //属性信息
-      activeLeaf: false,
       loadTimer: null,
       hiddenState: 0,
       websock: null,
       socketTimer: null,
-      natureInfo: null,
       shadowType: null,
       isUiBar: true,
       uaInfo: null,
-      treeEmpty: this.$t("webClient.browser.tips[0]"),
-      TreePageNo: 2,
-      ScrollDistance: 0,
       iTime: {},
-      comSaveNode: null,
-      godNode: null,
       appType: null,
       userType: null,
       // （材质库）
@@ -254,8 +226,7 @@ export default {
       if(this.propsProgress.loadData <= 90 && this.maxNodes === false){
         this.propsProgress.loadData += 5;
       }
-     },300);                
-    this.lockView = this.$route.query.isGis || this.$route.query.weatherBin; 
+     },300);
     this.uaInfo = navigator.userAgent.toLowerCase();
     this.appId = this.$route.query.appid;
     this.appToken = this.$route.query.token;
@@ -278,12 +249,9 @@ export default {
   //   }
 
     // appType  0:普通模型(isGis: GIS模型)   1:漫游模型   3:链接模型(isGis: GIS链接模型)  4:示例模型    5:云应用
-    this.isGis = (this.appType === '0' && this.lockView === 'true') || (this.appType === '3' && this.lockView === 'true')
+    this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
   },
   mounted() {
-    document
-      .querySelector("#tree-content")
-      .addEventListener("scroll", this.throttle(this.handleScroll));
     if (this.$route.query.locale) {
       this.locale = this.$route.query.locale;
       this.$i18n.locale = this.locale;
@@ -421,51 +389,6 @@ export default {
     showViewPic(valModel){
       this.showViewPicture = valModel;
     },
-    // 点击锁
-    handleToggleLock(node, data, i){
-        // 最多只开一把锁的，打开某一个锁，其他锁要关闭
-        const result = node.parent.childNodes;
-        if(result){
-          for (let index = 0; index < result.length; index++) {
-            if(result[index].data.uuid !== data.uuid) {
-              this.$set(result[index].data, `lockView${result[index].data.uuid.slice(-1)}`, false)
-            }else {
-              this.$set(data, [`lockView${i}`], !data[`lockView${i}`])
-            }
-          }
-        }
-        // 将点击锁的那一项的信息赋予 lockObj
-        this.lockObj.node = node;
-        this.lockObj.data = data;
-        this.lockObj.num = i;
-        const params = {
-          taskId: this.taskId,
-          flag: data[`lockView${i}`] ? "on" : "off"
-        }
-        MODELAPI.LOCKOPENORCLOSE(params).then((res) => {
-          if(res.data.code == 0) {
-            const infoParam = {
-              taskId: this.taskId,
-              actorOrAppId: data.projectId
-            }
-            if(params.flag === 'on'){
-               MODELAPI.LOCKAFTERINFO(infoParam).then((res) => {
-                 if(res.data.code === 0){
-                  this.$message({
-                    message: this.$t("webClient.loadBox.message[2]"),
-                    type: "success",
-                  });
-                 }
-              });
-            }
-          }else{
-            this.$message({
-              message: res.data.message,
-              type: "error",
-           });
-          }
-        });        
-      },
       // 监听工具栏隐藏和显示
      addMessageEvent() {
       window.addEventListener(
@@ -523,140 +446,6 @@ export default {
       };
       doAction(params)
     },
-    filterNode(value, data) {
-      /**
-       * @Author: zk
-       * @Date: 2021-09-01 10:49:56
-       * @description: 筛选模型构件树
-       */
-      if (!value) return true;
-      const reamVal = data.name.indexOf(value) !== -1;
-      if (!reamVal) {
-        this.treeEmpty = this.$t("webClient.browser.tips[1]");
-      }
-      return reamVal;
-    },
-
-    ExpandNode(e, data) {
-      /**
-       * @Author: zk
-       * @Date: 2021-06-18 17:06:25
-       * @description: 节点展开
-       */
-      this.TreePageNo = 2;
-      this.openNode = data;
-
-      if (this.appType === "3") {
-        // 合模
-      } else {
-        // 不是合模
-        // 展开根节点，保存根节点信息
-        if (data.level === 1) {
-          this.godNode = data || {};
-        }
-
-        // 保存自定义构件信息（普通模型）
-        if (data.data.name === "自定义构件") {
-          this.comSaveNode = data || {};
-        }
-      }
-    },
-    throttle(fn, delay = 500) {
-      /**
-       * @Author: zk
-       * @Date: 2021-06-18 16:50:53
-       * @description: 节流优化
-       */
-      // 设置变量默认为true
-      let flag = true;
-      // 为了保证this指向，返回一个箭头函数
-      return (...args) => {
-        // 判断如果已经在执行就直接return
-        if (!flag) return;
-        // 否则就是没有执行，将状态赋值为false
-        flag = false;
-        // 设置定时器，设置时间
-        let timer = setTimeout(() => {
-          // 调用apply方法确保this指向问题
-          fn.apply(this, args);
-          // 最后将状态重新更改为true，以便程序下次执行
-          flag = true;
-          clearTimeout(timer);
-        }, delay);
-      };
-    },
-    handleScroll() {
-      /**
-       * @Author: zk
-       * @Date: 2021-06-18 16:22:59
-       * @description: 监听滚动
-       */
-      let offsetHeight = document.querySelector(".tree-part").offsetHeight;
-      let scrollTop = document.querySelector("#tree-content").scrollTop;
-      let scrollHeight = document.querySelector("#tree-content").scrollHeight;
-      let scrollBottom = scrollHeight - (offsetHeight + scrollTop);
-      const ScrollDistance = scrollTop - this.ScrollDistance;
-      this.ScrollDistance = scrollTop;
-      if (ScrollDistance > 0) {
-        this.ListScrollTree();
-      }
-    },
-    // 更新添加的自定义构件库
-    updateComTree() {
-      if (!this.comSaveNode) {
-        return;
-      }
-      this.getMyComList(this.comSaveNode).then((res) => {
-        this.$refs.setTree.updateKeyChildren(this.comSaveNode.data.uuid, res);
-      });
-    },
-    updateGodChildNode() {
-      // 没有根节点，返回
-      if (!this.godNode) {
-        return;
-      }
-      // 检查第二层有无自定义构件
-      const flag = this.godNode.childNodes.some((item) => {
-        return item.data.name === "自定义构件";
-      });
-      // 如果有
-      if (flag) {
-        this.updateComTree();
-      } else {
-        let node = this.$refs.setTree.getNode(this.godNode);
-
-        // 如果没有，添加自定义构件组
-        this.getMyComList(this.godNode).then((res) => {
-          const data = res[res.length - 1];
-          this.$refs.setTree.append(data, node);
-        });
-      }
-    },
-    ListScrollTree() {
-      /**
-       * @Author: zk
-       * @Date: 2021-06-18 17:03:03
-       * @description: 滚动加载构件树
-       */
-      this.LisetMemberPage(this.openNode).then((res) => {
-        this.TreePageNo++;
-        if (res.length > 0) {
-          res.forEach((item) => {
-            let noneNode = this.$refs.setTree.getNode(item);
-            if (!noneNode) {
-              this.$refs.setTree.append(item, this.openNode.key);
-              this.$refs.setTree.setChecked(item, this.openNode.checked);
-            }
-          });
-        } else {
-          if (this.openNode.parent.data) {
-            this.TreePageNo = 1;
-            this.openNode = this.openNode.parent;
-            this.ListScrollTree();
-          }
-        }
-      });
-    },
     getError(e) {
       /**
        * @Author: zk
@@ -712,143 +501,10 @@ export default {
       this.handleState = 10;
       this.updateOrder();
     },
-    // 判断父级或者父父级node名字有没有vanjian
-    checkedNodeVanjian(node) {
-      if (node.level === 1) {
-        return true;
-      } else if (node.level === 2) {
-        if (node.parent.data.uuid.indexOf("vanjian") !== -1) {
-          return false;
-        } else {
-          return true;
-        }
-      } else if (node.level === 3) {
-        if (node.parent.parent.data.uuid.indexOf("vanjian") !== -1) {
-          return false;
-        } else {
-          return true;
-        }
-      }
-    },
-    updateComTreeAfterDeleteByUuid(uuid) {
-      // 获取自定义构件父级node
-      if(!this.$refs.setTree) return
-      const nodeParent = this.$refs.setTree.getNode(uuid).parent;
-      this.$refs.setTree.remove(uuid);
-      if (nodeParent.childNodes.length === 0) {
-        this.$refs.setTree.remove(nodeParent.data.uuid);
-      }
-    },
-    deleteCom(node) {
-      const { name, uuid } = node.data;
-      this.$confirm("此操作删除此构件, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
-      })
-        .then(() => {
-          COMPONENTLIBRARY.deleteCom({
-            taskId: this.taskId,
-            comId: uuid,
-          }).then((res) => {
-            resMessage(res.data);
-            // 获取自定义构件父级node
-            if (res.data.code === 0) {
-              this.updateComTreeAfterDeleteByUuid(node.data.uuid);
-            }
-          });
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除",
-          });
-        });
-    },
     openTeamDialog() {
       this.$refs.teamworkDialogRef.openDialog({
         appid: this.appId,
       });
-    },
-    handleTree(e, index) {
-      /**
-       * @Author: zk
-       * @Date: 2021-03-08 14:39:51
-       * @description: 构件树的指令
-       */
-      let messageInfo = {
-        prex: "ourbimMessage",
-        type: 20001,
-        data: e.data,
-        message: "",
-      };
-      this.sentParentIframe(messageInfo);
-      if (this.activeTree && this.activeTree.uuid === e.data.uuid) {
-        if (e.data.activeSelect === 1) {
-          this.activeLeaf = false;
-        } else {
-          this.activeLeaf = true;
-        }
-        e.data.activeSelect = e.data.activeSelect === 0 ? 1 : 0;
-        this.leafInfo = e;
-      } else {
-        this.activeLeaf = true;
-        this.leafInfo = e;
-        e.data.activeSelect = 1;
-      }
-      // 新增俩个属性放在最前面
-      if(e.data?.dynamicData?.length){
-        e.data.dynamicData = [{name:'构件ID',value:e.data.revitCode},{name:'构件名称',value:e.data.name}].concat(e.data.dynamicData)
-      }
-      this.memberInfo = e.data.dynamicData || []
-      this.leafInfo = e;
-      this.handleState = 9;
-
-      this.activeTree = e.data;
-
-      if (e.data.typeId === "comp") {
-        // 如果是构件库
-        this.leafInfo = e;
-        this.isQrCodeClick = true;
-        this.handleFocusTag(e.data);
-      } else {
-        this.updateOrder();
-      }
-    },
-    handleFocusTag(e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-08-17 16:00:55
-       * @description: 定位二维码
-       */
-      let flag = null;
-      flag = this.leafInfo.data.activeSelect ? true : false;
-      let params = {
-        taskId: this.taskId,
-        comId: e.uuid,
-        flag,
-      };
-
-      COMPONENTLIBRARY.focusComponent(params)
-        .then((res) => {
-          if (res.data.code === 0) {
-            this.$message({
-              message: res.data.message,
-              type: "success",
-            });
-          } else {
-            this.$message({
-              message: res.data.message,
-              type: "error",
-            });
-          }
-        })
-        .catch((res) => {
-          this.$message({
-            message: res.data.message,
-            type: "error",
-          });
-        });
     },
     handleOrder(e) {
       /**
@@ -910,27 +566,6 @@ export default {
           // 重置主视图
           params.action = "clearGodCamerashot";
           break;
-        case 8:
-          // 构件显示 隐藏 半透明
-          params.mn = this.leafInfo.uuid;
-          params.projectId = this.leafInfo.projectId;
-          if (this.leafInfo.activeState === 0) {
-            params.action = "showComponents";
-          } else if (this.leafInfo.activeState === 1) {
-            params.action = "hideComponents";
-          } else {
-            params.action = "setTransparency";
-            params.Opacity = 0.5;
-          }
-          break;
-        case 9:
-          // 当前 focus + 高亮 /取消
-          params.projectId = this.leafInfo.data.projectId;
-          params.mn = this.leafInfo.key;
-          this.leafInfo.data.activeSelect === 0
-            ? (params.action = "cancelSelectComponent")
-            : (params.action = "selectComponent");
-          break;
         case 10:
           // 定位主视图
           params.action = "cameraPosAll";
@@ -969,90 +604,6 @@ export default {
             });
         })
     },
-
-    async getMyComList(node) {
-      let params = {
-        appliId:
-          node.data && node.data.projectId ? node.data.projectId : this.appId,
-        pageNo: 1,
-        pageSize: 999,
-      };
-      node.key ? (params.uuid = node.key) : "";
-      let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
-        if (res.data.code === 0) {
-          return res.data.data;
-        } else {
-          return [];
-        }
-      });
-      return realMember;
-    },
-
-    async LisetMemberPage(node) {
-      let params = {
-        appliId:
-          node.data && node.data.projectId ? node.data.projectId : this.appId,
-        pageNo: this.TreePageNo,
-        pageSize: 20,
-      };
-      node.key ? (params.uuid = node.key) : "";
-      let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
-        if (res.data.code === 0) {
-          return res.data.data;
-        } else {
-          return [];
-        }
-      });
-      return realMember;
-    },
-    async getMemberList(node) {
-      let params = {
-        appliId:
-          node.data && node.data.projectId ? node.data.projectId : this.appId,
-        pageNo: 1,
-        pageSize: 20,
-      };
-      node.key ? (params.uuid = node.key) : "";
-      let realMember = await MODELAPI.LISTMEMBERTREE(params).then((res) => {
-        if (res.data.code === 0) { 
-          return res.data.data;
-        } else {
-          return [];
-        }
-      });
-
-      return realMember;
-    },
-    loadNode(node, resolve) {
-      if (node.level === 0) {
-        this.getMemberList(node).then((res) => {
-          if (res.length > 0) {
-            res.forEach((item) => {
-              item.activeState = 0;
-              item.activeSelect = 0;
-            });
-            return resolve(res);
-          } else {
-            this.treeEmpty = this.$t("webClient.browser.tips[1]");
-          }
-        });
-      }
-      if (node.level >= 1) {
-        this.getMemberList(node).then((res) => {
-          if (res.length > 0) {
-            res.forEach((item) => {
-              item.activeState = 0;
-              item.activeSelect = 1;
-            });
-
-            return resolve(res);
-          } else {
-            this.treeEmpty = this.$t("webClient.browser.tips[1]");
-            return resolve([]);
-          }
-        });
-      }
-    },
     // 关闭模块
     closePart(type) {
         EventBus.$emit('eventTool', type)
@@ -1070,75 +621,6 @@ export default {
         message: "",
       };
       this.sentParentIframe(messageInfo);
-    },
-    updateComTreeAfterAddComs() {
-      if (this.appType === "3") {
-        // 合模
-        this.handleMultModle();
-      } else {
-        let params = {
-          appliId: this.appId,
-          pageNo: 1,
-          pageSize: 99,
-          uuid: "vanjian",
-        };
-        MODELAPI.LISTMEMBERTREE(params).then((res) => {
-          this.$refs.setTree.updateKeyChildren(params.uuid, res.data.data);
-        });
-      }
-    },
-    async handleMultModle() {
-      // 查看有没有合模的自定义构件
-      // 合模必然有 uuid vanjian1
-      const godNodeList =
-        this.$refs.setTree.getNode("vanjian1").parent.childNodes;
-
-      const mult = godNodeList.find((item) => {
-        return item.data.name === "自定义构件";
-      });
-
-      let multUuid = mult ? mult.data.uuid : null;
-      let multBeforeUuid = null;
-      // 如果没有自定义构件，保存最后一个节点，用来insertAfter节点
-      if (!multUuid) {
-        multBeforeUuid = godNodeList[godNodeList.length - 1].data.uuid;
-      }
-
-      // 处理合模添加构件后更新列表
-      if (multUuid) {
-        // 如果有了自定义构件列表
-        let params = {
-          appliId: this.appId,
-          pageNo: 1,
-          pageSize: 888,
-          uuid: multUuid,
-        };
-        MODELAPI.LISTMEMBERTREE(params).then((res) => {
-            if(res.data.data){
-          this.$refs.setTree.updateKeyChildren(multUuid, res.data.data);
-        }
-        });
-      } else {
-        // 合模如果没有自定义构件列表
-        // 请求根节点
-        // insertAfter自定义构件列表
-        let params = {
-          appliId: this.appId,
-          pageNo: 1,
-          pageSize: 999,
-        };
-        MODELAPI.LISTMEMBERTREE(params).then((res) => {
-          const list = res.data.data;
-          this.$refs.setTree.insertAfter(list[list.length - 1], multBeforeUuid);
-        });
-      }
-    },
-
-    flatten(arr) {
-      // 数组扁平化
-      return !Array.isArray(arr)
-        ? arr
-        : [].concat.apply([], arr.map(this.flatten));
     },
     initWebSocket() {
       //初始化weosocket
@@ -1209,7 +691,6 @@ export default {
             this.selectPark = null
             this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {} })
             this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: {} })
-            this.activeLeaf = false;
           } else if (realData.id === "8") {
             // 加载过程
             let messageInfo = {
@@ -1266,7 +747,6 @@ export default {
               Number(this.propsProgress.loadData) >= 0 &&
               Number(this.propsProgress.loadData) <= 100
             ) {
-              this.envProgress = Number(realData.progress) * 100;
               this.propsProgress.loadData = Number(
                 String(Number(realData.progress) * 100).substring(0, 3)
               );
@@ -1294,7 +774,10 @@ export default {
           } else if (realData.id === "14") {
             // 添加构件，但是按了 ESC
             if (this.controllerInfo.uiBar) {
-              this.updateComTreeAfterAddComs();
+              if(this.$refs.ComponentTree){
+                // 更新构件树
+                this.$refs.ComponentTree.updateComTreeAfterAddComs();
+              }
               this.controllerInfo.tagUiBar = true;
               this.hideTool(false)
             }
@@ -1308,20 +791,13 @@ export default {
             // 距离上一次操作时长
             this.exitMiniprogram(realData.lastOperationTime);
           } else if (realData.id === "17") {
-            realData.uuids.map((v) => {
-              this.updateComTreeAfterDeleteByUuid(v);
-            });
-          } else if (realData.id === "18") {
-            // 显示面板
-            this.showUiBar();
-            // 构件创建成功
-            // 更新自定义构件列表
-            if (this.appType === "3") {
-              // 合模
-              this.handleMultModle();
-            } else {
-              this.updateGodChildNode();
+            if(this.$refs.ComponentTree){
+              realData.uuids.map((v) => {
+                this.$refs.ComponentTree.updateTree(v);
+              });
             }
+          } else if (realData.id === "18") {
+            // 构件创建成功,这个没有返回相关信息了
           } else if (realData.id === "19") {
             // 构件新建失败
             // 提示判断添加构建失败
@@ -1545,9 +1021,6 @@ export default {
     },
     // 清除定时器
     clearTimePass() {
-      if (this.timerInfo) {
-        clearInterval(this.timerInfo);
-      }
       if (this.loadTimer) {
         clearTimeout(this.loadTimer);
       }
@@ -1698,11 +1171,9 @@ export default {
   0% {
     background-color: #092b4c;
   }
-
   50% {
     background-color: #2a4663;
   }
-
   100% {
     background-color: none;
   }
@@ -1712,11 +1183,9 @@ export default {
   0% {
     background-color: #092b4c;
   }
-
   50% {
     background-color: #2a4663;
   }
-
   100% {
     background-color: none;
   }
@@ -1783,7 +1252,6 @@ export default {
       0% {
         background-position: 0 0;
       }
-
       100% {
         background-position: -100% 0;
       }
@@ -1802,11 +1270,9 @@ export default {
       0% {
         left: -30px;
       }
-
       25% {
         left: -30px;
       }
-
       50% {
         left: -20px;
       }
@@ -1821,11 +1287,9 @@ export default {
       0% {
         left: -30px;
       }
-
       25% {
         left: -30px;
       }
-
       50% {
         left: -20px;
       }
@@ -1845,7 +1309,6 @@ export default {
     }
     .learn-text {
       letter-spacing: 1px;
-      // font-size: 30px;
     }
     .hidden-text {
       margin-top: 130px;
@@ -1943,38 +1406,6 @@ export default {
 </style>
 <style lang="less" >
 @import './index.less';
-.tree-content {
-  .el-tree {
-    background: none;
-    color: #fff;
-    .el-tree-node {
-      .el-tree-node__content {
-        line-height: 200%;
-        background: none;
-        &:hover {
-          background: none;
-        }
-      }
-      .el-tree-node__expand-icon {
-        color: #fff;
-      }
-      .is-leaf {
-        color: transparent;
-      }
-      .el-checkbox {
-        position: absolute;
-        right: 0;
-      }
-      .el-checkbox__inner {
-        background-color: transparent;
-        border-color: transparent;
-      }
-    }
-    .tree-select {
-      background: rgba(255, 255, 255, 0.2);
-    }
-  }
-}
 .set-index-message {
   z-index: 5000 !important;
 }
@@ -2008,42 +1439,6 @@ export default {
   }
 }
 
-
-.publicList{
-  padding-top: 10px;
-}
-.publicComListItem {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  margin-bottom: 10px;
-  cursor: pointer;
-  .img {
-    margin: 0 2px;
-    height: 115px;
-    width: 115px;
-    img {
-      border-radius: 5px;
-      width: 100%;
-      height: 100%;
-    }
-  }
-  .name {
-    width: 100px;
-    color: #fff;
-    text-align: center;
-    white-space: nowrap; //强制在一行显示
-    overflow: hidden; //溢出隐藏
-    text-overflow: ellipsis; //显示省略号
-  }
-}
-
-.delect-com-icon {
-  padding: 0 10px;
-  width: 15px;
-  height: 15px;
-}
 .invite-team-friend {
   padding-left: 0 !important;
   .invite-btn {
@@ -2068,14 +1463,9 @@ export default {
   padding-left: 15px;
   font-size: 14px;
   box-sizing: border-box;
-
   img {
     width: 20px;
     height: 20px;
   }
 }
-.lockLock{
-  margin-right: 5px;
-}
-
 </style>

@@ -38,31 +38,7 @@ const MODELAPI = {
     CREATESOCKET: params => {
         return `${BASE.WSPRO}websocket/${params}`
     },
-    // 获取构件树
-    LISTMEMBERTREE: params => {
-        return request({
-            url: '/appli/getComponent',
-            method: 'get',
-            params
-        })
-    },
 
-    // 浏览器中 锁的打开与关闭
-    LOCKOPENORCLOSE: params => {
-        return request({
-            url: '/OurBim/editorModeControl',
-            method: 'post',
-            params
-        })
-    },
-    // 点击锁后的 后续信息
-    LOCKAFTERINFO: params => {
-        return request({
-            url: '/OurBim/editorActorOrModel',
-            method: 'post',
-            params
-        })
-    },
     // 获取关注视角
     LISTFOLLOWPOINT: params => {
         return request({
@@ -306,6 +282,33 @@ const MODELAPI = {
             params
         })
     },
+}
+
+// 点击锁后的 后续信息
+export function lockAfterInfo(params) {
+    return newRequest({
+        url: '/OurBim/editorActorOrModel',
+        method: 'post',
+        params
+    })
+}
+
+// 浏览器中 锁的打开与关闭
+export function lockControl(params) {
+    return newRequest({
+        url: '/OurBim/editorModeControl',
+        method: 'post',
+        params
+    })
+}
+
+// 获取构件树
+export function getComponents(params) {
+    return newRequest({
+        url: '/appli/getComponent',
+        method: 'get',
+        params
+    })
 }
 // 设置太阳光、天空光照属性
 export function setWeatherSun(params,data) {

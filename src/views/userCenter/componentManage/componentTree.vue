@@ -8,64 +8,73 @@
                 </el-input>
             </div>
             <!-- 树 -->
-            <el-tree class="set-tree" ref="setTree" @check="checkTree" :empty-text="treeEmpty" @node-expand="ExpandNode"
-                :props="propsMember" :expand-on-click-node="false" :load="loadNode" :filter-node-method="filterNode"
-                show-checkbox highlight-current node-key="uuid" lazy>
-                <span class="custom-tree-node" :class="activeTree &&
-                    node.data.uuid === activeTree.uuid &&
-                    activeLeaf
-                    ? 'tree-select'
-                    : ''
-                    " slot-scope="{ node,data}" @click="handleTree(node, 0)">
+            <el-tree class="set-tree" ref="tree" empty-text="暂无数据" :props="props" :expand-on-click-node="false" :load="loadNode" @check="isShowCom" :filter-node-method="filterNode"
+                :show-checkbox="true" highlight-current node-key="uuid" lazy>
+                <span class="custom-tree-node" :class="{'tree-select': activeTree && node.data.uuid === activeTree.uuid}" slot-scope="{node,data}" @click="handleTree(node)">
                     <span class="label-span">{{ node.label }}</span>
-                    <!-- 合模 -->
-                    <img src="@/assets/images/tag/6.png" @click.stop="deleteCom(node)" class="delect-com-icon" v-if="appType === '3' &&
-                        node.data.typeId === 'comp' &&
-                        checkedNodeVanjian(node)
-                        " />
-                    <!-- 非合模 -->
-                    <img src="@/assets/images/tag/6.png" @click.stop="deleteCom(node)" class="delect-com-icon"
-                        v-if="appType !== '3' && node.data.typeId === 'comp'" />
-                    <span v-if="node.level === 1 && (appType === '3' || appType === '0') && node.data.name != '自定义构件'">
-                        <!-- 开锁和闭锁 -->
-                        <i class="iconfont icon-24gl-lock2 lockLock" v-if="!data[`lockView${+node.id}`]"
-                            @click.stop="handleToggleLock(node, data, node.id)"></i>
-                        <i v-else class="iconfont icon-24gl-unlock4 lockLock"
-                            @click.stop="handleToggleLock(node, data, node.id)"></i>
+                    <!-- 删除按钮 -->
+                    <img src="@/assets/images/tag/6.png" @click.stop="deleteCom(node)" class="delect-com-icon" v-if="data.typeId === 'comp'" />
+                    <!-- 开锁和闭锁 -->
+                    <span v-if="node.level === 1 && (appType === '3' || appType === '0') && !node.data.typeId">
+                        <i class="iconfont lockLock" :class="data.lockCheck?'icon-24gl-unlock4':'icon-24gl-lock2'" @click.stop="toggleLock(data)"></i>
                     </span>
+                    <!-- 显示状态 -->
                     <span>
-                        <!-- 显示状态 -->
-                        <i class="iconfont icon-xianshi2" v-if="!node.checked"></i>
-                        <i v-else class="iconfont icon-yincang1"></i>
+                        <i class="iconfont" :class="node.checked?'icon-yincang1':'icon-xianshi2'"></i>
                     </span>
                 </span>
             </el-tree>
+
+            <!-- 构件操作图标 -->
+            <OperatingTools ref="OperatingTools" v-if="drawer && hasLock()" :data="data"/>
         </template>
     </Drawer>
 </template>
 
 <script>
-import { doAction } from '@/api/model_api.js'
-import COMPONENTLIBRARY, { controlComShowOrHide } from "@/api/component-library";
+import { doAction, getComponents, lockControl, lockAfterInfo, setGizmoMode } from "@/api/model_api";
+import { deleteCustomCom, focusComponent } from "@/api/component-library";
 import Drawer from "@/components/Drawer/index.vue";
+import OperatingTools from "../resourcePool/operatingTools.vue";
 import { EventBus } from '@/utils/bus.js'
 export default {
-    components: { Drawer },
+    components: { Drawer, OperatingTools },
     props: {
         data: {
             type: Object,
             default:()=> {}
+        },
+        // 构件数据
+        memberInfo: {
+            type: Array,
+            require: false,
+            default: ()=> []
         }
     },
     data() {
         return {
+            appType: null,
             search: '',
-            leafInfo: null,
+            treeParentData: [],//tree一级数据
+            props: {
+                label: "name",
+                isLeaf: (e) => {//指定是否为叶子结点,叶子结点即为最后一个结点
+                    if (e.haveChild === "1") {
+                        return false;
+                    }
+                    if (e.haveChild === "0") {
+                        return true;
+                    }
+                },
+            },
+            activeTree: null,//选中状态
         };
     },
     watch: {},
     computed: {},
-    created() { },
+    created() {
+        this.appType = this.$route.query.appType
+    },
     mounted() { },
     methods: {
         show() {
@@ -77,36 +86,205 @@ export default {
         },
         // 搜索
         searchContent() {
-            this.$refs.setTree.filter(this.search);
+            this.$refs.tree.filter(this.search);
         },
-        checkTree(data, e) {
-            this.leafInfo = data;
-            if (e.checkedKeys.includes(data.uuid)) {
-                // this.handleState = 8;
-                data.activeState = 1;
-                // 如果是自定义构件
-                if (data.typeId === "comp") {
-                    this.componentShowHide(data.uuid);
-                    return;
+        // 搜索过滤
+        filterNode(value, data) {
+            if (!value) return true;
+            const reamVal = data.name.indexOf(value) !== -1;
+            return reamVal;
+        },
+        //遍历是否有锁打开了
+        hasLock(){
+            let index = this.treeParentData.findIndex(e=>{return e.lockCheck})
+            return index > -1
+        },
+        // 获取树列表
+        async getList(node) {
+            let params = {
+                appliId: this.data.appId,
+                uuid: node&&node.key,
+                pageNo: 1,
+                pageSize: 20,
+            };
+            let list = await getComponents(params).then((res) => {
+                return res.data || [];
+            });
+
+            return list;
+        },
+        // 加载子树数据的方法，仅当 lazy 属性为true 时生效
+        loadNode(node, resolve) {
+            this.getList(node).then((res) => {
+                if(node.level === 0){
+                    this.treeParentData = res
                 }
-                this.updateOrder();
-            } else {
-                // this.handleState = 8;
-                data.activeState = 0;
-                // 如果是自定义构件
-                if (data.typeId === "comp") {
-                    this.componentShowHide(data.uuid);
-                    return;
+                res.length&&res.forEach((item) => {
+                    // 点击锁🔒
+                    this.$set(item,'lockCheck',false)
+                    //选中聚焦
+                    this.$set(item,'check',false)
+                });
+                return resolve(res);
+            }).catch(()=>{
+                return resolve([]);
+            });
+        },
+        // 点击聚焦操作
+        handleTree(e) {
+            e.data.check = !e.data.check
+            // 切换不同构件
+            if(this.activeTree && (e.data.uuid !== this.activeTree.uuid)){
+                e.data.check = true
+            }
+            this.activeTree = e.data.check ? e.data : null
+            // 新增俩个属性放在最前面
+            if(e.data?.dynamicData?.length){
+                e.data.dynamicData = [{name:'构件ID',value:e.data.revitCode},{name:'构件名称',value:e.data.name}].concat(e.data.dynamicData)
+            }
+            let memberInfo = e.data.dynamicData || []
+            this.$emit('update:memberInfo',memberInfo)
+            if(e.data.typeId === 'comp'){
+                // 自定义构件
+                this.focusCustomComponent({comId: e.data.uuid, flag: e.data.check})
+            }else{
+                // 选中构件或者取消选中
+                let data = {
+                    projectId: e.data.projectId || e.data.compData?.projectId,
+                    mn: e.data.uuid,
+                    action: e.data.check ? 'selectComponent' : 'cancelSelectComponent'
                 }
-                this.updateOrder();
+                this.updateEdit(data);
             }
         },
-        // 自定义构件显示隐藏
-        componentShowHide(uuid) {
-            const lableVisibility = this.leafInfo.activeState == 1 ? false : true;
-            controlComShowOrHide({comId: uuid, taskId: this.data.taskId,lableVisibility}).then((res) => {
-                this.$message.success(res.message);
+        // 自定义构件聚焦
+        focusCustomComponent({ comId, flag }){
+            let params = {
+                taskId: this.data.taskId,
+                comId,
+                flag
+            }
+            focusComponent(params).then((res) => {
+                this.$message.success(res.message)
+            })
+        },
+        // 删除构件
+        deleteCom(node) {
+            const { name, uuid } = node.data;
+            this.$confirm(`此操作删除此【${name}】构件, 是否继续?`, "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+            }).then(() => {
+                deleteCustomCom({
+                    taskId: this.data.taskId,
+                    comId: uuid,
+                }).then((res) => {
+                    this.$message.success(res.message)
+                    this.updateTree(node.data.uuid);
+                });
+            }).catch(() => {});
+        },
+        // 删除构件后更新tree数据
+        updateTree(uuid) {
+            if(!this.$refs.tree) return
+            // 获取自定义构件父级node
+            const nodeParent = this.$refs.tree.getNode(uuid).parent;
+            this.$refs.tree.remove(uuid);
+            if (!nodeParent.childNodes.length) {
+                this.$refs.tree.remove(nodeParent.data.uuid);
+            }
+        },
+        // 点击锁
+        toggleLock(data = { lockCheck: false }){
+            if(data.uuid){
+                data.lockCheck = !data.lockCheck
+            }
+            this.$refs.tree && this.$refs.tree.root.childNodes.forEach(e=>{
+                if(e.data.uuid !== data.uuid){
+                    e.data.lockCheck = false
+                }
+            })
+            const params = {
+                taskId: this.data.taskId,
+                flag: data.lockCheck ? "on" : "off"
+            }
+            lockControl(params).then((res) => {
+                if(params.flag === 'on'){
+                    this.setGizmoMode('translate')
+                    const infoParam = {
+                        taskId: this.data.taskId,
+                        actorOrAppId: data.projectId
+                    }
+                    lockAfterInfo(infoParam).then((res) => {
+                        this.checkGizmoMode(true)
+
+                    });
+                }
+                setTimeout(()=>{
+                    this.hasLock()
+                },200)
+            });        
+        },
+        // 打开缩放，旋转，移动
+        setGizmoMode(mode){
+            let params ={
+                taskId: this.data.taskId,
+                mode
+            }
+            setGizmoMode(params).then(()=>{
+                this.$message.success('切换编辑模式')
+            })
+        },
+        // 选中图标缩放，旋转，移动check:true/false
+        checkGizmoMode(check){
+            this.$refs.OperatingTools.toolIcons.forEach(e=>{
+                if(e.key === 'translate'){
+                    e.check = check
+                }
+            })
+        },
+        // 点击显示或隐藏构件
+        isShowCom(data, e){
+            let params = {
+                mn: data.uuid,
+                projectId: data.projectId,
+                action: !e.checkedKeys.includes(data.uuid) ? 'showComponents' : 'hideComponents'
+            }
+            this.updateEdit(params)
+        },
+        // 添加构件后更新列表
+        updateComTreeAfterAddComs() {
+            if (this.appType === "3") {
+                // 合模
+                this.handleMultModle();
+            } else {
+                this.getList({key:"vanjian"}).then((res) => {
+                    this.$refs.tree.updateKeyChildren("vanjian", res);
+                })
+            }
+        },
+        // 查看有没有合模的自定义构件
+        // 合模必然有 uuid vanjian1
+        handleMultModle() {
+            const godNodeList = this.$refs.tree.getNode("vanjian1").parent.childNodes;
+            const mult = godNodeList.find((item) => {
+                return item.data.typeId === "comp";
             });
+
+            let uuid = mult ? mult.data.uuid : null;
+            // 如果没有自定义构件，保存最后一个节点，用来insertAfter节点
+            if (!uuid) {
+                this.getList().then((res) => {
+                    let customMess = res[res.length - 1];
+                    this.$refs.tree.insertAfter(customMess,godNodeList[godNodeList.length-1].data.uuid);
+                })
+            }else{
+                // 如果有了自定义构件列表
+                this.getList({key:uuid}).then((res) => {
+                    this.$refs.tree.updateKeyChildren(uuid, res);
+                })
+            }
         },
         // action事件
         updateEdit(obj) {
@@ -123,7 +301,30 @@ export default {
 </script>
 <style lang="less" scoped>
 .search {
-    margin: 10px;
+    margin: 10px!important;
+}
+/deep/ .el-tree{
+    height: calc(100% - 110px);
+    overflow: auto;
+    .tree-select {
+        padding: 2.5px 8px 2.5px 0;
+    }
+    .delect-com-icon {
+        padding: 0 10px;
+        width: 15px;
+        height: 15px;
+    }
+    .el-checkbox {
+        position: absolute;
+        right: 0;
+    }
+    .el-checkbox__inner {
+        background-color: transparent !important;
+        border-color: transparent !important;
+    }
+    .lockLock{
+        margin-right: 5px;
+    }
 }
 
 .custom-tree-node {

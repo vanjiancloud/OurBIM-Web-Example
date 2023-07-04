@@ -28,14 +28,6 @@ const COMPONENTLIBRARY = {
             params
         })
     },
-    // 构件定位
-    focusComponent: params => {
-        return request({
-            url: '/comControl/comFocus',
-            method: 'POST',
-            params
-        })
-    },
 
     operateCom: params => {
         return request({
@@ -44,15 +36,26 @@ const COMPONENTLIBRARY = {
             params
         })
     },
-    // 删除自定义构件
-    // /comControl/deleteCom
-    deleteCom: params => {
-        return request({
-            url: '/comControl/deleteCom',
-            method: 'POST',
-            params
-        })
-    },
+}
+
+
+// 构件定位
+export function focusComponent(params) {
+    return newRequest({
+        url: '/comControl/comFocus',
+        method: 'POST',
+        params
+    })
+}
+
+
+// 删除自定义构件
+export function deleteCustomCom(params) {
+    return newRequest({
+        url: '/comControl/deleteCom',
+        method: 'POST',
+        params
+    })
 }
 
 

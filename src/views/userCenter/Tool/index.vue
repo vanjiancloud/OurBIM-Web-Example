@@ -510,6 +510,10 @@ export default {
                 // 视图关闭弹窗
                 this.changeDecomposition(0)
             }
+            if(key === 'browser'){
+                // 浏览器关闭弹窗
+                this.$parent.$refs.ComponentTree.toggleLock()
+            }
         },
         // 操作子菜单
         onSubTool(item, parentKey) {
