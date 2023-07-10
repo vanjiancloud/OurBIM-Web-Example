@@ -522,7 +522,7 @@ export default {
         
         // 图标显示--------缩放,旋转,移动,轴心,笔刷
         checkOprate(data){
-            this.$refs.OperatingTools.checkOprate(data)
+            this.$refs.OperatingTools&&this.$refs.OperatingTools.checkOprate(data)
         },
         // 搜索内容----前端实现的
         searchContent(){
