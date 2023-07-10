@@ -14,7 +14,7 @@
                 <el-button v-if="updateCode" class="grayPlain" type="primary" size="mini" @click="confirmUpdateLocator(false)">恢 复</el-button>
             </el-form-item>
             <el-form-item label="视 图：">
-                <el-image class="codeViewImg" :src="form.codeViewImg" fit="fit"></el-image>
+                <el-image class="codeViewImg" :src="form.codeViewImg" fit="fit" @click="focusCode({codeIds:form.codeId,focus:true})"></el-image>
             </el-form-item>
             <el-form-item label="创 建 人：">
                 <span class="text">{{ form.createUser }}</span>
@@ -189,6 +189,7 @@ export default {
     .codeViewImg{
         width: 100%;
         height: 110px;
+        cursor: pointer;
     }
 }
 </style>

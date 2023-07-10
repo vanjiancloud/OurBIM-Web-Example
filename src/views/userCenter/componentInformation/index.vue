@@ -42,7 +42,7 @@
                     </div>
                 </div>
                 <!-- 光源参数 -->
-                <div class="pointolite geometryItem" v-if="['spotLight','pointLight','areaLight'].includes(geometryObjForm.lightType)">
+                <!-- <div class="pointolite geometryItem" v-if="['spotLight','pointLight','areaLight'].includes(geometryObjForm.lightType)">
                     <div class="comTitle"><img src="@/assets/images/component/title2.png"/>光源参数</div>
                     <div class="switchBox">
                         <span>灯光开关</span><el-switch @change="changeLight" v-model="geometryObjForm.affectsWorld" active-value="true" inactive-value="false" active-color="#409EFF" inactive-color="#727272"></el-switch>
@@ -59,6 +59,34 @@
                     <div class="sliderBox" v-if="['spotLight','pointLight'].includes(geometryObjForm.lightType)"><span>光源长度</span><el-slider @change="changeLight" v-model="geometryObjForm.sourceLength"></el-slider><span class="sliderNum">{{geometryObjForm.sourceLength}}cm</span></div>
                     <div class="sliderBox" v-if="['areaLight'].includes(geometryObjForm.lightType)"><span>光源高度</span><el-slider @change="changeLight" v-model="geometryObjForm.sourceHeight"></el-slider><span class="sliderNum">{{geometryObjForm.sourceHeight}}cm</span></div>
                     <div class="sliderBox" v-if="['areaLight'].includes(geometryObjForm.lightType)"><span>光源宽度</span><el-slider @change="changeLight" v-model="geometryObjForm.sourceWidth"></el-slider><span class="sliderNum">{{geometryObjForm.sourceWidth}}cm</span></div>
+                </div> -->
+                <!-- 光源参数 -->
+                <div class="pointolite" v-if="['spotLight','pointLight','areaLight','sphereReflection'].includes(geometryObjForm.lightType)">
+                    <div class="comTitle"><img src="@/assets/images/component/title2.png"/>光源参数</div>
+                    <div class="switchBox">
+                        <span class="itemSpan" v-if="geometryObjForm.lightType!=='sphereReflection'"><span>灯光开关</span><el-switch @change="changeLight" v-model="geometryObjForm.affectsWorld" active-value="true" inactive-value="false" active-color="#409EFF" inactive-color="#727272"></el-switch></span>
+                        <span class="itemSpan" v-if="geometryObjForm.lightType!=='sphereReflection'"><span>阴影开关</span><el-switch @change="changeLight" v-model="geometryObjForm.castShadow" active-value="true" inactive-value="false" active-color="#409EFF" inactive-color="#727272"></el-switch></span>
+                        <span class="itemSpan" v-if="geometryObjForm.lightType==='sphereReflection'"><span>反射开关</span><el-switch @change="changeLight" v-model="geometryObjForm.visiableOfReflection" active-value="true" inactive-value="false" active-color="#409EFF" inactive-color="#727272"></el-switch></span>
+                    </div>
+                    <div class="colorBox itemSpan" v-if="geometryObjForm.lightType!=='sphereReflection'"><span>光源颜色</span><div><el-color-picker @change="changeLight" v-model="geometryObjForm.lightColor" show-alpha></el-color-picker><span>{{geometryObjForm.lightColor&&formatColor(geometryObjForm.lightColor)}}</span></div></div>
+                    <!-- 反射源类型 -->
+                    <div class="sliderBox" v-if="['sphereReflection'].includes(geometryObjForm.lightType)">
+                        <div style="margin-top:15px">反射源类型</div>
+                        <el-radio-group v-model="geometryObjForm.reflectionSourceType" @change="changeLight">
+                            <el-radio label="CapturedScene" size="large">捕获场景</el-radio>
+                            <el-radio label="SpecifiedCubemap" size="large">立体贴图</el-radio>
+                        </el-radio-group>
+                    </div>
+                    <template v-for="(item,index) in lightArr">
+                        <div class="sliderBox" :key="index" v-if="item.limits&&item.limits.length?item.limits.includes(geometryObjForm.lightType):true">
+                            <p>{{item.name}}</p>
+                            <div class="sliderParmer">
+                                <el-slider @change="changeLight(item.key,$event)" v-model="geometryObjForm[item.key+'1']" :min="item.min" :max="item.max" :step="item.step"></el-slider>
+                                <el-input class="sliderInput" v-model.trim="geometryObjForm[item.key]" @change="changeLight(item.key,$event)" size="small" v-only-number="{min:0,precision:1}" />
+                                <span class="sliderNum">{{item.unit}}</span>
+                            </div>
+                        </div>
+                    </template>
                 </div>
                 <!-- 参数化尺寸参数 -->
                 <!-- <div class="parameter geometryItem">
@@ -239,6 +267,81 @@ export default {
             // 材质end-----------------------
 
             // 几何信息start-----------------------
+            lightArr:[
+                {
+                    key:'intensity',
+                    name: '光源强度',
+                    unit: 'cd',
+                    limits: ['spotLight','pointLight','areaLight']
+                },
+                {
+                    key:'radiationAngleOfInner',
+                    name: '内辐射角',
+                    unit: '°',
+                    limits: ['spotLight']
+                },
+                {
+                    key:'radiationAngleOfOuter',
+                    name: '外辐射角',
+                    unit: '°',
+                    limits: ['spotLight']
+                },
+                {
+                    key:'attenuationRadius',
+                    name: '衰减半径',
+                    unit: 'cm',
+                    limits: ['spotLight','pointLight','areaLight']
+                },
+                {
+                    key:'influenceRadius',
+                    name: '影响半径',
+                    unit: 'cm',
+                    limits: ['sphereReflection']
+                },
+                {
+                    key:'brightness',
+                    name: '反射强度',
+                    unit: '',
+                    limits: ['sphereReflection'],
+                    min:0,
+                    max:1,
+                    step:0.1
+                },
+                {
+                    key:'sourceRadius',
+                    name: '光源半径',
+                    unit: 'cm',
+                    limits: ['spotLight','pointLight']
+                },
+                {
+                    key:'sourceLength',
+                    name: '光源长度',
+                    unit: 'cm',
+                    limits: ['spotLight','pointLight']
+                },
+                {
+                    key:'sourceHeight',
+                    name: '光源高度',
+                    unit: 'cm',
+                    limits: ['areaLight']
+                },
+                {
+                    key:'sourceWidth',
+                    name: '光源宽度',
+                    unit: 'cm',
+                    limits: ['areaLight']
+                },{
+                    key:'barnDoorAngle',
+                    name: '谷仓门角度',
+                    unit: '。',
+                    limits: ['areaLight']
+                },{
+                    key:'barnDoorLength',
+                    name: '谷仓门长度',
+                    unit: 'cm',
+                    limits: ['areaLight']
+                }
+            ],
             geometryObjForm: {
                 public:false,//是否是自定义构件
                 id:'',//构件的id
@@ -259,7 +362,23 @@ export default {
                 influenceRadius:10,//影响半径
                 brightness:0.5,//光源亮度,反射强度
                 sourceHeight:1,//光源高度
-                sourceWidth:1//光源宽度
+                sourceWidth:1,//光源宽度
+                reflectionSourceType:'CapturedScene',//反射源类型
+                barnDoorAngle:44,//谷仓门角度
+                barnDoorLength:200,//谷仓门长度
+                // 表单的
+                intensity1:1,
+                radiationAngleOfInner1:44,
+                radiationAngleOfOuter1:44,
+                attenuationRadius1:100,
+                sourceRadius1:10,
+                sourceLength1:200,
+                influenceRadius1:10,
+                brightness1:0.5,
+                sourceHeight1:1,
+                sourceWidth1:1,
+                barnDoorAngle1:44,
+                barnDoorLength1:200
             },
             wordHeightList: [], //字体高度
             wordTypeList: [], //字体
@@ -284,54 +403,53 @@ export default {
                 this.geometryObjForm.id = val.mN
                 // 处理光源信息
                 val.rsInfo.forEach(e=>{
-                    if(e.key==='name'){
-                        this.geometryObjForm.name = e.value
-                    }
-                    if(e.key==='lightType'){
-                        this.geometryObjForm.lightType = e.value
+                    if(['id','name','lightType'].includes(e.key)){
+                        this.geometryObjForm[e.key] = e.value
+                        console.log('🚀🚀🚀@@@@@@@@@@@@@@@@@@@@@@@', e.value);
                     }
                     // 坐标
                     if(e.key==='location'){
                         let value = e.value.split(' ')
                         this.geometryObjForm.location = {
-                            x: +value[0].split('=')[1],
-                            y: +value[1].split('=')[1],
-                            z: +value[2].split('=')[1]
+                            x: value[0].split('=')[1],
+                            y: value[1].split('=')[1],
+                            z: value[2].split('=')[1]
                         }
                     }
                     // 角度
                     if(e.key==='rotation'){
                         let value = e.value.split(' ')
                         this.geometryObjForm.rotation = {
-                            p: +value[0].split('=')[1],
-                            y: +value[1].split('=')[1],
-                            r: +value[2].split('=')[1]
+                            p: value[0].split('=')[1],
+                            y: value[1].split('=')[1],
+                            r: value[2].split('=')[1]
                         }
                     }
                     //比例,缩放
                     if(e.key==='scale'){
                         let value = e.value.split(' ')
                         this.geometryObjForm.scale = {
-                            x: +value[0].split('=')[1],
-                            y: +value[1].split('=')[1],
-                            z: +value[2].split('=')[1]
+                            x: value[0].split('=')[1],
+                            y: value[1].split('=')[1],
+                            z: value[2].split('=')[1]
                         }
                     }
                     // 灯光开关
                     if(e.key === 'affectsWorld'){
                         this.geometryObjForm.affectsWorld = e.value
                     }
-                    // 阴影开关
-                    if(e.key === 'castShadow'){
-                        this.geometryObjForm.castShadow = e.value
+                    // 阴影开关,灯光开关,反射开关,反射源类型
+                    if(['castShadow','affectsWorld','visiableOfReflection','reflectionSourceType'].includes(e.key)){
+                        this.geometryObjForm[e.key] = e.value
                     }
                     // 灯光颜色
                     if(e.key === 'lightColor'){
                         this.geometryObjForm.lightColor = this.arrToRgb(JSON.parse(e.value))
                     }
                     // 灯光强度,内辐射角,外辐射角,衰减半径,影响半径,光源半径,光源长度,光源亮度
-                    if(['brightness','sourceLength','sourceRadius','influenceRadius','intensity','radiationAngleOfInner','radiationAngleOfOuter','attenuationRadius'].includes(e.key)){
+                    if(['brightness','sourceLength','sourceRadius','influenceRadius','intensity','radiationAngleOfInner','radiationAngleOfOuter','attenuationRadius','barnDoorAngle','barnDoorLength'].includes(e.key)){
                         this.geometryObjForm[e.key] = Number(e.value)
+                        this.$set(this.geometryObjForm, e.key+'1', Number(e.value))
                     }
                 })
                 this.$forceUpdate()
@@ -343,14 +461,15 @@ export default {
     },
     created() {
         this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
-        this.unwatchToken = this.$store.watch((state) => state.material.materialAllInfo.matParam,(newValue, oldValue) => {
-            if(!newValue || !newValue.baseParamsList){
+        this.unwatchToken = this.$store.watch((state) => state.material.materialAllInfo,(newValue, oldValue) => {
+            if(!newValue.matParam || !newValue.matParam.baseParamsList){
                 this.unwatchToken()
                 return
             }
+            console.log('🚀🚀🚀是否更新',newValue);
             this.materialChartlet.textureParamsList = this.formatBaseParams(this.getChartletParams())
-            this.materialChartlet.baseParamsList = this.formatBaseParams(newValue.baseParamsList)
-            this.formatColors(newValue.colorList)
+            this.materialChartlet.baseParamsList = this.formatBaseParams(newValue.matParam.baseParamsList)
+            this.formatColors(newValue.matParam.colorList)
         });
     },
     mounted() {},
@@ -569,17 +688,46 @@ export default {
             }).catch(() => {});
         },
         // 改变光源信息
-        changeLight(){
+        changeLight(key,e){
+            if(key){
+                this.geometryObjForm[key] = +e
+                this.geometryObjForm[key+'1'] = +e
+            }
             let params = {
                 taskId: this.data.taskId,
                 comId: this.geometryObjForm.id
             }
-            let { sourceWidth,sourceHeight, influenceRadius, lightType, affectsWorld, castShadow, lightColor, intensity, radiationAngleOfInner, radiationAngleOfOuter, attenuationRadius, sourceRadius, sourceLength, brightness } = this.geometryObjForm
+            let { sourceWidth,sourceHeight, influenceRadius, lightType, affectsWorld, castShadow, lightColor, intensity, radiationAngleOfInner, radiationAngleOfOuter, attenuationRadius, sourceRadius, sourceLength, brightness, visiableOfReflection, reflectionSourceType,barnDoorAngle,barnDoorLength } = this.geometryObjForm
+            let data = {}
             let color = this.formatColor(lightColor)&&this.formatColor(lightColor).split(',')
-            let data = {
-                lightType,affectsWorld, castShadow, intensity, radiationAngleOfInner,
-                radiationAngleOfOuter, attenuationRadius, sourceRadius, sourceLength, brightness,influenceRadius,sourceHeight,sourceWidth,
-                lightColor: color ? [color[0],color[1],color[2],color[3]*255] : ['255','255','255','255']
+            if(lightType==='spotLight'){
+                // 聚光源
+                data = {
+                    lightType,
+                    affectsWorld,castShadow,intensity,radiationAngleOfInner,radiationAngleOfOuter,
+                    attenuationRadius,sourceRadius,sourceLength,
+                    lightColor: color ? [color[0],color[1],color[2],color[3]*255] : ['255','255','255','255']
+                }
+            }else if(lightType==='pointLight'){
+                // 点光源
+                data = {
+                    lightType,
+                    affectsWorld,castShadow,intensity,attenuationRadius,sourceRadius,sourceLength,
+                    lightColor: color ? [color[0],color[1],color[2],color[3]*255] : ['255','255','255','255']
+                }
+            }else if(lightType==='areaLight'){
+                // 面光源,
+                data = {
+                    lightType,barnDoorAngle,barnDoorLength,
+                    affectsWorld,castShadow,intensity,attenuationRadius,sourceHeight,sourceWidth,
+                    lightColor: color ? [color[0],color[1],color[2],color[3]*255] : ['255','255','255','255']
+                }
+            }else if(lightType==='sphereReflection'){
+                // 反射球
+                data = {
+                    lightType,
+                    visiableOfReflection,reflectionSourceType,influenceRadius,brightness
+                }
             }
             modifyComParams(params, data).then(()=>{
                 this.$message.success('修改光源信息成功！')
@@ -771,7 +919,35 @@ export default {
         }
     }
     .light{}
-    .pointolite{}
+    .pointolite{
+        .sliderBox{
+            display: initial;
+        }
+        .itemSpan{
+            padding-right: 16px;
+            font-size: 14px;
+            >span{
+                padding-right: 5px;
+            }
+            &:first-child{
+                padding-left: 0;
+            }
+        }
+        .sliderParmer{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            .sliderInput{
+                width: 70px;
+                margin-left: 12px;
+            }
+            .sliderNum{
+                width: 10px;
+                min-width: initial;
+            }
+        }
+    }
     .word{
         .wordTextarea{
             display: flex;
