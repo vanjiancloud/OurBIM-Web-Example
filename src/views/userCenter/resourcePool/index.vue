@@ -21,7 +21,7 @@
             
             <div class="contentWrap">               
                 <!-- 导入图纸(未上线) -->
-                <!-- <Drawing ref="Drawing" :levels="levels" :data="{taskId:data.taskId}" @toDrawLevel="toDrawLevel" /> -->
+                <Drawing ref="Drawing" :levels="levels" :data="{taskId:data.taskId}" @toDrawLevel="toDrawLevel" />
                 <!-- 内容资源 -->
                 <div class="content" v-if="!levels.hideContent">
                     <div class="contentItem" v-for="(item,index) in (levels.level ===2 ? contentLevel2ListPage:contentList[levels.tab2Index])" :key="index" @click="toLevel2(item)">
@@ -154,7 +154,9 @@ export default {
     },
     methods: {
         show() {
-            this.$refs.Drawing.drawingList = this.$refs.Drawing.$options.data().drawingList//图纸数据初始化
+            if(this.$refs.Drawing){
+                this.$refs.Drawing.drawingList = this.$refs.Drawing.$options.data().drawingList//图纸数据初始化
+            }
             this.$refs.Drawer.show()
             switch (this.levels.tab1Index) {
                 case 0:
