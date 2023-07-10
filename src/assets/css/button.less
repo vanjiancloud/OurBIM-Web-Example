@@ -1,60 +1,87 @@
-.btn(@bgColor,@color:'#FFFFFF'){
-  background: @bgColor;
-  border: 1px solid @bgColor;
-  color: @color;
-  &:hover,&:focus{
-    background: rgba(@bgColor,0.8);
+.btn(@bgColor, @color: "#FFFFFF") {
+    background: @bgColor;
     border: 1px solid @bgColor;
     color: @color;
-  }
-}
-.borderBtn(@bgColor){
-  border: 1px solid @bgColor!important;
-  background: #fff!important;
-  color: @bgColor!important;
-  &:hover,&:focus{
-    background: rgba(@bgColor,1)!important;
-    border: 1px solid @bgColor!important;
-    color:#FFFFFF!important;
-  }
-}
-.blueBtn{
-  .btn(#00AAF0)
-}
-.blueBtn1{
-    .btn(#11C5FC)
-  }
 
-.bluePlainBtn{
-  .borderBtn(#00AAF0)
+    &:hover,
+    &:focus {
+        background: rgba(@bgColor, 0.8);
+        border: 1px solid @bgColor;
+        color: @color;
+    }
 }
 
-.bluePlainBtn1{
-  .borderBtn(#00C9FD)
+.borderBtn(@bgColor, @bg: "#FFFFFF") {
+    border: 1px solid @bgColor  !important;
+    background: @bg  !important;
+    color: @bgColor  !important;
+
+    &:hover,
+    &:focus {
+        background: rgba(@bgColor, 1) !important;
+        border: 1px solid @bgColor  !important;
+        color: #ffffff !important;
+    }
 }
 
-.iconBtn(@color){
-  font-size: 16px;
-  cursor: pointer;
-  color: @color;
-  margin: 0 5px;
-  &:hover{
-    color: rgba(@color,0.8);
-  }
+.blueBtn {
+    .btn(#00aaf0);
 }
 
-.editIcon{
-  .iconBtn(#20C6FF)
-}
-.deleteIcon{
-  .iconBtn(#FF0008)
-}
-.greyIcon{
-    .iconBtn(#aaa29b)
+.blueBtn1 {
+    .btn(#11c5fc);
 }
 
-.el-button.is-disabled, .el-button.is-disabled:focus, .el-button.is-disabled:hover{
-    background: #E0E0E0!important;
-    border: #E0E0E0!important;
-    color: #6D7278;
+
+
+// 有边框的
+.grayPlain {
+    .borderBtn(#727272,#4C4D4F);
+    color:#ffffff!important;
+}
+
+.bluePlainBtn {
+    .borderBtn(#00aaf0);
+}
+
+.bluePlainBtn1 {
+    .borderBtn(#00c9fd);
+}
+
+.darkBluePlain {
+    .borderBtn(#00c9fd, #4c4d4f);
+}
+
+
+
+// 图标按钮
+.iconBtn(@color) {
+    font-size: 16px;
+    cursor: pointer;
+    color: @color;
+    margin: 0 5px;
+
+    &:hover {
+        color: rgba(@color, 0.8);
+    }
+}
+
+.editIcon {
+    .iconBtn(#20c6ff);
+}
+
+.deleteIcon {
+    .iconBtn(#ff0008);
+}
+
+.greyIcon {
+    .iconBtn(#aaa29b);
+}
+
+.el-button.is-disabled,
+.el-button.is-disabled:focus,
+.el-button.is-disabled:hover {
+    background: #e0e0e0 !important;
+    border: #e0e0e0 !important;
+    color: #6d7278;
 }

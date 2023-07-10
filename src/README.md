@@ -72,8 +72,11 @@ function sendToIframe(type, data, message) {
 // 控制栏整体显示/隐藏
     type = 1001 
     data = true/false
-// 选择性隐藏工具栏显示/隐藏
+// 选择性隐藏工具栏
     type = 1002
+    data = ['show','selection']
+// 选择性显示工具栏
+    type = 1003
     data = ['show','selection']
 // viewcube显示/隐藏
     type = 1015

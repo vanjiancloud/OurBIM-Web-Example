@@ -3,7 +3,7 @@
     <div class="tool">
         <div class="toolBox">
             <template v-for="(item,index) in list">
-                <div class="toolItem" v-if="hideTag(item.key)" :key="index">
+                <div class="toolItem" v-if="hideTag(item.key) && showTag(item.key)" :key="index">
                     <el-tooltip effect="dark" :content="item.name" placement="top">
                         <img :src="item.check?item.checkUrl:item.url" @click="onTool(item)" />
                     </el-tooltip>
@@ -12,7 +12,7 @@
                         <!-- 显示子菜单 -->
                         <div class="subTool" v-if="item.key==='show'&&item.check">
                             <template v-for="item in showSubList">
-                                <div v-if="hideTag(item.key)" :key="item.key" class="subToolItem" @click="onSubTool(item)">
+                                <div v-if="hideTag(item.key) && showTag(item.key)" :key="item.key" class="subToolItem" @click="onSubTool(item)">
                                     <el-tooltip effect="dark" :content="item.name" placement="left">
                                         <span>
                                             <el-image :src="item.url" class="url"></el-image>
@@ -25,7 +25,7 @@
                         <!-- 模型剖切子菜单 -->
                         <div class="subTool" v-if="item.key==='modelSectioning'&&item.check">
                             <template v-for="item in sectioningSubList">
-                                <div v-if="hideTag(item.key)" :key="item.key" class="subToolItem" @click="onSubTool(item)">
+                                <div v-if="hideTag(item.key) && showTag(item.key)" :key="item.key" class="subToolItem" @click="onSubTool(item)">
                                     <el-tooltip effect="dark" :content="item.name" placement="left">
                                         <img :src="item.check?item.checkUrl:item.url" />
                                     </el-tooltip>
@@ -35,7 +35,7 @@
                         <!-- 测量子菜单 -->
                         <div class="subTool" v-if="item.key==='measure'&&item.check">
                             <template v-for="item in measureSubList">
-                                <div v-if="hideTag(item.key)" :key="item.key" class="subToolItem" @click="onSubTool(item)">
+                                <div v-if="hideTag(item.key) && showTag(item.key)" :key="item.key" class="subToolItem" @click="onSubTool(item)">
                                     <el-tooltip effect="dark" :content="item.name" placement="left" v-if="item.key!=='settingMeasure'">
                                         <img :src="item.check?item.checkUrl:item.url" />
                                     </el-tooltip>
@@ -63,7 +63,7 @@
                         <!-- 视图子菜单 -->
                         <div class="subTool" v-if="item.key==='view'&&item.check">
                             <template v-for="item in viewSubList">
-                                <div v-if="hideTag(item.key)" :key="item.key" class="subToolItem" @click="onSubTool(item)">
+                                <div v-if="hideTag(item.key) && showTag(item.key)" :key="item.key" class="subToolItem" @click="onSubTool(item)">
                                     <el-tooltip effect="dark" :content="item.name" placement="left">
                                         <img :src="item.check?item.checkUrl:item.url" />
                                     </el-tooltip>
@@ -92,6 +92,7 @@ import {
     doAction
 } from '@/api/model_api.js'
 import { materialEditorControl } from "@/api/material_api";
+import { openLocate } from '@/api/userCenter/locationCode.js'
 export default {
     components: {},
     props: {
@@ -197,6 +198,13 @@ export default {
                     checkUrl: require('@/assets/images/todo/check/tool13.png'),
                     name: '构件信息',
                     key: 'componentInformation',
+                    check: false
+                },
+                {
+                    url: require('@/assets/images/todo/unchecked/tool15.png'),
+                    checkUrl: require('@/assets/images/todo/check/tool15.png'),
+                    name: 'AR定位码',
+                    key: 'locationCode',
                     check: false
                 }
             ],
@@ -439,6 +447,10 @@ export default {
                     case 'componentInformation':
                         filterCheck(item.name, ['browser', 'resource'])
                         break
+                    // 定位码
+                    case 'locationCode':
+                        filterCheck(item.name)
+                        break
 
                     default:
                         break
@@ -513,6 +525,10 @@ export default {
             if(key === 'browser'){
                 // 浏览器关闭弹窗
                 this.$parent.$refs.ComponentTree.toggleLock()
+            }
+            if(key === 'locationCode'){
+                // 定位码退出定位模式
+                openLocate({ taskId: this.data.taskId, status: false })
             }
         },
         // 操作子菜单
@@ -678,9 +694,16 @@ export default {
                 }
             })
         },
-        // 通过postMessage显示和隐藏工具栏
+        // 通过postMessage选择性隐藏工具栏
         hideTag(key){
-            return !this.data.singleTags.includes(key)
+            return !this.data.hideTools.includes(key)
+        },
+        // 通过postMessage选择性显示工具栏
+        showTag(key){
+            if(!this.data.showTools.length){
+                return true
+            }
+            return this.data.showTools.includes(key)
         }
     }
 }

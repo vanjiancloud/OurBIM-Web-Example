@@ -21,9 +21,11 @@ import { closeComEdit } from "@/api/component-library";
 export default {
     components: {},
     props: {
+        // taskId必传
         data: {
             type: Object,
-            default:()=> {}
+            default:()=> {},
+            required:true
         }
     },
     data() {
@@ -155,7 +157,7 @@ export default {
         // 图标显示--------缩放,旋转,移动,轴心,笔刷
         checkOprate(data){
             this.toolIcons.forEach((e,i)=>{
-                if(['缩放','旋转','移动'].includes(e.name)){
+                if(['scale','rotate','translate'].includes(e.key)){
                     if(e.key===data.gizmoMode){
                         e.check = true
                     }else{

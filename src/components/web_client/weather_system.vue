@@ -295,7 +295,7 @@
   import { getDict } from "@/api/dict.js"
   import { EventBus } from '@/utils/bus.js'
   import Drawer from "@/components/Drawer/index.vue";
-  import MODELAPI, { setWeatherSun, setWeatherLight, doAction } from "@/api/model_api";
+  import MODELAPI, { setWeatherSun, setWeatherLight, doAction, backgroundSetting } from "@/api/model_api";
   import CHAILIAOAPI from "@/api/material_api";
   import moment from 'moment'
   export default {

@@ -20,7 +20,7 @@
             <Tab v-model="levels.tab2Index" v-show="levels.level ===1" class="roundTab" :data="typeList" @onTab="onTypeTab" />
             
             <div class="contentWrap">               
-                <!-- 导入图纸 -->
+                <!-- 导入图纸(未上线) -->
                 <Drawing ref="Drawing" :levels="levels" :data="{taskId:data.taskId}" @toDrawLevel="toDrawLevel" />
                 <!-- 内容资源 -->
                 <div class="content" v-if="!levels.hideContent">
@@ -77,7 +77,7 @@ import Pagination from "@/components/Pagination/index.vue";
 import DialogChartletGroup from "./DialogChartletGroup.vue"; // 新建分组弹框
 import DialogChartlet from "./DialogCharlet.vue"; // 上传贴图弹框
 import Drawer from "@/components/Drawer/index.vue";
-import OperatingTools from "./operatingTools.vue";
+import OperatingTools from "@/components/OperatingTools";
 import Drawing from "./drawing.vue"; //导入图纸
 export default {
     components: { Tab, Pagination, DialogChartletGroup, DialogChartlet, Drawer, OperatingTools, Drawing },

@@ -7,7 +7,15 @@
         </div>
 
         <div class="drawerContent">           
-            <div class="drawerTitle">{{ title }}<i class="el-icon-close" @click="close"></i></div>
+            <div class="drawerTitle">
+                <div>
+                    <!-- 图标 -->
+                    <span class="icon" @click="onIcon()"><slot name="icon"></slot></span>
+                    <span class="title">{{ title }}<i class="el-icon-close" @click="close"></i></span>
+                </div>
+                <!-- 标题右侧内容 -->
+                <div class="titleRight"><slot name="titleRight"></slot></div>
+            </div>
             <slot :isShow="isShow" :drawer="drawer"></slot>
         </div>
     </div>
@@ -49,6 +57,9 @@ export default {
         close() {
             this.hide()
             this.$emit('onClose')
+        },
+        onIcon(){
+            this.$emit('onIcon')
         }
     }
 }
@@ -101,13 +112,22 @@ export default {
         word-break: break-all;
         position: relative;
         border-bottom: 1px solid #464646;
-        i{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .title i{
             color: #FFFFFF;
             position: absolute;
             right: 16px;
             top: 17px;
             font-size: 20px;
             cursor: pointer;
+        }
+        .icon{
+            cursor: pointer;
+            i,img{
+                margin-right: 12px;
+            }
         }
     }
     div {

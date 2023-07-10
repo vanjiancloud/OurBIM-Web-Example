@@ -16,10 +16,11 @@
                     <img src="@/assets/images/tag/6.png" @click.stop="deleteCom(node)" class="delect-com-icon" v-if="data.typeId === 'comp'" />
                     <!-- 开锁和闭锁 -->
                     <span v-if="node.level === 1 && (appType === '3' || appType === '0') && !node.data.typeId">
-                        <i class="iconfont lockLock" :class="data.lockCheck?'icon-24gl-unlock4':'icon-24gl-lock2'" @click.stop="toggleLock(data)"></i>
+                        <i class="iconfont" :class="data.lockCheck?'icon-24gl-unlock4':'icon-24gl-lock2'" @click.stop="toggleLock(data)"></i>
                     </span>
                     <!-- 显示状态 -->
                     <span>
+                        <!-- <svg-icon class="icon" icon-class="freeze1" @click.stop="freezeCom(node)"/> -->
                         <i class="iconfont" :class="node.checked?'icon-yincang1':'icon-xianshi2'"></i>
                     </span>
                 </span>
@@ -32,10 +33,10 @@
 </template>
 
 <script>
-import { doAction, getComponents, lockControl, lockAfterInfo, setGizmoMode } from "@/api/model_api";
+import { doAction, getComponents, lockControl, lockAfterInfo, setGizmoMode, freezeCom } from "@/api/model_api";
 import { deleteCustomCom, focusComponent } from "@/api/component-library";
 import Drawer from "@/components/Drawer/index.vue";
-import OperatingTools from "../resourcePool/operatingTools.vue";
+import OperatingTools from "@/components/OperatingTools";
 import { EventBus } from '@/utils/bus.js'
 export default {
     components: { Drawer, OperatingTools },
@@ -217,8 +218,7 @@ export default {
                         actorOrAppId: data.projectId
                     }
                     lockAfterInfo(infoParam).then((res) => {
-                        this.checkGizmoMode(true)
-
+                        this.$refs.OperatingTools.checkOprate({gizmoMode:'translate'})
                     });
                 }
                 setTimeout(()=>{
@@ -234,14 +234,6 @@ export default {
             }
             setGizmoMode(params).then(()=>{
                 this.$message.success('切换编辑模式')
-            })
-        },
-        // 选中图标缩放，旋转，移动check:true/false
-        checkGizmoMode(check){
-            this.$refs.OperatingTools.toolIcons.forEach(e=>{
-                if(e.key === 'translate'){
-                    e.check = check
-                }
             })
         },
         // 点击显示或隐藏构件
@@ -286,6 +278,20 @@ export default {
                 })
             }
         },
+        // 冻结与解冻
+        freezeCom(node){
+            let params = {
+                taskId:this.data.taskId,
+                isFreeze:'',
+                isAll: node.level===1 ? true : false, //是否冻结所有
+                freezePakId: ''
+            }
+            let data = []
+            console.log('🚀🚀🚀',node);
+            // freezeCom(params,data).then((res)=>{
+            //     this.$message.success(res.message)
+            // })
+        },
         // action事件
         updateEdit(obj) {
             let params = {
@@ -310,7 +316,6 @@ export default {
         padding: 2.5px 8px 2.5px 0;
     }
     .delect-com-icon {
-        padding: 0 10px;
         width: 15px;
         height: 15px;
     }
@@ -321,9 +326,6 @@ export default {
     .el-checkbox__inner {
         background-color: transparent !important;
         border-color: transparent !important;
-    }
-    .lockLock{
-        margin-right: 5px;
     }
 }
 
@@ -341,6 +343,11 @@ export default {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+    }
+    .icon,i,img{
+        color: #ffffff;
+        font-size: 15px;
+        margin: 0 2px;
     }
 }
 </style>

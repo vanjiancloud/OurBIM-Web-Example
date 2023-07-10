@@ -106,8 +106,10 @@
         <viewPhoto ref="viewPhoto" v-show="checkShow('view')" :viewPic="showViewPicture" :setProps="{ taskId }" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
         <!-- 浏览器构件树，构件管理 -->
         <ComponentTree ref="ComponentTree" v-show="checkShow('browser')" :memberInfo.sync="memberInfo" :data="{ taskId, appId }"/>
+        <!-- 定位码 -->
+        <LocationCode ref="LocationCode" v-show="checkShow('locationCode')" :data="{ taskId, appId }"/>
         <!-- 底部工具栏 -->
-        <Tool ref="Tool" v-model="activeToolArr" :data="{ taskId, appId, selectPark, isGis, singleTags: controllerInfo.singleTags }" @onSuccess="toolSuccess"/>
+        <Tool ref="Tool" v-model="activeToolArr" :data="{ taskId, appId, selectPark, isGis, hideTools: controllerInfo.hideTools, showTools:controllerInfo.showTools }" @onSuccess="toolSuccess"/>
         <!-- 设置比例尺弹窗 -->
         <DialogScale ref="DialogScale" :data="copyingPictures" />
       </div>
@@ -133,6 +135,7 @@ import ComponentInformation from "../componentInformation/index.vue"; //构件�
 import Label from "../label/index.vue"; //标签
 import TagLibrary from "../label/tagLibrary.vue"; //标签库
 import ComponentTree from "../componentManage/componentTree.vue"; //构件树
+import LocationCode from "../locationCode/index.vue"; //定位码
 import Tool from "../Tool/index.vue"; //底部工具栏
 import DialogScale from "@/views/userCenter/resourcePool/DialogScale.vue"; //设置比例尺弹窗
 import { EventBus } from '@/utils/bus.js'
@@ -155,6 +158,7 @@ export default {
     TagLibrary,
     DialogScale,
     ComponentTree,
+    LocationCode,
     Drawer,
   },
   data() {
@@ -176,7 +180,8 @@ export default {
         uiBar: true,
         viewCube: true,
         tagUiBar: true,
-        singleTags: [],//选择性隐藏工具栏数组
+        hideTools: [],//选择性隐藏工具栏数组
+        showTools: [],//选择性显示工具栏数组
       },
       webUrl: null,
       appId: null,
@@ -338,6 +343,10 @@ export default {
             case 'componentInformation':
                 this.$refs.ComponentInformation.show()
                 break;
+            // 定位码
+            case 'locationCode':
+                this.$refs.LocationCode.show()
+                break;
         
             default:
                 break;
@@ -406,8 +415,11 @@ export default {
               // viewCube的显示/隐藏
               this.controllerInfo.viewCube = e.data.data;
             } else if (e.data.type === 1002) {
-              // 选择工具栏的显示/隐藏
-              this.controllerInfo.singleTags = e.data.data || []
+              // 选择工具栏隐藏
+              this.controllerInfo.hideTools = e.data.data || []
+            } else if (e.data.type === 1003) {
+              // 选择工具栏显示
+              this.controllerInfo.showTools = e.data.data || []
             }
           }
         },
@@ -867,6 +879,11 @@ export default {
             // 视点动画播放
             if(this.$refs.viewPhoto){
               this.$refs.viewPhoto.WebSocketData = realData
+            }
+          }else if(realData.id === "41"){
+            // 定位码放置完成
+            if(this.$refs.LocationCode){
+              this.$refs.LocationCode.placeCode()
             }
           }else if(realData.id === "42"){
             // 临摹图信息

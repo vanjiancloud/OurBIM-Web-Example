@@ -387,4 +387,14 @@ export function doAction(params) {
     })
 }
 
+// 指令下发
+export function freezeCom(params, data) {
+    return newRequest({
+        url: '/comControl/freezeCom',
+        method: 'post',
+        params,
+        data
+    })
+}
+
 export default MODELAPI
