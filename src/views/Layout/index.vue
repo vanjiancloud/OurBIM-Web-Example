@@ -168,32 +168,32 @@
                         <span class="first">
                           <img src="../Layout/img/phone.png" alt="" />
                         </span>
-                        <span class="second">150&emsp;2261&nbsp;8868</span>
+                        <span class="second">150 2261 8868</span>
                       </div>
                     </div>
                   </div>
-                  <!-- <div class="box-p">
+                  <div class="box-p">
                     <div class="one">
                       <div class="one-c">
-                        <img src="../Layout/img/niu.png" alt="" />
+                        <img src="../Layout/img/su.jpg" alt="" />
                       </div>
                     </div>
-                    <div class="two">华南区</div>
+                    <div class="two">中部地区</div>
                     <div class="three">
                       <div class="three-o">
                         <span class="first">
                           <img src="../Layout/img/user.png" alt="" />
                         </span>
-                        <span class="second">牛经理</span>
+                        <span class="second">苏经理</span>
                       </div>
                       <div>
                         <span class="first">
                           <img src="../Layout/img/phone.png" alt="" />
                         </span>
-                        <span class="second">198&emsp;6771&nbsp;9871</span>
+                        <span class="second">177 7177 7957</span>
                       </div>
                     </div>
-                  </div> -->
+                  </div>
                   <div class="box-p">
                     <div class="one">
                       <div class="one-c">
@@ -212,32 +212,10 @@
                         <span class="first">
                           <img src="../Layout/img/phone.png" alt="" />
                         </span>
-                        <span class="second">186&emsp;2283&nbsp;7275</span>
+                        <span class="second">186 2283 7275</span>
                       </div>
                     </div>
                   </div>
-                  <!-- <div class="box-p">
-                    <div class="one">
-                      <div class="one-c">
-                        <img src="../Layout/img/liu.png" alt="" />
-                      </div>
-                    </div>
-                    <div class="two">华中区、西部地区</div>
-                    <div class="three">
-                      <div>
-                        <span class="first">
-                          <img src="../Layout/img/user.png" alt="" />
-                        </span>
-                        <span class="second">刘经理</span>
-                      </div>
-                      <div>
-                        <span class="first">
-                          <img src="../Layout/img/phone.png" alt="" />
-                        </span>
-                        <span class="second">186&emsp;2283&nbsp;7275</span>
-                      </div>
-                    </div>
-                  </div> -->
                   <el-button slot="reference" class="btn">
                     <img src="./img/yuyue.png" alt="" />
                     <span>预约演示</span>
@@ -592,8 +570,6 @@ export default {
 
 <style lang="less">
 .el-popover {
-  width: 400px;
-  height: 240px;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -601,6 +577,7 @@ export default {
     width: 130px;
     height: 200px;
     background-color: #fff;
+    margin: 0 10px;
     .one {
       width: 100%;
       height: 128px;

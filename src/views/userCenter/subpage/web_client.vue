@@ -883,7 +883,7 @@ export default {
           }else if(realData.id === "41"){
             // 定位码放置完成
             if(this.$refs.LocationCode){
-              this.$refs.LocationCode.placeCode()
+              this.$refs.LocationCode.placeCode(realData.codeID)
             }
           }else if(realData.id === "42"){
             // 临摹图信息

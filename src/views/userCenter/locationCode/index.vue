@@ -43,12 +43,13 @@
             <AddCode ref="AddCode" v-if="type!==0" :data="{ ...data, type }" @update="update"/>
         </Drawer>
         <!-- 操作轴 -->
-        <OperatingTools ref="OperatingTools" :data="data" class="OperatingTools" v-if="$refs.AddCode&&$refs.AddCode.updateCode"/>
+        <OperatingTools ref="OperatingTools" :data="data" class="OperatingTools" v-if="$refs.AddCode&&($refs.AddCode.updateCode||$refs.AddCode.surePlace)"/>
     </div>
 </template>
 
 <script>
 import OperatingTools from "@/components/OperatingTools";
+import { setGizmoMode } from "@/api/model_api";
 import { getList, download, deleteCode, openLocate } from '@/api/userCenter/locationCode.js'
 import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";
@@ -78,6 +79,7 @@ export default {
     methods: {
         show() {
             this.openLocate()
+            this.onIcon()
             this.getList()
             this.$refs.Drawer.show()
         },
@@ -92,8 +94,13 @@ export default {
             })
         },
         // 定位码放置完成
-        placeCode(){
-            this.$refs.AddCode.placeCode()
+        placeCode(codeID){
+            if(codeID!=='null'){
+                this.$refs.AddCode.placeCode()
+            }else{
+                // 取消
+                this.$refs.AddCode.sureLocator(false)
+            }
         },
         // 获取列表
         getList(){
@@ -175,9 +182,18 @@ export default {
             setTimeout(()=>{
                 if(e&&this.$refs.OperatingTools){
                     this.$refs.OperatingTools.checkOprate({gizmoMode:'translate'})
+                    this.setGizmoMode('translate')
                 }
             },300)
-        }
+        },
+        // 打开缩放，旋转，移动
+        setGizmoMode(mode){
+            let params ={
+                taskId: this.data.taskId,
+                mode
+            }
+            setGizmoMode(params)
+        },
     }
 };
 </script>
