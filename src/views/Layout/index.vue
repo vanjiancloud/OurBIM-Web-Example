@@ -3,228 +3,59 @@
     <!-- 顶部导航栏 -->
     <el-header>
       <div class="head">
-        <el-row>
-          <!-- PC端 -->
-          <el-col>
-            <div class="max-nav md-page">
-              <div class="w-100">
-                <el-menu
-                  :default-active="$route.path"
-                  text-color="#999"
-                  active-text-color="#FF6600"
-                  class="nav-menu"
-                  mode="horizontal"
-                >
-                  <el-menu-item index="/" style="padding: 0">
-                    <a href="http://www.ourbim.com">
-                      <img class="logo-index" src="./img/logo.png" alt=""
-                    /></a>
-                  </el-menu-item>
-                  <el-menu-item index="/"
-                    ><a href="http://www.ourbim.com">首页</a></el-menu-item
-                  >
-                  <el-menu-item index=""
-                    ><a href="http://www.ourbim.com/introduce">
-                      功能介绍</a
-                    ></el-menu-item
-                  >
-                  <!-- <el-menu-item index=""
-                    ><a href="http://www.ourbim.com/solution">
-                      解决方案</a
-                    ></el-menu-item
-                  > -->
-                  <el-menu-item index=""
-                    ><a href="http://www.ourbim.com/sample_project">
-                      示例项目</a
-                    ></el-menu-item
-                  >
-                  <el-menu-item index=""
-                    ><a href="http://www.ourbim.com/application_scenarios">
-                      应用场景</a
-                    ></el-menu-item
-                  >
-                  <el-menu-item index=""
-                    ><a href="http://www.ourbim.com/product_pricing">
-                      产品定价</a
-                    ></el-menu-item
-                  >
-                  <el-menu-item index=""
-                    ><a href="http://www.ourbim.com/latest_news">
-                      最新资讯</a
-                    ></el-menu-item
-                  >
-                  <el-menu-item index=""
-                    ><a href="https://www.ourbim.com/download">
-                      下载</a
-                    ></el-menu-item
-                  >
-                  <el-submenu index="" popper-class="popper-class">
-                    <template slot="title">开发者</template>
-                    <el-menu-item index="/"
-                      ><a
-                        href="http://www.ourbim.com/developer/developer_guide"
-                        style="
-                          text-decoration: none;
-                          color: #999;
-                          font-size: 16px;
-                          display: block;
-                          width: 100%;
-                        "
-                      >
-                        开发指南
-                      </a></el-menu-item
-                    >
-                    <el-menu-item index="/"
-                      ><a
-                        href="http://www.ourbim.com/developer/api_file"
-                        style="
-                          text-decoration: none;
-                          color: #999;
-                          font-size: 16px;
-                          display: block;
-                          width: 100%;
-                        "
-                      >
-                        {{ $t("APIdov") }}
-                      </a></el-menu-item
-                    >
-                    <el-menu-item index="/"
-                      ><a
-                        href="https://www.ourbim.com/developer/demo/index.html"
-                        style="
-                          text-decoration: none;
-                          color: #999;
-                          font-size: 16px;
-                          display: block;
-                          width: 100%;
-                        "
-                      >
-                        示例DEMO
-                      </a></el-menu-item
-                    >
-
-                    <el-menu-item index="/">
-                      <a
-                        href="http://www.ourbim.com/developer/update_log"
-                        style="
-                          text-decoration: none;
-                          color: #999;
-                          font-size: 16px;
-                          display: block;
-                          width: 100%;
-                        "
-                        >{{ $t("log") }}</a
-                      ></el-menu-item
-                    >
-                  </el-submenu>
-                </el-menu>
-                <!--项目中心-->
-                <div class="rights">
-                  <div class="project" @click="toManage">
-                    <div class="photo">
-                      <img src="./img/project.png" alt="" />
-                    </div>
-                    <span> 项目中心 </span>
+        <div class="headLeft">
+          <a href="http://www.ourbim.com"><img class="logo-index" src="./img/logo.png" alt=""/></a>
+          <el-menu
+            :default-active="$route.path"
+            text-color="#333333"
+            active-text-color="#FF6600"
+            class="nav-menu"
+            mode="horizontal"
+          >
+          <template v-for="(item,index) in menuList">
+            <el-menu-item index="/" v-if="!item.children" :key="index">
+              <a :href="item.url" class="aMenu">{{item.name}}</a>
+            </el-menu-item>
+            <el-submenu v-else index="/" popper-class="popper-class" :key="index+1">
+              <template slot="title">{{item.name}}</template>
+              <el-menu-item index="/" v-for="(childItem,childIndex) in item.children" :key="childIndex">
+                <a :href="item.url" class="aMenu">{{childItem.name}}</a>
+              </el-menu-item>
+            </el-submenu>
+          </template>
+          </el-menu>
+        </div>
+          <!--项目中心-->
+          <div class="rights">
+            <el-button @click="toManage" type="primary" size="mini" class="headerBtn blueBtn">
+                <img src="./img/project.png" alt="" />
+                控制台
+              </el-button>
+            <!-- 头像 -->
+            <el-dropdown class="avatar">
+              <img class="avatarImg" :src="imgUrl ? imgUrl : require('./img/man.png')" alt=""/>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item @click.native="toLogin">{{ $t("quit") }}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <!--预约演示-->
+            <el-popover placement="bottom" width="auto" trigger="hover" popper-class="order">
+              <div class="orderContent">
+                <div class="orderItem" v-for="(item,index) in orderList" :key="index">
+                  <div class="code"><img :src="item.codeImg" alt="" /></div>
+                  <div class="address">{{item.address}}</div>
+                  <div class="user">
+                    <div><img src="../Layout/img/user.png" alt="" />{{item.name}}</div>
+                    <div><img src="../Layout/img/phone.png" alt="" />{{item.phone}}</div>
                   </div>
-                  <!-- 头像 -->
-                  <div class="end">
-                    <div class="touxiang">
-                      <el-dropdown>
-                        <span>
-                          <img
-                            :src="imgUrl ? imgUrl : require('./img/man.png')"
-                            alt=""
-                          />
-                        </span>
-                        <el-dropdown-menu slot="dropdown">
-                          <el-dropdown-item
-                            @click.native="toLogin"
-                            style="background-color: #fff"
-                            >{{ $t("quit") }}</el-dropdown-item
-                          >
-                        </el-dropdown-menu>
-                      </el-dropdown>
-                    </div>
-                  </div>
-                  <!--预约演示-->
                 </div>
-                <!--预约演示-->
-                <el-popover placement="bottom" trigger="hover">
-                  <div class="box-p">
-                    <div class="one">
-                      <div class="one-c">
-                        <img src="../Layout/img/sun.png" alt="" />
-                      </div>
-                    </div>
-                    <div class="two">北方地区</div>
-                    <div class="three">
-                      <div>
-                        <span class="first">
-                          <img src="../Layout/img/user.png" alt="" />
-                        </span>
-                        <span class="second">孙经理</span>
-                      </div>
-                      <div>
-                        <span class="first">
-                          <img src="../Layout/img/phone.png" alt="" />
-                        </span>
-                        <span class="second">150 2261 8868</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="box-p">
-                    <div class="one">
-                      <div class="one-c">
-                        <img src="../Layout/img/su.jpg" alt="" />
-                      </div>
-                    </div>
-                    <div class="two">中部地区</div>
-                    <div class="three">
-                      <div class="three-o">
-                        <span class="first">
-                          <img src="../Layout/img/user.png" alt="" />
-                        </span>
-                        <span class="second">苏经理</span>
-                      </div>
-                      <div>
-                        <span class="first">
-                          <img src="../Layout/img/phone.png" alt="" />
-                        </span>
-                        <span class="second">177 7177 7957</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="box-p">
-                    <div class="one">
-                      <div class="one-c">
-                        <img src="../Layout/img/wan.png" alt="" />
-                      </div>
-                    </div>
-                    <div class="two">南方地区</div>
-                    <div class="three">
-                      <div>
-                        <span class="first">
-                          <img src="../Layout/img/user.png" alt="" />
-                        </span>
-                        <span class="second">小万</span>
-                      </div>
-                      <div>
-                        <span class="first">
-                          <img src="../Layout/img/phone.png" alt="" />
-                        </span>
-                        <span class="second">186 2283 7275</span>
-                      </div>
-                    </div>
-                  </div>
-                  <el-button slot="reference" class="btn">
-                    <img src="./img/yuyue.png" alt="" />
-                    <span>预约演示</span>
-                  </el-button>
-                </el-popover>
               </div>
-            </div>
-          </el-col>
-        </el-row>
+              <el-button slot="reference" type="primary" size="mini" class="headerBtn orangeBtn">
+                <img src="./img/yuyue.png" alt="" />
+                预约演示
+              </el-button>
+            </el-popover>
+          </div>
       </div>
     </el-header>
     <!-- 内容区 -->
@@ -428,6 +259,73 @@ export default {
       currentCountSpace: "", //当前用户已使用的存储率
       countBF: "", //当前用户的并发总数最大值
       currentCountBF: "", //当前用户的并发数
+      orderList:[
+        {
+          name: '孙经理',
+          phone: '150 2261 8868',
+          address: '北方地区',
+          codeImg: require('./img/sun.png')
+        },
+        {
+          name: '苏经理',
+          phone: '177 7177 7957',
+          address: '中部地区',
+          codeImg: require('./img/su.jpg')
+        },
+        {
+          name: '小万',
+          phone: '186 2283 7275',
+          address: '南方地区',
+          codeImg: require('./img/wan.png')
+        }
+      ],
+      // 菜单
+      menuList:[
+        {
+          name:'首页',
+          url:'/'
+        },
+        {
+          name:'功能介绍',
+          url:'http://www.ourbim.com/introduce'
+        },{
+          name:'示例项目',
+          url:'http://www.ourbim.com/sample_project'
+        },{
+          name:'应用场景',
+          url:'http://www.ourbim.com/application_scenarios'
+        },{
+          name:'产品定价',
+          url:'http://www.ourbim.com/product_pricing'
+        },{
+          name:'最新资讯',
+          url:'http://www.ourbim.com/latest_news'
+        },{
+          name:'下载',
+          url:'https://www.ourbim.com/download'
+        },{
+          name:'开发者',
+          url:'',
+          children:[
+            {
+              name:'开发指南',
+              url:'http://www.ourbim.com/developer/developer_guide',
+            },
+            {
+              name:this.$t("APIdov"),
+              url:'http://www.ourbim.com/developer/api_file',
+            },
+            {
+              name:'示例DEMO',
+              url:'https://www.ourbim.com/developer/demo/index.html',
+            },
+            {
+              name:this.$t("log"),
+              url:'http://www.ourbim.com/developer/update_log',
+            }
+          ]
+        },
+      ]
     };
   },
   created() {
@@ -568,200 +466,111 @@ export default {
 };
 </script>
 
-<style lang="less">
-.el-popover {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  .box-p {
-    width: 130px;
-    height: 200px;
-    background-color: #fff;
-    margin: 0 10px;
-    .one {
-      width: 100%;
-      height: 128px;
-      background-color: #f0f2f5;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      .one-c {
-        width: 95px;
-        height: 95px;
-        img {
+<style lang="less" scoped>
+.headerBtn{
+  padding: 5px 12px;
+  img{
+    width: 14px;
+    height: auto;
+    margin-right: 3px;
+    vertical-align: bottom;
+  }
+}
+.order{
+  .orderContent{
+    display: flex;
+    justify-content: start;
+    gap:20px;
+    .orderItem{
+      width: 140px;
+      .code{
+        width: 100%;
+        height: 140px;
+        padding: 25px;
+        background-color: #f4f5f7;
+        img{
           width: 100%;
           height: 100%;
         }
       }
-    }
-    .two {
-      width: 100%;
-      height: 21px;
-      line-height: 21px;
-      background-color: #ff6600;
-      margin-bottom: 5px;
-      text-align: center;
-      color: #fff;
-      font-size: 12px;
-    }
-    .three {
-      width: 100%;
-      height: 46px;
-      border: 1px solid #00aaf0;
-      img {
-        width: 12px;
-        height: 12px;
-        margin: 0 5px;
-      }
-      .second {
+      .address{
+        width: 100%;
+        background-color: #ff6803;
+        text-align: center;
+        line-height: 22px;
+        color: #ffffff;
         font-size: 12px;
-        color: #000;
+      }
+      .user{
+        border:1px solid #00aaf0;
+        padding: 3px 5px;
+        margin-top:5px;
+        font-size: 12px;
+        img{
+          margin-right: 5px;
+        }
       }
     }
   }
 }
-</style>
 
-<style lang="less" scoped>
+.aMenu{
+  text-decoration: none;
+  color: #333333;
+  font-family: PingFang SC;
+  font-size: 16px;
+  &:hover {
+    color: #ff6600;
+  }
+}
+
 .el-container {
-  margin: 0;
-  padding: 0;
   .el-header {
-    margin: 0;
-    padding: 0;
+    width: 100%;
+    background-color: #fff;
+    padding: 0 32px;
+    min-width: 1200px;
     .head {
       width: 100%;
       height: 60px;
-      background-color: #fff;
-    }
-    .w-100 {
-      width: 100%;
       display: flex;
-    }
-    .el-menu {
-      width: 100vw;
-    }
-    .max-nav {
-      width: 1200px;
-      display: flex;
-      margin: 0 auto;
-      height: 60px;
-      .nav-menu {
-        border-bottom: none;
+      justify-content: space-between;
+      align-items: center;
+      .headLeft{
+        display: flex;
+        align-items: center;
       }
+    }
       .rights {
-        height: 60px;
-        line-height: 60px;
         display: flex;
         align-items: center;
-        .project {
-          width: 86px;
-          height: 26px;
-          line-height: 26px;
-          background-color: #ff6600;
-          color: #fff;
-          border-radius: 5px;
-          display: flex;
-          justify-content: space-around;
-          cursor: pointer;
-          font-size: 14px;
-          .photo {
-            width: 15px;
-            height: 15px;
-            margin-left: 2px;
-            margin-top: 2px;
-            img {
-              width: 100%;
-              height: 100%;
-            }
-          }
-          span {
-            margin-bottom: 5px;
-          }
-        }
-        .end {
-          height: 60px;
+        .avatar{
           margin: 0 20px;
-          .touxiang {
-            .el-dropdown {
-              height: 52px;
-            }
-            img {
-              width: 40px;
-              height: 40px;
-              border-radius: 50%;
-              cursor: pointer;
-              margin-top: 10px;
-            }
+          .avatarImg{
+            width: 40px;
+            height: 40px;
+            border-radius: 100%;
+            cursor: pointer;
           }
-        }
-      }
-      .btn {
-        width: 86px;
-        height: 26px;
-        line-height: 26px;
-        background-color: #ff6600;
-        color: #fff;
-        font-size: 14px;
-        display: flex;
-        align-items: center;
-        border-radius: 5px;
-        position: relative;
-        margin-top: 17px;
-        span {
-          margin-left: 4px;
-        }
-        img {
-          width: 15px;
-          height: 15px;
-          position: absolute;
-          top: 5px;
-          left: 5px;
         }
       }
       .logo-index {
         width: 150px;
-        margin-right: 50px;
+        margin-right: 100px;
       }
-      .el-menu-item {
+      .nav-menu{
         border-bottom: none;
-        font-size: 16px;
-        padding: 0 10px;
-        height: 60px;
-        line-height: 60px;
-        background: #fff !important;
-        margin-top: -2px;
-        a {
-          text-decoration: none;
-          color: #000;
-          font-family: PingFang SC;
-          font-size: 16px;
-          color: #999;
-        }
-        a:hover {
-          color: #ff6600;
-        }
-      }
-      .el-submenu {
-        ::v-deep .el-submenu__title {
+        /deep/.el-menu-item {
           border-bottom: none;
           font-size: 16px;
-          height: 60px;
-          line-height: 60px;
+          padding: 0 10px;
           background: #fff !important;
-          i {
-            color: #999;
-            right: 0;
-            top: 55%;
-          }
+          margin-top: -2px;
+        }
+        /deep/ .el-submenu__title{
+          font-size: 16px;
         }
       }
-    }
-    .el-menu {
-      .el-menu-item {
-        font-size: 16px;
-      }
-    }
   }
   .el-main {
     margin-bottom: 35px;

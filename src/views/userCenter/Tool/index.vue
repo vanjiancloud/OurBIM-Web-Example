@@ -726,6 +726,7 @@ export default {
         width: 100%;
         padding: 0 16px;
         .toolItem {
+            box-sizing: content-box;
             padding: 0 10px;
             cursor: pointer;
             width: 30px;
