@@ -405,7 +405,6 @@ export default {
                 val.rsInfo.forEach(e=>{
                     if(['id','name','lightType'].includes(e.key)){
                         this.geometryObjForm[e.key] = e.value
-                        console.log('🚀🚀🚀@@@@@@@@@@@@@@@@@@@@@@@', e.value);
                     }
                     // 坐标
                     if(e.key==='location'){
@@ -447,7 +446,8 @@ export default {
                         this.geometryObjForm.lightColor = this.arrToRgb(JSON.parse(e.value))
                     }
                     // 灯光强度,内辐射角,外辐射角,衰减半径,影响半径,光源半径,光源长度,光源亮度
-                    if(['brightness','sourceLength','sourceRadius','influenceRadius','intensity','radiationAngleOfInner','radiationAngleOfOuter','attenuationRadius','barnDoorAngle','barnDoorLength'].includes(e.key)){
+                    if(['brightness','sourceLength','sourceRadius','influenceRadius','intensity','radiationAngleOfInner',
+                    'radiationAngleOfOuter','attenuationRadius','barnDoorAngle','barnDoorLength','sourceWidth','sourceHeight'].includes(e.key)){
                         this.geometryObjForm[e.key] = Number(e.value)
                         this.$set(this.geometryObjForm, e.key+'1', Number(e.value))
                     }

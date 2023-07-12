@@ -156,7 +156,10 @@ export default {
                 isCheck = !!data
                 if(data) return
             })
-            if(!this.$refs.upload.uploadFiles.length && !isCheck){
+            if(isCheck){
+                return this.$message.warning("数据未填写完整！");
+            }
+            if(!this.$refs.upload.uploadFiles.length){
                 return this.$message.warning("请上传文件");
             }
             this.$refs.upload.submit();
