@@ -13,13 +13,13 @@
             mode="horizontal"
           >
           <template v-for="(item,index) in menuList">
-            <el-menu-item index="/" v-if="!item.children" :key="index">
+            <el-menu-item :index="item.url" v-if="!item.children" :key="index">
               <a :href="item.url" class="aMenu">{{item.name}}</a>
             </el-menu-item>
-            <el-submenu v-else index="/" popper-class="popper-class" :key="index+1">
+            <el-submenu v-else :index="item.url" popper-class="popper-class" :key="index+1">
               <template slot="title">{{item.name}}</template>
-              <el-menu-item index="/" v-for="(childItem,childIndex) in item.children" :key="childIndex">
-                <a :href="item.url" class="aMenu">{{childItem.name}}</a>
+              <el-menu-item :index="childItem.url" v-for="(childItem,childIndex) in item.children" :key="childIndex">
+                <a :href="childItem.url" class="aMenu" :target="childItem.blank ? '_blank' : ''">{{childItem.name}}</a>
               </el-menu-item>
             </el-submenu>
           </template>
@@ -60,7 +60,45 @@
     </el-header>
     <!-- 内容区 -->
     <el-main>
-      <div class="container">
+      <!-- 头部统计部分 -->
+      <div class="statistics flexStart">
+        <div class="statisticsBox user">
+          <img :src="imgUrl || require('./img/man.png')" />          
+          <div class="userRight">
+            <span class="name">{{ name || mobile }}</span>
+            <span class="userID">ID:12121212121221aaaaaa</span>
+          </div>
+        </div>
+        <div class="statisticsBox server">
+          <div class="serverTitle">公有云服务器使用</div>
+          <div class="serverBox">
+            <div class="serverItem">            
+              <div class="serverPer">{{ spacePer }}%</div>
+              <el-progress :text-inside="true" :stroke-width="16" :percentage="Number(spacePer)" :show-text="false" color="#02AAF0"></el-progress>
+              <div class="serverUsed">
+                <img src="./img/cunchu.png" alt="" />
+                <span>已用储存 {{ currentCountSpace }}GB/{{countSpace}}GB</span>
+              </div>
+            </div>
+            <div class="serverItem">            
+              <div class="flexBetween">
+                <div class="serverPer">{{ spacePer }}%</div>
+                <div class="serverTotal">已用总并发 0/0</div>
+              </div>
+              <div id="erupt"></div>
+              <!-- <el-progress :text-inside="true" :stroke-width="16" :percentage="Number(spacePer)" :show-text="false" color="#02AAF0"></el-progress> -->
+              <div class="serverUsed">
+                <img src="./img/jiedian.png" alt="" />
+                <span>已用云VR/AR/MR并发  0/0
+                  <p>已用预启动并发  {{bfPer}}/{{ countBF }}</p>
+                </span>               
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="statisticsBox"></div>
+        <div class="statisticsBox"></div>
+      </div>
         <!-- 个人信息展示 -->
         <div class="top">
           <div class="left">
@@ -206,7 +244,6 @@
             <router-view></router-view>
           </div>
         </div>
-      </div>
     </el-main>
     <!-- 尾部 -->
     <el-footer>
@@ -243,7 +280,7 @@ export default {
   data() {
     return {
       time: null, //定时器
-      customColor: "#00AAF0",
+      // customColor: "#00AAF0",
       note: "", //签名
       name: "", //用户名
       sex: "0", //性别
@@ -318,6 +355,7 @@ export default {
             {
               name:'示例DEMO',
               url:'https://www.ourbim.com/developer/demo/index.html',
+              blank:true
             },
             {
               name:this.$t("log"),
@@ -329,7 +367,6 @@ export default {
     };
   },
   created() {
-    // console.log(this.$route.path)
     //加载信息数据
     this.showData();
     //阻止回车键发送请求
@@ -339,19 +376,113 @@ export default {
         return false;
       }
     };
-    // 页面缩放
-    // window.onload = function () {
-    //   // 获取构件树页面最大宽度
-    //   var maxWidth = document.documentElement.offsetWidth
-    //   document.documentElement.style.fontSize =
-    //     document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
-    //   window.onresize = function () {
-    //     document.documentElement.style.fontSize =
-    //       document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
-    //   }
-    // }
+  },
+  mounted(){
+    this.getEchart()
   },
   methods: {
+    getEchart(){
+      let echart = this.$echarts.init(document.getElementById("erupt"))
+      let option = {
+        xAxis: {
+          type: 'value',
+          axisLine: {
+            show: false, //隐藏y轴
+          },
+          axisTick: {
+            show: false,  //刻度线
+          },
+          axisLabel: {
+            show: false, //隐藏刻度值
+          },
+          splitLine: {
+            show: false
+          },
+        },
+        yAxis: {
+          type: 'category',
+          axisTick: {
+            show: false,  //刻度线
+          },
+          axisLine: {
+            show: false, //隐藏y轴
+          },
+          axisLabel: {
+            show: false, //隐藏刻度值
+          },
+          splitLine: {
+            show: false
+          },
+        },
+        series: [{
+          type: 'bar',
+          barWidth:16,
+            itemStyle: {
+              barBorderRadius: 10,
+              color:'#02E2F0',
+              color: this.$echarts.graphic.LinearGradient(
+                  0, 0, 0, 1,//4个参数用于配置渐变色的起止位置, 这4个参数依次对应右/下/左/上四个方位. 而0 0 0 1则代表渐变色从正上方开始
+                  [
+                      {offset: 1, color: '#02E2F0'},
+                      {offset: 0, color: '#0aadb7'}
+                  ]                
+              )
+            },
+          barGap: '-100%',
+          data: [1],
+            zlevel:3
+          },{
+          type: 'bar',
+          barWidth:16,
+            itemStyle: {
+              barBorderRadius: 10,
+              color:'#029BF0',
+              color: this.$echarts.graphic.LinearGradient(
+                  0, 0, 0, 1,//4个参数用于配置渐变色的起止位置, 这4个参数依次对应右/下/左/上四个方位. 而0 0 0 1则代表渐变色从正上方开始
+                  [
+                      {offset: 1, color: '#029BF0'},
+                      {offset: 0, color: '#0d7cb9'}
+                  ]                
+              )
+            },
+          barGap: '-100%',
+          data: [2],
+            zlevel:2
+          },{
+          type: 'bar',
+          barWidth:16,
+            itemStyle: {
+              barBorderRadius: 10,
+              color:'#0204F0',
+              color: this.$echarts.graphic.LinearGradient(
+                  0, 0, 0, 1,//4个参数用于配置渐变色的起止位置, 这4个参数依次对应右/下/左/上四个方位. 而0 0 0 1则代表渐变色从正上方开始
+                  [
+                      {offset: 1, color: '#0204F0'},
+                      {offset: 0, color: '#0084FF'}
+                  ]                
+              )
+            },
+          barGap: '-100%',
+          data: [4],
+            zlevel:1
+          },
+          {
+          // 这块用于设置圆角的背景色的，因为知道echarts最大值，所以写死了data的值
+          type: 'bar',
+          barWidth:16,
+            itemStyle:{
+                normal: {  //normal 图形在默认状态下的样式;
+                    barBorderRadius: 10,//柱条圆角半径,单位px.
+                    color:'#EAEEF5'//柱条颜色
+                }
+            },
+          barGap: '-100%',
+          data: [10]
+          }
+        ]
+      };
+      echart.setOption(option);
+    },
     English() {
       this.$i18n.locale = "en";
       this.classify = "whole";
@@ -392,8 +523,7 @@ export default {
         userid: Getuserid(),
       })
         .then((res) => {
-          // console.log(res)
-          // console.log(res.data.data.imgUrl)
+          // this.user = res.data.data
           this.name = res.data.data.name;
           this.sex = res.data.data.sex;
           this.note = res.data.data.note;
@@ -520,7 +650,7 @@ export default {
   font-family: PingFang SC;
   font-size: 16px;
   &:hover {
-    color: #ff6600;
+    color: #ff6600!important;
   }
 }
 
@@ -573,12 +703,110 @@ export default {
       }
   }
   .el-main {
-    margin-bottom: 35px;
+    padding: 24px 32px;
+    .statistics{
+      gap: 24px;
+      .statisticsBox{
+        background: #FFFFFF;
+        border-radius: 12px;
+        padding: 16px 24px;
+        height: 160px;
+      }
+      .user{
+        width: 280px;
+        font-size: 18px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: 500;
+        color: #333333;
+        background: #ffffff url(./img/useBg.png) bottom right no-repeat;
+        background-size: 70% 72%;
+        display: flex;
+        img{
+          width: 45px;
+          height: 45px;
+          border-radius: 100%;
+          vertical-align: text-top;
+          border:1px solid #00acf0;
+        }
+        .userRight{
+          .name{
+            padding: 5px 0 0 30px;
+            font-weight: 600;
+          }
+          .userID{
+            background: #E8E9EA;
+            border-radius: 14px;
+            padding: 3px 13px;
+            color: #999999;
+            margin-top: 18px;
+            margin-left: 16px;
+            display: block;
+            word-wrap:break-word;
+            width: 80%;
+            font-size: 14px;
+          }
+        }
+      }
+      .server{
+        font-family: PingFangSC-Medium, PingFang SC;
+        .serverTitle{
+          font-size: 18px;
+          font-weight: 600;
+          color: #096191;
+        }
+        .serverPer{
+          font-weight: 500;
+          color: #02AAF0;
+          margin-top: 18px;
+        }
+        .serverTotal{
+          margin-top: 18px;
+          color: #333333;
+        }
+        .serverUsed{
+          font-size: 14px;
+          color: #999999;
+          margin-top: 10px;
+          display: inline-block;
+          vertical-align: text-top;
+          img{
+            vertical-align: middle;
+            margin-right: 12px;
+          }
+        }
+        .serverBox{
+          display: flex;
+        }
+        .serverItem{
+          position: relative;
+          width: 100%;
+          &:first-child{
+            padding-right: 40px;
+          }
+          &:last-child{
+            padding-left: 40px;
+            &::before{
+              content: '';
+              display: block;
+              top: 0;
+              left: 0;
+              width: 1px;
+              height: 97px;
+              background: #CCCCCC;
+              position: absolute;
+            }
+          }
+          #erupt{
+            width: 240px;
+            height: 30px;
+          }
+        }
+      }
+    }
     .top {
       height: 152px;
       margin-bottom: 20px;
       background-color: #fff;
-      // background-color: red;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -586,14 +814,12 @@ export default {
         height: 152px;
         width: 288px;
         margin-left: 20px;
-        // background-color: green;
         display: flex;
         .im {
           margin-top: 36px;
           width: 80px;
           height: 80px;
           border-radius: 50%;
-          // background-color: blue;
           margin-right: 20px;
           img {
             width: 100%;
@@ -607,7 +833,6 @@ export default {
             width: 100%;
             font-weight: bold;
             text-align: center;
-            // background-color: red;
             margin-top: 45px;
           }
           .note {
@@ -622,13 +847,10 @@ export default {
         height: 100px;
         background-color: #ccc;
         margin: 0 20px;
-        // margin-top: 26px;
       }
       .middle {
         height: 100%;
         margin-right: 30px;
-        // min-width: 270px;
-        // background-color: blue;
         h3 {
           margin-top: 5px;
         }
@@ -651,10 +873,7 @@ export default {
       }
 
       .jindu {
-        // min-width: 270px;
         height: 80px;
-        // margin-top: 35px;
-        // background-color: pink;
         .tutu {
           margin-top: 10px;
           display: flex;
@@ -674,7 +893,6 @@ export default {
         height: 152px;
         margin-right: 40px;
         text-align: center;
-        // background-color: green;
         .content {
           margin-top: 36px;
           width: 207px;
@@ -724,14 +942,6 @@ export default {
               color: #fff;
             }
           }
-          // el-submenu 每一项选中状态
-          // /deep/ .el-submenu.is-active {
-          //   background-color: #00aaf0 !important;
-          //   // color: #fff !important;
-          //   i {
-          //     color: #fff;
-          //   }
-          // }
           /deep/ .el-submenu {
             i.el-submenu__icon-arrow.el-icon-arrow-down {
               color: #000;
@@ -760,12 +970,10 @@ export default {
             margin-right: 20px;
             margin-left: 10px;
             font-size: 25px;
-            // color: #fff;
           }
         }
       }
       .content {
-        // float: left;
         width: calc(100% - 300px);
         flex-grow: 1;
         min-height: 961px;
