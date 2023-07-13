@@ -48,9 +48,10 @@
 </template>
 
 <script>
+import qs from "qs";
 import OperatingTools from "@/components/OperatingTools";
 import { setGizmoMode } from "@/api/model_api";
-import { getList, download, deleteCode, openLocate } from '@/api/userCenter/locationCode.js'
+import { getList, deleteCode, openLocate } from '@/api/userCenter/locationCode.js'
 import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";
 import AddCode from "./addCode.vue";
@@ -173,9 +174,7 @@ export default {
                     isAll: false
                 }
             }
-            download(data).then(res=>{
-
-            })
+            window.location.href = `${process.env.VUE_APP_REQUEST_URL}/ar/downloadLocator?${qs.stringify(data)}`
         },
         // 更新定位码
         update(e){

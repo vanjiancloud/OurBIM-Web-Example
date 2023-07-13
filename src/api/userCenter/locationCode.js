@@ -54,15 +54,6 @@ export function sureLocator(params){
   })
 }
 
-// 下载定位码
-export function download(params) {
-  return request({
-    url: '/ar/downloadLocator',
-    method: 'get',
-    params
-  })
-}
-
 // 删除
 export function deleteCode(params,data) {
   return request({
