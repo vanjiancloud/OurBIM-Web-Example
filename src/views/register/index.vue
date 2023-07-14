@@ -290,7 +290,7 @@ export default {
     },
     // 返回登录页
     toReturn() {
-      this.$router.push("../../login");
+      this.$router.push("@/login");
     },
     toLogoin() {
       let source = this.getUrlKey("source");

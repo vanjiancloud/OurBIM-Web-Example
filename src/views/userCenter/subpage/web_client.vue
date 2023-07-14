@@ -126,7 +126,7 @@ import viewCube from "@/components/web_client/view_cube";
 import roamNavigate from "@/components/web_client/roam_navigate";
 import viewPhoto from "@/components/web_client/view_photo";
 import progressBar from "@/components/web_client/progress_bar";
-import TeamworkDialog from "../../manage/TeamworkDialog.vue";
+import TeamworkDialog from "@/views/projectManage/model/TeamworkDialog.vue";
 import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
 import { Getuserid } from "@/store/index.js"; // (自定义构件)
 import weatherSystem from "@/components/web_client/weather_system.vue"; // 天气系统

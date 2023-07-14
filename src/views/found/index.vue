@@ -87,7 +87,7 @@
               </el-progress>
               <!-- 转换失败 -->
               <div  v-if="scope.row.ourbimComponentInfo !== null && scope.row.ourbimComponentInfo.comStatus === '3'">
-                <img src="../../assets/err.png" alt="" />
+                <img src="@/assets/err.png" alt="" />
               </div>
             </div>
           </template>
@@ -181,7 +181,7 @@ import MODELAPI from "@/api/model_api";
 import { Getuserid } from "@/store/index.js";
 import axios from "@/utils/request";
 import qs from "qs";
-import { updateJudgeMsg } from '../../api/my';
+import { updateJudgeMsg } from '@/api/my';
 import SingleUpload from "@/components/Upload/singleUpload.vue"
 import addComps from './components/addComps.vue'
 import axios2 from 'axios'

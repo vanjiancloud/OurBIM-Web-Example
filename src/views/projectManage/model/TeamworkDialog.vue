@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import TeamModeApi from "../../api/team_mode";
+import TeamModeApi from "@/api/team_mode";
 export default {
   props: {
     appId: {

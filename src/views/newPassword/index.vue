@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { updatePassword } from '../../api/my'
+import { updatePassword } from '@/api/my'
 export default {
   name: 'newPassword',
   data () {
@@ -96,7 +96,7 @@ export default {
   methods: {
     // 返回登录页
     toReturn () {
-      this.$router.push('../../changepassword')
+      this.$router.push('@/changepassword')
     },
     // 跳转到成功页面
     toNext () {
@@ -116,7 +116,7 @@ export default {
         .then(res => {
           console.log(res)
           if (res.data.code === 0) {
-            this.$router.replace('../../resetSucceed')
+            this.$router.replace('@/resetSucceed')
           } else {
             this.$message.error('验证码验证失败')
           }

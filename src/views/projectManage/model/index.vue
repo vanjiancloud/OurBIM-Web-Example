@@ -103,7 +103,7 @@
               <div :style="{'display':'flex','justify-content':'center','align-items':'center'}"
               >
                 <span>{{ formatStatus(scope.row.applidStatus) }}</span>
-                <div class="err-icon"><img src="../../assets/err.png" alt="" /></div>
+                <div class="err-icon"><img src="@/assets/err.png" alt="" /></div>
               </div>
             </el-tooltip>
             <div v-else>{{ formatStatus(scope.row.applidStatus) }}</div>

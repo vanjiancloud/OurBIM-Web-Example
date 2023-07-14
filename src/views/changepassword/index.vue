@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { sendMsgCode, updateJudgeMsg } from '../../api/my'
+import { sendMsgCode, updateJudgeMsg } from '@/api/my'
 
 export default {
   name: 'changepassword',
@@ -121,7 +121,7 @@ export default {
   methods: {
     // 返回登录页
     toReturn () {
-      this.$router.push('../../login')
+      this.$router.push('@/login')
     },
 
     // 跳转到重置密码

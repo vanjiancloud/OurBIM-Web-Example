@@ -171,7 +171,7 @@ import MODELAPI from "@/api/model_api";
 import { Getuserid } from "@/store/index.js";
 import axios from "@/utils/request";
 import qs from "qs";
-import { updateJudgeMsg } from '../../api/my';
+import { updateJudgeMsg } from '@/api/my';
 
 import addDocument from './components/addDocument.vue'
 import { error } from 'console';

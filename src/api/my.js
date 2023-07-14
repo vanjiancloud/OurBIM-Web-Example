@@ -1,5 +1,6 @@
 // 导入抽取的axios对象
 import request from '../utils/request'
+import newRequest from "@/utils/newRequest.js";
 // 导入字符串转换工具
 import qsStringify from 'qs-stringify'
 
@@ -231,7 +232,7 @@ export function uploadImg(data) {
 
 // 当前用户信息展示
 export function showDetail(data) {
-    return request({
+    return newRequest({
         url: '/CountManager/getCountDetail',
         method: 'GET',
         params: data

@@ -80,14 +80,14 @@
     <img
       class="go-front"
       @click.stop="goFront"
-      src="../../assets/images/todo/home.png"
+      src="@/assets/images/todo/home.png"
       mode=""
     />
     <div class="drop-down">
       <img
         class="handle-down"
         @click.stop="changeView"
-        src="../../assets/images/todo/drop_down.png"
+        src="@/assets/images/todo/drop_down.png"
         alt=""
       />
       <transition name="el-zoom-in-top">
@@ -1140,32 +1140,32 @@ export default {
 }
 .front {
   transform: translateZ(34px);
-  background: url("../../assets/images/todo/front.png");
+  background: url("~@/assets/images/todo/front.png");
 }
 
 .back {
   transform: translateZ(-34px) rotateY(180deg);
-  background: url("../../assets/images/todo/front.png");
+  background: url("~@/assets/images/todo/front.png");
 }
 
 .left {
   transform: translateX(-34px) rotateY(270deg);
-  background: url("../../assets/images/todo/front.png");
+  background: url("~@/assets/images/todo/front.png");
 }
 
 .right {
   transform: translateX(34px) rotateY(90deg);
-  background: url("../../assets/images/todo/front.png");
+  background: url("~@/assets/images/todo/front.png");
 }
 
 .top {
   transform: translateY(-34px) rotateX(90deg);
-  background: url("../../assets/images/todo/front.png");
+  background: url("~@/assets/images/todo/front.png");
 }
 
 .bottom {
   transform: translateY(34px) rotateX(-90deg) rotateY(0deg);
-  background: url("../../assets/images/todo/front.png");
+  background: url("~@/assets/images/todo/front.png");
 }
 .edgeLine(@left, @top, @height, @width) {
   height: @height !important;
