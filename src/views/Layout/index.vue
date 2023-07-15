@@ -245,6 +245,13 @@ export default {
         };
     },
     created() {
+        //阻止回车键发送请求
+        document.onkeydown = (e) => {
+            let keyCode = window.event.keyCode;
+            if (keyCode == "Enter" || keyCode == 32) {
+                return false;
+            }
+        };
         this.showData();
     },
     mounted() {
@@ -808,6 +815,7 @@ export default {
                     overflow-x: hidden;
                     overflow-y: auto;
                     border-right:0;
+                    border-radius: 6px;
 
                     .icon {
                         font-size: 20px;
