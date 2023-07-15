@@ -121,10 +121,11 @@
                 <!--项目中心-->
                 <div class="rights">
                   <div class="project" @click="toManage">
-                    <div class="photo">
+                    <!-- <div class="photo">
                       <img src="./img/project.png" alt="" />
-                    </div>
-                    <span> 项目中心 </span>
+                    </div> -->
+                    <svg-icon icon-class="ourbimCloud" style="font-size:18px;"/>
+                    <span> OurBIM Cloud </span>
                   </div>
                   <!-- 头像 -->
                   <div class="end">
@@ -655,9 +656,8 @@ export default {
         display: flex;
         align-items: center;
         .project {
-          width: 86px;
+          width: 130px;
           height: 26px;
-          line-height: 26px;
           background-color: #ff6600;
           color: #fff;
           border-radius: 5px;
@@ -665,6 +665,7 @@ export default {
           justify-content: space-around;
           cursor: pointer;
           font-size: 14px;
+          align-items: center;
           .photo {
             width: 15px;
             height: 15px;
@@ -674,9 +675,6 @@ export default {
               width: 100%;
               height: 100%;
             }
-          }
-          span {
-            margin-bottom: 5px;
           }
         }
         .end {

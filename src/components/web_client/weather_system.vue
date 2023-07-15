@@ -276,7 +276,7 @@
           </div>
       </div>
         <!-- 环境背景 -->
-        <div class="background">            
+        <div class="background" v-if="!isGis">            
             <div class="row-box">
                 <el-checkbox v-model="backgroundSetting.groundCheck" label="环境背景" @change="changeBackground"/>
             </div>

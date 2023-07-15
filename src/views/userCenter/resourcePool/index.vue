@@ -20,8 +20,8 @@
             <Tab v-model="levels.tab2Index" v-show="levels.level ===1" class="roundTab" :data="typeList" @onTab="onTypeTab" />
             
             <div class="contentWrap">               
-                <!-- 导入图纸(未上线) -->
-                <!-- <Drawing ref="Drawing" :levels="levels" :data="{taskId:data.taskId}" @toDrawLevel="toDrawLevel" /> -->
+                <!-- 导入图纸 -->
+                <Drawing ref="Drawing" :levels="levels" :data="{taskId:data.taskId}" @toDrawLevel="toDrawLevel" />
                 <!-- 内容资源 -->
                 <div class="content" v-if="!levels.hideContent">
                     <div class="contentItem" v-for="(item,index) in (levels.level ===2 ? contentLevel2ListPage:contentList[levels.tab2Index])" :key="index" @click="toLevel2(item)">

@@ -174,7 +174,7 @@ export default {
                     isAll: false
                 }
             }
-            window.location.href = `${process.env.VUE_APP_REQUEST_URL}/ar/downloadLocator?${qs.stringify(data)}`
+            window.open(`${process.env.VUE_APP_REQUEST_URL}/ar/downloadLocator?${qs.stringify(data)}`)
         },
         // 更新定位码
         update(e){

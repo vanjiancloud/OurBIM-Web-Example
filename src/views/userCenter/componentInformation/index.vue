@@ -470,7 +470,7 @@ export default {
             this.materialChartlet.textureParamsList = this.formatBaseParams(this.getChartletParams())
             this.materialChartlet.baseParamsList = this.formatBaseParams(newValue.matParam.baseParamsList)
             this.formatColors(newValue.matParam.colorList)
-        });
+        }, { deep: true });
     },
     mounted() {},
     destroyed () {
