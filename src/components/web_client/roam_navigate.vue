@@ -241,7 +241,11 @@ export default {
     created(){
         this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
         this.params.viewMode = this.isGis?1:2
-    //   this.threeView();
+        this.radio = this.isGis?1:2
+        if(this.isGis){
+            this.checkWeight = true
+            this.checkBroken = true
+        }
     },
     beforeDestroy () {},
     watch:{
@@ -256,7 +260,7 @@ export default {
     },
     methods:{
         show() {
-            this.radio = this.isGis?1:2
+            // this.radio = this.isGis?1:2
             this.$refs.Drawer.show()
         },
         close() {

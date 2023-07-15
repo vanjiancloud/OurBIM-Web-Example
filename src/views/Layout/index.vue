@@ -22,8 +22,9 @@
                 <!--项目中心-->
                 <div class="rights">
                     <el-button @click="toManage" type="primary" size="mini" class="headerBtn blueBtn">
-                        <img src="./img/project.png" alt="" />
-                        控制台
+                        <!-- <img src="./img/project.png" alt="" /> -->
+                        <svg-icon icon-class="ourbimCloud" style="font-size: 14px;"/>
+                        OurBIM Cloud
                     </el-button>
                     <!-- 头像 -->
                     <el-dropdown class="avatar">

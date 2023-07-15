@@ -694,11 +694,13 @@ export default {
             this.sentParentIframe(messageInfo);
           } else if (realData.id === "5") {
             // 多选构件
+            this.sentParentIframe({ prex: "ourbimMessage", type: 20002, data: "", message: "" });
           } else if(realData.id === "6"){
             this.isFade = false
           } 
           else if (realData.id === "7") {
             // 点击空白地方初始化
+            this.sentParentIframe({ prex: "ourbimMessage", type: 20003, data: "", message: "" });
             this.memberInfo = []
             this.selectPark = null
             this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {} })
@@ -743,11 +745,22 @@ export default {
               }, 1000);
             }
           } else if (realData.id === "9") {
-            
+            let messageInfo = {
+                prex: "ourbimMessage",
+                type: 30001,
+                data: {
+                    state: true,
+                    tagId: realData.tagId,
+                    tagType: 0,
+                },
+                message: "",
+            };
+            this.sentParentIframe(messageInfo);
           } else if (realData.id === "10") {
+            this.sentParentIframe({ prex: "ourbimMessage", type: 30002, data: {tagId: realData.tagId}, message: "" });
             this.showUiBar();
           } else if (realData.id === "11") {
-            
+            this.sentParentIframe({ prex: "ourbimMessage", type: 30003, data: {tagId: realData.tagId}, message: "" });
           } else if (realData.id === "12") {
             // 判断是否是链接模型
             if(realData.isLink === "true"){
@@ -1158,7 +1171,7 @@ export default {
       let params = {
         appId:this.appId
       }
-      CHAILIAOAPI.GETPAKIDBYAPPID(params).then(item=>{
+      CHAILIAOAPI.GETPAKIDBYAPPID(params).then(res=>{
           if(res.data.code === 0){
             this.pakAndAppid = res.data.data;
           }
@@ -1166,13 +1179,8 @@ export default {
     },
     // 根据pakId 找到appId
     pakidToAppid(str){
-      let componentAppId = '';
-      this.pakAndAppid.forEach(item=>{
-        if(item.pakId === str){
-          componentAppId = item.appId;
-        }
-      })
-      return componentAppId;
+      let obj = this.pakAndAppid.find(e=>{return e.pakId === str})
+      return obj?.appId;
     },
   },
   destroyed(){

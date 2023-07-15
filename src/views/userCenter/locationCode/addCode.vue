@@ -36,7 +36,8 @@
 </template>
 
 <script>
-import { create, download, getCode, getCodeImg, sureLocator, updateLocator, confirmUpdateLocator, focusLocator } from '@/api/userCenter/locationCode.js'
+import qs from "qs";
+import { create, getCode, getCodeImg, sureLocator, updateLocator, confirmUpdateLocator, focusLocator } from '@/api/userCenter/locationCode.js'
 export default {
     components: {},
     props: {
@@ -129,7 +130,7 @@ export default {
                 codeId: this.form.codeId,
                 isAll: false
             }
-            download(data)
+            window.open(`${process.env.VUE_APP_REQUEST_URL}/ar/downloadLocator?${qs.stringify(data)}`)
         },
         // 启动更新
         updateLocator(){

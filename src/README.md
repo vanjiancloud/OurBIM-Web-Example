@@ -81,3 +81,29 @@ function sendToIframe(type, data, message) {
 // viewcube显示/隐藏
     type = 1015
     data = true/false
+
+
+
+
+
+兼容旧的项目
+* 构件相关
+* 20001：单击构件
+* 20002: 框选构件
+* 20003：点击空白
+
+* 标签相关
+* 30001：点击标签
+* data: {
+*    state: true // 是否选中
+*    tagId: "111" // 标签ID
+*    tagType: 0/1 // 标签类型 0 标签 1 标签组
+*}
+* 30002: 构件新建成功
+* data: {
+*    tagId: "" // 标签ID
+* }
+* 30003: 删除构件
+* data: {
+*   tagId: "" // 标签ID
+* }
