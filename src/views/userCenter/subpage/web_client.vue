@@ -427,6 +427,10 @@ export default {
       );
     },
     listenWindowSize() {
+      // 移动端不更新分辨率
+      if(this.isMobile()){
+        return
+      }
       // 监听窗口大小变化 id=14 height
       this.handleWindowSize();
       window.onresize = () => {
