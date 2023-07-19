@@ -18,13 +18,19 @@ export function urlToblob(url, func) {
 
 
 // 使用fetch函数下载文件
-export function downFile(url) {
-	const spliceLength2 = url.lastIndexOf("/");
-	const urlName = url.slice(spliceLength2 + 1);
-	fetch(url)
-		.then(response => response.blob())
+export function downFile(fileUrl) {
+	const spliceLength2 = fileUrl.lastIndexOf("/");
+	const urlName = fileUrl.slice(spliceLength2 + 1);
+	let errblob = {};
+	let msg = ''
+	fetch(fileUrl)
+		.then(async response => {
+			msg = Message({message: '文件正在下载中，请等待。。。', duration: 0})
+			errblob = new Blob([response])
+			return response.blob()
+		})
 		.then(blob => {
-			Message({message: '下载文件可能过大，请等待。。。', duration: 5 * 1000})
+			msg.close()
 			const url = window.URL.createObjectURL(blob);
 			const link = document.createElement('a');
 			link.href = url;
@@ -37,6 +43,16 @@ export function downFile(url) {
 		})
 		.catch(error => {
 			// console.error('下载文件时发生错误:', error);
-			Message({message: '文件错误', type: 'error', duration: 5 * 1000})
+			// Message({message: '文件错误', type: 'error', duration: 5 * 1000})
+			msg.close()
+			const url = window.URL.createObjectURL(errblob);
+			const link = document.createElement('a');
+			link.href = url;
+			link.setAttribute('download', urlName);
+			link.style.display = 'none';
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			window.URL.revokeObjectURL(url);
 		});
 }
