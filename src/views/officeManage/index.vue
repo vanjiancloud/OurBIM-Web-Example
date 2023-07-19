@@ -174,7 +174,7 @@ import qs from "qs";
 import { updateJudgeMsg } from '../../api/my';
 
 import addDocument from './components/addDocument.vue'
-import { error } from 'console';
+import { downFile } from '@/utils/file.js';
 
 export default {
   name: "office",
@@ -357,8 +357,7 @@ export default {
           };
           MODELAPI.GETCLOUDDOCDOWNLOADURL(params).then((res)=>{
             if(res.data.code === 0){
-                console.log('ifif',res.data);
-                window.open(res.data.message)
+              downFile(res.data.message)
             }else{
                 this.$message.error(res.data.message);
             }
