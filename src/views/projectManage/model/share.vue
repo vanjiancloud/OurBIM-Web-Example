@@ -67,31 +67,26 @@ import { urlToblob } from "@/utils/file.js";
 import { Getuserid } from "@/store/index.js";
 import { getWebUrl } from "@/api/my.js";
 export default {
-  props: {
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    appid: {
-      type: [String, Number],
-      default: ""
-    },
-    isGis: {
-      type: [Boolean, String],
-      default: ""
-    }
-  },
   data() {
     return {
+      visible:false,
       isShow: "1",
       formShare: {
         days: "999", //链接有效期
         qrurl: "", //二维码图片地址
         webShareUrl: "" //链接地址
-      }
+      },
+      appid:''
     };
   },
   methods: {
+    show(e){
+      this.appid = e
+      this.visible = true
+    },
+    hide(){
+      this.visible = false
+    },
     //确定分享
     confirm() {
       this.$common.openLoading("正在加载中....");
@@ -114,14 +109,14 @@ export default {
         .catch(err => {
           this.$message.error("分享失败,请重新选择");
           this.$common.closeLoading();
-          this.$emit("update:visible", false);
+          this.hide()
         });
     },
 
     handleClose() {
       this.isShow = 1;
       this.formShare.days = "999";
-      this.$emit("update:visible", false);
+      this.hide()
     },
 
     // 复制二维码图片

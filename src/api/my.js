@@ -163,7 +163,7 @@ export function getProjectList(data) {
 
 // 获取GIS服务列表
 export function getGISProjectList(data) {
-    return request({
+    return newRequest({
         url: '/appli/getGISLayerList',
         method: 'GET',
         params: data
@@ -195,11 +195,11 @@ export function deleteProject(data) {
 }
 
 // 编辑项目
-export function updateProject(data) {
-    return request({
+export function updateProject(params) {
+    return newRequest({
         url: '/appli/updateProject',
         method: 'POST',
-        data: qsStringify(data)
+        params
     })
 }
 

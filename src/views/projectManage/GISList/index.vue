@@ -1,17 +1,20 @@
 <!-- GIS数据服务 -->
 <template>
-    <div class="box" v-loading="loading">
-        <div class="boxHeader">
-            <div class="boxHeaderTitle">您共有<span>{{total}}</span>个项目</div>
-            <div>
-                <el-button style="margin-right:20px" icon="el-icon-plus" class="bluePlainBtn" plain type="primary" @click="AddGISProgect('添加')">新建GIS服务项目</el-button>
-                <!-- 上传GIS数据的关闭弹窗后显示正在上传的个数  -->
-                <el-badge :value="uploadGISNum" :hidden="!uploadGISNum">
-                    <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="uploadGIS">上传GIS数据</el-button>
-                </el-badge>
+    <List v-loading="loading" @change="onChange">
+        <template slot="title">
+            <div class="boxHeader">
+                <div class="boxHeaderTitle">您共有<span>{{total}}</span>个项目</div>
+                <div>
+                    <el-button style="margin-right:20px" icon="el-icon-plus" class="bluePlainBtn" plain type="primary" @click="AddGISProgect('添加')">新建GIS服务项目</el-button>
+                    <!-- 上传GIS数据的关闭弹窗后显示正在上传的个数  -->
+                    <el-badge :value="uploadGISNum" :hidden="!uploadGISNum">
+                        <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="uploadGIS">上传GIS数据</el-button>
+                    </el-badge>
+                </div>
             </div>
-        </div>
-        <el-table :data="tableData">
+        </template>
+        <!-- 表格 -->
+        <el-table :data="tableData" v-if="isList">
             <el-table-column prop="gisServerName" label="项目名称" />
             <el-table-column prop="gisId" label="项目ID" />
             <el-table-column prop="createTime" label="上传日期" />
@@ -24,7 +27,7 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="160">
                 <template slot-scope="scope">
-                    <div class="operateBtn">
+                    <div class="flexBetween">
                         <el-button class="blueBtn" type="primary" :disabled="scope.row.status!=2" @click="toProject(scope.row)">进入项目</el-button>
                         <el-dropdown>
                             <span class="el-dropdown-link">
@@ -44,13 +47,45 @@
                 </template>
             </el-table-column>
         </el-table>
+        <!-- 盒子 -->
+        <div class="listBox" v-if="!isList">
+            <div class="listItem" v-for="(item,index) in tableData" :key="index">
+                <el-image :src="item.thumbnail" class="defaultImg">
+                    <div slot="error" class="image-slot">
+                        <img :src="require('@/assets/default/list.png')"/>
+                    </div>
+                </el-image>
+                <div class="title">{{ item.gisServerName }}</div>
+                <div class="flexBetween">
+                    <div class="type">类型：{{ item.layerType }}</div>
+                    <div class="status" :class="{'status1':item.status==1,'status2':item.status==2,'status3':item.status==3,'status4':item.status==4,'status5':item.status==5}">{{ status[item.status] }}</div>
+                </div>
+                <div class="flexBetween">
+                    <div>
+                        <el-button class="blueBtn" type="primary" size="small" :disabled="item.status!=2" @click="toProject(item)">进入项目</el-button>
+                    </div>
+                    <el-dropdown>
+                        <span class="el-dropdown-link">
+                            <i class="el-icon-arrow-down el-icon-more"></i>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item v-if="item.status==2" @click.native="AddGISProgect('编辑',item)">编辑</el-dropdown-item>
+                            <el-dropdown-item v-if="item.status==2&&item.isSingle==='true'" @click.native="onCopy(item.fileUrl)">复制URL</el-dropdown-item>
+                            <el-dropdown-item v-if="item.status==2">分享</el-dropdown-item>
+                            <el-dropdown-item v-if="item.status==2" @click.native="uploadRow(item)">下载</el-dropdown-item>
+                            <el-dropdown-item :divided="item.status==2" @click.native="deleteRow(item)">删除</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </div>
+            </div>
+        </div>
         <Pagination :total="total" :page.sync="pages.pageNo" :limit.sync="pages.pageSize" @pagination="handlePageChange" />
         <!-- 新建GIS服务项目 -->
         <DialogsProject ref="DialogsProject" />
         <!-- 上传GIS数据 -->
         <DragUpload ref="DragUpload" :limit="1" numType="uploadGISNum" @getFile="getFileDrag" @onSuccess="getList" @beforeUpload="beforeUpload">
             <template v-slot:append>
-                <el-form :model="form" :rules="rules" ref="form" label-width="130px">
+                <el-form :model="form" :rules="rules" ref="form" label-width="130px" class="layerForm">
                     <el-form-item label="图层类型：" prop="layerType">
                         <el-select v-model="form.layerType " placeholder="请选择" style="width:100%">
                             <el-option :value="item.value" v-for="(item,index) in layerTypeList" :key="index" :disabled="item.value==='OurGIS'">{{ item.note }}</el-option>
@@ -78,8 +113,12 @@
                     </el-form-item>
                 </el-form>
             </template>
+            <template v-slot:tip>
+              <span class="tipRed">* </span>
+              文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
+            </template>
         </DragUpload>
-    </div>
+    </List>
 </template>
 
 <script>
@@ -89,12 +128,14 @@ import { getList, deleteList } from "@/api/GISList.js";
 import DialogsProject from "./dialogsProject.vue";
 import DragUpload from "@/components/Upload/dragUpload.vue";
 import Pagination from "@/components/Pagination";
+import List from "@/components/List/index.vue";
 export default {
-    components: { DialogsProject, DragUpload, Pagination },
+    components: { DialogsProject, DragUpload, Pagination, List },
     props: {},
     data() {
         return {
             loading:false,
+            isList: true,
             tableData: [],
             total: 0,
             pages: {
@@ -159,6 +200,9 @@ export default {
         window.clearInterval(this.timer)
     },
     methods: {
+        onChange(e){
+            this.isList = e
+        },
         // 轮询  删除中和发布中才轮询
         setTime(){
             this.timer = window.setInterval(() => {
@@ -175,7 +219,7 @@ export default {
         },
         // 新建GIS服务项目
         AddGISProgect(title, row = {}) {
-            this.$refs.DialogsProject.show(title, row);
+            this.$refs.DialogsProject.show(title, JSON.parse(JSON.stringify(row)));
         },
         // 上传GIS数据
         uploadGIS() {
@@ -250,11 +294,6 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.operateBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 .el-dropdown {
     .el-dropdown-link {
         cursor: pointer;
@@ -304,5 +343,11 @@ export default {
 }
 .GISMark{
     text-align: center;
+}
+.layerForm{
+    border-bottom: 1px solid #f5f5f5;
+    border-top: 1px solid #f5f5f5;
+    padding-top: 20px;
+    margin: 20px 0;
 }
 </style>

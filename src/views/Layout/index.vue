@@ -22,7 +22,6 @@
                 <!--项目中心-->
                 <div class="rights">
                     <el-button @click="toManage" type="primary" size="mini" class="headerBtn blueBtn">
-                        <!-- <img src="./img/project.png" alt="" /> -->
                         <svg-icon icon-class="ourbimCloud" style="font-size: 14px;"/>
                         OurBIM Cloud
                     </el-button>
@@ -62,7 +61,7 @@
                         <img :src="user.imgUrl || require('./img/man.png')" />
                         <div class="userRight">
                             <span class="name">{{ user.name || user.mobile }}</span>
-                            <span class="userID">ID:12121212121221aaaaaa</span>
+                            <span class="userID">ID:{{ user.userid }}</span>
                         </div>
                     </div>
                 </el-col>
@@ -887,6 +886,7 @@ export default {
                 border-radius: 12px;
                 flex: 1;
                 background-color: #fff;
+                overflow: hidden;
             }
         }
     }

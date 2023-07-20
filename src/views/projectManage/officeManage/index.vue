@@ -10,13 +10,12 @@
         {{ $t("project") }}
       </div>
       <!-- 按钮 -->
-      <div class="right">   
-        <el-button type="primary" @click="addDoc" class="upload-btn">
-          上传文档
-          <div class="uploadDoc" v-show="uploadDoc">
-            {{ uploadDoc }}
-          </div>
-        </el-button>
+      <div class="right">
+        <el-badge :value="uploadDoc" :hidden="!uploadDoc">
+            <el-button type="primary" @click="addDoc" class="blueBtn">
+              上传文档
+            </el-button>
+        </el-badge>
       </div>
     </div>
     <!-- 表格 -->
@@ -36,17 +35,17 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        <el-table-column prop="" label="文档ID" width="190">
+        <el-table-column prop="" label="文档ID">
             <template slot-scope="scope">
                 <span>{{scope.row.userFileId}}</span>
             </template>
         </el-table-column>
-        <el-table-column :label="$t('uploaddate')" width="120">
+        <el-table-column :label="$t('uploaddate')">
           <template slot-scope="scope">
             <span>{{ scope.row.addTime }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="" label="文档类型" width="170">
+        <el-table-column prop="" label="文档类型">
           <template slot-scope="scope">
             <span>{{ scope.row.extand }}</span>
           </template>
@@ -56,7 +55,7 @@
           <template slot-scope="scope" class="goapp-row">
             <el-button
               @click="goCloudDoc(scope.row)"
-             class="blue-btn"
+              class="blueBtn"
             >
               打开文档
             </el-button>
@@ -427,12 +426,6 @@ export default {
   text-align: center;
 }
 .box {
-  overflow: hidden;
-  width: 96%;
-  padding: 20px 2%;
-  /deep/ .el-button--primary {
-    background-color: #00aaf0;
-  }
   .record {
     display: flex;
     align-items: center;
@@ -448,76 +441,6 @@ export default {
   }
   ::v-deep .el-breadcrumb .el-breadcrumb__item .el-breadcrumb__inner:hover{
     color: #00aaf0;
-  }
-  .table {
-    margin-top: 20px;
-    margin-bottom: 40px;
-    ::v-deep .el-table__body-wrapper .el-table__body .el-table__row{
-      cursor: pointer;
-    }
-    .name-two {
-      background-color: red !important;
-    }
-    .sheet {
-      font-size: 16px;
-    }
-    // 进度条里的文字
-    /deep/ .el-progress-bar__innerText {
-      color: #000;
-      margin-top: -6px;
-    }
-    /deep/ .el-table thead {
-      color: #fff;
-    }
-    /deep/ .el-table th {
-      background-color: #00aaf0;
-      text-align: center;
-      font-size: 17px;
-      font-weight: normal;
-    }
-    /deep/ .el-table td {
-      text-align: center;
-    }
-    // 表头字体颜色
-    /deep/ .el-table th > .cell {
-      color: #fff;
-    }
-    //表格去横线
-    // /deep/ .el-table__row > td {
-    //   border: none;
-    // }
-    //表格去横线之去掉最下面的那一条线
-    // /deep/ .el-table::before {
-    //   height: 0px;
-    // }
-    // 第一列字体颜色
-    // /deep/ .el-table_1_column_1 {
-    //   color: #00aaf0;
-    // }
-    .btn-one {
-      font-size: 14px;
-      color: #00aaf0;
-    }
-    .gray-btn {
-      background-color: #bbb;
-      color: #fff;
-    }
-    .blue-btn {
-      background-color: #00aaf0;
-      color: #fff;
-    }
-    .red {
-      font-size: 16px;
-      color: #ff6600;
-    }
-    .gray {
-      font-size: 14px;
-      color: gray;
-    }
-    .blue {
-      color: #00aaf0;
-      font-size: 14px;
-    }
   }
   .el-dialog {
     .content {
@@ -742,25 +665,6 @@ export default {
   float:right;
   position: relative;
   top:0px;
-}
-.upload-btn {
-  position: relative;
-  .uploadDoc {
-    position: absolute;
-    top: -13px;
-    right: -10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: red;
-    font-size: 14px;
-    color: #fff;
-    font-weight: 500;
-    padding: 6px;
-  }
 }
 .box-one {
       display: flex;

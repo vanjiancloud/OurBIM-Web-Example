@@ -18,7 +18,7 @@
 
 <script>
 import SingleUpload from "@/components/Upload/singleUpload.vue"
-import { addChartletGroup, updateMaterialTextureGroup } from "@/api/material_api";
+import { addChartletGroup, updateMaterialTextureGroup } from '@/api/resource/chartlet.js'
 export default {
     components: { SingleUpload },
     props: {},

@@ -1,4 +1,4 @@
-.btn(@bgColor, @color: "#FFFFFF") {
+.btn(@bgColor, @color: #FFFFFF) {
     background: @bgColor;
     border: 1px solid @bgColor;
     color: @color;
@@ -14,7 +14,7 @@
     }
 }
 
-.borderBtn(@bgColor, @bg: "#FFFFFF") {
+.borderBtn(@bgColor, @bg: #FFFFFF) {
     border: 1px solid @bgColor  !important;
     background: @bg  !important;
     color: @bgColor  !important;
@@ -66,6 +66,22 @@
 }
 
 
+// 文字按钮
+.textBtn(@color) {
+    color: @color;
+    &:hover {
+        color: rgba(@color, 0.8);
+    }
+}
+
+.blueText{
+    .textBtn(#00AAF0)
+}
+.blackText{
+    .textBtn(#333333)
+}
+
+
 
 // 图标按钮
 .iconBtn(@color) {
@@ -97,4 +113,11 @@
     background: #e0e0e0 !important;
     border: #e0e0e0 !important;
     color: #6d7278;
+}
+
+.el-button--text.is-disabled,
+.el-button--text.is-disabled:focus,
+.el-button--text.is-disabled:hover{
+    background: none !important;
+    color: #b8bec5;
 }

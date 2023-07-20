@@ -110,7 +110,7 @@ export default {
                 }
                 upgradeModle(data).then(()=>{
                     this.hide()
-                    this.$parent.getAllModelList()
+                    this.$parent.$parent.getAllModelList()
                 })
             })
         }

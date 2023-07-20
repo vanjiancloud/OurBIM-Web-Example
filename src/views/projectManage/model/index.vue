@@ -1,390 +1,129 @@
 <template>
-  <div class="box">
-    <div class="record">
-      <div class="left">
-        {{ $t("Youhave") }}&nbsp;
-        <span style="color: #00aaf0">{{ total }} </span>&nbsp;
-        {{ $t("project") }}
-      </div>
-      <div class="right">
-        <!-- <el-button type="primary" @click="createProject()">新建项目</el-button> -->
-        <el-button
-          :type="timerFlag ? 'primary' : 'info'"
-          @click="handleCreateProjectDialog"
-          class="upload-btn"
-          :disabled="!timerFlag"
-          >上传模型
-          <div class="uploadingNum" v-show="uploadingNum">
-            {{ uploadingNum }}
+  <List v-loading="loading" @change="onChange">
+    <template slot="title">
+      <div class="boxHeader">
+          <div class="boxHeaderTitle">您共有<span>{{total}}</span>个项目</div>
+          <div>
+              <!-- <el-button type="primary" class="blueBtn" @click="createProject()">新建BIM项目</el-button> -->
+              <!-- 上传GIS数据的关闭弹窗后显示正在上传的个数  -->
+              <el-badge :value="uploadingNum" :hidden="!uploadingNum" style="margin:0 16px">
+                  <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="handleCreateProjectDialog" :disabled="!timerFlag">上传BIM模型</el-button>
+              </el-badge>
+              <el-button type="primary" class="bluePlainBtn1" plain @click="showLinkModelDialog">链接模型</el-button>
           </div>
-        </el-button>
-        <el-button type="primary" @click="showLinkModelDialog">链接模型</el-button>
       </div>
-    </div>
-
+    </template>
     <!-- 模型表格 -->
-    <div class="table">
-      <el-table :data="allModelData" style="width: 100%" class="sheet">
-        <el-table-column prop="appName" :label="$t('applyname')">
+    <el-table :data="allModelData" v-if="isList">
+        <el-table-column prop="appName" label="模型项目名称" show-overflow-tooltip />
+        <el-table-column prop="appid" label="模型项目ID" />
+        <el-table-column prop="createTime" label="上传日期" />
+        <el-table-column prop="fileSize" label="模型大小" />
+        <el-table-column label="类型">
           <template slot-scope="scope">
-            <el-tooltip
-              popper-class="app-name-tip"
-              placement="top"
-              effect="dark"
-            >
-              <div slot="content">{{ scope.row.appName }}</div>
-              <div>
-                {{ scope.row.appName }}
-              </div>
+            <span class="can-click" v-if="scope.row.appType === '0' && scope.row.isGis ==='true'" @click="handleCommand('编辑',scope.row)">GIS模型</span>
+            <el-tooltip effect="dark" :content="JSON.stringify(scope.row.sonAppMap)" placement="top" v-else-if="scope.row.appType === '3'">
+              <div v-if="scope.row.isGis ==='false'">链接模型</div>
+              <div class="can-click" v-else @click="handleCommand('编辑',scope.row)">GIS链接模型</div>
             </el-tooltip>
+            <span v-else>{{ scope.row | modelType}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="appid" :label="$t('applicationid')" width="120">
-        </el-table-column>
-        <el-table-column :label="$t('uploaddate')" width="110">
-          <template slot-scope="scope">
-            <div v-text="scope.row.createTime"></div>
-            <!-- <div v-text="scope.row.createTime.slice(0, 10)"></div> -->
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="fileSize" label="模型大小">
-          <template slot-scope="scope">
-            {{ scope.row.fileSize !== "0" ? scope.row.fileSize : "-" }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="" label="项目类型" width="110">
-          <template slot-scope="scope">
-            <span v-if="scope.row.appType === '0' && scope.row.isGis ==='false'">普通模型</span>
-            <span v-else-if="scope.row.appType === '1'">漫游模型</span>
-            <el-tooltip
-              effect="dark"
-              :content="JSON.stringify(scope.row.sonAppMap)"
-              placement="top"
-              v-else-if="scope.row.appType === '3'  && scope.row.isGis ==='false'"
-            >
-              <div>链接模型</div>
-            </el-tooltip>
-
-            <!-- <span v-else-if="scope.row.appType === '3'">链接模型</span> -->
-            <span v-else-if="scope.row.appType === '4'">示例模型</span>
-            <span v-else-if="scope.row.appType === '5'">云应用</span>
-            <span v-else-if="scope.row.appType === '0' && scope.row.isGis ==='true'" class="can-click" @click="edit(scope.row)">GIS模型</span>
-            <el-tooltip
-              effect="dark"
-              :content="JSON.stringify(scope.row.sonAppMap)"
-              placement="top"
-              v-else-if="scope.row.appType === '3' && scope.row.isGis ==='true'"
-            >
-              <div class="can-click" @click="edit(scope.row)">GIS链接模型</div>
-            </el-tooltip>
-            <!-- <span v-else-if="scope.row.appType === '3' && scope.row.isGis ==='true'">GIS链接模型</span> -->
-            <span v-else>其他模型</span>
-          </template>
-        </el-table-column>
-        <!-- <el-table-column prop="" label="并发节点">
+        <!-- <el-table-column label="并发节点">
           <template slot-scope="scope">
             {{ scope.row.currentInstance }}/{{ scope.row.maxInstance }}
           </template>
         </el-table-column> -->
-        <el-table-column :label="$t('state')">
+        <el-table-column prop="status" label="状态" width="120px">
           <template slot-scope="scope">
-            <!-- 做自定义操作 需要改成template的形式,scope.row代表的是表格数据itemList中的每一项 -->
-            <el-tooltip
-              effect="dark"
-              placement="top"
-              popper-class="trans-tooplip"
-              v-if="scope.row.applidStatus === '3'"
-            >
+            <el-tooltip effect="dark" placement="top" popper-class="trans-tooplip" v-if="scope.row.applidStatus === '3'">
               <div slot="content" class="trans-tooplip-content">
                 {{ scope.row.errMsg }}
               </div>
               <!-- 转化失败 -->
-              <div :style="{'display':'flex','justify-content':'center','align-items':'center'}"
-              >
-                <span>{{ formatStatus(scope.row.applidStatus) }}</span>
+              <div :style="{'display':'flex','justify-content':'center','align-items':'center'}">
+                <span class="status">{{ formatStatus(scope.row.applidStatus) }}</span>
                 <div class="err-icon"><img src="@/assets/err.png" alt="" /></div>
               </div>
             </el-tooltip>
-            <div v-else>{{ formatStatus(scope.row.applidStatus) }}</div>
+            <div v-else class="status">{{ formatStatus(scope.row.applidStatus) }}</div>
 
             <el-progress
               :text-inside="true"
               :percentage="scope.row.progress"
               :show-text="true"
               :stroke-width="13"
-              :color="customColor"
-              v-if="
-                scope.row.applidStatus === '1' || scope.row.applidStatus === '6'
-                  ? true
-                  : false
-              "
+              color="#00AAF0"
+              v-if="['1','6'].includes(scope.row.applidStatus)"
             >
             </el-progress>
           </template>
         </el-table-column>
-
-        <!-- 报错 -->
-        <!-- <el-button
-          @click="reportErr(scope.row)"
-          type="text"
-          class="btn-one"
-        >
-          报错
-        </el-button> -->
-
-        <el-table-column label="操作" width="300">
-          <template slot-scope="scope">
-            <el-button
-              @click="GoApp(scope.row)"
-              :disabled="scope.row.applidStatus === '2' ? false : true"
-              :class="scope.row.applidStatus === '2' ? 'blue-btn' : 'gray-btn'"
-            >
-              {{ $t("into") }}
-            </el-button>
-            <el-button
-              @click="teamWorkBtnClick(scope.row)"
-              :disabled="
-                scope.row.applidStatus === '2' && scope.row.appType !== '5'
-                  ? false
-                  : true
-              "
-              :class="
-                scope.row.applidStatus === '2' && scope.row.appType !== '5'
-                  ? 'blue-btn'
-                  : 'gray-btn'
-              "
-            >
-              协同模式
-            </el-button>
-            <!-- 点点点 -->
-            <el-dropdown
-              @command="handleCommand"
-              @visible-change="visibleChange(scope.row)"
-              trigger="hover"
-              placement="bottom"
-            >
-              <div class="ellipsis">
-                <div class="ellipsis-item"></div>
-                <div class="ellipsis-item"></div>
-                <div class="ellipsis-item"></div>
-              </div>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                  command="share"
-                  v-if="scope.row.applidStatus === '2'"
-                  >分享</el-dropdown-item
-                >
-                <el-dropdown-item
-                  command="edit"
-                  v-if="scope.row.applidStatus !== '5' || scope.row.applidStatus !== '6'"
-                  >编辑</el-dropdown-item
-                >
-                <el-dropdown-item
-                  command="downloadModel"
-                  v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false') && scope.row.fileSize!='0'"
-                  >下载</el-dropdown-item
-                >
-                <!-- <el-dropdown-item command="reconversion" v-if="scope.row.appType === '0'&&scope.row.applidStatus === '2'&&scope.row.fileSize!='0'">重新转换</el-dropdown-item> -->
-                <el-dropdown-item
-                  command="delete"
-                  v-if="scope.row.applidStatus !== '5'"
-                  >删除</el-dropdown-item
-                >
-              </el-dropdown-menu>
-            </el-dropdown>
-          </template>
+        <el-table-column fixed="right" label="操作" width="200">
+            <template slot-scope="scope">
+                <div class="flexBetween">
+                  <el-button type="text" class="blueText" @click="GoApp(scope.row)" :disabled="scope.row.applidStatus !== '2'">打开模型</el-button>
+                  <el-button type="text" class="blueText" @click="teamWorkBtnClick(scope.row)" :disabled="!(scope.row.applidStatus === '2' && scope.row.appType !== '5')">协同模式</el-button>
+                  <!-- <el-button type="text" class="blackText">互动模式</el-button> -->
+                    <el-dropdown>
+                        <span class="el-dropdown-link">
+                            <i class="el-icon-arrow-down el-icon-more"></i>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item v-if="scope.row.applidStatus === '2'" @click.native="handleCommand('分享',scope.row)">分享</el-dropdown-item>
+                            <el-dropdown-item v-if="!['5','6'].includes(scope.row.applidStatus)" @click.native="handleCommand('编辑',scope.row)">编辑</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false') && scope.row.fileSize!='0'" @click.native="handleCommand('下载',scope.row)">下载</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.appType === '0'&&scope.row.applidStatus === '2'&&scope.row.fileSize!='0'" @click.native="handleCommand('重新转换',scope.row)">重新转换</el-dropdown-item>
+                            <el-dropdown-item v-if="scope.row.applidStatus !== '5'" @click.native="handleCommand('删除',scope.row)">删除</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </div>
+            </template>
         </el-table-column>
-      </el-table>
-      <Pagination :total="total" :page.sync="pages.pageNo" :limit.sync="pages.pageSize" @pagination="handlePageChange" />
+    </el-table>
+    <!-- 盒子 -->
+    <div class="listBox" v-if="!isList">
+        <div class="listItem" v-for="(item,index) in allModelData" :key="index">
+            <el-image :src="item.screenImg" class="defaultImg">
+                <div slot="error" class="image-slot">
+                    <img :src="require('@/assets/default/list.png')"/>
+                </div>
+            </el-image>
+            <div class="title">{{ item.appName }}</div>
+            <div class="flexBetween">
+                <div class="type">类型：{{ item | modelType}}</div>
+                <div class="status" :class="{'status1':item.status==1,'status2':item.status==2,'status3':item.status==3,'status4':item.status==4,'status5':item.status==5}">
+                  {{ formatStatus(item.applidStatus) }}
+                </div>
+            </div>
+            <div class="flexBetween">
+                <div>
+                  <el-button size="small" class="blueBtn" @click="GoApp(item)" :disabled="item.applidStatus !== '2'">打开模型</el-button>
+                  <el-button size="small" class="bluePlainBtn1" @click="teamWorkBtnClick(item)" :disabled="!(item.applidStatus === '2' && item.appType !== '5')">协同模式</el-button>
+                  <!-- <el-button type="text" class="blackText">互动模式</el-button> -->
+                </div>
+                <el-dropdown>
+                    <span class="el-dropdown-link">
+                        <i class="el-icon-arrow-down el-icon-more"></i>
+                    </span>
+                    <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item v-if="item.applidStatus === '2'" @click.native="handleCommand('分享',item)">分享</el-dropdown-item>
+                        <el-dropdown-item v-if="!['5','6'].includes(item.applidStatus)" @click.native="handleCommand('编辑',item)">编辑</el-dropdown-item>
+                        <el-dropdown-item v-if="item.applidStatus === '2' && (item.appType === '0' && item.isGis === 'false') && item.fileSize!='0'" @click.native="handleCommand('下载',item)">下载</el-dropdown-item>
+                        <el-dropdown-item v-if="item.appType === '0'&&item.applidStatus === '2'&&item.fileSize!='0'" @click.native="handleCommand('重新转换',item)">重新转换</el-dropdown-item>
+                        <el-dropdown-item v-if="item.applidStatus !== '5'" @click.native="handleCommand('删除',item)">删除</el-dropdown-item>
+                    </el-dropdown-menu>
+                </el-dropdown>
+            </div>
+        </div>
     </div>
+    <Pagination :total="total" :page.sync="pages.pageNo" :limit.sync="pages.pageSize" @pagination="handlePageChange" />
+
+
     <!-- 分享dialog框 -->
-    <Share :visible.sync="dialogFormVisibleOne" :appid="formShare.appid" :isGis="form.isGis"></Share>
+    <Share ref="Share"></Share>
+    <!-- 重新转换 -->
     <DialogsConversion ref="DialogsConversion"/>
-    <!-- 编辑dialog框 -->
-    <el-dialog
-      title="编辑项目"
-      :visible="editDialogFormVisible"
-      center
-      :destroy-on-close="true"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      @close="closeEdit"
-      custom-class="saveAsDialog"
-    >
-      <div :class="form.appType == '3' && form.isGis =='true' || form.appType == '3'&&value2 == 'GIS' || form.appType == '0' && value2 == 'GIS' ? '' : 'content' " >
-        <el-form :model="form" :rules="rules" ref="form">
-          <el-form-item label="项目名称：" label-width="110px">
-            <el-input v-model="form.name"></el-input>
-          </el-form-item>
-          <el-form-item label="项目缩略图：" label-width="110px">
-            <SingleUpload v-model="form.screenImg" url="/appli/uploadThumbnail"/>
-          </el-form-item>
-
-          <el-form-item
-            label="基础程序路径："
-            v-if="form.appType === '3' || form.appType === '0'"
-            label-width="110px"
-          >
-            <el-select v-model="value2" @change="changeEditorEngine">
-              <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-
-          <el-form-item
-            label="主程序路径："
-            v-if="form.appType === '5'"
-            label-width="110px"
-          >
-            <el-select v-model="form.startup" placeholder="请选择主程序路径">
-              <el-option
-                :label="item"
-                :value="item"
-                v-for="item in selectStartups"
-                :key="item"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-
-          <el-form-item
-            label="GIS坐标系："
-            v-if="(form.appType === '3' && form.isGis==='true' && value2 !=='BIM') || (form.appType === '0' && form.isGis==='true' && value2 !=='BIM') || value2==='GIS'"
-            label-width="110px"
-          >
-            <el-select v-model="form.gisCoordinateType" placeholder="请选择GIS坐标系">
-              <el-option value="WGS-84" label="WGS-84"></el-option>
-              <el-option value="GCJ-02" label="GCJ-02"></el-option>
-              <el-option value="BD-09" label="BD-09"></el-option>
-            </el-select>
-          </el-form-item>
-
-          <!-- appType  0:普通模型(isGis: GIS模型)   1:漫游模型   3:链接模型(isGis: GIS链接模型)  4:示例模型    5:云应用 -->
-          <!-- value2: 编辑框基础程序路径的绑定值 -->
-
-          <!-- GIS模型 或者 GIS链接模型 或者 链接模型 或者 普通模型改为GIS模型时展示 -->
-          <el-form-item
-            :label="this.value2==='GIS' ? 'GIS信息:' : '子模型列表:'"
-            v-if="(form.appType === '3' && form.isGis==='true') || (form.appType === '3' && form.isGis==='false') || (form.appType === '0' && this.value2==='GIS')"
-            label-width="100px"
-            :style="value2 == 'BIM' ? 'width:300px' : ''"
-          >
-            <el-card class="box-card">
-                <div v-for="(GISitem, index) in editShowGisInfoData" :key="index" class="text item clearfix">
-                  <el-tooltip class="item" effect="dark" :content="GISitem.name" placement="top">
-                    <div class="wordEllipsis"> {{ GISitem.name }} </div>
-                  </el-tooltip>
-                  <!-- 链接模型最低要2个模型 -->
-                  <div v-if="editShowGisInfoData.length > 2" class="td yinc" @click="delRow(index)"> 移除 </div>
-
-                  <!-- GIS模型 或者 改为GIS模型的时候显示 -->
-                  <div v-if="(form.isGis === 'true' && value2 ==='GIS') || value2 ==='GIS'">
-                    <el-form
-                      :model="GISitem"
-                      :rules="gisInfoRules"
-                      class="gis-form"
-                      ref="editorGISInfo"
-                    >
-                      <el-form-item label="" prop="longitude" class="gis-form-box">
-                        <el-input size="small" placeholder="请输入经度" v-model="GISitem.longitude"></el-input>
-                        <span class="gis-input-label">°</span>
-                      </el-form-item>
-                      <el-form-item label="" prop="latitude" class="gis-form-box">
-                        <el-input size="small" placeholder="请输入纬度" v-model="GISitem.latitude"></el-input>
-                      <span class="gis-input-label">°</span>
-                      </el-form-item>
-                      <el-form-item label="" prop="altitude" class="gis-form-box">
-                        <el-input size="small" placeholder="请输入海拔高度" v-model="GISitem.altitude"></el-input>
-                      <span class="gis-input-label">m</span>
-                      </el-form-item>
-                    </el-form>
-                  </div>
-                </div>
-
-                <!-- 链接模型展示 -->
-                <div class="addNewModel" v-if="form.appType === '3'">
-                  <span v-if="modelListFlag" @click="addModelClick">添加模型</span>
-                  <el-select v-model="modelListValue" clearable placeholder="请选择" size="mini" @change="modelListValChange" v-else>
-                    <el-option
-                      v-for="item in modelList"
-                      :key="item.appid"
-                      :label="item.appName"
-                      :value="item.appid">
-                    </el-option>
-                  </el-select>
-                </div>
-            </el-card>
-          </el-form-item>
-
-          <el-form-item
-            label="链接GIS数据服务："
-            label-width="110px"
-            v-if="value2==='GIS'"
-          >
-            <el-card class="box-card">
-              <div v-for="(item, index) in editShowGisServeData" class="gis-serve-box" :key="item.gisId">
-                <el-tooltip class="item" effect="dark" :content="item.gisServerName" placement="top">
-                  <div class="textEllipsis gis-serve"> {{ item.gisServerName }} </div>
-                </el-tooltip>
-                <span class="gis-serve-delete" @click="deleteGisServe(index)">移除</span>
-              </div>
-
-              <span class="add-gis-serve" v-if="selectGisList.length === 0" @click="showSelectGis">添加GIS服务</span>
-              <el-select v-model="selectedGisServe" placeholder="请选择" size="mini" @change="addGisServe" v-else>
-                <el-option
-                  v-for="item in selectGisList"
-                  :key="item.gisId"
-                  :label="item.gisServerName"
-                  :value="item.gisId">
-                </el-option>
-              </el-select>
-            </el-card>
-          </el-form-item>
-
-          <el-form-item
-            label="最大并发数："
-            label-width="110px"
-            prop="maxInstance"
-            
-          >
-            <el-input v-model="form.maxInstance" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item class="startNumber" label="启动参数:" v-if="form.appType === '5'" label-width="100px">
-            <el-input v-model="form.startNum"></el-input>
-          </el-form-item>
-          <el-form-item class="orStart" label="是否预启动:" v-if="form.appType !== '5'" label-width="100px">
-              <el-radio-group v-model="radioStart" @change="readStart">
-                <el-radio :label="1">是</el-radio>
-                <el-radio :label="2">否</el-radio>
-              </el-radio-group>
-          </el-form-item>
-          <el-form-item label="鼠标操作模式：">
-            <el-select v-model="form.doMouse" placeholder="请选择操作模式">
-              <el-option label="非锁定模式" value="0"></el-option>
-              <el-option label="锁定模式" value="1"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="窗口显示模式：">
-            <el-select
-              v-model="form.displayWindow"
-              placeholder="请选择显示模式"
-            >
-              <el-option label="完全填充" value="0"></el-option>
-              <el-option label="尽量填充" value="1"></el-option>
-              <el-option label="原始大小" value="2"></el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-      </div>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="closeEdit">取 消</el-button>
-        <el-button type="primary" @click="editComfirm">确 定</el-button>
-      </div>
-    </el-dialog>
     <!-- 链接模型 -->
     <el-dialog
       title="链接模型"
@@ -469,48 +208,9 @@
       </span>
     </el-dialog>
 
-    <!-- 报错dialog -->
-    <el-dialog title="提示" :visible.sync="reportErrDialogVisible" width="30%">
-      <el-form
-        :model="reportErrForm"
-        :rules="reportErrRules"
-        ref="reportErrFormRef"
-        label-width="100px"
-      >
-        <el-form-item label="标题" prop="title">
-          <el-input
-            v-model="reportErrForm.title"
-            maxlength="20"
-            show-word-limit
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="问题类别" prop="type">
-          <el-select v-model="reportErrForm.type" placeholder="请选择问题类别">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="问题描述" prop="detail">
-          <el-input
-            type="textarea"
-            :autosize="{ minRows: 9 }"
-            v-model="reportErrForm.detail"
-            maxlength="200"
-            show-word-limit
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <!-- 提交项目报错 -->
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="reportErrDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="reportErrDialogVisible = false"
-          >确 定</el-button
-        >
-      </span>
-    </el-dialog>
     <DragUpload ref="DragUpload" numType="uploadingNum" accept=".rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.fbx,.FBX,.obj,.stp,.xyz,.txt,.pts,.las"
     @getFile="getFileDrag" @onSuccess="getAllModelList" @beforeUpload="beforeUpload">
-        <!-- <template v-slot:append>
+        <template v-slot:append>
             <el-form :model="conversionForm" :rules="conversionRules" ref="conversionForm" label-width="0" class="conversionForm">
                 <el-form-item prop="modelActorLimitNum">
                     <el-checkbox label="模型体量优化" v-model="conversionForm.NumChecked"></el-checkbox>
@@ -530,22 +230,24 @@
                     </el-radio-group>
                 </el-form-item>
             </el-form>
-        </template> -->
+        </template>
+        <template v-slot:tip>
+          <span class="tipRed">* </span>
+          文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
+        </template>
     </DragUpload>
-  </div>
+    <!-- 编辑 -->
+    <DialogsEdit ref="DialogsEdit" :ListLinkModel="ListLinkModel"/>
+  </List>
 </template>
 
-<script type='text/html' style='display:block'>
+<script>
 import {
   getProjectList,
-  getGISProjectList,
   deleteProject,
-  updateProject,
 } from "@/api/my.js";
 import MODELAPI from "@/api/model_api";
 import { Getuserid } from "@/store/index.js";
-import newRequest from "@/utils/newRequest.js";
-import { urlToblob } from "@/utils/file.js";
 import qs from "qs";
 import Pagination from "@/components/Pagination"
 import Share from "./share.vue"
@@ -553,38 +255,41 @@ import Transfer from "./transfer/main.vue"
 import SingleUpload from "@/components/Upload/singleUpload.vue"
 import DialogsConversion from "./dialogsConversion.vue"
 import DragUpload from "@/components/Upload/dragUpload.vue";
+import List from "@/components/List/index.vue";
+import DialogsEdit from "./dialogsEdit.vue";
 
 export default {
-  name: "manage",
   components: {
     Pagination,
     SingleUpload,
     Transfer,
     Share,
     DialogsConversion,
-    DragUpload
+    DragUpload,
+    List,
+    DialogsEdit
+  },
+  filters:{
+      modelType(e){
+          if(e.appType === '0' && e.isGis ==='false'){
+            return '普通模型'
+          }else if(e.appType === '0' && e.isGis ==='true'){
+            return 'GIS模型'
+          }else if(e.appType === '1'){
+            return '漫游模型'
+          }else if(e.appType === '3' && e.isGis ==='false'){
+            return '链接模型'
+          }else if(e.appType === '3' && e.isGis ==='true'){
+            return 'GIS链接模型'
+          }else if(e.appType === '4'){
+            return '示例模型'
+          }else if(e.appType === '5'){
+            return '云应用'
+          }
+          return '其他模型'
+      }
   },
   data() {
-    const validaLongitude = (rule, value, callback) => {
-      if (!value || value === '') {
-        callback(new Error('经度不能为空'))
-      }
-      if (Number(value) > 180 || Number(value) < -180) {
-        callback(new Error('经度范围为-180~180'))
-      } else {
-        callback()
-      }
-    }
-    const validaLatitude = (rule, value, callback) => {
-      if (!value || value === '') {
-        callback(new Error('纬度不能为空'))
-      }
-      if (Number(value) > 90 || Number(value) < -90) {
-        callback(new Error('纬度范围为-90~90'))
-      } else {
-        callback()
-      }
-    }
     var validateModelActorLimitNum = (rule, value, callback) => {
         if (this.conversionForm.NumChecked&&!value) {
             callback(new Error('请输入模型构件数阈值'));
@@ -600,17 +305,11 @@ export default {
         }
     };
     return {
-      gisInfoRules: {
-        longitude: [{ required: true, validator: validaLongitude, trigger: ['change', 'blur'] }],
-        latitude: [{ required: true, validator: validaLatitude, trigger: ['change', 'blur'] }],
-        altitude: [{ required: true, message: "海拔高度不能为空", trigger: ['change', 'blur'] }]
-      },
-      GISInfo: '',
-      radioStart:2, // 是否预启动      
+      loading:false,
+      isList: true,
+      GISInfo: '',    
       isGis:'',
       type:null,
-      editShowGisInfoData: [],
-      editShowGisServeData: [],
       options: [
         {
           value: "GIS",
@@ -622,9 +321,7 @@ export default {
         },
       ],
       value: "BIM",
-      value2: "",
       timerFlag: true, //是否开启定时器轮询
-      selectOprationItem: {}, //表格 点击的当前行的数据
       FormIntegrate: {
         appName: null,
       },
@@ -633,7 +330,6 @@ export default {
           { required: true, message: "请输入链接模型名称", trigger: "blur" },
         ],
       },
-      reportErrDialogVisible: false,
       ActiveLinkModel: [],
       ActiveLinkGISModel: [],
       ListLinkModel: [],
@@ -641,94 +337,7 @@ export default {
       linkModelDialog: false,
       allModelData: [], //数据列表
       timer: null, // 模型列表接口请求定时器
-      display: false, //转换进度条默认隐藏
-      customColor: "#00AAF0", //进度条颜色
-      fileList: [{ url: "" }], //上传图片列表显示
       editDialogFormVisible: false,
-      dialogFormVisibleOne: false,
-      //分享应用表单
-      formShare: {
-        appid: "",
-      },
-      // 编辑应用表单
-      form: {
-        appType:"",
-        startup:"",
-        gisCoordinateType:"WGS-84",
-        applid:[],
-        appName:[],
-        displayName: "",
-        gisinfo:[],
-        name: "",
-        maxInstance: "",
-        appid: "",
-        screenImg: "",
-        applidStatus: null,
-        isGis:'',
-        modelIds:'',
-        startNum:'', // 启动参数
-        startVal: null, // 是否预启动
-        displayWindow: [
-          {
-            value: "0",
-            label: "完全填充",
-          },
-          {
-            value: "1",
-            label: "尽量填充",
-          },
-          {
-            value: "2",
-            label: "原始大小",
-          },
-        ],
-        doMouse: [
-          {
-            value: "0",
-            label: "非锁定模式",
-          },
-          {
-            value: "1",
-            label: "锁定模式",
-          },
-        ],
-      },
-      rules: {
-        // 最大并发的校验
-        maxInstance: [
-          {
-            pattern: /^([1-9]\d{0,3})$/,
-            message: "请输入1-9999的正整数",
-            trigger: "blur",
-          }
-        ]
-      },
-      // 报错表单
-      reportErrForm: {
-        title: "",
-        type: "",
-        detail: "",
-      },
-      // 报错表单验证规则
-      reportErrRules: {
-        title: [
-          { required: true, message: "请输入标题!", trigger: "blur" },
-          { min: 1, max: 20, message: "字数不能超过20!", trigger: "blur" }
-        ],
-        type: [
-          { required: true, message: "请选择活动区域", trigger: "change" }
-        ],
-        detail: [
-          { required: true, message: "请输入问题描述!", trigger: "blur" },
-          { min: 1, max: 200, message: "字数不能超过200!", trigger: "blur" }
-        ]
-      },
-      selectStartups: null,
-      modelList: [], // 编辑中添加模型时的下拉框数据
-      selectGisList: [], // 可选的gis服务数据
-      selectedGisServe: '',
-      modelListValue:'', //  编辑中添加模型时的下拉框的v-model
-      modelListFlag: true,
       linkGisCoordinateType:'WGS-84', // 链接模型时选择坐标系
       
       total: 0,
@@ -777,77 +386,44 @@ export default {
   created() {
     this.getAllModelList()
     this.setGetModelListTimer()
-    // 获取gis服务数据
-    this.getGISProject()
+    this.getModelList()
   },
   methods: {
-    handleChange (data) {
-      this.GISInfo = data
+    onChange(e){
+        this.isList = e
     },
-
-    readStart (val) {
-      if (val === 1) {
-         this.form.startVal = true
-      } else {
-        this.form.startVal = false
+    // 更多按钮操作
+    handleCommand(command,row) {
+      let newRow = JSON.parse(JSON.stringify(row))
+      switch (command) {
+        case "分享":
+          this.$refs.Share.show(newRow.appid)
+          break;
+        case "编辑":
+          this.$refs.DialogsEdit.show(newRow)
+          break;
+        case "下载":
+          this.downloadModel(newRow);
+          break;
+        case "重新转换":
+          this.$refs.DialogsConversion.show(newRow)
+          break;
+        case "删除":
+          this.remove(newRow);
+          break;
+        default:
+          break;
       }
     },
 
-    closeEdit () {
-      this.editDialogFormVisible = false
-      this.editShowGisInfoData = []
+    handleChange (data) {
+      this.GISInfo = data
     },
 
     closeLinkModel () {
         this.linkModelDialog = false
         this.ActiveLinkModel = []
         this.FormIntegrate.appName=''
-    },
-
-    delRow (index) {
-      this.$confirm('确定移除吗', '提示').then(() => {
-        // 将添加模型下拉框清空
-        this.modelListValue = ''
-
-        // 更新modelIds
-        let combineIds = this.form.modelIds.split(',')
-        const data = combineIds.filter(item => item !== this.editShowGisInfoData[index].appId)
-        this.form.modelIds = data.join(',')
-
-        this.editShowGisInfoData.splice(index, 1)
-      })
-        .then(() => {
-          this.$message({
-            type: "warning",
-            message: "开始下载",
-          });
-          let params = {
-            userId: Getuserid(),
-            appId: row.appid,
-          };
-          let urllll =
-            process.env.VUE_APP_REQUEST_URL +
-            "/FileStorge/downloadModelFile?" +
-            qs.stringify(params);
-          window.open(urllll);
-          return;
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消下载",
-          });
-        });
-    },
-
-    deleteGisServe (index) {
-      this.$confirm('确定移除吗', '提示').then(() => {
-        this.editShowGisServeData.splice(index, 1)
-      })
-    },
-
-    reportErr (row) {
-      reportErrDialogVisible = true
     },
 
     handleCreateProjectDialog () {
@@ -930,23 +506,8 @@ export default {
       });
     },
 
-    getGISProject() {
-      const params = {
-        userId: Getuserid()
-      }
-      getGISProjectList(params).then(res => {
-        if (res.data.code === 0) {
-          // 只显示status为2的数据
-          this.ListLinkGISModel = res.data.data.list.filter(item => item.status === '2')
-        } else {
-          this.ListLinkGISModel = []
-        }
-      })
-    },
-
     showLinkModelDialog() {
       this.linkModelDialog = true
-      this.getModelList()
     },
     // 获取模型列表
     getModelList(){
@@ -991,7 +552,9 @@ export default {
         pageSize: this.pages.pageSize,
         userid: Getuserid()
       }
+      this.loading = true
       getProjectList(params).then(res => {
+        this.loading = false
         if (res.data.code == "0") {
           this.total = res.data.data.total
           this.allModelData = res.data.data.list
@@ -1020,98 +583,6 @@ export default {
         6: "升级中"
       };
       return statusObj[status]
-    },
-
-    // 分享按钮
-    share(e) {
-      this.formShare.appid = e.appid;
-      this.form.isGis = e.isGis;
-    },
-    // 关闭分享dialog
-    handleClose(done) {
-      done();
-      this.isShow = 1;
-      this.formShare.days = "999";
-      // this.$confirm("确认关闭？")
-      //   .then((_) => {})
-      //   .catch((_) => {});
-    },
-    //确定分享
-    confirm() {
-      this.$common.openLoading("正在加载中....");
-      getWebUrl({
-        appid: this.formShare.appid,
-        days: this.formShare.days,
-        userid: Getuserid(),
-      })
-        .then((res) => {
-          if (res.data.code === 0) {
-            this.isShow = 2;
-            this.formShare.qrurl = res.data.data.qrurl;
-            this.formShare.webShareUrl = res.data.data.webShareUrl
-            this.$message.success(res.data.message);
-          } else {
-            this.$message.error(res.data.message);
-          }
-          this.$common.closeLoading();
-        })
-        .catch((err) => {
-          this.$message.error("分享失败,请重新选择");
-          this.$common.closeLoading();
-          this.dialogFormVisibleOne = false;
-        });
-    },
-    //复制链接成功
-    onCopyUrl: function (e) {
-      this.$message.success("链接复制成功！");
-    },
-    //复制链接失败
-    onErrorUrl: function (e) {
-      this.$message.error("复制失败！");
-    },
-    // 复制二维码图片
-    async copyImg() {
-      // 剪切板只有image/png格式才行，其他图片格式报错
-      urlToblob(this.formShare.qrurl,async (blob)=>{
-        const item = new ClipboardItem({
-          [blob.type]: blob
-        })
-        navigator.clipboard.write([item]).then(res=>{
-          this.$message.success("二维码复制成功！");
-        },err=>{
-          this.$message.error("二维码复制失败！",err);
-        })
-      })
-    },
-    
-    visibleChange(e) {
-      this.selectOprationItem = e;
-    },
-    handleCommand(command) {
-      const item = this.selectOprationItem;
-      switch (command) {
-        case "upgrade":
-          this.upgrade(item);
-          break;
-        case "share":
-          this.dialogFormVisibleOne = true;
-          this.share(item);
-          break;
-        case "edit":
-          this.edit(item);
-          break;
-        case "downloadModel":
-          this.downloadModel(item);
-          break;
-        case "delete":
-          this.remove(item);
-          break;
-        case "reconversion":
-            this.$refs.DialogsConversion.show(item)
-            break;
-        default:
-          break;
-      }
     },
     // 下载
     downloadModel(row){
@@ -1144,106 +615,6 @@ export default {
         });
     },
 
-    changeEditorEngine (value) {
-      if (value === 'GIS' && this.editShowGisInfoData.length === 0) {
-        this.editShowGisInfoData.push({
-          name: this.form.name,
-          appId: this.form.appid,
-          longitude: '',
-          latitude: '',
-          altitude: ''
-        })
-      } 
-    },
-
-    // 编辑按钮
-    edit(e) {
-      this.editShowGisInfoData = []
-      this.editShowGisServeData = []
-      this.selectGisList = []
-      // 将添加模型按钮显示出来
-      this.modelListFlag = true
-
-      let data = JSON.parse(JSON.stringify(e))
-      this.form = data
-    //   this.form.name = data.appName;
-    //   this.form.appid = data.appid;
-    //   this.form.modelIds = data.combineId;
-    //   this.form.gisCoordinateType = data.gisCoordinateType || 'WGS-84';
-    //   this.form.startNum = data.param || '';
-      this.$set(this.form,'name',data.appName)
-      this.$set(this.form,'appid',data.appid)
-      this.$set(this.form,'modelIds',data.combineId)
-      this.$set(this.form,'gisCoordinateType',data.gisCoordinateType || 'WGS-84')
-      this.$set(this.form,'startNum',data.param || '')
-      if (e.isReserve === 'true') {
-        this.radioStart = 1;
-        this.form.startVal = true;
-      } else {
-        this.radioStart = 2;
-         this.form.startVal = false;
-      }
-
-      // 获取gis服务数据
-      if (e.gisServerMap) {
-        for (let item in e.gisServerMap) {
-          this.editShowGisServeData.push({
-            gisId: item,
-            gisServerName: e.gisServerMap[item]
-          })
-        }
-      }
-
-      // 状态 只有是  转换完成  的情况下才可以编辑
-      if (this.form.applidStatus !== '2') {
-         this.$message.error("当前状态不可编辑");
-         return;
-      }
-
-      // appType  0:普通模型(isGis: GIS模型)   1:漫游模型   3:链接模型(isGis: GIS链接模型)  4:示例模型    5:云应用
-      if (e.appType == "3" && e.isGis=='true') { // GIS链接模型
-        this.value2 = "GIS"
-        this.form.gisinfo = JSON.parse(e.gisInfo);
-        this.editShowGisInfoData = this.form.gisinfo
-        // e.sonAppMap: 是个对象里面存的是gis的id和模型名字
-        // e.gisinfo数组,有经纬度和appid
-        this.editShowGisInfoData.forEach(item => {
-          item.name = e.sonAppMap[item.appId]
-        })
-      } else if (e.appType == "0" && e.isGis=='true') { // GIS模型
-        this.value2 = "GIS"
-        this.form.gisinfo = JSON.parse(e.gisInfo);
-
-        this.editShowGisInfoData.push(this.form.gisinfo)
-        this.editShowGisInfoData[0].name = e.appName
-        this.editShowGisInfoData[0].appId = e.appid
-      } else if (e.appType == "3" && e.isGis == 'false') { // 链接模型
-        this.value2 = "BIM"
-        this.form.gisinfo = JSON.parse(e.gisInfo);
-        for (let item in e.sonAppMap) {
-          this.editShowGisInfoData.push({
-            name: e.sonAppMap[item],
-            appId: item,
-            longitude: '',
-            latitude: '',
-            altitude: ''
-          })
-        }
-      } else {
-        this.value2 = "BIM"
-        this.form.gisinfo = JSON.parse(e.gisInfo);
-      }
-      
-      if (e.startups) {
-        this.selectStartups = e.startups.split(",");
-      }
-      for (let index = 0; index < this.fileList.length; index++) {
-        this.fileList[index].url = e.screenImg;
-      }
-      this.editDialogFormVisible = true;
-      this.getModelList()
-    },
-
     validaGISInputForm () {
       if (!this.$refs.editorGISInfo || this.$refs.editorGISInfo.length === 0) return true
       const dataArr = this.$refs.editorGISInfo
@@ -1256,98 +627,6 @@ export default {
         })
       })
       return validStatus
-    },
-
-    editComfirm () {
-      let param = this.form
-      // 1 验证必填项
-      const verify = {
-        name: "项目名称",
-        maxInstance: "最大并发数"
-      }
-      for (const k in verify) {
-        const val = Array.isArray(param[k]) ? param[k][0] : param[k]
-        if (!this.$common.noNull(val)) {
-          this.$common.message(verify[k] + " 不能为空", "warning") // 提示信息
-          return
-        }
-      }
-     
-      // 验证 gis信息 不能为空
-      const gisMessageValid = this.validaGISInputForm()
-      if (!gisMessageValid) {
-        this.$message({
-          message: "请填写正确的gis信息",
-          type: "warning"
-        })
-        return
-      }
-
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          this.$common.openLoading("正在加载中....")
-          
-          // 整理gis信息数据
-          // 如果不是链接模型,这里的数据就需要传对象,链接模型则需要传数组
-          let gisinfoLis = this.form.appType === '3' ? [] : {}
-          if (this.form.appType === '3' && this.editShowGisInfoData.length !== 0) {
-            gisinfoLis = this.editShowGisInfoData.map(item => {
-              const { appId, longitude, altitude, latitude } = item
-              return {
-                appId,
-                longitude,
-                altitude,
-                latitude
-              }
-            })
-          } else if (this.editShowGisInfoData.length !== 0) {
-            const { appId, longitude, altitude, latitude } = this.editShowGisInfoData[0]
-            gisinfoLis = {
-              appId,
-              longitude,
-              altitude,
-              latitude
-            }
-          }
-
-          // 整理gis服务数据
-          const gisServerList = this.editShowGisServeData.map(item => item.gisId).join(',')
-          const params = {
-            appid: this.form.appid,
-            appName: this.form.name,
-            doMouse: this.form.doMouse,
-            displayWindow: this.form.displayWindow,
-            appType: this.form.appType,
-            screenImg: this.form.screenImg,
-            maxInstance: this.form.maxInstance,
-            startup: this.form.startup,
-            gisInfo: JSON.stringify(gisinfoLis),
-            gisServerList: gisServerList,
-            isGis: this.value2 === 'BIM' ? 'false' : 'true',
-            combineId: this.form.modelIds,
-            gisCoordinateType: this.form.gisCoordinateType,
-            param: this.form.startNum, // 启动参数
-            isReserve: this.form.startVal // 是否预启动
-          }
-
-          console.log('请求参数', params)
-          updateProject(params).then(res => {
-            if (res.data.code === 0) {
-              this.$message.success(res.data.message)
-              this.$common.closeLoading()
-              this.getAllModelList()
-              this.editDialogFormVisible = false
-            } else if (res.data.code === 1) {
-              this.$message.error("修改失败，" + res.data.message)
-              this.$common.closeLoading()
-            }
-          })
-          .catch(err => {
-            this.$message.error("修改信息失败,请重新修改")
-            this.$common.closeLoading()
-          })
-        }
-      });
     },
     // 删除按钮
     remove(e) {
@@ -1439,62 +718,12 @@ export default {
         }
       });
     },
-    
-    // 点击添加模型按钮
-    addModelClick () {
-      this.modelListFlag = false
-      this.modelListValue = ''
-
-      const combineIds = this.form.modelIds.split(',')
-      this.modelList = this.ListLinkModel.filter(item => !combineIds.includes(item.appid))
-    },
-
-    showSelectGis () {
-      this.selectedGisServe = ''
-      const selectedGisServeIds = this.editShowGisServeData.map(item => item.gisId)
-      // 找出未被选中的gis服务数据
-      this.selectGisList = this.ListLinkGISModel.filter(item => !selectedGisServeIds.includes(item.gisId))
-      if (this.selectGisList.length === 0) {
-        this.$message.warning('已添加全部gis服务，没有更多gis服务可供添加')
-      }
-    },
-
-    addGisServe (data) {
-      const index = this.selectGisList.findIndex(item => item.gisId === data)
-      const { gisId, gisServerName } = this.selectGisList[index]
-      this.editShowGisServeData.push({
-        gisId,
-        gisServerName
-      })
-      this.selectGisList = []
-    },
-
-    // 添加的模型变化时
-    modelListValChange (appId) {
-      const index = this.modelList.findIndex(item => item.appid === appId)
-      if (appId) {
-        // 更新modelIds
-        const combineIds = this.form.modelIds.split(',')
-        combineIds.push(appId)
-        this.form.modelIds = combineIds.join(',')
-
-        const { appName, appid } = this.modelList[index]
-        this.editShowGisInfoData.push({
-          name: appName,
-          appId: appid,
-          longitude: '',
-          latitude: '',
-          altitude: ''
-        })
-        this.modelListFlag = true
-      }
-    },
     // 上传模型参数
     getFileDrag(file, callback) {
         callback({
-            // platform: this.conversionForm.platform,
-            // modelActorLimitNum: this.conversionForm.modelActorLimitNum,
-            // singleActorLimitNum: this.conversionForm.singleActorLimitNum,
+            platform: this.conversionForm.platform,
+            modelActorLimitNum: this.conversionForm.modelActorLimitNum,
+            singleActorLimitNum: this.conversionForm.singleActorLimitNum,
             fileUpload: file,
             userId: Getuserid(),
             url: "/appli/addProject",
@@ -1502,37 +731,20 @@ export default {
     },
     // 上传GIS数据验证
     beforeUpload(callback){
-        // this.$refs.conversionForm.validate((valid) => {
-        //     if (!valid){
-        //         callback(true)
-        //         return false;
-        //     }
-        // })
+        this.$refs.conversionForm.validate((valid) => {
+            if (!valid){
+                callback(true)
+                return false;
+            }
+        })
     },
     // 新建项目
     createProject(){
       this.$refs.DragUpload.show('新建项目')
     }
   },
-  mounted() {
-    //禁用返回键
-    if (window.history && window.history.pushState) {
-      history.pushState(null, null, document.URL);
-      window.addEventListener(
-        "popstate",
-        function () {
-          history.pushState(null, null, document.URL);
-        },
-        false
-      );
-    }
-  },
-  watch: {
-    $route(to, from) {
-      this.getAllModelList();
-      this.$router.go(0);
-    }
-  },
+  mounted() {},
+  watch: {},
 
   beforeDestroy () {
     // 清除列表接口请求定时器
@@ -1543,11 +755,23 @@ export default {
 </script>
 
 <style lang="less" scoped>
-/deep/ .el-dialog__wrapper {
-  overflow: hidden;
+
+.status {
+    position: relative;
+    &::before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #14dda6;
+        border-radius: 100%;
+        margin-right: 6px;
+    }
 }
-/deep/ .gis-form-box .el-form-item__content {
-  display: flex;
+
+.err-icon {
+  margin-top: 7px;
+  margin-left: 2px;
 }
 
 .can-click {
@@ -1555,126 +779,20 @@ export default {
   cursor: pointer;
 }
 
-.gis-form {
-  display: flex;
-  align-items: flex-start;
-  height: 58px;
-}
-.gis-form-box {
-  flex: 1;
-  margin: 0 5px 0 5px;
-  display: flex;
-  .gis-input-label {
-    margin: 0 0 0 5px;
-  }
+
+/deep/.el-progress-bar__innerText{
+  vertical-align: baseline;
 }
 
-.box {
-  overflow: hidden;
-  width: 96%;
-  padding: 20px 2%;
-  /deep/ .el-button--primary {
-    background-color: #00aaf0;
-  }
-  .record {
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    position: relative;
-    .right {
-      margin-left: auto;
-    }
-  }
-  .table {
-    margin-top: 20px;
-    margin-bottom: 40px;
-    .name-two {
-      background-color: red !important;
-    }
-    .sheet {
-      font-size: 16px;
-    }
-    // 进度条里的文字
-    /deep/ .el-progress-bar__innerText {
-      color: #000;
-      margin-top: -6px;
-    }
-    /deep/ .el-table thead {
-      color: #fff;
-    }
-    /deep/ .el-table th {
-      background-color: #00aaf0;
-      text-align: center;
-      font-size: 17px;
-      font-weight: normal;
-    }
-    /deep/ .el-table td {
-      text-align: center;
-    }
-    // 表头字体颜色
-    /deep/ .el-table th > .cell {
-      color: #fff;
-    }
-    //表格去横线
-    // /deep/ .el-table__row > td {
-    //   border: none;
-    // }
-    //表格去横线之去掉最下面的那一条线
-    // /deep/ .el-table::before {
-    //   height: 0px;
-    // }
-    // 第一列字体颜色
-    // /deep/ .el-table_1_column_1 {
-    //   color: #00aaf0;
-    // }
-    .btn-one {
-      font-size: 14px;
-      color: #00aaf0;
-    }
-    .gray-btn {
-      background-color: #bbb;
-      color: #fff;
-    }
-    .blue-btn {
-      background-color: #00aaf0;
-      color: #fff;
-    }
-    .red {
-      font-size: 16px;
-      color: #ff6600;
-    }
-    .gray {
-      font-size: 14px;
-      color: gray;
-    }
-    .blue {
-      color: #00aaf0;
-      font-size: 14px;
-    }
-  }
-  .el-dialog {
-    .content {
-      display: flex;
-      justify-content: center;
-      .el-form {
-        .el-input {
-          width: 150px;
+.el-dropdown {
+    .el-dropdown-link {
+        cursor: pointer;
+        margin: 0 10px;
+        i {
+            font-size: 22px;
+            color: #999999;
         }
-        .el-select {
-          width: 150px;
-        }
-      }
     }
-    .hidden {
-      width: 0;
-      height: 0;
-      opacity: 0;
-      position: absolute;
-      top: -1000%;
-      left: -1000%;
-      z-index: -9999999;
-    }
-  }
 }
 .form-integrate {
   margin-top: 20px;
@@ -1698,46 +816,18 @@ export default {
     }
   }
 }
+
+.conversionForm{
+    border-bottom: 1px solid #f5f5f5;
+    border-top: 1px solid #f5f5f5;
+    padding-top: 20px;
+    margin: 20px 0;
+    .text {
+        padding: 0 30px;
+    }
+}
 </style>
 <style lang="less">
-/* 背景 */
-.app-name-tip {
-  background-color: #00aaf0 !important;
-  /* 箭头 */
-  &[x-placement^="top"] .popper__arrow:after {
-    border-top-color: #00aaf0 !important;
-  }
-  &[x-placement^="bottom"] .popper__arrow:after {
-    border-bottom-color: #00aaf0 !important;
-  }
-  /* 箭头边框 */
-  &[x-placement^="bottom"] .popper__arrow {
-    border-bottom-color: #00aaf0 !important;
-  }
-  &[x-placement^="top"] .popper__arrow {
-    border-top-color: #00aaf0 !important;
-  }
-}
-
-/* 转换失败 */
-.trans-tooplip {
-  background-color: #ffe8e8 !important;
-  /* 箭头 */
-  &[x-placement^="top"] .popper__arrow:after {
-    border-top-color: #ffe8e8 !important;
-  }
-  &[x-placement^="bottom"] .popper__arrow:after {
-    border-bottom-color: #ffe8e8 !important;
-  }
-  /* 箭头边框 */
-  &[x-placement^="bottom"] .popper__arrow {
-    border-bottom-color: #ffe8e8 !important;
-  }
-  &[x-placement^="top"] .popper__arrow {
-    border-top-color: #ffe8e8 !important;
-  }
-}
-
 .integrate-transfer {
   .el-transfer-panel:nth-of-type(3) {
     width: 300px;
@@ -1757,13 +847,6 @@ export default {
     padding-top: 0;
   }
 }
-.sheet {
-  .el-table__body,
-  .el-table__header {
-    width: 100% !important;
-    table-layout: auto;
-  }
-}
 
 .trans-tooplip-content {
   font-size: 14px;
@@ -1772,154 +855,5 @@ export default {
   color: #ff3333;
 }
 
-.err-icon {
-  margin-top: 7px;
-  margin-left: 2px;
-}
 
-/deep/ .el-notification__group {
-  width: 100%;
-  background-color: red;
-}
-
-/deep/ .el-notification__content {
-  background-color: pink;
-  width: 100px;
-  p {
-    display: block;
-  }
-}
-
-.ellipsis {
-  cursor: pointer;
-  display: flex;
-  display: inline-block;
-  margin-left: 10px;
-  .ellipsis-item {
-    display: inline-block;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background-color: #999;
-    margin: 0 3px;       
-  }
-}
-
-</style>
-
-<style lang="less" scoped>
-::v-deep .saveAsDialog{
-  width: 700px !important;
-}
-.wordEllipsis{
-  width: 100px;
-  white-space: nowrap; //强制在一行显示
-  overflow: hidden; //溢出隐藏
-  text-overflow: ellipsis; //显示省略号
-  float: left;
-}
-
-.gis-serve-box {
-  position: relative;
-  .gis-serve {
-    margin: 0 80px 0 0;
-  }
-  .gis-serve-delete {
-    position: absolute;
-    right: 20px;
-    top: 0;
-    color: #00aaf0;
-    &:hover {
-      cursor: pointer;
-    }
-  }
-}
-.add-gis-serve {
-  color: #00aaf0;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.clearfix::before,
-.clearfix::after{
-  content:'';
-  display: table;
-}
-.clearfix::after{
-  clear:both;
-}
-
-::v-deep .el-card__body {
-    padding: 0.25rem 1.25rem;
-}
-.elinput ::v-deep .el-input__inner{
-  width: 96px;
-  height: 20px;
-  padding: 0 10px;
-}
-
-.yinc {
-  padding-left: 10px;
-  color: #00aaf0;
-}
-.bind {
-  display: none;
-}
-.yinc:hover {
-  cursor: pointer;
-}
-.td {
-  float:right;
-  position: relative;
-  top:0px;
-}
-.upload-btn {
-  position: relative;
-  .uploadingNum {
-    position: absolute;
-    top: -13px;
-    right: -10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: red;
-    font-size: 14px;
-    color: #fff;
-    font-weight: 500;
-    padding: 6px;
-  }
-}
-
-.box-card {
-  margin-left: 9px;
-  .addNewModel{
-    span {
-      color: #00aaf0;
-      font-size: 14px;
-      cursor: pointer;
-    }
-  }
-}
-::v-deep .orStart .el-radio-group {
-   margin-left: 9px;
-}
-::v-deep .reaNum .el-input {
-  margin-left: 9px;
-}
-::v-deep .startNumber .el-input {
-  margin-left: 9px;
-}
-
-.conversionForm{
-    border-bottom: 1px solid #f5f5f5;
-    border-top: 1px solid #f5f5f5;
-    padding-top: 20px;
-    margin: 20px 0;
-    .text {
-        padding: 0 30px;
-    }
-}
 </style>

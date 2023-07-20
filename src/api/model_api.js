@@ -168,44 +168,11 @@ const MODELAPI = {
             params
         })
     },
-
-    // 获取自定义构件列表 （自定义构件）
-    GETCOMLISTBYPARENTID: params => {
-        return request({
-            url: '/comControl/getComListByParentId',
-            method: 'GET',
-            params
-        })
-    },
-    // 删除自定义构件分组/构件 （自定义构件）
-    DELETEUSERCOM: params => {
-        return request({
-            url: '/comControl/deleteUserCom',
-            method: 'POST',
-            params
-        })
-    },
-    // 新建分组 （自定义构件）
-    ADDCOMGROUP: params => {
-        return request({
-            url: '/comControl/addComGroup',
-            method: 'POST',
-            params
-        })
-    },
     // 获取所有自定义构建 （自定义构件）
     GETALLCOM: params => {
         return request({
             url: '/comControl/getAllCom',
             method: 'get',
-            params
-        })
-    },
-    // 自定义构建组更名 （自定义构件）
-    UPDATECOMGROUP: params => {
-        return request({
-            url: '/comControl/updateComGroup',
-            method: 'post',
             params
         })
     },

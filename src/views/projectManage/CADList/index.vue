@@ -1,15 +1,17 @@
 <!-- 图纸管理 -->
 <template>
-    <div class="box" v-loading="loading">
-        <div class="boxHeader">
-            <div class="boxHeaderTitle">您共有<span>{{total}}</span>个项目</div>
-            <div>
-                <!-- <el-badge :value="uploadGISNum" :hidden="!uploadGISNum"> -->
-                    <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="uploadCAD">上传图纸</el-button>
-                <!-- </el-badge> -->
-            </div>
-        </div>
-        <el-table :data="tableData">
+    <List v-loading="loading" @change="onChange">
+        <template slot="title">
+            <div class="boxHeader">
+                <div class="boxHeaderTitle">您共有<span>{{total}}</span>个项目</div>
+                <div>
+                    <!-- <el-badge :value="uploadGISNum" :hidden="!uploadGISNum"> -->
+                        <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="uploadCAD">上传图纸</el-button>
+                    <!-- </el-badge> -->
+                </div>
+            </div>            
+        </template>
+        <el-table :data="tableData" v-if="isList">
             <el-table-column prop="fileName" label="图纸名称" />
             <el-table-column prop="userFileId" label="图纸ID" />
             <el-table-column prop="addTime" label="上传日期" />
@@ -47,13 +49,44 @@
                 </template>
             </el-table-column>
         </el-table>
+        <div class="listBox" v-if="!isList">
+            <div class="listItem" v-for="(item,index) in tableData" :key="index">
+                <el-image :src="item.fileUrl" class="defaultImg">
+                    <div slot="error" class="image-slot">
+                        <img :src="require('@/assets/default/list.png')"/>
+                    </div>
+                </el-image>
+                <div class="title">{{ item.fileName }}</div>
+                <div class="flexBetween">
+                    <div class="type">类型：{{ item.extand }}</div>
+                    <div class="status" :class="item.fileStatus === '1' ? 'status' : item.fileStatus === '2' ? 'status3' : 'status1'">{{ status[item.fileStatus] }}</div>
+                </div>
+                <div class="flexBetween">
+                    <div>
+                        <el-button class="blueBtn" type="primary" size="small" :disabled="item.fileStatus !== '1'" @click="toProject(item)">进入项目</el-button>
+                    </div>
+                    <el-dropdown>
+                        <span class="el-dropdown-link">
+                            <i class="el-icon-arrow-down el-icon-more"></i>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item @click.native="editorCAD('编辑',item)">编辑</el-dropdown-item>                          
+                            <el-dropdown-item v-if="item.status==2&&item.isSingle==='true'" @click.native="onCopy(item.fileUrl)">复制URL</el-dropdown-item>
+                            <el-dropdown-item v-if="item.status==2">分享</el-dropdown-item>
+                            <el-dropdown-item @click.native="downLoad(item)">下载</el-dropdown-item>
+                            <el-dropdown-item :divided="item.status==2" @click.native="deleteRow(item)">删除</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </div>
+            </div>
+        </div>
         <Pagination :total="total" :page.sync="pages.pageNo" :limit.sync="pages.pageSize" @pagination="handlePageChange" />
         <!-- 新建GIS服务项目 -->
         <DialogsProject ref="DialogsProject" />
         <!-- 上传GIS数据 -->
         <DragUpload ref="DragUpload" :limit="null" accept=".dwg,.dxf,.svg"  numType="uploadCADNum" @getFile="getFileDrag" @onSuccess="getList">
         </DragUpload>
-    </div>
+    </List>
 </template>
 
 <script>
@@ -62,11 +95,13 @@ import { getList, deleteList, downLoadCAD } from "@/api/CADList.js"
 import DialogsProject from "./dialogsProject.vue"
 import DragUpload from "@/components/Upload/dragUploadCAD.vue"
 import Pagination from "@/components/Pagination"
+import List from "@/components/List/index.vue";
 export default {
-    components: { DragUpload, Pagination, DialogsProject },
+    components: { DragUpload, Pagination, DialogsProject, List },
     data() {
         return {
             loading: false,
+            isList: true,
             tableData: [],
             total: 0,
             pages: {
@@ -96,9 +131,11 @@ export default {
         window.clearInterval(this.timer)
     },
     methods: {
-        
+        onChange(e){
+            this.isList = e
+        },
         editorCAD(title, row = {}) {
-            this.$refs.DialogsProject.show(title, row)
+            this.$refs.DialogsProject.show(title, JSON.parse(JSON.stringify(row)))
         },
     
         uploadCAD() {
@@ -263,9 +300,5 @@ export default {
     &::before {
         background: #8692A1;
     }
-}
-
-/deep/ .el-table th.el-table__cell {
-    background-color: #00aaf0;
 }
 </style>

@@ -171,7 +171,7 @@
                   formData.append([key],data[key])
               }
               editGISLayerServer(formData).then(res=>{
-                  this.$parent.getList()
+                  this.$parent.$parent.getList()
                   this.$message.success('编辑成功！')
                   this.hide()
               })
@@ -182,7 +182,7 @@
                   thumbnail:this.form.thumbnail
               }
               addGISLayerServer(data,JSON.stringify(this.form.ourGISLayerList)).then(res=>{
-                  this.$parent.getList()
+                  this.$parent.$parent.getList()
                   this.$message.success('创建成功！')
                   this.hide()
               })

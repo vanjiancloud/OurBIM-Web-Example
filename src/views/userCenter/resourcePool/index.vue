@@ -69,7 +69,8 @@
 import { throttle } from 'lodash'
 import { mapGetters, mapState } from 'vuex'
 import { EventBus } from '@/utils/bus.js'
-import CHAILIAOAPI, { getChartletList, getMaterialByGroup, addMaterialForUser, changeMaterialByInstruction, getMaterialByMatId,deleteMaterialTexture } from "@/api/material_api";
+import { deleteMaterialTexture } from '@/api/resource/chartlet.js'
+import CHAILIAOAPI, { getChartletList, getMaterialByGroup, addMaterialForUser, changeMaterialByInstruction, getMaterialByMatId } from "@/api/material_api";
 import MODELAPI from "@/api/model_api";
 import COMPONENTLIBRARY, { addCom } from "@/api/component-library";
 import Tab from "@/components/Tab/index.vue";

@@ -40,17 +40,6 @@ const CHAILIAOAPI = {
             data: formData,
         })
     },
-    // 创建个人库材质贴图分组
-    CREATEMATERIALTEXTUREGROUP: data => {
-        return request({
-            url: '/material/createMaterialTextureGroup',
-            method: 'post',
-            data,
-            headers: {
-                "Content-Type": "multipart/form-data;"
-            },
-        })
-    },
     GETPAKIDBYAPPID: params => {
         return request({
             url: '/appli/getPakIdByAppId',
@@ -124,19 +113,6 @@ const CHAILIAOAPI = {
     },
 }
 
-
-// 创建贴图分组
-export function addChartletGroup(data) {
-    return newRequest({
-        url: "/material/createMaterialTextureGroup",
-        method: "post",
-        data,
-        headers: {
-            "Content-Type": "multipart/form-data;"
-        },
-    });
-}
-
 // 获取 个人库 贴图
 export function getChartletList(params) {
     return newRequest({
@@ -146,17 +122,6 @@ export function getChartletList(params) {
     });
 }
 
-// 上传贴图
-export function addChartlet(data) {
-    return newRequest({
-        url: "/material/uploadMaterialTextures",
-        method: "post",
-        data,
-        headers: {
-            "Content-Type": "multipart/form-data;"
-        },
-    });
-}
 // 获取OurBIM材质库某分组下的材质
 export function getMaterialByGroup(params) {
     return newRequest({
@@ -226,33 +191,6 @@ export function changeMaterialByInstruction(params,data) {
         data,
         headers: {
             'Content-Type': 'application/json'
-        }
-    })
-}
-// 删除贴图分组或贴图
-export function deleteMaterialTexture(params) {
-    return newRequest({
-        url: '/material/deleteMaterialTextureInfo',
-        method: 'post',
-        params,
-    })
-}
-// 编辑贴图分组
-export function updateMaterialTextureGroup(params) {
-    return newRequest({
-        url: '/material/updateMaterialTextureGroup',
-        method: 'post',
-        params,
-    })
-}
-// 编辑贴图
-export function updateMaterialTexture(data) {
-    return newRequest({
-        url: '/material/updateMaterialTexture',
-        method: 'post',
-        data,
-        headers: {
-            'Content-Type': 'multipart/form-data;'
         }
     })
 }

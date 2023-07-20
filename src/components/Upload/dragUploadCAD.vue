@@ -13,11 +13,11 @@
         <slot name="append"></slot>
         <div class="dragUpLoad">
             <div class="dragUpLoadTitle">
-                <img src="@/views/found/icon.png" alt="" />
+                <img src="@/assets/images/common/icon.png" alt="" />
                 <div class="dragUpLoadText">{{ title }}</div>
             </div>
             <el-upload ref="upload" drag action="#" :auto-upload="false" :accept="accept" :limit="limit" :on-change="onChange" :on-exceed="handleExceed" :http-request="httpRequest" multiple>
-                <img src="@/views/found/file.png" />
+                <img src="@/assets/images/common/file.png" />
                 <div class="el-upload__text">
                     <em>点击</em>或将文件拖拽到这里上传
                 </div>
