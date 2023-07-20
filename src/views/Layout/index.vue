@@ -125,7 +125,7 @@
                 <div class="nav" :class="fold ? 'nav' : 'closeNav'">
                     <!-- 收缩 -->
                     <div class="packUp" @click="fold=!fold"><svg-icon icon-class="packUp" /></div>
-                    <el-menu :default-active="activeMenu" class="tac" text-color="#999999" active-text-color="#fff" router
+                    <el-menu :collapse="!fold" :default-active="activeMenu" class="tac" text-color="#999999" active-text-color="#FF5900" router
                         background-color="#fff">
                         <el-submenu :index="item.path" v-for="(item, index) in routes" :key="index">
                             <template slot="title">
@@ -589,6 +589,7 @@ export default {
                 font-size: 18px;
                 font-weight: 600;
                 color: #096191;
+                text-align: left;
             }
 
             .statisticsBox {
@@ -703,6 +704,7 @@ export default {
             }
 
             .period {
+                text-align: center;
                 .time {
                     font-size: 14px;
                     font-weight: 400;
@@ -807,6 +809,10 @@ export default {
                     cursor: pointer;
                     text-align: center;
                     line-height: 32px;
+                    &:hover{
+                        background-color: #00AAF0;
+                        color: #ffffff;
+                    }
                 }
 
                 .tac {
@@ -876,9 +882,12 @@ export default {
             }
 
             .closeNav{
-                width: 0;
+                width: 80px;
                 .packUp{
                     transform:rotate(180deg);
+                }
+                .tac .icon{
+                    margin-left: 10px;
                 }
             }
 
@@ -925,6 +934,13 @@ export default {
                 }
             }
         }
+    }
+}
+
+.el-menu--popup-right-start{
+    .el-menu-item:focus, .el-menu-item:hover{
+        background: #ff6600!important;
+        color: #ffffff!important;
     }
 }
 </style>

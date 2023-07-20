@@ -239,7 +239,7 @@ export default {
         getGISProject() {
             getGISProjectList({ userId: Getuserid() }).then(res => {
                 // 只显示status为2的数据
-                this.GISModel = res.data.list && res.data.list.filter(item => item.status === '2')
+                this.GISModel = res.data?.list && res.data.list.filter(item => item.status === '2')
             })
         },
         // 找出未被选中的gis服务数据

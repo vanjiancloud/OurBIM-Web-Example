@@ -79,6 +79,8 @@
                 </div>
             </div>
         </div>
+        <el-empty v-if="!isList&&!tableData.length" :image="require('@/assets/noData.png')" :image-size="100"></el-empty>
+        
         <Pagination :total="total" :page.sync="pages.pageNo" :limit.sync="pages.pageSize" @pagination="handlePageChange" />
         <!-- 新建GIS服务项目 -->
         <DialogsProject ref="DialogsProject" />
