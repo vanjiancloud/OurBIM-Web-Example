@@ -240,7 +240,7 @@ export default {
         isShowCom(data, e){
             let params = {
                 mn: data.uuid,
-                projectId: data.projectId,
+                projectId: data.projectId || data.compData?.projectId,
                 action: !e.checkedKeys.includes(data.uuid) ? 'showComponents' : 'hideComponents'
             }
             this.updateEdit(params)
