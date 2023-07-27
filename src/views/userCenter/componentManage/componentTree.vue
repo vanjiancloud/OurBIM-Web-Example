@@ -34,7 +34,7 @@
 
 <script>
 import { doAction, getComponents, lockControl, lockAfterInfo, setGizmoMode, freezeCom } from "@/api/model_api";
-import { deleteCustomCom, focusComponent } from "@/api/component-library";
+import { deleteCustomCom, focusComponent, controlComShowOrHide } from "@/api/component-library";
 import Drawer from "@/components/Drawer/index.vue";
 import OperatingTools from "@/components/OperatingTools";
 import { EventBus } from '@/utils/bus.js'
@@ -238,12 +238,23 @@ export default {
         },
         // 点击显示或隐藏构件
         isShowCom(data, e){
-            let params = {
-                mn: data.uuid,
-                projectId: data.projectId || data.compData?.projectId,
-                action: !e.checkedKeys.includes(data.uuid) ? 'showComponents' : 'hideComponents'
+            if(data.typeId === "comp"){
+                // 自定义构件
+                let params = {
+                    comId: data.uuid,
+                    taskId: this.data.taskId,
+                    lableVisibility: !e.checkedKeys.includes(data.uuid)
+                }
+                controlComShowOrHide(params)
+            }else{
+                // 模型构件
+                let params = {
+                    mn: data.uuid,
+                    projectId: data.projectId || data.compData?.projectId,
+                    action: !e.checkedKeys.includes(data.uuid) ? 'showComponents' : 'hideComponents'
+                }
+                this.updateEdit(params)
             }
-            this.updateEdit(params)
         },
         // 添加构件后更新列表
         updateComTreeAfterAddComs() {
