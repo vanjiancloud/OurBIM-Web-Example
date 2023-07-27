@@ -16,7 +16,17 @@ module.exports = {
     // 生产环境是否生成 sourceMap 文件
     productionSourceMap: false,
     devServer: {
-        port: 8888
+        port: 8888,
+        proxy: {
+            '/api': {
+                target: 'http://172.16.100.154:11012',
+                changeOrigin: true,
+                logLevel: 'debug',
+                pathRewrite: {
+                    '^/api': ''
+                }
+            }
+        }
     },
     configureWebpack: (config) => {
         if (process.env.NODE_ENV === 'production') {
