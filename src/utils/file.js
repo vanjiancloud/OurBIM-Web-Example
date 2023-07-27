@@ -18,9 +18,9 @@ export function urlToblob(url, func) {
 
 
 // 使用fetch函数下载文件
-export function downFile(fileUrl) {
+export function downFile(fileUrl, name) {
 	const spliceLength2 = fileUrl.lastIndexOf("/");
-	const urlName = fileUrl.slice(spliceLength2 + 1);
+	const urlName = name || fileUrl.slice(spliceLength2 + 1);
 	let errblob = {};
 	let msg = ''
 	fetch(fileUrl)

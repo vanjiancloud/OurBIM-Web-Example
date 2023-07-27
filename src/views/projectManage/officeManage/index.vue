@@ -356,7 +356,7 @@ export default {
           };
           MODELAPI.GETCLOUDDOCDOWNLOADURL(params).then((res)=>{
             if(res.data.code === 0){
-              downFile(res.data.message)
+              downFile(res.data.message,item.fileName)
             }else{
                 this.$message.error(res.data.message);
             }
