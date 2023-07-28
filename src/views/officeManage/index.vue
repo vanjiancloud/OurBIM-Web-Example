@@ -355,7 +355,7 @@ export default {
         .catch(() => {
           this.$message({
             type: "info",
-            message: "已取消下载",
+            message: "已取消下载", 
           });
         });
     },
