@@ -76,8 +76,18 @@ export default {
 <style lang="less" scoped>
 .tabs{
     padding-top: 15px;
-    /deep/.el-tabs__nav{
-        margin-left: 40px;
+    /deep/.el-tabs__item{
+        padding: 0 30px!important;
+        text-align: center;
+    }
+    /deep/.el-tabs__active-bar{
+        display: none;
+    }
+    /deep/.is-active{
+        border-bottom: 3px solid #00AAF0;
+    }
+    /deep/.el-tabs__nav-scroll{
+        margin-left: 10px;
     }
     .bread{
         font-size: 16px;

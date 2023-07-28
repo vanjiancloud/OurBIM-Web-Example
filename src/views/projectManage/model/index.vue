@@ -209,7 +209,7 @@
       </span>
     </el-dialog>
 
-    <DragUpload ref="DragUpload" numType="uploadingNum" accept=".rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.fbx,.FBX,.obj,.stp,.xyz,.txt,.pts,.las"
+    <DialogsDrag ref="DialogsDrag" numType="uploadingNum" accept=".rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.fbx,.FBX,.obj,.stp,.xyz,.txt,.pts,.las"
     @getFile="getFileDrag" @onSuccess="getAllModelList" @beforeUpload="beforeUpload">
         <template v-slot:append>
             <el-form :model="conversionForm" :rules="conversionRules" ref="conversionForm" label-width="0" class="conversionForm">
@@ -236,7 +236,7 @@
           <span class="tipRed">* </span>
           文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
         </template>
-    </DragUpload>
+    </DialogsDrag>
     <!-- 编辑 -->
     <DialogsEdit ref="DialogsEdit" :ListLinkModel="ListLinkModel"/>
   </List>
@@ -255,7 +255,7 @@ import Share from "./share.vue"
 import Transfer from "./transfer/main.vue"
 import SingleUpload from "@/components/Upload/singleUpload.vue"
 import DialogsConversion from "./dialogsConversion.vue"
-import DragUpload from "@/components/Upload/dragUpload.vue";
+import DialogsDrag from "@/components/Upload/DialogsDrag.vue";
 import List from "@/components/List/index.vue";
 import DialogsEdit from "./dialogsEdit.vue";
 
@@ -266,7 +266,7 @@ export default {
     Transfer,
     Share,
     DialogsConversion,
-    DragUpload,
+    DialogsDrag,
     List,
     DialogsEdit
   },
@@ -429,7 +429,7 @@ export default {
 
     handleCreateProjectDialog () {
         this.conversionForm = this.$options.data().conversionForm
-        this.$refs.DragUpload.show('上传模型')
+        this.$refs.DialogsDrag.show('上传模型')
     },
 
     SubmitIntegrate () {
@@ -741,7 +741,7 @@ export default {
     },
     // 新建项目
     createProject(){
-      this.$refs.DragUpload.show('新建项目')
+      this.$refs.DialogsDrag.show('新建项目')
     }
   },
   mounted() {},

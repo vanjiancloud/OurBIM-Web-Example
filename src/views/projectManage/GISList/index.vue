@@ -85,7 +85,7 @@
         <!-- 新建GIS服务项目 -->
         <DialogsProject ref="DialogsProject" />
         <!-- 上传GIS数据 -->
-        <DragUpload ref="DragUpload" :limit="1" numType="uploadGISNum" @getFile="getFileDrag" @onSuccess="getList" @beforeUpload="beforeUpload">
+        <DialogsDrag ref="DialogsDrag" :limit="1" numType="uploadGISNum" @getFile="getFileDrag" @onSuccess="getList" @beforeUpload="beforeUpload">
             <template v-slot:append>
                 <el-form :model="form" :rules="rules" ref="form" label-width="130px" class="layerForm">
                     <el-form-item label="图层类型：" prop="layerType">
@@ -119,7 +119,7 @@
               <span class="tipRed">* </span>
               文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
             </template>
-        </DragUpload>
+        </DialogsDrag>
     </List>
 </template>
 
@@ -128,11 +128,11 @@ import { getDict } from "@/api/dict.js"
 import { Getuserid } from "@/store/index.js";
 import { getList, deleteList } from "@/api/GISList.js";
 import DialogsProject from "./dialogsProject.vue";
-import DragUpload from "@/components/Upload/dragUpload.vue";
+import DialogsDrag from "@/components/Upload/DialogsDrag.vue";
 import Pagination from "@/components/Pagination";
 import List from "@/components/List/index.vue";
 export default {
-    components: { DialogsProject, DragUpload, Pagination, List },
+    components: { DialogsProject, DialogsDrag, Pagination, List },
     props: {},
     data() {
         return {
@@ -226,7 +226,7 @@ export default {
         // 上传GIS数据
         uploadGIS() {
             this.form = this.$options.data().form
-            this.$refs.DragUpload.show("上传GIS");
+            this.$refs.DialogsDrag.show("上传GIS");
         },
         // 获取列表
         getList() {

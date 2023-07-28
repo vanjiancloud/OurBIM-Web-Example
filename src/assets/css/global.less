@@ -32,6 +32,52 @@ body {
     min-width: 1200px !important;
     margin: 0 auto;
     font-size: 16px;
+    // 内容
+    .box{
+        overflow: hidden;
+        width: 100%;
+        padding: 20px 24px;
+        .boxHeader{
+            .flexBetween();
+            .boxHeaderTitle{
+            span{
+                color: #00AAF0;
+                padding: 0 5px;
+            }
+            }
+        }
+    }
+    // 搜索
+    .search{
+        .flexBetween();
+        .el-input__inner{
+            background-color: #FFFFFF;
+            height: 36px;
+            line-height: 36px;
+        }
+        .searchRight{
+            margin-bottom: 20px;
+            .flexStart()
+        }
+    }
+    // 左边带小点
+    .status{
+        position: relative;
+        padding-left: 13px;
+        &::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #14dda6;
+            border-radius: 100%;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            margin: auto;
+        }
+    }
 }
 
 body {
@@ -44,23 +90,6 @@ body {
 
 .el-tooltip__popper {
     max-width: 50%!important;
-}
-
-.box{
-  overflow: hidden;
-  width: 100%;
-  padding: 20px 24px;
-  .boxHeader{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    .boxHeaderTitle{
-      span{
-        color: #00AAF0;
-        padding: 0 5px;
-      }
-    }
-  }
 }
 
 
@@ -82,6 +111,8 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+
 
 .modelPage {
     margin: 15px 0!important;

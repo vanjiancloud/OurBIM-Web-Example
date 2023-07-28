@@ -120,7 +120,7 @@
         <!-- 编辑构件 -->
         <DialogsCom ref="DialogsCom" :parentData="parentData"/>
         <!-- 上传构件 -->
-        <DragUpload ref="DragUpload" numType="uploadCom" @getFile="getFileDrag" @onSuccess="getList(parentId)"/>
+        <DialogsDrag ref="DialogsDrag" numType="uploadCom" @getFile="getFileDrag" @onSuccess="getList(parentId)"/>
     </List>
 </template>
 
@@ -129,10 +129,10 @@ import { Getuserid } from "@/store/index.js";
 import { list, deleteUserCom } from '@/api/resource/components.js'
 import List from "@/components/List/index.vue";
 import DialogsComGroup from './components/DialogsComGroup.vue'
-import DragUpload from "@/components/Upload/dragUpload.vue";
+import DialogsDrag from "@/components/Upload/DialogsDrag.vue";
 import DialogsCom from './components/DialogsCom.vue'
 export default {
-    components: { List, DialogsComGroup, DragUpload, DialogsCom },
+    components: { List, DialogsComGroup, DialogsDrag, DialogsCom },
     props: {
         total: {
             type: Number,
@@ -238,7 +238,7 @@ export default {
         },
         // 上传构件
         uploadCompents(){
-            this.$refs.DragUpload.show('上传构件')
+            this.$refs.DialogsDrag.show('上传构件')
         },
         // 上传构件参数
         getFileDrag(file, callback) {
