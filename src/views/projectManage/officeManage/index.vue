@@ -173,7 +173,6 @@ import qs from "qs";
 import { updateJudgeMsg } from '@/api/my';
 
 import addDocument from './components/addDocument.vue'
-import { downFile } from '@/utils/file.js';
 
 export default {
   name: "office",
@@ -350,17 +349,7 @@ export default {
         type: "warning",
       })
         .then(() => {
-          let params = {
-            userId: Getuserid(),
-            userFileId: item.userFileId
-          };
-          MODELAPI.GETCLOUDDOCDOWNLOADURL(params).then((res)=>{
-            if(res.data.code === 0){
-              downFile(res.data.message,item.fileName)
-            }else{
-                this.$message.error(res.data.message);
-            }
-          }).catch(()=>{})
+          window.location.href = `https://office.ourbim.com/prod-api/office/downloadFile?userFileId=${item.userFileId}`
         })
         .catch(() => {
           this.$message({
