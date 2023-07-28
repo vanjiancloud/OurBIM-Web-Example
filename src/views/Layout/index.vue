@@ -125,7 +125,7 @@
                 <div class="nav" :class="fold ? 'nav' : 'closeNav'">
                     <!-- 收缩 -->
                     <div class="packUp" @click="fold=!fold"><svg-icon icon-class="packUp" /></div>
-                    <el-menu :collapse="!fold" :default-active="activeMenu" class="tac" text-color="#999999" active-text-color="#FF5900" router
+                    <el-menu :collapse="!fold" :default-active="activeMenu" :collapse-transition="false" class="tac" text-color="#999999" active-text-color="#FF5900" router
                         background-color="#fff">
                         <el-submenu :index="item.path" v-for="(item, index) in routes" :key="index">
                             <template slot="title">
