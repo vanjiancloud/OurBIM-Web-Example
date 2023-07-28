@@ -117,7 +117,7 @@
             </div>
         </div>
     </div>
-    <el-empty v-if="!isList&&!tableData.length" :image="require('@/assets/noData.png')" :image-size="100"></el-empty>
+    <el-empty v-if="!isList&&!allModelData.length" :image="require('@/assets/noData.png')" :image-size="100"></el-empty>
     <Pagination :total="total" :page.sync="pages.pageNo" :limit.sync="pages.pageSize" @pagination="handlePageChange" />
 
 
@@ -340,7 +340,6 @@ export default {
       timer: null, // 模型列表接口请求定时器
       editDialogFormVisible: false,
       linkGisCoordinateType:'WGS-84', // 链接模型时选择坐标系
-      
       total: 0,
       pages: {
         pageNo: 1,
