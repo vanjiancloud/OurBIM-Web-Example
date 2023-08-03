@@ -14,7 +14,7 @@
                             <template v-for="item in showSubList">
                                 <div v-if="hideTag(item.key) && showTag(item.key)" :key="item.key" class="subToolItem" @click="onSubTool(item)">
                                     <el-tooltip effect="dark" :content="item.name" placement="left">
-                                        <span>
+                                        <span style="display: inline-block;">
                                             <el-image :src="item.url" class="url"></el-image>
                                             <el-image :src="item.checkUrl" class="checkUrl"></el-image>
                                         </span>
@@ -747,13 +747,14 @@ export default {
                 border-top-right-radius: 6px;
                 width: 40%;
                 padding: 10px;
+                box-sizing: content-box;
                 .subToolItem {
                     text-align: center;
                     img,
                     .el-image {
                         width: 20px;
                         height: 20px;
-                        padding: 6px 0;
+                        margin: 6px 0;
                         object-fit: contain;
                     }
                     span {
@@ -761,9 +762,11 @@ export default {
                     }
                     .url {
                         display: block;
+                        box-sizing: content-box;
                     }
                     .checkUrl {
                         display: none;
+                        box-sizing: content-box;
                     }
                     &:hover {
                         .url {

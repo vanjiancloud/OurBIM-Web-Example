@@ -567,6 +567,9 @@ export default {
     font-weight: 500;
     color: #ffffff;
     padding: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     i {
         margin-right: 5px;
         cursor: pointer;
