@@ -243,8 +243,8 @@ export default {
         this.params.viewMode = this.isGis?1:2
         this.radio = this.isGis?1:2
         if(this.isGis){
-            this.checkWeight = true
-            this.checkBroken = true
+            this.checkWeight = false
+            this.checkBroken = false
         }
     },
     beforeDestroy () {},

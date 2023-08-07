@@ -187,7 +187,7 @@
             </div>
             <div class="proEditDown">
                 <div class="allWidth" :style="{'display':'flex'}" onselectstart="return false;">
-                  <draggable v-model="animaViewPointer" handle=".dragImg"  chosenClass="chosen" forceFallback="true" group="people" animation="1000" @start="onStart" @end="onEnd">
+                  <draggable v-model="animaViewPointer" handle=".dragImg" :options="{scroll: true}"  chosenClass="chosen" :forceFallback="false" group="people" animation="1000" @start="onStart" @end="onEnd">
                     <transition-group :style="{'display':'flex'}">
                         <div class="viewMorePic" v-for="(item,index) in animaViewPointer" :key="item.tid">
                             <img class="dragImg" :src="item.imagePath" alt="" @click="selectPoints(item,index)" :class="{'pointBor':activePoints === index}" :style="{'width':'100%','height':'100%','cursor': 'move'}">
@@ -263,6 +263,7 @@ import { EventBus } from '@/utils/bus.js'
   import draggable from 'vuedraggable'
   import MODELAPI,{ doAction } from "@/api/model_api";
   import viewDialog from "@/components/web_client/view_dialog";
+import { error } from 'console';
   export default {
         components: {
          viewDialog,
@@ -1061,24 +1062,25 @@ import { EventBus } from '@/utils/bus.js'
             speedUp(isLeft = false){
                 let allWidth = document.querySelector('.allWidth').offsetWidth;
                 let startPost = document.querySelector('.startPost');
-                let params = {
-                    viewId:this.animViewId,
-                    taskId:this.getProps.taskId,
-                    time: this.clickPlayTime || 0
-                }
-                MODELAPI.VIEWANIMPREVIEW(params)
+                // let params = {
+                //     viewId:this.animViewId,
+                //     taskId:this.getProps.taskId,
+                //     time: this.clickPlayTime || 0
+                // }
+                // MODELAPI.VIEWANIMPREVIEW(params)
                 const set = () => {
                     if(isLeft){
                         if(parseInt(startPost.style.left)<=6){
-                            this.speedStop()
+                            // this.speedStop()
                             startPost.style.left = '6px'
                             return
                         }
                         startPost.style.left = (parseInt(startPost.style.left)-14)+'px'
                     }else{
-                        if(parseInt(startPost.style.left) >= allWidth){
-                            this.speedStop()
-                            startPost.style.left = '6px'
+                        let dom = document.querySelector('.proEditDown');
+                        if(parseInt(startPost.style.left) >= dom.offsetWidth - 25){
+                            // this.speedStop()
+                            startPost.style.left = dom.offsetWidth - 25 + 'px';
                             return
                         }
                         startPost.style.left = (parseInt(startPost.style.left)+14)+'px'
@@ -1095,10 +1097,11 @@ import { EventBus } from '@/utils/bus.js'
             speedStop(){
                 clearInterval(this.noTimer);
                 this.noTimer = null;
-                this.logoClick('pause')
+                // this.logoClick('pause')
             },
             // 点击播放按钮
             startPlay(item,i){
+                this.getPlayTime();
                 if(i!=null&&i!=undefined){
                     this.videoIndex = i
                 }
@@ -1113,22 +1116,32 @@ import { EventBus } from '@/utils/bus.js'
                         if(this.videoIndex!==null){
                             this.$set(this.viewPointLists[this.videoIndex],'playFlags','2')
                         }
-                        this.moveStart();
+                        this.moveStart(item);
                     }
                 })
             },
-            moveStart(){
+            moveStart(item){
                 let proEditDown = document.querySelector('.proEditDown');
                 let allWidth = document.querySelector('.allWidth');
                 let startPost = document.querySelector('.startPost');
                 let proEditMain = document.querySelector('.proEditMain');
                 if(!startPost) return
                 let stepTime = Number(( this.picTime * 1000 / allWidth.offsetWidth ).toFixed(5));
+                let imgWidth = document.querySelector('.viewMorePic').offsetWidth;
+                let imgObj = {}
                 // 如果没有进度条
                 if(allWidth.offsetWidth < proEditMain.offsetWidth){
+                    const time =()=>{
                      this.noTimer = setInterval(()=>{
+                        if(!this.WebSocketData?.rsInfo?.[1].value) return
+                        if(this.WebSocketData.rsInfo){
+                            imgObj = this.animaViewPointer.find(e=>{return e.tid==this.WebSocketData.rsInfo[1].value})//跑到第几个图片了
+                            stepTime = Number(( +(imgObj.time||3) * 1000 / (Number(imgObj.time)>3?(imgWidth+imgWidth/2+10):(imgWidth+10)) ).toFixed(5));
+                        }
                         startPost.style.left = parseInt(startPost.style.left) + 1 + 'px';
                         this.startLang = parseInt(startPost.style.left);
+                        clearInterval(this.noTimer);
+                        time()
                         if(parseInt(startPost.style.left) >= allWidth.offsetWidth-6){
                             startPost.style.left = allWidth.offsetWidth-6 + 'px';
                              setTimeout(()=>{
@@ -1140,15 +1153,29 @@ import { EventBus } from '@/utils/bus.js'
                              },1000);
                         }
                     },stepTime);
+                }
+                time()
                 }else{
                     let dom = document.querySelector('.proEditDown');
+                    const time =()=>{
                     this.twoTimer = setInterval(()=>{
+                        if(!this.WebSocketData?.rsInfo?.[1].value) return
+                        if(this.WebSocketData.rsInfo){
+                            imgObj = this.animaViewPointer.find(e=>{return e.tid==this.WebSocketData.rsInfo[1].value})//跑到第几个图片了
+                            stepTime = Number(( +(imgObj.time||3) * 1000 / (Number(imgObj.time)>3?(imgWidth+imgWidth/2+10):(imgWidth+10)) ).toFixed(5));
+                        }
                         startPost.style.left = parseInt(startPost.style.left) + 1 + 'px';
                         this.startLang = parseInt(startPost.style.left);
                         if(parseInt(startPost.style.left) >= proEditDown.offsetWidth - 25){
                              startPost.style.left = proEditDown.offsetWidth - 25 + 'px'
                              clearInterval(this.twoTimer);
+                             const threeTimerFun =()=>{
                              this.threeTimer = setInterval(()=>{
+                                if(!this.WebSocketData?.rsInfo?.[1].value) return
+                                if(this.WebSocketData.rsInfo){
+                                    imgObj = this.animaViewPointer.find(e=>{return e.tid==this.WebSocketData.rsInfo[1].value})//跑到第几个图片了
+                                    stepTime = Number(( +(imgObj.time||3) * 1000 / (Number(imgObj.time)>3?(imgWidth+imgWidth/2+10):(imgWidth+10)) ).toFixed(5));
+                                }
                                 dom.scrollLeft = dom.scrollLeft + 1;
                                 if(dom.scrollWidth === dom.clientWidth + dom.scrollLeft){
                                         startPost.style.left = proEditDown.offsetWidth - 25 + 'px';
@@ -1160,9 +1187,18 @@ import { EventBus } from '@/utils/bus.js'
                                             clearInterval(this.threeTimer);
                                         },1000);
                                 }
+                                clearInterval(this.threeTimer);
+                                threeTimerFun()
                              },stepTime);
+                            }
+                            threeTimerFun()
+                        }else{
+                            clearInterval(this.twoTimer);
+                            time()
                         }
                     },stepTime);
+                    }
+                    time()
                 }
             },
             // 点击暂停、播放、停止时
@@ -1285,11 +1321,31 @@ import { EventBus } from '@/utils/bus.js'
                 let startPost = document.querySelector('.startPost');
                 let dom = document.querySelector('.proEditDown');
                 this.playFlags = '1';
-                if(allWidth.offsetWidth < proEditMain.offsetWidth){
-                  this.clickPlayTime = ((parseInt(startPost.style.left) / allWidth.offsetWidth) * this.picTime).toFixed(2);
-                }else{
-                  this.clickPlayTime = (((parseInt(startPost.style.left) + dom.scrollLeft) / allWidth.offsetWidth) * this.picTime).toFixed(2);
+                let imgWidth = document.querySelector('.viewMorePic').offsetWidth;
+                let left = dom.scrollLeft+parseInt(startPost.style.left)
+                let num = (left/(imgWidth+10)).toFixed(2)
+                var startTime = 0
+                try {                 
+                    this.animaViewPointer.forEach((e,i)=>{
+                        if(i!=parseInt(num)){
+                            startTime += Number(e.time)
+                        }else if(i===parseInt(num)){
+                            startTime += Number(e.time)/imgWidth*(num-parseInt(num)).toFixed(2)*100
+                        }
+                        if(i >= parseInt(num)){
+                            throw Error()
+                        }
+                    })
+                } catch (error) {
+                    
                 }
+                this.clickPlayTime = startTime
+                // console.log('🚀🚀🚀',startTime,dom.scrollLeft);
+                // if(allWidth.offsetWidth < proEditMain.offsetWidth){
+                //   this.clickPlayTime = ((parseInt(startPost.style.left) / allWidth.offsetWidth) * this.picTime).toFixed(2);
+                // }else{
+                //   this.clickPlayTime = (((parseInt(startPost.style.left) + dom.scrollLeft) / allWidth.offsetWidth) * this.picTime).toFixed(2);
+                // }
             }
         }
     }
