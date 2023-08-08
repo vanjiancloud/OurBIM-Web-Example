@@ -187,7 +187,7 @@
             </div>
             <div class="proEditDown">
                 <div class="allWidth" :style="{'display':'flex'}" onselectstart="return false;">
-                  <draggable v-model="animaViewPointer" handle=".dragImg" :options="{scroll: true}"  chosenClass="chosen" :forceFallback="false" group="people" animation="1000" @start="onStart" @end="onEnd">
+                  <draggable v-model="animaViewPointer" handle=".dragImg" :options="{scroll: true, animation: 800,forceFallback:true,fallbackOnBody:true,dragClass:'dragClass'}" @start="onStart" @end="onEnd">
                     <transition-group :style="{'display':'flex'}">
                         <div class="viewMorePic" v-for="(item,index) in animaViewPointer" :key="item.tid">
                             <img class="dragImg" :src="item.imagePath" alt="" @click="selectPoints(item,index)" :class="{'pointBor':activePoints === index}" :style="{'width':'100%','height':'100%','cursor': 'move'}">
@@ -290,7 +290,6 @@ import { error } from 'console';
                 WebSocketData: {},//websocket返回的数据
               proviewPic:false, // 图片预览弹框
               namePicDif:'', // 区分图片预览的名称
-              drag:false, // 拖拽视点相关
               input:'',  // 视点列表搜索绑定
               inputTwo:'', // 视点动画搜索绑定
               active:-1,
@@ -510,21 +509,6 @@ import { error } from 'console';
             if (this.setProps.taskId) {
                 this.getProps = this.setProps;
             }
-            // document.addEventListener("click", function(e) {
-            //     console.log('666 在');
-            //     var event = e || window.event;
-            //     var target = event.target || event.srcElement;
-            //     let flag = false;
-            //     let imgLength = document.querySelectorAll(".boxPhoto img");
-            //     for(let i =1;i<=imgLength.length;i++){
-            //         if(document.querySelector(".pictures .picBox:nth-of-type("+i+") .boxPhoto").contains(target)) {
-            //             flag = true;
-            //         }
-            //     }
-            //     if(flag===false){
-            //       this.active = -1;
-            //     }
-            // }) 
         },
         mounted(){
             
@@ -544,11 +528,10 @@ import { error } from 'console';
             },
              //开始拖拽事件
             onStart(e){
-                this.drag=true;
+                
             },
             //拖拽结束事件
             onEnd(e) {
-               this.drag=false;
                let currentTid = this.animaViewPointer[e.newIndex].tid;
                let newBefoTid = e.newIndex === 0 ? '0' : this.animaViewPointer[e.newIndex-1].tid;
                let params = {
@@ -1787,5 +1770,7 @@ import { error } from 'console';
             right: -18px;
         }
     }
-    
+.dragClass{
+    overflow: hidden;
+} 
 </style>
