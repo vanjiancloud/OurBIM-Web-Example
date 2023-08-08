@@ -90,14 +90,14 @@
             <br />7.3 请您在发现任何违反本服务协议以及其他任何单项服务的服务条款、OurBIM各类公告之情形时，通知OurBIM及产品所属的万间网络科技（天津）有限公司。
       </div>
     </div>
-    <my-footer></my-footer>
+    <Footer :statement="true"/>
   </div>
 </template>
 
 <script>
-import MyFooter from "../components/myFooter.vue";
+import Footer from '@/views/Layout/footer.vue'
 export default {
-  components: { MyFooter },
+  components: { Footer },
 };
 </script>
 

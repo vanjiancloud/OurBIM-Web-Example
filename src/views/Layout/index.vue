@@ -144,31 +144,19 @@
             </div>
         </el-main>
         <!-- 尾部 -->
-        <el-footer>
-            <div class="footer">
-                <div class="container">
-                    <div class="wenzi">
-                        <div class="first">
-                            <a href="https://www.vanjian.com/" target="_blank">
-                                Copyright © 2017-2023 万间网络科技（天津）有限公司 版权所有</a>
-                        </div>
-                        <div class="last">
-                            <a href="https://beian.miit.gov.cn/#/Integrated/index" target="_blank">津ICP备15006036号-2</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </el-footer>
+        <Footer/>
     </el-container>
 </template>
 
 <script>
+import Footer from './footer.vue'
 import { showDetail } from "@/api/my.js";
 import { Getuserid } from "@/store/index.js";
 import { Deluserid } from "@/store/index.js";
 
 export default {
     name: "myHeader",
+    components: { Footer },
     data() {
         return {
             fold:true,//菜单是否展开
@@ -896,42 +884,6 @@ export default {
                 flex: 1;
                 background-color: #fff;
                 overflow: hidden;
-            }
-        }
-    }
-
-    .el-footer {
-        padding: 0;
-        .footer {
-            min-height: 80px;
-            background-color: #19283b;
-            display: flex;
-            align-items: center;
-
-            .wenzi {
-                color: #fff;
-                text-align: center;
-                font-family: "microsoft yahei";
-                font-size: 14px;
-
-                .first {
-                    height: 19px;
-                    margin-bottom: 10px;
-
-                    a {
-                        color: #fff;
-                        text-decoration: none;
-                    }
-                }
-
-                .last {
-                    margin: 0;
-
-                    a {
-                        color: #fff;
-                        text-decoration: none;
-                    }
-                }
             }
         }
     }

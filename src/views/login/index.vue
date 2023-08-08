@@ -286,11 +286,11 @@ export default {
     },
     // 注册新用户
     register() {
-      this.$router.push("@/register");
+      this.$router.push("/register");
     },
     // 忘记密码
     changePassword() {
-      this.$router.push("@/changePassword");
+      this.$router.push("/changePassword");
     },
     // 点击账号登录
     emailLogin() {

@@ -2,7 +2,6 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 // 引入路由组件
 import Layout from '@/views/Layout/index.vue'
-import demo from '@/views/demo/index.vue'
 
 
 Vue.use(VueRouter)
@@ -144,14 +143,6 @@ const routes = [
             }
         ]
     },
-    {
-        path: 'demo',
-        component: demo,
-        meta: {
-            title: 'demo'
-        },
-        hidden: true
-    },
     // 忘记密码
     {
         path: '/changePassword',
@@ -196,28 +187,6 @@ const routes = [
         },
         hidden: true
     },
-    // 激活成功
-    {
-        path: '/activateSucceed',
-        name: 'activateSucceed',
-        component: () =>
-            import ('../views/register/activateSucceed.vue'),
-        meta: {
-            title: 'OurBIM激活账户'
-        },
-        hidden: true
-    },
-    // 新密码
-    {
-        path: '/newPassword',
-        name: 'newPassword',
-        component: () =>
-            import ('../views/newPassword/index.vue'),
-        meta: {
-            title: 'OurBIM找回密码'
-        },
-        hidden: true
-    },
     // 修改密码成功
     {
         path: '/resetSucceed',
@@ -255,11 +224,9 @@ router.beforeEach(function(to, from, next) {
             to.path !== '/login' &&
             to.path !== '/changePassword' &&
             to.path !== '/register' &&
-            to.path !== '/newPassword' &&
             to.path !== '/resetSucceed' &&
             to.path !== '/protocol' &&
             to.path !== '/registerSucceed' &&
-            to.path !== '/activateSucceed' &&
             to.path !== '/web_client' &&
             to.path !== '/'
         ) {
