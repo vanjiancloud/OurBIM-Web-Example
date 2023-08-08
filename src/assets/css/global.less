@@ -92,6 +92,18 @@ body {
     max-width: 50%!important;
 }
 
+.flexCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flexColumnCenter {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
 .flexStart{
     display: flex;
@@ -142,4 +154,20 @@ body {
 }
 .el-empty{
     width: 100%;
+}
+
+.expense-title::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 18px;
+    background: linear-gradient(180deg, #00D5F9 0%, #00AAF0 100%);
+    border-radius: 4px;
+    margin-right: 10px;
+}
+.expense-title {
+    font-size: 18px;
+    margin: 24px;
+    display: flex;
+    align-items: center;
 }
