@@ -1,5 +1,7 @@
 <template>
-    <div></div>
+    <div>
+        购买充值
+    </div>
 </template>
 
 <script>
