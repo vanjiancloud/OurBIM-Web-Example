@@ -47,3 +47,13 @@ export function getDictData(params) {
         params
     })
 }
+
+/************************订单管理**********************/
+// 获取订单管理列表
+export function getOrderList(params) {
+    return request({
+        url: `/monitor/publicManage/order/listOrder`,
+        method: "GET",
+        params,
+    })
+}
