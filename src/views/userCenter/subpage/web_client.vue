@@ -252,7 +252,7 @@ export default {
     this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
   },
   mounted() {
-    // this.setTimeLoad();
+    this.setTimeLoad();
     this.getModelUrl();
     //判断是否使用的是ipad
     let isiPad =
@@ -388,7 +388,6 @@ export default {
         "message",
         (e) => {
           if (e.data.prex === "pxymessage") {
-            console.log('🚀🚀🚀',e);
             this.getError(e.data);
           }
           if (e.data.prex === "ourbimMessage") {
