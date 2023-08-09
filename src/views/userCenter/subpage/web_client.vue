@@ -10,7 +10,7 @@
     <iframe
       class="bim-web"
       allowfullscreen="true"
-      :class="runTimeCode === 0 ? '' : 'phone-bim'"
+      :class="{'phone-bim':isMobile()}"
       v-if="webUrl"
       :src="webUrl"
       frameborder="0"
@@ -19,7 +19,7 @@
     <!-- 遮罩层 -->
     <div
       class="hidden-bim"
-      :class="runTimeCode === 0 ? '' : 'phone-hidden-bim'"
+      :class="{'phone-hidden-bim':isMobile()}"
       v-if="isFade"
     >
       <div class="hidden-bim">
@@ -36,30 +36,29 @@
           ></el-progress>
         </div>
         <div
-          class="hidden-text learn-text"
+          class="hidden-text"
           v-if="hiddenState === 1"
           v-text="$t('webClient.loadBox.title[2]')"
         ></div>
         <div
-          class="hidden-text learn-text"
+          class="hidden-text"
           v-if="hiddenState === 2"
           v-text="$t('webClient.loadBox.title[3]')"
         ></div>
         <div
-          class="hidden-text learn-text"
+          class="hidden-text"
           v-if="hiddenState === 4"
           v-text="$t('webClient.loadBox.message[6]')"
         ></div>
         <div
-          class="hidden-text learn-text"
+          class="hidden-text"
           v-if="hiddenState === 5 && userType == '0'"
           v-text="$t('webClient.loadBox.message[7]')"
         ></div>
       </div>
     </div>
     
-    <!-- runTimeCode 1:mobile  0 ：PC  -->
-    <div v-if="runTimeCode === 0">      
+    <div v-if="!isMobile()">      
       <transition name="el-fade-in-linear">
         <progress-bar
           v-if="isProgress"
@@ -186,14 +185,11 @@ export default {
       webUrl: null,
       appId: null,
       appToken: null,
-      locale: "zh",
       taskId: null,
       isFade: true,
-      isQrCodeClick: false,
       handleState: 0,
       listenInfo: null,
       cubeState: 6,
-      runTimeCode: 0,
       memberInfo: [], //属性信息
       loadTimer: null,
       hiddenState: 0,
@@ -209,7 +205,6 @@ export default {
       materialData: {},
       selectPark: null,//选择构件
       // 贴图库 公共库的信息
-      modelIsLink:null, // 是否是链接模型
       pakIdMapweb:'', // 区分点击的是自定义构件还是模型自带的构件
       pakAndAppid:[],
       escTitle: '',//esc显示名称
@@ -257,18 +252,7 @@ export default {
     this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
   },
   mounted() {
-    if (this.$route.query.locale) {
-      this.locale = this.$route.query.locale;
-      this.$i18n.locale = this.locale;
-    } else {
-      this.$i18n.locale = this.locale;
-    }
-    this.setTimeLoad();
-    if (this.isMobile()) {
-      this.runTimeCode = 1;
-    } else {
-      this.runTimeCode = 0;
-    }
+    // this.setTimeLoad();
     this.getModelUrl();
     //判断是否使用的是ipad
     let isiPad =
@@ -404,6 +388,7 @@ export default {
         "message",
         (e) => {
           if (e.data.prex === "pxymessage") {
+            console.log('🚀🚀🚀',e);
             this.getError(e.data);
           }
           if (e.data.prex === "ourbimMessage") {
@@ -596,12 +581,6 @@ export default {
         default:
           break;
       }
-      if (this.isAngle) {
-        params = {
-          taskid: this.taskId,
-          id: 20,
-        };
-      }
       if (this.handleState == 13) {
         return;
       }
@@ -766,12 +745,6 @@ export default {
           } else if (realData.id === "11") {
             this.sentParentIframe({ prex: "ourbimMessage", type: 30003, data: {tagId: realData.tagId}, message: "" });
           } else if (realData.id === "12") {
-            // 判断是否是链接模型
-            if(realData.isLink === "true"){
-              this.modelIsLink = true;
-            }else{
-              this.modelIsLink = false;
-            }
             if (
               Number(this.propsProgress.loadData) >= 0 &&
               Number(this.propsProgress.loadData) <= 100
@@ -917,7 +890,7 @@ export default {
     },
     limitZoomSpeed() {
       // 限制缩放速度
-      if (this.runTimeCode) {
+      if (this.isMobile()) {
         let params = {
           taskid: this.taskId,
           action: "initWorldParam",
@@ -971,7 +944,6 @@ export default {
         params.userType = userType;
       }
       if (userType == 0) {
-        this.runTimeCode = 1;
         this.isFade = false;
       }
       if (nickName) {
@@ -1008,7 +980,6 @@ export default {
             this.sentParentIframe(messageInfo);
             this.initWebSocket();
             if (res.data.data.appliType !== "1") {
-              this.controllerInfo.uiBar = true;
               if (this.isUiBar) {
                 this.controllerInfo.uiBar = true;
               } else {
@@ -1114,9 +1085,6 @@ export default {
         // 关闭tool
         this.sendToIframe(10200, "false", "");
         document.addEventListener("keydown", (e) => {
-          if (this.isQrCodeClick) {
-            return;
-          }
           this.sendToIframe(
             10010,
             {
@@ -1127,9 +1095,6 @@ export default {
           );
         });
         document.addEventListener("keyup", (e) => {
-          if (this.isQrCodeClick) {
-            return;
-          }
           this.sendToIframe(
             10011,
             {
@@ -1187,83 +1152,15 @@ export default {
       return obj?.appId;
     },
   },
-  destroyed(){
-    if(this.websock){
-      this.websock.close()
-    }
-  }
 };
 </script>
 
 <style lang="less" scoped>
-@-webkit-keyframes fadeIt {
-  0% {
-    background-color: #092b4c;
-  }
-  50% {
-    background-color: #2a4663;
-  }
-  100% {
-    background-color: none;
-  }
-}
-
-@keyframes fadeIt {
-  0% {
-    background-color: #092b4c;
-  }
-  50% {
-    background-color: #2a4663;
-  }
-  100% {
-    background-color: none;
-  }
-}
-
 .bim-main {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
   position: relative;
-  .time-log {
-    pointer-events: none;
-    position: absolute;
-    z-index: 3000;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .log-main {
-      pointer-events: auto;
-      width: 360px;
-      padding: 30px;
-      border-radius: 3px;
-      background-color: rgba(0, 0, 0, 0.36);
-      text-align: center;
-      color: #ffffff;
-
-      .show-logo {
-        width: 80px;
-        height: 80px;
-        margin-bottom: 30px;
-      }
-    }
-
-    .phone-log-main {
-      transform: rotate(90deg);
-      -ms-transform: rotate(90deg);
-      /* IE 9 */
-      -moz-transform: rotate(90deg);
-      /* Firefox */
-      -webkit-transform: rotate(90deg);
-      /* Safari 和 Chrome */
-      -o-transform: rotate(90deg);
-    }
-  }
 
   .hidden-bim {
     position: absolute;
@@ -1285,65 +1182,11 @@ export default {
         background-position: -100% 0;
       }
     }
-
-    .load-text {
-      letter-spacing: 5px;
-      display: flex;
-
-      .model-loading {
-        margin-left: 20px;
-        margin-right: 10px;
-      }
-    }
-    @keyframes dot {
-      0% {
-        left: -30px;
-      }
-      25% {
-        left: -30px;
-      }
-      50% {
-        left: -20px;
-      }
-      75% {
-        left: -10px;
-      }
-      100% {
-        left: 0px;
-      }
-    }
-    @-webkit-keyframes dot {
-      0% {
-        left: -30px;
-      }
-      25% {
-        left: -30px;
-      }
-      50% {
-        left: -20px;
-      }
-      75% {
-        left: -10px;
-      }
-      100% {
-        left: 0px;
-      }
-    }
-    .wait-main {
-      width: 30px;
-      position: relative;
-      left: 0px;
-      background: #000;
-      animation: dot 3s infinite step-start;
-    }
-    .learn-text {
-      letter-spacing: 1px;
-    }
     .hidden-text {
+      letter-spacing: 1px;
       margin-top: 130px;
       position: absolute;
       font-size: 20px;
-      // color: #fff;
       background-image: linear-gradient(
         to right,
         #b9fffc,
@@ -1360,64 +1203,10 @@ export default {
       animation: bgp 3s infinite linear;
     }
 
-    .loading:after {
-      overflow: hidden;
-      display: inline-block;
-      vertical-align: bottom;
-      animation: ellipsis 1.5s infinite;
-      content: "\2026";
-      /* ascii code for the ellipsis character */
-    }
-
-    @keyframes ellipsis {
-      from {
-        width: 2px;
-      }
-
-      to {
-        width: 25px;
-      }
-    }
-
     .show-loading {
       width: 80px;
       height: 80px;
       margin-bottom: 30px;
-    }
-  }
-
-  .phone-hidden-bim {
-    .load-text {
-      letter-spacing: 5rpx;
-      font-size: 23px;
-      display: flex;
-      text-align: center;
-      letter-spacing: 5rpx;
-    }
-    @-webkit-keyframes dotPhone {
-      0% {
-        left: -25px;
-      }
-
-      33% {
-        left: -20px;
-      }
-
-      66% {
-        left: -15px;
-      }
-
-      100% {
-        left: -0px;
-      }
-    }
-
-    .wait-main {
-      width: 30px;
-      position: relative;
-      left: -30px;
-      background: #000;
-      animation: dotPhone 3s infinite step-start;
     }
   }
 
