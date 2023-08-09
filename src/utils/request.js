@@ -23,6 +23,7 @@ import {
 // axios.defaults.baseURL = 'http://cloud.ourbim.com:11011/vjapi' // 测试服务器
 
 axios.defaults.baseURL = process.env.VUE_APP_REQUEST_URL
+// export const BASEURL = 'http://172.16.100.105:9088/vjapi'//杨景
 
 
 axios.defaults.transformResponse = [
