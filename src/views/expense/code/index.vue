@@ -4,7 +4,7 @@
             <el-button type="primary" @click="showDialog = true">创建授权码</el-button>
             <el-button @click="jumpToBuy">购买套餐</el-button>
         </div>
-        <el-table :data="tableData">
+        <el-table :data="tableData" v-loading="loading">
             <el-table-column prop="code" show-overflow-tooltip label="授权码编号" />
             <el-table-column prop="versionName" show-overflow-tooltip label="产品版本" />
             <el-table-column prop="createTime" show-overflow-tooltip label="创建/购买日期" />
@@ -76,6 +76,7 @@ export default {
     components: { Pagination },
     data() {
         return {
+            loading: false,
             rules: {
                 version: [{ required: true, message: '请输入优惠码名称' }]
             },
@@ -123,9 +124,11 @@ export default {
                 pageSize: this.pagination.pageSize,
                 userId: Getuserid()
             }
+            this.loading = true
             getAuthorizationCodeList(params).then(res => {
                 if (res.code === 200) {
                     this.tableData = res.data.rows
+                    this.loading = false
                     this.tableData.forEach(item => {
                         item.activateTime = item.activateTime ? item.activateTime : '-'
                         item.expireTime = item.expireTime ? item.expireTime : '-'
