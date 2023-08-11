@@ -6,10 +6,14 @@
 
         <el-form ref="rechargeForm" :model="rechargeForm" label-position="right" label-width="110px" :rules="rules">
             <el-form-item class="flexCenter" label="账号余额：">
-                <div class="formInputWidth">资源点</div>
+                <div class="formInputWidth color999">
+                    <span class="font18">{{ accountMoney }}</span> 资源点
+                </div>
             </el-form-item>
             <el-form-item class="flexCenter" label="可用余额：">
-                <div class="formInputWidth">资源点</div>
+                <div class="formInputWidth color999">
+                    <span class="font18">{{ accountMoney }}</span> 资源点
+                </div>
             </el-form-item>
             <el-form-item class="flexCenter" label="充值方式：" prop="payWay">
                 <div class="formInputWidth pay-box">
@@ -38,7 +42,7 @@
             <el-form-item class="flexCenter" label="优惠券：" prop="coupon">
                 <div class="formInputWidth flexCenter">
                     <el-input v-model="rechargeForm.coupon" placeholder="请输入优惠券"></el-input>
-                    <el-button class="left10" type="primary">校验</el-button>
+                    <el-button class="left10" type="primary" @click="verifyCode">校验</el-button>
                 </div>
             </el-form-item>
         </el-form>
@@ -58,6 +62,8 @@
 
 <script>
 import PayDialog from './payDialog.vue'
+import { getUserMoney, createTopUpOrder, verifyUserDiscountCode } from '@/api/expenseManage'
+import { Getuserid } from '@/store/index.js'
 export default {
     components: {
         PayDialog
@@ -67,27 +73,64 @@ export default {
         return {
             rechargeForm: {
                 payWay: '',
-                payNum: ''
+                payNum: '',
+                coupon: ''
             },
             rules: {
                 payWay: [{ required: true, message: '请选择支付方式' }],
-                payNum: [{ required: true, message: '请输入充值金额' }],
-                coupon: [{ required: true, message: '请输入优惠券' }]
-            }
+                payNum: [{ required: true, message: '请输入充值金额' }]
+            },
+            accountMoney: ''
         }
     },
     watch: {},
     computed: {},
-    created() {},
+    created() {
+        this.getMoney()
+    },
     mounted() {},
     methods: {
+        getMoney() {
+            const params = {
+                userId: Getuserid()
+            }
+            getUserMoney(params).then(res => {
+                if (res.code === 200) {
+                    this.accountMoney = res.data.orderCountSurplusMoney
+                }
+            })
+        },
+
         selectPayWay(way) {
             this.rechargeForm.payWay = way
         },
+
+        verifyCode() {
+            const params = {
+                code: this.rechargeForm.coupon,
+                userId: Getuserid()
+            }
+            verifyUserDiscountCode(params).then(res => {
+                if (res.code === 200) {
+                    this.$message.success('校验成功')
+                }
+            })
+        },
+
         submitOrder() {
             this.$refs.rechargeForm.validate(valid => {
                 if (valid) {
-                    this.$refs.payDialog.show()
+                    const params = {
+                        discountCode: this.rechargeForm.coupon,
+                        money: this.rechargeForm.payNum * 1,
+                        source: this.rechargeForm.payWay === 'weixin' ? 1 : 2,
+                        userId: Getuserid()
+                    }
+                    createTopUpOrder(params).then(res => {
+                        let blob = new Blob([res])
+                        let url = window.URL.createObjectURL(blob)
+                        this.$refs.payDialog.show(url)
+                    })
                 }
             })
         }
@@ -170,6 +213,10 @@ export default {
 
 .left10 {
     margin-left: 10px;
+}
+
+.color999 {
+    color: #999999;
 }
 
 ::v-deep .el-form-item__label {

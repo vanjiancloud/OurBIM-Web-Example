@@ -48,6 +48,35 @@ export function getDictData(params) {
     })
 }
 
+/************************购买充值**********************/
+// 用户账户余额查询
+export function getUserMoney(params) {
+    return request({
+        url: `/monitor/publicManage/order/getUserMoney`,
+        method: "GET",
+        params,
+    })
+}
+
+// 创建用户充值订单
+export function createTopUpOrder(data) {
+    return request({
+        url: `/monitor/publicManage/order/createTopUpOrder`,
+        method: "POST",
+        responseType: 'blob',
+        data,
+    })
+}
+
+// 优惠券校验
+export function verifyUserDiscountCode(data) {
+    return request({
+        url: `/monitor/verify/verifyUserDiscountCode`,
+        method: "POST",
+        data,
+    })
+}
+
 /************************订单管理**********************/
 // 获取订单管理列表
 export function getOrderList(params) {

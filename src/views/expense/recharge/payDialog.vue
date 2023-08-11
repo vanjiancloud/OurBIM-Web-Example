@@ -8,7 +8,8 @@
             </div>
             <div class="flexColumnCenter">
                 <div :class="['qr-code-box', payType]">
-                    <canvas id="buyCode"></canvas>
+                    <!-- <canvas id="buyCode"></canvas> -->
+                    <img :src="codeImage" id="buyCode" alt="">
                     <img class="logo" src="../../../assets/logo.jpg" alt="" />
                 </div>
 
@@ -55,6 +56,7 @@ export default {
     },
     data() {
         return {
+            codeImage: '',
             showDialog: false,
             payStatus: false
         }
@@ -62,9 +64,10 @@ export default {
     watch: {},
     computed: {},
     methods: {
-        show() {
+        show(img) {
+            this.codeImage = img
             this.showDialog = true
-            this.drawCode()
+            // this.drawCode()
         },
 
         changePayWay() {
