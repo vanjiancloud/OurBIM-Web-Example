@@ -8,8 +8,7 @@
             </div>
             <div class="flexColumnCenter">
                 <div :class="['qr-code-box', payType]">
-                    <!-- <canvas id="buyCode"></canvas> -->
-                    <img :src="codeImage" id="buyCode" alt="">
+                    <canvas id="buyCode"></canvas>
                     <img class="logo" src="../../../assets/logo.jpg" alt="" />
                 </div>
 
@@ -46,6 +45,7 @@
 
 <script>
 import QRCode from 'qrcode'
+import { getPayStatus } from '@/api/expenseManage'
 export default {
     components: {},
     props: {
@@ -56,18 +56,25 @@ export default {
     },
     data() {
         return {
-            codeImage: '',
+            payUrl: '',
+            orderCode: '',
             showDialog: false,
-            payStatus: false
+            payStatus: false,
+            payStatusWatcher: ''
         }
     },
     watch: {},
     computed: {},
     methods: {
-        show(img) {
-            this.codeImage = img
+        show(url, orderCode) {
+            this.payUrl = url
+            this.orderCode = orderCode
             this.showDialog = true
-            // this.drawCode()
+            this.drawCode()
+            // 轮询支付状态
+            this.payStatusWatcher = setInterval(() => {
+                this.getPaySta()
+            }, 1000)
         },
 
         changePayWay() {
@@ -87,13 +94,22 @@ export default {
                     width: 200,
                     height: 200
                 }
-                QRCode.toCanvas(container, '测试', qrCodeOptions, error => {
+                QRCode.toCanvas(container, this.payUrl, qrCodeOptions, error => {
                     if (error) {
                         console.log(error)
                         return
                     }
                 })
             }
+        },
+
+        getPaySta() {
+            const params = {
+                code: this.orderCode
+            }
+            getPayStatus(params).then(res => {
+                console.log('第103行被执行', res)
+            })
         },
 
         jumpToOrderManagement() {

@@ -63,7 +63,6 @@ export function createTopUpOrder(data) {
     return request({
         url: `/monitor/publicManage/order/createTopUpOrder`,
         method: "POST",
-        responseType: 'blob',
         data,
     })
 }
@@ -72,6 +71,15 @@ export function createTopUpOrder(data) {
 export function verifyUserDiscountCode(data) {
     return request({
         url: `/monitor/verify/verifyUserDiscountCode`,
+        method: "POST",
+        data,
+    })
+}
+
+// 获取订单支付状态
+export function getPayStatus(data) {
+    return request({
+        url: `/monitor/publicManage/order/toPay`,
         method: "POST",
         data,
     })

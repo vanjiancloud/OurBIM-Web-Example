@@ -127,9 +127,10 @@ export default {
                         userId: Getuserid()
                     }
                     createTopUpOrder(params).then(res => {
-                        let blob = new Blob([res])
-                        let url = window.URL.createObjectURL(blob)
-                        this.$refs.payDialog.show(url)
+                        if (res.code === 200) {
+                            const { code, url } = res.data
+                            this.$refs.payDialog.show(url, code)
+                        }
                     })
                 }
             })
