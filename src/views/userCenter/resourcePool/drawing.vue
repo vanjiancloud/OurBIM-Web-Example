@@ -1,6 +1,6 @@
 <template>
     <!-- 导入图纸 -->
-    <div class="drawing" v-if="levels.tab1Index === 0 && levels.tab2Index === 0">
+    <div class="drawing" v-if="levels.tab2Index === 0">
         <div class="drawingLevel1" v-if="levels.level === 1">
             <div class="comTitle">导入图纸</div>
             <div class="drawingCon" @click="toLevel2()">

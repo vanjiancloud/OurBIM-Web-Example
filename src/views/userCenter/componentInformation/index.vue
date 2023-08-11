@@ -463,7 +463,7 @@ export default {
         this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
         this.unwatchToken = this.$store.watch((state) => state.material.materialAllInfo,(newValue, oldValue) => {
             if(!newValue.matParam || !newValue.matParam.baseParamsList){
-                this.unwatchToken()
+                // this.unwatchToken()
                 return
             }
             console.log('🚀🚀🚀是否更新',newValue);

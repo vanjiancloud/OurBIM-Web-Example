@@ -21,14 +21,6 @@ const CHAILIAOAPI = {
             params
         })
     },
-    // 获取OurBIM材质库分组
-    GETOURBIMMATERIALGROUP: params => {
-        return request({
-            url: '/material/getOurBIMMaterialGroup',
-            method: 'get',
-            params
-        })
-    },
     // 修改材质贴图
     MODIFYMATERIALTEXTURE: formData => {
         return request({
@@ -141,6 +133,23 @@ export function addChartletGroup(data) {
 export function getChartletList(params) {
     return newRequest({
         url: "/material/getAllMaterialTextureInfo",
+        method: "get",
+        params
+    });
+}
+
+// 获取 个人库 贴图分组
+export function getTextureGroup(params) {
+    return newRequest({
+        url: "/material/getAllMaterialTextureGroup",
+        method: "get",
+        params
+    });
+}
+// 获取 个人库 贴图分组下的贴图
+export function getTextureByGroupId(params) {
+    return newRequest({
+        url: "/material/getMaterialTextureByGroupId",
         method: "get",
         params
     });
@@ -262,8 +271,48 @@ export function updateScale(params, data) {
     return newRequest({
         url: `/buildSystem/blueprintSetting`,
         method: 'post',
-        params: params,
-        data: data
+        params,
+        data
+    })
+}
+
+// 获取OurBIM材质库分组
+export function getOurBIMMaterialGroup(params) {
+    return newRequest({
+        url: '/material/getOurBIMMaterialGroup',
+        method: 'get',
+        params
+    })
+}
+
+// 获取用户的个人材质库
+export function getMaterialFromUser(params) {
+    return newRequest({
+        url: `/material/getMaterialFromUser`,
+        method: 'get',
+        params,
+    })
+}
+
+// 获取项目的材质库
+export function getProjectMaterial(params) {
+    return newRequest({
+        url: `/material/getMaterialList`,
+        method: 'get',
+        params,
+    })
+}
+
+// 添加材质到项目材质库
+export function addMaterialForApp(params,data) {
+    return newRequest({
+        url: `/material/addMaterialForApp`,
+        method: 'post',
+        params,
+        data,
+        headers: {
+            'Content-Type': 'application/json'
+        }
     })
 }
 
