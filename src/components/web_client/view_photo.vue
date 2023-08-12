@@ -1045,12 +1045,23 @@ import { error } from 'console';
             speedUp(isLeft = false){
                 let allWidth = document.querySelector('.allWidth').offsetWidth;
                 let startPost = document.querySelector('.startPost');
-                // let params = {
-                //     viewId:this.animViewId,
-                //     taskId:this.getProps.taskId,
-                //     time: this.clickPlayTime || 0
-                // }
-                // MODELAPI.VIEWANIMPREVIEW(params)
+                if(this.playFlags != '1'){
+                    // this.logoClick('pause')
+                    let params = {
+                        taskId:this.getProps.taskId,
+                        status:'pause',
+                        viewId:this.animViewId,
+                    }
+                    MODELAPI.PLAYOPERATION(params).then((res)=>{
+                        clearInterval(this.twoTimer);
+                        clearInterval(this.threeTimer);
+                        this.playFlags = '1';
+                        this.$set(this.viewPointLists[this.videoIndex],'playFlags','1')
+                    })
+                }else{
+                    this.playFlags = '1';
+                    this.viewPointLists.forEach(e=>e.playFlags='1')
+                }
                 const set = () => {
                     if(isLeft){
                         if(parseInt(startPost.style.left)<=6){
@@ -1131,6 +1142,7 @@ import { error } from 'console';
                                 startPost.style.left =  6 +'px';
                                 this.startLang = parseInt(startPost.style.left);
                                 this.playFlags = '1';
+                                this.viewPointLists.forEach(e=>e.playFlags='1')
                                 this.clickPlayTime = 0
                                 clearInterval(this.noTimer);
                              },1000);
@@ -1299,9 +1311,8 @@ import { error } from 'console';
             },
             // 根据内容长度计算播放条所在位置的时间
             getPlayTime(){
-                let proEditMain = document.querySelector('.proEditMain');
-                let allWidth = document.querySelector('.allWidth');
                 let startPost = document.querySelector('.startPost');
+                if(!startPost) return
                 let dom = document.querySelector('.proEditDown');
                 this.playFlags = '1';
                 let imgWidth = document.querySelector('.viewMorePic').offsetWidth;
@@ -1323,12 +1334,6 @@ import { error } from 'console';
                     
                 }
                 this.clickPlayTime = startTime
-                // console.log('🚀🚀🚀',startTime,dom.scrollLeft);
-                // if(allWidth.offsetWidth < proEditMain.offsetWidth){
-                //   this.clickPlayTime = ((parseInt(startPost.style.left) / allWidth.offsetWidth) * this.picTime).toFixed(2);
-                // }else{
-                //   this.clickPlayTime = (((parseInt(startPost.style.left) + dom.scrollLeft) / allWidth.offsetWidth) * this.picTime).toFixed(2);
-                // }
             }
         }
     }
