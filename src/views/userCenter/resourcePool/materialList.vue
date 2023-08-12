@@ -180,7 +180,7 @@ export default {
                 default:
                     break;
             }
-        }),
+        },800),
         // 点击去二级构件
         async toLevel2(item) {
             this.levels.activeContent = item

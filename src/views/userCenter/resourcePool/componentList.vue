@@ -172,7 +172,7 @@ export default {
                 default:
                     break;
             }
-        }),
+        },800),
         // 点击去二级构件
         async toLevel2(item) {
             if (this.levels.level === 1) {

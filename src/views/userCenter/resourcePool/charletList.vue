@@ -135,7 +135,7 @@ export default {
                 default:
                     break;
             }
-        }),
+        },800),
         // 获取贴图列表
         getTextureList(groupId){
             getTextureByGroupId({userId:this.data.userId,groupId}).then(res=>{
