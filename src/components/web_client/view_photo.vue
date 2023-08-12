@@ -1169,7 +1169,7 @@ import { error } from 'console';
                                 if(!this.WebSocketData?.rsInfo?.[1].value) return
                                 if(this.WebSocketData.rsInfo){
                                     imgObj = this.animaViewPointer.find(e=>{return e.tid==this.WebSocketData.rsInfo[1].value})//跑到第几个图片了
-                                    stepTime = Number(( +(imgObj.time||3) * 1000 / (Number(imgObj.time)>3?(imgWidth+imgWidth/2+10):(imgWidth+10)) ).toFixed(5));
+                                    stepTime = Number(( +(imgObj.time||3) * 1000 / (imgWidth+imgWidth/2+10) ).toFixed(5));
                                 }
                                 dom.scrollLeft = dom.scrollLeft + 1;
                                 if(dom.scrollWidth === dom.clientWidth + dom.scrollLeft){
