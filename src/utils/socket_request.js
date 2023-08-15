@@ -5,17 +5,7 @@
  * @LastEditTime: 2021-09-09 17:32:18
  * @description: 
  */
-// let WSPRO = "ws://api.ourbim.com:11011/vjapi/";
-
-// let WSPRO = "ws://api.ourbim.com:21012/vjapi/";
-// let WSPRO = "ws://192.168.3.151:11011/vjapi/";
-// let WSPRO = "ws://192.168.3.235:11011/vjapi/";
-
- //let WSPRO = "ws://192.168.100.56:11011/vjapi/";
-
-// let WSPRO = "ws://cloud.ourbim.com:11011/vjapi/";
-
-let WSPRO = process.env.VUE_APP_SOCKET_URL;
+let WSPRO = process.env.VUE_APP_REQUEST_URL.replace('http://', 'ws://').replace('https://', 'wss://');
 export let BASE = {
   WSPRO
 }
