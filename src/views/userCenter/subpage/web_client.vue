@@ -456,9 +456,9 @@ export default {
         101, 102, 103, 201, 202, 203, 301, 401, 402, 403, 404, 501, 502, 503,
         504, 601, 602, 603, 1001, 1002, 1003, 1004,
       ];
-      if (e.type === 200) {
-        this.getMonitor();
-      }
+      // if (e.type === 200) {
+      //   this.getMonitor();
+      // }
       if (errorList.indexOf(e.type) !== -1) {
         if (this.userType == "0") {
           this.hiddenState = 5;
@@ -725,6 +725,7 @@ export default {
                 this.isProgress = false;
                 clearTimeout(noneTimer);
               }, 1000);
+              this.getMonitor();
             }
           } else if (realData.id === "9") {
             let messageInfo = {
@@ -1042,68 +1043,28 @@ export default {
       }
     },
     getMonitor() {
-      /**
-       * @Author: zk
-       * @Date: 2020-09-27 17:56:43
-       * @description: 监听事件
-       */
-      let realTimer = setTimeout(() => {
-        // 鼠标移出
-        document.getElementById("show-bim").onmouseout = () => {
-          // this.sendToIframe(
-          //   10002,
-          //   {
-          //     button: "left",
-          //     x: 500,
-          //     y: 500,
-          //   },
-          //   ""
-          // );
-          // this.sendToIframe(
-          //   10002,
-          //   {
-          //     button: "right",
-          //     x: 500,
-          //     y: 500,
-          //   },
-          //   ""
-          // );
-        };
-        // 移动滚轮
-        document.getElementById("show-bim").onmousewheel = () => {
-          this.sendToIframe(
-            10003,
-            {
-              x: 500,
-              y: 500,
-              wheel: -100,
-            },
-            ""
-          );
-        };
-        // 关闭tool
-        this.sendToIframe(10200, "false", "");
         document.addEventListener("keydown", (e) => {
           this.sendToIframe(
             10010,
             {
               key: e.code,
-              isRepeat: e.repeat,
+              keyCode: e.keyCode,
+              repeat: e.repeat,
             },
             ""
           );
-        });
+        },true);
         document.addEventListener("keyup", (e) => {
           this.sendToIframe(
             10011,
             {
               key: e.code,
+              keyCode: e.keyCode,
+              repeat: e.repeat,
             },
             ""
           );
-        });
-        window.clearTimeout(realTimer);
-      }, 1000 * 2);
+        },true);
     },
     sentParentIframe(e) {
       /**
