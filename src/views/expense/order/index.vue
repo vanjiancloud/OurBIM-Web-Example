@@ -5,11 +5,11 @@
                 订单列表
             </div>
             <div>
-                <el-button type="primary">批量开票</el-button>
+                <el-button type="primary" @click="manyInvoice">批量开票</el-button>
                 <el-button>导出</el-button>
             </div>
         </div>
-        <el-table :data="tableData" v-loading="loading">
+        <el-table :data="tableData" v-loading="loading" @select="selectOrder" @select-all="selectOrder">
             <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="code" show-overflow-tooltip label="订单编号" />
             <el-table-column prop="createTime" show-overflow-tooltip label="创建时间" />
@@ -35,7 +35,7 @@
                 <template slot-scope="scope">
                     <div class="operate-btn color-btn" @click="jumpToPay(scope.row)">去支付</div>
                     <div class="operate-btn color-btn" @click="invoice(scope.row)">开发票</div>
-                    <div class="operate-btn" @click="resetCode(scope.row)">删除</div>
+                    <div class="operate-btn" @click="delOrder(scope.row)">删除</div>
                 </template>
             </el-table-column>
         </el-table>
@@ -52,10 +52,7 @@
 </template>
 
 <script>
-import {
-    getOrderList,
-    resetAuthorizationCode
-} from '@/api/expenseManage'
+import { getOrderList, deleteOrder } from '@/api/expenseManage'
 import { Getuserid } from '@/store/index.js'
 import { getDictDataByKey } from '@/utils/getDict'
 import Pagination from '@/components/Pagination'
@@ -66,6 +63,7 @@ export default {
     data() {
         return {
             loading: false,
+            selectionData: [],
             tableData: [],
             pagination: {
                 pageNum: 1,
@@ -128,17 +126,28 @@ export default {
             this.getData()
         },
 
-        resetCode(row) {
-            resetAuthorizationCode(row.id).then(res => {
-                if (res.code === 200) {
-                    this.$message.success('重置成功')
-                    this.getData()
-                }
-            })
+        selectOrder(selection) {
+            this.selectionData = selection
+        },
+
+        manyInvoice() {
+            this.$refs.invoice.show(this.selectionData)
         },
 
         invoice(row) {
             this.$refs.invoice.show([row])
+        },
+
+        delOrder(row) {
+            const params = {
+                id: row.id
+            }
+            deleteOrder(params).then(res => {
+                console.log('订单删除', res)
+            })
+            deleteOrder(row.id).then(res => {
+                console.log('订单删除', res)
+            })
         },
 
         jumpToPay(row) {
@@ -165,7 +174,7 @@ export default {
     cursor: pointer;
 }
 .color-btn {
-    color: #00AAF0;
+    color: #00aaf0;
 }
 .status-circle::before {
     content: '';
@@ -178,7 +187,7 @@ export default {
 .status {
     // 待支付
     &-0::before {
-        background: #FF7F28;
+        background: #ff7f28;
     }
     // 已支付
     &-1::before {

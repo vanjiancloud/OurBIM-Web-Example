@@ -1,16 +1,17 @@
 <template>
     <el-dialog title="开票申请" :visible.sync="showDialog">
-        <template v-if="tableData.length !== 0">
-            <div>
-                已选订单
-            </div>
+        <template v-if="tableData.length > 1">
+            <div class="expense-title marginBot20">已选订单</div>
             <el-table :data="tableData">
                 <el-table-column prop="code" show-overflow-tooltip label="订单编号" />
                 <el-table-column prop="realMoney" show-overflow-tooltip label="订单金额(元)" />
             </el-table>
+            <div class="marginBot20 invoice-money font16">
+                开票合计金额：<span class="red">{{ invoiceMoney }}元</span>
+            </div>
         </template>
 
-        <div class="expense-title dialog-title">发票信息</div>
+        <div class="expense-title marginBot20">发票信息</div>
         <el-form ref="invoiceForm" :model="invoiceForm" label-position="right" label-width="130px" :rules="rules">
             <el-form-item label="发票类型：" prop="type">
                 <el-select v-model="invoiceForm.type" class="w100" placeholder="请选择发票类型">
@@ -78,7 +79,8 @@ export default {
                     code: 1,
                     value: '增值税普通发票'
                 }
-            ]
+            ],
+            invoiceMoney: 0
         }
     },
     watch: {},
@@ -86,10 +88,14 @@ export default {
     methods: {
         show(data) {
             this.invoiceForm.orderIdList = []
+            this.tableData = data
+            this.invoiceMoney = 0
             data.forEach(item => {
                 this.invoiceForm.orderIdList.push(item.id)
+                this.invoiceMoney = this.invoiceMoney + Number(item.realMoney)
             })
             this.showDialog = true
+            this.$refs.invoiceForm?.resetFields()
         },
 
         closeDialog() {
@@ -112,7 +118,16 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.dialog-title {
+.marginBot20 {
     margin-bottom: 20px;
+}
+
+.invoice-money {
+    display: flex;
+    justify-content: right;
+    margin-top: 10px;
+    .red {
+        color: red;
+    }
 }
 </style>

@@ -109,3 +109,25 @@ export function doInvoice(data) {
         data,
     })
 }
+
+// 删除订单
+export function deleteOrder(data) {
+    return request({
+        url: `/monitor/publicManage/order/deleteOrder`,
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        data,
+    })
+}
+
+/************************消费账单管理**********************/
+// 获取消费账单列表
+export function getConsumerList(params) {
+    return request({
+        url: `/monitor/publicManage/order/listConsumerRecord`,
+        method: "GET",
+        params,
+    })
+}
