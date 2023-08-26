@@ -71,10 +71,8 @@ export default {
             this.orderCode = orderCode
             this.showDialog = true
             this.drawCode()
-            // 轮询支付状态
-            this.payStatusWatcher = setInterval(() => {
-                this.getPaySta()
-            }, 1000)
+            // 获取支付状态
+            this.getPaySta()
         },
 
         changePayWay() {
@@ -104,11 +102,15 @@ export default {
         },
 
         getPaySta() {
-            const params = {
-                code: this.orderCode
-            }
-            getPayStatus(params).then(res => {
-                console.log('第103行被执行', res)
+            getPayStatus(this.orderCode).then(res => {
+                if (res.code === 200 && res.data.status === 1) {
+                    this.$message.success('支付成功')
+                    this.showDialog = false
+                } else {
+                    setTimeout(() => {
+                        this.getPaySta()
+                    }, 1000)
+                }
             })
         },
 

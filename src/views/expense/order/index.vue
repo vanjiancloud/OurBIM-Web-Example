@@ -31,14 +31,17 @@
                     {{ invoiceStatusObj[scope.row.invoiceStatus] }}
                 </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" min-width="100px">
+            <el-table-column fixed="right" label="操作" width="230px">
                 <template slot-scope="scope">
                     <div class="operate-btn color-btn" @click="jumpToPay(scope.row)">去支付</div>
-                    <div class="operate-btn color-btn" @click="resetCode(scope.row)">开发票</div>
+                    <div class="operate-btn color-btn" @click="invoice(scope.row)">开发票</div>
                     <div class="operate-btn" @click="resetCode(scope.row)">删除</div>
                 </template>
             </el-table-column>
         </el-table>
+
+        <Invoice ref="invoice"></Invoice>
+
         <Pagination
             :total="pagination.total"
             :page.sync="pagination.pageNum"
@@ -51,15 +54,15 @@
 <script>
 import {
     getOrderList,
-    createAuthorizationCode,
     resetAuthorizationCode
 } from '@/api/expenseManage'
 import { Getuserid } from '@/store/index.js'
 import { getDictDataByKey } from '@/utils/getDict'
 import Pagination from '@/components/Pagination'
+import Invoice from './invoiceDialog.vue'
 export default {
     name: 'authorizationCode',
-    components: { Pagination },
+    components: { Pagination, Invoice },
     data() {
         return {
             loading: false,
@@ -132,6 +135,10 @@ export default {
                     this.getData()
                 }
             })
+        },
+
+        invoice(row) {
+            this.$refs.invoice.show([row])
         },
 
         jumpToPay(row) {

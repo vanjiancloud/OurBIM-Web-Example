@@ -1,5 +1,7 @@
 <template>
-    <div></div>
+    <div>
+        消费账单管理
+    </div>
 </template>
 
 <script>

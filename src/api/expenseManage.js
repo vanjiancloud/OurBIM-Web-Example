@@ -79,8 +79,11 @@ export function verifyUserDiscountCode(data) {
 // 获取订单支付状态
 export function getPayStatus(data) {
     return request({
-        url: `/monitor/publicManage/order/toPay`,
+        url: `/monitor/publicManage/order/getOrderStatus`,
         method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
         data,
     })
 }
@@ -92,5 +95,17 @@ export function getOrderList(params) {
         url: `/monitor/publicManage/order/listOrder`,
         method: "GET",
         params,
+    })
+}
+
+// 开发票
+export function doInvoice(data) {
+    return request({
+        url: `/monitor/publicManage/order/doInvoice`,
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        data,
     })
 }
