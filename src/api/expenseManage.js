@@ -132,6 +132,24 @@ export function getConsumerList(params) {
     })
 }
 
+// 获取消费内容下拉列表接口
+export function getConsumerContentList(params) {
+    return request({
+        method: 'GET',
+        url: '/monitor/publicManage/order/listConsumerContent',
+        params
+    })
+}
+
+// 获取授权码下拉列表接口
+export function getAuthorizationCodeSelect(params) {
+    return request({
+        method: 'GET',
+        url: '/monitor/publicManage/order/listAuthorizationCode',
+        params
+    })
+}
+
 // 由于接口都是用的threeRequest去请求，暂时先把用户管理相关的接口也写在这里
 // 后续需要挪回到用户管理对应的接口文件夹中
 /************************用户管理**********************/

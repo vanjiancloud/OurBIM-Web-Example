@@ -4,36 +4,92 @@
             <div class="expense-title">
                 消费账单流水
             </div>
-            <div>
-                <el-button>导出</el-button>
-            </div>
         </div>
+
+        <el-form :model="searchForm" label-width="100px">
+            <el-row>
+                <el-col :xs="12" :sm="8" :lg="8">
+                    <el-form-item label="账期" prop="consumerDate">
+                        <el-date-picker
+                            class="formInputWidth"
+                            v-model="searchForm.consumerDate"
+                            placeholder="请选择有效时间"
+                            type="month"
+                            value-format="YYYY-MM"
+                        />
+                    </el-form-item>
+                </el-col>
+                <el-col :xs="12" :sm="8" :lg="8">
+                    <el-form-item label="计费方式" prop="billingMode">
+                        <el-select v-model="searchForm.billingMode" class="formInputWidth" placeholder="请选择计费方式">
+                            <el-option
+                                v-for="item in billingModeList"
+                                :key="item.code"
+                                :label="item.value"
+                                :value="item.code"
+                            />
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+                <el-col :xs="12" :sm="8" :lg="8">
+                    <el-form-item label="消费内容" prop="consumeContent">
+                        <el-select
+                            v-model="searchForm.consumeContent"
+                            class="formInputWidth"
+                            placeholder="请选择计费方式"
+                        >
+                            <el-option
+                                v-for="(item, index) in consumerContentList"
+                                :key="index"
+                                :label="item"
+                                :value="item"
+                            />
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+                <el-col :xs="12" :sm="8" :lg="8">
+                    <el-form-item label="授权码" prop="authorizationCode">
+                        <el-select
+                            v-model="searchForm.authorizationCode"
+                            class="formInputWidth"
+                            placeholder="请选择授权码产品版本"
+                        >
+                            <el-option v-for="item in productList" :key="item.id" :label="item.name" :value="item.id">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+
+                <el-button class="marginleft20" type="primary">查询</el-button>
+                <el-button type="primary">重置</el-button>
+                <el-button type="info">导出</el-button>
+            </el-row>
+        </el-form>
+
         <el-table :data="tableData" v-loading="loading">
-            <el-table-column prop="code" show-overflow-tooltip label="订单编号" />
-            <el-table-column prop="createTime" show-overflow-tooltip label="创建时间" />
-            <el-table-column prop="versionName" show-overflow-tooltip label="产品版本类型" />
-            <el-table-column prop="buyResourceNumber" label="购买/充值资源点数" />
-            <el-table-column prop="totalMoney" label="购买金额(元)" />
-            <el-table-column prop="discountCode" label="优惠码" />
-            <el-table-column prop="discountMoney" label="优惠金额" />
-            <el-table-column prop="realMoney" label="订单金额" />
-            <el-table-column prop="status" show-overflow-tooltip label="订单状态" min-width="110px">
+            <el-table-column align="center" prop="consumerDate" show-overflow-tooltip label="账期" />
+            <el-table-column align="center" prop="id" show-overflow-tooltip label="消费账单ID" />
+            <el-table-column align="center" prop="createTime" show-overflow-tooltip label="创建时间" />
+            <el-table-column align="center" prop="versionName" show-overflow-tooltip label="产品版本" />
+            <el-table-column align="center" prop="billingMode" show-overflow-tooltip label="计费方式">
                 <template #default="scope">
-                    <div :class="['status-circle', `status-${scope.row.status}`]">
-                        {{ statusObj[scope.row.status] }}
-                    </div>
+                    {{ billingModeObj[scope.row.billingMode] }}
                 </template>
             </el-table-column>
-            <el-table-column prop="invoiceStatus" show-overflow-tooltip label="开票状态">
+            <el-table-column align="center" prop="consumeContent" show-overflow-tooltip label="消费内容" />
+            <el-table-column align="center" prop="price" show-overflow-tooltip label="服务单价(资源点)" />
+            <el-table-column align="center" show-overflow-tooltip label="消费时间">
                 <template #default="scope">
-                    {{ invoiceStatusObj[scope.row.invoiceStatus] }}
+                    {{ scope.row.consumeStartTime }} 到 {{ scope.row.consumeEndTime }}
                 </template>
             </el-table-column>
+            <el-table-column align="center" prop="createTime" show-overflow-tooltip label="消费容量/时长" />
+            <el-table-column align="center" prop="consumeMoney" show-overflow-tooltip label="消费资源点数" />
+            <el-table-column align="center" prop="discountMoney" show-overflow-tooltip label="优惠资源点数" />
+            <el-table-column align="center" prop="consumeActualMoney" show-overflow-tooltip label="实扣资源点数" />
             <el-table-column fixed="right" label="操作" width="230px">
                 <template slot-scope="scope">
-                    <div class="operate-btn color-btn" @click="jumpToPay(scope.row)">去支付</div>
-                    <div class="operate-btn color-btn" @click="invoice(scope.row)">开发票</div>
-                    <div class="operate-btn" @click="delOrder(scope.row)">删除</div>
+                    <div class="operate-btn color-btn" @click="orderDetail(scope.row)">账单详情</div>
                 </template>
             </el-table-column>
         </el-table>
@@ -44,59 +100,81 @@
             :limit.sync="pagination.pageSize"
             @pagination="handlePageChange"
         />
+
+        <orderDetail
+            ref="orderDetailDialog"
+            @get-data="getData"
+        ></orderDetail>
     </div>
 </template>
 
 <script>
-import { getConsumerList } from '@/api/expenseManage'
+import { getConsumerList, getConsumerContentList, getProductList } from '@/api/expenseManage'
 import { Getuserid } from '@/store/index.js'
 import { getDictDataByKey } from '@/utils/getDict'
 import Pagination from '@/components/Pagination'
+import orderDetail from './orderDetail.vue'
 export default {
     name: 'authorizationCode',
     components: { Pagination },
     data() {
         return {
             loading: false,
-            selectionData: [],
+            searchForm: {},
             tableData: [],
             pagination: {
                 pageNum: 1,
                 pageSize: 10,
                 total: 0
             },
-            statusObj: {},
-            invoiceStatusObj: {}
+
+            billingModeList: [],
+            billingModeObj: {},
+            consumerContentList: [],
+            productList: []
         }
     },
     created() {
         this.getData()
-        this.getOrderStatusData()
-        this.getInvoiceStatusData()
+        this.getBillMode()
+        this.getCusContentList()
+        this.getProductData()
     },
     methods: {
-        getOrderStatusData() {
-            getDictDataByKey('UserOrderStatusEnum').then(data => {
+        // 获取计费方式枚举
+        getBillMode() {
+            getDictDataByKey('BillingModeEnum').then(data => {
+                this.billingModeList = data
+
                 let obj = {}
                 data.forEach(item => {
                     obj[item.code] = item.value
                 })
-                this.statusObj = obj
+                this.billingModeObj = obj
             })
         },
 
-        getInvoiceStatusData() {
-            getDictDataByKey('UserOrderInvoiceStatusEnum').then(data => {
-                let obj = {}
-                data.forEach(item => {
-                    obj[item.code] = item.value
-                })
-                this.invoiceStatusObj = obj
+        // 获取消费内容下拉数据
+        getCusContentList() {
+            getConsumerContentList({ userId: Getuserid() }).then(res => {
+                if (res.code === 200) {
+                    this.consumerContentList = res.data
+                }
+            })
+        },
+
+        // 获取授权码产品版本数据
+        getProductData() {
+            getProductList().then(res => {
+                if (res.code === 200) {
+                    this.productList = res.data
+                }
             })
         },
 
         getData() {
             const params = {
+                ...this.searchForm,
                 pageNum: this.pagination.pageNum,
                 pageSize: this.pagination.pageSize,
                 userId: Getuserid()
@@ -119,12 +197,26 @@ export default {
             this.pagination.pageNum = data.pageIndex
             this.pagination.pageSize = data.pageSize
             this.getData()
+        },
+
+        orderDetail(rowData) {
+            rowData.consumerBillingMode = billingModeObj[rowData.billingMode]
+            this.$refs.orderDetailDialog.showDialog('账单详情', rowData)
         }
     }
 }
 </script>
 
 <style lang="less" scoped>
+.formInputWidth {
+    width: 100% !important;
+    margin: 0 20px 0 0;
+}
+
+.marginleft20 {
+    margin-left: 20px;
+}
+
 .marginBottom16 {
     margin-bottom: 16px;
 }
@@ -139,26 +231,5 @@ export default {
 }
 .color-btn {
     color: #00aaf0;
-}
-.status-circle::before {
-    content: '';
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 100%;
-    margin-right: 6px;
-}
-.status {
-    // 待支付
-    &-0::before {
-        background: #ff7f28;
-    }
-    // 已支付
-    &-1::before {
-        background: #03c13f;
-    }
-    &-2::before {
-        background: #999999;
-    }
 }
 </style>
