@@ -22,7 +22,7 @@
                     <el-input v-model="userInfo.position" class="formInputWidth" placeholder="请输入名称"></el-input>
                 </el-form-item>
                 <el-form-item label="userId：" prop="userId">
-                    <el-input v-model="userInfo.userId" disabled class="formInputWidth" placeholder="请输入名称"></el-input>
+                    <el-input v-model="userId" disabled class="formInputWidth" placeholder="请输入名称"></el-input>
                 </el-form-item>
                 <el-form-item label="头像：" prop="imgUrl">
                     <div class="avator-box flexCenter" v-if="imgUrl">
@@ -64,16 +64,18 @@ import { Getuserid } from '@/store/index.js'
 import axios from '@/utils/request'
 
 export default {
-    name: 'bill',
+    name: 'userAccount',
     data() {
         return {
             userInfo: {},
+            userId: '',
             imgUrl: '', // 用户头像
             imgUrlDefault: '', // 用户头像为空,时的变量
             baseURL: axios.defaults.baseURL
         }
     },
     created() {
+        this.userId = Getuserid()
         this.getData()
     },
     methods: {

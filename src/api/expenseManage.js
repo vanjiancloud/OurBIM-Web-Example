@@ -131,3 +131,18 @@ export function getConsumerList(params) {
         params,
     })
 }
+
+// 由于接口都是用的threeRequest去请求，暂时先把用户管理相关的接口也写在这里
+// 后续需要挪回到用户管理对应的接口文件夹中
+/************************用户管理**********************/
+// 修改密码
+export function editPassword(data) {
+    return request({
+        url: '/monitor/publicManage/user/editPassword',
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        },
+        data: data
+    })
+}
