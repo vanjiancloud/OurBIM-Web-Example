@@ -189,7 +189,7 @@ export default {
     .price-content {
         display: flex;
         flex-direction: column;
-        align-items: start;
+        align-items: flex-start;
         width: 500px;
         margin-top: 24px;
         font-size: 16px;

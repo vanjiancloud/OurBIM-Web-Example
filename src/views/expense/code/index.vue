@@ -188,7 +188,7 @@ export default {
 }
 .flex-right {
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     margin-bottom: 16px;
 }
 .operate-reset {
