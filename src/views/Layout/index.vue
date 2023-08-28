@@ -454,7 +454,7 @@ export default {
 .order {
     .orderContent {
         display: flex;
-        justify-content: start;
+        justify-content: flex-start;
         gap: 20px;
 
         .orderItem {
