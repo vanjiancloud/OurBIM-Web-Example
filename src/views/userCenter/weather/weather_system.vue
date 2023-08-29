@@ -1,5 +1,4 @@
 <template>
-    <Drawer ref="Drawer" title="天气环境" direction="rtl" @onClose="close">
     <div class="systemWeather">
       <div class="weatherClassify">
           <div class="selectGroup">
@@ -288,18 +287,15 @@
             </div>
         </div>
     </div>
-    </Drawer>
   </template>
   
   <script>
   import { getDict } from "@/api/dict.js"
-  import { EventBus } from '@/utils/bus.js'
-  import Drawer from "@/components/Drawer/index.vue";
   import MODELAPI, { setWeatherSun, setWeatherLight, doAction, backgroundSetting } from "@/api/model_api";
   import CHAILIAOAPI from "@/api/material_api";
   import moment from 'moment'
   export default {
-    components: { Drawer },
+    components: { },
       props:{
           appId: {
               type: String,
@@ -392,6 +388,7 @@
       },
       created(){
           this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
+            this.show()
         },
       mounted(){
           if(this.isGis){
@@ -400,14 +397,9 @@
         },
       methods:{
         show() {
-            this.$refs.Drawer.show()
             this.getWeatherList();
             this.changeColor(this.color1);
             this.getDictList()
-        },
-        close(){
-            this.$refs.Drawer.hide()
-            EventBus.$emit('eventTool', 'renderingEnvironment')
         },
         rgbaToArr(color) {
             var arr = []
@@ -1142,24 +1134,6 @@
           height: calc(100% - 53px);
           overflow-x: hidden;
           overflow-y: auto;
-          &::-webkit-scrollbar {
-            /*滚动条整体样式*/
-            width: 6px;
-            /*高宽分别对应横竖滚动条的尺寸*/
-            height: 1px;
-          }
-  
-          &::-webkit-scrollbar-thumb {
-            /*滚动条里面小方块*/
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.3);
-          }
-  
-          &::-webkit-scrollbar-track {
-            /*滚动条里面轨道*/
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.295);
-          }
           .weatherClassify{
               width: 272px;
             //   height: 300px;
