@@ -1044,6 +1044,7 @@ export default {
     },
     getMonitor() {
         document.addEventListener("keydown", (e) => {
+          if([37,38,39,40,229].includes(e.keyCode)) return
           this.sendToIframe(
             10010,
             {
@@ -1055,6 +1056,7 @@ export default {
           );
         },true);
         document.addEventListener("keyup", (e) => {
+          if([37,38,39,40,229].includes(e.keyCode)) return
           this.sendToIframe(
             10011,
             {
