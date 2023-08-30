@@ -63,7 +63,7 @@ export default {
                     }
                     updateMaterialTextureGroup(formData).then(() => {
                         this.hide();
-                        this.$parent.getChartletList();
+                        this.$parent.getUserList();
                     });
                 }else{
                     let data = {
@@ -76,7 +76,7 @@ export default {
                     }
                     addChartletGroup(formData).then(() => {
                         this.hide();
-                        this.$parent.getChartletList();
+                        this.$parent.getUserList();
                     });
                 }
             })

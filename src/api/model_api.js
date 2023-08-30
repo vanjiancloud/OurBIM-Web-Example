@@ -36,7 +36,7 @@ const MODELAPI = {
     },
     // 建立websocket通信
     CREATESOCKET: params => {
-        return `${BASE.WSPRO}websocket/${params}`
+        return `${BASE.WSPRO}/websocket/${params}`
     },
 
     // 获取关注视角

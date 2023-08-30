@@ -11,15 +11,6 @@ import qsStringify from "qs-stringify"
 
 const COMPONENTLIBRARY = {
 
-    // 获取构件列表
-    getPublicComList: params => {
-        return request({
-            url: '/comControl/getPublicComList',
-            method: 'get',
-            params
-        })
-    },
-
     // 初始化构件
     initComponent: params => {
         return request({
@@ -117,6 +108,14 @@ export function updateComsCoordinate(params,data) {
     })
 }
 
+// 获取构件列表
+export function getPublicList(params) {
+    return newRequest({
+        url: '/comControl/getPublicComList',
+        method: 'get',
+        params
+    })
+}
 
 
 export default COMPONENTLIBRARY

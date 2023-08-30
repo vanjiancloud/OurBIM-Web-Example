@@ -84,8 +84,7 @@ export default {
                     }
                     updateMaterialTexture(formData).then(() => {
                         this.hide()
-                        this.$parent.getChartletList()
-                        this.$emit('onSuccess',this.form)
+                        this.$parent.getTextureList(this.form.groupId)
                     })
                 } else {
                     let data = {
@@ -98,8 +97,7 @@ export default {
                     }
                     addChartlet(formData).then(() => {
                         this.hide()
-                        this.$parent.getChartletList()
-                        this.$emit('onSuccess',this.form)
+                        this.$parent.getTextureList(this.form.groupId)
                     })
                 }
             })
