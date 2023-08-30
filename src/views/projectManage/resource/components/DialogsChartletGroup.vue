@@ -5,7 +5,7 @@
             <el-form-item label="贴图分组名称：" prop="groupName">
                 <el-input v-model="form.groupName" placeholder="请输入"></el-input>
             </el-form-item>
-            <el-form-item label="构件缩略图：">
+            <el-form-item label="分组缩略图：">
                 <SingleUpload v-model="form.fileUpload" :autoUpload="false"/>
                 <div class="uploadTip">上传长宽比=1:1的图片</div>
             </el-form-item>

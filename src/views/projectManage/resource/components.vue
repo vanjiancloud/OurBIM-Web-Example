@@ -49,7 +49,7 @@
             </el-table-column>
             <el-table-column label="文件大小">
                 <template slot-scope="scope">
-                    {{ scope.row.ourbimComponentInfo&&scope.row.ourbimComponentInfo.fileLongSize }}MB
+                    {{ parseInt(scope.row.ourbimComponentInfo&&scope.row.ourbimComponentInfo.fileLongSize/1024) }}MB
                 </template>
             </el-table-column>
             <el-table-column prop="isGroup" label="类型">
@@ -184,7 +184,7 @@ export default {
             this.isGroup = true
         },
         getList(parentId='god'){
-            this.$emit('update:groupName','')
+            this.$emit('update:groupName',parentId === 'god' ? '' : this.groupName)
             let params = {
                 userId: Getuserid(),
                 parentId
@@ -262,7 +262,7 @@ export default {
         },
         // 打开构件
         openCom(row){
-
+            this.$message('功能待开放！')
         }
     }
 };

@@ -57,12 +57,11 @@ export default {
             this.$refs.form.validate((valid) => {
                 if (!valid) return false;
                 if(this.form.groupId){
-                    let data = {
-                        userId: this.$route.query.userId,
-                        groupId:this.form.groupId,
-                        groupName:this.form.groupName
-                    };
-                    updateMaterialTextureGroup(data).then(() => {
+                    let formData = new FormData();
+                    for (const key in this.form) {
+                        formData.append([key], this.form[key]);
+                    }
+                    updateMaterialTextureGroup(formData).then(() => {
                         this.hide();
                         this.$parent.getChartletList();
                     });

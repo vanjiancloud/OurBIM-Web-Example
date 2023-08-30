@@ -83,7 +83,7 @@ export default {
         httpRequest(param) {
             // 接口不是统一的
             const formData = new FormData();
-            if(Object.keys(this.params).length){
+            if(this.params&&Object.keys(this.params).length){
                 for (const key in this.params) {
                     formData.append([key], ["fileUpload"].includes(key) ? param.file : this.params[key]);
                 }

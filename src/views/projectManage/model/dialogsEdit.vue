@@ -291,6 +291,7 @@ export default {
                 delete data.gisServerMap
                 delete data.sonAppMap
                 updateProject(data).then(() => {
+                    this.$message.success('项目信息更新成功')
                     this.hide()
                     this.$parent.$parent.getAllModelList()
                 })

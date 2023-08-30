@@ -1,5 +1,5 @@
 <template>
-  <List v-loading="loading" @change="onChange">
+  <List @change="onChange">
     <template slot="title">
       <div class="boxHeader">
           <div class="boxHeaderTitle">您共有<span>{{total}}</span>个项目</div>
@@ -71,7 +71,7 @@
                         </span>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item v-if="scope.row.applidStatus === '2'" @click.native="handleCommand('分享',scope.row)">分享</el-dropdown-item>
-                            <el-dropdown-item v-if="!['5','6'].includes(scope.row.applidStatus)" @click.native="handleCommand('编辑',scope.row)">编辑</el-dropdown-item>
+                            <el-dropdown-item v-if="!['1','5','6'].includes(scope.row.applidStatus)" @click.native="handleCommand('编辑',scope.row)">编辑</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false') && scope.row.fileSize!='0'" @click.native="handleCommand('下载',scope.row)">下载</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.appType === '0'&&scope.row.applidStatus === '2'&&scope.row.fileSize!='0'" @click.native="handleCommand('重新转换',scope.row)">重新转换</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.applidStatus !== '5'" @click.native="handleCommand('删除',scope.row)">删除</el-dropdown-item>
@@ -108,7 +108,7 @@
                     </span>
                     <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item v-if="item.applidStatus === '2'" @click.native="handleCommand('分享',item)">分享</el-dropdown-item>
-                        <el-dropdown-item v-if="!['5','6'].includes(item.applidStatus)" @click.native="handleCommand('编辑',item)">编辑</el-dropdown-item>
+                        <el-dropdown-item v-if="!['1','5','6'].includes(item.applidStatus)" @click.native="handleCommand('编辑',item)">编辑</el-dropdown-item>
                         <el-dropdown-item v-if="item.applidStatus === '2' && (item.appType === '0' && item.isGis === 'false') && item.fileSize!='0'" @click.native="handleCommand('下载',item)">下载</el-dropdown-item>
                         <el-dropdown-item v-if="item.appType === '0'&&item.applidStatus === '2'&&item.fileSize!='0'" @click.native="handleCommand('重新转换',item)">重新转换</el-dropdown-item>
                         <el-dropdown-item v-if="item.applidStatus !== '5'" @click.native="handleCommand('删除',item)">删除</el-dropdown-item>
@@ -306,7 +306,6 @@ export default {
         }
     };
     return {
-      loading:false,
       isList: true,
       GISInfo: '',    
       isGis:'',
@@ -552,9 +551,7 @@ export default {
         pageSize: this.pages.pageSize,
         userid: Getuserid()
       }
-      this.loading = true
       getProjectList(params).then(res => {
-        this.loading = false
         if (res.data.code == "0") {
           this.total = res.data.data.total
           this.allModelData = res.data.data.list

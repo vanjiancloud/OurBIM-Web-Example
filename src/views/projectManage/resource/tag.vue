@@ -1,5 +1,7 @@
 <template>
-    <div></div>
+    <div>
+        <el-empty description="功能待开放。。。"></el-empty>
+    </div>
 </template>
 
 <script>
