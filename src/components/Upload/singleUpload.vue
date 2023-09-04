@@ -1,6 +1,6 @@
 <!-- 单个图片上传，没有统一的上传文件接口,自动上传的传url手动的emit  file文件回去， -->
 <template>
-    <el-upload action="#" :show-file-list="false" :accept="accept" :on-change="onChange" :before-upload="beforeAvatarUpload" :auto-upload="autoUpload" :http-request="httpRequest">
+    <el-upload action="#" :show-file-list="false" :accept="accept" :on-change="onChange" :before-upload="beforeAvatarUpload" :auto-upload="autoUpload" :http-request="httpRequest" :disabled="disabled">
         <img v-if="value" :src="autoUpload?value:changeImg(value)" class="avatar" />
         <slot name="icon" v-else>
             <i class="el-icon-plus avatar-uploader-icon"></i>           
@@ -34,6 +34,10 @@ export default {
         autoUpload:{
             type: Boolean,
             default: true,
+        },
+        disabled:{
+            type: Boolean,
+            default: false,
         },
         // 当其他上传接口用的参数不是默认的参数时，可以用该字段自定义
         params:{
