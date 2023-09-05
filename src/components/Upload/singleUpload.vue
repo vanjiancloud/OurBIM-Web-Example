@@ -89,7 +89,7 @@ export default {
             const formData = new FormData();
             if(Object.keys(this.params).length){
                 for (const key in this.params) {
-                    formData.append([key], ["fileUpload"].includes(key) ? param.file : this.params[key]);
+                    formData.append([key], ["fileUpload"].includes(key) ? param.file : this.params[key]||param.file);
                 }
             }else{
                 formData.append("fileUpload", param.file);
@@ -102,6 +102,7 @@ export default {
             }).then((res) => {
                 this.imageUrl = res.data;
                 this.$emit("input", res.data);
+                this.$emit("success", res.data);
             });
         },
     },

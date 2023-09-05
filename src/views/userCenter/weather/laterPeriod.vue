@@ -2,16 +2,16 @@
 <template>
     <div class="laterPeriod">
         <el-collapse v-model="activeNames">
-            <!-- <el-collapse-item name="1">
+            <el-collapse-item name="1" v-if="form.reflections">
                 <template slot="title">
                     <div class="laterTitle">
-                        <el-checkbox v-model="form.checked">全局光照和反射</el-checkbox>
+                        <el-checkbox v-model="form.checkedreflections" @change="changeCheck('reflections',$event)"></el-checkbox>全局光照和反射
                     </div>
                 </template>
                 <div class="laterContent">
                     <div class="laterItem">
-                        <div class="laterItem-name">类型</div>
-                        <el-select v-model="form.value" placeholder="请选择" size="small" style="width: 100%;" class="laterItem-right" @keydown.native.stop>
+                        <div class="laterItem-name">反射方式</div>
+                        <el-select v-model="form.reflections.method" :disabled="!form.checkedreflections" placeholder="请选择" size="small" style="width: 100%;" class="laterItem-right" @keydown.native.stop @change="setWeather">
                             <el-option
                                 v-for="item in illuminationList"
                                 :key="item.key"
@@ -20,23 +20,27 @@
                             </el-option>
                         </el-select>
                     </div>
-                    <div class="laterItem">
+                    <!-- <div class="laterItem">
                         <div class="laterItem-name">光照类型</div>
                         <div class="laterItem-right flexBetween">
                             <el-slider v-model="form.value1" class="slider"></el-slider>
                             <el-input v-model="form.value1" placeholder="内容" size="small" class="laterItem-input" @keydown.native.stop></el-input>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="laterItem">
                         <div class="laterItem-name">反射质量</div>
-                        <div class="laterItem-right flexBetween">
-                            <el-slider v-model="form.value1" class="slider"></el-slider>
-                            <el-input v-model="form.value1" placeholder="内容" size="small" class="laterItem-input" @keydown.native.stop></el-input>
+                        <div class="laterItem-right flexBetween" v-if="form.reflections.method==='Lumen'">
+                            <el-slider v-model="form.reflections.lumenReflections.qualitySliderInput" :disabled="!form.checkedreflections" :min="form.reflections.lumenReflections.qualityMin" :max="form.reflections.lumenReflections.qualityMax" :step="0.1" class="slider" @change="setWeatherInput('reflections.lumenReflections.quality',$event)"></el-slider>
+                            <el-input v-model.number="form.reflections.lumenReflections.quality" :disabled="!form.checkedreflections" type="number" placeholder="内容" size="small" class="laterItem-input" @keydown.native.stop @change="setWeather"></el-input>
+                        </div>
+                        <div class="laterItem-right flexBetween" v-if="form.reflections.method==='ScreenSpace'">
+                            <el-slider v-model="form.reflections.screenSpaceReflections.qualitySliderInput" :disabled="!form.checkedreflections" :min="0" :max="100" :step="1" class="slider" @change="setWeatherInput('reflections.screenSpaceReflections.quality',$event)"></el-slider>
+                            <el-input v-model.number="form.reflections.screenSpaceReflections.quality" :disabled="!form.checkedreflections" type="number" placeholder="内容" size="small" class="laterItem-input" @keydown.native.stop @change="setWeather"></el-input>
                         </div>
                     </div>
                 </div>
-            </el-collapse-item> -->
-            <!-- <div class="line"></div> -->
+            </el-collapse-item>
+            <div class="line"></div>
             <el-collapse-item name="3" title="相机镜头设置">
                 <el-collapse-item name="4" v-if="form.bloom">
                     <template slot="title">
@@ -141,7 +145,7 @@
                         <div class="laterItem">
                             <div class="laterItem-name">遮罩贴图</div>
                             <div class="laterItem-right color">
-                                <SingleUpload v-model="form.dirtMask.dirtMaskTexture" url="" :disabled="!form.checkeddirtMask" class="upload"/>
+                                <SingleUpload v-model="form.dirtMask.dirtMaskTexture" accept="image/png" url="/weather/uploadImg" :params="{ taskId: data.taskId,fileUpload:'' }" @success="setWeather" :disabled="!form.checkeddirtMask" class="upload"/>
                             </div>
                         </div>
                         <div class="laterItem">
@@ -346,7 +350,7 @@
                     <div class="laterContent">
                         <div class="laterItem">
                             <div class="laterItem-name">LUT</div>
-                            <el-select v-model="form.misc.colorGradingLUTIndex" placeholder="请选择" size="small" style="width: 100%;" class="laterItem-right" @keydown.native.stop>
+                            <el-select v-model="form.misc.colorGradingLUTIndex" :disabled="!form.checkedmisc" placeholder="请选择" size="small" style="width: 100%;" class="laterItem-right" @keydown.native.stop @change="setWeather">
                                 <el-option
                                     v-for="item in LUTList"
                                     :key="item.key"
@@ -446,6 +450,15 @@ export default {
                 misc:{
                     colorGradingLUTIndex:0
                 },
+                reflections:{
+                    lumenReflections:{
+                        quality:1
+                    },
+                    screenSpaceReflections:{
+                        quality:1
+                    },
+                    method:'Lumen'
+                },
                 ppMatModeIndex:0
             },
             // 滚动轴后面的输入框
@@ -465,15 +478,16 @@ export default {
                 tint:0,
                 saturation:[1,1,1,1],
                 contrast:[1,1,1,1],
-                radius:200
+                radius:200,
+                quality:1
             },
             illuminationList: [
                 {
-                    key:'1',
+                    key:'Lumen',
                     value:'Lumen全局光照'
                 },
                 {
-                    key:'2',
+                    key:'ScreenSpace',
                     value:'屏幕空间全局光照（SSGI）'
                 }
             ],//光照类型
@@ -601,28 +615,50 @@ export default {
                 this.$set(this.form.lensFlares,'tint',this.arrToRgb(res.data.lensFlares.tint) || this.$options.data().form.lensFlares.tint)
 
                 // 添加表单参数
-                Object.keys(this.form).forEach(e=>{
-                    if(typeof this.form[e] === 'object'){
-                        for (let key in this.form[e]) {
-                            if(this.SliderInputForm.hasOwnProperty(key)){
-                                this.$set(this.form[e],`${key}SliderInput`,JSON.parse(JSON.stringify(this.form[e][key])))
+                const addParams = (data)=>{
+                    Object.keys(data).forEach(e=>{
+                        if(Object.prototype.toString.call(data[e]) === '[object Object]'){
+                            for (let key in data[e]) {
+                                if(Object.prototype.toString.call(data[e][key]) === '[object Object]'){
+                                    addParams(data[e])
+                                }else if(this.SliderInputForm.hasOwnProperty(key)){
+                                    this.$set(data[e],`${key}SliderInput`,JSON.parse(JSON.stringify(data[e][key])))
+                                }
                             }
+                            this.$set(data,`checked${e}`,this.hasAllProperties(data[e],this.$options.data().form[e]))
                         }
-                        this.$set(this.form,`checked${e}`,this.hasAllProperties(this.form[e],this.$options.data().form[e]))
-                    }
-                })
+                    })
+                }
+                addParams(this.form)
             })
         },
         // 对象是否包含另一个对象的属性
         hasAllProperties(obj1, obj2) {
             let count = 0
-            for (let key in obj2) {
-                if(typeof obj1 !== 'object') continue
-                if (obj1!==null&&(JSON.stringify(obj1[key]) === JSON.stringify(obj2[key]))) {
-                    ++count
+            const total = (obj1, obj2)=>{
+                if(Object.prototype.toString.call(obj1) !== '[object Object]') return
+                for (let key in obj2) {
+                    if(Object.prototype.toString.call(obj2[key]) === '[object Object]'){
+                        total(obj1[key],obj2[key])
+                    }else if (obj1!==null && (JSON.stringify(obj1[key]) === JSON.stringify(obj2[key]))) {
+                        ++count
+                    }
                 }
             }
-            if(typeof obj2 === 'object' && count === Object.keys(obj2).length){
+            total(obj1, obj2)
+            // 计算参数总数和
+            const countParams = (obj)=> {
+                let counts = 0;
+                for (let key in obj) {
+                    if (Object.prototype.toString.call(obj[key]) === '[object Object]') {
+                        counts += countParams(obj[key]);
+                    } else {
+                        counts++;
+                    }
+                }
+                return counts;
+            }
+            if(typeof obj2 === 'object' && count === countParams(obj2)){
                 return false;
             }
             return true
@@ -641,16 +677,24 @@ export default {
             let data = JSON.parse(JSON.stringify(this.form))
             data.dirtMask.dirtMaskTint = this.formatColor(data.dirtMask.dirtMaskTint)
             data.lensFlares.tint = this.formatColor(data.lensFlares.tint)
-            // 添加表单参数
-            Object.keys(data).forEach(e=>{
-                if(typeof data[e] === 'object'){
-                    for (let key in data[e]) {
-                        if(this.SliderInputForm.hasOwnProperty(key)){
-                            this.$delete(data[e],`${key}SliderInput`)
+            data.dirtMask.dirtMaskTexture = data.dirtMask.dirtMaskTexture.match('[^/]+(?!.*/)')[0];
+            // 删除表单参数
+            const deleteParams = (delData)=>{
+                Object.keys(delData).forEach(e=>{
+                    if(Object.prototype.toString.call(delData[e]) === '[object Object]'){
+                        for (let key in delData[e]) {
+                            if(Object.prototype.toString.call(delData[e][key]) === '[object Object]'){
+                                deleteParams(delData[e])
+                            }else if(this.SliderInputForm.hasOwnProperty(key)){
+                                this.$delete(delData[e],`${key}SliderInput`)
+                            }
                         }
+                        this.$delete(delData,`checked${e}`)
                     }
-                }
-            })
+                })
+            }
+            deleteParams(data)
+
             setWeather({taskId:this.data.taskId},data).then(res=>{
                 this.$message.success('设置成功')
                 this.getWeather()
