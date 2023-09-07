@@ -97,7 +97,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getMaterialByMatId, resetMaterial, updateMaterial } from "@/api/material_api";
-import { modifyComParams } from "@/api/component-library";
 import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";
 import Tab from "@/components/Tab/index.vue";
@@ -135,86 +134,6 @@ export default {
             activeChartlet: null,//贴图是否被选中
             form: {},
             // 材质end-----------------------
-
-            // 几何信息start-----------------------
-            lightArr:[
-                {
-                    key:'intensity',
-                    name: '光源强度',
-                    unit: 'cd',
-                    limits: ['spotLight','pointLight','areaLight']
-                },
-                {
-                    key:'radiationAngleOfInner',
-                    name: '内辐射角',
-                    unit: '°',
-                    limits: ['spotLight']
-                },
-                {
-                    key:'radiationAngleOfOuter',
-                    name: '外辐射角',
-                    unit: '°',
-                    limits: ['spotLight']
-                },
-                {
-                    key:'attenuationRadius',
-                    name: '衰减半径',
-                    unit: 'cm',
-                    limits: ['spotLight','pointLight','areaLight']
-                },
-                {
-                    key:'influenceRadius',
-                    name: '影响半径',
-                    unit: 'cm',
-                    limits: ['sphereReflection']
-                },
-                {
-                    key:'brightness',
-                    name: '反射强度',
-                    unit: '',
-                    limits: ['sphereReflection'],
-                    min:0,
-                    max:1,
-                    step:0.1
-                },
-                {
-                    key:'sourceRadius',
-                    name: '光源半径',
-                    unit: 'cm',
-                    limits: ['spotLight','pointLight']
-                },
-                {
-                    key:'sourceLength',
-                    name: '光源长度',
-                    unit: 'cm',
-                    limits: ['spotLight','pointLight']
-                },
-                {
-                    key:'sourceHeight',
-                    name: '光源高度',
-                    unit: 'cm',
-                    limits: ['areaLight']
-                },
-                {
-                    key:'sourceWidth',
-                    name: '光源宽度',
-                    unit: 'cm',
-                    limits: ['areaLight']
-                },{
-                    key:'barnDoorAngle',
-                    name: '谷仓门角度',
-                    unit: '。',
-                    limits: ['areaLight']
-                },{
-                    key:'barnDoorLength',
-                    name: '谷仓门长度',
-                    unit: 'cm',
-                    limits: ['areaLight']
-                }
-            ],
-            wordHeightList: [], //字体高度
-            wordTypeList: [], //字体
-            // 几何信息end-----------------------
             isGis:false,//是否是gis模式下的
         }
     },

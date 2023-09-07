@@ -88,16 +88,6 @@ export function closeComEdit(params) {
     })
 }
 
-// 修改光源信息
-export function modifyComParams(params,data) {
-    return newRequest({
-        url: '/comControl/modifyComParams',
-        method: 'POST',
-        params,
-        data
-    })
-}
-
 // 获取构件列表
 export function getPublicList(params) {
     return newRequest({

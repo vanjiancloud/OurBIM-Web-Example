@@ -329,6 +329,83 @@ export default {
     },
     data() {
         return {
+            lightArr:[
+                {
+                    key:'intensity',
+                    name: '光源强度',
+                    unit: 'cd',
+                    limits: ['spotLight','pointLight','areaLight']
+                },
+                {
+                    key:'radiationAngleOfInner',
+                    name: '内辐射角',
+                    unit: '°',
+                    limits: ['spotLight']
+                },
+                {
+                    key:'radiationAngleOfOuter',
+                    name: '外辐射角',
+                    unit: '°',
+                    limits: ['spotLight']
+                },
+                {
+                    key:'attenuationRadius',
+                    name: '衰减半径',
+                    unit: 'cm',
+                    limits: ['spotLight','pointLight','areaLight']
+                },
+                {
+                    key:'influenceRadius',
+                    name: '影响半径',
+                    unit: 'cm',
+                    limits: ['sphereReflection']
+                },
+                {
+                    key:'brightness',
+                    name: '反射强度',
+                    unit: '',
+                    limits: ['sphereReflection'],
+                    min:0,
+                    max:1,
+                    step:0.1
+                },
+                {
+                    key:'sourceRadius',
+                    name: '光源半径',
+                    unit: 'cm',
+                    limits: ['spotLight','pointLight']
+                },
+                {
+                    key:'sourceLength',
+                    name: '光源长度',
+                    unit: 'cm',
+                    limits: ['spotLight','pointLight']
+                },
+                {
+                    key:'sourceHeight',
+                    name: '光源高度',
+                    unit: 'cm',
+                    limits: ['areaLight']
+                },
+                {
+                    key:'sourceWidth',
+                    name: '光源宽度',
+                    unit: 'cm',
+                    limits: ['areaLight']
+                },{
+                    key:'barnDoorAngle',
+                    name: '谷仓门角度',
+                    unit: '。',
+                    limits: ['areaLight']
+                },{
+                    key:'barnDoorLength',
+                    name: '谷仓门长度',
+                    unit: 'cm',
+                    limits: ['areaLight']
+                }
+            ],
+            wordHeightList: [], //字体高度
+            wordTypeList: [], //字体
             // 水表面类型：
             waterSurfaceList:[
                 {
