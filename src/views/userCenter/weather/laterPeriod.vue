@@ -344,7 +344,7 @@
                 <el-collapse-item name="14" v-if="form.misc">
                     <template slot="title">
                         <div class="laterTitle">
-                            <el-checkbox v-model="form.checkedmisc"></el-checkbox>LUT模版
+                            <el-checkbox v-model="form.checkedmisc" @change="changeCheck('misc',$event)"></el-checkbox>LUT模版
                         </div>
                     </template>
                     <div class="laterContent">
@@ -364,7 +364,7 @@
                 <el-collapse-item name="15">
                     <template slot="title">
                         <div class="laterTitle">
-                            <el-checkbox v-model="form.checked"></el-checkbox>后处理材质滤镜
+                            <el-checkbox v-model="form.checkedppMatModeIndex" @change="changeCheck('ppMatModeIndex',$event)"></el-checkbox>后处理材质滤镜
                         </div>
                     </template>
                     <div class="laterContent">
@@ -457,7 +457,7 @@ export default {
                     screenSpaceReflections:{
                         quality:1
                     },
-                    method:'Lumen'
+                    method:'ScreenSpace'
                 },
                 ppMatModeIndex:0
             },
@@ -613,6 +613,7 @@ export default {
                 this.form = res.data
                 this.$set(this.form.dirtMask,'dirtMaskTint',this.arrToRgb(res.data.dirtMask.dirtMaskTint) || this.$options.data().form.dirtMask.dirtMaskTint)
                 this.$set(this.form.lensFlares,'tint',this.arrToRgb(res.data.lensFlares.tint) || this.$options.data().form.lensFlares.tint)
+                this.$set(this.form,'checkedppMatModeIndex',res.data.ppMatModeIndex !== this.$options.data().form.ppMatModeIndex)
 
                 // 添加表单参数
                 const addParams = (data)=>{
@@ -670,6 +671,7 @@ export default {
         },
         // 去掉rgba,去掉空格,转数组
         formatColor(color){
+            if(!color) return []
             let colorStr = color && color.slice(5,color.length-1).replace(/\s*/g, '') || ''
             return colorStr.split(',')
         },
@@ -677,7 +679,9 @@ export default {
             let data = JSON.parse(JSON.stringify(this.form))
             data.dirtMask.dirtMaskTint = this.formatColor(data.dirtMask.dirtMaskTint)
             data.lensFlares.tint = this.formatColor(data.lensFlares.tint)
-            data.dirtMask.dirtMaskTexture = data.dirtMask.dirtMaskTexture.match('[^/]+(?!.*/)')[0];
+            if(data.dirtMask.dirtMaskTexture){
+                data.dirtMask.dirtMaskTexture = data.dirtMask.dirtMaskTexture.match('[^/]+(?!.*/)')[0];
+            }
             // 删除表单参数
             const deleteParams = (delData)=>{
                 Object.keys(delData).forEach(e=>{
@@ -694,6 +698,7 @@ export default {
                 })
             }
             deleteParams(data)
+            this.$delete(data,'checkedppMatModeIndex')
 
             setWeather({taskId:this.data.taskId},data).then(res=>{
                 this.$message.success('设置成功')
@@ -755,14 +760,16 @@ export default {
             }
             .slider{
                 width: 60%;
-                /deep/.el-slider__bar{
-                    background: linear-gradient(90deg, #C1EAFF 0%, #8ED1FF 100%);
-                    height: 8px;
-                }
-                /deep/.el-slider__button{
-                    background: #00C9FD;
-                    box-shadow: 0px 0px 4px 0px #FFFFFF;
-                    border: 2px solid #FFFFFF;
+                /deep/.el-slider__runway:not(.disabled){
+                    .el-slider__bar{
+                        background: linear-gradient(90deg, #C1EAFF 0%, #8ED1FF 100%);
+                        height: 8px;
+                    }
+                    .el-slider__button{
+                        background: #00C9FD;
+                        box-shadow: 0px 0px 4px 0px #FFFFFF;
+                        border: 2px solid #FFFFFF;
+                    }
                 }
             }
             .color{
@@ -793,18 +800,6 @@ export default {
             }
         }
     }
-}
-/deep/.el-checkbox__input.is-checked + .el-checkbox__label{
-    color: #FFFFFF!important;
-}
-/deep/.el-checkbox__input.is-checked .el-checkbox__inner, /deep/.el-checkbox__input.is-indeterminate .el-checkbox__inner{
-    background-color: #9FAFC2!important;
-    border-color: #9FAFC2!important;
-}
-/deep/.el-checkbox__inner::after{
-    border: 1px solid #2c3539!important;
-    border-left:0!important;
-    border-top:0!important;
 }
 /deep/.el-input__inner{
     padding:0 0 0 8px;

@@ -98,16 +98,6 @@ export function modifyComParams(params,data) {
     })
 }
 
-// 修改自定义构件坐标
-export function updateComsCoordinate(params,data) {
-    return newRequest({
-        url: '/comControl/updateComs',
-        method: 'POST',
-        params,
-        data
-    })
-}
-
 // 获取构件列表
 export function getPublicList(params) {
     return newRequest({
