@@ -884,7 +884,7 @@ export default {
       this.websock.onopen = (e) => {
         this.socketTimer = setInterval(() => {
           this.websock.send("Bang");
-        }, 1000 * 60);
+        }, 1000 * 30);
       };
       this.websock.onerror = (e) => {};
     },
