@@ -96,7 +96,7 @@
         <!-- 构件信息 -->
         <ComponentInformation ref="ComponentInformation" :data="{ taskId, memberInfo, materialData, pakIdMapweb, selectPark }" v-show="checkShow('componentInformation')"/>
         <!-- 天气 -->
-        <weatherSystem ref="weatherSystem" :appId="appId" :taskId="taskId" v-show="checkShow('renderingEnvironment')"/>
+        <Weather ref="Weather" :data="{ taskId, appId }" v-show="checkShow('renderingEnvironment')"/>
         <!-- 标签 -->
         <Label ref="Label" v-show="checkShow('label')" :setProps="{ taskId, appId }" @setTagClick="setTagClick" />
         <!-- 标签库(未上线) -->
@@ -128,7 +128,7 @@ import progressBar from "@/components/web_client/progress_bar";
 import TeamworkDialog from "@/views/projectManage/model/TeamworkDialog.vue";
 import EscDialogItem from "@/components/web_client/EscDialogItem.vue";
 import { Getuserid } from "@/store/index.js"; // (自定义构件)
-import weatherSystem from "@/components/web_client/weather_system.vue"; // 天气系统
+import Weather from "../weather/index.vue"; // 天气系统
 import ResourcePool from "../resourcePool/index.vue"; // 资源库
 import ComponentInformation from "../componentInformation/index.vue"; //构件信息
 import Label from "../label/index.vue"; //标签
@@ -149,7 +149,7 @@ export default {
     EscDialogItem,
     roamNavigate,
     viewPhoto,
-    weatherSystem,
+    Weather,
     ResourcePool,
     ComponentInformation,
     Tool,
@@ -313,7 +313,7 @@ export default {
                 break;
             // 渲染环境
             case 'renderingEnvironment':
-                this.$refs.weatherSystem.show()
+                this.$refs.Weather.show()
                 break;
             // 资源库
             case 'resource':
@@ -884,7 +884,7 @@ export default {
       this.websock.onopen = (e) => {
         this.socketTimer = setInterval(() => {
           this.websock.send("Bang");
-        }, 1000 * 60);
+        }, 1000 * 30);
       };
       this.websock.onerror = (e) => {};
     },
