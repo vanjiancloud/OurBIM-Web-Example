@@ -3,13 +3,13 @@ import { MessageBox, Message } from 'element-ui'
 import store from '@/store/vuex.js'
 import { Getuserid } from '@/store/index.js'
 
-export const BASEURL = process.env.VUE_APP_REQUEST_URL
+export const BASEURL = 'https://manage.ourbim.com:10012'
 // create an axios instance
 const CancelToken = axios.CancelToken;
 const service = axios.create({
   // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  baseURL: '/api',
-  // withCredentials: true, // send cookies when cross-domain requests
+  baseURL: process.env.NODE_ENV === "development" ? '/api' : BASEURL,
+  withCredentials: true, // send cookies when cross-domain requests
   // timeout: 10000 // request timeout
   cancelToken: new CancelToken(function executor(c){
     store.commit("request/SET_CANCEL", c);
@@ -19,9 +19,6 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   config => {
-    // if (store.getters.token) {
-    //   config.headers['token'] = getToken()
-    // }
     if (Getuserid()) {
       config.headers.common['token'] = Getuserid()
     }
@@ -42,20 +39,6 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
-
-      // 403: token失效;
-      // if (res.code === 403) {
-      //   // to re-login
-      //   MessageBox.confirm('您已注销，可以取消以停留在此页面，或再次登录', '退出', {
-      //     confirmButtonText: '登录',
-      //     cancelButtonText: '取消',
-      //     type: 'warning'
-      //   }).then(() => {
-      //     store.dispatch('user/resetToken').then(() => {
-      //       location.reload()
-      //     })
-      //   })
-      // }
       return Promise.reject(new Error(res.message))
     } else {
       return res
