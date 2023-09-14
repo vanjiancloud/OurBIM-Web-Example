@@ -20,11 +20,11 @@
                     <el-image class="img" :src="item.comUrl" lazy>
                         <div slot="placeholder" class="image-slot">
                             <img src="@/assets/default/component.png" v-if="levels.tab2Index ===1"/>
-                            <img src="@/assets/default/material.png" v-if="levels.tab2Index ===0"/>
+                            <img src="@/assets/default/model.png" v-if="levels.tab2Index ===0"/>
                         </div>
                         <div slot="error" class="image-slot">
                             <img src="@/assets/default/component.png" v-if="levels.tab2Index ===1"/>
-                            <img src="@/assets/default/material.png" v-if="levels.tab2Index ===0"/>
+                            <img src="@/assets/default/model.png" v-if="levels.tab2Index ===0"/>
                         </div>
                     </el-image>
                     <div>{{item.comName}}</div>
@@ -304,6 +304,17 @@ export default {
             height: 85px;
             object-fit: fill;
             margin-bottom: 8px;
+            background: #28292E;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /deep/.el-image__error, /deep/.el-image__inner, /deep/.el-image__placeholder{
+                max-width: 100%;
+                max-height: 100%;
+                width: auto;
+                height: auto;
+            }
         }
         > div {
             overflow: hidden;

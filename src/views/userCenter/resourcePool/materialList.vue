@@ -324,6 +324,17 @@ export default {
             height: 85px;
             object-fit: fill;
             margin-bottom: 8px;
+            background: #28292E;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /deep/.el-image__error, /deep/.el-image__inner, /deep/.el-image__placeholder{
+                max-width: 100%;
+                max-height: 100%;
+                width: auto;
+                height: auto;
+            }
         }
         > div {
             overflow: hidden;

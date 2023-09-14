@@ -126,6 +126,9 @@
                         <el-input class="input" v-model="flowForm.simulationHeight" v-only-number="{min:0,precision:1}" size="mini"
                             @keydown.native.stop @change="editFlow()" />
                     </div>
+                    <div class="flowItem">
+                        <el-checkbox v-model="flowForm.debugPreview" @change="editFlow()">调试模式</el-checkbox>
+                    </div>
                 </div>
                 <div class="flow geometryItem">
                     <div class="comTitle">水表面仿真</div>
@@ -489,7 +492,8 @@ export default {
                 simulationHeight:1500,
                 fluxSurface:'water',
                 simulationDuration:-1,
-                iterativeInterval:0.008333333333
+                iterativeInterval:0.008333333333,
+                debugPreview:false
             },
             // 水源
             waterForm:{
