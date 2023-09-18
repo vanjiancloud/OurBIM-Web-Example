@@ -138,7 +138,7 @@
                 <el-collapse-item name="6" v-if="form.dirtMask">
                     <template slot="title">
                         <div class="laterTitle">
-                            <el-checkbox v-model="form.checkeddirtMask" @change="changeCheck('dirtMask',$event)"></el-checkbox>脏轨遮罩
+                            <el-checkbox v-model="form.checkeddirtMask" @change="changeCheck('dirtMask',$event)"></el-checkbox>脏迹遮罩
                         </div>
                     </template>
                     <div class="laterContent">

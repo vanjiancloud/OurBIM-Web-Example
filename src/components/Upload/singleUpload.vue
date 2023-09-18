@@ -1,7 +1,10 @@
 <!-- 单个图片上传，没有统一的上传文件接口,自动上传的传url手动的emit  file文件回去， -->
 <template>
     <el-upload action="#" :show-file-list="false" :accept="accept" :on-change="onChange" :before-upload="beforeAvatarUpload" :auto-upload="autoUpload" :http-request="httpRequest" :disabled="disabled">
-        <img v-if="value" :src="autoUpload?value:changeImg(value)" class="avatar" />
+        <template v-if="value">
+            <img :src="autoUpload?value:changeImg(value)" class="avatar" />
+            <span class="delete" @click.stop="deleteImg"><i class="el-icon-close"></i></span>
+        </template>
         <slot name="icon" v-else>
             <i class="el-icon-plus avatar-uploader-icon"></i>           
         </slot>
@@ -84,6 +87,10 @@ export default {
             }
             return isJPG && isLt2M;
         },
+        deleteImg(){
+            this.$emit("input", '');
+            this.$emit("success", '');
+        },
         httpRequest(param) {
             // 接口不是统一的
             const formData = new FormData();
@@ -121,6 +128,11 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    &:hover{
+        .delete{
+            display: flex!important;
+        }
+    }
 }
 .avatar-uploader .el-upload:hover {
     border-color: #409eff;
@@ -134,5 +146,20 @@ export default {
     height: 100%;
     display: block;
     object-fit: fill;
+}
+.delete{
+    background: rgba(0, 0, 0, 0.7);
+    font-size: 16px;
+    border-radius: 100%;
+    color: #ffffff;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: none;
 }
 </style>

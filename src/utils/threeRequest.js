@@ -9,7 +9,7 @@ const CancelToken = axios.CancelToken;
 const service = axios.create({
   // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
   baseURL: process.env.NODE_ENV === "development" ? '/api' : BASEURL,
-  withCredentials: true, // send cookies when cross-domain requests
+  // withCredentials: true, // send cookies when cross-domain requests
   // timeout: 10000 // request timeout
   cancelToken: new CancelToken(function executor(c){
     store.commit("request/SET_CANCEL", c);

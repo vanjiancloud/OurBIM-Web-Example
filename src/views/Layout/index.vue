@@ -125,7 +125,7 @@
                 <div class="nav" :class="fold ? 'nav' : 'closeNav'">
                     <!-- 收缩 -->
                     <div class="packUp" @click="fold=!fold"><svg-icon icon-class="packUp" /></div>
-                    <el-menu :collapse="!fold" :default-active="activeMenu" :collapse-transition="false" class="tac" text-color="#999999" active-text-color="#FF5900" router
+                    <el-menu :collapse="!fold" :default-active="activeMenu" :collapse-transition="false" class="tac" text-color="#999999" active-text-color="#ffffff" router
                         background-color="#fff">
                         <el-submenu :index="item.path" v-for="(item, index) in routes" :key="index">
                             <template slot="title">
@@ -802,7 +802,7 @@ export default {
                         color: #ffffff;
                     }
                 }
-
+                
                 .tac {
                     width: 100%;
                     height: 100%;
@@ -842,28 +842,16 @@ export default {
 
                     // el-submenu 每一项鼠标悬停状态
                     /deep/.el-submenu__title:hover {
-                        background-color: #ff6600 !important;
-                        color: #fff !important;
-
-                        .icon,
-                        .title,
-                        .el-submenu__icon-arrow {
-                            color: #fff;
-                        }
+                        background-color: #ffffff!important;
                     }
-
                     /deep/.is-active {
-                        color: #ff6600 !important;
-                        background: none !important;
+                        color: #ffffff !important;
+                        background: #ff6600 !important;
 
                         .icon,
                         .title,
                         .el-submenu__icon-arrow {
-                            color: #fff;
-                        }
-
-                        .el-submenu__title {
-                            background-color: #ff6600 !important;
+                            color: #ff6600;
                         }
                     }
                 }
@@ -893,6 +881,9 @@ export default {
     .el-menu-item:focus, .el-menu-item:hover{
         background: #ff6600!important;
         color: #ffffff!important;
+    }
+    .el-menu-item.is-active{
+        background: #ff6600 !important;
     }
 }
 </style>

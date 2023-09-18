@@ -539,8 +539,8 @@ export default {
             if(!val||val.id!=='1'){
                 return
             }
-            this.geometryObjForm.public = !!val.rsInfo
-            if(val.rsInfo){
+            this.geometryObjForm.public = !!val.object
+            if(val.object){
                 this.geometryObjForm.id = val.mN
                 // 处理光源信息
                 val.rsInfo.forEach(e=>{
