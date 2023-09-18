@@ -4,81 +4,82 @@
         <div class="table">
             <div class="tableItem">
                 <div class="tableTitle">TaskId</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.taskId }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">项目名称</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.projectName }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">项目类型</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.projectType }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">客户端IP</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.serverIp }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">客户终端ID</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.serverId }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">客户终端Mac地址</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.clientMac }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">访问地区</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.visitRegion }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">服务器节点分区</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.serverNodePartition }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">服务器节点分组</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.serverNodeGroup }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">是否限制最高帧率</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ !!Number(detailData.isLimitMaxFps) }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">最高帧率</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.maxFps }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">是否离屏渲染</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ !!Number(detailData.isOffscreenRendering) }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">访问方式</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.visitMode }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">进程类型</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.processType }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">是否是预启动项目</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ !!Number(detailData.isPreStartProject) }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">创建时间</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.createTime }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">开始时间</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.startTime }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">结束时间</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.endTime }}</div>
             </div>
         </div>
     </el-dialog>
 </template>
 
 <script>
+import { detail } from "@/api/server/progress.js"
 export default {
     components: { },
     props: {
@@ -95,7 +96,10 @@ export default {
     created() {},
     mounted() {},
     methods: {
-        show(row) {
+        show(id) {
+            detail(id).then(res=>{
+                this.detailData = res.data
+            })
             this.dialogVisible = true
         },
         hide() {

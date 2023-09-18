@@ -218,7 +218,7 @@
                         @keydown.native.stop @change="editWater()" />
                 </div>
                 <div class="waterItem">
-                    <el-checkbox v-model="waterForm.bActivate" @change="editWater()">水源自动激活</el-checkbox>
+                    <el-checkbox v-model="waterForm.bActivate" true-label="true" false-label="false" @change="editWater()">水源自动激活</el-checkbox>
                 </div>
             </div>
             <!-- 挡水坝 -->
@@ -226,7 +226,7 @@
                 <div class="comTitle">
                     <img src="@/assets/images/component/title2.png" />挡水坝设置
                 </div>
-                <el-checkbox v-model="splashDamForm.bVisible" @change="editSplashDam()">打破/拆除</el-checkbox>
+                <el-checkbox v-model="splashDamForm.bVisible" true-label="true" false-label="false" @change="editSplashDam()">打破/拆除</el-checkbox>
             </div>
             <!-- 喷泉设置 -->
             <div class="coordinate geometryItem" v-if="geometryObjForm.name === '喷泉'">
@@ -506,11 +506,11 @@ export default {
                 edge:1,
                 intensity:1.0,
                 duration:-1,
-                bActivate:false
+                bActivate:'false'
             },
             // 挡水坝
             splashDamForm:{
-                bVisible:false
+                bVisible:'false'
             },
             // 喷泉
             fountainForm:{
