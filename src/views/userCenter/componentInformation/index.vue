@@ -207,10 +207,8 @@ export default {
                 if(colorList.length){
                     try {
                         colorList.forEach(e=>{
-                            if(e.paramName==='BaseColor' || e.paramName==='Color' || e.paramName==='GlowColor' || e.paramName==='BaseColor1' || e.paramName==='BaseColor2'){
-                                e.paramValue = this.form.color?this.formatColor(this.form.color).split(','):[]
-                                throw new Error()
-                            }
+                            e.paramValue = this.form.color?this.formatColor(this.form.color).split(','):[]
+                            throw new Error()
                         })
                     } catch (error) {}
                 }
@@ -219,10 +217,8 @@ export default {
                 if(colorList.length){
                     try {
                         colorList.forEach(e=>{
-                            if(e.paramName==='BaseColor' || e.paramName==='Color' || e.paramName==='GlowColor' || e.paramName==='BaseColor1' || e.paramName==='BaseColor2'){
-                                this.$set(this.form,'color',this.arrToRgb(e.paramValue))
-                                throw new Error()
-                            }
+                            this.$set(this.form,'color',this.arrToRgb(e.paramValue))
+                            throw new Error()
                         })           
                     } catch (error) {}
                 }else{
