@@ -617,12 +617,12 @@ export default {
                         if(e.key==='fountainRotation'){
                             this.fountainForm.fountainRotationP = e.value.split(' ')[0].split('=')[1]
                             this.fountainForm.fountainRotationY = e.value.split(' ')[1].split('=')[1]
-                            this.fountainForm.fountainRotationR = e.value.split(' ')[1].split('=')[1]
+                            this.fountainForm.fountainRotationR = e.value.split(' ')[2].split('=')[1]
                         }
                         if(e.key==='fountainScale'){
                             this.fountainForm.fountainScaleX = e.value.split(' ')[0].split('=')[1]
                             this.fountainForm.fountainScaleY = e.value.split(' ')[1].split('=')[1]
-                            this.fountainForm.fountainScaleZ = e.value.split(' ')[1].split('=')[1]
+                            this.fountainForm.fountainScaleZ = e.value.split(' ')[2].split('=')[1]
                         }
                         if(e.key==='spreadWidth'){
                             this.fountainForm.spreadWidth = Number(e.value)
@@ -775,8 +775,8 @@ export default {
         editFountain(){
             let data = {
                 spreadWidth:this.fountainForm.spreadWidth,
-                fountainScale: `X=${this.fountainForm.fountainScaleX} Y=${this.fountainForm.fountainScaleX} Z=${this.fountainForm.fountainScaleZ}`,
-                fountainRotation: `P=${this.fountainForm.fountainRotationP} Y=${this.fountainForm.fountainScaleX} R=${this.fountainForm.fountainRotationR}`,
+                fountainScale: `X=${this.fountainForm.fountainScaleX} Y=${this.fountainForm.fountainScaleY} Z=${this.fountainForm.fountainScaleZ}`,
+                fountainRotation: `P=${this.fountainForm.fountainRotationP} Y=${this.fountainForm.fountainRotationY} R=${this.fountainForm.fountainRotationR}`,
                 type:1
             }
             this.editComApi(data)
