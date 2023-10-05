@@ -67,26 +67,26 @@
                 </el-col>
                 <el-col :md="14" :xs="14" :sm="14" :lg="8">
                     <div class="statisticsBox server">
-                        <div class="statisticsTitle">公有云服务器使用</div>
+                        <div class="statisticsTitle">公有云服务使用</div>
                         <div class="serverBox">
                             <div class="serverItem">
-                                <div class="serverPer">{{ user.spacePer }}%</div>
-                                <el-progress :text-inside="true" :stroke-width="16" :percentage="Number(user.spacePer) || 0" :show-text="false" color="#02AAF0"></el-progress>
+                                <div class="serverPer">{{ (total.useStore/total.store*100).toFixed(2) }}%</div>
+                                <el-progress :text-inside="true" :stroke-width="16" :percentage="Number(total.useStore/total.store*100) || 0" :show-text="false" color="#02AAF0"></el-progress>
                                 <div class="serverUsed">
                                     <img src="./img/cunchu.png" alt="" />
-                                    <span>已用储存 {{ user.currentCountSpace }}GB/{{ user.countSpace }}GB</span>
+                                    <span>已用储存 {{ total.useStore }}GB/{{ total.store }}GB</span>
                                 </div>
                             </div>
                             <div class="serverItem">
                                 <div class="flexBetween">
-                                    <div class="serverPer">{{ user.bfPer }}%</div>
-                                    <div class="serverTotal">已用总并发 0/0</div>
+                                    <div class="serverPer">{{ (total.useConcurrency/total.countConcurrency*100).toFixed(2) }}%</div>
+                                    <div class="serverTotal">已用总并发 {{ total.useConcurrency }}/{{ total.countConcurrency }}</div>
                                 </div>
                                 <div id="erupt"></div>
                                 <div class="serverUsed">
                                     <img src="./img/jiedian.png" alt="" />
-                                    <span>已用云VR/AR/MR并发 0/0
-                                        <p>已用预启动并发 {{ user.currentCountBF }}/{{ user.countBF }}</p>
+                                    <span>已用云VR/AR/MR并发 {{ total.useVrConcurrency }}/{{ total.vrConcurrency }}
+                                        <p>已用预启动并发 {{ total.usePreConcurrency }}/{{ total.preConcurrency }}</p>
                                     </span>
                                 </div>
                             </div>
@@ -96,9 +96,9 @@
                 <el-col :md="10" :xs="10" :sm="10" :lg="5">
                     <div class="statisticsBox period">
                         <div class="statisticsTitle">服务有效期</div>
-                        <div class="time">{{ user.countStartTime }} 至 {{ user.countendTime }}</div>
+                        <div class="time">{{ total.startUseTime }} 至 {{ total.endUseTime }}</div>
                         <el-button type="primary" size="small" class="grayBtn" style="width: 130px;"
-                            @click="toOrder">延长有效期</el-button>
+                            @click="$router.push('/expense/consumption')">延长有效期</el-button>
                     </div>
                 </el-col>
                 <el-col :md="14" :xs="14" :sm="14" :lg="7">
@@ -106,14 +106,14 @@
                         <div class="statisticsTitle">账户信息</div>
                         <div class="accountBox">
                             <div class="accountItem">
-                                <div class="text">账户余额：<span>{{ user.isPay }}</span><span>服务点</span></div>
+                                <div class="text">账户余额：<span>{{ total.money }}</span><span>资源点</span></div>
                                 <el-button type="primary" size="small" class="orangeBtn"
-                                    style="width: 120px;background-color:#FF7F28">立即充值</el-button>
+                                    style="width: 120px;background-color:#FF7F28" @click="$router.push('/expense/recharge')">立即充值</el-button>
                             </div>
                             <div class="accountItem">
-                                <div class="text">授权码：<span style="color:#00AAF0">0</span><span>个</span></div>
-                                <el-button type="primary" size="small" class="grayBtn">查看</el-button>
-                                <el-button type="primary" size="small" class="grayBtn">申请授权码</el-button>
+                                <div class="text">授权码：<span style="color:#00AAF0">{{ total.codeSum }}</span><span>个</span></div>
+                                <el-button type="primary" size="small" class="grayBtn"  @click="toOrder">查看</el-button>
+                                <el-button type="primary" size="small" class="grayBtn"  @click="toOrder">申请授权码</el-button>
                             </div>
                         </div>
                     </div>
@@ -150,7 +150,7 @@
 
 <script>
 import Footer from './footer.vue'
-import { showDetail } from "@/api/my.js";
+import { showDetail, userCenterUse } from "@/api/my.js";
 import { Getuserid } from "@/store/index.js";
 import { Deluserid } from "@/store/index.js";
 
@@ -160,6 +160,7 @@ export default {
     data() {
         return {
             fold:true,//菜单是否展开
+            total:{},
             user: {},
             time: null, //定时器
             orderList: [
@@ -234,13 +235,14 @@ export default {
     },
     created() {
         //阻止回车键发送请求
-        document.onkeydown = (e) => {
-            let keyCode = window.event.keyCode;
-            if (keyCode == "Enter" || keyCode == 32) {
-                return false;
-            }
-        };
+        // document.onkeydown = (e) => {
+        //     let keyCode = window.event.keyCode;
+        //     if (keyCode == "Enter" || keyCode == 32) {
+        //         return false;
+        //     }
+        // };
         this.showData();
+        this.getData()
     },
     mounted() {
         this.$nextTick(() => {
@@ -290,6 +292,11 @@ export default {
         clearInterval(this.time);
     },
     methods: {
+        getData(){
+            userCenterUse({ userId: Getuserid() }).then((res)=>{
+                this.total = res.data
+            })
+        },
         // 总并发
         getEchart() {
             let echart = this.$echarts.init(document.getElementById("erupt"))
@@ -344,7 +351,7 @@ export default {
                         )
                     },
                     barGap: '-100%',
-                    data: [1],
+                    data: [this.total.useVrConcurrency],
                     zlevel: 3
                 }, {
                     type: 'bar',
@@ -360,7 +367,7 @@ export default {
                         )
                     },
                     barGap: '-100%',
-                    data: [2],
+                    data: [this.total.useVrConcurrency],
                     zlevel: 2
                 }, {
                     type: 'bar',
@@ -376,7 +383,7 @@ export default {
                         )
                     },
                     barGap: '-100%',
-                    data: [4],
+                    data: [this.total.useVrConcurrency],
                     zlevel: 1
                 },
                 {
@@ -404,7 +411,7 @@ export default {
 
         // 延长有效期按钮
         toOrder() {
-            this.$router.push("../order");
+            this.$router.push("/expense/code");
         },
 
         // 退出按钮

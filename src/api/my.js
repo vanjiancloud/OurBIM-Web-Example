@@ -265,3 +265,13 @@ export function verification(data) {
         data: qsStringify(data)
     })
 }
+
+
+// 用户中心-资源信息使用信息统计接口
+export function userCenterUse(params) {
+    return newRequest({
+        url: '/UserCenter/userCenterUse',
+        method: 'GET',
+        params
+    })
+}

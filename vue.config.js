@@ -19,8 +19,8 @@ module.exports = {
         port: 8888,
         proxy: {
             '/api': {
-                target: 'http://172.16.100.154:11012',
-                // target: 'https://manage.ourbim.com:10012',
+                // target: 'http://172.16.100.154:11012',
+                target: 'https://manage.ourbim.com:10012',
                 changeOrigin: true,
                 logLevel: 'debug',
                 pathRewrite: {

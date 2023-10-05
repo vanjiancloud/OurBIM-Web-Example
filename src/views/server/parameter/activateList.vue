@@ -21,28 +21,28 @@
         </div>
         <div class="tableTitle">云服务授权码信息</div>
         <el-table :data="tableData">
-            <el-table-column prop="groupName" label="编号" />
-            <el-table-column prop="id" label="授权码" />
+            <el-table-column prop="id" label="编号" />
+            <el-table-column prop="code" label="授权码" />
             <el-table-column prop="isGroup" label="产品版本">
                 <template slot-scope="scope">
                     <span class="version">
-                        {{ scope.row.isGroup }}
+                        {{ scope.row.versionName }}
                         <svg-icon icon-class="feeDetail" class="svgBtn" @click="openFee(scope.row)"/>
                     </span>
                 </template>
             </el-table-column>
-            <el-table-column prop="isGroup" label="创建/购买时间"/>
-            <el-table-column prop="isGroup" label="激活时间"/>
-            <el-table-column prop="isGroup" label="到期时间"/>
-            <el-table-column prop="isGroup" label="总并发数"/>
-            <el-table-column prop="isGroup" label="预启动并发数"/>
-            <el-table-column prop="isGroup" label="存储空间"/>
+            <el-table-column prop="createTime" label="创建/购买时间"/>
+            <el-table-column prop="activateTime" label="激活时间"/>
+            <el-table-column prop="expireTime" label="到期时间"/>
+            <el-table-column prop="countNumber" label="总并发数"/>
+            <el-table-column prop="prestartNumber" label="预启动并发数"/>
+            <el-table-column prop="store" label="存储空间"/>
             <el-table-column label="状态">
                 <template slot-scope="scope">
-                    <span class="status">{{ scope.row.isGroup }}</span>
+                    <span class="status" :class="[`status-${scope.row.status}`]">{{ statusObj[scope.row.status] }}</span>
                 </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" width="200">
+            <el-table-column fixed="right" label="操作" width="80">
                 <template slot-scope="scope">
                     <el-button type="text" class="blueText" @click.stop="deleteRow(scope.row)">删除</el-button>
                 </template>
@@ -54,21 +54,45 @@
 </template>
 
 <script>
+import { Getuserid } from '@/store/index.js'
+import { getAuthorizationCodeList } from '@/api/expenseManage'
 import DialogFeeDetial from './components/DialogFeeDetial.vue'
+import { getDictDataByKey } from '@/utils/getDict'
 export default {
     components: { DialogFeeDetial },
     props: {},
     data() {
         return {
-            form:{},
-            tableData:[{isGroup:1}]
+            form:{
+                pageNum: 1,
+                pageSize: 200,
+            },
+            tableData:[],
+            statusObj:{}
         };
     },
     watch: {},
     computed: {},
-    created() { },
+    created() {
+        this.getDict()
+        this.getList()
+    },
     mounted() { },
     methods: {
+        getDict() {
+            getDictDataByKey('AuthorizationCodeStatusEnum').then(data => {
+                let obj = {}
+                data.forEach(item => {
+                    obj[item.code] = item.value
+                })
+                this.statusObj = obj
+            })
+        },
+        getList(){
+            getAuthorizationCodeList({...this.form,userId: Getuserid()}).then((res)=>{
+                this.tableData = res.data.rows
+            })
+        },
         openFee(row){
             this.$refs.DialogFeeDetial.show(row)
         },
@@ -115,10 +139,20 @@ export default {
         }
     }
 }
-.status1::before{
-    background: #999999;
-}
-.status2::before{
-    background: #02AF5D;
+
+.status {
+    &-1::before {
+        // 未激活
+        background: #b8cad5;
+    }
+    &-2::before {
+        // 已激活
+        background: #03c13f;
+    }
+    &-3::before,
+    &-4::before,
+    &-5::before {
+        background: #999999;
+    }
 }
 </style>
