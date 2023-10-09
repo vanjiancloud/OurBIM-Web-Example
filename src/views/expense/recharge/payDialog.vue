@@ -1,10 +1,10 @@
 <template>
-    <el-dialog :title="payType === 'weixin' ? '微信支付' : '支付宝支付'" :visible.sync="showDialog">
+    <el-dialog :title="payType === 'weixin' ? '微信支付' : '支付宝支付'" :visible.sync="showDialog" @close="closeDialog">
         <template v-if="!payStatus">
             <div class="pay-message flexColumnCenter">
                 <span class="font20 bold">订单提交成功！请尽快付款</span>
                 <span class="font14">订单号: 2938447464664</span>
-                <span class="font16">应付金额: <span class="pay-num">3,800元</span></span>
+                <span class="font16">应付金额: <span class="pay-num">{{ orderPayNum }}元</span></span>
             </div>
             <div class="flexColumnCenter">
                 <div :class="['qr-code-box', payType]">
@@ -45,12 +45,13 @@
 
 <script>
 import QRCode from 'qrcode'
-import { getPayStatus } from '@/api/expenseManage'
+import { getPayStatus, createTopUpOrder } from '@/api/expenseManage'
+import { Getuserid } from '@/store/index.js'
 export default {
     components: {},
     props: {
-        payType: {
-            type: String,
+        rechargeForm: {
+            type: Object,
             required: true
         }
     },
@@ -60,24 +61,53 @@ export default {
             orderCode: '',
             showDialog: false,
             payStatus: false,
-            payStatusWatcher: ''
+            payStatusWatcher: '',
+            orderPayNum: '',
+            getPayStaTimer: ''
         }
     },
     watch: {},
-    computed: {},
+    computed: {
+        payType() {
+            return this.rechargeForm.payWay
+        }
+    },
     methods: {
-        show(url, orderCode) {
-            this.payUrl = url
-            this.orderCode = orderCode
+        show() {
+            this.getPayUrl()
             this.showDialog = true
-            this.drawCode()
-            // 获取支付状态
-            this.getPaySta()
         },
 
         changePayWay() {
             const payWay = this.payType === 'weixin' ? 'zhifubao' : 'weixin'
-            this.$emit('update:payType', payWay)
+            this.$emit('changePayType', payWay)
+            this.getPayUrl()
+        },
+
+        getPayUrl() {
+            const params = {
+                discountCode: this.rechargeForm.coupon,
+                money: this.rechargeForm.payNum,
+                source: this.rechargeForm.payWay === 'weixin' ? 1 : 2,
+                userId: Getuserid()
+            }
+            createTopUpOrder(params).then(res => {
+                if (res.code === 200) {
+                    const { code, url, money } = res.data
+                    this.payUrl = url
+                    this.orderCode = code
+                    this.orderPayNum = money
+                    this.$emit('updateMoney', money)
+
+                    this.drawCode()
+                    clearInterval(this.getPayStaTimer)
+                    this.getPayStaTimer = null
+                    // 获取支付状态
+                    this.getPayStaTimer = setInterval(() => {
+                        this.getPaySta()
+                    }, 1000)
+                }
+            })
         },
 
         drawCode() {
@@ -102,16 +132,18 @@ export default {
         },
 
         getPaySta() {
-            getPayStatus(this.orderCode).then(res => {
+            getPayStatus({ code: this.orderCode }).then(res => {
                 if (res.code === 200 && res.data.status === 1) {
                     this.$message.success('支付成功')
                     this.showDialog = false
-                } else {
-                    setTimeout(() => {
-                        this.getPaySta()
-                    }, 1000)
                 }
             })
+        },
+
+        closeDialog() {
+            clearInterval(this.getPayStaTimer)
+            this.getPayStaTimer = null
+            this.showDialog = false
         },
 
         jumpToOrderManagement() {
