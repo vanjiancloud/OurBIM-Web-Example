@@ -56,13 +56,18 @@
             <el-button class="submit-btn" type="warning" @click="submitOrder">提交订单</el-button>
         </div>
 
-        <PayDialog ref="payDialog" :payType.sync="rechargeForm.payWay"></PayDialog>
+        <PayDialog
+            ref="payDialog"
+            :rechargeForm.sync="rechargeForm"
+            @changePayType="changePayType"
+            @updateMoney="updateMoney"
+        ></PayDialog>
     </div>
 </template>
 
 <script>
 import PayDialog from './payDialog.vue'
-import { getUserMoney, createTopUpOrder, verifyUserDiscountCode } from '@/api/expenseManage'
+import { getUserMoney, verifyUserDiscountCode } from '@/api/expenseManage'
 import { Getuserid } from '@/store/index.js'
 export default {
     components: {
@@ -92,13 +97,12 @@ export default {
             accountMoney: '',
             discountMoney: 0, // 优惠金额
             // sumOrderPrice: 0 // 订单总价
-
         }
     },
     watch: {},
     computed: {
         sumOrderPrice() {
-            return this.rechargeForm.payNum - this.discountMoney
+            return (this.rechargeForm.payNum - this.discountMoney).toFixed(2)
         }
     },
     created() {
@@ -128,34 +132,38 @@ export default {
             }
             verifyUserDiscountCode(params).then(res => {
                 if (res.code === 200) {
+                    this.discountMoney = res.data
                     this.$message.success('校验成功')
                 }
             })
         },
 
         submitOrder() {
+            if (this.sumOrderPrice <= 0) {
+                this.$message.warning('充值金额必须大于优惠金额')
+                return
+            } 
             this.$refs.rechargeForm.validate(valid => {
                 if (valid) {
-                    const params = {
-                        discountCode: this.rechargeForm.coupon,
-                        money: this.rechargeForm.payNum * 1,
-                        source: this.rechargeForm.payWay === 'weixin' ? 1 : 2,
-                        userId: Getuserid()
-                    }
-                    createTopUpOrder(params).then(res => {
-                        if (res.code === 200) {
-                            const { code, url } = res.data
-                            this.$refs.payDialog.show(url, code)
-                        }
-                    })
+                    this.rechargeForm.payNum = Number(this.rechargeForm.payNum).toFixed(2)
+                    this.$refs.payDialog.show()
                 }
             })
+        },
+
+        changePayType(payWay) {
+            this.rechargeForm.payWay = payWay
+        },
+
+        // 更新价格，处理用户填写了优惠券，但没点校验的情况
+        updateMoney(money) {
+            this.discountMoney = (this.rechargeForm.payNum - money).toFixed(2)
         },
 
         channelInputLimit (e) {
             const key = e.key
             // 不允许输入'e'和'.'和'-'
-            if (key === 'e' || key === '.' || key === '-') {
+            if (key === 'e' || key === '-') {
                 e.returnValue = false
                 return false
             }

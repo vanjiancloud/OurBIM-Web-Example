@@ -68,7 +68,7 @@
 
         <el-table :data="tableData" v-loading="loading">
             <el-table-column align="center" prop="consumerDate" show-overflow-tooltip label="账期" />
-            <el-table-column align="center" prop="id" show-overflow-tooltip label="消费账单ID" />
+            <el-table-column align="center" prop="code" show-overflow-tooltip label="消费账单ID" />
             <el-table-column align="center" prop="createTime" show-overflow-tooltip label="创建时间" />
             <el-table-column align="center" prop="versionName" show-overflow-tooltip label="产品版本" />
             <el-table-column align="center" prop="billingMode" show-overflow-tooltip label="计费方式">
