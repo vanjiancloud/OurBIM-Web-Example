@@ -1,5 +1,5 @@
 <template>
-    <el-dialog v-model="dialogVisible" :title="title" center @close="closeDialog">
+    <el-dialog :visible.sync="dialogVisible" :title="title" center @close="closeDialog">
         <div class="detail-message">
             <div class="detail-box detail-bg">
                 <span class="detail-label">taskId：</span>
@@ -95,7 +95,6 @@
 
 <script>
 export default {
-    name: "orderDetail",
     data() {
         return {
             dialogVisible: false,

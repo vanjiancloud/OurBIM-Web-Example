@@ -217,7 +217,7 @@ export default {
         },
 
         orderDetail(rowData) {
-            rowData.consumerBillingMode = billingModeObj[rowData.billingMode]
+            rowData.consumerBillingMode = this.billingModeObj[rowData.billingMode]
             this.$refs.orderDetailDialog.showDialog('账单详情', rowData)
         }
     }
