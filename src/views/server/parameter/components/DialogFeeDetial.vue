@@ -2,15 +2,16 @@
 <template>
     <el-dialog title="计费详情" :visible.sync="dialogVisible" :close-on-click-modal="false" append-to-body width="50%" :before-close="hide">
         <el-table :data="tableData">
-            <el-table-column prop="groupName" label="计费项目" />
-            <el-table-column prop="id" label="计费规格" />
-            <el-table-column prop="isGroup" label="判断规则"/>
-            <el-table-column prop="isGroup" label="计费单价（资源点数）"/>
+            <el-table-column prop="billingName" label="计费项目" />
+            <el-table-column prop="billingUnit" label="计费规格" />
+            <el-table-column prop="rule" label="判断规则"/>
+            <el-table-column prop="billingPrice" label="计费单价（资源点数）"/>
         </el-table>
     </el-dialog>
 </template>
 
 <script>
+import { getConsumeRule } from '@/api/server/parameter'
 export default {
     components: { },
     props: {
@@ -29,10 +30,16 @@ export default {
     methods: {
         show(row) {
             this.dialogVisible = true
+            this.getDetail(row.code)
         },
         hide() {
             this.dialogVisible = false
         },
+        getDetail(code){
+            getConsumeRule({code}).then((res)=>{
+                this.tableData = res.data
+            })
+        }
     }
 }
 </script>

@@ -4,18 +4,15 @@
         <div class="search">               
             <el-form :inline="true" :model="form">
                 <el-form-item label="授权方式">
-                    <el-select v-model="form.region" placeholder="请选择" clearable>
-                        <el-option label="所有" value="shanghai"></el-option>
-                        <el-option label="3D" value="beijing"></el-option>
-                        <el-option label="VR" value="beijing"></el-option>
-                        <el-option label="AR/MR" value="beijing"></el-option>
+                    <el-select v-model="form.type" placeholder="请选择">
+                        <el-option label="云授权" value="1"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="授权码">
-                    <el-input v-model="form.user" placeholder="请输入授权码" clearable></el-input>
+                    <el-input v-model="form.code" placeholder="请输入授权码" clearable style="width: 300px;"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button style="width: 96px;" size="small" class="blueBtn" @click="stop()">验 证</el-button>
+                    <el-button style="width: 96px;" size="small" class="blueBtn" @click="verity()">验 证</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -27,7 +24,7 @@
                 <template slot-scope="scope">
                     <span class="version">
                         {{ scope.row.versionName }}
-                        <svg-icon icon-class="feeDetail" class="svgBtn" @click="openFee(scope.row)"/>
+                        <svg-icon v-if="scope.row.billingMode==='0'" icon-class="feeDetail" class="svgBtn" @click="openFee(scope.row)"/>
                     </span>
                 </template>
             </el-table-column>
@@ -36,17 +33,23 @@
             <el-table-column prop="expireTime" label="到期时间"/>
             <el-table-column prop="countNumber" label="总并发数"/>
             <el-table-column prop="prestartNumber" label="预启动并发数"/>
-            <el-table-column prop="store" label="存储空间"/>
+            <el-table-column prop="store" label="存储空间">
+                <template slot-scope="scope">
+                    <span class="version">
+                        {{ scope.row.store }}GB
+                    </span>
+                </template>
+            </el-table-column>
             <el-table-column label="状态">
                 <template slot-scope="scope">
                     <span class="status" :class="[`status-${scope.row.status}`]">{{ statusObj[scope.row.status] }}</span>
                 </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" width="80">
+            <!-- <el-table-column fixed="right" label="操作" width="80">
                 <template slot-scope="scope">
-                    <el-button type="text" class="blueText" @click.stop="deleteRow(scope.row)">删除</el-button>
+                    <el-button v-if="scope.row.status!=='2'" type="text" class="blueText" @click.stop="deleteRow(scope.row)">删除</el-button>
                 </template>
-            </el-table-column>
+            </el-table-column> -->
         </el-table>
         <!-- 计费详情 -->
         <DialogFeeDetial ref="DialogFeeDetial"/>
@@ -55,7 +58,7 @@
 
 <script>
 import { Getuserid } from '@/store/index.js'
-import { getAuthorizationCodeList } from '@/api/expenseManage'
+import { verifyUserAuthorizationCode, authorizationCodeList, deleteAuthorizationCode } from '@/api/server/parameter'
 import DialogFeeDetial from './components/DialogFeeDetial.vue'
 import { getDictDataByKey } from '@/utils/getDict'
 export default {
@@ -66,6 +69,7 @@ export default {
             form:{
                 pageNum: 1,
                 pageSize: 200,
+                type:"1"
             },
             tableData:[],
             statusObj:{}
@@ -89,20 +93,44 @@ export default {
             })
         },
         getList(){
-            getAuthorizationCodeList({...this.form,userId: Getuserid()}).then((res)=>{
-                this.tableData = res.data.rows
+            authorizationCodeList({authorizationType:this.form.type,userId: Getuserid()}).then((res)=>{
+                this.tableData = res.data
             })
         },
         openFee(row){
             this.$refs.DialogFeeDetial.show(row)
         },
         deleteRow(row){
-            this.$confirm(`此操作将删除当前预启动云服务，是否继续？`, "删除预启动项目", {
+            this.$confirm(`此操作将删除当前授权码，是否继续？`, "删除授权码", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning",
             }).then(() => {
-                
+                deleteAuthorizationCode({code:row.code}).then(()=>{
+                    this.$message.success("删除成功！")
+                    this.getList()
+                })
+            }).catch(() => {});
+        },
+        // 授权码
+        verity(){
+            if(!this.form.code){
+                return this.$message.warning("请输入授权码！")
+            }
+            this.$confirm(`确认验证此授权码吗`, "验证", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning",
+            }).then(() => {
+                let data = {
+                    type:this.form.type,
+                    code:this.form.code,
+                    userId: Getuserid()
+                }
+                verifyUserAuthorizationCode(data).then(()=>{
+                    this.$message.success("验证成功！")
+                    this.getList()
+                })
             }).catch(() => {});
         }
     }

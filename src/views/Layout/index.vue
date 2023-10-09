@@ -68,7 +68,31 @@
                 <el-col :md="14" :xs="14" :sm="14" :lg="8">
                     <div class="statisticsBox server">
                         <div class="statisticsTitle">公有云服务使用</div>
-                        <div class="serverBox">
+                        <!-- 按需计费 -->
+                        <div class="flexSpaceBetween needFee" v-if="total.billingMode === '0'">
+                            <div>
+                                <div class="needFeeTitle">上传数据统计</div>
+                                {{ total.useStore }}GB
+                            </div>
+                            <div>
+                                <div class="needFeeTitle">实时并发统计</div>
+                                <div class="flexSpaceBetween needNum">
+                                    <div>
+                                        <p>{{ total.use3dConcurrency }}个</p>
+                                        3D并发
+                                    </div>
+                                    <div>
+                                        <p>{{ total.useArConcurrency+total.useVrConcurrency+total.useMrConcurrency }}个</p>
+                                        VR/AR/MR并发
+                                    </div>
+                                    <div>
+                                        <p>{{ total.usePreConcurrency }}/{{ total.preConcurrency }}个</p>
+                                        预启动并发
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="serverBox" v-if="total.billingMode!=='0'">
                             <div class="serverItem">
                                 <div class="serverPer">{{ (total.useStore/total.store*100).toFixed(2) }}%</div>
                                 <el-progress :text-inside="true" :stroke-width="16" :percentage="Number(total.useStore/total.store*100) || 0" :show-text="false" color="#02AAF0"></el-progress>
@@ -85,7 +109,7 @@
                                 <div id="erupt"></div>
                                 <div class="serverUsed">
                                     <img src="./img/jiedian.png" alt="" />
-                                    <span>已用云VR/AR/MR并发 {{ total.useVrConcurrency }}/{{ total.vrConcurrency }}
+                                    <span>已用云VR/AR/MR并发 {{ total.useConcurrency }}/{{ total.countConcurrency }}
                                         <p>已用预启动并发 {{ total.usePreConcurrency }}/{{ total.preConcurrency }}</p>
                                     </span>
                                 </div>
@@ -601,7 +625,8 @@ export default {
                 font-weight: 500;
                 color: #333333;
                 background: #ffffff url(./img/useBg.png) bottom right no-repeat;
-                background-size: 70% 72%;
+                // background-size: 70% 72%;
+                background-position: bottom right;
                 display: flex;
 
                 img {
@@ -666,6 +691,27 @@ export default {
 
                 .serverBox {
                     display: flex;
+                }
+                .needFee{
+                    text-align: center;
+                    font-size: 20px;
+                    font-weight: bold;
+                    .needFeeTitle{
+                        margin-top: 20px;
+                        margin-bottom: 10px;
+                        font-size: 16px;
+                        font-weight: initial;
+                    }
+                    .needNum>div{
+                        margin: 0 8px;
+                        font-size: 14px;
+                        font-weight: initial;
+                        p{
+                            font-weight: bold;
+                            font-size: 20px;
+                            margin-bottom: 3px;
+                        }
+                    }
                 }
 
                 .serverItem {
