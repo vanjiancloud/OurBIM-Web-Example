@@ -28,7 +28,7 @@ const MODELAPI = {
         })
     },
     GETMODELINFO: params => {
-        return request({
+        return newRequest({
             url: '/OurBim/requestOurBim',
             method: 'POST',
             data: qsStringify(params)

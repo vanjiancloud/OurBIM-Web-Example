@@ -94,7 +94,7 @@
                         </div>
                         <div class="serverBox" v-if="total.billingMode!=='0'">
                             <div class="serverItem">
-                                <div class="serverPer">{{ (total.useStore/total.store*100).toFixed(2) }}%</div>
+                                <div class="serverPer">{{ total.useStore&&(total.useStore/total.store*100).toFixed(2) }}%</div>
                                 <el-progress :text-inside="true" :stroke-width="16" :percentage="Number(total.useStore/total.store*100) || 0" :show-text="false" color="#02AAF0"></el-progress>
                                 <div class="serverUsed">
                                     <img src="./img/cunchu.png" alt="" />
@@ -103,13 +103,13 @@
                             </div>
                             <div class="serverItem">
                                 <div class="flexBetween">
-                                    <div class="serverPer">{{ (total.useConcurrency/total.countConcurrency*100).toFixed(2) }}%</div>
+                                    <div class="serverPer">{{ total.useConcurrency&&(total.useConcurrency/total.countConcurrency*100).toFixed(2)||0 }}%</div>
                                     <div class="serverTotal">已用总并发 {{ total.useConcurrency }}/{{ total.countConcurrency }}</div>
                                 </div>
                                 <div id="erupt"></div>
                                 <div class="serverUsed">
                                     <img src="./img/jiedian.png" alt="" />
-                                    <span>已用云VR/AR/MR并发 {{ total.useConcurrency }}/{{ total.countConcurrency }}
+                                    <span>已用云VR/AR/MR并发 {{ total.useArConcurrency+total.useVrConcurrency+total.useMrConcurrency }}/{{ total.countConcurrency }}
                                         <p>已用预启动并发 {{ total.usePreConcurrency }}/{{ total.preConcurrency }}</p>
                                     </span>
                                 </div>
@@ -130,12 +130,12 @@
                         <div class="statisticsTitle">账户信息</div>
                         <div class="accountBox">
                             <div class="accountItem">
-                                <div class="text">账户余额：<span>{{ total.money }}</span><span>资源点</span></div>
+                                <div class="text">账户余额：<span>{{ total.money || 0 }}</span><span>资源点</span></div>
                                 <el-button type="primary" size="small" class="orangeBtn"
                                     style="width: 120px;background-color:#FF7F28" @click="$router.push('/expense/recharge')">立即充值</el-button>
                             </div>
                             <div class="accountItem">
-                                <div class="text">授权码：<span style="color:#00AAF0">{{ total.codeSum }}</span><span>个</span></div>
+                                <div class="text">授权码：<span style="color:#00AAF0">{{ total.codeSum || 0 }}</span><span>个</span></div>
                                 <el-button type="primary" size="small" class="grayBtn"  @click="toOrder">查看</el-button>
                                 <el-button type="primary" size="small" class="grayBtn"  @click="toOrder">申请授权码</el-button>
                             </div>

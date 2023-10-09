@@ -424,7 +424,7 @@ export default {
         }, 200);
       };
     },
-    handleWindowSize() {
+    handleWindowSize(type = false) {
       const viewWidth = window.innerWidth; //获取可视区域宽度
       const viewHeight = window.innerHeight; //获取可视区域高度
       let height = "";
@@ -436,6 +436,9 @@ export default {
       } else {
         height = document.body.clientWidth;
         width = document.body.clientHeight;
+      }
+      if(type){
+        return { width, height }
       }
       let params = {
         taskid: this.taskId,
@@ -933,10 +936,12 @@ export default {
     },
     getModelUrl() {
       let appId = this.$route.query.appid;
-
+      let size = this.handleWindowSize(true)
       let params = {
         appliId: appId,
         token: this.appToken,
+        resX: size.width,
+        resY: size.height
       };
       const { userType, nickName, code } = this.$route.query;
       if (userType !== undefined && userType !== null) {
@@ -952,14 +957,14 @@ export default {
       if (code) {
         params.code = code;
       }
+      console.log('🚀🚀🚀分辨率',params);
       MODELAPI.GETMODELINFO(params)
         .then((res) => {
-          if (res.data.code === 0 && res.data.data) {
-            this.webUrl = res.data.data.url;
-            this.taskId = res.data.data.taskId;
+            this.webUrl = res.data.url;
+            this.taskId = res.data.taskId;
             // 保存code
-            if (res.data.data.code) {
-              this.shareCode = res.data.data.code;
+            if (res.data.code) {
+              this.shareCode = res.data.code;
               let messageInfo = {
                 prex: "ourbimMessage",
                 type: "shareCode",
@@ -973,13 +978,13 @@ export default {
               prex: "ourbimMessage",
               type: 10001,
               data: {
-                taskId: res.data.data.taskId,
+                taskId: res.data.taskId,
               },
               message: "",
             };
             this.sentParentIframe(messageInfo);
             this.initWebSocket();
-            if (res.data.data.appliType !== "1") {
+            if (res.data.appliType !== "1") {
               if (this.isUiBar) {
                 this.controllerInfo.uiBar = true;
               } else {
@@ -990,17 +995,10 @@ export default {
               this.controllerInfo.uiBar = false;
               this.controllerInfo.viewCube = false;
             }
-          } else {
-            this.$message({
-              type: "warning",
-              message: res.data.message,
-              customClass: "set-index-message",
-            });
-            // 最大节点已达到上限时
-            this.maxNodes = true;
-          }
         })
         .catch((err) => {
+          // 最大节点已达到上限时
+          this.maxNodes = true;
           this.$message({
             type: "error",
             message: this.$t("webClient.loadBox.message[4]"),
