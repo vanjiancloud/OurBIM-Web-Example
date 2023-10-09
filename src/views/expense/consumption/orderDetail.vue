@@ -95,6 +95,7 @@
 
 <script>
 export default {
+    name: "orderDetail",
     data() {
         return {
             dialogVisible: false,

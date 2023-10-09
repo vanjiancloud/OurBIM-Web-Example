@@ -36,7 +36,7 @@
                         <el-select
                             v-model="searchForm.consumeContent"
                             class="formInputWidth"
-                            placeholder="请选择计费方式"
+                            placeholder="请选择消费内容"
                         >
                             <el-option
                                 v-for="(item, index) in consumerContentList"
@@ -60,8 +60,8 @@
                     </el-form-item>
                 </el-col>
 
-                <el-button class="marginleft20" type="primary">查询</el-button>
-                <el-button type="primary">重置</el-button>
+                <el-button class="marginleft20" type="primary" @click="getData">查询</el-button>
+                <el-button type="primary" @click="resetSearch">重置</el-button>
                 <el-button type="info">导出</el-button>
             </el-row>
         </el-form>
@@ -83,7 +83,7 @@
                     {{ scope.row.consumeStartTime }} 到 {{ scope.row.consumeEndTime }}
                 </template>
             </el-table-column>
-            <el-table-column align="center" prop="createTime" show-overflow-tooltip label="消费容量/时长" />
+            <el-table-column align="center" prop="consumeTime" show-overflow-tooltip label="消费容量/时长" />
             <el-table-column align="center" prop="consumeMoney" show-overflow-tooltip label="消费资源点数" />
             <el-table-column align="center" prop="discountMoney" show-overflow-tooltip label="优惠资源点数" />
             <el-table-column align="center" prop="consumeActualMoney" show-overflow-tooltip label="实扣资源点数" />
@@ -116,11 +116,16 @@ import Pagination from '@/components/Pagination'
 import orderDetail from './orderDetail.vue'
 export default {
     name: 'authorizationCode',
-    components: { Pagination },
+    components: { Pagination, orderDetail },
     data() {
         return {
             loading: false,
-            searchForm: {},
+            searchForm: {
+                consumerDate: '', // 账期
+                billingMode: '', // 计费方式
+                consumeContent: '', // 消费内容
+                authorizationCode: '' // 授权码
+            },
             tableData: [],
             pagination: {
                 pageNum: 1,
@@ -191,6 +196,18 @@ export default {
                     this.pagination.total = res.data.total
                 }
             })
+        },
+
+        resetSearch() {
+            this.searchForm = {
+                consumerDate: '', // 账期
+                billingMode: '', // 计费方式
+                consumeContent: '', // 消费内容
+                authorizationCode: '' // 授权码
+            }
+            this.pagination.pageNum = 1
+            this.pagination.pageSize = 10
+            this.getData()
         },
 
         handlePageChange(data) {

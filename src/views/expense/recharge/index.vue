@@ -35,7 +35,7 @@
             </el-form-item>
             <el-form-item class="flexCenter" label="充值金额：" prop="payNum">
                 <div class="formInputWidth flexCenter">
-                    <el-input v-model="rechargeForm.payNum" placeholder="请输入充值金额"></el-input>
+                    <el-input v-model="rechargeForm.payNum" placeholder="请输入充值金额" type="number"  @keydown.native="channelInputLimit"></el-input>
                     <span class="left10">元</span>
                 </div>
             </el-form-item>
@@ -48,10 +48,10 @@
         </el-form>
         <div class="pay-price-box">
             <div class="price-content">
-                <div>购买资源点：<span class="buy-source">69800资源点</span></div>
-                <div>购买金额： <span class="buy-num">￥4,600</span></div>
-                <div>优惠金额： -￥800</div>
-                <div>订单总价：<span class="all-price">￥3,800</span></div>
+                <div>购买资源点：<span class="buy-source">{{ rechargeForm.payNum }} 资源点</span></div>
+                <div>购买金额： <span class="buy-num">￥{{ rechargeForm.payNum }}</span></div>
+                <div>优惠金额： -￥{{ discountMoney }}</div>
+                <div>订单总价：<span class="all-price">￥{{ sumOrderPrice }}</span></div>
             </div>
             <el-button class="submit-btn" type="warning" @click="submitOrder">提交订单</el-button>
         </div>
@@ -70,6 +70,15 @@ export default {
     },
     props: {},
     data() {
+        const checkPayNum = (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请输入充值金额'))
+            } else if (Number(value) < 0) {
+                callback(new Error('充值金额不能为负数'))
+            } else {
+                callback()
+            }
+        }
         return {
             rechargeForm: {
                 payWay: '',
@@ -78,13 +87,20 @@ export default {
             },
             rules: {
                 payWay: [{ required: true, message: '请选择支付方式' }],
-                payNum: [{ required: true, message: '请输入充值金额' }]
+                payNum: [{ required: true, validator: checkPayNum, trigger: ['blur', 'change'] }]
             },
-            accountMoney: ''
+            accountMoney: '',
+            discountMoney: 0, // 优惠金额
+            // sumOrderPrice: 0 // 订单总价
+
         }
     },
     watch: {},
-    computed: {},
+    computed: {
+        sumOrderPrice() {
+            return this.rechargeForm.payNum - this.discountMoney
+        }
+    },
     created() {
         this.getMoney()
     },
@@ -134,6 +150,16 @@ export default {
                     })
                 }
             })
+        },
+
+        channelInputLimit (e) {
+            const key = e.key
+            // 不允许输入'e'和'.'和'-'
+            if (key === 'e' || key === '.' || key === '-') {
+                e.returnValue = false
+                return false
+            }
+            return true
         }
     }
 }
@@ -226,5 +252,14 @@ export default {
 }
 ::v-deep .el-form-item__content {
     margin-left: 20px !important;
+}
+
+/deep/ .el-input__inner::-webkit-outer-spin-button,
+ /deep/ .el-input__inner::-webkit-inner-spin-button {
+ -webkit-appearance: none;
+}
+
+/deep/ .el-input__inner[type='number'] {
+ -moz-appearance: textfield;
 }
 </style>
