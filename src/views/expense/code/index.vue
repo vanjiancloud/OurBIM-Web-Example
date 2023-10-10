@@ -14,7 +14,6 @@
             <el-table-column prop="cloudNumber" label="包含云VR/AR/MR并发数" />
             <el-table-column prop="prestartNumber" label="包含预启动并发数" />
             <el-table-column prop="store" label="存储空间" />
-            <el-table-column prop="status" label="状态" />
             <el-table-column prop="status" show-overflow-tooltip label="状态" min-width="110px">
                 <template #default="scope">
                     <div :class="['status-circle', `status-${scope.row.status}`]">
