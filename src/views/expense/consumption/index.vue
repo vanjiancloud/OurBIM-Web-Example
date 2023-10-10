@@ -15,7 +15,7 @@
                             v-model="searchForm.consumerDate"
                             placeholder="请选择有效时间"
                             type="month"
-                            value-format="YYYY-MM"
+                            value-format="yyyy-MM"
                         />
                     </el-form-item>
                 </el-col>
