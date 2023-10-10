@@ -67,18 +67,18 @@
         </el-form>
 
         <el-table :data="tableData" v-loading="loading">
-            <el-table-column align="center" prop="consumerDate" show-overflow-tooltip label="账期" />
-            <el-table-column align="center" prop="code" show-overflow-tooltip label="消费账单ID" />
-            <el-table-column align="center" prop="createTime" show-overflow-tooltip label="创建时间" />
-            <el-table-column align="center" prop="versionName" show-overflow-tooltip label="产品版本" />
-            <el-table-column align="center" prop="billingMode" show-overflow-tooltip label="计费方式">
+            <el-table-column align="center" prop="consumerDate" label="账期" />
+            <el-table-column align="center" prop="code" label="消费账单ID" />
+            <el-table-column align="center" prop="createTime" label="创建时间" />
+            <el-table-column align="center" prop="versionName" label="产品版本" />
+            <el-table-column align="center" prop="billingMode" label="计费方式">
                 <template #default="scope">
                     {{ billingModeObj[scope.row.billingMode] }}
                 </template>
             </el-table-column>
-            <el-table-column align="center" prop="consumeContent" show-overflow-tooltip label="消费内容" />
+            <el-table-column align="center" prop="consumeContent" label="消费内容" />
             <el-table-column align="center" prop="price" show-overflow-tooltip label="服务单价(资源点)" />
-            <el-table-column align="center" show-overflow-tooltip label="消费时间">
+            <el-table-column align="center" label="消费时间" min-width="140">
                 <template #default="scope">
                     {{ scope.row.consumeStartTime }} 到 {{ scope.row.consumeEndTime }}
                 </template>
@@ -87,7 +87,7 @@
             <el-table-column align="center" prop="consumeMoney" show-overflow-tooltip label="消费资源点数" />
             <el-table-column align="center" prop="discountMoney" show-overflow-tooltip label="优惠资源点数" />
             <el-table-column align="center" prop="consumeActualMoney" show-overflow-tooltip label="实扣资源点数" />
-            <el-table-column fixed="right" label="操作" width="230px">
+            <el-table-column fixed="right" label="操作" width="120px">
                 <template slot-scope="scope">
                     <div class="operate-btn color-btn" @click="orderDetail(scope.row)">账单详情</div>
                 </template>
