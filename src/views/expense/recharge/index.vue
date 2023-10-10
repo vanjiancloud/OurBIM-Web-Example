@@ -41,7 +41,7 @@
             </el-form-item>
             <el-form-item class="flexCenter" label="优惠券：" prop="coupon">
                 <div class="formInputWidth flexCenter">
-                    <el-input v-model="rechargeForm.coupon" placeholder="请输入优惠券"></el-input>
+                    <el-input v-model="rechargeForm.coupon" placeholder="请输入优惠券" @change="changeCoupon"></el-input>
                     <el-button class="left10" type="primary" @click="verifyCode">校验</el-button>
                 </div>
             </el-form-item>
@@ -97,6 +97,7 @@ export default {
             accountMoney: '',
             discountMoney: 0, // 优惠金额
             // sumOrderPrice: 0 // 订单总价
+            isCheckCoupon: false, // 优惠券是否完成校验
         }
     },
     watch: {},
@@ -133,18 +134,29 @@ export default {
             verifyUserDiscountCode(params).then(res => {
                 if (res.code === 200) {
                     this.discountMoney = res.data
+                    this.isCheckCoupon = true
                     this.$message.success('校验成功')
                 }
             })
         },
 
+        changeCoupon() {
+            this.isCheckCoupon = false
+        },
+
         submitOrder() {
-            if (this.sumOrderPrice <= 0) {
-                this.$message.warning('充值金额必须大于优惠金额')
-                return
-            } 
             this.$refs.rechargeForm.validate(valid => {
                 if (valid) {
+
+                    if (this.sumOrderPrice <= 0) {
+                        this.$message.warning('充值金额必须大于优惠金额')
+                        return
+                    } 
+                    if (!this.isCheckCoupon && this.rechargeForm.coupon) {
+                        this.$message.warning('请对优惠券进行校验')
+                        return
+                    }
+
                     this.rechargeForm.payNum = Number(this.rechargeForm.payNum).toFixed(2)
                     this.$refs.payDialog.show()
                 }

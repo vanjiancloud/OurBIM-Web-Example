@@ -11,8 +11,8 @@
         </div>
         <el-table :data="tableData" v-loading="loading" @select="selectOrder" @select-all="selectOrder">
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="code" show-overflow-tooltip label="订单编号" />
-            <el-table-column prop="createTime" show-overflow-tooltip label="创建时间" />
+            <el-table-column prop="code" label="订单编号" />
+            <el-table-column prop="createTime" label="创建时间" />
             <el-table-column prop="versionName" show-overflow-tooltip label="产品版本类型" />
             <el-table-column prop="buyResourceNumber" label="购买/充值资源点数" />
             <el-table-column prop="totalMoney" label="购买金额(元)" />
@@ -113,7 +113,9 @@ export default {
                     this.loading = false
                     this.tableData.forEach(item => {
                         item.activateTime = item.activateTime ? item.activateTime : '-'
-                        item.expireTime = item.expireTime ? item.expireTime : '-'
+                        item.versionName = item.versionName ? item.versionName : '-'
+                        item.discountCode = item.discountCode ? item.discountCode : '-'
+                        item.discountMoney = item.discountMoney ? item.discountMoney : '-'
                     })
                     this.pagination.total = res.data.total
                 }

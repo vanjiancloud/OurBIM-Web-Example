@@ -3,11 +3,11 @@
         <template v-if="!payStatus">
             <div class="pay-message flexColumnCenter">
                 <span class="font20 bold">订单提交成功！请尽快付款</span>
-                <span class="font14">订单号: 2938447464664</span>
+                <span class="font14">订单号: {{ orderCode }}</span>
                 <span class="font16">应付金额: <span class="pay-num">{{ orderPayNum }}元</span></span>
             </div>
             <div class="flexColumnCenter">
-                <div :class="['qr-code-box', payType]">
+                <div :class="['qr-code-box', payType]" v-loading="loadPayUrl">
                     <canvas id="buyCode"></canvas>
                     <img class="logo" src="../../../assets/logo.jpg" alt="" />
                 </div>
@@ -35,8 +35,8 @@
                 >
                 <span class="link font14" @click="jumpToOrderManagement">请前往订单管理页面查看</span>
                 <div class="font14">
-                    <span class="order-num">订单号：2938447464664</span>
-                    <span>应付金额：<span class="pay-num">66,000元</span></span>
+                    <span class="order-num">订单号：{{ orderCode }}</span>
+                    <span>实付金额：<span class="pay-num">{{ orderPayNum }}元</span></span>
                 </div>
             </div>
         </template>
@@ -63,7 +63,8 @@ export default {
             payStatus: false,
             payStatusWatcher: '',
             orderPayNum: '',
-            getPayStaTimer: ''
+            getPayStaTimer: '',
+            loadPayUrl: true
         }
     },
     watch: {},
@@ -79,6 +80,7 @@ export default {
         },
 
         changePayWay() {
+            this.loadPayUrl = true
             const payWay = this.payType === 'weixin' ? 'zhifubao' : 'weixin'
             this.$emit('changePayType', payWay)
             this.getPayUrl()
@@ -123,6 +125,7 @@ export default {
                     height: 200
                 }
                 QRCode.toCanvas(container, this.payUrl, qrCodeOptions, error => {
+                    this.loadPayUrl = false
                     if (error) {
                         console.log(error)
                         return
@@ -135,7 +138,9 @@ export default {
             getPayStatus({ code: this.orderCode }).then(res => {
                 if (res.code === 200 && res.data.status === 1) {
                     this.$message.success('支付成功')
-                    this.showDialog = false
+                    this.payStatus = true
+                    clearInterval(this.getPayStaTimer)
+                    this.getPayStaTimer = null
                 }
             })
         },

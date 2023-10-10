@@ -5,16 +5,15 @@
             <el-button @click="jumpToBuy">购买套餐</el-button>
         </div>
         <el-table :data="tableData" v-loading="loading">
-            <el-table-column prop="code" show-overflow-tooltip label="授权码编号" />
-            <el-table-column prop="versionName" show-overflow-tooltip label="产品版本" />
-            <el-table-column prop="createTime" show-overflow-tooltip label="创建/购买日期" />
+            <el-table-column prop="code" label="授权码编号" min-width="200" />
+            <el-table-column prop="versionName" label="产品版本" />
+            <el-table-column prop="createTime" label="创建/购买日期" />
             <el-table-column prop="activateTime" label="激活时间" />
             <el-table-column prop="expireTime" label="到期时间" />
             <el-table-column prop="countNumber" label="总并发数" />
             <el-table-column prop="cloudNumber" label="包含云VR/AR/MR并发数" />
             <el-table-column prop="prestartNumber" label="包含预启动并发数" />
             <el-table-column prop="store" label="存储空间" />
-            <el-table-column prop="status" label="状态" />
             <el-table-column prop="status" show-overflow-tooltip label="状态" min-width="110px">
                 <template #default="scope">
                     <div :class="['status-circle', `status-${scope.row.status}`]">
@@ -130,8 +129,12 @@ export default {
                     this.tableData = res.data.rows
                     this.loading = false
                     this.tableData.forEach(item => {
+                        item.countNumber = item.countNumber ? item.countNumber : '-'
+                        item.cloudNumber = item.cloudNumber ? item.cloudNumber : '-'
+                        item.prestartNumber = item.prestartNumber ? item.prestartNumber : '-'
                         item.activateTime = item.activateTime ? item.activateTime : '-'
                         item.expireTime = item.expireTime ? item.expireTime : '-'
+                        item.store = item.store !== null ? item.store + ' GB' : '不限'
                     })
                     this.pagination.total = res.data.total
                 }
