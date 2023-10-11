@@ -34,3 +34,12 @@ export function batchEnd(data) {
       data
     })
 }
+
+// 查看终端监测
+export function getTerminalDetail(params) {
+  return request({
+    url: `/cloudServiceTerminalDetail/list`,
+    method: 'get',
+    params
+  })
+}

@@ -15,12 +15,28 @@
                 <div class="tableContent">{{ detailData.projectType }}</div>
             </div>
             <div class="tableItem">
-                <div class="tableTitle">客户端IP</div>
-                <div class="tableContent">{{ detailData.clientIp }}</div>
+                <div class="tableTitle">服务器ID</div>
+                <div class="tableContent">{{ detailData.serverId }}</div>
+            </div>
+            <div class="tableItem">
+                <div class="tableTitle">服务器IP</div>
+                <div class="tableContent">{{ detailData.serverIp }}</div>
+            </div>
+            <div class="tableItem">
+                <div class="tableTitle">公网IP</div>
+                <div class="tableContent">{{ detailData.publicIp }}</div>
+            </div>
+            <div class="tableItem">
+                <div class="tableTitle">外网出口IP</div>
+                <div class="tableContent">{{ detailData.outIp }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">客户终端ID</div>
                 <div class="tableContent">{{ detailData.clientId }}</div>
+            </div>
+            <div class="tableItem">
+                <div class="tableTitle">客户端IP</div>
+                <div class="tableContent">{{ detailData.clientIp }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">客户终端Mac地址</div>
@@ -40,7 +56,7 @@
             </div>
             <div class="tableItem">
                 <div class="tableTitle">是否限制最高帧率</div>
-                <div class="tableContent">{{ !!Number(detailData.isLimitMaxFps) }}</div>
+                <div class="tableContent">{{ detailData.isLimitMaxFps && (!!Number(detailData.isLimitMaxFps) ? "是" : "否") }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">最高帧率</div>
@@ -48,7 +64,7 @@
             </div>
             <div class="tableItem">
                 <div class="tableTitle">是否离屏渲染</div>
-                <div class="tableContent">{{ !!Number(detailData.isOffscreenRendering) }}</div>
+                <div class="tableContent">{{ detailData.isOffscreenRendering&&(!!Number(detailData.isOffscreenRendering) ? "是" : "否") }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">访问方式</div>
@@ -60,7 +76,7 @@
             </div>
             <div class="tableItem">
                 <div class="tableTitle">是否是预启动项目</div>
-                <div class="tableContent">{{ !!Number(detailData.isPreStartProject) }}</div>
+                <div class="tableContent">{{ detailData.isPreStartProject&&(!!Number(detailData.isPreStartProject) ? "是" : "否") }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">创建时间</div>

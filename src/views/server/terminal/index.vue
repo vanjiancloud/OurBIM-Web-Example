@@ -1,5 +1,5 @@
 <template>
-    <el-tabs v-model="activeName" class="tabs" @tab-click="getList">
+    <el-tabs v-model="activeName" class="tabs" @tab-click="search">
         <el-tab-pane label="3D" name="3D"></el-tab-pane>
         <el-tab-pane label="VR" name="VR"></el-tab-pane>
         <el-tab-pane label="AR/MR" name="AR/MR"></el-tab-pane>
@@ -28,9 +28,10 @@
                 </div>
             </div>
             <el-table :data="tableData" @selection-change="handleSelectionChange">
-                <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column :key="0" prop="serverId" label="客户终端ID" />
-                <el-table-column :key="1" prop="serverIp" label="客户端IP" />
+                <el-table-column type="selection" width="55" :selectable="selectHandle"></el-table-column>
+                <el-table-column prop="taskId" label="TaskId" :key="-1"/>
+                <el-table-column :key="0" prop="clientId" label="客户终端ID" />
+                <el-table-column :key="1" prop="clientIp" label="客户端IP" />
                 <el-table-column :key="2" v-if="activeName==='3D'" prop="projectName" label="项目名称" />
                 <el-table-column :key="3" v-if="['VR','AR/MR'].includes(activeName)" prop="deviceName" label="设备名称" />
                 <el-table-column :key="4" v-if="activeName==='3D'" prop="projectId" label="项目ID" />
@@ -43,8 +44,8 @@
                 <el-table-column fixed="right" label="操作" width="200">
                     <template slot-scope="scope">
                         <el-button type="text" class="blueText" @click.stop="detail(scope.row)">查看详情</el-button>
-                        <el-button v-if="['VR','AR/MR'].includes(activeName)" type="text" class="blueText" @click.stop="monitorDetail(scope.row)">终端监测</el-button>
-                        <el-button type="text" class="orangeText" @click.stop="stop(scope.row)">终止</el-button>
+                        <el-button v-if="['VR','AR/MR'].includes(activeName) && scope.row.clientId" type="text" class="blueText" @click.stop="monitorDetail(scope.row)">终端监测</el-button>
+                        <el-button v-if="!scope.row.endTime" type="text" class="orangeText" @click.stop="stop(scope.row)">终止</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -101,6 +102,10 @@ export default {
             this.form.pageSize = data.pageSize
             this.getList()
         },
+        // 多选框禁用
+        selectHandle(row){
+            return !row.endTime
+        },
         handleSelectionChange(val){
             this.multipleSelection = val;
         },
@@ -110,7 +115,7 @@ export default {
         },
         // 详情
         monitorDetail(row){
-            this.$refs.DialogMonitor.show(row.id)
+            this.$refs.DialogMonitor.show(row.clientId)
         },
         // 终止进程
         stop(row){

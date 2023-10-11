@@ -1,5 +1,5 @@
 <template>
-    <el-tabs v-model="activeName" class="tabs" @tab-click="getList">
+    <el-tabs v-model="activeName" class="tabs" @tab-click="search">
         <el-tab-pane label="运行中" name="true"></el-tab-pane>
         <el-tab-pane label="已结束" name="false"></el-tab-pane>
 
@@ -27,9 +27,10 @@
             </div>
             <el-table :data="tableData" @selection-change="handleSelectionChange">
                 <el-table-column v-if="activeName==='true'" type="selection" width="55" :key="0"></el-table-column>
+                <el-table-column prop="taskId" label="TaskId" :key="6"/>
                 <el-table-column prop="projectName" label="项目名称" :key="1"/>
                 <el-table-column prop="projectId" label="项目ID" :key="2"/>
-                <el-table-column prop="serverIp" label="客户端IP" :key="3"/>
+                <el-table-column prop="clientIp" label="客户端IP" :key="3"/>
                 <el-table-column prop="createTime" label="创建日期" :key="4"/>
                 <el-table-column prop="endTime" label="结束日期" v-if="activeName!=='true'" :key="5"/>
                 <el-table-column prop="visitMode" label="访问方式"/>

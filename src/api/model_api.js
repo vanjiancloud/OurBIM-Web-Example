@@ -6,14 +6,15 @@
  * @description: 
  */
 import newRequest from "@/utils/newRequest.js";
-import qs from "qs"
-import {
-    BASE
-} from "../utils/socket_request"
 import request from '../utils/request'
 import qsStringify from "qs-stringify"
 
 import axios from 'axios'
+
+
+let WSBASEURL = process.env.VUE_APP_REQUEST_URL.replace('http://', 'ws://').replace('https://', 'wss://');
+
+
 const MODELAPI = {
 
     DOWNLOADFILE: (params, callback) => {
@@ -36,7 +37,7 @@ const MODELAPI = {
     },
     // 建立websocket通信
     CREATESOCKET: params => {
-        return `${BASE.WSPRO}/websocket/${params}`
+        return `${WSBASEURL}/websocket/${params}`
     },
 
     // 获取关注视角
@@ -363,5 +364,7 @@ export function freezeCom(params, data) {
         data
     })
 }
+
+
 
 export default MODELAPI

@@ -2,27 +2,25 @@
 <template>
     <el-dialog :title="title+'预启动项目'" :visible.sync="dialogVisible" :close-on-click-modal="false" append-to-body width="460px" :before-close="hide">
         <el-form ref="form" :style="{'width':'90%'}" :model="form" :rules="rules" label-width="100px">
-            <el-form-item label="选择项目:" prop="textureName">
-                <el-input v-model="form.textureName" placeholder="请输入项目名称并查找"></el-input>
+            <el-form-item label="选择项目:" prop="projectName">
+                <el-autocomplete style="width: 100%;" v-model="form.projectName" value-key="appName" :fetch-suggestions="querySearchAsync" placeholder="请输入项目名称并查找" @select="handleSelect">
+                    <template slot-scope="{ item }">
+                        {{ item.appName }}
+                    </template>
+                </el-autocomplete>
             </el-form-item>
-            <el-form-item label="预启动数量:" prop="textureName">
-                <el-input v-model="form.textureName" placeholder="请输入正整数" v-only-number="{precision:0}"></el-input>
+            <el-form-item label="预启动数量:" prop="preStartNum">
+                <el-input v-model="form.preStartNum" placeholder="请输入正整数" v-only-number="{precision:0}"></el-input>
             </el-form-item>
-            <el-form-item label="码率:" prop="textureName">
-                <el-select v-model="form.region" placeholder="请选择" clearable>
-                    <el-option label="所有" value="shanghai"></el-option>
-                    <el-option label="3D" value="beijing"></el-option>
-                    <el-option label="VR" value="beijing"></el-option>
-                    <el-option label="AR/MR" value="beijing"></el-option>
+            <el-form-item label="码率:" prop="codeRate">
+                <el-select v-model="form.codeRate" placeholder="请选择">
+                    <el-option :label="item" :value="item" v-for="item in codeRate" :key="item"></el-option>
                 </el-select>
                 <span style="margin-left: 16px;">kbps</span>
             </el-form-item>
-            <el-form-item label="帧率:" prop="textureName">
-                <el-select v-model="form.region" placeholder="请选择" clearable>
-                    <el-option label="所有" value="shanghai"></el-option>
-                    <el-option label="3D" value="beijing"></el-option>
-                    <el-option label="VR" value="beijing"></el-option>
-                    <el-option label="AR/MR" value="beijing"></el-option>
+            <el-form-item label="帧率:" prop="frameRate">
+                <el-select v-model="form.frameRate" placeholder="请选择">
+                    <el-option :label="item" :value="item" v-for="item in frameRate" :key="item"></el-option>
                 </el-select>
             </el-form-item>
         </el-form>
@@ -34,18 +32,32 @@
 </template>
 
 <script>
+import { Getuserid } from '@/store/index.js'
+import { add, findProject } from "@/api/server/prestart.js"
 export default {
     components: { },
-    props: {},
+    props: {
+        codeRate:{
+            type: Array,
+            default:()=>[]
+        },
+        frameRate:{
+            type: Array,
+            default:()=>[]
+        }
+    },
     data() {
         return {
             title: '',
             dialogVisible: false,
-            form: {},
+            form: {
+                status: "0"
+            },
             rules: {
-                textureName: [{ required: true, message: '请输入名称', trigger: 'blur' }],
-                fileUpload: [{required: true,message: '请上传贴图文件',trigger: 'blur'}],
-                parentId: [{ required: true, message: '请选择分组', trigger: 'blur' }]
+                projectName: [{ required: true, message: '请选择项目', trigger: 'blur' }],
+                preStartNum: [{required: true,message: '请输入预启动数量',trigger: 'blur'}],
+                codeRate: [{ required: true, message: '请选择码率', trigger: 'blur' }],
+                frameRate: [{ required: true, message: '请选择帧率', trigger: 'blur' }]
             }
         }
     },
@@ -59,10 +71,8 @@ export default {
             this.dialogVisible = true
             this.$nextTick(() => {
                 this.$refs.form.clearValidate()
-                this.form = row
                 if (row.id) {
                     this.title = '编辑'
-                    this.$set(this.form, 'fileUpload', row.imgPath)
                 }else{
                     this.title = '添加'
                 }
@@ -71,10 +81,27 @@ export default {
         hide() {
             this.dialogVisible = false
         },
+        // 查找项目
+        async querySearchAsync(queryString, cb) {
+            var results = (await findProject({userId:Getuserid(),appName:queryString})).data
+
+            clearTimeout(this.timeout);
+            this.timeout = setTimeout(() => {
+                cb(results);
+            }, 3000 * Math.random());
+        },
+        // 选中项目
+        handleSelect(item) {
+            this.$set(this.form,"projectId",item.appid)
+        },
         submit() {
             this.$refs.form.validate((valid) => {
                 if (!valid) return false
-                
+                add(this.form).then(()=>{
+                    this.$message.success("新增成功")
+                    this.hide()
+                    this.$parent.getList()
+                })
             })
         }
     }

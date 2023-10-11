@@ -4,57 +4,58 @@
         <div class="table">
             <div class="tableItem">
                 <div class="tableTitle">客户终端ID</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.clientId }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">设备名称</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.deviceName }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">设备型号</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.deviceType }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">头显电量</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.headDisplayPower }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">手柄电量（左）</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.leftHandleDisplayPower }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">手柄电量（右）</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.rightHandleDisplayPower }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">内存用量</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.memoryUsage }}/{{ detailData.memoryTotal }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">存储用量</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.storageUsage }}/{{ detailData.storageTotal }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">客户端IP</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.clientIp }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">客户端Mac地址</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.clientMac }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">运行中项目名称</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.projectName }}</div>
             </div>
             <div class="tableItem">
                 <div class="tableTitle">网络延时</div>
-                <div class="tableContent">11233453456745434</div>
+                <div class="tableContent">{{ detailData.networkDelay }}</div>
             </div>
         </div>
     </el-dialog>
 </template>
 
 <script>
+import { getTerminalDetail } from "@/api/server/terminal.js"
 export default {
     components: { },
     props: {
@@ -71,7 +72,15 @@ export default {
     created() {},
     mounted() {},
     methods: {
-        show(row) {
+        show(id) {
+            let data = {
+                pageSize:1,
+                pageNum:1,
+                clientId:id
+            }
+            getTerminalDetail(data).then(res=>{
+                this.detailData = res.data[0]
+            })
             this.dialogVisible = true
         },
         hide() {

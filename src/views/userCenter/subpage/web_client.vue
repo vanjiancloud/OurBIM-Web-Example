@@ -56,6 +56,11 @@
           v-text="$t('webClient.loadBox.message[7]')"
         ></div>
       </div>
+
+      <!-- 加载文字流程 -->
+      <div class="proccessText" v-if="loadingProccessArr.length && hiddenState !== 2">
+        {{ loadingProccessArr[loadingProccess].text }} ({{loadingProccess+1}}/10)
+      </div>
     </div>
     
     <div v-if="!isMobile()">      
@@ -119,6 +124,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Drawer from '@/components/Drawer/index.vue'
+import { getTaskId, getProccess } from "@/api/userCenter/web_client";
 import MODELAPI,{ doAction } from "@/api/model_api";
 import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
 import viewCube from "@/components/web_client/view_cube";
@@ -138,6 +144,7 @@ import LocationCode from "../locationCode/index.vue"; //定位码
 import Tool from "../Tool/index.vue"; //底部工具栏
 import DialogScale from "@/views/userCenter/resourcePool/DialogScale.vue"; //设置比例尺弹窗
 import { EventBus } from '@/utils/bus.js'
+import { error } from 'console';
 
 export default {
   name: "look_app",
@@ -162,6 +169,12 @@ export default {
   },
   data() {
     return {
+        // 加载流程
+      loadingProccess:0,
+      loadingProccessArr:[{
+        status: "success",
+        text: "准备统一权限认证"
+      }],
       userId: this.$route.query.userId || Getuserid() || 'travels',//用户id：链接可能没有用户id取缓存的
       activeToolArr: [],//工具栏打开的内容
       isGis: false,
@@ -216,6 +229,7 @@ export default {
   },
   watch: {},
   created() {
+    this.getProccess()
     // 用定时器给 环境加载中进度条 赋假值 让其(不再只有0和100)
     let timerTime = null;
     timerTime = setInterval(()=>{
@@ -936,7 +950,32 @@ export default {
     },
     // 获取流程文字
     getProccess(){
-
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        let count = 0;//计算请求次数
+        getTaskId({projectId:this.$route.query.appid}).then(res=>{
+            const getResponse = ()=>{
+                if(this.hiddenState !== 1) return
+                getProccess({taskId:res.data.task_id}).then(async res=>{
+                    this.loadingProccessArr = res.data
+                    for (let i = 0; i < res.data.length; i++) {
+                        if(this.webUrl || count > 30) return
+                        const element = res.data[i];
+                        if(this.loadingProccess > 0 && element.status==="waiting"){
+                            this.loadingProccess = i
+                            count++
+                            setTimeout(getResponse(),1000)
+                            return
+                        }else if(count===0 && element.status==="success"){
+                            this.loadingProccess = i
+                        }
+                        await sleep(200);
+                    }
+                })
+            }
+            getResponse()
+        })
     },
     // 获取流地址
     getModelUrl() {
@@ -1172,6 +1211,13 @@ export default {
       width: 80px;
       height: 80px;
       margin-bottom: 30px;
+    }
+
+    .proccessText{
+      color: #ffffff;
+      position: absolute;
+      bottom: 90px;
+      z-index: 999;
     }
   }
 
