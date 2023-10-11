@@ -34,7 +34,8 @@
             <el-table-column fixed="right" label="操作" width="230px">
                 <template slot-scope="scope">
                     <div class="operate-btn color-btn" v-if="scope.row.status == 0" @click="jumpToPay(scope.row)">去支付</div>
-                    <div class="operate-btn color-btn" @click="invoice(scope.row)">开发票</div>
+                    <!-- 只有已支付和未开票的可以开发票 -->
+                    <div class="operate-btn color-btn" v-if="scope.row.status == 1 && scope.row.invoiceStatus == 2" @click="invoice(scope.row)">开发票</div>
                     <div class="operate-btn" @click="delOrder(scope.row)">删除</div>
                 </template>
             </el-table-column>

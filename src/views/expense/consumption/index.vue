@@ -83,7 +83,11 @@
                     {{ scope.row.consumeStartTime }} 到 {{ scope.row.consumeEndTime }}
                 </template>
             </el-table-column>
-            <el-table-column align="center" prop="consumeTime" show-overflow-tooltip label="消费容量/时长" />
+            <el-table-column align="center" prop="consumeTime" show-overflow-tooltip label="消费容量/时长" >
+                <template #default="scope">
+                    {{ scope.row.consumeTime }} {{ scope.row.consumeUnit }}
+                </template>
+            </el-table-column>
             <el-table-column align="center" prop="consumeMoney" show-overflow-tooltip label="消费资源点数" />
             <el-table-column align="center" prop="discountMoney" show-overflow-tooltip label="优惠资源点数" />
             <el-table-column align="center" prop="consumeActualMoney" show-overflow-tooltip label="实扣资源点数" />
