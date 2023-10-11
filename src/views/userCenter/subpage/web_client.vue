@@ -383,7 +383,7 @@ export default {
       this.showViewPicture = valModel;
     },
       // 监听工具栏隐藏和显示
-     addMessageEvent() {
+    addMessageEvent() {
       window.addEventListener(
         "message",
         (e) => {
@@ -934,6 +934,11 @@ export default {
         clearTimeout(loadTimer);
       }, e);
     },
+    // 获取流程文字
+    getProccess(){
+
+    },
+    // 获取流地址
     getModelUrl() {
       let appId = this.$route.query.appid;
       let size = this.handleWindowSize(true)
