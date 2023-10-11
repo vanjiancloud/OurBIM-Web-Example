@@ -141,6 +141,10 @@ export default {
                     this.payStatus = true
                     clearInterval(this.getPayStaTimer)
                     this.getPayStaTimer = null
+
+                    setTimeout(() => {
+                        this.jumpToOrderManagement()
+                    }, 2000)
                 }
             })
         },
