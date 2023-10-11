@@ -85,7 +85,7 @@
         <!-- 新建GIS服务项目 -->
         <DialogsProject ref="DialogsProject" />
         <!-- 上传GIS数据 -->
-        <DragUpload ref="DragUpload" :limit="null" accept=".dwg,.dxf,.svg"  numType="uploadCADNum" @getFile="getFileDrag" @onSuccess="getList">
+        <DragUpload ref="DragUpload" :limit="null" accept=".dwg,.dxf,.svg"  numType="uploadCADNum" @getFile="getFileDrag" @onSuccess="uploadSuccess">
         </DragUpload>
     </List>
 </template>
@@ -129,7 +129,8 @@ export default {
         this.getList()
     },
     destroyed() {
-        window.clearInterval(this.timer)
+        clearInterval(this.timer)
+        this.timer = null
     },
     methods: {
         onChange(e){
@@ -142,6 +143,10 @@ export default {
         uploadCAD() {
             this.form = this.$options.data().form
             this.$refs.DragUpload.show("上传图纸")
+        },
+
+        uploadSuccess() {
+            this.getList(false)
         },
     
         getList(isLoading = true) {
@@ -170,9 +175,11 @@ export default {
         },
 
         watchStatus() {
+            clearInterval(this.timer)
+            this.timer = null
             this.tableData.some(item => {
                 if (item.fileStatus === '0') {
-                    setTimeout(() => {
+                    this.timer = setInterval(() => {
                         this.getList(false)
                     }, 2000)
                     return true
