@@ -9,12 +9,12 @@
                 <el-form-item label="签名：" prop="note">
                     <el-input v-model="userInfo.note" class="formInputWidth" placeholder="请输入签名"></el-input>
                 </el-form-item>
-                <el-form-item label="邮箱：" prop="email">
+                <!-- <el-form-item label="邮箱：" prop="email">
                     <el-input v-model="userInfo.email" class="formInputWidth" disabled placeholder="请输入邮箱"></el-input>
                 </el-form-item>
                 <el-form-item label="手机号：" prop="mobile">
                     <el-input v-model="userInfo.mobile" class="formInputWidth" disabled placeholder="请输入手机号"></el-input>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="公司：" prop="company">
                     <el-input v-model="userInfo.company" class="formInputWidth" placeholder="请输入公司"></el-input>
                 </el-form-item>
