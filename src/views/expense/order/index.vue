@@ -155,7 +155,7 @@ export default {
 
         jumpToPay(row) {
             this.$router.push({
-                path: 'recharge',
+                name: 'recharge',
                 params: row
             })
         }

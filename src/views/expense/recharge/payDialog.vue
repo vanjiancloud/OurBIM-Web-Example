@@ -45,7 +45,7 @@
 
 <script>
 import QRCode from 'qrcode'
-import { getPayStatus, createTopUpOrder } from '@/api/expenseManage'
+import { getPayStatus, createTopUpOrder, getPayUrl } from '@/api/expenseManage'
 import { Getuserid } from '@/store/index.js'
 export default {
     components: {},
@@ -74,8 +74,13 @@ export default {
         }
     },
     methods: {
-        show() {
-            this.getPayUrl()
+        show(code) {
+            if (code) {
+                this.orderCode = code
+                this.getPayUrl()
+            } else {
+                this.createOrder()
+            }
             this.showDialog = true
         },
 
@@ -88,19 +93,14 @@ export default {
 
         getPayUrl() {
             const params = {
-                discountCode: this.rechargeForm.coupon,
-                money: this.rechargeForm.payNum,
                 source: this.rechargeForm.payWay === 'weixin' ? 1 : 2,
-                userId: Getuserid()
+                userId: Getuserid(),
+                code: this.orderCode
             }
-            createTopUpOrder(params).then(res => {
-                if (res.code === 200) {
-                    const { code, url, money } = res.data
-                    this.payUrl = url
-                    this.orderCode = code
-                    this.orderPayNum = money
-                    this.$emit('updateMoney', money)
-
+            getPayUrl(params).then(res => {
+                if (res.code == 200) {
+                    this.payUrl = res.data.url
+                    this.orderPayNum = res.data.money
                     this.drawCode()
                     clearInterval(this.getPayStaTimer)
                     this.getPayStaTimer = null
@@ -108,6 +108,24 @@ export default {
                     this.getPayStaTimer = setInterval(() => {
                         this.getPaySta()
                     }, 1000)
+                }
+            })
+        },
+
+        createOrder() {
+            const params = {
+                discountCode: this.rechargeForm.coupon,
+                money: this.rechargeForm.payNum,
+                source: this.rechargeForm.payWay === 'weixin' ? 1 : 2,
+                userId: Getuserid()
+            }
+            createTopUpOrder(params).then(res => {
+                if (res.code === 200) {
+                    const { code, money } = res.data
+                    this.orderCode = code
+                    this.orderPayNum = money
+                    this.$emit('updateMoney', money)
+                    this.getPayUrl()
                 }
             })
         },

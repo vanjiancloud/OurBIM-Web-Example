@@ -105,6 +105,7 @@ const routes = [
                 }
             },{
                 path: 'recharge',
+                name: 'recharge',
                 component: () => import('@/views/expense/recharge/index.vue'),
                 meta: {
                     title: '购买充值'

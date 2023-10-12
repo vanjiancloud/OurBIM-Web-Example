@@ -98,6 +98,7 @@ export default {
             discountMoney: 0, // 优惠金额
             // sumOrderPrice: 0 // 订单总价
             isCheckCoupon: false, // 优惠券是否完成校验
+            isOrderToPay: false // 是否是订单管理跳转来支付
         }
     },
     watch: {},
@@ -107,9 +108,23 @@ export default {
         }
     },
     created() {
+        // 订单管理跳转支付
+        if (this.$route.params.buyResourceNumber) {
+            const { buyResourceNumber, discountMoney, discountCode } = this.$route.params
+            this.rechargeForm.payNum = buyResourceNumber
+            this.rechargeForm.coupon = discountCode
+            this.rechargeForm.payWay = 'weixin'
+            this.discountMoney = typeof discountMoney == 'number' ? discountMoney : 0
+            this.isOrderToPay = true
+        }
         this.getMoney()
     },
-    mounted() {},
+    mounted() {
+        // 订单管理跳转支付
+        if (this.isOrderToPay) {
+            this.$refs.payDialog.show(this.$route.params.code)
+        }
+    },
     methods: {
         getMoney() {
             const params = {
