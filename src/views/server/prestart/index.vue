@@ -123,7 +123,7 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning",
             }).then(() => {
-                startRow({id:row.id}).then(()=>{
+                startRow(row.id).then(()=>{
                     this.$message.success("已启用！")
                     this.getList()
                 })
@@ -136,7 +136,7 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning",
             }).then(() => {
-                stopRow({id:row.id}).then(()=>{
+                stopRow(row.id).then(()=>{
                     this.$message.success("已禁用！")
                     this.getList()
                 })
@@ -149,7 +149,7 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning",
             }).then(() => {
-                deleteRow({id:row.id}).then(()=>{
+                deleteRow(row.id).then(()=>{
                     this.$message.success("删除成功！")
                     this.getList()
                 })

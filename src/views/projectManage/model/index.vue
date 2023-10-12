@@ -670,12 +670,11 @@ export default {
       MODELAPI.GETBIMTOKEN({
         appid: e.appid,
       }).then((res) => {
-        if (res.data.code === 0) {
           let query = {
             appid: e.appid,
             locale: this.$i18n.locale,
             appType: e.appType,
-            token: res.data.data.token,
+            token: res.data.token,
             isGis: e.isGis,  // 用于控制 gis模型  时  渲染环境 图标隐藏
             reserveId: e.reserveId || '', // 有reserveId就是预启动项目 没有就不是
             userId:Getuserid()
@@ -687,7 +686,7 @@ export default {
           if (isiPad !== false || isMac !== false) {
             // 移动端
             if (e.appType == "5") {
-              window.open(res.data.data.url);
+              window.open(res.data.url);
               return;
             }
             this.$router.push({
@@ -698,7 +697,7 @@ export default {
             // PC端
          
             if (e.appType == "5") {
-              window.open(res.data.data.url, "_blank");
+              window.open(res.data.url, "_blank");
               return;
             }
             const { href } = this.$router.resolve({
@@ -707,12 +706,6 @@ export default {
             });
             window.open(href, "_blank");
           }
-        } else {
-          this.$message({
-            type: "error",
-            message: err.data.message,
-          });
-        }
       });
     },
     // 上传模型参数

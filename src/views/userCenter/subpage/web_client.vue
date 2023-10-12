@@ -956,7 +956,7 @@ export default {
         let count = 0;//计算请求次数
         getTaskId({projectId:this.$route.query.appid}).then(res=>{
             const getResponse = ()=>{
-                if(this.hiddenState !== 1) return
+                if(this.hiddenState !== 0 && this.hiddenState !== 3) return
                 getProccess({taskId:res.data.task_id}).then(async res=>{
                     this.loadingProccessArr = res.data
                     for (let i = 0; i < res.data.length; i++) {
@@ -967,7 +967,7 @@ export default {
                             count++
                             setTimeout(getResponse(),1000)
                             return
-                        }else if(count===0 && element.status==="success"){
+                        }else if(element.status==="success" && (count === 0 || (this.loadingProccess > 0 && this.loadingProccess < i))){
                             this.loadingProccess = i
                         }
                         await sleep(200);

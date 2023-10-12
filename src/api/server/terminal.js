@@ -22,7 +22,10 @@ export function end(data) {
     return request({
       url: `/cloudServiceTerminal/end`,
       method: 'post',
-      data
+      data,
+      headers: {
+        "Content-Type": "application/json"
+      }
     })
 }
 
@@ -31,7 +34,10 @@ export function batchEnd(data) {
     return request({
       url: `/cloudServiceTerminal/batchEnd`,
       method: 'post',
-      data
+      data,
+      headers: {
+        "Content-Type": "application/json"
+      }
     })
 }
 

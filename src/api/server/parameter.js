@@ -37,3 +37,31 @@ export function getConsumeRule(params) {
         params,
     })
 }
+
+
+// 添加时间限制
+export function addTime(data) {
+    return request({
+        url: `/cloudServiceConfigDict/add`,
+        method: "POST",
+        data,
+    })
+}
+
+// 编辑时间限制
+export function editTime(data) {
+    return request({
+        url: `/cloudServiceConfigDict/edit`,
+        method: "POST",
+        data,
+    })
+}
+
+// 获取限制时间
+export function getLimitTime(params) {
+    return request({
+        url: `/cloudServiceConfigDict/list`,
+        method: "GET",
+        params,
+    })
+}

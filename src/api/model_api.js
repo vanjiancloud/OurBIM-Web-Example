@@ -228,7 +228,7 @@ const MODELAPI = {
     },
     // 获取模型token
     GETBIMTOKEN: params => {
-        return request({
+        return newRequest({
             url: '/OurBim/getEnterToken',
             method: 'get',
             params

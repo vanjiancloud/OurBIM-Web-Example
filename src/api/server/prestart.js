@@ -41,7 +41,10 @@ export function deleteRow(data) {
     return request({
       url: '/cloudServicePreStart/removeById',
       method: 'post',
-      data
+      data,
+      headers: {
+        "Content-Type": "application/json"
+      }
     })
 }
 
@@ -50,7 +53,10 @@ export function startRow(data) {
     return request({
       url: '/cloudServicePreStart/start',
       method: 'post',
-      data
+      data,
+      headers: {
+        "Content-Type": "application/json"
+      }
     })
 }
 
@@ -59,6 +65,9 @@ export function stopRow(data) {
     return request({
       url: '/cloudServicePreStart/stop',
       method: 'post',
-      data
+      data,
+      headers: {
+        "Content-Type": "application/json"
+      }
     })
 }
