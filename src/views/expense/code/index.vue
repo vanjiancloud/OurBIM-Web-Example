@@ -5,8 +5,8 @@
             <el-button @click="jumpToBuy">购买套餐</el-button>
         </div>
         <el-table :data="tableData" v-loading="loading">
-            <el-table-column prop="code" label="授权码" min-width="160" />
-            <el-table-column prop="number" label="授权码编号" />
+            <el-table-column prop="number" label="授权码编号" min-width="110"/>
+            <el-table-column prop="code" label="授权码" min-width="140" />
             <el-table-column prop="versionName" label="产品版本" />
             <el-table-column prop="createTime" label="创建/购买日期" />
             <el-table-column prop="activateTime" label="激活时间" />

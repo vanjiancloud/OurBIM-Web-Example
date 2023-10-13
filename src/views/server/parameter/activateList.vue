@@ -117,22 +117,17 @@ export default {
             if(!this.form.code){
                 return this.$message.warning("请输入授权码！")
             }
-            this.$confirm(`确认验证此授权码吗`, "验证", {
-                confirmButtonText: "确定",
-                cancelButtonText: "取消",
-                type: "warning",
-            }).then(() => {
-                let data = {
-                    type:this.form.type,
-                    code:this.form.code,
-                    userId: Getuserid()
-                }
-                verifyUserAuthorizationCode(data).then(()=>{
-                    this.$message.success("验证成功！")
-                    this.getList()
-                    this.$store.dispatch('user/getTotal')
-                })
-            }).catch(() => {});
+            
+            let data = {
+                type:this.form.type,
+                code:this.form.code,
+                userId: Getuserid()
+            }
+            verifyUserAuthorizationCode(data).then(res => {
+                this.$message.success("验证成功！授权码已激活!")
+                this.getList()
+                this.$store.dispatch('user/getTotal')
+            })
         }
     }
 };

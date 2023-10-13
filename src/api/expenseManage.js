@@ -12,7 +12,7 @@ export function getAuthorizationCodeList(params) {
 // 查询所有产品信息
 export function getProductList(params) {
     return request({
-        url: '/monitor/ourbimManage/version/listVersionName',
+        url: '/monitor/publicManage/order/getVersionNameSelect',
         method: "GET",
         params,
     })
@@ -62,6 +62,15 @@ export function getUserMoney(params) {
 export function createTopUpOrder(data) {
     return request({
         url: `/monitor/publicManage/order/createTopUpOrder`,
+        method: "POST",
+        data,
+    })
+}
+
+// 获取支付链接
+export function getPayUrl(data) {
+    return request({
+        url: `/monitor/publicManage/order/getPayUrl`,
         method: "POST",
         data,
     })
