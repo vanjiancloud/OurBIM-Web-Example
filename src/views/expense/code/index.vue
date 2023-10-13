@@ -189,6 +189,7 @@ export default {
                             this.$message.success('创建成功')
                             this.showDialog = false
                             this.getData()
+                            this.$store.dispatch('user/getTotal')
                         }
                     })
                 }
@@ -200,6 +201,7 @@ export default {
                 if (res.code === 200) {
                     this.$message.success('重置成功')
                     this.getData()
+                    this.$store.dispatch('user/getTotal')
                 }
             })
         },

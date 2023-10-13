@@ -20,14 +20,14 @@
                 <div class="el-upload__text">
                     <em>点击</em>或将文件拖拽到这里上传
                 </div>
-                <div class="el-upload__tip" slot="tip">
-                    <slot name="append"></slot>
-                    <slot name="tip">
-                        <!-- <span class="tipRed">* </span>
-                        文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。 -->
-                    </slot>
-                </div>
             </el-upload>
+            <div class="el-upload__tip">
+                <slot name="append"></slot>
+                <slot name="tip">
+                    <!-- <span class="tipRed">* </span>
+                    文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。 -->
+                </slot>
+            </div>
             <div slot="footer" class="dialog-footer">
                 <el-button :loading="loading" class="blueBtn" type="primary" @click="submit">开始上传</el-button>
             </div>
@@ -46,7 +46,6 @@ export default {
         },
         accept: {
             type: String,
-            // default: 'application/x-zip-compressed,application/zip,application/x-rar-compressed,application/x-rar-compressed,application/x-7z-compressed'
             default: '.rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.fbx,.FBX,.obj,.stp,.xyz,.txt,.pts,.las'
         },
         // vuex中缓存的上传类型key

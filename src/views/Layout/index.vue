@@ -94,7 +94,7 @@
                         </div>
                         <div class="serverBox" v-if="total.billingMode!=='0'">
                             <div class="serverItem">
-                                <div class="serverPer">{{ total.useStore&&(total.useStore/total.store*100).toFixed(2) }}%</div>
+                                <div class="serverPer" :class="{colorGray:!total.useStore}">{{ total.useStore&&(total.useStore/total.store*100).toFixed(2) || 0 }}%</div>
                                 <el-progress :text-inside="true" :stroke-width="16" :percentage="Number(total.useStore/total.store*100) || 0" :show-text="false" color="#02AAF0"></el-progress>
                                 <div class="serverUsed">
                                     <img src="./img/cunchu.png" alt="" />
@@ -103,7 +103,7 @@
                             </div>
                             <div class="serverItem">
                                 <div class="flexBetween">
-                                    <div class="serverPer">{{ total.useConcurrency&&(total.useConcurrency/total.countConcurrency*100).toFixed(2)||0 }}%</div>
+                                    <div class="serverPer" :class="{colorGray:!total.useConcurrency}">{{ total.useConcurrency&&(total.useConcurrency/total.countConcurrency*100).toFixed(2)||0 }}%</div>
                                     <div class="serverTotal">已用总并发 {{ total.useConcurrency }}/{{ total.countConcurrency }}</div>
                                 </div>
                                 <div id="erupt"></div>
@@ -117,12 +117,12 @@
                         </div>
                     </div>
                 </el-col>
-                <el-col :md="10" :xs="10" :sm="10" :lg="5">
+                <el-col :md="10" :xs="10" :sm="10" :lg="5" v-if="total.billingMode==='1'">
                     <div class="statisticsBox period">
                         <div class="statisticsTitle">服务有效期</div>
                         <div class="time">{{ total.startUseTime }} 至 {{ total.endUseTime }}</div>
                         <el-button type="primary" size="small" class="grayBtn" style="width: 130px;"
-                            @click="$router.push('/expense/consumption')">延长有效期</el-button>
+                            @click="$router.push('/server/parameter')">延长有效期</el-button>
                     </div>
                 </el-col>
                 <el-col :md="14" :xs="14" :sm="14" :lg="7">
@@ -130,12 +130,12 @@
                         <div class="statisticsTitle">账户信息</div>
                         <div class="accountBox">
                             <div class="accountItem">
-                                <div class="text">账户余额：<span>{{ total.money || 0 }}</span><span>资源点</span></div>
+                                <div class="text">账户余额：<span :class="{colorGray:!total.money}">{{ total.money || 0 }}</span><span>资源点</span></div>
                                 <el-button type="primary" size="small" class="orangeBtn"
                                     style="width: 120px;background-color:#FF7F28" @click="$router.push('/expense/recharge')">立即充值</el-button>
                             </div>
                             <div class="accountItem">
-                                <div class="text">授权码：<span style="color:#00AAF0">{{ total.codeSum || 0 }}</span><span>个</span></div>
+                                <div class="text">授权码：<span style="color:#00AAF0" :class="{colorGray:!total.codeSum}">{{ total.codeSum || 0 }}</span><span>个</span></div>
                                 <el-button type="primary" size="small" class="grayBtn"  @click="toOrder">查看</el-button>
                                 <el-button type="primary" size="small" class="grayBtn"  @click="toOrder">申请授权码</el-button>
                             </div>
@@ -174,9 +174,6 @@
 
 <script>
 import Footer from './footer.vue'
-import { showDetail, userCenterUse } from "@/api/my.js";
-import { Getuserid } from "@/store/index.js";
-import { Deluserid } from "@/store/index.js";
 
 export default {
     name: "myHeader",
@@ -184,9 +181,6 @@ export default {
     data() {
         return {
             fold:true,//菜单是否展开
-            total:{},
-            user: {},
-            time: null, //定时器
             orderList: [
                 {
                     name: '孙经理',
@@ -258,14 +252,6 @@ export default {
         };
     },
     created() {
-        //阻止回车键发送请求
-        // document.onkeydown = (e) => {
-        //     let keyCode = window.event.keyCode;
-        //     if (keyCode == "Enter" || keyCode == 32) {
-        //         return false;
-        //     }
-        // };
-        this.showData();
         this.getData()
     },
     mounted() {
@@ -274,52 +260,33 @@ export default {
         })
     },
     computed: {
+        user() {
+            return this.$store.state.user.userInfo || {}
+        },
+        total() {
+            return this.$store.state.user.total || {}
+        },
         routes() {
             let routes = this.$router.options.routes
             let list = routes.length && routes.filter(e => { return !e.hidden })
             return list
         },
-        /*使用计算属性来获取到当前点击的菜单的路由路径
-          然后设置default-active中的值
-          使得菜单在载入时就能对应高亮
-        */
         activeMenu() {
             const route = this.$route;
             const { meta, path } = route;
-            /*
-             可以在路由配置文件中设置自定义的路由路径到
-             meta.activeMenu属性中，来控制菜单自定义高亮显示
-            */
             if (meta.activeMenu) {
                 return meta.activeMenu;
             }
             return path;
         },
     },
-    watch: {
-        // 监听路由变化
-        $route(to, from) {
-            // this.showData();
-        },
-    },
-    /* 把定时器放在activated事件里，当清除定时后，
-    下次再次进入当前路由的话，可以再次唤起定时器 */
-    activated() {
-        this.time = setInterval(() => {
-            // this.showData();
-            // console.log('个人信息')
-        }, 5000);
-    },
-    //页面实例销毁后清除定时
-    destroyed() {
-        // 清除定时器
-        clearInterval(this.time);
-    },
+    watch: {},
+    activated() {},
+    destroyed() {},
     methods: {
         getData(){
-            userCenterUse({ userId: Getuserid() }).then((res)=>{
-                this.total = res.data
-            })
+            this.$store.dispatch('user/getUser')
+            this.$store.dispatch('user/getTotal')
         },
         // 总并发
         getEchart() {
@@ -440,20 +407,8 @@ export default {
 
         // 退出按钮
         toLogin() {
-            this.$router.push("../login");
-            // 刷新登陆页
-            location.reload();
-            if (sessionStorage.getItem("userInfo")) {
-                sessionStorage.removeItem("userInfo");
-            }
-            Deluserid();
-            clearInterval(this.time);
-        },
-
-        //展示当前用户信息
-        showData() {
-            showDetail({ userid: Getuserid() }).then((res) => {
-                this.user = res.data
+            this.$store.dispatch('user/logout').then(()=>{
+                this.$router.push("/login");
             })
         },
 
@@ -471,6 +426,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.colorGray{
+    color: #b7b7b7!important;
+}
 .headerBtn {
     padding: 5px 12px;
 

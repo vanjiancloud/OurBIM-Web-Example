@@ -11,7 +11,7 @@
             </el-form>
         </div>
         <div class="operate flexBetween">
-            <div class="operateLeft">预启动并发已使用 <span>3/</span>15</div>
+            <div class="operateLeft">预启动资源已开通 <span>0/</span>{{ total }}</div>
             <div class="searchRight">
                 <el-button size="small" style="width: 96px;" class="bluePlainBtn" @click="add()">添加</el-button>
             </div>

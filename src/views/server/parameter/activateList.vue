@@ -124,12 +124,9 @@ export default {
                 userId: Getuserid()
             }
             verifyUserAuthorizationCode(data).then(res => {
-                if (res.code == 200) {
-                    this.$message.success("验证成功！授权码已激活!")
-                    this.getList()
-                } else {
-                    this.$message.error("验证失败！授权码输入错误或已失效。")
-                }
+                this.$message.success("验证成功！授权码已激活!")
+                this.getList()
+                this.$store.dispatch('user/getTotal')
             })
         }
     }

@@ -2,6 +2,7 @@ import Vue from "vue"
 import Vuex from "vuex"
 import material from './modules/material'
 import request from './modules/request'
+import user from './modules/user'
 import getters from './getters'
 
 // 挂载Vue
@@ -23,7 +24,8 @@ export default new Vuex.Store({
     },
     modules: {
         material,
-        request
+        request,
+        user
     },
     getters
 })

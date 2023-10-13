@@ -139,6 +139,7 @@ export default {
                                 this.getData()
                                 this.$common.closeLoading()
                                 this.$message.success(res.data.message)
+                                this.$store.dispatch('user/getUser')
                             } else if (res.data.code === 1) {
                                 this.$message.error(res.data.message)
                                 this.$common.closeLoading()
