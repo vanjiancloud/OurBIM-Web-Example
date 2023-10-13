@@ -50,13 +50,14 @@ import { Getuserid } from '@/store/index.js'
 export default {
     components: {},
     props: {
-        rechargeForm: {
-            type: Object,
+        payType: {
+            type: String,
             required: true
         }
     },
     data() {
         return {
+            rechargeForm: {},
             payUrl: '',
             orderCode: '',
             showDialog: false,
@@ -69,12 +70,13 @@ export default {
     },
     watch: {},
     computed: {
-        payType() {
-            return this.rechargeForm.payWay
+        payTypeaa() {
+            return this.payType
         }
     },
     methods: {
-        show(code) {
+        show(formData, code) {
+            this.rechargeForm = JSON.parse(JSON.stringify(formData))
             if (code) {
                 this.orderCode = code
                 this.getPayUrl()

@@ -122,7 +122,7 @@ export function doInvoice(data) {
 // 删除订单
 export function deleteOrder(data) {
     return request({
-        url: `/monitor/publicManage/order/deleteOrder`,
+        url: `/monitor/ourbimManage/order/deleteOrder`,
         method: "POST",
         headers: {
             "Content-Type": "application/json"

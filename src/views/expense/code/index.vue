@@ -4,10 +4,27 @@
             <el-button type="primary" @click="showDialog = true">创建授权码</el-button>
             <el-button @click="jumpToBuy">购买套餐</el-button>
         </div>
-        <el-table :data="tableData" v-loading="loading">
+        <el-table :data="tableData" v-loading="loading" @cell-mouse-enter="showData">
             <el-table-column prop="number" label="授权码编号" min-width="110"/>
             <el-table-column prop="code" label="授权码" min-width="140" />
-            <el-table-column prop="versionName" label="产品版本" />
+            <el-table-column label="产品版本">
+                <template slot-scope="scope">
+                    <el-tooltip :disabled="tooltipData.length == 0" placement="right">
+                        <div slot="content" class="tooltipBox">
+                            <el-table :data="tooltipData">
+                                <el-table-column prop="billingName" label="计费项目" />
+                                <el-table-column prop="billingUnit" label="计费规格" />
+                                <el-table-column prop="rule" label="判断规则" />
+                                <el-table-column prop="billingPrice" label="计费单价(资源点数)" />
+                            </el-table>
+                        </div>
+                        <div @click="showData(scope.row.versionName)">
+                            <span>{{ scope.row.versionName }}</span><br>
+                            <i class="el-icon-question"></i>
+                        </div>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
             <el-table-column prop="createTime" label="创建/购买日期" />
             <el-table-column prop="activateTime" label="激活时间" />
             <el-table-column prop="expireTime" label="到期时间" />
@@ -91,7 +108,9 @@ export default {
                 pageSize: 10,
                 total: 0
             },
-            statusObj: {}
+            statusObj: {},
+            productObj: {},
+            tooltipData: []
         }
     },
     created() {
@@ -114,8 +133,18 @@ export default {
             getProductList().then(res => {
                 if (res.code === 200) {
                     this.productList = res.data
+                    this.productList.forEach(item => {
+                        this.productObj[item.name] = item
+                    })
                 }
             })
+        },
+
+        showData(row) {
+            this.tooltipData = []
+            if (this.productObj[row.versionName]?.billingList) {
+                this.tooltipData = this.productObj[row.versionName].billingList
+            }
         },
 
         getData() {
@@ -183,6 +212,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.tooltipBox {
+    min-width: 600px;
+}
 .formInputWidth {
     width: 360px !important;
     margin: 0 20px 0 0;

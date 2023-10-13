@@ -71,11 +71,11 @@
             </div>
             <div class="detail-box">
                 <span class="detail-label">消费时长：</span>
-                <span class="detail-content">{{ form.invoice }}分钟</span>
+                <span class="detail-content" v-if="form.invoice">{{ form.invoice }}分钟</span>
             </div>
             <div class="detail-box detail-bg">
                 <span class="detail-label">消费次数：</span>
-                <span class="detail-content">{{ form.consumeCount }}次</span>
+                <span class="detail-content" v-if="form.consumeCount">{{ form.consumeCount }}次</span>
             </div>
             <div class="detail-box">
                 <span class="detail-label">消费资源点数：</span>

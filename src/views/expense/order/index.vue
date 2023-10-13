@@ -31,12 +31,13 @@
                     {{ invoiceStatusObj[scope.row.invoiceStatus] }}
                 </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" width="230px">
+            <el-table-column fixed="right" label="操作" width="160">
                 <template slot-scope="scope">
                     <div class="operate-btn color-btn" v-if="scope.row.status == 0" @click="jumpToPay(scope.row)">去支付</div>
                     <!-- 只有已支付和未开票的可以开发票 -->
                     <div class="operate-btn color-btn" v-if="scope.row.status == 1 && scope.row.invoiceStatus == 2" @click="invoice(scope.row)">开发票</div>
-                    <div class="operate-btn" @click="delOrder(scope.row)">删除</div>
+                    <!-- 只有待支付才能删除 -->
+                    <div class="operate-btn" v-if="scope.row.status == 0" @click="delOrder(scope.row)">删除</div>
                 </template>
             </el-table-column>
         </el-table>
@@ -134,7 +135,11 @@ export default {
         },
 
         manyInvoice() {
-            this.$refs.invoice.show(this.selectionData)
+            if (this.selectionData.length == 0) {
+                this.$message.warning('请选择订单')
+            } else {
+                this.$refs.invoice.show(this.selectionData)
+            }
         },
 
         invoice(row) {
@@ -142,15 +147,23 @@ export default {
         },
 
         delOrder(row) {
-            const params = {
-                id: row.id
-            }
-            deleteOrder(params).then(res => {
-                console.log('订单删除', res)
-            })
-            deleteOrder(row.id).then(res => {
-                console.log('订单删除', res)
-            })
+            this.$confirm(`删除【${row.code}】订单后无法恢复，确认是否删除？`, '删除', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                closeOnClickModal:false,
+                type: 'warning'
+            }).then(() => {
+                const params = {
+                    userFileId: row.userFileId,
+                    userId: Getuserid()
+                }
+                deleteOrder(row.id).then(res => {
+                    if (res.code == 200) {
+                        this.$message.success("删除成功!")
+                        this.getData()
+                    }
+                })
+            }).catch(() => {})
         },
 
         jumpToPay(row) {
