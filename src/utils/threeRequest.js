@@ -12,7 +12,7 @@ const service = axios.create({
   // withCredentials: true, // send cookies when cross-domain requests
   // timeout: 10000 // request timeout
   cancelToken: new CancelToken(function executor(c){
-    store.commit("request/SET_CANCEL", c);
+    store && store.commit("request/SET_CANCEL", c);
   })
 })
 

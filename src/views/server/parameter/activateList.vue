@@ -130,6 +130,7 @@ export default {
                 verifyUserAuthorizationCode(data).then(()=>{
                     this.$message.success("验证成功！")
                     this.getList()
+                    this.$store.dispatch('user/getTotal')
                 })
             }).catch(() => {});
         }

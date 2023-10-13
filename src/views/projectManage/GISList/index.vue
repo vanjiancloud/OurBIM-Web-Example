@@ -115,10 +115,6 @@
                     </el-form-item>
                 </el-form>
             </template>
-            <template v-slot:tip>
-              <span class="tipRed">* </span>
-              文件默认打开初始的三维视图，请将文件在对应视图打开状态下保存，再上传。上传的BIM文件需要与中心文件分离，否则可能无法转换。
-            </template>
         </DialogsDrag>
     </List>
 </template>
@@ -347,7 +343,6 @@ export default {
     text-align: center;
 }
 .layerForm{
-    border-bottom: 1px solid #f5f5f5;
     border-top: 1px solid #f5f5f5;
     padding-top: 20px;
     margin: 20px 0;

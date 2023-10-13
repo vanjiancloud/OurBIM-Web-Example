@@ -1,10 +1,11 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Router from 'vue-router'
 // 引入路由组件
 import Layout from '@/views/Layout/index.vue'
 
 
-Vue.use(VueRouter)
+
+Vue.use(Router)
 
 const routes = [
     // 登录页面
@@ -211,9 +212,14 @@ const routes = [
     },
 ]
 
-const router = new VueRouter({
-    routes
+
+const createRouter = () => new Router({
+    // mode: 'history', // require service support
+    scrollBehavior: () => ({ y: 0 }),
+    routes: routes
 })
+  
+const router = createRouter()
 
 // 路由前置守卫
 router.beforeEach(function(to, from, next) {
@@ -242,5 +248,10 @@ router.beforeEach(function(to, from, next) {
 router.afterEach((to, from) => {
     document.title = to.meta.title
 })
+
+
+export function resetRouter() {
+    router.matcher = router.matcher // reset router
+}
 
 export default router

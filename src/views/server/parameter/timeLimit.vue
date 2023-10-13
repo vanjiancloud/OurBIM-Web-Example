@@ -34,45 +34,7 @@ export default {
     computed: {},
     created() { },
     mounted() {
-        function getLocalIPAddress() {
-  return new Promise((resolve, reject) => {
-    const peerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-    const sessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription || window.webkitRTCSessionDescription;
-  
-    if (!peerConnection) {
-      reject(new Error("WebRTC is not supported in this browser"));
-      return;
-    }
-  
-    const pc = new peerConnection({ iceServers: [] });
-    pc.createDataChannel("");
-  
-    pc.onicecandidate = function (event) {
-      if (event && event.candidate && event.candidate.candidate) {
-        const ipRegex = /(?<=ip\s)([^\s]+)/g;
-        const match = event.candidate.candidate.match(ipRegex);
-        const ipAddress = match ? match[0] : undefined;
-        const os = require('os');
-        const hostname = os.hostname();
-        console.log('当前计算机的主机名：', hostname);
-        console.log('🚀🚀🚀',ipAddress,hostname);
-        resolve(ipAddress);
-      }
-  
-      pc.onicecandidate = null;
-      pc.close();
-    };
-  
-    pc.createOffer(function (offer) {
-      pc.setLocalDescription(new sessionDescription(offer), function () {}, reject);
-    }, reject);
-  });
-}
-
-// 调用示例：
-getLocalIPAddress()
-  .then(ipAddress => console.log('本地IP地址为：', ipAddress))
-  .catch(error => console.error(error));
+        
     },
     methods: {
         save(){

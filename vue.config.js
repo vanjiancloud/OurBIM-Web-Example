@@ -11,8 +11,8 @@ function resolve(dir) {
 }
 module.exports = {
     lintOnSave: false,
-    // publicPath: "./",
-    publicPath: "/ourbimtest/",
+    publicPath: "./",
+    // publicPath: "/ourbimtest/",
     // 生产环境是否生成 sourceMap 文件
     productionSourceMap: false,
     devServer: {
