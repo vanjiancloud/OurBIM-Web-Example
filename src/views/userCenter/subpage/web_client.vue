@@ -17,16 +17,12 @@
       id="show-bim"
     ></iframe>
     <!-- 遮罩层 -->
-    <div
-      class="hidden-bim"
-      :class="{'phone-hidden-bim':isMobile()}"
-      v-if="isFade"
-    >
+    <div class="hidden-bim" :class="{'phone-hidden-bim':isMobile()}" v-if="isFade">
       <div class="hidden-bim">
         <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
-        <div class="bim-progress" v-if="hiddenState === 0 || hiddenState === 3">
+        <div class="bim-progress" v-if="hiddenState === 0">
           <div class="load-tip">
-            环境加载中…
+            {{ exceptionMessge[hiddenState] }}
             <div>{{ propsProgress.loadData }}%</div>
           </div>
           <el-progress
@@ -35,32 +31,13 @@
             :percentage="propsProgress.loadData"
           ></el-progress>
         </div>
-        <div
-          class="hidden-text"
-          v-if="hiddenState === 1"
-          v-text="$t('webClient.loadBox.title[2]')"
-        ></div>
-        <div
-          class="hidden-text"
-          v-if="hiddenState === 2"
-          v-text="$t('webClient.loadBox.title[3]')"
-        ></div>
-        <div
-          class="hidden-text"
-          v-if="hiddenState === 4"
-          v-text="$t('webClient.loadBox.message[6]')"
-        ></div>
-        <div
-          class="hidden-text"
-          v-if="hiddenState === 5 && userType == '0'"
-          v-text="$t('webClient.loadBox.message[7]')"
-        ></div>
+        <div v-else-if="hiddenState === -1" class="hidden-text">{{ baseExceptMessge }}</div>
+        <div v-else class="hidden-text">{{ exceptionMessge[hiddenState] }}</div>
       </div>
 
-      <!-- 加载文字流程 -->
-      <div class="proccessText" v-if="loadingProccessArr.length && hiddenState !== 2">
-        {{ loadingProccessArr[loadingProccess].text }} ({{loadingProccess+1}}/10)
-      </div>
+      <!-- <div class="proccessText" v-if="loadingProccessArr.length && hiddenState !== 2">
+        {{ loadingProccessArr[loadingProccess].text }} ({{loadingProccess+1}}/{{loadingProccessArr.length || 5}})
+      </div> -->
     </div>
     
     <div v-if="!isMobile()">      
@@ -169,11 +146,18 @@ export default {
   data() {
     return {
         // 加载流程
-      loadingProccess:0,
-      loadingProccessArr:[{
-        status: "success",
-        text: "准备统一权限认证"
-      }],
+    //   loadingProccess:0,
+    //   loadingProccessArr:[{
+    //     status: "success",
+    //     text: "准备统一权限认证"
+    //   }],
+    //   异常提示
+      exceptionMessge:[
+        "环境加载中…",
+        "长时间未交互，已自动断开，刷新即可重连",
+        "模型长时间未响应，请刷新重试"
+      ],
+      baseExceptMessge: "",
       userId: this.$route.query.userId || Getuserid() || 'travels',//用户id：链接可能没有用户id取缓存的
       activeToolArr: [],//工具栏打开的内容
       isGis: false,
@@ -228,7 +212,6 @@ export default {
   },
   watch: {},
   created() {
-    this.getProccess()
     // 用定时器给 环境加载中进度条 赋假值 让其(不再只有0和100)
     let timerTime = null;
     timerTime = setInterval(()=>{
@@ -255,11 +238,6 @@ export default {
         this.isProgress =false;
       }
     }
-    // 如果是 预启动项目就去掉遮罩层和加载进度
-  //   if (this.$route.query.reserveId){
-  //        this.isFade = false;
-  //        this.isProgress =false;
-  //   }
 
     // appType  0:普通模型(isGis: GIS模型)   1:漫游模型   3:链接模型(isGis: GIS链接模型)  4:示例模型    5:云应用
     this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
@@ -267,14 +245,7 @@ export default {
   mounted() {
     this.setTimeLoad();
     this.getModelUrl();
-    //判断是否使用的是ipad
-    let isiPad =
-      navigator.userAgent.match(/(iPad)/) ||
-      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    let isMac = /macintosh|mac os x/i.test(navigator.userAgent);
-    if (isiPad !== false || isMac !== false) {
-      this.hiddenState = 3;
-    }
+    // this.getProccess()
     this.addMessageEvent();
     this.getLinkModelAppid(); // 获取appid
   },
@@ -397,12 +368,17 @@ export default {
     },
       // 监听工具栏隐藏和显示
     addMessageEvent() {
-      window.addEventListener(
-        "message",
-        (e) => {
-          if (e.data.prex === "pxymessage") {
-            this.getError(e.data);
-          }
+        window.addEventListener("message",(e) => {
+            let res = e.data
+            if (res.prex === "ourbimBaseMessage") {
+                let errType = [0,1].includes(res.type)
+                if(errType){
+                    this.closeWebSocket();
+                    this.isFade = true;
+                    this.hiddenState = -1
+                    this.baseExceptMessge = res.message
+                }
+            }
           if (e.data.prex === "ourbimMessage") {
             // 控制栏显示隐藏
             if (e.data.type === 1001) {
@@ -462,36 +438,6 @@ export default {
       };
       doAction(params)
     },
-    getError(e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-03-16 13:55:19
-       * @description: 处理异常
-       */
-      let errorList = [
-        101, 102, 103, 201, 202, 203, 301, 401, 402, 403, 404, 501, 502, 503,
-        504, 601, 602, 603, 1001, 1002, 1003, 1004,
-      ];
-      // if (e.type === 200) {
-      //   this.getMonitor();
-      // }
-      if (errorList.indexOf(e.type) !== -1) {
-        if (this.userType == "0") {
-          this.hiddenState = 5;
-          this.isFade = true;
-          this.closeWebSocket();
-        } else {
-          this.hiddenState = 4;
-          this.isFade = true;
-          this.closeWebSocket();
-          this.$message({
-            message: this.$t("webClient.loadBox.message[6]"),
-            type: "warning",
-            customClass: "set-index-message",
-          });
-        }
-      }
-    },
     handleType(e) {
       /**
        * @Author: zk
@@ -539,12 +485,7 @@ export default {
        * @description: 操作指令
        */
       if (!this.taskId) {
-        this.$message({
-          message: this.$t("webClient.loadBox.message[1]"),
-          type: "error",
-          customClass: "set-index-message",
-        });
-        return;
+        return this.$message.error("场景未加载，请刷新");
       }
       let params = {
         taskid: this.taskId,
@@ -586,18 +527,8 @@ export default {
           // 定位主视图
           params.action = "cameraPosAll";
           break;
-        // case 13:
-        //   // 启动应用
-        //   params.action = "platform";
-        //   params.plateType = this.isMobile() ? 1 : 0;
-        //   params.width = document.body.clientWidth;
-        //   params.height = document.body.clientHeight;
-        //   break;
         default:
           break;
-      }
-      if (this.handleState == 13) {
-        return;
       }
       //模型操作
       await doAction(params)
@@ -608,10 +539,7 @@ export default {
                 this.$refs.getCube.resetActive(realProject);
               }
             }
-            this.$message({
-              message: this.$t("webClient.loadBox.message[2]"),
-              type: "success",
-            });
+            this.$message.success("指令下发成功")
         })
     },
     // 关闭模块
@@ -781,8 +709,6 @@ export default {
             };
             this.sentParentIframe(messageInfo);
             if (Number(realData.progress) === 1) {
-              this.handleState = 13;
-              this.updateOrder();
               if (this.uaInfo.match(/MicroMessenger/i) != "micromessenger") {
                 this.delMaskTimer(500);
               } else {
@@ -955,7 +881,7 @@ export default {
         let count = 0;//计算请求次数
         getTaskId({projectId:this.$route.query.appid}).then(res=>{
             const getResponse = ()=>{
-                if(this.hiddenState !== 0 && this.hiddenState !== 3) return
+                if(this.hiddenState !== 0) return
                 getProccess({taskId:res.data.task_id}).then(async res=>{
                     this.loadingProccessArr = res.data
                     for (let i = 0; i < res.data.length; i++) {
@@ -1042,11 +968,6 @@ export default {
         .catch((err) => {
           // 最大节点已达到上限时
           this.maxNodes = true;
-          this.$message({
-            type: "error",
-            message: this.$t("webClient.loadBox.message[4]"),
-            customClass: "set-index-message",
-          });
         });
     },
     isMobile() {

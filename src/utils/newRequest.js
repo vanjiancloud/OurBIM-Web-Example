@@ -42,20 +42,6 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
-
-      // 403: token失效;
-      // if (res.code === 403) {
-      //   // to re-login
-      //   MessageBox.confirm('您已注销，可以取消以停留在此页面，或再次登录', '退出', {
-      //     confirmButtonText: '登录',
-      //     cancelButtonText: '取消',
-      //     type: 'warning'
-      //   }).then(() => {
-      //     store.dispatch('user/resetToken').then(() => {
-      //       location.reload()
-      //     })
-      //   })
-      // }
       return Promise.reject(new Error(res.message))
     } else {
       return res
