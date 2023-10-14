@@ -9,7 +9,7 @@
             <el-table-column prop="code" label="授权码" min-width="140" />
             <el-table-column label="产品版本">
                 <template slot-scope="scope">
-                    <el-tooltip :disabled="tooltipData.length == 0" placement="right">
+                    <el-tooltip :disabled="tooltipData.length == 0" :visible-arrow="false" popper-class="tooltip" placement="right">
                         <div slot="content" class="tooltipBox">
                             <el-table :data="tooltipData">
                                 <el-table-column prop="billingName" label="计费项目" />
@@ -18,9 +18,9 @@
                                 <el-table-column prop="billingPrice" label="计费单价(资源点数)" />
                             </el-table>
                         </div>
-                        <div @click="showData(scope.row.versionName)">
-                            <span>{{ scope.row.versionName }}</span><br>
-                            <i class="el-icon-question"></i>
+                        <div @click="showData(scope.row.versionName)" class="pointer">
+                            <span>{{ scope.row.versionName }}</span>
+                            <i class="el-icon-question blue"></i>
                         </div>
                     </el-tooltip>
                 </template>
@@ -256,5 +256,12 @@ export default {
     &-5::before {
         background: #999999;
     }
+}
+</style>
+<style>
+.tooltip {
+    /* background: #5EC8F3 !important; */
+    background: skyblue !important;
+    /* background: #03e2f0 !important; */
 }
 </style>
