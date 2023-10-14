@@ -4,25 +4,13 @@
             <el-button type="primary" @click="openCreateDialog">创建授权码</el-button>
             <el-button @click="jumpToBuy">购买套餐</el-button>
         </div>
-        <el-table :data="tableData" v-loading="loading" @cell-mouse-enter="showData">
+        <el-table :data="tableData" v-loading="loading">
             <el-table-column prop="number" label="授权码编号" min-width="110"/>
             <el-table-column prop="code" label="授权码" min-width="140" />
             <el-table-column label="产品版本">
-                <template slot-scope="scope">
-                    <el-tooltip :disabled="tooltipData.length == 0" :visible-arrow="false" popper-class="tooltip" placement="right">
-                        <div slot="content" class="tooltipBox">
-                            <el-table :data="tooltipData">
-                                <el-table-column prop="billingName" label="计费项目" />
-                                <el-table-column prop="billingUnit" label="计费规格" />
-                                <el-table-column prop="rule" label="判断规则" />
-                                <el-table-column prop="billingPrice" label="计费单价(资源点数)" />
-                            </el-table>
-                        </div>
-                        <div @click="showData(scope.row.versionName)" class="pointer">
-                            <span>{{ scope.row.versionName }}</span>
-                            <i class="el-icon-question blue"></i>
-                        </div>
-                    </el-tooltip>
+                <template slot-scope="scope">   
+                    <span>{{ scope.row.versionName }}</span>
+                    <svg-icon v-if="scope.row.showPriceDetailIcon" icon-class="feeDetail" class="svgBtn" @click="showPriceDetail(scope.row)"/>
                 </template>
             </el-table-column>
             <el-table-column prop="createTime" label="创建/购买日期" />
@@ -51,6 +39,15 @@
             :limit.sync="pagination.pageSize"
             @pagination="handlePageChange"
         />
+
+        <el-dialog title="计费详情" :visible.sync="priceDetailDialog">
+            <el-table :data="priceDetailData">
+                <el-table-column prop="billingName" label="计费项目" />
+                <el-table-column prop="billingUnit" label="计费规格" />
+                <el-table-column prop="rule" label="判断规则" />
+                <el-table-column prop="billingPrice" label="计费单价(资源点数)" />
+            </el-table>
+        </el-dialog>
 
         <el-dialog title="创建授权码" :visible.sync="showDialog">
             <el-form ref="createForm" :model="createForm" :rules="rules">
@@ -116,13 +113,13 @@ export default {
             },
             statusObj: {},
             productObj: {},
-            tooltipData: [],
+            priceDetailDialog: false,
+            priceDetailData: [],
             selectProductData: []
         }
     },
     created() {
         this.getData()
-        this.getProductData()
         this.getCodeStatusData()
     },
     methods: {
@@ -143,14 +140,27 @@ export default {
                     this.productList.forEach(item => {
                         this.productObj[item.name] = item
                     })
+                    this.updatePriceDetailIconStatus()
                 }
             })
         },
 
-        showData(row) {
-            this.tooltipData = []
+        updatePriceDetailIconStatus() {
+            this.tableData = this.tableData.map(item => {
+                if (this.productObj[item.versionName]?.billingList) {
+                    item.showPriceDetailIcon = true
+                } else {
+                    item.showPriceDetailIcon = false
+                }
+                return item
+            })
+        },
+
+        showPriceDetail(row) {
+            this.priceDetailData = []
             if (this.productObj[row.versionName]?.billingList) {
-                this.tooltipData = this.productObj[row.versionName].billingList
+                this.priceDetailData = this.productObj[row.versionName].billingList
+                this.priceDetailDialog = true
             }
         },
 
@@ -172,7 +182,11 @@ export default {
                         item.activateTime = item.activateTime ? item.activateTime : '-'
                         item.expireTime = item.expireTime ? item.expireTime : '-'
                         item.store = item.store ? item.store + ' GB' : '不限'
+                        item.showPriceDetailIcon = false
                     })
+                    if (this.productList.length === 0) {
+                        this.getProductData()
+                    }
                     this.pagination.total = res.data.total
                 }
             })
@@ -247,6 +261,15 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.svgBtn{
+    color: #CFCFCF;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 5px;
+    &:hover{
+        color: #00aaf0;
+    }
+}
 .tooltipBox {
     min-width: 600px;
 }
