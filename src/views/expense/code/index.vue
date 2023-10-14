@@ -1,7 +1,7 @@
 <template>
     <div class="page-contain">
         <div class="flex-right">
-            <el-button type="primary" @click="showDialog = true">创建授权码</el-button>
+            <el-button type="primary" @click="openCreateDialog">创建授权码</el-button>
             <el-button @click="jumpToBuy">购买套餐</el-button>
         </div>
         <el-table :data="tableData" v-loading="loading" @cell-mouse-enter="showData">
@@ -57,7 +57,7 @@
                 <el-row>
                     <el-col :xs="24" :sm="24" :lg="24">
                         <el-form-item label="选择授权产品版本" prop="version">
-                            <el-select v-model="createForm.version" class="formInputWidth" placeholder="请选择产品版本">
+                            <el-select v-model="createForm.version" class="formInputWidth" placeholder="请选择产品版本" @change="selectProduct">
                                 <el-option
                                     v-for="item in productList"
                                     :key="item.id"
@@ -70,6 +70,12 @@
                     </el-col>
                 </el-row>
             </el-form>
+            <el-table :data="selectProductData" v-if="selectProductData.length !== 0">
+                <el-table-column prop="billingName" label="计费项目" />
+                <el-table-column prop="billingUnit" label="计费规格" />
+                <el-table-column prop="rule" label="判断规则" />
+                <el-table-column prop="billingPrice" label="计费单价(资源点数)" />
+            </el-table>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="showDialog = false">取 消</el-button>
                 <el-button type="primary" @click="createCode">确 定</el-button>
@@ -110,7 +116,8 @@ export default {
             },
             statusObj: {},
             productObj: {},
-            tooltipData: []
+            tooltipData: [],
+            selectProductData: []
         }
     },
     created() {
@@ -175,6 +182,20 @@ export default {
             this.pagination.pageNum = data.pageIndex
             this.pagination.pageSize = data.pageSize
             this.getData()
+        },
+
+        openCreateDialog() {
+            this.showDialog = true
+            this.$refs.createForm?.resetFields()
+            this.selectProductData = []
+        },
+
+        selectProduct() {
+            this.productList.some(item => {
+                if (item.id == this.createForm.version && item?.billingList) {
+                    this.selectProductData = item.billingList
+                }
+            })
         },
 
         createCode() {
