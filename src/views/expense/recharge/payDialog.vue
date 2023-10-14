@@ -68,12 +68,6 @@ export default {
             loadPayUrl: true
         }
     },
-    watch: {},
-    computed: {
-        payTypeaa() {
-            return this.payType
-        }
-    },
     methods: {
         show(formData, code) {
             this.rechargeForm = JSON.parse(JSON.stringify(formData))
@@ -90,12 +84,13 @@ export default {
             this.loadPayUrl = true
             const payWay = this.payType === 'weixin' ? 'zhifubao' : 'weixin'
             this.$emit('changePayType', payWay)
-            this.getPayUrl()
+            this.getPayUrl(payWay)
         },
 
-        getPayUrl() {
+        getPayUrl(payWay) {
+            const payType = payWay ? payWay : this.payType
             const params = {
-                source: this.rechargeForm.payWay === 'weixin' ? 1 : 2,
+                source: payType === 'weixin' ? 1 : 2,
                 userId: Getuserid(),
                 code: this.orderCode
             }
@@ -118,7 +113,7 @@ export default {
             const params = {
                 discountCode: this.rechargeForm.coupon,
                 money: this.rechargeForm.payNum,
-                source: this.rechargeForm.payWay === 'weixin' ? 1 : 2,
+                source: this.payType === 'weixin' ? 1 : 2,
                 userId: Getuserid()
             }
             createTopUpOrder(params).then(res => {
