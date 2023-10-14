@@ -218,13 +218,25 @@ export default {
         },
 
         resetCode(row) {
-            resetAuthorizationCode(row.id).then(res => {
-                if (res.code === 200) {
-                    this.$message.success('重置成功')
-                    this.getData()
-                    this.$store.dispatch('user/getTotal')
-                }
-            })
+            if (row.status != '2') {
+                this.$message.warning("无法重置，只有已激活授权码才能重置！")
+                return
+            }
+
+            this.$confirm(`重置【${row.code}】授权码后无法恢复，确认是否重置？`, '重置', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                closeOnClickModal:false,
+                type: 'warning'
+            }).then(() => {
+                resetAuthorizationCode(row.id).then(res => {
+                    if (res.code === 200) {
+                        this.$message.success('重置成功')
+                        this.getData()
+                        this.$store.dispatch('user/getTotal')
+                    }
+                })
+            }).catch(() => {})
         },
 
         jumpToBuy() {
