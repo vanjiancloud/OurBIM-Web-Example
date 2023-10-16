@@ -79,7 +79,7 @@
             <el-table-column align="center" prop="consumeContent" label="消费内容" />
             <el-table-column align="center" prop="price" show-overflow-tooltip label="服务单价(资源点)">
                 <template #default="scope">
-                    {{ scope.row.price }} {{ scope.row.consumeUnit }}
+                    {{ scope.row.price }} <span v-if="scope.row.consumeUnit">/ {{ scope.row.consumeUnit }}</span>
                 </template>
             </el-table-column>
             <el-table-column align="center" label="消费时间" min-width="140">
