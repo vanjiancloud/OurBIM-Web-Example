@@ -42,12 +42,11 @@
               </div>
               <!-- 转化失败 -->
               <div :style="{'display':'flex','justify-content':'center','align-items':'center'}">
-                <span class="status">{{ formatStatus(scope.row.applidStatus) }}</span>
+                <span class="status" :class="{status1:['0','1','6'].includes(scope.row.applidStatus), status2:['3','4','5'].includes(scope.row.applidStatus)}">{{ formatStatus(scope.row.applidStatus) }}</span>
                 <div class="err-icon"><img src="@/assets/err.png" alt="" /></div>
               </div>
             </el-tooltip>
-            <div v-else class="status">{{ formatStatus(scope.row.applidStatus) }}</div>
-
+            <div v-else class="status" :class="{status1:['0','1','6'].includes(scope.row.applidStatus), status2:['3','4','5'].includes(scope.row.applidStatus)}">{{ formatStatus(scope.row.applidStatus) }}</div>
             <el-progress
               :text-inside="true"
               :percentage="scope.row.progress"
@@ -73,7 +72,7 @@
                             <el-dropdown-item v-if="scope.row.applidStatus === '2'" @click.native="handleCommand('分享',scope.row)">分享</el-dropdown-item>
                             <el-dropdown-item v-if="!['1','5','6'].includes(scope.row.applidStatus)" @click.native="handleCommand('编辑',scope.row)">编辑</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false') && scope.row.fileSize!='0'" @click.native="handleCommand('下载',scope.row)">下载</el-dropdown-item>
-                            <el-dropdown-item v-if="scope.row.appType === '0'&&scope.row.applidStatus === '2'&&scope.row.fileSize!='0'" @click.native="handleCommand('重新转换',scope.row)">重新转换</el-dropdown-item>
+                            <el-dropdown-item @click.native="handleCommand('重新转换',scope.row)">重新转换</el-dropdown-item>
                             <el-dropdown-item v-if="scope.row.applidStatus !== '5'" @click.native="handleCommand('删除',scope.row)">删除</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
@@ -92,7 +91,7 @@
             <div class="title">{{ item.appName }}</div>
             <div class="flexBetween">
                 <div class="type">类型：{{ item | modelType}}</div>
-                <div class="status" :class="{'status1':item.status==1,'status2':item.status==2,'status3':item.status==3,'status4':item.status==4,'status5':item.status==5}">
+                <div class="status" :class="{status1:['0','1','6'].includes(item.applidStatus), status2:['3','4','5'].includes(item.applidStatus)}">
                   {{ formatStatus(item.applidStatus) }}
                 </div>
             </div>
@@ -746,16 +745,14 @@ export default {
 
 <style lang="less" scoped>
 
-.status {
-    position: relative;
-    &::before {
-        content: "";
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        background: #14dda6;
-        border-radius: 100%;
-        margin-right: 6px;
+.status1{
+    &::before{
+        background: #FF7F28!important;
+    }
+}
+.status2{
+    &::before{
+        background: #FF7F7F!important;
     }
 }
 

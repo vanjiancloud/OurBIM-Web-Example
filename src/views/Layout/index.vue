@@ -180,6 +180,7 @@ export default {
     components: { Footer },
     data() {
         return {
+            timer: null,//定时器
             fold:true,//菜单是否展开
             orderList: [
                 {
@@ -251,14 +252,6 @@ export default {
             ]
         };
     },
-    created() {
-        this.getData()
-    },
-    mounted() {
-        this.$nextTick(() => {
-            this.getEchart()
-        })
-    },
     computed: {
         user() {
             return this.$store.state.user.userInfo || {}
@@ -281,12 +274,34 @@ export default {
         },
     },
     watch: {},
-    activated() {},
-    destroyed() {},
+    created() {
+        this.$store.dispatch('user/getUser')
+        this.startTimer();
+    },
+    mounted() {
+        this.$nextTick(() => {
+            this.getEchart()
+        })
+    },
+    destroyed() {
+        this.stopTimer();
+    },
+    beforeRouteLeave(to, from, next) {
+        this.stopTimer();
+        next()
+    },
     methods: {
-        getData(){
-            this.$store.dispatch('user/getUser')
+        startTimer() {
             this.$store.dispatch('user/getTotal')
+            this.timer = setInterval(() => {
+                this.$store.dispatch('user/getTotal')
+            }, 3000);
+        },
+        stopTimer() {
+            if (this.timer) {
+                clearInterval(this.timer);
+                this.timer = null;
+            }
         },
         // 总并发
         getEchart() {

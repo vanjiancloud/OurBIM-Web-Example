@@ -77,7 +77,7 @@ export default {
     mounted() { },
     methods: {
         getList(){
-            list({...this.form,isRunning:this.activeName}).then((res)=>{
+            list({...this.form,isRunning:this.activeName,userAccount:this.$store.state.user.userId}).then((res)=>{
                 this.tableData = res.data
                 this.total = res.count
             })

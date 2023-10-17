@@ -53,7 +53,7 @@
             <div class="listItem" v-for="(item,index) in tableData" :key="index">
                 <el-image :src="item.fileUrl" class="defaultImg">
                     <div slot="error" class="image-slot">
-                        <img :src="require('@/assets/default/list.png')"/>
+                        <img :src="require('@/assets/default/listCAD.png')"/>
                     </div>
                 </el-image>
                 <div class="title">{{ item.fileName }}</div>

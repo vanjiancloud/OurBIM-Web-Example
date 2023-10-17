@@ -1,7 +1,7 @@
 <!-- 无操作时限 -->
 <template>
     <div class="box">
-        <div class="tips">单位：秒，指定时间内无操作释放连接，0:表示一直保持连续</div>
+        <div class="tips">单位：秒，指定时间内无操作释放连接，0:表示一直保持连接</div>
         <el-form ref="form" :model="form" :rules="rules" label-width="130px" class="form">
             <el-form-item label="无操作时限（s）" prop="time">
                 <div class="flexStart">
