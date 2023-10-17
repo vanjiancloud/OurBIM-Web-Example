@@ -11,8 +11,10 @@
                 <el-col :xs="12" :sm="8" :lg="8">
                     <el-form-item label="账期" prop="consumerDate">
                         <el-date-picker
+                            clearable
                             class="formInputWidth"
                             v-model="searchForm.consumerDate"
+                            @change="getData"
                             placeholder="请选择有效时间"
                             type="month"
                             value-format="yyyy-MM"
@@ -21,7 +23,13 @@
                 </el-col>
                 <el-col :xs="12" :sm="8" :lg="8">
                     <el-form-item label="计费方式" prop="billingMode">
-                        <el-select v-model="searchForm.billingMode" class="formInputWidth" placeholder="请选择计费方式">
+                        <el-select
+                            clearable
+                            v-model="searchForm.billingMode"
+                            class="formInputWidth"
+                            placeholder="请选择计费方式"
+                            @change="getData"
+                        >
                             <el-option
                                 v-for="item in billingModeList"
                                 :key="item.code"
@@ -34,8 +42,10 @@
                 <el-col :xs="12" :sm="8" :lg="8">
                     <el-form-item label="消费内容" prop="consumeContent">
                         <el-select
+                            clearable
                             v-model="searchForm.consumeContent"
                             class="formInputWidth"
+                            @change="getData"
                             placeholder="请选择消费内容"
                         >
                             <el-option
@@ -50,8 +60,10 @@
                 <el-col :xs="12" :sm="8" :lg="8">
                     <el-form-item label="授权码" prop="authorizationCode">
                         <el-select
+                            clearable
                             v-model="searchForm.authorizationCode"
                             class="formInputWidth"
+                            @change="getData"
                             placeholder="请选择授权码产品版本"
                         >
                             <el-option v-for="item in productList" :key="item.id" :label="item.name" :value="item.id">
@@ -60,9 +72,7 @@
                     </el-form-item>
                 </el-col>
 
-                <el-button class="marginleft20" type="primary" @click="getData">查询</el-button>
-                <el-button type="primary" @click="resetSearch">重置</el-button>
-                <el-button type="info">导出</el-button>
+                <el-button type="primary" class="marginleft20">导出</el-button>
             </el-row>
         </el-form>
 
@@ -87,15 +97,11 @@
                     {{ scope.row.consumeStartTime }} 到 {{ scope.row.consumeEndTime }}
                 </template>
             </el-table-column>
-            <el-table-column align="center" prop="consumeTime" label="消费容量/时长" >
-                <template #default="scope">
-                    {{ scope.row.consumeTime }} {{ scope.row.consumeUnit }}
-                </template>
+            <el-table-column align="center" prop="consumeTime" label="消费容量/时长">
+                <template #default="scope"> {{ scope.row.consumeTime }} {{ scope.row.consumeUnit }} </template>
             </el-table-column>
             <el-table-column align="center" prop="consumeMoney" label="消费资源点数">
-                <template #default="scope">
-                    {{ scope.row.consumeMoney }} {{ scope.row.consumeUnit }}
-                </template>
+                <template #default="scope"> {{ scope.row.consumeMoney }} {{ scope.row.consumeUnit }} </template>
             </el-table-column>
             <el-table-column align="center" prop="discountMoney" label="优惠资源点数" />
             <el-table-column align="center" prop="consumeActualMoney" label="实扣资源点数" />
@@ -113,10 +119,7 @@
             @pagination="handlePageChange"
         />
 
-        <orderDetail
-            ref="orderDetailDialog"
-            @get-data="getData"
-        ></orderDetail>
+        <orderDetail ref="orderDetailDialog" @get-data="getData"></orderDetail>
     </div>
 </template>
 
@@ -237,6 +240,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/.el-input__inner{
+    background-color: #FFFFFF;
+    height: 36px;
+    line-height: 36px;
+}
 .formInputWidth {
     width: 100% !important;
     margin: 0 20px 0 0;
