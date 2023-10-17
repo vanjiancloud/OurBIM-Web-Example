@@ -73,7 +73,7 @@ export default {
                 if (valid) {
                     editPassword(params).then(res => {
                         if (res.code === 200) {
-                            this.$message.sucess('修改成功')
+                            this.$message.success('修改成功')
                         }
                     })
                 }
