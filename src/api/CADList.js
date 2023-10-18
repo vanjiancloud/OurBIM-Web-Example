@@ -2,7 +2,9 @@
 import axios from 'axios'
 
 // export const cadRequestUrl = `http://172.16.100.154:11088/vjapi` // 本地环境
-export const cadRequestUrl = `https://api.ourbim.com:11088/vjapi` // 线上正式环境
+// export const cadRequestUrl = `https://api.ourbim.com:11088/vjapi` // 线上正式环境
+export const cadRequestUrl = `https://xr.ourbim.com:10088/vjapi` // 线上正式环境
+// export const cadRequestUrl = `http://localhost:11088/vjapi` // 线上正式环境
 // 新建GIS数据服务
 export function addGISLayerServer(params, data) {
   return axios({

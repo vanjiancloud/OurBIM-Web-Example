@@ -249,7 +249,8 @@ export default {
         toProject(row){
             const splitArr = row.filePath.split('/')
             const fileName = splitArr[splitArr.length - 1].split('.dxf')[0]
-            const url = `https://www.ourbim.com/bim_CAD/?file=${fileName}`
+            // const url = `https://www.ourbim.com/bim_CAD/?file=${fileName}`
+            const url = `http://120.86.64.201:5023/bim_CAD/?file=${fileName}`
             // const url = `http://127.0.0.1:5174/bim_CAD/?file=${fileName}`
             window.open(url)
         }
