@@ -53,7 +53,7 @@
             <div class="listItem" v-for="(item,index) in tableData" :key="index">
                 <el-image :src="item.fileUrl" class="defaultImg">
                     <div slot="error" class="image-slot">
-                        <img :src="require('@/assets/default/list.png')"/>
+                        <img :src="require('@/assets/default/listCAD.png')"/>
                     </div>
                 </el-image>
                 <div class="title">{{ item.fileName }}</div>
@@ -249,7 +249,8 @@ export default {
         toProject(row){
             const splitArr = row.filePath.split('/')
             const fileName = splitArr[splitArr.length - 1].split('.dxf')[0]
-            const url = `https://www.ourbim.com/bim_CAD/?file=${fileName}`
+            // const url = `https://www.ourbim.com/bim_CAD/?file=${fileName}`
+            const url = `http://120.86.64.201:5023/bim_CAD/?file=${fileName}`
             // const url = `http://127.0.0.1:5174/bim_CAD/?file=${fileName}`
             window.open(url)
         }

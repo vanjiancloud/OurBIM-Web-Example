@@ -58,7 +58,7 @@
             <div class="listItem" v-for="(item,index) in tableData" :key="index" @click="item.isGroup === '1' ? cellClick(item):''" :style="{cursor:item.isGroup === '1'?'pointer':'auto'}">
                 <el-image :src="item.imgPath" class="defaultImg">
                     <div slot="error" class="image-slot">
-                        <img :src="require('@/assets/default/list.png')"/>
+                        <img :src="require('@/assets/default/list1.png')"/>
                     </div>
                 </el-image>
                 <div class="title">{{ item.isGroup === '1'?item.groupName:item.textureName }}</div>
@@ -211,30 +211,9 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-// .listItem{
-//     width: 180px!important;
-//     min-width: 180px!important;
-//     max-width: 24%!important;
-// }
-// @media only screen and (min-width: 1318px) and (max-width: 1514px) {
-//     .listItem {
-//         max-width: 18%!important;
-//     }
-// }
-// @media only screen and (min-width: 1514px) and (max-width: 1750px) {
-//     .listItem {
-//         max-width: 15%!important;
-//     }
-// }
-// @media only screen and (min-width: 1750px) and (max-width: 1920px) {
-//     .listItem {
-//         max-width: 10%!important;
-//     }
-// }
-// @media only screen and (min-width: 1921px) {
-//     .listItem {
-//         max-width: 180px!important;
-//         min-width: 180px!important;
-//     }
-// }
+.List .subContent .listBox .listItem{
+    width: 180px!important;
+    flex: initial;
+    min-width: initial;
+}
 </style>

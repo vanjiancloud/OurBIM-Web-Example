@@ -58,11 +58,11 @@
                 </template>
             </el-table-column>
             <el-table-column label="状态">
-                <template slot-scope="scope">
-                    <div>
-                        {{ scope.row.ourbimComponentInfo&&status[scope.row.ourbimComponentInfo.comStatus] }}
+                <template slot-scope="scope" v-if="scope.row.ourbimComponentInfo">
+                    <div class="status" :class="{status1:['0','1','6'].includes(scope.row.ourbimComponentInfo.comStatus), status2:['3','4','5'].includes(scope.row.ourbimComponentInfo.comStatus)}">
+                        {{ status[scope.row.ourbimComponentInfo.comStatus] }}
                         <!-- 转换失败 -->
-                        <i class="el-icon-error error" v-if="scope.row.ourbimComponentInfo && scope.row.ourbimComponentInfo.comStatus === '3'"></i>
+                        <i class="el-icon-error error" v-if="scope.row.ourbimComponentInfo.comStatus === '3'"></i>
                     </div>
                     <!-- 转换中 -->
                     <el-progress
@@ -71,7 +71,7 @@
                         :show-text="true"
                         :stroke-width="13"
                         color="#00aaf0"
-                        v-if="scope.row.ourbimComponentInfo && scope.row.ourbimComponentInfo.comStatus === '1' && scope.row.ourbimComponentInfo.progress !== 100"
+                        v-if="scope.row.ourbimComponentInfo.comStatus === '1' && scope.row.ourbimComponentInfo.progress !== 100"
                     >
                     </el-progress>
                 </template>
@@ -90,13 +90,14 @@
             <div class="listItem" v-for="(item,index) in tableData" :key="index" @click="item.isGroup === '1' ? cellClick(item):''" :style="{cursor:item.isGroup === '1'?'pointer':'auto'}">
                 <el-image :src="item.isGroup === '1' ? item.url : item.ourbimComponentInfo.comUrl" class="defaultImg">
                     <div slot="error" class="image-slot">
-                        <img :src="require('@/assets/default/list.png')"/>
+                        <img v-if="item.isGroup === '1'" :src="require('@/assets/default/list3.png')"/>
+                        <img v-else :src="require('@/assets/default/list4.png')"/>
                     </div>
                 </el-image>
                 <div class="title">{{ item.isGroup === '1'?item.groupName:item.ourbimComponentInfo.comName }}</div>
                 <div class="flexBetween">
                     <div class="type">类型：{{ item.isGroup === '1' ? '构件分组' : '构件' }}</div>
-                    <div class="status" v-if="item.isGroup === '0'">{{ status[item.ourbimComponentInfo.comStatus] }}</div>
+                    <div class="status" v-if="item.isGroup === '0'" :class="{status1:['0','1','6'].includes(item.ourbimComponentInfo.comStatus), status2:['3','4','5'].includes(item.ourbimComponentInfo.comStatus)}">{{ status[item.ourbimComponentInfo.comStatus] }}</div>
                 </div>
                 <div class="flexBetween">
                     <div>
@@ -271,5 +272,21 @@ export default {
 .error{
     color: red;
     font-size: 20px;
+}
+
+.status1{
+    &::before{
+        background: #FF7F28!important;
+    }
+}
+.status2{
+    &::before{
+        background: #FF7F7F!important;
+    }
+}
+.List .subContent .listBox .listItem{
+    width: 180px!important;
+    flex: initial;
+    min-width: initial;
 }
 </style>

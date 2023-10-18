@@ -52,7 +52,7 @@
             <div class="listItem" v-for="(item,index) in tableData" :key="index">
                 <el-image :src="item.thumbnail" class="defaultImg">
                     <div slot="error" class="image-slot">
-                        <img :src="require('@/assets/default/list.png')"/>
+                        <img :src="require('@/assets/default/listGis.png')"/>
                     </div>
                 </el-image>
                 <div class="title">{{ item.gisServerName }}</div>

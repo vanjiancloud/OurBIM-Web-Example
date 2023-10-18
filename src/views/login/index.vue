@@ -503,8 +503,8 @@ export default {
   justify-content: space-around;
   align-items: center;
   background-image: url(./bg.png);
-  background-size: cover;
   background-size: 100% 100%;
+  overflow: hidden;
   .picture {
     height: 100vh;
     width: 40vw;

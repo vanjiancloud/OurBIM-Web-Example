@@ -55,94 +55,95 @@
         <!-- 内容区 -->
         <el-main>
             <!-- 头部统计部分 -->
-            <el-row :gutter="20" class="statistics" type="flex" style="flex-flow: row wrap;">
-                <el-col :md="10" :xs="10" :sm="10" :lg="4" :span="16">
-                    <div class="statisticsBox user">
-                        <img :src="user.imgUrl || require('./img/man.png')" />
-                        <div class="userRight">
-                            <span class="name">{{ user.name || user.mobile }}</span>
-                            <span class="userID">ID:{{ user.userid }}</span>
-                        </div>
+            <div class="statistics">
+                <div class="statisticsBox user">
+                    <img :src="user.imgUrl || require('./img/man.png')" />
+                    <div class="userRight">
+                        <span class="name">{{ user.name || user.mobile }}</span>
+                        <span class="userID">ID:{{ user.userid }}</span>
                     </div>
-                </el-col>
-                <el-col :md="14" :xs="14" :sm="14" :lg="8">
-                    <div class="statisticsBox server">
-                        <div class="statisticsTitle">公有云服务使用</div>
-                        <!-- 按需计费 -->
-                        <div class="flexSpaceBetween needFee" v-if="total.billingMode === '0'">
-                            <div>
-                                <div class="needFeeTitle">上传数据统计</div>
-                                {{ total.useStore }}GB
+                </div>
+                <div class="statisticsBox server">
+                    <div class="statisticsTitle">公有云服务使用</div>
+                    <!-- 按需计费 -->
+                    <div class="flexSpaceBetween needFee" v-if="total.billingMode === '0'">
+                        <div style="width: 40%;margin-right: 4%;">
+                            <div class="needFeeNum">{{ total.useStore }}<span>GB</span></div>
+                            <div class="needFeeTitle">
+                                <img src="./img/cunchu.png" alt="" />
+                                上传数据统计
                             </div>
-                            <div>
-                                <div class="needFeeTitle">实时并发统计</div>
-                                <div class="flexSpaceBetween needNum">
-                                    <div>
-                                        <p>{{ total.use3dConcurrency }}个</p>
+                        </div>
+                        <div class="serverItem">
+                            <div class="needTotalTitle">实时并发统计</div>
+                            <div class="flexSpaceBetween needNum">
+                                <div>
+                                    <div class="needFeeNum">{{ total.use3dConcurrency }}<span>个</span></div>
+                                    <div class="needFeeTitle">
                                         3D并发
                                     </div>
-                                    <div>
-                                        <p>{{ total.useArConcurrency+total.useVrConcurrency+total.useMrConcurrency }}个</p>
+                                </div>
+                                <div>
+                                    <div class="needFeeNum">{{ total.useArConcurrency+total.useVrConcurrency+total.useMrConcurrency }}<span>个</span></div>
+                                    <div class="needFeeTitle">
                                         VR/AR/MR并发
                                     </div>
-                                    <div>
-                                        <p>{{ total.usePreConcurrency }}/{{ total.preConcurrency }}个</p>
+                                </div>
+                                <div>
+                                    <div class="needFeeNum">{{ total.usePreConcurrency }}<span style="color: #6A7C87;font-size: 24px;">/{{ total.preConcurrency }}</span><span style="color: #6A7C87;">个</span></div>
+                                    <div class="needFeeTitle">
                                         预启动并发
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="serverBox" v-if="total.billingMode!=='0'">
-                            <div class="serverItem">
-                                <div class="serverPer" :class="{colorGray:!total.useStore}">{{ total.useStore&&(total.useStore/total.store*100).toFixed(2) || 0 }}%</div>
-                                <el-progress :text-inside="true" :stroke-width="16" :percentage="Number(total.useStore/total.store*100) || 0" :show-text="false" color="#02AAF0"></el-progress>
-                                <div class="serverUsed">
-                                    <img src="./img/cunchu.png" alt="" />
-                                    <span>已用储存 {{ total.useStore }}GB/{{ total.store }}GB</span>
-                                </div>
-                            </div>
-                            <div class="serverItem">
-                                <div class="flexBetween">
-                                    <div class="serverPer" :class="{colorGray:!total.useConcurrency}">{{ total.useConcurrency&&(total.useConcurrency/total.countConcurrency*100).toFixed(2)||0 }}%</div>
-                                    <div class="serverTotal">已用总并发 {{ total.useConcurrency }}/{{ total.countConcurrency }}</div>
-                                </div>
-                                <div id="erupt"></div>
-                                <div class="serverUsed">
-                                    <img src="./img/jiedian.png" alt="" />
-                                    <span>已用云VR/AR/MR并发 {{ total.useArConcurrency+total.useVrConcurrency+total.useMrConcurrency }}/{{ total.countConcurrency }}
-                                        <p>已用预启动并发 {{ total.usePreConcurrency }}/{{ total.preConcurrency }}</p>
-                                    </span>
-                                </div>
+                    </div>
+                    <div class="serverBox" v-if="total.billingMode==='1'">
+                        <div class="serverItem">
+                            <div class="serverPer" :class="{colorGray:!total.useStore}">{{ total.useStore&&(total.useStore/total.store*100).toFixed(2) || 0 }}%</div>
+                            <el-progress :text-inside="true" :stroke-width="16" :percentage="Number(total.useStore/total.store*100) || 0" :show-text="false" color="#02AAF0"></el-progress>
+                            <div class="serverUsed">
+                                <img src="./img/cunchu.png" alt="" />
+                                <span>已用储存 {{ total.useStore }}GB/{{ total.store }}GB</span>
                             </div>
                         </div>
-                    </div>
-                </el-col>
-                <el-col :md="10" :xs="10" :sm="10" :lg="5" v-if="total.billingMode==='1'">
-                    <div class="statisticsBox period">
-                        <div class="statisticsTitle">服务有效期</div>
-                        <div class="time">{{ total.startUseTime }} 至 {{ total.endUseTime }}</div>
-                        <el-button type="primary" size="small" class="grayBtn" style="width: 130px;"
-                            @click="$router.push('/server/parameter')">延长有效期</el-button>
-                    </div>
-                </el-col>
-                <el-col :md="14" :xs="14" :sm="14" :lg="7">
-                    <div class="statisticsBox account">
-                        <div class="statisticsTitle">账户信息</div>
-                        <div class="accountBox">
-                            <div class="accountItem">
-                                <div class="text">账户余额：<span :class="{colorGray:!total.money}">{{ total.money || 0 }}</span><span>资源点</span></div>
-                                <el-button type="primary" size="small" class="orangeBtn"
-                                    style="width: 120px;background-color:#FF7F28" @click="$router.push('/expense/recharge')">立即充值</el-button>
+                        <div class="serverItem">
+                            <div class="flexBetween">
+                                <div class="serverPer" :class="{colorGray:!total.useConcurrency}">{{ total.useConcurrency&&(total.useConcurrency/total.countConcurrency*100).toFixed(2)||0 }}%</div>
+                                <div class="serverTotal">已用总并发 {{ total.useConcurrency }}/{{ total.countConcurrency }}</div>
                             </div>
-                            <div class="accountItem">
-                                <div class="text">授权码：<span style="color:#00AAF0" :class="{colorGray:!total.codeSum}">{{ total.codeSum || 0 }}</span><span>个</span></div>
-                                <el-button type="primary" size="small" class="grayBtn"  @click="toOrder">查看</el-button>
-                                <el-button type="primary" size="small" class="grayBtn"  @click="toOrder">申请授权码</el-button>
+                            <div id="erupt"></div>
+                            <div class="serverUsed">
+                                <img src="./img/jiedian.png" alt="" />
+                                <span>已用云VR/AR/MR并发 {{ total.useArConcurrency+total.useVrConcurrency+total.useMrConcurrency }}/{{ total.countConcurrency }}
+                                    <p>已用预启动并发 {{ total.usePreConcurrency }}/{{ total.preConcurrency }}</p>
+                                </span>
                             </div>
                         </div>
+                        <div class="period serverItem" v-if="total.billingMode==='1'">
+                            <div class="statisticsTitle">服务有效期</div>
+                            <div class="time">{{ total.startUseTime }} 至 {{ total.endUseTime }}</div>
+                            <el-button type="primary" size="small" class="grayBtn" style="width: 130px;"
+                                @click="$router.push('/server/parameter')">延长有效期</el-button>
+                        </div>
                     </div>
-                </el-col>
-            </el-row>
+                </div>
+                <div class="statisticsBox account">
+                    <div class="statisticsTitle">账户信息</div>
+                    <div class="accountBox">
+                        <div class="accountItem" style="text-align: right;">
+                            <div class="text">账户余额：<span :class="{colorGray:!total.money}">{{ total.money || 0 }}</span><span>资源点</span></div>
+                            <el-button type="primary" size="small" class="orangeBtn"
+                                style="width: 120px;background-color:#FF7F28" @click="$router.push('/expense/recharge')">立即充值</el-button>
+                        </div>
+                        <div class="accountItem">
+                            <div class="text">授权码：<span style="color:#00AAF0" :class="{colorGray:!total.codeSum}">{{ total.codeSum || 0 }}</span><span>个</span></div>
+                            <el-button type="primary" size="small" class="grayBtn"  @click="toOrder">查看</el-button>
+                            <el-button type="primary" size="small" class="grayBtn"  @click="toOrder">申请授权码</el-button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <!-- 主体内容区 -->
             <div class="wrap">
                 <!-- 导航菜单 -->
@@ -180,6 +181,7 @@ export default {
     components: { Footer },
     data() {
         return {
+            timer: null,//定时器
             fold:true,//菜单是否展开
             orderList: [
                 {
@@ -251,14 +253,6 @@ export default {
             ]
         };
     },
-    created() {
-        this.getData()
-    },
-    mounted() {
-        this.$nextTick(() => {
-            this.getEchart()
-        })
-    },
     computed: {
         user() {
             return this.$store.state.user.userInfo || {}
@@ -281,12 +275,38 @@ export default {
         },
     },
     watch: {},
-    activated() {},
-    destroyed() {},
+    created() {
+        this.$store.dispatch('user/getUser')
+        this.startTimer();
+    },
+    mounted() {
+        this.$nextTick(() => {
+            setTimeout(()=>{
+                if(this.total.billingMode==='1'){
+                    this.getEchart()
+                }
+            },200)
+        })
+    },
+    destroyed() {
+        this.stopTimer();
+    },
+    beforeRouteLeave(to, from, next) {
+        this.stopTimer();
+        next()
+    },
     methods: {
-        getData(){
-            this.$store.dispatch('user/getUser')
+        startTimer() {
             this.$store.dispatch('user/getTotal')
+            this.timer = setInterval(() => {
+                this.$store.dispatch('user/getTotal')
+            }, 3000);
+        },
+        stopTimer() {
+            if (this.timer) {
+                clearInterval(this.timer);
+                this.timer = null;
+            }
         },
         // 总并发
         getEchart() {
@@ -558,9 +578,8 @@ export default {
         padding: 24px 32px;
 
         .statistics {
-            /deep/ .el-col {
-                padding-bottom: 16px;
-            }
+            display: flex;
+            gap: 24px;
 
             .statisticsTitle {
                 font-size: 18px;
@@ -572,18 +591,20 @@ export default {
             .statisticsBox {
                 background: #FFFFFF;
                 border-radius: 12px;
-                padding: 16px 24px;
+                padding: 16px 1.2%;
                 height: 100%;
                 margin-bottom: 16px;
+                height: 160px;
             }
 
             .user {
+                min-width: 200px;
+                width: 15%;
                 font-size: 18px;
                 font-family: PingFangSC-Medium, PingFang SC;
                 font-weight: 500;
                 color: #333333;
                 background: #ffffff url(./img/useBg.png) bottom right no-repeat;
-                // background-size: 70% 72%;
                 background-position: bottom right;
                 display: flex;
 
@@ -622,6 +643,12 @@ export default {
             }
 
             .server {
+                flex: 1;
+                .needNum{
+                    >div{
+                        flex: 1;
+                    }
+                }
                 .serverPer {
                     font-weight: 500;
                     color: #02AAF0;
@@ -633,6 +660,7 @@ export default {
                     margin-top: 18px;
                     margin-bottom: 3px;
                     color: #333333;
+                    font-size: 14px;
                 }
 
                 .serverUsed {
@@ -649,39 +677,44 @@ export default {
 
                 .serverBox {
                     display: flex;
+                    gap: 3%;
+                    .serverItem{
+                        flex:1;
+                    }
                 }
                 .needFee{
                     text-align: center;
-                    font-size: 20px;
-                    font-weight: bold;
-                    .needFeeTitle{
-                        margin-top: 20px;
-                        margin-bottom: 10px;
+                    .needTotalTitle{
                         font-size: 16px;
-                        font-weight: initial;
+                        color: #333333;
+                        margin-top: -22px;
                     }
-                    .needNum>div{
-                        margin: 0 8px;
-                        font-size: 14px;
-                        font-weight: initial;
-                        p{
-                            font-weight: bold;
-                            font-size: 20px;
-                            margin-bottom: 3px;
+                    .needFeeTitle{
+                        font-size: 13px;
+                        color: #999999;
+                        img{
+                            margin-right: 5px;
+                            width: 18px;
+                            height: auto;
+                            vertical-align: middle;
+                        }
+                    }
+                    .needFeeNum{
+                        font-size: 24px;
+                        font-weight: bold;
+                        color: #02AAF0;
+                        margin: 20px 0 15px 0;
+                        span{
+                            font-size: 16px;
+                            padding-left: 5px;
                         }
                     }
                 }
 
                 .serverItem {
                     position: relative;
-                    width: 100%;
-
-                    &:first-child {
-                        padding-right: 40px;
-                    }
 
                     &:last-child {
-                        padding-left: 40px;
 
                         &::before {
                             content: '';
@@ -704,22 +737,31 @@ export default {
 
             .period {
                 text-align: center;
+                padding-left: 3%;
                 .time {
-                    font-size: 14px;
+                    font-size: 13px;
                     font-weight: 400;
                     color: rgba(37, 34, 34, 0.78);
-                    margin: 22px 0 18px 0;
+                    margin: 10px 0 18px 0;
+                }
+                .statisticsTitle{
+                    font-size:16px;
+                    color: #333333;
+                    font-weight: inherit;
+                    margin-top: -22px;
                 }
             }
 
             .account {
+                min-width: 446px;
+                width: 28%;
                 .accountBox {
                     display: flex;
                 }
 
                 .accountItem {
                     position: relative;
-                    padding-right: 33px;
+                    padding-right: 6%;
 
                     .text {
                         margin: 19px 0 16px 0;
@@ -742,7 +784,7 @@ export default {
                     }
 
                     &:last-child {
-                        padding-left: 33px;
+                        padding-left: 6%;
                         padding-right: 0px;
 
                         &::before {
@@ -760,24 +802,9 @@ export default {
             }
         }
 
-        @media screen and (min-width:1200px) and (max-width: 1741px) {
-            .statistics {
-
-                .serverBox,
-                .accountBox {
-                    flex-direction: column;
-
-                    .serverItem,
-                    .accountItem {
-                        padding: 0 !important;
-
-                        &:last-child::before {
-                            width: 100%;
-                            height: 1px;
-                            margin-top: 12px;
-                        }
-                    }
-                }
+        @media screen and (max-width: 1470px) {
+            .serverUsed{
+                font-size: 10px!important;
             }
         }
 
