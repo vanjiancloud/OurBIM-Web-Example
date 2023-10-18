@@ -89,19 +89,19 @@
             <el-table-column align="center" prop="consumeContent" label="消费内容" />
             <el-table-column align="center" prop="price" label="服务单价(资源点)">
                 <template #default="scope">
-                    {{ scope.row.price }}<span v-if="scope.row.consumeUnit">/{{ scope.row.consumeUnit }}</span>
+                    {{ scope.row.price }}<span v-if="scope.row.consumeUnit && scope.row.price">/{{ scope.row.consumeUnit }}</span>
                 </template>
             </el-table-column>
             <el-table-column align="center" label="消费时间" min-width="140">
                 <template #default="scope">
-                    {{ scope.row.consumeStartTime }} 到 {{ scope.row.consumeEndTime }}
+                    {{ scope.row.consumeStartTime }} <span v-if="scope.row.consumeStartTime">到</span> {{ scope.row.consumeEndTime }}
                 </template>
             </el-table-column>
             <el-table-column align="center" prop="consumeTime" label="消费容量/时长">
                 <template #default="scope"> {{ scope.row.consumeTime }} {{ scope.row.consumeUnit }} </template>
             </el-table-column>
             <el-table-column align="center" prop="consumeMoney" label="消费资源点数">
-                <template #default="scope"> {{ scope.row.consumeMoney }} {{ scope.row.consumeUnit }} </template>
+                <template #default="scope"> {{ scope.row.consumeMoney }} </template>
             </el-table-column>
             <el-table-column align="center" prop="discountMoney" label="优惠资源点数" />
             <el-table-column align="center" prop="consumeActualMoney" label="实扣资源点数" />
