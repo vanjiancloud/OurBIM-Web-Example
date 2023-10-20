@@ -72,7 +72,7 @@
                         </div>
                         <!-- 分解模型-------滑块 -->
                         <div class="decompositionSubTool" v-if="item.key==='decompositionModel'&&item.check">
-                            <el-slider v-model="splitValue" :min="0" :max="10" :step="1" @change="changeDecomposition" style="width:100%"></el-slider>
+                            <el-slider v-model="splitValue" :min="0" :max="10" :step="1" @change="changeDecomposition"></el-slider>
                         </div>
                     </transition>
                 </div>
@@ -786,6 +786,7 @@ export default {
                 margin: 0 auto;
                 width: 150%;
                 padding: 0 100px;
+                box-sizing: content-box;
             }
         }
     }

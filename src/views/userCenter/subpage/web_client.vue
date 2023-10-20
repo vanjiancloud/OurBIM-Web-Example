@@ -248,7 +248,6 @@ export default {
   },
   mounted() {
     this.setTimeLoad();
-    this.getProccess()
     this.addMessageEvent();
     this.getLinkModelAppid(); // 获取appid
   },
@@ -861,7 +860,6 @@ export default {
             userName: "vanjian",  
             password: "vanjian666",  
             onSuccess: (e) => {
-                console.log("onConnected",this.client);
                 this.client.subscribe('task/#');
                 this.client.subscribe(`terminal/${this.$route.query.token}`);
                 this.getModelUrl();
@@ -884,6 +882,7 @@ export default {
             let res = JSON.parse(message.payloadString)
             if(res.taskId){
                 this.taskId = res.taskId
+                this.getProccess()
             }
         };
     },
@@ -962,28 +961,26 @@ export default {
             return new Promise(resolve => setTimeout(resolve, ms));
         }
         let count = 0;//计算请求次数
-        getTaskId({projectId:this.$route.query.appid}).then(res=>{
-            const getResponse = ()=>{
-                if(this.hiddenState !== 0) return
-                getProccess({taskId:res.data.task_id}).then(async res=>{
-                    this.loadingProccessArr = res.data
-                    for (let i = 0; i < res.data.length; i++) {
-                        if(this.webUrl || count > 30) return
-                        const element = res.data[i];
-                        if(this.loadingProccess > 0 && element.status==="waiting"){
-                            this.loadingProccess = i
-                            count++
-                            setTimeout(getResponse(),1000)
-                            return
-                        }else if(element.status==="success" && (count === 0 || (this.loadingProccess > 0 && this.loadingProccess < i))){
-                            this.loadingProccess = i
-                        }
-                        await sleep(200);
+        const getResponse = ()=>{
+            if(this.hiddenState !== 0) return
+            getProccess({taskId:this.taskId}).then(async res=>{
+                this.loadingProccessArr = res.data
+                for (let i = 0; i < res.data.length; i++) {
+                    if(this.webUrl || count > 30) return
+                    const element = res.data[i];
+                    if(this.loadingProccess > 0 && element.status==="waiting"){
+                        this.loadingProccess = i
+                        count++
+                        setTimeout(getResponse(),1000)
+                        return
+                    }else if(element.status==="success" && (count === 0 || (this.loadingProccess > 0 && this.loadingProccess < i))){
+                        this.loadingProccess = i
                     }
-                })
-            }
-            getResponse()
-        })
+                    await sleep(200);
+                }
+            })
+        }
+        getResponse()
     },
     // 获取流地址
     getModelUrl() {
@@ -1009,7 +1006,6 @@ export default {
       if (code) {
         params.code = code;
       }
-      console.log('🚀🚀🚀分辨率',params);
       MODELAPI.GETMODELINFO(params)
         .then((res) => {
             this.webUrl = res.data.url;

@@ -68,7 +68,7 @@
                     <!-- 按需计费 -->
                     <div class="flexSpaceBetween needFee" v-if="total.billingMode === '0'">
                         <div style="width: 40%;margin-right: 4%;">
-                            <div class="needFeeNum">{{ total.useStore }}<span>GB</span></div>
+                            <div class="needFeeNum">{{ Number(total.useStore).toFixed(2) }}<span>GB</span></div>
                             <div class="needFeeTitle">
                                 <img src="./img/cunchu.png" alt="" />
                                 上传数据统计

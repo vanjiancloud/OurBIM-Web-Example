@@ -19,12 +19,8 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   config => {
-    // if (store.getters.token) {
-    //   config.headers['token'] = getToken()
-    // }
-    if (Getuserid()) {
-      config.headers.common['token'] = Getuserid()
-    }
+    const params = new URLSearchParams(window.location.href);
+    config.headers.common['token'] = Getuserid() || params.get('userId')
     return config
   },
   error => {
