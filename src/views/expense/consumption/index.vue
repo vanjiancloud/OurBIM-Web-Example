@@ -72,7 +72,7 @@
                     </el-form-item>
                 </el-col>
 
-                <el-button type="primary" class="marginleft20">导出</el-button>
+                <el-button type="primary" class="marginleft20 blueBtn">导出</el-button>
             </el-row>
         </el-form>
 

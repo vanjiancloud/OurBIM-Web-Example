@@ -47,7 +47,7 @@
                         placeholder="请输入优惠券"
                         @change="changeCoupon"
                     ></el-input>
-                    <el-button class="left10" type="primary" @click="verifyCode">校验</el-button>
+                    <el-button class="left10 blueBtn" type="primary" @click="verifyCode">校验</el-button>
                 </div>
             </el-form-item>
         </el-form>

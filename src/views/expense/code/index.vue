@@ -1,8 +1,8 @@
 <template>
     <div class="page-contain">
         <div class="flex-right">
-            <el-button type="primary" @click="openCreateDialog">创建授权码</el-button>
-            <el-button @click="jumpToBuy">购买套餐</el-button>
+            <el-button type="primary" class="blueBtn" @click="openCreateDialog">创建授权码</el-button>
+            <el-button @click="jumpToBuy" class="bluePlainBtn">购买套餐</el-button>
         </div>
         <el-table :data="tableData" v-loading="loading">
             <el-table-column prop="number" label="授权码编号" min-width="110"/>
