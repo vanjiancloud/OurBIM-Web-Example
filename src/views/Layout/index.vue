@@ -4,7 +4,7 @@
         <el-header>
             <div class="head">
                 <div class="headLeft">
-                    <a href="http://www.ourbim.com"><img class="logo-index" src="./img/logo.png" alt="" /></a>
+                    <a href="http://www.ourbim.com"><img class="logo-index" :src="require('@/assets/images/logo/logo_home.png')" alt="" /></a>
                     <el-menu :default-active="$route.path" text-color="#333333" active-text-color="#FF6600" class="nav-menu" mode="horizontal">
                         <template v-for="(item, index) in menuList">
                             <el-menu-item :index="item.url" v-if="!item.children" :key="index">
@@ -110,13 +110,13 @@
                         <div class="serverItem">
                             <div class="flexBetween">
                                 <div class="serverPer" :class="{colorGray:!total.useConcurrency}">{{ total.useConcurrency&&(total.useConcurrency/total.countConcurrency*100).toFixed(2)||0 }}%</div>
-                                <div class="serverTotal">已用总并发 {{ total.useConcurrency }}/{{ total.countConcurrency }}</div>
+                                <div class="serverTotal">总并发 {{ total.useConcurrency }}/{{ total.countConcurrency }}</div>
                             </div>
                             <div id="erupt"></div>
                             <div class="serverUsed">
                                 <img src="./img/jiedian.png" alt="" />
-                                <span>已用云VR/AR/MR并发 {{ total.useArConcurrency+total.useVrConcurrency+total.useMrConcurrency }}/{{ total.countConcurrency }}
-                                    <p>已用预启动并发 {{ total.usePreConcurrency }}/{{ total.preConcurrency }}</p>
+                                <span>云VR/AR/MR {{ total.useArConcurrency+total.useVrConcurrency+total.useMrConcurrency }}/{{ total.countConcurrency }}
+                                    <p>预启动 {{ total.usePreConcurrency }}/{{ total.preConcurrency }}</p>
                                 </span>
                             </div>
                         </div>
@@ -805,6 +805,9 @@ export default {
         @media screen and (max-width: 1470px) {
             .serverUsed{
                 font-size: 10px!important;
+            }
+            .serverTotal{
+                font-size: 13px!important;
             }
         }
 

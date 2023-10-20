@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import request from "@/utils/newRequest.js";
+import { uploadLogo } from '@/api/server/parameter'
 export default {
     components: {},
     props: {
@@ -34,7 +34,7 @@ export default {
         // 是否自动上传
         autoUpload:{
             type: Boolean,
-            default: false
+            default: true
         },
         // 样式
         styles: {
@@ -51,6 +51,10 @@ export default {
             type: [String, File],
             default: '',
         },
+        type: {
+            type: String,
+            default: '',
+        }
     },
     data() {
         return {
@@ -92,28 +96,18 @@ export default {
             this.$message.warning(`最多只能上传${this.limit}个`)
         },
         httpRequest(param) {
+            let data = {
+                userId: this.$store.state.user.userId,
+                file: param.file,
+                type: this.type
+            }
             const formData = new FormData();
             for (const key in data) {
-                if (key !== "url") {
-                    formData.append([key], data[key]);
-                }
+                formData.append([key], data[key]);
             }
-            request({
-                method: "post",
-                url: data.url,
-                data: formData,
-                onUploadProgress: (progressEvent) => {
-                    if(!progressEvent) return
-                    let percent = ((progressEvent.loaded / progressEvent.total) * 100) | 0;
-                    param.onProgress({ percent });
-                },
-            }).then((res) => {
-                // 成功状态
-                param.onSuccess(res);
-                this.$emit("onSuccess", res.data)
-            }).catch(() => {
-                param.onError();
-            });
+            uploadLogo(formData).then((res)=>{
+                this.$message.success("修改成功！")
+            })
         },
         submit() {
             if(!this.$refs.upload.uploadFiles.length){
@@ -130,13 +124,14 @@ export default {
     font-size: 12px;
 }
 .img{
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
 }
 .hasImg{
     width: 100%;
     height: 100%;
     position: relative;
+    display: contents;
     .changeText{
         width: 100%;
         height: 34px;

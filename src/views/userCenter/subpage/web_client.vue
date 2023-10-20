@@ -35,9 +35,9 @@
         <div v-else class="hidden-text">{{ exceptionMessge[hiddenState] }}</div>
       </div>
 
-      <!-- <div class="proccessText" v-if="loadingProccessArr.length && hiddenState !== 2">
+      <div class="proccessText" v-if="loadingProccessArr.length && hiddenState !== 2">
         {{ loadingProccessArr[loadingProccess].text }} ({{loadingProccess+1}}/{{loadingProccessArr.length || 5}})
-      </div> -->
+      </div>
     </div>
     
     <div v-if="!isMobile()">      
@@ -121,6 +121,7 @@ import LocationCode from "../locationCode/index.vue"; //定位码
 import Tool from "../Tool/index.vue"; //底部工具栏
 import DialogScale from "@/views/userCenter/resourcePool/DialogScale.vue"; //设置比例尺弹窗
 import { EventBus } from '@/utils/bus.js'
+var mqtt = require('@/utils/mqttws31.min.js')
 
 export default {
   name: "look_app",
@@ -146,11 +147,11 @@ export default {
   data() {
     return {
         // 加载流程
-    //   loadingProccess:0,
-    //   loadingProccessArr:[{
-    //     status: "success",
-    //     text: "准备统一权限认证"
-    //   }],
+      loadingProccess:0,
+      loadingProccessArr:[{
+        status: "success",
+        text: "准备统一权限认证"
+      }],
     //   异常提示
       exceptionMessge:[
         "环境加载中…",
@@ -205,6 +206,7 @@ export default {
       pakAndAppid:[],
       escTitle: '',//esc显示名称
       copyingPictures: {},//临摹图信息
+      client: null //mqtt
     };
   },
   computed: {
@@ -212,6 +214,8 @@ export default {
   },
   watch: {},
   created() {
+    this.unLoad()
+    this.initMqtt()
     // 用定时器给 环境加载中进度条 赋假值 让其(不再只有0和100)
     let timerTime = null;
     timerTime = setInterval(()=>{
@@ -244,12 +248,12 @@ export default {
   },
   mounted() {
     this.setTimeLoad();
-    this.getModelUrl();
-    // this.getProccess()
+    this.getProccess()
     this.addMessageEvent();
     this.getLinkModelAppid(); // 获取appid
   },
-  destroyed() {
+  deactivated(){
+    this.sendMqtt()
     this.clearTimePass();
     this.closeWebSocket();
   },
@@ -829,6 +833,85 @@ export default {
         }, 1000 * 30);
       };
       this.websock.onerror = (e) => {};
+    },
+    /*
+      注释中所提到的后台即为发布端/订阅端
+    */
+    initMqtt(){
+        const url = new URL(process.env.VUE_APP_REQUEST_URL);
+        var hostname = url.hostname,
+            port = 8083,
+            clientId = `mqtt_${Math.random().toString(16).slice(3)}`,
+            timeout = 4000,
+            keepAlive = 100,
+            cleanSession = false,
+            ssl = false;
+        this.client = new Paho.MQTT.Client(hostname, port, clientId);
+        var options = {
+            invocationContext: {
+                host: hostname,
+                port: port,
+                path: this.client.path,
+                clientId: clientId
+            },
+            timeout: timeout,
+            keepAliveInterval: keepAlive,
+            cleanSession: cleanSession,
+            useSSL: ssl,
+            userName: "vanjian",  
+            password: "vanjian666",  
+            onSuccess: (e) => {
+                console.log("onConnected",this.client);
+                this.client.subscribe('task/#');
+                this.client.subscribe(`terminal/${this.$route.query.token}`);
+                this.getModelUrl();
+            },
+            onFailure: (e) => {
+                console.log("onFailure",e);
+            }
+        };
+        this.client.connect(options);
+
+        // 注册消息接收处理事件
+        this.client.onConnectionLost = (responseObject)=> {
+            if (responseObject.errorCode !== 0) {
+                console.log("onConnectionLost:" + responseObject.errorMessage);
+                console.log("连接已断开");
+            }
+        };
+        //注册连接断开处理事件  
+        this.client.onMessageArrived = (message)=> {
+            let res = JSON.parse(message.payloadString)
+            if(res.taskId){
+                this.taskId = res.taskId
+            }
+        };
+    },
+    // 发送消息到mqtt
+    sendMqtt() {
+        if(!this.taskId) return this.$message.error("没有taskId")
+        let mess = `task/${this.taskId}/js/close`
+        var message = new Paho.MQTT.Message(JSON.stringify({timestamp:new Date().getTime()}));
+        message.destinationName = mess;
+        message.qos=0;
+        this.client.send(message);
+    },
+    // 监听关闭浏览器
+    unLoad(){
+        if (this.isMobile()) {
+            window.addEventListener('pagehide', ()=> {
+                this.sendMqtt()
+            });
+            document.addEventListener('visibilitychange', (event)=> {
+                if (document.visibilityState === 'hidden') {
+                    this.sendMqtt()
+                }
+            });
+        } else {
+            window.addEventListener('beforeunload', (event)=> {
+                this.sendMqtt()
+            });
+        }
     },
     limitZoomSpeed() {
       // 限制缩放速度

@@ -65,3 +65,63 @@ export function getLimitTime(params) {
         params,
     })
 }
+
+
+// 获取ip黑名单列表
+export function Iplist(params) {
+    return request({
+        url: `/cloudServiceConfigIp/list`,
+        method: "GET",
+        params,
+    })
+}
+
+// 添加ip
+export function addIp(data) {
+    return request({
+        url: `/cloudServiceConfigIp/add`,
+        method: "POST",
+        data,
+    })
+}
+
+// 删除ip
+export function removeIp(data) {
+    return request({
+        url: `/cloudServiceConfigIp/remove`,
+        method: "POST",
+        data,
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+}
+
+// 获取Logo
+export function getLogo(params) {
+    return request({
+        url: `/cloudServiceImg/downloadImg`,
+        method: "GET",
+        params,
+        responseType: "blob"
+    })
+}
+
+// logo上传图片
+export function uploadLogo(data) {
+    return request({
+        url: `/cloudServiceImg/uploadImg`,
+        method: "POST",
+        data,
+    })
+}
+
+// logo重置
+export function restoreImg(params) {
+    return request({
+        url: `/cloudServiceImg/restoreImg`,
+        method: "GET",
+        params,
+    })
+}
+
