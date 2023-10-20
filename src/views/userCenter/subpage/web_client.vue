@@ -837,7 +837,7 @@ export default {
       注释中所提到的后台即为发布端/订阅端
     */
     initMqtt(){
-        const url = new URL(process.env.VUE_APP_REQUEST_URL);
+        const url = new URL(this.$config.VUE_APP_REQUEST_URL);
         var hostname = url.hostname,
             port = 8083,
             clientId = `mqtt_${Math.random().toString(16).slice(3)}`,

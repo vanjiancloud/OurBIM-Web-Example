@@ -35,7 +35,9 @@ Vue.use(ElementUI)
 
 // 引入vuex
 import store from "./store/vuex.js"
+import config from '../server.config'
 
+Vue.prototype.$config = config
     // 把axiox放到原型上
 Vue.prototype.$axios = axios
     // 把$EventBus放到原型上

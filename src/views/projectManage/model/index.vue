@@ -597,7 +597,7 @@ export default {
             appId: row.appid,
           };
           let urlDownload =
-            process.env.VUE_APP_REQUEST_URL +
+          this.$config.VUE_APP_REQUEST_URL +
             "/FileStorge/downloadModelFile?" +
             qs.stringify(params)
           window.open(urlDownload)

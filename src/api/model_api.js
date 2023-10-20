@@ -8,11 +8,10 @@
 import newRequest from "@/utils/newRequest.js";
 import request from '../utils/request'
 import qsStringify from "qs-stringify"
-
 import axios from 'axios'
 
 
-let WSBASEURL = process.env.VUE_APP_REQUEST_URL.replace('http://', 'ws://').replace('https://', 'wss://');
+let WSBASEURL = this.$config.VUE_APP_REQUEST_URL.replace('http://', 'ws://').replace('https://', 'wss://');
 
 
 const MODELAPI = {
