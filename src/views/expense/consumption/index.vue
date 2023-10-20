@@ -6,75 +6,66 @@
             </div>
         </div>
 
-        <el-form :model="searchForm" label-width="100px">
-            <el-row>
-                <el-col :xs="12" :sm="8" :lg="8">
-                    <el-form-item label="账期" prop="consumerDate">
-                        <el-date-picker
-                            clearable
-                            class="formInputWidth"
-                            v-model="searchForm.consumerDate"
-                            @change="getData"
-                            placeholder="请选择有效时间"
-                            type="month"
-                            value-format="yyyy-MM"
+        <div class="search searchBox">               
+            <el-form :inline="true" :model="searchForm">
+                <el-form-item label="账期" prop="consumerDate">
+                    <el-date-picker
+                        clearable
+                        class="formInputWidth"
+                        v-model="searchForm.consumerDate"
+                        @change="getData"
+                        placeholder="请选择有效时间"
+                        type="month"
+                        value-format="yyyy-MM"
+                    />
+                </el-form-item>
+                <el-form-item label="计费方式" prop="billingMode">
+                    <el-select
+                        clearable
+                        v-model="searchForm.billingMode"
+                        class="formInputWidth"
+                        placeholder="请选择计费方式"
+                        @change="getData"
+                    >
+                        <el-option
+                            v-for="item in billingModeList"
+                            :key="item.code"
+                            :label="item.value"
+                            :value="item.code"
                         />
-                    </el-form-item>
-                </el-col>
-                <el-col :xs="12" :sm="8" :lg="8">
-                    <el-form-item label="计费方式" prop="billingMode">
-                        <el-select
-                            clearable
-                            v-model="searchForm.billingMode"
-                            class="formInputWidth"
-                            placeholder="请选择计费方式"
-                            @change="getData"
-                        >
-                            <el-option
-                                v-for="item in billingModeList"
-                                :key="item.code"
-                                :label="item.value"
-                                :value="item.code"
-                            />
-                        </el-select>
-                    </el-form-item>
-                </el-col>
-                <el-col :xs="12" :sm="8" :lg="8">
-                    <el-form-item label="消费内容" prop="consumeContent">
-                        <el-select
-                            clearable
-                            v-model="searchForm.consumeContent"
-                            class="formInputWidth"
-                            @change="getData"
-                            placeholder="请选择消费内容"
-                        >
-                            <el-option
-                                v-for="(item, index) in consumerContentList"
-                                :key="index"
-                                :label="item"
-                                :value="item"
-                            />
-                        </el-select>
-                    </el-form-item>
-                </el-col>
-                <el-col :xs="12" :sm="8" :lg="8">
-                    <el-form-item label="授权码" prop="authorizationCode">
-                        <el-select
-                            clearable
-                            v-model="searchForm.authorizationCode"
-                            class="formInputWidth"
-                            @change="getData"
-                            placeholder="请选择授权码产品版本"
-                        >
-                            <el-option v-for="item in productList" :key="item.id" :label="item.name" :value="item.id">
-                            </el-option>
-                        </el-select>
-                    </el-form-item>
-                </el-col>
-
-                <el-button type="primary" class="marginleft20 blueBtn">导出</el-button>
-            </el-row>
-        </el-form>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="消费内容" prop="consumeContent">
+                    <el-select
+                        clearable
+                        v-model="searchForm.consumeContent"
+                        class="formInputWidth"
+                        @change="getData"
+                        placeholder="请选择消费内容"
+                    >
+                        <el-option
+                            v-for="(item, index) in consumerContentList"
+                            :key="index"
+                            :label="item"
+                            :value="item"
+                        />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="授权码" prop="authorizationCode">
+                    <el-select
+                        clearable
+                        v-model="searchForm.authorizationCode"
+                        class="formInputWidth"
+                        @change="getData"
+                        placeholder="请选择授权码产品版本"
+                    >
+                        <el-option v-for="item in productList" :key="item.id" :label="item.name" :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <el-button style="width: 96px;margin-top: 4px;" size="small" class="blueBtn">导出</el-button>
+        </div>
 
         <el-table :data="tableData" v-loading="loading">
             <el-table-column align="center" prop="consumerDate" label="账期" />
@@ -240,6 +231,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.searchBox {
+    align-items: flex-start !important;
+}
 /deep/.el-input__inner{
     background-color: #FFFFFF;
     height: 36px;

@@ -230,7 +230,6 @@ export default {
 .pay-price-box {
     background-color: #f3f5fa;
     margin: 0 24px;
-    padding-left: 126px;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -240,6 +239,7 @@ export default {
         align-items: flex-start;
         width: 500px;
         margin-top: 24px;
+        padding-left: 63px;
         font-size: 16px;
         color: #999999;
         span {

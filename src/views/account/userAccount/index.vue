@@ -25,6 +25,7 @@
                     <el-input v-model="userId" disabled class="formInputWidth" placeholder="请输入userId"></el-input>
                     <el-button
                         type="primary"
+                        class="blueBtn"
                         v-clipboard:copy="userId"
                         v-clipboard:success="onCopyUserId"
                         v-clipboard:error="onError"
@@ -61,7 +62,7 @@
                 </el-form-item>
             </el-form>
 
-            <el-button type="primary" class="save-btn" @click="changeUserInfo">保存</el-button>
+            <el-button type="primary" class="save-btn blueBtn" @click="changeUserInfo">保存</el-button>
         </div>
     </div>
 </template>

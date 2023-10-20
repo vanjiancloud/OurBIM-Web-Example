@@ -29,7 +29,7 @@
                 </el-form-item>
             </el-form>
 
-            <el-button type="primary" class="save-btn" @click="editPass">保存</el-button>
+            <el-button type="primary" class="save-btn blueBtn" @click="editPass">保存</el-button>
         </div>
     </div>
 </template>
