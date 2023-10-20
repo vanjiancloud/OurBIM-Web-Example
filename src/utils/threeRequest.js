@@ -3,7 +3,8 @@ import { MessageBox, Message } from 'element-ui'
 import store from '@/store/vuex.js'
 import { Getuserid } from '@/store/index.js'
 
-export const BASEURL = 'https://manage.ourbim.com:10012'
+// export const BASEURL = 'https://manage.ourbim.com:10012' // 小牛云
+export const BASEURL = 'https://api.ourbim.com:10012' // 瑞云4.1
 // create an axios instance
 const CancelToken = axios.CancelToken;
 const service = axios.create({
