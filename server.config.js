@@ -13,5 +13,5 @@ const serverConfig = {
     }
 }
 
-const env = 'production'
+const env = 'development'
 export default serverConfig[env]
