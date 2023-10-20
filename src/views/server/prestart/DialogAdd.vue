@@ -101,6 +101,7 @@ export default {
                     this.$message.success("新增成功")
                     this.hide()
                     this.$parent.getList()
+                    this.$parent.getOpenPreTotalData()
                 })
             })
         }

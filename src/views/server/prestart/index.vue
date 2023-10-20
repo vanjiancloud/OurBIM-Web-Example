@@ -11,7 +11,7 @@
             </el-form>
         </div>
         <div class="operate flexBetween">
-            <div class="operateLeft">预启动资源已开通 <span>0/</span>{{ total }}</div>
+            <div class="operateLeft">预启动资源已开通 <span>{{ openPreTotal }}/</span>{{ total }}</div>
             <div class="searchRight">
                 <el-button size="small" style="width: 96px;" class="bluePlainBtn" @click="add()">添加</el-button>
             </div>
@@ -61,9 +61,10 @@
 </template>
 
 <script>
-import { list, edit, deleteRow, startRow, stopRow } from "@/api/server/prestart.js"
+import { list, edit, deleteRow, startRow, stopRow, getOpenPreTotal } from "@/api/server/prestart.js"
 import DialogAdd from "./DialogAdd.vue"
 import Pagination from "@/components/Pagination"
+import { Getuserid } from '@/store/index.js'
 export default {
     components: { Pagination, DialogAdd },
     props: {},
@@ -78,13 +79,15 @@ export default {
             // 码率
             codeRate:["8000","15000","20000","30000","50000","100000"],
             // 码率
-            frameRate:["30","60"]
+            frameRate:["30","60"],
+            openPreTotal: 0, // 预启动开通数
         };
     },
     watch: {},
     computed: {},
     created() {
         this.getList()
+        this.getOpenPreTotalData()
     },
     mounted() { },
     methods: {
@@ -92,6 +95,11 @@ export default {
             list(this.form).then((res)=>{
                 this.tableData = res.data
                 this.total = res.count
+            })
+        },
+        getOpenPreTotalData() {
+            getOpenPreTotal({userId: Getuserid()}).then(res => {
+                this.openPreTotal = res.data.totalPreStartNum
             })
         },
         search(){

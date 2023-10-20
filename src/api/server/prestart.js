@@ -36,6 +36,15 @@ export function list(params) {
     })
 }
 
+// 获取预启动开通总数
+export function getOpenPreTotal(params) {
+    return request({
+      url: '/cloudServicePreStart/getTotalPreStartNum',
+      method: 'get',
+      params
+    })
+}
+
 // 删除
 export function deleteRow(data) {
     return request({
