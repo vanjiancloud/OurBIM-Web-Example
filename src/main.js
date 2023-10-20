@@ -38,7 +38,9 @@ import resMessage from "./utils/res-message"
 
 // 引入vuex
 import store from "./store/vuex.js"
+import config from '../server.config'
 
+Vue.prototype.$config = config
 Vue.prototype.$resMsg = resMessage
     // 把axiox放到原型上
 Vue.prototype.$axios = axios

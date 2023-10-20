@@ -130,7 +130,7 @@ export default {
                 codeId: this.form.codeId,
                 isAll: false
             }
-            window.open(`${process.env.VUE_APP_REQUEST_URL}/ar/downloadLocator?${qs.stringify(data)}`)
+            window.open(`${this.$config.VUE_APP_REQUEST_URL}/ar/downloadLocator?${qs.stringify(data)}`)
         },
         // 启动更新
         updateLocator(){

@@ -62,7 +62,7 @@ export default {
     mounted() { },
     methods: {
         getLogo(type){
-            let url = `${process.env.VUE_APP_REQUEST_URL}/cloudServiceImg/downloadImg?userId=${this.$store.state.user.userId}&type=${type}`
+            let url = `${this.$config.VUE_APP_REQUEST_URL}/cloudServiceImg/downloadImg?userId=${this.$store.state.user.userId}&type=${type}`
             // this.$set(this.form, type, url)
             // let data = {
             //     userId: this.$store.state.user.userId,
