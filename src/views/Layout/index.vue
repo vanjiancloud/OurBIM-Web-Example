@@ -120,7 +120,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="period serverItem" v-if="total.billingMode==='1'">
+                        <div class="period serverItem">
                             <div class="statisticsTitle">服务有效期</div>
                             <div class="time">{{ total.startUseTime }} 至 {{ total.endUseTime }}</div>
                             <el-button type="primary" size="small" class="grayBtn" style="width: 130px;"
@@ -713,7 +713,7 @@ export default {
 
                 .serverItem {
                     position: relative;
-
+                    width: 100%;
                     &:last-child {
 
                         &::before {
