@@ -2,8 +2,8 @@ import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store/vuex.js'
 import { Getuserid } from '@/store/index.js'
-
-export const BASEURL = process.env.VUE_APP_REQUEST_URL
+import config from '../../server.config'
+export const BASEURL = config.VUE_APP_REQUEST_URL
 // create an axios instance
 const CancelToken = axios.CancelToken;
 const service = axios.create({

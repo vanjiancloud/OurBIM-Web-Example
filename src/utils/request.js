@@ -12,7 +12,9 @@ import {
 } from '@/store/index.js'
 
 
-axios.defaults.baseURL = process.env.VUE_APP_REQUEST_URL
+import config from '../../server.config'
+axios.defaults.baseURL = config.VUE_APP_REQUEST_URL
+// export const BASEURL = 'http://172.16.100.105:9088/vjapi'//杨景
 
 
 axios.defaults.transformResponse = [
