@@ -4,14 +4,13 @@ import store from '@/store/vuex.js'
 import { Getuserid } from '@/store/index.js'
 import config from '../../server.config'
 
-// export const BASEURL = 'https://manage.ourbim.com:10012' // 小牛云
-// export const BASEURL = 'https://api.ourbim.com:10012' // 瑞云4.1
+
 export const BASEURL = config.ADMIN_REQUEST_URL
 // create an axios instance
 const CancelToken = axios.CancelToken;
 const service = axios.create({
   // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  baseURL: process.env.NODE_ENV === "development" ? '/api' : BASEURL,
+  baseURL: BASEURL,
   // withCredentials: true, // send cookies when cross-domain requests
   // timeout: 10000 // request timeout
   cancelToken: new CancelToken(function executor(c){

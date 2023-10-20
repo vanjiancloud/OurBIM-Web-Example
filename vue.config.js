@@ -17,17 +17,16 @@ module.exports = {
     productionSourceMap: false,
     devServer: {
         port: 8888,
-        proxy: {
-            '/api': {
-                // target: 'http://172.16.100.154:11012',
-                target: 'https://manage.ourbim.com:10012',
-                changeOrigin: true,
-                logLevel: 'debug',
-                pathRewrite: {
-                    '^/api': ''
-                }
-            }
-        }
+        // proxy: {
+        //     '/api': {
+        //         target: 'https://manage.ourbim.com:10012',
+        //         changeOrigin: true,
+        //         logLevel: 'debug',
+        //         pathRewrite: {
+        //             '^/api': ''
+        //         }
+        //     }
+        // }
     },
     configureWebpack: (config) => {
         if (process.env.NODE_ENV === 'production') {
