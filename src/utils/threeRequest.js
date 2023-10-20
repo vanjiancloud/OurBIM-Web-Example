@@ -21,9 +21,8 @@ const service = axios.create({
 // request interceptor
 service.interceptors.request.use(
   config => {
-    if (Getuserid()) {
-      config.headers.common['token'] = Getuserid()
-    }
+    const params = new URLSearchParams(window.location.href);
+    config.headers.common['token'] = Getuserid() || params.get('userId')
     return config
   },
   error => {

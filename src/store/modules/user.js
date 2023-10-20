@@ -51,6 +51,7 @@ const actions = {
     // 退出
     logout({ commit, state }) {
         return new Promise((resolve, reject) => {
+            localStorage.clear()
             sessionStorage.clear()
             resetRouter()
             commit('RESET_STATE')
