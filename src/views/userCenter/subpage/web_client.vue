@@ -18,8 +18,8 @@
     ></iframe>
     <!-- 遮罩层 -->
     <div class="hidden-bim" :class="{'phone-hidden-bim':isMobile()}" v-if="isFade">
-      <div class="hidden-bim">
-        <img src="@/assets/img/ourbim-logo.png" class="show-loading" alt="" />
+      <div class="hidden-bim" :style="{background:`#000000 url(${logoImg.startUpBkgImg}) no-repeat center`}">
+        <img v-if="logoImg.startUpLogo" :src="logoImg.startUpLogo" class="show-loading" alt="" />
         <div class="bim-progress" v-if="hiddenState === 0">
           <div class="load-tip">
             {{ exceptionMessge[hiddenState] }}
@@ -122,6 +122,7 @@ import Tool from "../Tool/index.vue"; //底部工具栏
 import DialogScale from "@/views/userCenter/resourcePool/DialogScale.vue"; //设置比例尺弹窗
 import { EventBus } from '@/utils/bus.js'
 var mqtt = require('@/utils/mqttws31.min.js')
+import { getLogo } from '@/api/server/parameter'
 
 export default {
   name: "look_app",
@@ -146,6 +147,7 @@ export default {
   },
   data() {
     return {
+      logoImg:{},
         // 加载流程
       loadingProccess:0,
       loadingProccessArr:[{
@@ -214,6 +216,8 @@ export default {
   },
   watch: {},
   created() {
+    this.getLogo("startUpLogo")
+    this.getLogo("startUpBkgImg")
     this.unLoad()
     this.initMqtt()
     // 用定时器给 环境加载中进度条 赋假值 让其(不再只有0和100)
@@ -257,6 +261,25 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    // 获取中logo
+    getLogo(type){
+        let url = `${this.$config.VUE_APP_REQUEST_URL}/cloudServiceImg/downloadImg?userId=${this.$store.state.user.userId}&type=${type}&time=${new Date().getTime()}`
+        let data = {
+            userId: this.$store.state.user.userId,
+            type
+        }
+        getLogo(data).then(res=>{
+            if(res.message === "用户已上传图片"){
+                this.$set(this.logoImg, type, url)
+            }else{
+                let defaultLogo = {
+                    startUpLogo: require('@/assets/images/logo/logo.png'),
+                    startUpBkgImg: '',
+                }
+                this.$set(this.logoImg, type, defaultLogo[type])
+            }
+        })
+    },
     // 点击底部工具栏后操作
     toolSuccess(e){
         if(!this.taskId) return
@@ -888,7 +911,7 @@ export default {
     },
     // 发送消息到mqtt
     sendMqtt() {
-        if(!this.taskId) return this.$message.error("没有taskId")
+        if(!this.taskId) return
         let mess = `task/${this.taskId}/js/close`
         var message = new Paho.MQTT.Message(JSON.stringify({timestamp:new Date().getTime()}));
         message.destinationName = mess;
@@ -1176,6 +1199,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+    background-size: cover!important;
 
     @-webkit-keyframes bgp {
       0% {

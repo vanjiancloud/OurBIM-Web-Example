@@ -110,9 +110,9 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning",
             }).then(async () => {
-                let res = row ? await end(row.id) : await batchEnd(this.multipleSelection.map(e=>{return e.id}).join(','))
+                let res = row ? await end(row.id) : await batchEnd({ids: this.multipleSelection.map(e=>{return e.id}).join(',')})
                 if(res){
-                    this.$message.success(res.message)
+                    this.$message.success('终止成功!')
                     this.getList()
                 }
             }).catch(() => {});

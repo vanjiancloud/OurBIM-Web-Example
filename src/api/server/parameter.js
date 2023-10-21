@@ -100,10 +100,9 @@ export function removeIp(data) {
 // 获取Logo
 export function getLogo(params) {
     return request({
-        url: `/cloudServiceImg/downloadImg`,
+        url: `/cloudServiceImg/isUploadImg`,
         method: "GET",
-        params,
-        responseType: "blob"
+        params
     })
 }
 

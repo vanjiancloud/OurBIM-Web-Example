@@ -107,6 +107,7 @@ export default {
             }
             uploadLogo(formData).then((res)=>{
                 this.$message.success("修改成功！")
+                this.$emit("success", this.type);
             })
         },
         submit() {

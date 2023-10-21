@@ -3,7 +3,7 @@
         <el-form ref="form" :model="form" label-width="140px">
             <el-form-item label="启动页中心logo" required>
                 <div class="uploadBox">
-                    <DragUpload v-model="form.startUpLogo" type="startUpLogo" :styles="{width: '160px',height:'160px'}"/>
+                    <DragUpload v-model="form.startUpLogo" type="startUpLogo" :styles="{width: '160px',height:'160px'}" @success="getLogo"/>
                     <div class="recover" style="margin-left: -50px;" @click="recover('startUpLogo')">
                         <svg-icon icon-class="recover" class="svgRecover"/>恢复
                     </div>
@@ -11,7 +11,7 @@
             </el-form-item>
             <el-form-item label="启动页背景图" required>
                 <div class="uploadBox">
-                    <DragUpload v-model="form.startUpBkgImg" type="startUpBkgImg" :styles="{width: '284px',height:'160px'}">
+                    <DragUpload v-model="form.startUpBkgImg" type="startUpBkgImg" :styles="{width: '284px',height:'160px'}" @success="getLogo">
                         <template slot="tip">
                             推荐尺寸：1920x1080 ，仅上传jpg/png格式
                         </template>
@@ -23,7 +23,7 @@
             </el-form-item>
             <el-form-item label="控制球" required>
                 <div class="uploadBox">
-                    <DragUpload v-model="form.controlBallImg" type="controlBallImg" :styles="{width: '160px',height:'160px'}">
+                    <DragUpload v-model="form.controlBallImg" type="controlBallImg" :styles="{width: '160px',height:'160px'}" @success="getLogo">
                         <template slot="tip">
                             推荐尺寸：100*100 ，仅上传jpg/png格式
                         </template>
@@ -62,18 +62,18 @@ export default {
     mounted() { },
     methods: {
         getLogo(type){
-            let url = `${this.$config.VUE_APP_REQUEST_URL}/cloudServiceImg/downloadImg?userId=${this.$store.state.user.userId}&type=${type}`
-            // this.$set(this.form, type, url)
-            // let data = {
-            //     userId: this.$store.state.user.userId,
-            //     type
-            // }
-            // getLogo(data).then(res=>{
-            //     console.log('🚀🚀🚀',res);
-            //     if(res.data){
-            //         this.$set(this.form, type, res.data)
-            //     }
-            // })
+            let url = `${this.$config.VUE_APP_REQUEST_URL}/cloudServiceImg/downloadImg?userId=${this.$store.state.user.userId}&type=${type}&time=${new Date().getTime()}`
+            let data = {
+                userId: this.$store.state.user.userId,
+                type
+            }
+            getLogo(data).then(res=>{
+                if(res.message === "用户已上传图片"){
+                    this.$set(this.form, type, url)
+                }else{
+                    this.form[type] = this.$options.data().form[type]
+                }
+            })
         },
         // 恢复
         recover(type){
@@ -91,7 +91,7 @@ export default {
                     this.getLogo(type)
                 })
             }).catch(() => {});
-        }
+        },
     }
 };
 </script>
