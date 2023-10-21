@@ -233,11 +233,11 @@ export default {
 <style lang="less" scoped>
 .searchBox {
     align-items: flex-start !important;
-}
-/deep/.el-input__inner{
-    background-color: #FFFFFF;
-    height: 36px;
-    line-height: 36px;
+    /deep/.el-input__inner{
+        background-color: #FFFFFF;
+        height: 36px;
+        line-height: 36px;
+    }
 }
 .formInputWidth {
     width: 100% !important;

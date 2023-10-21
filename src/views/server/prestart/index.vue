@@ -43,7 +43,7 @@
             <el-table-column label="状态">
                 <template slot-scope="scope">
                     <span v-if="scope.row.status === '1'" class="status">启用</span>
-                    <span v-if="scope.row.status === '0'" class="status">禁用</span>
+                    <span v-if="scope.row.status === '0'" class="status stopStatus">禁用</span>
                 </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="150">
@@ -177,24 +177,10 @@ export default {
         }
     }
 }
-.status{
-    position: relative;
-    padding-left: 15px;
-    &::before{
-        content: '';
-        display: block;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        margin: auto;
-        position: absolute;
-        width: 9px;
-        height: 9px;
-        background: #00AAF0;
-        border-radius: 100%;
+.stopStatus {
+    color: #FF7F28;
+    &::before {
+        background: #FF7F28;
     }
-}
-.stopStatus::before{
-    background: #FF7F28;
 }
 </style>

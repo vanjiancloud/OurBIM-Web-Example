@@ -165,18 +165,25 @@ export default {
 }
 
 .status {
-    &-1::before {
-        // 未激活
-        background: #b8cad5;
+    &-1{
+        color: #b8cad5!important;
+        &::before {
+            background: #b8cad5!important;
+        }
     }
-    &-2::before {
-        // 已激活
-        background: #03c13f;
+    &-2{
+        color: #03c13f!important;
+        &::before {
+            background: #03c13f!important;
+        }
     }
-    &-3::before,
-    &-4::before,
-    &-5::before {
-        background: #999999;
+    &-3,
+    &-4,
+    &-5{
+        color: #999999!important;
+        &::before {
+            background: #999999!important;
+        }
     }
 }
 </style>

@@ -746,11 +746,13 @@ export default {
 <style lang="less" scoped>
 
 .status1{
+  color: #FF7F28!important;
     &::before{
         background: #FF7F28!important;
     }
 }
 .status2{
+    color: #FF7F7F!important;
     &::before{
         background: #FF7F7F!important;
     }

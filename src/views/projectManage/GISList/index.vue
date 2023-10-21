@@ -22,13 +22,13 @@
             <el-table-column prop="layerType" label="数据类型" />
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
-                    <span class="status" :class="{'status1':scope.row.status==1,'status2':scope.row.status==2,'status3':scope.row.status==3,'status4':scope.row.status==4,'status5':scope.row.status==5}">{{ status[scope.row.status] }}</span>
+                    <span class="status" :class="{'status1':scope.row.status==1,'status3':scope.row.status==3,'status4':scope.row.status==4,'status5':scope.row.status==5}">{{ status[scope.row.status] }}</span>
                 </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" width="160">
+            <el-table-column fixed="right" label="操作" width="122">
                 <template slot-scope="scope">
                     <div class="flexBetween">
-                        <el-button class="blueBtn" type="primary" :disabled="scope.row.status!=2" @click="toProject(scope.row)">进入项目</el-button>
+                        <el-button type="text" class="blueText" @click="toProject(scope.row)" :disabled="scope.row.status!=2">进入项目</el-button>
                         <el-dropdown>
                             <span class="el-dropdown-link">
                                 <i class="el-icon-arrow-down el-icon-more"></i>
@@ -302,29 +302,11 @@ export default {
         }
     }
 }
-.status {
-    position: relative;
-    &::before {
-        content: "";
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        background: #14dda6;
-        border-radius: 100%;
-        margin-right: 6px;
-    }
-}
 
 .status1{
     color: #FF8434;
     &::before{
         background: #FF8434;
-    }
-}
-.status2{
-    color: #405560;
-    &::before{
-        background: #14DDA6;
     }
 }
 .status3,.status5{

@@ -26,11 +26,10 @@
                     <span class="status" :class="scope.row.fileStatus === '1' ? 'status' : scope.row.fileStatus === '2' ? 'status3' : 'status1'">{{ status[scope.row.fileStatus] }}</span>
                 </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" width="160">
+            <el-table-column fixed="right" label="操作" width="122">
                 <template slot-scope="scope">
                     <div class="operateBtn">
-                        
-                        <el-button class="blueBtn" type="primary" v-if="scope.row.fileStatus === '1'" @click="toProject(scope.row)">打开图纸</el-button>
+                        <el-button type="text" class="blueText" @click="toProject(scope.row)" :disabled="scope.row.fileStatus !== '1'">打开图纸</el-button>
                         <el-dropdown>
                             <span class="el-dropdown-link">
                                 <i class="el-icon-arrow-down el-icon-more"></i>
@@ -272,29 +271,11 @@ export default {
         }
     }
 }
-.status {
-    position: relative;
-    &::before {
-        content: "";
-        display: inline-block;
-        width: 8px;
-        height: 8px;
-        background: #14dda6;
-        border-radius: 100%;
-        margin-right: 6px;
-    }
-}
 
 .status1 {
     color: #FF8434;
     &::before {
         background: #FF8434;
-    }
-}
-.status2 {
-    color: #405560;
-    &::before {
-        background: #14DDA6;
     }
 }
 .status3, .status5 {

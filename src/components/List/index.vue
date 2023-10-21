@@ -65,9 +65,10 @@ export default {
             .listItem{
                 width: 300px;
                 max-width: 32%;
-                min-width: 270px;
+                min-width: 220px;
                 flex: 1 0 auto;
                 .defaultImg{
+                    border: 1px solid #e0e8ed;
                     width: 100%;
                     height: 180px;
                     border-radius: 8px;
@@ -96,28 +97,18 @@ export default {
         }
     }
     .status {
-        position: relative;
         font-size: 14px;
-        &::before {
-            content: "";
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: #14dda6;
-            border-radius: 100%;
-            margin-right: 6px;
-        }
     }
     /deep/.el-icon-more{
         font-size: 20px;
     }
 }
-@media only screen and (min-width: 1480px) and (max-width: 1750px) {
+@media only screen and (min-width: 1480px) and (max-width: 1650px) {
     .listItem {
         max-width: 23%!important;
     }
 }
-@media only screen and (min-width: 1750px) and (max-width: 1920px) {
+@media only screen and (min-width: 1650px) and (max-width: 1920px) {
     .listItem {
         max-width: 19%!important;
     }

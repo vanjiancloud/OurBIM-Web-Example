@@ -88,7 +88,7 @@ export default {
 <style scoped lang="less">
 .pagination {
   margin-top: 40px;
-  text-align: center;
+  text-align: right;
 }
 ::v-deep.el-pagination.is-background .el-pager li:not(.disabled).active {
   background: #5ec8f3;

@@ -40,16 +40,20 @@ body {
         .boxHeader{
             .flexBetween();
             .boxHeaderTitle{
-            span{
-                color: #00AAF0;
-                padding: 0 5px;
-            }
+                color: #4A4A4A;
+                span{
+                    color: #00AAF0;
+                    padding: 0 5px;
+                }
             }
         }
     }
     // 搜索
     .search{
         .flexBetween();
+        .el-form-item{
+            margin-right: 24px;
+        }
         .el-input__inner{
             background-color: #FFFFFF;
             height: 36px;
@@ -65,12 +69,13 @@ body {
         position: relative;
         padding-left: 13px;
         text-align: left;
+        color: #2AB200;
         &::before {
             content: "";
             display: inline-block;
             width: 8px;
             height: 8px;
-            background: #14dda6;
+            background: #2AB201;
             border-radius: 100%;
             position: absolute;
             top: 0;
@@ -210,4 +215,8 @@ body {
 }
 .blue {
     color: #5EC8F3;
+}
+
+.el-select-dropdown__item.selected{
+    color: #00AAF0;
 }

@@ -1,26 +1,15 @@
 <template>
   <!-- 应用管理 -->
   <div class="box">
-    <!-- 消息提示 -->
-    <div class="record">
-      <!-- 消息提示 -->
-      <div class="left">
-        {{ $t("Youhave") }}&nbsp;
-        <span style="color: #00aaf0">{{ docuList.length }} </span>&nbsp;
-        {{ $t("project") }}
-      </div>
-      <!-- 按钮 -->
-      <div class="right">
+    <div class="boxHeader">
+        <div class="boxHeaderTitle">您共有<span>{{docuList.length}}</span>个项目</div>
         <el-badge :value="uploadDoc" :hidden="!uploadDoc">
-            <el-button type="primary" @click="addDoc" class="blueBtn">
-              上传文档
-            </el-button>
+            <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="addDoc">上传文档</el-button>
         </el-badge>
-      </div>
     </div>
     <!-- 表格 -->
     <div class="table">
-      <el-table :data="docuList" style="width: 100%" class="sheet">
+      <el-table :data="docuList" style="width: 100%">
           <el-table-column prop="" label="文档名称" width="190">
           <template slot-scope="scope">
             <el-tooltip
@@ -51,26 +40,20 @@
           </template>
         </el-table-column>
     
-        <el-table-column label="操作">
+        <el-table-column label="操作" width="122">
           <template slot-scope="scope" class="goapp-row">
-            <el-button
-              @click="goCloudDoc(scope.row)"
-              class="blueBtn"
-            >
-              打开文档
-            </el-button>
-            <!-- 点点点 -->
+              <div class="flexCenter">
+                  <!-- 点点点 -->
+                <el-button type="text" class="blueText" @click="goCloudDoc(scope.row)">打开文档</el-button>
             <el-dropdown
               @command="handleCommand"
               @visible-change="visibleChange(scope.row)"
               trigger="hover"
               placement="bottom"
             >
-              <div class="ellipsis">
-                <div class="ellipsis-item"></div>
-                <div class="ellipsis-item"></div>
-                <div class="ellipsis-item"></div>
-              </div>
+              <span class="el-dropdown-link">
+                  <i class="el-icon-arrow-down el-icon-more"></i>
+              </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
                   command="shareFile"
@@ -86,6 +69,7 @@
                   >删除</el-dropdown-item>
                 </el-dropdown-menu>
             </el-dropdown>
+            </div>
           </template>
         </el-table-column>
         
@@ -410,92 +394,29 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.handle-btn {
-  text-align: center;
+.table{
+    margin-top: 20px;
+}
+.el-dropdown {
+    .el-dropdown-link {
+        cursor: pointer;
+        margin: 0 10px;
+        i {
+            font-size: 22px;
+            color: #999999;
+        }
+    }
 }
 .box {
-  .record {
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    position: relative;
-    margin-bottom: 12px;
-    .right {
-      margin-left: auto;
-    }
-  }
   ::v-deep .el-breadcrumb .el-breadcrumb__item .el-breadcrumb__inner{
     cursor: pointer !important;
   }
   ::v-deep .el-breadcrumb .el-breadcrumb__item .el-breadcrumb__inner:hover{
     color: #00aaf0;
   }
-  .el-dialog {
-    .content {
-      display: flex;
-      justify-content: center;
-      .el-form {
-        .el-input {
-          width: 150px;
-        }
-        .el-select {
-          width: 150px;
-        }
-      }
-    }
-   
-    .hidden {
-      width: 0;
-      height: 0;
-      opacity: 0;
-      position: absolute;
-      top: -1000%;
-      left: -1000%;
-      z-index: -9999999;
-    }
-  }
-}
-.form-integrate {
-  margin-top: 20px;
-}
-.integrate-transfer {
-  /deep/ .el-transfer__buttons {
-    padding: 0 10px;
-  }
-  /deep/ .el-transfer__button {
-    display: block;
-    margin-left: 0;
-    padding: 7px;
-    background-color: #ecf5ff;
-    border-color: #ecf5ff;
-    color: #606266;
-    &:hover {
-      background-color: #ecf5ff8f;
-      border-color: #ecf5ff8f;
-      color: #606266;
-    }
-  }
 }
 </style>
 <style lang="less">
-/* 背景 */
-.app-name-tip {
-  background-color: #00aaf0 !important;
-  /* 箭头 */
-  &[x-placement^="top"] .popper__arrow:after {
-    border-top-color: #00aaf0 !important;
-  }
-  &[x-placement^="bottom"] .popper__arrow:after {
-    border-bottom-color: #00aaf0 !important;
-  }
-  /* 箭头边框 */
-  &[x-placement^="bottom"] .popper__arrow {
-    border-bottom-color: #00aaf0 !important;
-  }
-  &[x-placement^="top"] .popper__arrow {
-    border-top-color: #00aaf0 !important;
-  }
-}
 
 /* 转换失败 */
 .trans-tooplip {
@@ -516,63 +437,10 @@ export default {
   }
 }
 
-.integrate-transfer {
-  .el-transfer-panel:nth-of-type(3) {
-    width: 300px;
-    .el-checkbox__label{
-      width: 629px;
-    }
-  }
-  .el-transfer-panel:nth-of-type(1) {
-    width: 300px;
-  }
-}
-.integrate-dialog {
-  .el-dialog__body {
-    padding: 20px !important;
-  }
-  .el-dialog__footer {
-    padding-top: 0;
-  }
-}
-.sheet {
-  .el-table__body,
-  .el-table__header {
-    width: 100% !important;
-    table-layout: auto;
-  }
-}
-
-.trans-tooplip-content {
-  // color: #ff3333;
-  font-size: 14px;
-  // background-color: #ffe8e8;
-  width: 100%;
-  height: 100%;
-  color: #ff3333;
-}
-
-.err-icon {
-  margin-top: 7px;
-  margin-left: 2px;
-}
-
-.aaaaaaaa {
-  width: 100%;
-  background-color: #ddd;
-  box-sizing: border-box;
-}
 
 /deep/ .el-notification__group {
   width: 100%;
   background-color: red;
-}
-.skills {
-  text-align: right;
-  padding-right: 20px;
-  line-height: 40px;
-  color: white;
-  box-sizing: border-box;
 }
 
 /deep/ .el-notification__content {
@@ -583,77 +451,9 @@ export default {
   }
 }
 
-.ellipsis {
-  cursor: pointer;
-  display: flex;
-  display: inline-block;
-  margin-left: 10px;
-  .ellipsis-item {
-    display: inline-block;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background-color: #999;
-    margin: 0 3px;       
-  }
-}
-
-.zzwinput{
-  width: 100px;
-  border: 2px solid #dcdfe6;
-  border-radius:5px;
-  margin-top: 5px;
-  outline-color:#666666; 
-}
-
 </style>
 
 <style lang="less" scoped>
-::v-deep .saveAsDialog{
-  width: 700px !important;
-}
-.wordEllipsis{
-  width: 100px;
-  white-space: nowrap; //强制在一行显示
-  overflow: hidden; //溢出隐藏
-  text-overflow: ellipsis; //显示省略号
-  float: left;
-}
-.clearfix::before,
-.clearfix::after{
-  content:'';
-  display: table;
-}
-.clearfix::after{
-  clear:both;
-}
-// .text{
-//   overflow: hidden;
-// }
-::v-deep .el-card__body {
-    padding: 0.25rem 1.25rem;
-}
-.elinput ::v-deep .el-input__inner{
-  width: 96px;
-  height: 20px;
-  padding: 0 10px;
-}
-
-.yinc{
-  padding-left: 10px;
-  color: #00aaf0;
-}
-.bind{
-  display: none;
-}
-.yinc:hover{
-  cursor:pointer;
-}
-.td{
-  float:right;
-  position: relative;
-  top:0px;
-}
 .box-one {
       display: flex;
       justify-content: center;
@@ -663,12 +463,7 @@ export default {
       }
       .dialog-footer {
         position: absolute;
-        // left: 42%;
         top: 65%;
-        // .btn-one {
-          // margin-right: 60px;
-          // margin-left: -30px;
-        // }
       }
     }
     .box-two {
@@ -708,20 +503,5 @@ export default {
         }
       }
     }
-// 为了解决 链接模型弹框 右侧名字太长导致的布局问题
-::v-deep .el-transfer .el-transfer-panel .optionName{
-  font-style: normal !important;
-}
-// 为了解决 链接模型弹框 右侧名字太长导致的布局问题
-::v-deep .el-transfer-panel:nth-of-type(3) .el-transfer-panel__body .el-checkbox-group .el-checkbox .el-checkbox__label .appna .optionName{
-  display: inline-block;
-    width: 150px;
-  white-space: nowrap; //强制在一行显示
-  overflow: hidden; //溢出隐藏
-  text-overflow: ellipsis; //显示省略号
-}
-.box-card{
-  margin-left: 9px;
-}
 
 </style>

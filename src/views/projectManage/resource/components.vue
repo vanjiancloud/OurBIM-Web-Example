@@ -76,7 +76,7 @@
                     </el-progress>
                 </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" width="180">
+            <el-table-column fixed="right" label="操作" width="200">
                 <template slot-scope="scope">
                     <el-button type="text" class="blueText" @click.stop="openCom(scope.row)">打开构件</el-button>
                     <el-button type="text" class="blueText" @click.stop="editCom(scope.row)">编辑</el-button>
@@ -275,11 +275,13 @@ export default {
 }
 
 .status1{
+    color: #FF7F28;
     &::before{
         background: #FF7F28!important;
     }
 }
 .status2{
+    color: #FF7F7F;
     &::before{
         background: #FF7F7F!important;
     }

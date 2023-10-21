@@ -20,22 +20,11 @@
     <div class="hidden-bim" :class="{'phone-hidden-bim':isMobile()}" v-if="isFade">
       <div class="hidden-bim" :style="{background:`#000000 url(${logoImg.startUpBkgImg}) no-repeat center`}">
         <img v-if="logoImg.startUpLogo" :src="logoImg.startUpLogo" class="show-loading" alt="" />
-        <div class="bim-progress" v-if="hiddenState === 0">
-          <div class="load-tip">
-            {{ exceptionMessge[hiddenState] }}
-            <div>{{ propsProgress.loadData }}%</div>
-          </div>
-          <el-progress
-            type="line"
-            :show-text="false"
-            :percentage="propsProgress.loadData"
-          ></el-progress>
-        </div>
-        <div v-else-if="hiddenState === -1" class="hidden-text">{{ baseExceptMessge }}</div>
+        <div v-if="hiddenState === -1" class="hidden-text">{{ baseExceptMessge }}</div>
         <div v-else class="hidden-text">{{ exceptionMessge[hiddenState] }}</div>
       </div>
 
-      <div class="proccessText" v-if="loadingProccessArr.length && hiddenState !== 2">
+      <div class="proccessText" v-if="loadingProccessArr.length && hiddenState === 0">
         {{ loadingProccessArr[loadingProccess].text }} ({{loadingProccess+1}}/{{loadingProccessArr.length || 5}})
       </div>
     </div>
@@ -165,11 +154,9 @@ export default {
       activeToolArr: [],//工具栏打开的内容
       isGis: false,
       showViewPicture:'0', // 传递给 viewPhoto 控制视图列表的显示 (视图)
-      maxNodes:false,
       shareCode: null,
       propsProgress: {
         data: 0,
-        loadData: 0,
       },
 
       isProgress: true,
@@ -183,11 +170,9 @@ export default {
       },
       webUrl: null,
       appId: null,
-      appToken: null,
       taskId: null,
       isFade: true,
       handleState: 0,
-      listenInfo: null,
       cubeState: 6,
       memberInfo: [], //属性信息
       loadTimer: null,
@@ -196,9 +181,7 @@ export default {
       socketTimer: null,
       shadowType: null,
       isUiBar: true,
-      uaInfo: null,
       iTime: {},
-      appType: null,
       userType: null,
       // （材质库）
       materialData: {},
@@ -220,32 +203,16 @@ export default {
     this.getLogo("startUpBkgImg")
     this.unLoad()
     this.initMqtt()
-    // 用定时器给 环境加载中进度条 赋假值 让其(不再只有0和100)
-    let timerTime = null;
-    timerTime = setInterval(()=>{
-      // 大于85 和 节点已达到最大时 就停止定时器---
-      if(this.propsProgress.loadData > 90 || this.maxNodes === true){
-        clearInterval(timerTime);
-      }
-      if(this.propsProgress.loadData <= 90 && this.maxNodes === false){
-        this.propsProgress.loadData += 5;
-      }
-     },300);
-    this.uaInfo = navigator.userAgent.toLowerCase();
     this.appId = this.$route.query.appid;
-    this.appToken = this.$route.query.token;
     this.isUiBar =
       this.$route.query.uibar === undefined || this.$route.query.uibar === true
         ? true
         : false;
-    if (this.$route.query.appType) {
-      this.appType = this.$route.query.appType;
       // 如果是云应用就去掉遮罩层和操作栏以及加载进度---
       if(this.$route.query.appType === '5'){
         this.isFade = false;
         this.isProgress =false;
       }
-    }
 
     // appType  0:普通模型(isGis: GIS模型)   1:漫游模型   3:链接模型(isGis: GIS链接模型)  4:示例模型    5:云应用
     this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
@@ -529,11 +496,7 @@ export default {
           if (this.shadowType === 1) {
             // 透视投影
             params.projectionMode = 1;
-            if (this.listenInfo) {
-              params.viewMode = this.listenInfo.state === 0 ? 1 : 2;
-            } else {
               params.viewMode = 2;
-            }
           }
           break;
         case 2:
@@ -715,16 +678,8 @@ export default {
           } else if (realData.id === "11") {
             this.sentParentIframe({ prex: "ourbimMessage", type: 30003, data: {tagId: realData.tagId}, message: "" });
           } else if (realData.id === "12") {
-            if (
-              Number(this.propsProgress.loadData) >= 0 &&
-              Number(this.propsProgress.loadData) <= 100
-            ) {
-              this.propsProgress.loadData = Number(
-                String(Number(realData.progress) * 100).substring(0, 3)
-              );
               // 加载完再发 10200---
               this.sendToIframe(10200,'false',"");
-            }
             let messageInfo = {
               prex: "ourbimMessage",
               type: 10002,
@@ -735,7 +690,8 @@ export default {
             };
             this.sentParentIframe(messageInfo);
             if (Number(realData.progress) === 1) {
-              if (this.uaInfo.match(/MicroMessenger/i) != "micromessenger") {
+                let uaInfo = navigator.userAgent.toLowerCase();
+              if (uaInfo.match(/MicroMessenger/i) != "micromessenger") {
                 this.delMaskTimer(500);
               } else {
                 this.delMaskTimer(1000 * 5);
@@ -1011,7 +967,7 @@ export default {
       let size = this.handleWindowSize(true)
       let params = {
         appliId: appId,
-        token: this.appToken,
+        token: this.$route.query.token,
         resX: size.width,
         resY: size.height
       };
@@ -1067,10 +1023,6 @@ export default {
               this.controllerInfo.viewCube = false;
             }
         })
-        .catch((err) => {
-          // 最大节点已达到上限时
-          this.maxNodes = true;
-        });
     },
     isMobile() {
       let flag = navigator.userAgent.match(
@@ -1260,35 +1212,6 @@ export default {
 @import './index.less';
 .set-index-message {
   z-index: 5000 !important;
-}
-.bim-progress {
-  position: absolute;
-  margin-top: 120px;
-  width: 260px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  .el-progress {
-    margin: 0 auto;
-    width: 100%;
-    .el-progress-bar__outer {
-      background-color: #00a8f054!important;
-    }
-    .el-progress-bar__inner {
-      line-height: 0;
-      background-color: #00aaf0!important;
-    }
-  }
-  .load-tip {
-    width: 100%;
-    display: flex;
-    margin: 20px 0;
-    letter-spacing: 2px;
-    color: #00aaf0!important;
-    div {
-      margin-left: auto;
-    }
-  }
 }
 
 .invite-team-friend {

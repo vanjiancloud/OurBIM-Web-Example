@@ -134,7 +134,7 @@
                         <div class="accountItem" style="text-align: right;">
                             <div class="text">账户余额：<span :class="{colorGray:!total.money}">{{ total.money || 0 }}</span><span>资源点</span></div>
                             <el-button type="primary" size="small" class="orangeBtn"
-                                style="width: 120px;background-color:#FF7F28" @click="$router.push('/expense/recharge')">立即充值</el-button>
+                                style="border:0;width: 120px;background-color:#FF7F28" @click="$router.push('/expense/recharge')">立即充值</el-button>
                         </div>
                         <div class="accountItem">
                             <div class="text">授权码：<span style="color:#00AAF0" :class="{colorGray:!total.codeSum}">{{ total.codeSum || 0 }}</span><span>个</span></div>

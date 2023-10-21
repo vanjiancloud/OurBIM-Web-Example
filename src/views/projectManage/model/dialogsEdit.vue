@@ -59,8 +59,7 @@
 
                     <!-- 链接模型展示 -->
                     <div class="addNewModel" v-if="form.appType === '3'">
-                        <el-button v-if="!modelList.length" type="text" class="blueText"
-                            @click="addModelClick()">添加模型</el-button>
+                        <el-button v-if="!modelList.length" type="primary" @click="addModelClick()" plain class="bluePlainBtn1">添加模型</el-button>
                         <el-select v-model="form.modelListValue" clearable placeholder="请选择" size="mini"
                             @change="modelListValChange" v-else>
                             <el-option v-for="item in modelList" :key="item.appid" :label="item.appName"
@@ -77,8 +76,7 @@
                         </el-tooltip>
                         <el-button type="text" class="blueText" @click="deleteGisServe(key)">移除</el-button>
                     </div>
-                    <el-button v-if="!selectGisList.length" type="text" class="blueText"
-                        @click="showSelectGis()">添加GIS服务</el-button>
+                    <el-button v-if="!selectGisList.length" type="primary" @click="showSelectGis()" plain class="bluePlainBtn1">添加GIS服务</el-button>
                     <el-select v-model="form.selectGis" placeholder="请选择" size="mini" @change="addGisServe" v-else>
                         <el-option v-for="item in selectGisList" :key="item.gisId" :label="item.gisServerName"
                             :value="item.gisId"></el-option>

@@ -201,16 +201,23 @@ export default {
     margin-right: 6px;
 }
 .status {
-    // 待支付
-    &-0::before {
-        background: #ff7f28;
+    &-0{
+        color: #ff7f28!important;
+        &::before {
+            background: #ff7f28!important;
+        }
     }
-    // 已支付
-    &-1::before {
-        background: #03c13f;
+    &-1{
+        color: #03c13f!important;
+        &::before {
+            background: #03c13f!important;
+        }
     }
-    &-2::before {
-        background: #999999;
+    &-2{
+        color: #999999!important;
+        &::before {
+            background: #999999!important;
+        }
     }
 }
 </style>
