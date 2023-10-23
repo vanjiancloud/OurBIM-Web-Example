@@ -86,6 +86,8 @@ export default {
                 callback(new Error('请输入充值金额'))
             } else if (Number(value) < 0) {
                 callback(new Error('充值金额不能为负数'))
+            } else if (Number(value) > 200000) {
+                callback(new Error('单次充值金额限20万元以内'))
             } else {
                 callback()
             }
