@@ -10,7 +10,7 @@
             </div>
         </div>
         <el-table :data="tableData" v-loading="loading" @select="selectOrder" @select-all="selectOrder">
-            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column type="selection" width="55" :selectable='selectEnable'></el-table-column>
             <el-table-column prop="code" label="订单编号" />
             <el-table-column prop="createTime" label="创建时间" />
             <el-table-column prop="versionName" show-overflow-tooltip label="产品版本类型" />
@@ -171,6 +171,13 @@ export default {
                 name: 'recharge',
                 params: row
             })
+        },
+
+        selectEnable(row) {
+            if (row.invoiceStatus != 2) {
+                return false
+            }
+            return true
         }
     }
 }
@@ -201,23 +208,16 @@ export default {
     margin-right: 6px;
 }
 .status {
-    &-0{
-        color: #ff7f28!important;
-        &::before {
-            background: #ff7f28!important;
-        }
+    // 待支付
+    &-0::before {
+        background: #ff7f28;
     }
-    &-1{
-        color: #03c13f!important;
-        &::before {
-            background: #03c13f!important;
-        }
+    // 已支付
+    &-1::before {
+        background: #03c13f;
     }
-    &-2{
-        color: #999999!important;
-        &::before {
-            background: #999999!important;
-        }
+    &-2::before {
+        background: #999999;
     }
 }
 </style>
