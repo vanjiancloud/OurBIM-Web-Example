@@ -299,7 +299,6 @@ export default {
     },
     // 选择版本成功后
     onSuccess(e){
-        // let url = e === 2 ? "/" : "https://www.ourbim.com/v3/"
         this.isshow === 1 ? this.mobLogin(e) : this.doLogin(e);
     },
     // 账号登录接口
@@ -330,7 +329,7 @@ export default {
                     }
                     this.$router.push("/");
                 }else{
-                    window.location.href = `http://localhost:8889/#/?userId=${res.data.data.userid}`
+                    window.location.href = `https://www.ourbim.com/v3/#/?userId=${res.data.data.userid}`
                 }
             }else {
                 this.$message.error(res.data.message);
@@ -408,7 +407,7 @@ export default {
                     }
                     this.$router.push("/");
                 }else{
-                    window.location.href = `http://localhost:8889/#/?userId=${res.data.data.userid}`
+                    window.location.href = `https://www.ourbim.com/v3/#/?userId=${res.data.data.userid}`
                 }
             }else {
                 this.$message.error(res.data.message);
