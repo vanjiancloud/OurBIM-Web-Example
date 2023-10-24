@@ -136,6 +136,7 @@
       Copyright © 2023 www.OurBIM.com, <br />
       All Rights Reserved.
     </div>
+    <DialogsVersion ref="DialogsVersion" @onSuccess="onSuccess"/>
   </div>
 </template>
 
@@ -146,10 +147,12 @@ import { Setuserid } from "@/store/index.js";
 import { setemail, getemail, delemail } from "@/store/index.js";
 import { setpassword, getpassword, delpassword } from "@/store/index.js";
 import { setmobile, getmobile, delmobile } from "@/store/index.js";
-// const Base64 = require('js-base64').Base64
+import DialogsVersion from "./dialogsVersion.vue"
+import axios from 'axios'
 
 export default {
   name: "login",
+  components: { DialogsVersion },
   data() {
     return {
       isSend: false, // 是否显示
@@ -229,21 +232,9 @@ export default {
         this.Mobilelogin();
       }
     };
-    // 页面缩放
-    // window.onload = function () {
-    //   // 获取构件树页面最大宽度
-    //   var maxWidth = document.documentElement.offsetWidth
-    //   document.documentElement.style.fontSize =
-    //     document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
-    //   window.onresize = function () {
-    //     document.documentElement.style.fontSize =
-    //       document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
-    //   }
-    // }
     // 记住账号
     if (localStorage.getItem("email")) {
       this.form.loginName = getemail();
-      // console.log(this.form.isAgree)
       this.form.isAgree = true;
     } else if (localStorage.getItem("email") === null) {
       this.form.loginName = "";
@@ -252,7 +243,6 @@ export default {
     // 记住密码
     if (localStorage.getItem("password")) {
       this.form.password = getpassword();
-      // console.log(this.form.isAgree)
       this.form.isAgree = true;
     } else if (localStorage.getItem("password") === null) {
       this.form.password = "";
@@ -261,7 +251,6 @@ export default {
     // 记住手机号
     if (localStorage.getItem("mobile")) {
       this.mobForm.mobile = getmobile();
-      // console.log(this.mobForm.checkbox)
       this.mobForm.checkbox = true;
     } else if (localStorage.getItem("mobile") === null) {
       this.mobForm.mobile = "";
@@ -296,9 +285,7 @@ export default {
     emailLogin() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          this.logIn = "登录中";
-          this.isLoading = true;
-          this.doLogin();
+            this.$refs.DialogsVersion.show()
         }
       });
     },
@@ -306,93 +293,172 @@ export default {
     Mobilelogin() {
       this.$refs.mobForm.validate((valid) => {
         if (valid) {
-          this.logIn = "登录中";
-          this.isLoading = true;
-          this.mobLogin();
+            this.$refs.DialogsVersion.show()
         }
       });
     },
+    // 选择版本成功后
+    onSuccess(e){
+        // let url = e === 2 ? "/" : "https://www.ourbim.com/v3/"
+        this.isshow === 1 ? this.mobLogin(e) : this.doLogin(e);
+    },
     // 账号登录接口
-    doLogin() {
-      login({
-        loginName: this.form.loginName,
-        password: this.form.password,
-      })
-        .then((res) => {
-          if (res.data.code === 0) {
-            this.$message.success(res.data.message);
-            this.logIn = "登录";
+    doLogin(e) {
+        this.logIn = "登录中";
+        this.isLoading = true;
+        let baseUrl = e === 2 ? process.env.VUE_APP_REQUEST_URL : "https://api.ourbim.com:11023/vjapi"
+        axios({
+            url: `${baseUrl}/UserCenter/login`,
+            method: "post",
+            params:{
+                loginName: this.form.loginName,
+                password: this.form.password
+            },
+        }).then(res=>{
             this.isLoading = false;
-            sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
-            setemail(this.form.loginName);
-            setpassword(this.form.password);
-            // 存储用户信息userid，到sessionStorage
-            Setuserid(res.data.data.userid);
-            // console.log(this.form.isAgree)
-            if (this.form.isAgree === false) {
-              delemail();
-              delpassword();
+            this.logIn = "登录";
+            if (res.data.code === 0){
+                this.$message.success(res.data.message);
+                if(e === 2){
+                    sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
+                    setemail(this.form.loginName);
+                    setpassword(this.form.password);
+                    Setuserid(res.data.data.userid);
+                    if (this.form.isAgree === false) {
+                        delemail();
+                        delpassword();
+                    }
+                    this.$router.push("/");
+                }else{
+                    window.location.href = `http://localhost:8889/#/?userId=${res.data.data.userid}`
+                }
+            }else {
+                this.$message.error(res.data.message);
             }
-            this.$router.push("/");
-          } else if (res.data.code === 2) {
-            this.$message.warning(res.data.message);
+        }).catch((err) => {
+            this.$message.error("请检查网络或稍后重试");
             this.logIn = "登录";
             this.isLoading = false;
-          } else {
-            this.$message.error("账号或密码不正确，请重新输入");
-            this.logIn = "登录";
-            this.isLoading = false;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          this.$message.error("请检查网络或稍后重试");
-          this.logIn = "登录";
-          this.isLoading = false;
         });
+    //   login({
+    //     loginName: this.form.loginName,
+    //     password: this.form.password,
+    //   })
+    //     .then((res) => {
+    //       if (res.data.code === 0) {
+    //         this.$message.success(res.data.message);
+    //         this.logIn = "登录";
+    //         this.isLoading = false;
+    //         if(e === 2){
+    //         sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
+    //         setemail(this.form.loginName);
+    //         setpassword(this.form.password);
+    //         // 存储用户信息userid，到sessionStorage
+    //         Setuserid(res.data.data.userid);
+    //         if (this.form.isAgree === false) {
+    //           delemail();
+    //           delpassword();
+    //         }
+    //         this.$router.push("/");
+    //         }else{
+    //             window.location.href = `http://localhost:8889/#/?userId=${res.data.data.userid}`
+    //         }
+    //       } else if (res.data.code === 2) {
+    //         this.$message.warning(res.data.message);
+    //         this.logIn = "登录";
+    //         this.isLoading = false;
+    //       } else {
+    //         this.$message.error("账号或密码不正确，请重新输入");
+    //         this.logIn = "登录";
+    //         this.isLoading = false;
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //       this.$message.error("请检查网络或稍后重试");
+    //       this.logIn = "登录";
+    //       this.isLoading = false;
+    //     });
     },
     // 手机登录接口
-    mobLogin() {
-      loginMobile({
-        mobile: this.mobForm.mobile,
-        code: this.mobForm.code,
-      })
-        .then((res) => {
-          console.log(res);
-          if (res.data.code === 0) {
-            this.$message.success(res.data.message);
-            this.logIn = "登录";
+    mobLogin(e) {
+        this.logIn = "登录中";
+        this.isLoading = true;
+        let baseUrl = e === 2 ? process.env.VUE_APP_REQUEST_URL : "https://api.ourbim.com:11023/vjapi"
+        axios({
+            url: `${baseUrl}/UserCenter/loginMobile`,
+            method: "post",
+            params:{
+                mobile: this.mobForm.mobile,
+                code: this.mobForm.code,
+            },
+        }).then(res=>{
             this.isLoading = false;
-            // 存储用户信息userid，到localStorage
-            sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
-            setuserid(res.data.data.userid);
-            // 存储用户信息userid，到sessionStorage
-            Setuserid(res.data.data.userid);
-            setmobile(this.mobForm.mobile);
-            if (this.mobForm.checkbox === false) {
-              delmobile();
+            this.logIn = "登录";
+            if (res.data.code === 0){
+                this.$message.success(res.data.message);
+                if(e === 2){
+                    sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
+                    setuserid(res.data.data.userid);
+                    // 存储用户信息userid，到sessionStorage
+                    Setuserid(res.data.data.userid);
+                    setmobile(this.mobForm.mobile);
+                    if (this.mobForm.checkbox === false) {
+                        delmobile();
+                    }
+                    this.$router.push("/");
+                }else{
+                    window.location.href = `http://localhost:8889/#/?userId=${res.data.data.userid}`
+                }
+            }else {
+                this.$message.error(res.data.message);
             }
-            this.$router.push("/");
-          } else if (res.data.code === 2) {
-            this.$message.warning(res.data.message);
+        }).catch((err) => {
+            this.$message.error("请检查网络或稍后重试");
             this.logIn = "登录";
             this.isLoading = false;
-          } else if (res.data.code === 1) {
-            this.$message.error(res.data.message);
-            this.logIn = "登录";
-            this.isLoading = false;
-          } else {
-            this.$message.error("验证码验证失败，您的操作过于频繁，请稍后再试");
-            this.logIn = "登录";
-            this.isLoading = false;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          this.$message.error("请检查网络或稍后重试");
-          this.logIn = "登录";
-          this.isLoading = false;
         });
+    //     loginMobile({
+    //     mobile: this.mobForm.mobile,
+    //     code: this.mobForm.code,
+    //   })
+    //     .then((res) => {
+    //       console.log(res);
+    //       if (res.data.code === 0) {
+    //         this.$message.success(res.data.message);
+    //         this.logIn = "登录";
+    //         this.isLoading = false;
+    //         // 存储用户信息userid，到localStorage
+    //         sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
+    //         setuserid(res.data.data.userid);
+    //         // 存储用户信息userid，到sessionStorage
+    //         Setuserid(res.data.data.userid);
+    //         setmobile(this.mobForm.mobile);
+    //         if (this.mobForm.checkbox === false) {
+    //           delmobile();
+    //         }
+    //         // this.$router.push("/");
+    //         window.location.href = url
+    //       } else if (res.data.code === 2) {
+    //         this.$message.warning(res.data.message);
+    //         this.logIn = "登录";
+    //         this.isLoading = false;
+    //       } else if (res.data.code === 1) {
+    //         this.$message.error(res.data.message);
+    //         this.logIn = "登录";
+    //         this.isLoading = false;
+    //       } else {
+    //         this.$message.error("验证码验证失败，您的操作过于频繁，请稍后再试");
+    //         this.logIn = "登录";
+    //         this.isLoading = false;
+    //       }
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //       this.$message.error("请检查网络或稍后重试");
+    //       this.logIn = "登录";
+    //       this.isLoading = false;
+    //     });
     },
     // 取cookie
     getCookie: function (key) {
@@ -482,16 +548,6 @@ export default {
       }
     },
   },
-  /* 把键盘事件放在activated事件里，当清除键盘事件后，
-  下次再次进入当前路由的话，可以再次唤起键盘事件 */
-  // activated () {
-  //   // 添加键盘事件
-  //   document.onkeydown = e => {
-  //     if (e.key == 'Enter') {
-  //       this.emailLogin()
-  //     }
-  //   }
-  // }
 };
 </script>
 

@@ -2,6 +2,7 @@
 import request from '../utils/request'
 // 导入字符串转换工具
 import qsStringify from 'qs-stringify'
+import newRequest from '@/utils/newRequest.js'
 
 // 激活账号
 export function activation(data) {
@@ -16,15 +17,11 @@ export function activation(data) {
 }
 
 // 获取邮箱密码登录
-export function login(data) {
-    const { loginName, password } = data
-    return request({
+export function login(params) {
+    return newRequest({
         url: '/UserCenter/login',
         method: 'POST',
-        params: {
-            loginName,
-            password
-        }
+        params
     })
 }
 
