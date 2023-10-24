@@ -947,12 +947,12 @@ export default {
                 for (let i = 0; i < res.data.length; i++) {
                     if(this.webUrl || count > 30) return
                     const element = res.data[i];
-                    if(this.loadingProccess > 0 && element.status==="waiting"){
+                    if(element.status==="waiting"){
                         this.loadingProccess = i
                         count++
                         setTimeout(getResponse(),1000)
                         return
-                    }else if(element.status==="success" && (count === 0 || (this.loadingProccess > 0 && this.loadingProccess < i))){
+                    }else if(element.status==="success" && (count === 0 || (this.loadingProccess < i))){
                         this.loadingProccess = i
                     }
                     await sleep(200);
