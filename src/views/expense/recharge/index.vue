@@ -1,13 +1,17 @@
 <template>
     <div class="recharge-page">
-        <el-tabs v-model="activeName" class="tabs">
+
+        <!-- 套餐购买暂时还没做，先注释 -->
+        <!-- <el-tabs v-model="activeName" class="tabs">
             <el-tab-pane label="预付费账户充值" name="0">
                 <recharge :payType="payType" @getData="getData" @changePayType="changePayType"></recharge>
             </el-tab-pane>
             <el-tab-pane label="固定套餐购买" name="1">
                 <groups :payType="payType" @getData="getData" @changePayType="changePayType"></groups>
             </el-tab-pane>
-        </el-tabs>
+        </el-tabs> -->
+
+        <recharge :payType="payType" @getData="getData" @changePayType="changePayType"></recharge>
 
         <PayDialog ref="payDialog" :payType="payType" @changePayType="changePayType"></PayDialog>
     </div>
