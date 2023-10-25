@@ -136,7 +136,7 @@
                             <el-button type="primary" size="small" class="orangeBtn"
                                 style="border:0;width: 120px;background-color:#FF7F28" @click="$router.push('/expense/recharge')">立即充值</el-button>
                         </div>
-                        <div class="accountItem">
+                        <div class="accountItem" style="min-width:195px;">
                             <div class="text">授权码：<span style="color:#00AAF0" :class="{colorGray:!total.codeSum}">{{ total.codeSum || 0 }}</span><span>个</span></div>
                             <el-button type="primary" size="small" class="grayBtn"  @click="toOrder">查看</el-button>
                             <el-button type="primary" size="small" class="grayBtn"  @click="toOrder">申请授权码</el-button>
