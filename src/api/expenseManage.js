@@ -137,6 +137,9 @@ export function getConsumerList(params) {
     return request({
         url: `/monitor/publicManage/order/listConsumerRecord`,
         method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        },
         params,
     })
 }
@@ -155,6 +158,15 @@ export function getAuthorizationCodeSelect(params) {
     return request({
         method: 'GET',
         url: '/monitor/publicManage/order/listAuthorizationCode',
+        params
+    })
+}
+
+// 获取用户所有的授权信息
+export function getUserAllAuthorization(params) {
+    return request({
+        method: 'GET',
+        url: '/monitor/publicManage/order/getUserAllAuthorization',
         params
     })
 }

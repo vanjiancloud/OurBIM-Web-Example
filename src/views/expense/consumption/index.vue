@@ -59,7 +59,7 @@
                         @change="getData"
                         placeholder="请选择授权码产品版本"
                     >
-                        <el-option v-for="item in productList" :key="item.id" :label="item.name" :value="item.id">
+                        <el-option v-for="item in authCodeList" :key="item.code" :label="item.code" :value="item.code">
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -115,7 +115,7 @@
 </template>
 
 <script>
-import { getConsumerList, getConsumerContentList, getProductList } from '@/api/expenseManage'
+import { getConsumerList, getConsumerContentList, getUserAllAuthorization } from '@/api/expenseManage'
 import { Getuserid } from '@/store/index.js'
 import { getDictDataByKey } from '@/utils/getDict'
 import Pagination from '@/components/Pagination'
@@ -142,14 +142,14 @@ export default {
             billingModeList: [],
             billingModeObj: {},
             consumerContentList: [],
-            productList: []
+            authCodeList: []
         }
     },
     created() {
         this.getData()
         this.getBillMode()
         this.getCusContentList()
-        this.getProductData()
+        this.getAuthCodeData()
     },
     methods: {
         // 获取计费方式枚举
@@ -174,11 +174,11 @@ export default {
             })
         },
 
-        // 获取授权码产品版本数据
-        getProductData() {
-            getProductList().then(res => {
+        // 获取用户所有的授权码信息
+        getAuthCodeData() {
+            getUserAllAuthorization({ userId: Getuserid() }).then(res => {
                 if (res.code === 200) {
-                    this.productList = res.data
+                    this.authCodeList = res.data
                 }
             })
         },
