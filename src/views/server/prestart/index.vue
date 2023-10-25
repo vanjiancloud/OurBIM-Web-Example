@@ -11,7 +11,7 @@
             </el-form>
         </div>
         <div class="operate flexBetween">
-            <div class="operateLeft">预启动资源已开通 <span>{{ openPreTotal }}/</span>{{ total }}</div>
+            <div class="operateLeft">预启动资源已开通 <span>{{ openPreTotal }}/</span>{{ preTotal.preConcurrency }}</div>
             <div class="searchRight">
                 <el-button size="small" style="width: 96px;" class="bluePlainBtn" @click="add()">添加</el-button>
             </div>
@@ -84,7 +84,11 @@ export default {
         };
     },
     watch: {},
-    computed: {},
+    computed: {
+        preTotal() {
+            return this.$store.state.user.total || {}
+        },
+    },
     created() {
         this.getList()
         this.getOpenPreTotalData()
@@ -115,6 +119,9 @@ export default {
         },
         // 添加\编辑预启动项目
         add(){
+            if(Number(this.openPreTotal) >= Number(this.preTotal.preConcurrency)){
+                return this.$message.warning("授权的并发资源配额不足，不能添加。")
+            }
             this.$refs.DialogAdd.show()
         },
         // 编辑项目
