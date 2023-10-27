@@ -6,7 +6,8 @@
             </div>
             <div>
                 <el-button type="primary" class="blueBtn" @click="manyInvoice">批量开票</el-button>
-                <el-button class="bluePlainBtn">导出</el-button>
+                <!-- TODO:导出功能等后端接口联调 -->
+                <!-- <el-button class="bluePlainBtn">导出</el-button> -->
             </div>
         </div>
         <el-table :data="tableData" v-loading="loading" @select="selectOrder" @select-all="selectOrder">
