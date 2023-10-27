@@ -818,7 +818,7 @@ export default {
     initMqtt(){
         const url = new URL(this.$config.VUE_APP_REQUEST_URL);
         var hostname = url.hostname,
-            port = 8083,
+            port = 28083,
             clientId = `mqtt_${Math.random().toString(16).slice(3)}`,
             timeout = 4000,
             keepAlive = 100,
