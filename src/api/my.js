@@ -3,7 +3,6 @@ import request from '../utils/request'
 import newRequest from "@/utils/newRequest.js";
 // 导入字符串转换工具
 import qsStringify from 'qs-stringify'
-import newRequest from '@/utils/newRequest.js'
 
 // 激活账号
 export function activation(data) {
