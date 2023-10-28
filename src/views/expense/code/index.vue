@@ -176,9 +176,9 @@ export default {
                     this.tableData = res.data.rows
                     this.loading = false
                     this.tableData.forEach(item => {
-                        item.countNumber = item.countNumber == -1 ? '不限' : item.countNumber
-                        item.cloudNumber = item.cloudNumber == -1 ? '不限' : item.cloudNumber
-                        item.prestartNumber = item.prestartNumber == -1 ? '不限' : item.prestartNumber
+                        item.countNumber = item.countNumber == -1 ? '不限' : item.countNumber ? item.countNumber : '-'
+                        item.cloudNumber = item.cloudNumber == -1 ? '不限' : item.cloudNumber ? item.cloudNumber : '-'
+                        item.prestartNumber = item.prestartNumber == -1 ? '不限' : item.prestartNumber ? item.prestartNumber : '-'
                         item.activateTime = item.activateTime ? item.activateTime : '-'
                         item.expireTime = item.expireTime ? item.expireTime : '-'
                         item.store = item.store ? item.store + ' GB' : '不限'
