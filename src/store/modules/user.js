@@ -30,9 +30,6 @@ const mutations = {
 const actions = {
     // 获取用户信息
     getUser({ commit, state }){
-        if(!state.userId){
-            commit('SET_USERID', JSON.parse(sessionStorage.getItem("userid")))
-        }
         return new Promise((resolve, reject) => {
             showDetail({ userid: state.userId}).then(async response => {
                 commit('CHANGE_USERINFO', response.data)
