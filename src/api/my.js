@@ -3,6 +3,7 @@ import request from '../utils/request'
 import newRequest from "@/utils/newRequest.js";
 // 导入字符串转换工具
 import qsStringify from 'qs-stringify'
+import newRequest from '@/utils/newRequest.js'
 
 // 激活账号
 export function activation(data) {
@@ -17,28 +18,20 @@ export function activation(data) {
 }
 
 // 获取邮箱密码登录
-export function login(data) {
-    const { loginName, password } = data
-    return request({
+export function login(params) {
+    return newRequest({
         url: '/UserCenter/login',
         method: 'POST',
-        params: {
-            loginName,
-            password
-        }
+        params
     })
 }
 
 // 获取手机短信登录
-export function loginMobile(data) {
-    const { mobile, code } = data
-    return request({
+export function loginMobile(params) {
+    return newRequest({
         url: '/UserCenter/loginMobile',
         method: 'POST',
-        params: {
-            mobile,
-            code
-        }
+        params
     })
 }
 

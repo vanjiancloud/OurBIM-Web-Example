@@ -55,6 +55,13 @@
               <i slot="prefix" class="el-input__icon el-icon-unlock"></i>
             </el-input>
           </el-form-item>
+            <el-form-item>
+                <div class="fonts">选择版本：</div>
+                <el-radio-group v-model="version" @change="changeVersion">
+                    <el-radio :label="2">OurBIM 2.0</el-radio>
+                    <el-radio :label="3">OurBIM 3.0</el-radio>
+                </el-radio-group>
+            </el-form-item>
           <!-- 勾选框 -->
           <el-form-item prop="isAgree">
             <el-checkbox
@@ -111,6 +118,13 @@
               <i slot="prefix" class="el-input__icon el-icon-s-comment"></i>
             </el-input>
           </el-form-item>
+            <el-form-item>
+                <div class="fonts">选择版本：</div>
+                <el-radio-group v-model="version" @change="changeVersion">
+                    <el-radio :label="2">OurBIM 2.0</el-radio>
+                    <el-radio :label="3">OurBIM 3.0</el-radio>
+                </el-radio-group>
+            </el-form-item>
           <!-- 勾选框 -->
           <el-form-item prop="isAgree">
             <el-checkbox
@@ -146,7 +160,6 @@ import { Setuserid } from "@/store/index.js";
 import { setemail, getemail, delemail } from "@/store/index.js";
 import { setpassword, getpassword, delpassword } from "@/store/index.js";
 import { setmobile, getmobile, delmobile } from "@/store/index.js";
-// const Base64 = require('js-base64').Base64
 
 export default {
   name: "login",
@@ -220,6 +233,7 @@ export default {
           },
         ],
       },
+      version:2
     };
   },
   created() {
@@ -229,21 +243,9 @@ export default {
         this.Mobilelogin();
       }
     };
-    // 页面缩放
-    // window.onload = function () {
-    //   // 获取构件树页面最大宽度
-    //   var maxWidth = document.documentElement.offsetWidth
-    //   document.documentElement.style.fontSize =
-    //     document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
-    //   window.onresize = function () {
-    //     document.documentElement.style.fontSize =
-    //       document.documentElement.offsetWidth / (maxWidth / 16) + 'px'
-    //   }
-    // }
     // 记住账号
     if (localStorage.getItem("email")) {
       this.form.loginName = getemail();
-      // console.log(this.form.isAgree)
       this.form.isAgree = true;
     } else if (localStorage.getItem("email") === null) {
       this.form.loginName = "";
@@ -252,7 +254,6 @@ export default {
     // 记住密码
     if (localStorage.getItem("password")) {
       this.form.password = getpassword();
-      // console.log(this.form.isAgree)
       this.form.isAgree = true;
     } else if (localStorage.getItem("password") === null) {
       this.form.password = "";
@@ -261,13 +262,19 @@ export default {
     // 记住手机号
     if (localStorage.getItem("mobile")) {
       this.mobForm.mobile = getmobile();
-      // console.log(this.mobForm.checkbox)
       this.mobForm.checkbox = true;
     } else if (localStorage.getItem("mobile") === null) {
       this.mobForm.mobile = "";
     }
   },
   methods: {
+    changeVersion(e){
+        if(e===2) {
+            window.location.href = `https://www.ourbim.com/project_center/`
+        }else{
+            window.location.href = `https://www.ourbim.com/v3/`
+        }
+    },
     InputPassword() {
       /**
        * @Author: zk
@@ -296,9 +303,7 @@ export default {
     emailLogin() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          this.logIn = "登录中";
-          this.isLoading = true;
-          this.doLogin();
+            this.doLogin()
         }
       });
     },
@@ -306,92 +311,52 @@ export default {
     Mobilelogin() {
       this.$refs.mobForm.validate((valid) => {
         if (valid) {
-          this.logIn = "登录中";
-          this.isLoading = true;
-          this.mobLogin();
+            this.mobLogin()
         }
       });
     },
     // 账号登录接口
     doLogin() {
-      login({
-        loginName: this.form.loginName,
-        password: this.form.password,
-      })
-        .then((res) => {
-          if (res.data.code === 0) {
-            this.$message.success(res.data.message);
-            this.logIn = "登录";
+        this.logIn = "登录中";
+        this.isLoading = true;
+        login({loginName: this.form.loginName, password: this.form.password}).then(res=>{
             this.isLoading = false;
+            this.logIn = "登录";
+            this.$message.success(res.data.message);
             sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
             setemail(this.form.loginName);
             setpassword(this.form.password);
-            // 存储用户信息userid，到sessionStorage
             Setuserid(res.data.data.userid);
-            // console.log(this.form.isAgree)
             if (this.form.isAgree === false) {
-              delemail();
-              delpassword();
+                delemail();
+                delpassword();
             }
             this.$router.push("/");
-          } else if (res.data.code === 2) {
-            this.$message.warning(res.data.message);
+        }).catch((err) => {
             this.logIn = "登录";
             this.isLoading = false;
-          } else {
-            this.$message.error("账号或密码不正确，请重新输入");
-            this.logIn = "登录";
-            this.isLoading = false;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          this.$message.error("请检查网络或稍后重试");
-          this.logIn = "登录";
-          this.isLoading = false;
         });
     },
     // 手机登录接口
     mobLogin() {
-      loginMobile({
-        mobile: this.mobForm.mobile,
-        code: this.mobForm.code,
-      })
-        .then((res) => {
-          console.log(res);
-          if (res.data.code === 0) {
-            this.$message.success(res.data.message);
-            this.logIn = "登录";
+        this.logIn = "登录中";
+        this.isLoading = true;
+        loginMobile({mobile: this.mobForm.mobile,code: this.mobForm.code}).then(res=>{
             this.isLoading = false;
-            // 存储用户信息userid，到localStorage
+            this.logIn = "登录";
+            this.$message.success(res.data.message);
             sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
             setuserid(res.data.data.userid);
             // 存储用户信息userid，到sessionStorage
             Setuserid(res.data.data.userid);
             setmobile(this.mobForm.mobile);
             if (this.mobForm.checkbox === false) {
-              delmobile();
+                delmobile();
             }
             this.$router.push("/");
-          } else if (res.data.code === 2) {
-            this.$message.warning(res.data.message);
+        }).catch((err) => {
             this.logIn = "登录";
             this.isLoading = false;
-          } else if (res.data.code === 1) {
-            this.$message.error(res.data.message);
-            this.logIn = "登录";
-            this.isLoading = false;
-          } else {
-            this.$message.error("验证码验证失败，您的操作过于频繁，请稍后再试");
-            this.logIn = "登录";
-            this.isLoading = false;
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          this.$message.error("请检查网络或稍后重试");
-          this.logIn = "登录";
-          this.isLoading = false;
         });
     },
     // 取cookie
@@ -482,16 +447,6 @@ export default {
       }
     },
   },
-  /* 把键盘事件放在activated事件里，当清除键盘事件后，
-  下次再次进入当前路由的话，可以再次唤起键盘事件 */
-  // activated () {
-  //   // 添加键盘事件
-  //   document.onkeydown = e => {
-  //     if (e.key == 'Enter') {
-  //       this.emailLogin()
-  //     }
-  //   }
-  // }
 };
 </script>
 
