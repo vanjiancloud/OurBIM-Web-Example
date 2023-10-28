@@ -226,9 +226,6 @@ const router = createRouter()
 router.beforeEach(function(to, from, next) {
     // 如果sessionStorage中没有userid，并且去的不是登录页面，
     // 直接返回登录页，否则放行
-    if(to.query.userId){
-        sessionStorage.setItem("userid", JSON.stringify(to.query.userId))
-    }
     if (!sessionStorage.getItem('userid')) {
         if (
             to.path !== '/login' &&
