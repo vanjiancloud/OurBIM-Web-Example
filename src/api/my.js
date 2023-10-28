@@ -26,15 +26,11 @@ export function login(params) {
 }
 
 // 获取手机短信登录
-export function loginMobile(data) {
-    const { mobile, code } = data
-    return request({
+export function loginMobile(params) {
+    return newRequest({
         url: '/UserCenter/loginMobile',
         method: 'POST',
-        params: {
-            mobile,
-            code
-        }
+        params
     })
 }
 
