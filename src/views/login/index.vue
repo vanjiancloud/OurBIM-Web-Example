@@ -322,11 +322,10 @@ export default {
         login({loginName: this.form.loginName, password: this.form.password}).then(res=>{
             this.isLoading = false;
             this.logIn = "登录";
-            this.$message.success(res.data.message);
-            sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
+            sessionStorage.setItem("userInfo", JSON.stringify(res.data));
             setemail(this.form.loginName);
             setpassword(this.form.password);
-            Setuserid(res.data.data.userid);
+            Setuserid(res.data.userid);
             if (this.form.isAgree === false) {
                 delemail();
                 delpassword();
@@ -344,11 +343,10 @@ export default {
         loginMobile({mobile: this.mobForm.mobile,code: this.mobForm.code}).then(res=>{
             this.isLoading = false;
             this.logIn = "登录";
-            this.$message.success(res.data.message);
-            sessionStorage.setItem("userInfo", JSON.stringify(res.data.data));
-            setuserid(res.data.data.userid);
+            sessionStorage.setItem("userInfo", JSON.stringify(res.data));
+            setuserid(res.data.userid);
             // 存储用户信息userid，到sessionStorage
-            Setuserid(res.data.data.userid);
+            Setuserid(res.data.userid);
             setmobile(this.mobForm.mobile);
             if (this.mobForm.checkbox === false) {
                 delmobile();
