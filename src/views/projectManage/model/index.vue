@@ -62,8 +62,8 @@
         <el-table-column fixed="right" label="操作" width="200">
             <template slot-scope="scope">
                 <div class="flexBetween">
-                  <el-button type="text" class="blueText" @click="GoApp(scope.row)" :disabled="scope.row.applidStatus !== '2'">打开模型</el-button>
-                  <el-button type="text" class="blueText" @click="teamWorkBtnClick(scope.row)" :disabled="!(scope.row.applidStatus === '2' && scope.row.appType !== '5')">协同模式</el-button>
+                  <el-button type="text" class="blueText" @click="GoApp(scope.row)" :disabled="scope.row.applidStatus !== '2'||scope.row.currVersion!=='V50'">打开模型</el-button>
+                  <el-button type="text" class="blueText" @click="teamWorkBtnClick(scope.row)" :disabled="!(scope.row.applidStatus === '2' && scope.row.appType !== '5')||scope.row.currVersion!=='V50'">协同模式</el-button>
                   <!-- <el-button type="text" class="blackText">互动模式</el-button> -->
                     <el-dropdown>
                         <span class="el-dropdown-link">
