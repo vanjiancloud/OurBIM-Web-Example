@@ -19,6 +19,7 @@
         <el-table-column prop="appid" label="模型项目ID" />
         <el-table-column prop="createTime" label="上传日期" />
         <el-table-column prop="fileSize" label="模型大小" />
+        <el-table-column prop="currVersion" label="模型版本" />
         <el-table-column label="类型">
           <template slot-scope="scope">
             <span class="can-click" v-if="scope.row.appType === '0' && scope.row.isGis ==='true'" @click="handleCommand('编辑',scope.row)">GIS模型</span>
