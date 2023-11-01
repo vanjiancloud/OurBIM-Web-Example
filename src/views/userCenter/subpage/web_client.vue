@@ -865,7 +865,7 @@ export default {
             }
         };
     },
-    // 发送消息到mqtt
+    // 发送关闭进程消息到mqtt
     sendMqtt() {
         if(!this.taskId) return
         let mess = `task/${this.taskId}/js/close`
@@ -874,7 +874,7 @@ export default {
         message.qos=0;
         this.client.send(message);
     },
-    // 监听关闭浏览器
+    // 监听刷新浏览器
     unLoad(){
         if (this.isMobile()) {
             window.addEventListener('pagehide', ()=> {
