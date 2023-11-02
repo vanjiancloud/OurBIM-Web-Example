@@ -591,7 +591,7 @@ export default {
             if(realData.data?.dynamicData?.length){
               realData.data.dynamicData = [{name:'构件名称',value:realData.data.name},{name:'构件ID',value:realData.data.revitCode}].concat(realData.data.dynamicData)
             }
-            this.memberInfo = realData?.data?.dynamicData || realData.rsInfo || []
+            this.memberInfo = realData?.data?.dynamicData.length ? realData.data.dynamicData : realData.rsInfo || []
             let messageInfo = {
               prex: "ourbimMessage",
               type: 20001,
