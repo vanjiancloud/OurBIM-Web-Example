@@ -32,6 +32,7 @@
             <el-table-column prop="activateTime" label="激活时间"/>
             <el-table-column prop="expireTime" label="到期时间"/>
             <el-table-column prop="countNumber" label="总并发数"/>
+            <el-table-column prop="cloudNumber" label="包含云VR/AR/MR并发数"/>
             <el-table-column prop="prestartNumber" label="预启动并发数"/>
             <el-table-column prop="store" label="存储空间">
                 <template slot-scope="scope">

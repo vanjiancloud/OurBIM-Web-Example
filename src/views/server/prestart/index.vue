@@ -103,7 +103,7 @@ export default {
         },
         getOpenPreTotalData() {
             getOpenPreTotal({userId: Getuserid()}).then(res => {
-                this.openPreTotal = res.data.totalPreStartNum
+                this.openPreTotal = res?.data?.totalPreStartNum || 0
             })
         },
         search(){

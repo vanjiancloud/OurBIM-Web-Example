@@ -20,11 +20,10 @@
     <div class="hidden-bim" :class="{'phone-hidden-bim':isMobile()}" v-if="isFade">
       <div class="hidden-bim" :style="{background:`#000000 url(${logoImg.startUpBkgImg}) no-repeat center`}">
         <img v-if="logoImg.startUpLogo" :src="logoImg.startUpLogo" class="show-loading" alt="" />
-        <div v-if="hiddenState === -1" class="hidden-text">{{ baseExceptMessge }}</div>
-        <div v-else class="hidden-text">{{ exceptionMessge[hiddenState] }}</div>
+        <div class="hidden-text">{{ baseExceptMessge }}</div>
       </div>
 
-      <div class="proccessText" v-if="loadingProccessArr.length && hiddenState === 0">
+      <div class="proccessText" v-if="loadingProccessArr.length && baseExceptMessge === exceptionMessge[0]">
         {{ loadingProccessArr[loadingProccess].text }} ({{loadingProccess+1}}/{{loadingProccessArr.length || 5}})
       </div>
     </div>
@@ -90,7 +89,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Drawer from '@/components/Drawer/index.vue'
-import { getTaskId, getProccess } from "@/api/userCenter/web_client";
+import { getProccess } from "@/api/userCenter/web_client";
 import MODELAPI,{ doAction } from "@/api/model_api";
 import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
 import viewCube from "@/components/web_client/view_cube";
@@ -110,7 +109,7 @@ import LocationCode from "../locationCode/index.vue"; //定位码
 import Tool from "../Tool/index.vue"; //底部工具栏
 import DialogScale from "@/views/userCenter/resourcePool/DialogScale.vue"; //设置比例尺弹窗
 import { EventBus } from '@/utils/bus.js'
-var mqtt = require('@/utils/mqttws31.min.js')
+require('@/utils/mqttws31.min.js')
 import { getLogo } from '@/api/server/parameter'
 
 export default {
@@ -149,7 +148,7 @@ export default {
         "长时间未交互，已自动断开，刷新即可重连",
         "模型长时间未响应，请刷新重试"
       ],
-      baseExceptMessge: "",
+      baseExceptMessge: "环境加载中…",
       userId: this.$route.query.userId || Getuserid() || 'travels',//用户id：链接可能没有用户id取缓存的
       activeToolArr: [],//工具栏打开的内容
       isGis: false,
@@ -176,7 +175,6 @@ export default {
       cubeState: 6,
       memberInfo: [], //属性信息
       loadTimer: null,
-      hiddenState: 0,
       websock: null,
       socketTimer: null,
       shadowType: null,
@@ -241,7 +239,7 @@ export default {
             }else{
                 let defaultLogo = {
                     startUpLogo: require('@/assets/images/logo/logo.png'),
-                    startUpBkgImg: '',
+                    startUpBkgImg: require('@/assets/images/logo/loading.png'),
                 }
                 this.$set(this.logoImg, type, defaultLogo[type])
             }
@@ -368,7 +366,6 @@ export default {
                 if(errType){
                     this.closeWebSocket();
                     this.isFade = true;
-                    this.hiddenState = -1
                     this.baseExceptMessge = res.message
                 }
             }
@@ -631,7 +628,7 @@ export default {
               message: "",
             };
             this.sentParentIframe(messageInfo);
-            this.hiddenState = 0;
+            this.baseExceptMessge = this.exceptionMessge[0]
             const progress = Number(
               String(Number(realData.progress) * 100).substring(0, 3)
             );
@@ -915,7 +912,7 @@ export default {
         wx.miniProgram.getEnv((res) => {
           if (res.miniprogram) {
             this.isFade = true;
-            this.hiddenState = 1;
+            this.baseExceptMessge = this.exceptionMessge[1]
             this.clearTimePass();
             this.closeWebSocket();
           }
@@ -941,7 +938,7 @@ export default {
         }
         let count = 0;//计算请求次数
         const getResponse = ()=>{
-            if(this.hiddenState !== 0) return
+            if(this.baseExceptMessge !== this.exceptionMessge[0]) return
             getProccess({taskId:this.taskId}).then(async res=>{
                 this.loadingProccessArr = res.data
                 for (let i = 0; i < res.data.length; i++) {
@@ -1022,6 +1019,10 @@ export default {
               this.controllerInfo.uiBar = false;
               this.controllerInfo.viewCube = false;
             }
+        }).catch((e)=>{
+            if(e?.message){
+                this.baseExceptMessge = e.message
+            }
         })
     },
     isMobile() {
@@ -1034,7 +1035,7 @@ export default {
     setTimeLoad() {
       this.loadTimer = setTimeout(() => {
         if (this.isFade === true) {
-          this.hiddenState = 2;
+          this.baseExceptMessge = this.exceptionMessge[2]
           this.closeWebSocket();
         }
         clearTimeout(this.loadTimer);
@@ -1151,7 +1152,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-size: cover!important;
+    background-size: 100% 100%!important;
 
     @-webkit-keyframes bgp {
       0% {
@@ -1165,21 +1166,13 @@ export default {
       letter-spacing: 1px;
       margin-top: 130px;
       position: absolute;
-      font-size: 20px;
-      background-image: linear-gradient(
-        to right,
-        #b9fffc,
-        #a2d8f4,
-        #9ab3f5,
-        #7579e7,
-        #9ab3f5,
-        #a2d8f4,
-        #b9fffc
-      );
-      -webkit-text-fill-color: transparent;
-      -webkit-background-clip: text;
-      -webkit-background-size: 200% 100%;
       animation: bgp 3s infinite linear;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-size: 18px;
+        letter-spacing: 1px;
+        background: linear-gradient(157deg, #46AFFF 0%, #8D39FF 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     .show-loading {
@@ -1191,7 +1184,7 @@ export default {
     .proccessText{
       color: #ffffff;
       position: absolute;
-      bottom: 90px;
+      bottom: 10vh;
       z-index: 999;
     }
   }

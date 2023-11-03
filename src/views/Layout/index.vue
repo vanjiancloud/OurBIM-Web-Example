@@ -66,7 +66,7 @@
                 <div class="statisticsBox server">
                     <div class="statisticsTitle">公有云服务使用</div>
                     <!-- 按需计费 -->
-                    <div class="flexSpaceBetween needFee" v-if="total.billingMode !== '1'">
+                    <div class="flexSpaceBetween needFee" v-if="total.billingMode === '0'">
                         <div style="width: 40%;margin-right: 4%;">
                             <div class="needFeeNum">{{ Number(total.useStore).toFixed(2) }}<span>GB</span></div>
                             <div class="needFeeTitle">

@@ -25,7 +25,7 @@ export default {
         return {
             form: {
                 configName: 'noOperationTimeLimit',
-                configValue:0,
+                configValue:1200,
                 creator: this.$store.state.user.userId
             },
             rules:{

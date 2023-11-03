@@ -1131,7 +1131,7 @@
   }
       .systemWeather{
           width: 100%;
-          height: calc(100% - 53px);
+          height: calc(100% - 90px);
           overflow-x: hidden;
           overflow-y: auto;
           .weatherClassify{
@@ -1670,7 +1670,7 @@
                           }
       }
 .background{
-    padding: 0 0 15px 16px;
+    padding: 0 0 40px 16px;
     .row-box{
         margin-bottom: 10px;
     }

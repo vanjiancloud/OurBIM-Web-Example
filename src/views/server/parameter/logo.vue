@@ -47,7 +47,7 @@ export default {
         return {
             form: {
                 startUpLogo: require('@/assets/images/logo/logo.png'),
-                startUpBkgImg: '',
+                startUpBkgImg: require('@/assets/images/logo/loading.png'),
                 controlBallImg: require('@/assets/images/logo/logo.png')
             },
         };
