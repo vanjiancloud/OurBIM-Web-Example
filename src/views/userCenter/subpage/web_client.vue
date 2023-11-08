@@ -58,6 +58,9 @@
       </div>
     </div>
     <EscDialogItem ref="EscDialogItem" :title="escTitle" />
+    <!-- 构件操作图标 -->
+    <OperatingTools ref="OperatingTools" v-if="showOperatingTools" :data="{ taskId }" class="operatingStyle"/>
+
       <div v-show="controllerInfo.tagUiBar" v-if="isUiBar&&!isFade">
         <!-- 漫游导航 -->
         <roamNavigate ref="roamNavigate" :taskId="taskId" v-show="checkShow('roaming')"></roamNavigate>
@@ -90,7 +93,7 @@
 import { mapGetters } from 'vuex'
 import Drawer from '@/components/Drawer/index.vue'
 import { getProccess } from "@/api/userCenter/web_client";
-import MODELAPI,{ doAction } from "@/api/model_api";
+import MODELAPI,{ doAction, lockControl, setGizmoMode } from "@/api/model_api";
 import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
 import viewCube from "@/components/web_client/view_cube";
 import roamNavigate from "@/components/web_client/roam_navigate";
@@ -111,6 +114,7 @@ import DialogScale from "@/views/userCenter/resourcePool/DialogScale.vue"; //设
 import { EventBus } from '@/utils/bus.js'
 require('@/utils/mqttws31.min.js')
 import { getLogo } from '@/api/server/parameter'
+import OperatingTools from "@/components/OperatingTools";
 
 export default {
   name: "look_app",
@@ -132,6 +136,7 @@ export default {
     ComponentTree,
     LocationCode,
     Drawer,
+    OperatingTools
   },
   data() {
     return {
@@ -189,7 +194,8 @@ export default {
       pakAndAppid:[],
       escTitle: '',//esc显示名称
       copyingPictures: {},//临摹图信息
-      client: null //mqtt
+      client: null, //mqtt
+      showOperatingTools: false,//是否打开操作轴
     };
   },
   computed: {
@@ -226,6 +232,24 @@ export default {
     this.closeWebSocket();
   },
   methods: {
+    // 是否打开操作轴
+    openOperatingTools(e){
+        this.showOperatingTools = e
+        const params = {
+            taskId: this.taskId,
+            flag: e ? "on" : "off"
+        }
+        lockControl(params).then((res) => {
+            if(params.flag === 'on'){
+                let params ={
+                    taskId: this.taskId,
+                    mode: "translate"
+                }
+                setGizmoMode(params)
+                this.$refs.OperatingTools.checkOprate({gizmoMode:'translate'})
+            }
+        });
+    },
     // 获取中logo
     getLogo(type){
         let url = `${this.$config.VUE_APP_REQUEST_URL}/cloudServiceImg/downloadImg?userId=${this.$store.state.user.userId}&type=${type}&time=${new Date().getTime()}`
@@ -1137,6 +1161,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.operatingStyle{
+    left: 5%;
+    right: initial;
+}
 .bim-main {
   height: 100vh;
   width: 100vw;

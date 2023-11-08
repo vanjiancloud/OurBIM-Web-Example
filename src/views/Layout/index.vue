@@ -282,7 +282,7 @@ export default {
     mounted() {
         this.$nextTick(() => {
             setTimeout(()=>{
-                if(this.total.billingMode==='1'){
+                if(this.total.billingMode!=='0'){
                     this.getEchart()
                 }
             },200)
@@ -378,7 +378,7 @@ export default {
                         )
                     },
                     barGap: '-100%',
-                    data: [this.total.useVrConcurrency],
+                    data: [this.total.useVrConcurrency+this.total.useArConcurrency],
                     zlevel: 2
                 }, {
                     type: 'bar',
@@ -394,7 +394,7 @@ export default {
                         )
                     },
                     barGap: '-100%',
-                    data: [this.total.useVrConcurrency],
+                    data: [this.total.useVrConcurrency+this.total.useArConcurrency+this.total.useMrConcurrency],
                     zlevel: 1
                 },
                 {

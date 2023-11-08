@@ -414,6 +414,7 @@ export default {
                     case 'label':
                         filterCheck(item.name)
                         this.controlTagShow(true)
+                        this.$parent.openOperatingTools(true)
                         break
                     // 视图
                     case 'view':
@@ -513,6 +514,7 @@ export default {
             if (key === 'label') {
                 // 标签关闭
                 this.controlTagShow(false)
+                this.$parent.openOperatingTools(false)
             }
             if (key === 'view') {
                 // 视图关闭弹窗
