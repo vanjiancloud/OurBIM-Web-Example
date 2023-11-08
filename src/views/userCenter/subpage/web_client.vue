@@ -206,7 +206,6 @@ export default {
     this.getLogo("startUpLogo")
     this.getLogo("startUpBkgImg")
     this.unLoad()
-    this.initMqtt()
     this.appId = this.$route.query.appid;
     this.isUiBar =
       this.$route.query.uibar === undefined || this.$route.query.uibar === true
@@ -222,6 +221,7 @@ export default {
     this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
   },
   mounted() {
+    this.initMqtt()
     this.setTimeLoad();
     this.addMessageEvent();
     this.getLinkModelAppid(); // 获取appid
