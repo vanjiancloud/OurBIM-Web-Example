@@ -838,7 +838,9 @@ export default {
             onSuccess: (e) => {
                 this.client.subscribe('task/#');
                 this.client.subscribe(`terminal/${this.$route.query.token}`);
-                this.getModelUrl();
+                this.$nextTick(()=>{
+                    this.getModelUrl();
+                })
             },
             onFailure: (e) => {
                 console.log("onFailure",e);
