@@ -282,10 +282,10 @@ export default {
     mounted() {
         this.$nextTick(() => {
             setTimeout(()=>{
-                if(this.total.billingMode!=='0'){
+                if(Object.keys(this.total).length && this.total.billingMode!=='0'){
                     this.getEchart()
                 }
-            },200)
+            },1000)
         })
     },
     destroyed() {

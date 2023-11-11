@@ -75,7 +75,11 @@ export default {
     mounted() { },
     methods: {
         getList(){
-            Iplist(this.form).then((res)=>{
+            let data = {
+                pageNum: this.form.pageNum,
+                pageSize: this.form.pageSize,
+            }
+            Iplist(data).then((res)=>{
                 this.tableData = res.data
                 this.total = res.count
             })
