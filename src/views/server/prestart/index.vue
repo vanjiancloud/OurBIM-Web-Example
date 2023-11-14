@@ -164,7 +164,7 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning",
             }).then(() => {
-                deleteRow(row.id).then(()=>{
+                deleteRow({id:row.id}).then(()=>{
                     this.$message.success("删除成功！")
                     this.getList()
                 })

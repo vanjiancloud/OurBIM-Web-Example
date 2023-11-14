@@ -45,7 +45,7 @@ service.interceptors.response.use(
   },
   error => {
     // console.log('err' + error.response.data) // for debug
-    const errorRes = error && error.response.data
+    const errorRes = error && error?.response?.data
     Message({
       message: errorRes?.message || '网络异常',
       type: 'error',

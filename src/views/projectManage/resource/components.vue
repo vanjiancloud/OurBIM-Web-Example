@@ -76,11 +76,23 @@
                     </el-progress>
                 </template>
             </el-table-column>
-            <el-table-column fixed="right" label="操作" width="200">
+            <el-table-column fixed="right" label="操作" width="155">
                 <template slot-scope="scope">
-                    <el-button type="text" class="blueText" @click.stop="openCom(scope.row)">打开构件</el-button>
-                    <el-button type="text" class="blueText" @click.stop="editCom(scope.row)">编辑</el-button>
-                    <el-button type="text" class="blackText" @click.stop="deleteRow(scope.row)">删除</el-button>
+                    <div class="flexBetween">
+                        <div>
+                            <el-button type="text" class="blueText" @click.stop="openCom(scope.row)">打开构件</el-button>
+                            <el-button type="text" class="blueText" @click.stop="editCom(scope.row)">编辑</el-button>
+                        </div>
+                        <el-dropdown>
+                            <span class="el-dropdown-link">
+                                <i class="el-icon-arrow-down el-icon-more"></i>
+                            </span>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item @click.native="conversionRow(scope.row)">重新转换</el-dropdown-item>
+                                <el-dropdown-item @click.native="deleteRow(scope.row)">删除</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </div>
                 </template>
             </el-table-column>
         </el-table>
@@ -108,6 +120,7 @@
                             <i class="el-icon-arrow-down el-icon-more"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item v-if="item.isGroup === '0'" @click.native="conversionRow(item)">重新转换</el-dropdown-item>
                             <el-dropdown-item @click.native="deleteRow(item)">删除</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
@@ -127,7 +140,7 @@
 
 <script>
 import { Getuserid } from "@/store/index.js";
-import { list, deleteUserCom } from '@/api/resource/components.js'
+import { list, deleteUserCom, upgradeUserCom } from '@/api/resource/components.js'
 import List from "@/components/List/index.vue";
 import DialogsComGroup from './components/DialogsComGroup.vue'
 import DialogsDrag from "@/components/Upload/DialogsDrag.vue";
@@ -264,6 +277,13 @@ export default {
         // 打开构件
         openCom(row){
             this.$message('功能待开放！')
+        },
+        // 重新转换
+        conversionRow(row){
+            upgradeUserCom({comId:row.ourbimComponentInfo.comId}).then((res)=>{
+                this.getList(row.parentId)
+                this.$message.success(res.message)
+            })
         }
     }
 };

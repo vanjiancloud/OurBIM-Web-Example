@@ -3,7 +3,7 @@
     <el-dialog :title="title+'预启动项目'" :visible.sync="dialogVisible" :close-on-click-modal="false" append-to-body width="460px" :before-close="hide">
         <el-form ref="form" :style="{'width':'90%'}" :model="form" :rules="rules" label-width="100px">
             <el-form-item label="选择项目:" prop="projectName">
-                <el-autocomplete style="width: 100%;" v-model="form.projectName" value-key="appName" :fetch-suggestions="querySearchAsync" placeholder="请输入项目名称并查找" @select="handleSelect">
+                <el-autocomplete style="width: 100%;" v-model="form.projectName" :trigger-on-focus="false" value-key="appName" :fetch-suggestions="querySearchAsync" placeholder="请输入项目名称并查找" @select="handleSelect">
                     <template slot-scope="{ item }">
                         {{ item.appName }}
                     </template>
@@ -83,12 +83,15 @@ export default {
         },
         // 查找项目
         async querySearchAsync(queryString, cb) {
-            var results = (await findProject({userId:Getuserid(),appName:queryString})).data
+            this.form.projectId = null
+            if(!queryString){
+                return cb([]);
+            }
 
-            clearTimeout(this.timeout);
-            this.timeout = setTimeout(() => {
+            var results = (await findProject({userId:Getuserid(),appName:queryString})).data
+            setTimeout(() => {
                 cb(results);
-            }, 3000 * Math.random());
+            }, 3000);
         },
         // 选中项目
         handleSelect(item) {
@@ -97,6 +100,7 @@ export default {
         submit() {
             this.$refs.form.validate((valid) => {
                 if (!valid) return false
+                if(!this.form.projectId) return this.$message.warning('请选择项目')
                 add(this.form).then(()=>{
                     this.$message.success("新增成功")
                     this.hide()

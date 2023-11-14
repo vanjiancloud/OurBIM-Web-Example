@@ -297,7 +297,9 @@ export default {
     },
     methods: {
         startTimer() {
-            this.$store.dispatch('user/getTotal')
+            this.$store.dispatch('user/getTotal').catch((err)=>{
+                this.stopTimer();
+            })
             this.timer = setInterval(() => {
                 this.$store.dispatch('user/getTotal')
             }, 3000);

@@ -47,3 +47,12 @@ export function updateUserCom(data) {
         }
     })
 }
+
+// 重新转换构件
+export function upgradeUserCom(params) {
+    return request({
+        url: '/comControl/upgradeUserCom',
+        method: 'POST',
+        params
+    })
+}
