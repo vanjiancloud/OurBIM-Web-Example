@@ -88,7 +88,6 @@ export default {
       return this.accept.split(',').map(e => { return e.split('/')[1] }).join('/')
     },
     handleChange(file, fileList){
-      console.log('🚀🚀🚀',fileList);
       this.fileList = fileList
     },
     beforeUpload(file) {
@@ -110,7 +109,6 @@ export default {
       }
       // 清除文件列表防止change事件只触发一次
       const uploadFilesArr = this.$refs.upload.uploadFiles // 上传文件列表
-      console.log('🚀🚀🚀111',uploadFilesArr);
       if (uploadFilesArr.length && this.limit === 1) {
         this.$refs.upload.uploadFiles = []
       }
@@ -122,7 +120,6 @@ export default {
     // 点击预览文件
     handlePreview(file) {
       // // 手动上传
-      // console.log('🚀🚀🚀',file,file.url);
       // this.dialogImageUrl = file.url;
       // if (file.raw) {
       //   // 本地预览，转blob

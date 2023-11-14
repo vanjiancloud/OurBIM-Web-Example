@@ -241,7 +241,6 @@ export default {
        * @description: 边 鼠标移入移出
        */
       // 上
-      console.log(888);
       if ((node === 0 && e === 0) || (node === 2 && e === 2)) {
         this.setActiveEdge(0, 0, isShow, "edge");
         this.setActiveEdge(2, 2, isShow, "edge");
@@ -381,7 +380,6 @@ export default {
        * @description: 边 点 node 0 前 1 后 2 上 3 下 4 左 5 右
        * e 0 上 1 右 2 下 3 左
        */
-      // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       // let oldDownInfo = JSON.parse(JSON.stringify(this.downInfo))
       if (!this.isAnimation) {
         return;
@@ -615,7 +613,6 @@ export default {
        * @description: 点 node 0 前 1 后 2 上 3 下 4 左 5 右
        * e 0 左上 1 左下 2 右上 3 右下
        */
-      // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       if (!this.isAnimation) {
         return;
       }
@@ -847,11 +844,9 @@ export default {
        * @Date: 2020-09-21 09:44:35
        * @description: 旋转确认 前 0 后 1 上 2 下 3 左 4 右 5
        */
-      console.log('111',this.isAnimation);
       if (!this.isAnimation) {
         return;
       }
-      // console.log("old x:", JSON.parse(JSON.stringify(this.downInfo)).x, "y:", JSON.parse(JSON.stringify(this.downInfo)).y, "z:", JSON.parse(JSON.stringify(this.downInfo)).z);
       const oldDownInfo = JSON.parse(JSON.stringify(this.downInfo));
       this.activeFace = e;
       switch (e) {

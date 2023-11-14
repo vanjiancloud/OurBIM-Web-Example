@@ -134,10 +134,8 @@ export default {
         exportViewPhoto(){
             // let url = this.delInfo.imagePath;
             // this.outPic(url);
-            console.log('44',this.delInfo);
             // let str = this.delInfo.imagePath;
             // let str2 = str.match(/view\/(\S*)\./)[1];
-            // // console.log('pop',str2,this.delInfo);
             let params = {
                 taskId:this.taskid,
                 imgType:this.value,
