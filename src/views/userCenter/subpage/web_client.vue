@@ -1007,6 +1007,7 @@ export default {
         .then((res) => {
             this.webUrl = res.data.url;
             this.taskId = res.data.taskId;
+            console.log('🚀🚀🚀taskId🚀🚀🚀taskId🚀🚀🚀taskId:',this.taskId);
             // 保存code
             if (res.data.code) {
               this.shareCode = res.data.code;
