@@ -115,14 +115,14 @@
                 <el-slider v-model.number="form.sunLightIntensity" :min="0" :max="10" @change="colorChange"></el-slider>
             </div>
         </div>
-        <!-- <div class="sun">
+        <div class="sun">
             <div>
                 <span>天空光阴影</span>
                 <el-switch v-model="form.sky" active-color="#409eff" inactive-color="#191a1c" @change="lightTypeChange($event,'sky')"></el-switch>
                 <span style="margin-left:15px">太阳光阴影</span>
                 <el-switch v-model="form.direction" active-color="#409eff" inactive-color="#191a1c" @change="lightTypeChange($event,'direction')"></el-switch>
             </div>
-        </div> -->
+        </div>
           <div class="titleWeather">天气</div>
           <div class="cloude">
               <div class="cloudeSelect">
