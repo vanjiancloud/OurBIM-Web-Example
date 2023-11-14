@@ -26,14 +26,14 @@
                                 <img src="@/assets/default/material.png"/>
                             </div>
                         </el-image>
-                        <div class="materialReset" @click.stop="resetMaterial(item,index)" v-if="materialAllInfo.matParam && materialAllInfo.matParam.colorList && materialAllInfo.matParam.colorList.length"><i class="el-icon-refresh-right"></i></div>
+                        <div class="materialReset" @click.stop="resetMaterial(item,index)" v-if="materialAllInfo.matParam && materialAllInfo.matParam.baseParamsList && materialAllInfo.matParam.baseParamsList.length"><i class="el-icon-refresh-right"></i></div>
                     </div>
                 </div>
                 <!-- 是否展开和收缩 -->
                 <div class="isOpen" @click="isOpen=!isOpen"><i :class="{'el-icon-caret-top':isOpen,'el-icon-caret-bottom':!isOpen}"></i></div>
             </div>
-            <template v-if="materialAllInfo.matParam && materialAllInfo.matParam.colorList && materialAllInfo.matParam.colorList.length">
-                <div class="materialImg">
+            <template v-if="materialAllInfo.matParam">
+                <div class="materialImg" v-if="materialAllInfo.matParam.colorList && materialAllInfo.matParam.colorList.length">
                     <span>颜色</span>
                     <el-color-picker v-model="form.color" show-alpha @change="updateMaterial()"></el-color-picker>
                     <div class="chartlet">
@@ -57,33 +57,37 @@
                         </div>
                     </div>
                 </div>
-                <div class="componentTitle">贴图位置</div>
-                <template v-for="(item,index) in materialChartlet.textureParamsList">
-                    <div v-if="!item.hasOwnProperty('enableEdit')||item.enableEdit!='false'" :key="index">
-                        <div class="switchBox" v-if="item.label === '等比缩放'">
-                            <span>等比缩放</span><el-switch @change="updateMaterial()" v-model="item.paramValue" :active-value="1" :inactive-value="0" active-color="#409EFF" inactive-color="#727272"></el-switch>
-                        </div>
-                        <div class="materialSlider" :key="index+1" v-else-if="item.label !== '等比缩放' && (((filterTexturesList('等比缩放')==1&&item.label!=='纵向缩放'&&item.label!=='横向缩放') || (filterTexturesList('等比缩放')==0&&item.label!=='缩放')))">
-                            <div>{{ item.label }}</div>
-                            <div class="slider">
-                                <el-slider @change="onChange(0,$event,index)" v-model="item.paramValue1" :max="Number(item.max)" :min="Number(item.min)" :step="Number(item.min)<=0 ? 0.1 : ((Number(item.min)<=0.01) ? 0.01 : 1)"></el-slider>
-                                <input type="number" v-model.trim.number="item.paramValue" style="width:70px;height: 23px;" @change="updateMaterial()" />
-                                <span v-if="['横向偏移','纵向偏移'].includes(item.label)">mm</span>
-                                <span v-else-if="['角度'].includes(item.label)">°</span>
-                                <span v-else></span>
+                <template v-if="materialChartlet.textureParamsList && materialChartlet.textureParamsList.length">
+                    <div class="componentTitle">贴图位置</div>
+                    <template v-for="(item,index) in materialChartlet.textureParamsList">
+                        <div v-if="!item.hasOwnProperty('enableEdit')||item.enableEdit!='false'" :key="index">
+                            <div class="switchBox" v-if="item.label === '等比缩放'">
+                                <span>等比缩放</span><el-switch @change="updateMaterial()" v-model="item.paramValue" :active-value="1" :inactive-value="0" active-color="#409EFF" inactive-color="#727272"></el-switch>
+                            </div>
+                            <div class="materialSlider" :key="index+1" v-else-if="item.label !== '等比缩放' && (((filterTexturesList('等比缩放')==1&&item.label!=='纵向缩放'&&item.label!=='横向缩放') || (filterTexturesList('等比缩放')==0&&item.label!=='缩放')))">
+                                <div>{{ item.label }}</div>
+                                <div class="slider">
+                                    <el-slider @change="onChange(0,$event,index)" v-model="item.paramValue1" :max="Number(item.max)" :min="Number(item.min)" :step="Number(item.min)<=0 ? 0.1 : ((Number(item.min)<=0.01) ? 0.01 : 1)"></el-slider>
+                                    <input type="number" v-model.trim.number="item.paramValue" style="width:70px;height: 23px;" @change="updateMaterial()" />
+                                    <span v-if="['横向偏移','纵向偏移'].includes(item.label)">mm</span>
+                                    <span v-else-if="['角度'].includes(item.label)">°</span>
+                                    <span v-else></span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </template>
                 </template>
-                <div class="componentTitle">材质效果属性</div>
-                <template v-for="(item,index) in materialChartlet.baseParamsList">
-                    <div class="materialSlider" :key="index+'base'" v-if="!item.hasOwnProperty('enableEdit')||item.enableEdit!='false'">
-                        <div>{{ item.label }}</div>
-                        <div class="slider">
-                            <el-slider @change="onChange(1,$event,index)" v-model="item.paramValue1" :max="Number(item.max)" :min="Number(item.min)" :step="Number(item.min)<=0 ? 0.1 : ((Number(item.min)<=0.01) ? 0.01 : 1)"></el-slider>
-                            <input type="number" v-model.trim.number="item.paramValue" style="width:70px;height: 23px;" @change="updateMaterial()" />
+                <template v-if="materialChartlet.baseParamsList && materialChartlet.baseParamsList.length">
+                    <div class="componentTitle">材质效果属性</div>
+                    <template v-for="(item,index) in materialChartlet.baseParamsList">
+                        <div class="materialSlider" :key="index+'base'" v-if="!item.hasOwnProperty('enableEdit')||item.enableEdit!='false'">
+                            <div>{{ item.label }}</div>
+                            <div class="slider">
+                                <el-slider @change="onChange(1,$event,index)" v-model="item.paramValue1" :max="Number(item.max)" :min="Number(item.min)" :step="Number(item.min)<=0 ? 0.1 : ((Number(item.min)<=0.01) ? 0.01 : 1)"></el-slider>
+                                <input type="number" v-model.trim.number="item.paramValue" style="width:70px;height: 23px;" @change="updateMaterial()" />
+                            </div>
                         </div>
-                    </div>
+                    </template>
                 </template>
                 <!-- <div>
                     <el-checkbox v-model="form.checked">双面材质</el-checkbox>
@@ -485,6 +489,7 @@ export default {
     font-size: 14px;
     .materialList{
         border-bottom: 1px solid #464646;
+        margin-bottom: 20px;
         .materialListCon{
             display: flex;
             flex-wrap: wrap;
