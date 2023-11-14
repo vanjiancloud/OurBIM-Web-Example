@@ -152,8 +152,9 @@ export default {
     created() {
         this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
         this.unwatchToken = this.$store.watch((state) => state.material.materialAllInfo,(newValue, oldValue) => {
-            if(!newValue.matParam || !newValue.matParam.baseParamsList){
+            if(!newValue.matParam || !Object.keys(newValue.matParam).length){
                 // this.unwatchToken()
+                this.materialChartlet = this.$options.data().materialChartlet
                 return
             }
             this.materialChartlet.textureParamsList = this.formatBaseParams(this.getChartletParams())

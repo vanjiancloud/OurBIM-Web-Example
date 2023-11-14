@@ -49,7 +49,7 @@
             </el-table-column>
             <el-table-column label="文件大小">
                 <template slot-scope="scope">
-                    {{ parseInt(scope.row.ourbimComponentInfo&&scope.row.ourbimComponentInfo.fileLongSize/1024/1024) }}MB
+                    {{ scope.row.ourbimComponentInfo&&(scope.row.ourbimComponentInfo.fileLongSize/1024/1024).toFixed(2) }}MB
                 </template>
             </el-table-column>
             <el-table-column prop="isGroup" label="类型">
