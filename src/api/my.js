@@ -196,29 +196,20 @@ export function updateProject(params) {
 }
 
 // 获取用户已有信息
-export function getUserInfo(data) {
-    return request({
+export function getUserInfo(params) {
+    return newRequest({
         url: '/CountManager/getUserCount',
         method: 'GET',
-        params: data
+        params
     })
 }
 
 // 修改用户信息
-export function modifyUserInfo(data) {
-    return request({
+export function modifyUserInfo(params) {
+    return newRequest({
         url: '/CountManager/ModifyUserCount',
         method: 'POST',
-        data: qsStringify(data)
-    })
-}
-
-// 上传头像
-export function uploadImg(data) {
-    return request({
-        url: '/CountManager/postUserImg',
-        method: 'POST',
-        params: data
+        params
     })
 }
 
