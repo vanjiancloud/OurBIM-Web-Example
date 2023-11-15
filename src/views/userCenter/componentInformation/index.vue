@@ -450,39 +450,6 @@ export default {
     margin: 20px 0;
     .geometryText();
 }
-.colorBox{
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    .geometryText();
-    >div{
-        background: #24262B;
-        border-radius: 2px;
-        border: 1px solid #727272;
-        padding: 3px;
-        display: flex;
-        span{
-            padding: 0 10px;
-        }
-    }
-    i{
-        margin-left: 8px;
-    }
-    /deep/ .el-color-picker{
-        height: 22px;
-        .el-color-picker__trigger{
-            border:none;
-            width: 56px;
-            height: 22px;
-            padding: 0;
-            border-radius: 4px;
-            overflow: hidden;
-            .el-color-picker__color{
-                border:none;
-            }
-        }
-    }
-}
 
 .material{
     padding: 0 15px 20px 15px;

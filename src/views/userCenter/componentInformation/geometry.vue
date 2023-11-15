@@ -84,7 +84,7 @@
                     <div class="sliderBox" :key="index" v-if="item.limits && item.limits.length? item.limits.includes(geometryObjForm.lightType) : true">
                         <p>{{ item.name }}</p>
                         <div class="sliderParmer">
-                            <el-slider @change="changeLight(item.key, $event)" v-model="geometryObjForm[item.key + '1']"
+                            <el-slider class="slider" @change="changeLight(item.key, $event)" v-model="geometryObjForm[item.key + '1']"
                                 :min="item.min" :max="item.max" :step="item.step"></el-slider>
                             <el-input class="sliderInput" v-model.trim="geometryObjForm[item.key]"
                                 @change="changeLight(item.key, $event)" size="small"
@@ -264,6 +264,45 @@
             </div>
             <!-- ####################################################特效水end#################################################### -->
 
+
+            <!-- webui -->
+            <div class="geometryItem webui" v-if="geometryObjForm.name === 'WebUi-3d'">
+                <div class="comTitle">WebUI设置</div>
+                <div class="webuiItem">
+                    <span>是否跟随摄像头：</span>
+                    <el-switch @change="editWebUI()" v-model="webuiForm.isFollowedCamera" :active-value="true"
+                            :inactive-value="false" active-color="#409EFF" inactive-color="#727272"></el-switch>
+                </div>
+                <div class="webuiItem">
+                    <span>宽度：</span>
+                    <el-input class="input" v-model="webuiForm.width" v-only-number="{min:0,precision:1}" size="mini" style="width: 85px;"
+                        @keydown.native.stop @change="editWebUI()" />
+                    <span class="webuiUnit">cm</span>
+                </div>
+                <div class="webuiItem">
+                    <span>高度：</span>
+                    <el-input class="input" v-model="webuiForm.height" v-only-number="{min:0,precision:1}" size="mini" style="width: 85px;"
+                        @keydown.native.stop @change="editWebUI()" />
+                    <span class="webuiUnit">cm</span>
+                </div>
+                <div class="webuiItem">
+                    <span>亮度：</span>
+                    <el-input class="input" v-model="webuiForm.fengBrightness" v-only-number="{min:0,precision:1}" size="mini" style="width: 85px;"
+                        @keydown.native.stop @change="editWebUI()" />
+                </div>
+                <div class="webuiItem colorBox">
+                    <span>颜色及透明度</span>
+                    <div>
+                        <el-color-picker @change="editWebUI()" v-model="webuiForm.bgColor" show-alpha></el-color-picker>
+                        <span>{{ webuiForm.bgColor && formatColor(webuiForm.bgColor)}}</span>
+                    </div>
+                </div>
+                <div class="webuiItem">
+                    <span>URL：</span>
+                    <el-input class="input" v-model="webuiForm.url" type="textarea" :autosize="{ minRows: 2}" placeholder="请输入内容" size="mini"
+                        @keydown.native.stop @change="editWebUI()" />
+                </div>
+            </div>
             <!-- 参数化尺寸参数 -->
             <!-- <div class="parameter geometryItem">
                     <div class="comTitle"><img src="@/assets/images/component/title2.png"/>参数化尺寸参数</div>
@@ -523,6 +562,15 @@ export default {
                 fountainScaleY:1,
                 fountainScaleZ:1,
                 spreadWidth:0.4
+            },
+            //wenui
+            webuiForm:{
+                bgColor: 'rgba(0,0,0,0)',
+                fengBrightness: '0.05',
+                isFollowedCamera: true,
+                width:'',
+                height:'',
+                url:''
             }
         };
     },
@@ -535,6 +583,7 @@ export default {
                 this.waterForm = this.$options.data().waterForm
                 this.splashDamForm = this.$options.data().splashDamForm
                 this.fountainForm = this.$options.data().fountainForm
+                this.webuiForm = this.$options.data().webuiForm
             }
             if(!val||val.id!=='1'){
                 return
@@ -628,6 +677,16 @@ export default {
                             this.fountainForm.spreadWidth = Number(e.value)
                         }
                     }
+                    // webui
+                    if(this.webuiForm.hasOwnProperty(e.name)){
+                        if(e.name === 'bgColor'){
+                            this.webuiForm.bgColor = this.arrToRgb(JSON.parse(e.value))
+                        }else if(e.name === 'isFollowedCamera'){
+                            this.webuiForm.isFollowedCamera = JSON.parse(e.value)
+                        }else{
+                            this.findParams(this.webuiForm,e)
+                        }
+                    }
                 })
                 this.$forceUpdate()
             }
@@ -645,7 +704,7 @@ export default {
         // 颜色数组变rgba
         arrToRgb(arr){
             if(!arr || !arr.length) return null
-            return `rgba(${Number(arr[0])},${Number(arr[1])},${Number(arr[2])},${Number(arr[3])/255})`
+            return `rgba(${Number(arr[0])},${Number(arr[1])},${Number(arr[2])},${Number(arr[3])>1?Number(arr[3])/255:Number(arr[3])})`
         },
         // 去掉rgba,去掉空格
         formatColor(color){
@@ -780,6 +839,15 @@ export default {
                 type:1
             }
             this.editComApi(data)
+        },
+        // webui编辑
+        editWebUI(){
+            let data = {
+                type:5,
+                ...this.webuiForm,
+                bgColor: this.formatColor(this.webuiForm.bgColor) && this.formatColor(this.webuiForm.bgColor).split(',')
+            }
+            this.editComApi(data)
         }
     }
 };
@@ -790,6 +858,43 @@ export default {
         padding: 0 16px;
         &:first-child{
             padding-left: 0;
+        }
+    }
+}
+.switchBox{
+    margin: 20px 0;
+    .geometryText();
+}
+.colorBox{
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    .geometryText();
+    >div{
+        background: #24262B;
+        border-radius: 2px;
+        border: 1px solid #727272;
+        padding: 3px;
+        display: flex;
+        span{
+            padding: 0 10px;
+        }
+    }
+    i{
+        margin-left: 8px;
+    }
+    /deep/ .el-color-picker{
+        height: 22px;
+        .el-color-picker__trigger{
+            border:none;
+            width: 56px;
+            height: 22px;
+            padding: 0;
+            border-radius: 4px;
+            overflow: hidden;
+            .el-color-picker__color{
+                border:none;
+            }
         }
     }
 }
@@ -837,6 +942,7 @@ export default {
     }
     .light{}
     .pointolite{
+        padding-right: 15px;
         .sliderBox{
             display: initial;
         }
@@ -855,6 +961,9 @@ export default {
             align-items: center;
             justify-content: space-between;
             width: 100%;
+            .slider{
+                width: 60%;
+            }
             .sliderInput{
                 width: 70px;
                 margin-left: 12px;
@@ -935,6 +1044,20 @@ export default {
         }
         .sliderInput{
             width: 70px;
+        }
+    }
+    .webui{
+        .webuiItem{
+            display: flex;
+            align-items: center;
+            margin: 16px 0;
+            .geometryText();
+            span:first-child{
+                flex: none;
+            }
+            span{
+                padding: 0 13px;
+            }
         }
     }
 }
