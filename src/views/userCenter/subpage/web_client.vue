@@ -606,7 +606,7 @@ export default {
             this.selectPark = realData
             // 不知道构件为啥返回的格式不一样，有dynamicData的需要新增俩个属性放在最前面
             if(realData.data?.dynamicData?.length){
-              realData.data.dynamicData = [{name:'构件名称',value:realData.data.name},{name:'构件ID',value:realData.data.revitCode}].concat(realData.data.dynamicData)
+              realData.data.dynamicData = [{name:'构件名称',value:realData.data.name},{name:'构件ID',value:realData.data.uuid}].concat(realData.data.dynamicData)
             }
             this.memberInfo = realData?.data?.dynamicData.length ? realData.data.dynamicData : realData.rsInfo || []
             let messageInfo = {

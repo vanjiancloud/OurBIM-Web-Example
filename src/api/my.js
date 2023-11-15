@@ -162,7 +162,7 @@ export function getGISProjectList(data) {
     })
 }
 export function upgradeModle(params) { // 升级模型
-    return request({
+    return newRequest({
         url: '/appli/upgradeBIMModel',
         method: 'POST',
         params
