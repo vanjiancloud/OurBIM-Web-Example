@@ -3,12 +3,12 @@
     <el-dialog title="重新转换" :visible.sync="dialogVisible" width="480px" :before-close="hide" :close-on-click-modal="false">
         <el-form :model="form" :rules="rules" ref="form" label-width="0">
             <el-form-item prop="modelActorLimitNum">
-                <el-checkbox label="模型体量优化" v-model="form.NumChecked"></el-checkbox>
+                <el-checkbox label="模型体量优化" v-model="form.modelActor"></el-checkbox>
                 <span class="text">模型构件数阈值</span>
                 <el-input v-model="form.modelActorLimitNum" placeholder="请输入" style="width:150px;" v-only-number="{min:0}"></el-input>
             </el-form-item>
             <el-form-item prop="singleActorLimitNum">
-                <el-checkbox label="模型材质优化" v-model="form.ActorChecked"></el-checkbox>
+                <el-checkbox label="模型材质优化" v-model="form.singleActor"></el-checkbox>
                 <span class="text">单构件面数阈值</span>
                 <el-input v-model="form.singleActorLimitNum" placeholder="请输入" style="width:150px;" v-only-number="{min:0}"></el-input>
             </el-form-item>
@@ -35,14 +35,14 @@ export default {
     props: {},
     data() {
         var validateModelActorLimitNum = (rule, value, callback) => {
-            if (this.form.NumChecked&&!value) {
+            if (this.form.modelActor&&!value) {
                 callback(new Error('请输入模型构件数阈值'));
             } else {
                 callback();
             }
         };
         var validateSingleActorLimitNum = (rule, value, callback) => {
-            if (this.form.ActorChecked&&!value) {
+            if (this.form.singleActor&&!value) {
                 callback(new Error('请输入单构件面数阈值'));
             } else {
                 callback();
@@ -51,8 +51,8 @@ export default {
         return {
             dialogVisible: false,
             form: {
-                NumChecked:true,
-                ActorChecked:true,
+                modelActor:true,
+                singleActor:true,
                 platform: 'Windows',
                 modelActorLimitNum:'15000',
                 singleActorLimitNum:'500'
@@ -106,7 +106,9 @@ export default {
                     userId: this.form.userId,
                     platform: this.form.platform,
                     modelActorLimitNum: this.form.modelActorLimitNum,
-                    singleActorLimitNum: this.form.singleActorLimitNum
+                    singleActorLimitNum: this.form.singleActorLimitNum,
+                    modelActor: this.form.modelActor,
+                    singleActor: this.form.singleActor,
                 }
                 upgradeModle(data).then(()=>{
                     this.hide()

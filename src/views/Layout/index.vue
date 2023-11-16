@@ -115,7 +115,7 @@
                             <div id="erupt"></div>
                             <div class="serverUsed">
                                 <img src="./img/jiedian.png" alt="" />
-                                <span>云VR/AR/MR {{ total.useArConcurrency+total.useVrConcurrency+total.useMrConcurrency }}/{{ total.countConcurrency }}
+                                <span>云VR/AR/MR {{ total.useArConcurrency+total.useVrConcurrency+total.useMrConcurrency }}/{{ total.vrConcurrency }}
                                     <p>预启动 {{ total.usePreConcurrency }}/{{ total.preConcurrency }}</p>
                                 </span>
                             </div>

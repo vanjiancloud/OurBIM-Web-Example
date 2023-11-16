@@ -19,7 +19,7 @@
     <!-- 遮罩层 -->
     <div class="hidden-bim" :class="{'phone-hidden-bim':isMobile()}" v-if="isFade">
       <div class="hidden-bim" :style="{background:`#000000 url(${logoImg.startUpBkgImg}) no-repeat center`}">
-        <img v-if="logoImg.startUpLogo" :src="logoImg.startUpLogo" class="show-loading" alt="" />
+        <img :src="logoImg.startUpLogo" class="show-loading" alt="" />
         <div class="hidden-text">{{ baseExceptMessge }}</div>
       </div>
 
@@ -140,7 +140,10 @@ export default {
   },
   data() {
     return {
-      logoImg:{},
+      logoImg:{
+        startUpLogo: require('@/assets/images/logo/logo.png'),
+        startUpBkgImg: require('@/assets/images/logo/loading.png')
+      },
         // 加载流程
       loadingProccess:0,
       loadingProccessArr:[{
@@ -154,7 +157,7 @@ export default {
         "模型长时间未响应，请刷新重试"
       ],
       baseExceptMessge: "环境加载中…",
-      userId: this.$route.query.userId || Getuserid() || 'travels',//用户id：链接可能没有用户id取缓存的
+      userId: '',
       activeToolArr: [],//工具栏打开的内容
       isGis: false,
       showViewPicture:'0', // 传递给 viewPhoto 控制视图列表的显示 (视图)
@@ -196,6 +199,7 @@ export default {
       copyingPictures: {},//临摹图信息
       client: null, //mqtt
       showOperatingTools: false,//是否打开操作轴
+      preload:false,//是否是预启动
     };
   },
   computed: {
@@ -203,6 +207,7 @@ export default {
   },
   watch: {},
   created() {
+    this.userId = this.$route.query.userId || Getuserid() || 'travels'
     this.getLogo("startUpLogo")
     this.getLogo("startUpBkgImg")
     this.unLoad()
@@ -261,11 +266,7 @@ export default {
             if(res.message === "用户已上传图片"){
                 this.$set(this.logoImg, type, url)
             }else{
-                let defaultLogo = {
-                    startUpLogo: require('@/assets/images/logo/logo.png'),
-                    startUpBkgImg: require('@/assets/images/logo/loading.png'),
-                }
-                this.$set(this.logoImg, type, defaultLogo[type])
+                this.$set(this.logoImg, type, this.$options.data().logoImg[type])
             }
         })
     },
@@ -857,6 +858,7 @@ export default {
             onSuccess: (e) => {
                 this.client.subscribe('task/#');
                 this.client.subscribe(`terminal/${this.$route.query.token}`);
+                this.client.subscribe(`preload/${this.$route.query.token}`);
                 this.$nextTick(()=>{
                     this.getModelUrl();
                 })
@@ -877,6 +879,10 @@ export default {
         //注册连接断开处理事件  
         this.client.onMessageArrived = (message)=> {
             let res = JSON.parse(message.payloadString)
+            if(message.destinationName === `preload/${this.$route.query.token}`){
+                // 是预启动
+                this.preload = true
+            }
             if(res.taskId){
                 this.taskId = res.taskId
                 this.getProccess()
@@ -886,7 +892,7 @@ export default {
     // 发送关闭进程消息到mqtt
     sendMqtt() {
         if(!this.taskId) return
-        let mess = `task/${this.taskId}/js/close`
+        let mess = this.preload ? `task/${this.taskId}/preload/close` : `task/${this.taskId}/js/close`
         var message = new Paho.MQTT.Message(JSON.stringify({timestamp:new Date().getTime()}));
         message.destinationName = mess;
         message.qos=0;

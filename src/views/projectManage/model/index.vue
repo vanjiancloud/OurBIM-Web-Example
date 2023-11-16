@@ -213,12 +213,12 @@
         <template v-slot:append>
             <el-form :model="conversionForm" :rules="conversionRules" ref="conversionForm" label-width="0" class="conversionForm">
                 <el-form-item prop="modelActorLimitNum">
-                    <el-checkbox label="模型体量优化" v-model="conversionForm.NumChecked"></el-checkbox>
+                    <el-checkbox label="模型体量优化" v-model="conversionForm.modelActor"></el-checkbox>
                     <span class="text">模型构件数阈值</span>
                     <el-input v-model="conversionForm.modelActorLimitNum" placeholder="请输入" style="width:150px;" v-only-number="{min:0}"></el-input>
                 </el-form-item>
                 <el-form-item prop="singleActorLimitNum">
-                    <el-checkbox label="模型材质优化" v-model="conversionForm.ActorChecked"></el-checkbox>
+                    <el-checkbox label="模型材质优化" v-model="conversionForm.singleActor"></el-checkbox>
                     <span class="text">单构件面数阈值</span>
                     <el-input v-model="conversionForm.singleActorLimitNum" placeholder="请输入" style="width:150px;" v-only-number="{min:0}"></el-input>
                 </el-form-item>
@@ -291,14 +291,14 @@ export default {
   },
   data() {
     var validateModelActorLimitNum = (rule, value, callback) => {
-        if (this.conversionForm.NumChecked&&!value) {
+        if (this.conversionForm.modelActor&&!value) {
             callback(new Error('请输入模型构件数阈值'));
         } else {
             callback();
         }
     };
     var validateSingleActorLimitNum = (rule, value, callback) => {
-        if (this.conversionForm.ActorChecked&&!value) {
+        if (this.conversionForm.singleActor&&!value) {
             callback(new Error('请输入单构件面数阈值'));
         } else {
             callback();
@@ -345,8 +345,8 @@ export default {
       },
     //   上传模型转换
         conversionForm: {
-            NumChecked:true,
-            ActorChecked:true,
+            modelActor:true,
+            singleActor:true,
             platform: 'Windows',
             modelActorLimitNum:'15000',
             singleActorLimitNum:'500'
@@ -716,6 +716,8 @@ export default {
             fileUpload: file,
             userId: Getuserid(),
             url: "/appli/addProject",
+            modelActor: this.conversionForm.modelActor,
+            singleActor: this.conversionForm.singleActor,
         });
     },
     // 上传GIS数据验证
