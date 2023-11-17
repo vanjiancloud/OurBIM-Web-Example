@@ -103,7 +103,7 @@ export default {
         // 获取树列表
         async getList(node) {
             let params = {
-                appliId: node.data?.projectId||this.data.appId,
+                appliId: node?.data?.projectId||this.data.appId,
                 uuid: node&&node.key,
                 pageNo: 1,
                 pageSize: 20,
