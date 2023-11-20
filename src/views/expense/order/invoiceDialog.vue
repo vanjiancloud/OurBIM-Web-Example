@@ -109,6 +109,7 @@ export default {
                         if (res.code === 200) {
                             this.$message.success('开票成功')
                             this.closeDialog()
+                            this.$parent.getData()
                         }
                     })
                 }
