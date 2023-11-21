@@ -275,10 +275,11 @@ export default {
         },
     },
     watch: {},
-    created() {},
-    mounted() {
+    created() {
         this.$store.dispatch('user/getUser')
         this.startTimer();
+    },
+    mounted() {
         this.$nextTick(() => {
             setTimeout(()=>{
                 if(Object.keys(this.total).length && this.total.billingMode!=='0'){
