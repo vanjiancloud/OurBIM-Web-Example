@@ -3,12 +3,12 @@
         <el-form ref="rechargeForm" :model="rechargeForm" label-position="right" label-width="110px" :rules="rules">
             <el-form-item class="flexCenter" label="账号余额：">
                 <div class="formInputWidth color999">
-                    <span class="font18">{{ accountMoney }}</span> 资源点
+                    <span class="font18">{{ total.money || 0 }}</span> 资源点
                 </div>
             </el-form-item>
             <el-form-item class="flexCenter" label="可用余额：">
                 <div class="formInputWidth color999">
-                    <span class="font18">{{ accountMoney }}</span> 资源点
+                    <span class="font18">{{ total.money || 0 }}</span> 资源点
                 </div>
             </el-form-item>
             <el-form-item class="flexCenter" label="充值方式：">
@@ -100,12 +100,14 @@ export default {
             rules: {
                 payNum: [{ required: true, validator: checkPayNum, trigger: ['blur', 'change'] }]
             },
-            accountMoney: '',
             discountMoney: '', // 优惠金额
             isCheckCoupon: false, // 优惠券是否完成校验
         }
     },
     computed: {
+        total() {
+            return this.$store.state.user.total || {}
+        },
         sumOrderPrice() {
             return (this.rechargeForm.payNum - this.discountMoney).toFixed(2)
         }
@@ -118,19 +120,8 @@ export default {
             this.rechargeForm.coupon = discountCode
             this.discountMoney = typeof discountMoney == 'number' ? discountMoney : 0
         }
-        this.getMoney()
     },
     methods: {
-        getMoney() {
-            const params = {
-                userId: Getuserid()
-            }
-            getUserMoney(params).then(res => {
-                if (res.code === 200) {
-                    this.accountMoney = res.data.orderCountSurplusMoney
-                }
-            })
-        },
 
         selectPayWay(way) {
             this.$emit('changePayType', way)

@@ -92,7 +92,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Drawer from '@/components/Drawer/index.vue'
-import { getProccess } from "@/api/userCenter/web_client";
+import { getProccess, preloadClose } from "@/api/userCenter/web_client";
 import MODELAPI,{ doAction, lockControl, setGizmoMode } from "@/api/model_api";
 import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
 import viewCube from "@/components/web_client/view_cube";
@@ -858,7 +858,6 @@ export default {
             onSuccess: (e) => {
                 this.client.subscribe('task/#');
                 this.client.subscribe(`terminal/${this.$route.query.token}`);
-                this.client.subscribe(`preload/${this.$route.query.token}`);
                 this.$nextTick(()=>{
                     this.getModelUrl();
                 })
@@ -879,10 +878,6 @@ export default {
         //注册连接断开处理事件  
         this.client.onMessageArrived = (message)=> {
             let res = JSON.parse(message.payloadString)
-            if(message.destinationName === `preload/${this.$route.query.token}`){
-                // 是预启动
-                this.preload = true
-            }
             if(res.taskId){
                 this.taskId = res.taskId
                 this.getProccess()
@@ -892,7 +887,12 @@ export default {
     // 发送关闭进程消息到mqtt
     sendMqtt() {
         if(!this.taskId) return
-        let mess = this.preload ? `task/${this.taskId}/preload/close` : `task/${this.taskId}/js/close`
+        if(this.preType){
+            // 预启动关闭
+            preloadClose({taskId:this.taskId})
+            return
+        }
+        let mess = `task/${this.taskId}/js/close`
         var message = new Paho.MQTT.Message(JSON.stringify({timestamp:new Date().getTime()}));
         message.destinationName = mess;
         message.qos=0;
@@ -1013,6 +1013,7 @@ export default {
         .then((res) => {
             this.webUrl = res.data.url;
             this.taskId = res.data.taskId;
+            this.preType = res.data.preType==='1' ? true : false
             console.info('🚀🚀🚀taskId🚀🚀🚀taskId🚀🚀🚀taskId:',this.taskId);
             // 保存code
             if (res.data.code) {

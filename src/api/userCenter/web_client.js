@@ -8,3 +8,12 @@ export function getProccess(params) {
         params,
     })
 }
+
+// 预启动关闭
+export function preloadClose(params) {
+    return request({
+        url: '/cloudServicePreStart/preloadClose',
+        method: 'post',
+        params,
+    })
+}
