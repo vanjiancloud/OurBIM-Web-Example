@@ -515,7 +515,7 @@ export default {
             appType: 0
         }).then(res => {
             if (res.data.code === 0) {
-            let resData = res.data.data
+            let resData = res.data.data.list
             this.ListLinkModel = resData.filter(item => item.appType !== '4')
             } else {
             this.ListLinkModel = []

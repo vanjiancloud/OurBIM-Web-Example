@@ -31,7 +31,7 @@ const actions = {
     // 获取用户信息
     getUser({ commit, state }){
         return new Promise((resolve, reject) => {
-            showDetail({ userid: state.userId}).then(async response => {
+            showDetail({ userid: state.userId || JSON.parse(sessionStorage.getItem("userid"))}).then(async response => {
                 commit('CHANGE_USERINFO', response.data)
             }).catch(error => {
                 reject(error)
@@ -41,7 +41,7 @@ const actions = {
     // 获取头部统计
     getTotal({ commit, state }) {
         return new Promise((resolve, reject) => {
-            userCenterUse({ userId: state.userId}).then(async response => {
+            userCenterUse({ userId: state.userId || JSON.parse(sessionStorage.getItem("userid"))}).then(async response => {
                 commit('CHANGE_TOTAL', response.data)
             }).catch(error => {
                 reject(error)
