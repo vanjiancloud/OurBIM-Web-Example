@@ -969,12 +969,12 @@ export default {
             getProccess({taskId:this.taskId}).then(async res=>{
                 this.loadingProccessArr = res.data
                 for (let i = 0; i < res.data.length; i++) {
-                    if(this.webUrl || count > 30) return
+                    if(!this.isFade || this.loadingProccessArr[this.loadingProccessArr.length-1].status==='success' || count > 30) return
                     const element = res.data[i];
                     if(element.status==="waiting"){
                         this.loadingProccess = i
                         count++
-                        setTimeout(getResponse(),1000)
+                        setTimeout(getResponse(),2000)
                         return
                     }else if(element.status==="success" && (count === 0 || (this.loadingProccess < i))){
                         this.loadingProccess = i
