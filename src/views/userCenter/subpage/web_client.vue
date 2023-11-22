@@ -840,7 +840,7 @@ export default {
             timeout = 4000,
             keepAlive = 100,
             cleanSession = false,
-            ssl = false;
+            ssl = true;
         this.client = new Paho.MQTT.Client(hostname, port, clientId);
         var options = {
             invocationContext: {

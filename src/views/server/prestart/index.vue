@@ -119,9 +119,9 @@ export default {
         },
         // 添加\编辑预启动项目
         add(){
-            if(Number(this.openPreTotal) >= Number(this.preTotal.preConcurrency)){
-                return this.$message.warning("授权的并发资源配额不足，不能添加。")
-            }
+            // if(Number(this.openPreTotal) >= Number(this.preTotal.preConcurrency)){
+            //     return this.$message.warning("授权的并发资源配额不足，不能添加。")
+            // }
             this.$refs.DialogAdd.show()
         },
         // 编辑项目
