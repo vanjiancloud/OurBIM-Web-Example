@@ -3,7 +3,7 @@
     <el-dialog :title="title+'预启动项目'" :visible.sync="dialogVisible" :close-on-click-modal="false" append-to-body width="460px" :before-close="hide">
         <el-form ref="form" :style="{'width':'90%'}" :model="form" :rules="rules" label-width="100px">
             <el-form-item label="选择项目:" prop="projectName">
-                <el-autocomplete style="width: 100%;" v-model="form.projectName" :trigger-on-focus="false" value-key="appName" :fetch-suggestions="querySearchAsync" placeholder="请输入项目名称并查找" @select="handleSelect">
+                <el-autocomplete style="width: 100%;" v-model="form.projectName" :trigger-on-focus="false" value-key="appName" :fetch-suggestions="querySearchAsync" placeholder="请输入项目名称或项目ID查找" @select="handleSelect">
                     <template slot-scope="{ item }">
                         {{ item.appName }}
                     </template>
@@ -51,7 +51,8 @@ export default {
             title: '',
             dialogVisible: false,
             form: {
-                status: "0"
+                status: "0",
+                visitMode: '3D'
             },
             rules: {
                 projectName: [{ required: true, message: '请选择项目', trigger: 'blur' }],
@@ -88,7 +89,7 @@ export default {
                 return cb([]);
             }
 
-            var results = (await findProject({userId:Getuserid(),appName:queryString})).data
+            var results = (await findProject({userId:Getuserid(),keyword:queryString})).data
             setTimeout(() => {
                 cb(results);
             }, 3000);

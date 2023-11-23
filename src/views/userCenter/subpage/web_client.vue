@@ -640,6 +640,7 @@ export default {
             this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {} })
             this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: {} })
           } else if (realData.id === "8") {
+            this.sendToIframe(10200,'false',"");
             // 加载过程
             let messageInfo = {
               prex: "ourbimMessage",
@@ -974,7 +975,7 @@ export default {
                     if(element.status==="waiting"){
                         this.loadingProccess = i
                         count++
-                        setTimeout(getResponse(),2000)
+                        setTimeout(getResponse(),1500)
                         return
                     }else if(element.status==="success" && (count === 0 || (this.loadingProccess < i))){
                         this.loadingProccess = i
