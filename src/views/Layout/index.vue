@@ -302,6 +302,11 @@ export default {
             })
             this.timer = setInterval(() => {
                 this.$store.dispatch('user/getTotal')
+                this.$nextTick(() => {
+                    if(Object.keys(this.total).length && this.total.billingMode!=='0'){
+                        this.getEchart()
+                    }
+                })
             }, 3000);
         },
         stopTimer() {
@@ -312,8 +317,32 @@ export default {
         },
         // 总并发
         getEchart() {
-            let echart = this.$echarts.init(document.getElementById("erupt"))
             let option = {
+                tooltip: {
+                    trigger: 'item', // 触发类型，可选为：'item' | 'axis'
+                    axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                        type: 'shadow',
+                    },
+                    formatter: (params)=> {
+                        let text = `${params.seriesName}：`
+                        switch (params.seriesIndex) {
+                            case 0:
+                                text += this.total.useVrConcurrency+this.total.useArConcurrency+this.total.useMrConcurrency
+                                break;
+                            case 1:
+                                text += this.total.usePreConcurrency
+                                break;
+                            case 2:
+                                text += this.total.use3dConcurrency
+                                break;
+                        
+                            default:
+                                text +=`${params.value}`
+                                break;
+                        }
+                        return text
+                    },
+                },
                 xAxis: {
                     type: 'value',
                     axisLine: {
@@ -351,10 +380,11 @@ export default {
                     bottom: "0px"
                 },
                 series: [{
+                    name:'云VR、AR/MR并发数',
                     type: 'bar',
                     barWidth: 16,
                     itemStyle: {
-                        barBorderRadius: 10,
+                        borderRadius: 10,
                         color: new this.$echarts.graphic.LinearGradient(
                             0, 0, 0, 1,//4个参数用于配置渐变色的起止位置, 这4个参数依次对应右/下/左/上四个方位. 而0 0 0 1则代表渐变色从正上方开始
                             [
@@ -364,13 +394,14 @@ export default {
                         )
                     },
                     barGap: '-100%',
-                    data: [this.total.useVrConcurrency],
+                    data: [this.total.useVrConcurrency+this.total.useArConcurrency+this.total.useMrConcurrency],
                     zlevel: 3
                 }, {
+                    name:'预启动并发数',
                     type: 'bar',
                     barWidth: 16,
                     itemStyle: {
-                        barBorderRadius: 10,
+                        borderRadius: 10,
                         color: new this.$echarts.graphic.LinearGradient(
                             0, 0, 0, 1,//4个参数用于配置渐变色的起止位置, 这4个参数依次对应右/下/左/上四个方位. 而0 0 0 1则代表渐变色从正上方开始
                             [
@@ -380,13 +411,14 @@ export default {
                         )
                     },
                     barGap: '-100%',
-                    data: [this.total.useVrConcurrency+this.total.useArConcurrency],
+                    data: [this.total.useVrConcurrency+this.total.useArConcurrency+this.total.useMrConcurrency+this.total.usePreConcurrency],
                     zlevel: 2
                 }, {
+                    name:'云3D并发数',
                     type: 'bar',
                     barWidth: 16,
                     itemStyle: {
-                        barBorderRadius: 10,
+                        borderRadius: 10,
                         color: new this.$echarts.graphic.LinearGradient(
                             0, 0, 0, 1,//4个参数用于配置渐变色的起止位置, 这4个参数依次对应右/下/左/上四个方位. 而0 0 0 1则代表渐变色从正上方开始
                             [
@@ -396,26 +428,31 @@ export default {
                         )
                     },
                     barGap: '-100%',
-                    data: [this.total.useVrConcurrency+this.total.useArConcurrency+this.total.useMrConcurrency],
+                    data: [this.total.useConcurrency],
                     zlevel: 1
                 },
                 {
-                    // 这块用于设置圆角的背景色的，因为知道echarts最大值，所以写死了data的值
+                    name:'总并发数',
                     type: 'bar',
                     barWidth: 16,
                     itemStyle: {
-                        normal: {  //normal 图形在默认状态下的样式;
-                            barBorderRadius: 10,//柱条圆角半径,单位px.
-                            color: '#EAEEF5'//柱条颜色
-                        }
+                        borderRadius: 10,//柱条圆角半径,单位px.
+                        color: '#EAEEF5'//柱条颜色
                     },
                     barGap: '-100%',
-                    data: [10]
+                    data: [this.total.countConcurrency]
                 }
                 ]
             };
-            echart.setOption(option);
-            window.onresize = echart.resize;
+            var existingChart = this.$echarts.getInstanceByDom(document.getElementById("erupt"));
+            if (existingChart) {
+                option && existingChart.setOption(option);
+                window.onresize = existingChart.resize;
+            }else{
+                let myChart = this.$echarts.init(document.getElementById("erupt"))
+                option && myChart.setOption(option);
+                window.onresize = myChart.resize;
+            }
         },
         // 项目中心按钮
         toManage() {
