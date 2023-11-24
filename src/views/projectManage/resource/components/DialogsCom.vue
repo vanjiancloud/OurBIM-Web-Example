@@ -11,7 +11,7 @@
             </el-form-item>
             <el-form-item label="换组:" prop="groupId">
                 <el-select v-model="form.groupId" placeholder="请选择分组" style="width: 100%;">
-                    <el-option :value="item.id" :label="item.groupName" v-for="(item,index) in parentData" :key="index"></el-option>
+                    <el-option :value="item.id" :label="item.groupName" v-for="(item,index) in parentData.filter(e=>e.parentId)" :key="index"></el-option>
                 </el-select>
             </el-form-item>
         </el-form>

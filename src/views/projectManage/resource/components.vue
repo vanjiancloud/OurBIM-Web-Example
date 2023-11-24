@@ -25,8 +25,8 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="150">
                 <template slot-scope="scope">
-                    <el-button type="text" class="blueText" @click.stop="add(scope.row)">编辑</el-button>
-                    <el-button type="text" class="blackText" @click.stop="deleteRow(scope.row)">删除</el-button>
+                    <el-button v-if="scope.row.id!=='default'" type="text" class="blueText" @click.stop="add(scope.row)">编辑</el-button>
+                    <el-button v-if="scope.row.id!=='default'" type="text" class="blackText" @click.stop="deleteRow(scope.row)">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -199,6 +199,13 @@ export default {
         },
         getList(parentId='god'){
             this.$emit('update:groupName',parentId === 'god' ? '' : this.groupName)
+            // 兼容没有分组的构件显示id=default
+            if(parentId === 'default'){
+                this.tableData = this.tableData[0].children
+                this.isGroup = false
+                this.$emit('update:total',this.tableData.length)
+                return
+            }
             let params = {
                 userId: Getuserid(),
                 parentId
@@ -207,13 +214,28 @@ export default {
             list(params).then(res=>{
                 this.loading = false
                 this.isGroup = parentId === 'god' ? true : false
-                this.tableData = res.data&&res.data.ourbimComponentInfoList || []
+                if(this.isGroup){
+                    let resData = { groupName:'没有分组的构件', isGroup:'1', id:'default', children:[]}
+                    this.tableData = []
+                    res.data && res.data.ourbimComponentInfoList.forEach(item => {
+                        if(item.isGroup === '1'){
+                            this.tableData.push(item)
+                        }else{
+                            resData.children.push(item)
+                        }
+                    });
+                    if(resData.children.length){
+                        this.tableData.unshift({ ...resData, num: resData.children.length })
+                    }
+                }else{
+                    this.tableData = res.data&&res.data.ourbimComponentInfoList || []
+                }
                 this.$emit('update:total',this.tableData.length)
                 if(parentId!=='god' && !res.data){
                     return this.$message.warning(res.message)
                 }
                 if(parentId==='god'){
-                    this.parentData = res.data.ourbimComponentInfoList || []
+                    this.parentData = JSON.parse(JSON.stringify(this.tableData))
                 }
                 this.parentId = res.data?.parentId
             }).catch(()=>{
