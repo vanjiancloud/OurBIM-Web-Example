@@ -975,7 +975,7 @@ export default {
                     if(element.status==="waiting"){
                         this.loadingProccess = i
                         count++
-                        setTimeout(getResponse(),1500)
+                        setTimeout(getResponse(),1200)
                         return
                     }else if(element.status==="success" && (count === 0 || (this.loadingProccess < i))){
                         this.loadingProccess = i

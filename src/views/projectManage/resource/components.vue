@@ -80,7 +80,7 @@
                 <template slot-scope="scope">
                     <div class="flexBetween">
                         <div>
-                            <el-button type="text" class="blueText" @click.stop="openCom(scope.row)">打开构件</el-button>
+                            <el-button :disabled="scope.row.ourbimComponentInfo.version!='V50'" type="text" class="blueText" @click.stop="openCom(scope.row)">打开构件</el-button>
                             <el-button type="text" class="blueText" @click.stop="editCom(scope.row)">编辑</el-button>
                         </div>
                         <el-dropdown>
@@ -113,7 +113,7 @@
                 </div>
                 <div class="flexBetween">
                     <div>
-                        <el-button class="blueBtn" type="primary" size="small" @click.stop="item.isGroup === '1' ? add(item) : editCom(item)">编辑</el-button>
+                        <el-button v-if="item.id!=='default'" class="blueBtn" type="primary" size="small" @click.stop="item.isGroup === '1' ? add(item) : editCom(item)">编辑</el-button>
                     </div>
                     <el-dropdown>
                         <span class="el-dropdown-link">
@@ -121,7 +121,7 @@
                         </span>
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item v-if="item.isGroup === '0'" @click.native="conversionRow(item)">重新转换</el-dropdown-item>
-                            <el-dropdown-item @click.native="deleteRow(item)">删除</el-dropdown-item>
+                            <el-dropdown-item v-if="item.id!=='default'" @click.native="deleteRow(item)">删除</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
                 </div>
@@ -201,7 +201,7 @@ export default {
             this.$emit('update:groupName',parentId === 'god' ? '' : this.groupName)
             // 兼容没有分组的构件显示id=default
             if(parentId === 'default'){
-                this.tableData = this.tableData[0].children
+                this.tableData = this.parentData[0].children
                 this.isGroup = false
                 this.$emit('update:total',this.tableData.length)
                 return
@@ -214,21 +214,19 @@ export default {
             list(params).then(res=>{
                 this.loading = false
                 this.isGroup = parentId === 'god' ? true : false
-                if(this.isGroup){
-                    let resData = { groupName:'没有分组的构件', isGroup:'1', id:'default', children:[]}
-                    this.tableData = []
-                    res.data && res.data.ourbimComponentInfoList.forEach(item => {
-                        if(item.isGroup === '1'){
-                            this.tableData.push(item)
-                        }else{
-                            resData.children.push(item)
-                        }
-                    });
-                    if(resData.children.length){
-                        this.tableData.unshift({ ...resData, num: resData.children.length })
+                let resData = { groupName:'没有分组的构件', isGroup:'1', id:'default', children:[]}
+                this.tableData = []
+                res.data && res.data.ourbimComponentInfoList.forEach(item => {
+                    if(item.isGroup === '1'){
+                        this.tableData.push(item)
+                    }else{
+                        resData.children.push(item)
                     }
+                });
+                if(this.isGroup&&resData.children.length){
+                    this.tableData.unshift({ ...resData, num: resData.children.length })
                 }else{
-                    this.tableData = res.data&&res.data.ourbimComponentInfoList || []
+                    this.tableData = resData.children
                 }
                 this.$emit('update:total',this.tableData.length)
                 if(parentId!=='god' && !res.data){
