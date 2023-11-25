@@ -35,7 +35,17 @@
             </el-table-column>
             <el-table-column label="预启动数量">
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.preStartNum" placeholder="请输入正整数" v-only-number="{precision:0}" @change="edit(scope.row)"></el-input>
+                    <el-input v-model="scope.row.preStartNum" placeholder="请输入正整数" v-only-number="{min:0,precision:0}" @change="edit(scope.row)"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column label="分辨率尺寸X">
+                <template slot-scope="scope">
+                    <el-input v-model.number="scope.row.resX" placeholder="请输入正整数" v-only-number="{min:0,precision:0}" @change="edit(scope.row)"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column label="分辨率尺寸Y">
+                <template slot-scope="scope">
+                    <el-input v-model.number="scope.row.resY" placeholder="请输入正整数" v-only-number="{min:0,precision:0}" @change="edit(scope.row)"></el-input>
                 </template>
             </el-table-column>
             <el-table-column prop="serverRunningNum" label="服务器运行数"/>

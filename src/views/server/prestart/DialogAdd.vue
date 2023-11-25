@@ -1,7 +1,7 @@
 <!-- 添加\编辑预启动项目 -->
 <template>
     <el-dialog :title="title+'预启动项目'" :visible.sync="dialogVisible" :close-on-click-modal="false" append-to-body width="460px" :before-close="hide">
-        <el-form ref="form" :style="{'width':'90%'}" :model="form" :rules="rules" label-width="100px">
+        <el-form ref="form" :style="{'width':'90%'}" :model="form" :rules="rules" label-width="110px">
             <el-form-item label="选择项目:" prop="projectName">
                 <el-autocomplete style="width: 100%;" v-model="form.projectName" :trigger-on-focus="false" value-key="appName" :fetch-suggestions="querySearchAsync" placeholder="请输入项目名称或项目ID查找" @select="handleSelect">
                     <template slot-scope="{ item }">
@@ -10,7 +10,7 @@
                 </el-autocomplete>
             </el-form-item>
             <el-form-item label="预启动数量:" prop="preStartNum">
-                <el-input v-model="form.preStartNum" placeholder="请输入正整数" v-only-number="{precision:0}"></el-input>
+                <el-input v-model="form.preStartNum" placeholder="请输入正整数" v-only-number="{min:0,precision:0}"></el-input>
             </el-form-item>
             <el-form-item label="码率:" prop="codeRate">
                 <el-select v-model="form.codeRate" placeholder="请选择">
@@ -22,6 +22,12 @@
                 <el-select v-model="form.frameRate" placeholder="请选择">
                     <el-option :label="item" :value="item" v-for="item in frameRate" :key="item"></el-option>
                 </el-select>
+            </el-form-item>
+            <el-form-item label="分辨率尺寸X:" prop="ResX">
+                <el-input v-model="form.ResX" placeholder="请输入正整数" v-only-number="{min:0,precision:0}"></el-input>
+            </el-form-item>
+            <el-form-item label="分辨率尺寸Y:" prop="ResY">
+                <el-input v-model="form.ResY" placeholder="请输入正整数" v-only-number="{min:0,precision:0}"></el-input>
             </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -52,13 +58,17 @@ export default {
             dialogVisible: false,
             form: {
                 status: "0",
-                visitMode: '3D'
+                visitMode: '3D',
+                ResX: 1920,
+                ResY: 1080
             },
             rules: {
                 projectName: [{ required: true, message: '请选择项目', trigger: 'blur' }],
                 preStartNum: [{required: true,message: '请输入预启动数量',trigger: 'blur'}],
                 codeRate: [{ required: true, message: '请选择码率', trigger: 'blur' }],
-                frameRate: [{ required: true, message: '请选择帧率', trigger: 'blur' }]
+                frameRate: [{ required: true, message: '请选择帧率', trigger: 'blur' }],
+                ResX: [{ required: true, message: '请输入分辨率尺寸X', trigger: 'blur' }],
+                ResY: [{ required: true, message: '请输入分辨率尺寸Y', trigger: 'blur' }],
             }
         }
     },

@@ -214,13 +214,13 @@
             <el-form :model="conversionForm" :rules="conversionRules" ref="conversionForm" label-width="0" class="conversionForm">
                 <el-form-item prop="modelActorLimitNum">
                     <el-checkbox label="模型体量优化" v-model="conversionForm.modelActor"></el-checkbox>
-                    <span class="text">模型构件数阈值</span>
-                    <el-input v-model="conversionForm.modelActorLimitNum" placeholder="请输入" style="width:150px;" v-only-number="{min:0}"></el-input>
+                    <span v-if="conversionForm.modelActor" class="text">模型构件数阈值</span>
+                    <el-input v-if="conversionForm.modelActor" v-model="conversionForm.modelActorLimitNum" placeholder="请输入" style="width:150px;" v-only-number="{min:0}"></el-input>
                 </el-form-item>
                 <el-form-item prop="singleActorLimitNum">
                     <el-checkbox label="模型材质优化" v-model="conversionForm.singleActor"></el-checkbox>
-                    <span class="text">单构件面数阈值</span>
-                    <el-input v-model="conversionForm.singleActorLimitNum" placeholder="请输入" style="width:150px;" v-only-number="{min:0}"></el-input>
+                    <span v-if="conversionForm.singleActor" class="text">单构件面数阈值</span>
+                    <el-input v-if="conversionForm.singleActor" v-model="conversionForm.singleActorLimitNum" placeholder="请输入" style="width:150px;" v-only-number="{min:0}"></el-input>
                 </el-form-item>
                 <el-form-item prop="platform" label-width="110px" label="解析模型版本">
                     <el-radio-group v-model="conversionForm.platform" disabled>
