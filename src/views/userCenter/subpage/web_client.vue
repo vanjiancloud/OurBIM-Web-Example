@@ -92,7 +92,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Drawer from '@/components/Drawer/index.vue'
-import { getProccess, preloadClose } from "@/api/userCenter/web_client";
+import { getProccess, preloadStart } from "@/api/userCenter/web_client";
 import MODELAPI,{ doAction, lockControl, setGizmoMode } from "@/api/model_api";
 import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
 import viewCube from "@/components/web_client/view_cube";
@@ -231,7 +231,14 @@ export default {
     this.addMessageEvent();
     this.getLinkModelAppid(); // 获取appid
   },
+  destroyed(){
+    console.log('🚀🚀🚀destroyed------------');
+    this.sendMqtt()
+    this.clearTimePass();
+    this.closeWebSocket();
+  },
   deactivated(){
+    console.log('🚀🚀🚀deactivated------------');
     this.sendMqtt()
     this.clearTimePass();
     this.closeWebSocket();
@@ -890,7 +897,7 @@ export default {
         if(!this.taskId) return
         if(this.preType){
             // 预启动关闭
-            preloadClose({taskId:this.taskId})
+            this.closePre()
             return
         }
         let mess = `task/${this.taskId}/js/close`
@@ -898,6 +905,13 @@ export default {
         message.destinationName = mess;
         message.qos=0;
         this.client.send(message);
+    },
+    // 关闭预启动
+    closePre(){
+        fetch(`${this.$config.VUE_APP_REQUEST_URL}/cloudServicePreStart/preloadClose?taskId=${this.taskId}`, {
+            method: 'POST',
+            keepalive: true
+        });
     },
     // 监听刷新浏览器
     unLoad(){
@@ -1016,6 +1030,9 @@ export default {
             this.taskId = res.data.taskId;
             this.preType = res.data.preType==='1' ? true : false
             console.info('🚀🚀🚀taskId🚀🚀🚀taskId🚀🚀🚀taskId:',this.taskId);
+            if(this.preType){
+                preloadStart({ taskId: this.taskId })
+            }
             // 保存code
             if (res.data.code) {
               this.shareCode = res.data.code;

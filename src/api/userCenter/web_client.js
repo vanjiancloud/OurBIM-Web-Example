@@ -9,6 +9,15 @@ export function getProccess(params) {
     })
 }
 
+// 预启动开启
+export function preloadStart(params) {
+    return request({
+        url: '/cloudServicePreStart/preloadStart',
+        method: 'post',
+        params,
+    })
+}
+
 // 预启动关闭
 export function preloadClose(params) {
     return request({
