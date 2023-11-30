@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import { doAction, getComponents, lockControl, lockAfterInfo, setGizmoMode, freezeCom } from "@/api/model_api";
-import { deleteCustomCom, focusComponent, controlComShowOrHide } from "@/api/component-library";
+import { doAction, setGizmoMode } from "@/api/userCenter/index";
+import { getComponents, lockAfterInfo, lockControl, freezeCom, deleteCustomCom, focusComponent, controlComShowOrHide, getModelLocation } from "@/api/userCenter/componentManage.js";
 import Drawer from "@/components/Drawer/index.vue";
 import OperatingTools from "@/components/OperatingTools";
 import { EventBus } from '@/utils/bus.js'
@@ -220,6 +220,24 @@ export default {
                     lockAfterInfo(infoParam).then((res) => {
                         this.$refs.OperatingTools.checkOprate({gizmoMode:'translate'})
                     });
+                    // 在几何信息显示整体模型坐标信息
+                    getModelLocation({appId: data.projectId}).then(res=>{
+                        let resData = res.data[0]
+                        this.$parent.selectPark = { 
+                            id: '1', 
+                            mN: resData.appId,
+                            model: true,
+                            object: {},
+                            rsInfo: [
+                                { key: 'name', name: '名称', value: data.name },
+                                { key: 'location', name: '位置', value: resData.location },
+                                { key: 'rotation', name: '旋转', value: resData.rotation },
+                                { key: 'scale', name: '缩放', value: resData.scale },
+                            ]
+                        }
+                    })
+                }else{
+                    this.$parent.selectPark = { id: '1' }
                 }
                 setTimeout(()=>{
                     this.hasLock()

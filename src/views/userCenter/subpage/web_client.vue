@@ -92,9 +92,9 @@
 <script>
 import { mapGetters } from 'vuex'
 import Drawer from '@/components/Drawer/index.vue'
-import { getProccess, preloadStart } from "@/api/userCenter/web_client";
-import MODELAPI,{ doAction, lockControl, setGizmoMode } from "@/api/model_api";
-import CHAILIAOAPI from "@/api/material_api";   // 新增的材质库相关API （材质库）
+import { getProccess, preloadStart, doAction, setGizmoMode, getPakIdByAppId } from "@/api/userCenter/index";
+import { lockControl } from "@/api/userCenter/componentManage.js";
+import MODELAPI from "@/api/model_api";
 import viewCube from "@/components/web_client/view_cube";
 import roamNavigate from "@/components/web_client/roam_navigate";
 import viewPhoto from "@/components/web_client/view_photo";
@@ -1165,11 +1165,9 @@ export default {
       let params = {
         appId:this.appId
       }
-      CHAILIAOAPI.GETPAKIDBYAPPID(params).then(res=>{
-          if(res.data.code === 0){
-            this.pakAndAppid = res.data.data;
-          }
-      }).catch(()=>{})
+      getPakIdByAppId(params).then(res=>{
+        this.pakAndAppid = res.data;
+      })
     },
     // 根据pakId 找到appId
     pakidToAppid(str){

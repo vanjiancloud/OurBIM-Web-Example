@@ -291,8 +291,9 @@
   
   <script>
   import { getDict } from "@/api/dict.js"
-  import MODELAPI, { setWeatherSun, setWeatherLight, doAction, backgroundSetting } from "@/api/model_api";
-  import CHAILIAOAPI from "@/api/material_api";
+  import { getWeatherList, backgroundSetting, setWeatherSun, setWeatherLight, getWeatherParams, setWeatherColor, 
+    setWeatherTimeAndTimeSpeed, setWeatherType, setSunLightDirection, getCurrWeatherId, setWindDirectionAndSpeed } from '@/api/userCenter/weather.js'
+  import { doAction } from "@/api/userCenter/index";
   import moment from 'moment'
   export default {
     components: { },
@@ -466,12 +467,11 @@
               }
           },
           getWeatherList(){ // 获取天气环境
-              MODELAPI.LISTWEATHER({
+            getWeatherList({
                   appId: this.appId,
               }).then((res) => {
-                  if (res.data.code === 0) {
-                      this.optionsTemplate = res.data.data;
-                      this.lessOptions = res.data.data.filter(item=>{
+                      this.optionsTemplate = res.data;
+                      this.lessOptions = res.data.filter(item=>{
                           return (item.weatherName === '参数化天气' || item.weatherName === '轮廓线-可变背景色') ? false : true
                       })
                       if(!this.isGis){
@@ -480,39 +480,17 @@
                             this.radio = 2
                             this.getWeatherParams('none');
                       }
-                  } else {
-                      this.optionsTemplate = [];
-                  }
               });
           },
           valueChangeBtn(val){ // 选择天气改变时
               this.changeWea(val);
-              // setTimeout(()=>{
-                  // this.optionsTemplate.forEach(item=>{
-                  //     if(item.id == val && item.weatherName === '参数化天气'){
-                  //         this.setSun();
-                  //         this.setTimeAndSpeed();
-                  //         this.setWind();
-                  //         if(this.valueCloude){
-                  //             this.strongChange('cloude')
-                  //         }else if(this.valueRain){
-                  //             this.btnWeatherClick('2')
-                  //         }else if(this.valueSnow){
-                  //             this.strongChange('snow')
-                  //         }else if(this.valueFog){
-                  //             this.btnWeatherClick('4')
-                  //         }
-                  //     }
-                  // })
-              // },2000)
           },
           getWeatherParams(flag){ // 获取参数化天气信息
               let params = {
                   appId:this.appId,
               }
-              CHAILIAOAPI.GETWEATHERPARAMS(params).then(res=>{
-                  if(res.data.code === 0){
-                      let allData = res.data.data;
+              getWeatherParams(params).then(res=>{
+                      let allData = res.data;
                       if(allData.timeAndTimeSpeed){
                           allData.timeAndTimeSpeed.forEach(item=>{
                               if(item.key === 'timeOfDay'){
@@ -584,12 +562,7 @@
                         setTimeout(()=>{
                             this.allRequest();
                         },3500)
-                      }  
-                  }else{
-                    if(!res.data.data && this.radio == 2){
-                        this.$message.warning(res.data.message)
-                    }
-                  }
+                      }
               }).catch(()=>{})
           },
           weatherNow(bigStrongWether,cloudeMore,rainAndSnow){ // 根据数据回显天气
@@ -652,6 +625,7 @@
                           this.$message.success(res.message);
                           this.messageChange()
                       }
+                      if(this.radio === 0) return
                       this.optionsTemplate.forEach(item=>{
                           if(item.id === this.onlyTwoIds){
                               if(item.weatherName === '参数化天气'){
@@ -691,9 +665,7 @@
                   taskId:this.taskId,
                   rgbValue:rgb + 'ff'
               }
-              CHAILIAOAPI.SETWEATHERCOLOR(params).then(res=>{
-                  // console.log('rgba',res.data);
-              }).catch(()=>{})
+              setWeatherColor(params)
           },
           rgbChange(sRGB) { // rgb转换16进制
               let reg=/^(RGB|rgb)\((\d+),\s*(\d+),\s*(\d+)\)$/
@@ -729,16 +701,12 @@
                   timeOfDay: this.hourMinuteChange(this.hourValue),
                   animateTimeOfDay:true,
               }
-              CHAILIAOAPI.SETTIMEWEATHERTIMEANDTIMESPEED(params).then(res=>{
-                  if(res.data.code ===0){
+              setWeatherTimeAndTimeSpeed(params).then(res=>{
                       if(this.messageFlag){
                           this.messageFlag = false;
-                          this.$message.success(res.data.message);
+                          this.$message.success(res.message);
                           this.messageChange()
                       }
-                  }else{
-                      this.$message.error(res.data.message)
-                  }
               }).catch(()=>{})
           },
           clickDateTime(){ // 日期变化时
@@ -761,16 +729,12 @@
                       rainSnow:this.rainSnow,
                   }
               }
-              CHAILIAOAPI.SETWEATHRTTYPE(params,JSON.stringify(weather)).then(res=>{
-                  if(res.data.code ===0){
+              setWeatherType(params,JSON.stringify(weather)).then(res=>{
                       if(this.messageFlag){
                           this.messageFlag = false;
-                          this.$message.success(res.data.message);
+                          this.$message.success(res.message);
                           this.messageChange()
                       }
-                  }else{
-                      this.$message.error(res.data.message)
-                  }
               }).catch(()=>{})
           },
           setSun(){ // 设置太阳方位
@@ -786,27 +750,22 @@
                       latitude:this.inputLatitude
                   }
               }
-              CHAILIAOAPI.SETSUNLIGHTDIRECTION(params,JSON.stringify(weather)).then(res=>{
-                  if(res.data.code ===0){
+              setSunLightDirection(params,JSON.stringify(weather)).then(res=>{
                       if(this.messageFlag){
                           this.messageFlag = false;
-                          this.$message.success(res.data.message);
+                          this.$message.success(res.message);
                           this.messageChange()
                       }
-                  }else{
-                      this.$message.error(res.data.message)
-                  }
               }).catch(()=>{})
           },
           getWeatherId(){ // 获取当前天气的id
               let params = {
                   taskId:this.taskId
               }
-              CHAILIAOAPI.GETCURRWEATHERID(params).then(res=>{
-                  if(res.data.code === 0){
+              getCurrWeatherId(params).then(res=>{
                       let index = null;
                       this.optionsTemplate.forEach(item=>{
-                          if(item.id == res.data.data){
+                          if(item.id == res.data){
                               if(item.weatherName === '参数化天气'){
                                   this.radio = 2
                                   this.getWeatherParams('none');
@@ -822,11 +781,10 @@
                       })
                       if(this.radio == 0){
                           index = this.lessOptions.findIndex(item=>{
-                              return item.id == res.data.data;
+                              return item.id == res.data;
                           })
                           this.valueTemplate = this.lessOptions[index].id;
                       }
-                  }
               })
           },
           hourMinuteChange(val){ // 时间占一天的比例
@@ -996,16 +954,12 @@
                   windIntensity:this.inputSpeedWind,
                   windDirection:this.inputWind
               }
-              CHAILIAOAPI.SETWINDDIRECTIONANDSPEED(params).then(res=>{
-                  if(res.data.code ===0){
+              setWindDirectionAndSpeed(params).then(res=>{
                       if(this.messageFlag){
                           this.messageFlag = false;
-                          this.$message.success(res.data.message);
+                          this.$message.success(res.message);
                           this.messageChange()
                       }
-                  }else{
-                      this.$message.error(res.data.message)
-                  }
               }).catch(()=>{})
           },
           wetherMutex(flag){ // 天气互斥

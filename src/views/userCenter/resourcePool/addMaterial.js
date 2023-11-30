@@ -1,6 +1,6 @@
 // 替换材质
 import { mapGetters, mapState } from 'vuex'
-import { changeMaterialByInstruction, getMaterialByMatId, addMaterialForApp, addMaterialForUser } from "@/api/material_api";
+import { getMaterialByMatId, changeMaterialByInstruction, addMaterialForApp, addMaterialForUser } from "@/api/userCenter/resourcePool.js";
 export default {
     props: {},
     data() {

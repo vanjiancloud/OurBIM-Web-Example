@@ -360,6 +360,7 @@
 </template>
 
 <script>
+import { moveModel } from "@/api/userCenter/componentManage.js";
 import { updateComsCoordinate, fluidOperate, modifyComParams } from "@/api/userCenter/componentInformation.js";
 export default {
     components: {},
@@ -486,6 +487,7 @@ export default {
             ],
             geometryObjForm: {
                 public:false,//是否是自定义构件
+                model:false,//是否是整个模型
                 id:'',//构件的id
                 name: '',//光源名称
                 lightType:'',//光源类型
@@ -591,6 +593,7 @@ export default {
             this.geometryObjForm.public = !!val.object
             if(val.object){
                 this.geometryObjForm.id = val.mN
+                this.geometryObjForm.model = val.model
                 // 处理光源信息
                 val.rsInfo.forEach(e=>{
                     if(['id','name','lightType'].includes(e.key)){
@@ -764,6 +767,19 @@ export default {
         editCom(){
             let params = {
                 taskId: this.data.taskId
+            }
+            // 修改整个模型偏移
+            if(this.geometryObjForm.model){
+                let data = [{
+                    childrenAppId: this.geometryObjForm.id,
+                    location: this.geometryObjForm.location,
+                    rotation: this.geometryObjForm.rotation,
+                    scale: this.geometryObjForm.scale
+                }]
+                moveModel(params, data).then(()=>{
+                    this.$message.success('修改坐标成功！')
+                })
+                return
             }
             let data = []
             if(this.isGis){

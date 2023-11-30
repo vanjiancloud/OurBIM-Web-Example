@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import MODELAPI,{ doAction } from '@/api/model_api';
+import { doAction } from "@/api/userCenter/index";
 import { EventBus } from '@/utils/bus.js'
 import Drawer from '@/components/Drawer/index.vue'
 export default {

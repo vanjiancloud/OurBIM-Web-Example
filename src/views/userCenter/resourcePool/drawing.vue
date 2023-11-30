@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { doAction } from '@/api/model_api.js' 
+import { doAction } from "@/api/userCenter/index";
 import SingleUpload from '@/components/Upload/singleUpload.vue'
 export default {
     components: { SingleUpload },

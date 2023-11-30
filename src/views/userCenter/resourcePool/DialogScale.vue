@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { updateScale } from "@/api/material_api";
+import { updateScale } from "@/api/userCenter/resourcePool.js";
 export default {
     components: { },
     props: {

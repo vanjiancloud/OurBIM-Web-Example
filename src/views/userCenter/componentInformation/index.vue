@@ -100,7 +100,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getMaterialByMatId, resetMaterial, updateMaterial } from "@/api/material_api";
+import { getMaterialByMatId, resetMaterial, updateMaterial } from "@/api/userCenter/resourcePool.js";
 import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";
 import Tab from "@/components/Tab/index.vue";

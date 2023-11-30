@@ -44,7 +44,7 @@ import { mapState } from 'vuex'
 import { throttle } from 'lodash'
 import Tab from "@/components/Tab/index.vue";
 import Pagination from "@/components/Pagination/index.vue";
-import { getPublicList, addCom } from "@/api/component-library";
+import { getPublicList, addCom } from "@/api/userCenter/resourcePool.js";
 import MODELAPI from "@/api/model_api";
 import Drawing from "./drawing.vue"; //导入图纸
 export default {

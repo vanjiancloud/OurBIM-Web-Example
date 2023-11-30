@@ -117,13 +117,16 @@
 </template>
 
 <script>
-import { Getuserid } from "@/store/index.js";
 import SingleUpload from "@/components/Upload/singleUpload.vue"
-import { updateProject, getGISProjectList } from "@/api/my.js";
+import { updateProject } from "@/api/my.js";
 export default {
     components: { SingleUpload },
     props: {
         ListLinkModel: {
+            type: Array,
+            default: () => { return [] }
+        },
+        GISModel: {
             type: Array,
             default: () => { return [] }
         }
@@ -170,16 +173,14 @@ export default {
                 },
             ],
             modelList: [],//还未被选的模型
-            GISModel: [],//全部的gis服务，只显示status为2的数据
+            // GISModel: [],//全部的gis服务，只显示status为2的数据
             selectGisList: [],//还未被选的服务
         }
     },
     watch: {},
     computed: {},
     created() { },
-    mounted() {
-        this.getGISProject()
-    },
+    mounted() {},
     methods: {
         show(row) {
             this.dialogVisible = true
@@ -234,12 +235,12 @@ export default {
                 }
             })
         },
-        getGISProject() {
-            getGISProjectList({ userId: Getuserid() }).then(res => {
-                // 只显示status为2的数据
-                this.GISModel = res.data?.list && res.data.list.filter(item => item.status === '2')
-            })
-        },
+        // getGISProject() {
+        //     getGISProjectList({ userId: Getuserid() }).then(res => {
+        //         // 只显示status为2的数据
+        //         this.GISModel = res.data?.list && res.data.list.filter(item => item.status === '2') || []
+        //     })
+        // },
         // 找出未被选中的gis服务数据
         showSelectGis(type = false) {
             let arr = this.form.gisServerMap && Object.keys(this.form.gisServerMap) || []

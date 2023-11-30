@@ -51,7 +51,7 @@
 import { mapGetters, mapState } from 'vuex'
 import DialogChartletGroup from "./DialogChartletGroup.vue"; // 新建分组弹框
 import DialogChartlet from "./DialogCharlet.vue"; // 上传贴图弹框
-import { getTextureGroup, getTextureByGroupId } from "@/api/material_api";
+import { getTextureGroup, getTextureByGroupId } from "@/api/userCenter/resourcePool.js";
 import { deleteMaterialTexture } from '@/api/resource/chartlet.js'
 import { throttle } from 'lodash'
 import Tab from "@/components/Tab/index.vue";

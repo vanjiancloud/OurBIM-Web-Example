@@ -39,7 +39,7 @@
 import { throttle } from 'lodash'
 import { BASEURL } from '@/utils/newRequest.js'
 import { mapGetters, mapState } from 'vuex'
-import { getMaterialByGroup, getMaterialFromUser, getOurBIMMaterialGroup, getProjectMaterial } from "@/api/material_api";
+import { getMaterialByGroup, getMaterialFromUser, getOurBIMMaterialGroup, getProjectMaterial } from "@/api/userCenter/resourcePool.js";
 import Tab from "@/components/Tab/index.vue";
 import Pagination from "@/components/Pagination/index.vue";
 import addMaterial from './addMaterial.js'

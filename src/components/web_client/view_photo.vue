@@ -261,9 +261,9 @@
 import Drawer from "@/components/Drawer/index.vue";
 import { EventBus } from '@/utils/bus.js'
   import draggable from 'vuedraggable'
-  import MODELAPI,{ doAction } from "@/api/model_api";
+  import MODELAPI from "@/api/model_api";
+  import { doAction } from "@/api/userCenter/index";
   import viewDialog from "@/components/web_client/view_dialog";
-import { error } from 'console';
   export default {
         components: {
          viewDialog,

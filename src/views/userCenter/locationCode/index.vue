@@ -50,7 +50,7 @@
 <script>
 import qs from "qs";
 import OperatingTools from "@/components/OperatingTools";
-import { setGizmoMode } from "@/api/model_api";
+import { setGizmoMode } from "@/api/userCenter/index";
 import { getList, deleteCode, openLocate } from '@/api/userCenter/locationCode.js'
 import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";

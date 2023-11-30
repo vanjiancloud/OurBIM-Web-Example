@@ -237,7 +237,7 @@
         </template>
     </DialogsDrag>
     <!-- 编辑 -->
-    <DialogsEdit ref="DialogsEdit" :ListLinkModel="ListLinkModel"/>
+    <DialogsEdit ref="DialogsEdit" :ListLinkModel="ListLinkModel" :GISModel="ListLinkGISModel"/>
   </List>
 </template>
 
@@ -245,6 +245,7 @@
 import {
   getProjectList,
   deleteProject,
+  getGISProjectList
 } from "@/api/my.js";
 import MODELAPI from "@/api/model_api";
 import { Getuserid } from "@/store/index.js";
@@ -385,8 +386,15 @@ export default {
     this.getAllModelList()
     this.setGetModelListTimer()
     this.getModelList()
+    this.getGISProject()
   },
   methods: {
+    getGISProject() {
+        getGISProjectList({ userId: Getuserid() }).then(res => {
+            // 只显示status为2的数据
+            this.ListLinkGISModel = res.data?.list && res.data.list.filter(item => item.status === '2') || []
+        })
+    },
     onChange(e){
         this.isList = e
     },

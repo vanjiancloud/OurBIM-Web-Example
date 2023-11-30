@@ -83,15 +83,9 @@
 
 <script>
 import { EventBus } from '@/utils/bus.js'
-import { comSwitch } from '@/api/component-library.js'
+import { comSwitch ,materialEditorControl } from "@/api/userCenter/resourcePool.js";
 import { controlTagShow } from '@/api/tag_tree.js'
-import {
-    conChoiceVisible,
-    invertHidden,
-    displayAllActor,
-    doAction
-} from '@/api/model_api.js'
-import { materialEditorControl } from "@/api/material_api";
+import { doAction, conChoiceVisible, invertHidden, displayAllActor } from "@/api/userCenter/index";
 import { openLocate } from '@/api/userCenter/locationCode.js'
 export default {
     components: {},

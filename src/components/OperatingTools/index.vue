@@ -16,8 +16,7 @@
 </template>
 
 <script>
-import { setGizmoMode, setGizmoModeType } from "@/api/model_api";
-import { closeComEdit } from "@/api/component-library";
+import { setGizmoMode, setGizmoModeType, closeComEdit } from "@/api/userCenter/index";
 export default {
     components: {},
     props: {
