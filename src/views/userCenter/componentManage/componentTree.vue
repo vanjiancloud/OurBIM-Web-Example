@@ -235,6 +235,7 @@ export default {
                                 { key: 'scale', name: '缩放', value: resData.scale },
                             ]
                         }
+                        this.$parent.memberInfo = []
                     })
                 }else{
                     this.$parent.selectPark = { id: '1' }
