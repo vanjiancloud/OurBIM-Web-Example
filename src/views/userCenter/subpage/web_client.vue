@@ -449,7 +449,7 @@ export default {
         width = document.body.clientHeight;
       }
       if(type){
-        return { width:width*0.7, height:height*0.7 }
+        return { width, height }
       }
       let params = {
         taskid: this.taskId,
