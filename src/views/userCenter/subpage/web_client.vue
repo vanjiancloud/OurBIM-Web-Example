@@ -933,6 +933,7 @@ export default {
     // 监听刷新浏览器
     unLoad(){
         document.addEventListener('visibilitychange', (event)=> {
+            console.log('🚀🚀🚀',event,document.hidden);
             if (document.hidden) {
                 this.sendMqtt()
             }
