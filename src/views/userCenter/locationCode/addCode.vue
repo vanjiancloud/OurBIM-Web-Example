@@ -93,6 +93,10 @@ export default {
                 }
                 create(data).then(()=>{
                     this.$message.warning('请在模型中选择添加定位点的位置！')
+                }).catch(err=>{
+                    if(err.message === 'codeId已存在'){
+                        this.$message.warning('请在模型中选择添加定位点的位置！')
+                    }
                 })
             })
         },

@@ -848,7 +848,7 @@ export default {
             timeout = 4000,
             keepAlive = 100,
             cleanSession = false,
-            ssl = true;
+            ssl = url.protocol === 'https:';
         this.client = new Paho.MQTT.Client(hostname, port, clientId);
         var options = {
             invocationContext: {
@@ -864,7 +864,6 @@ export default {
             userName: "vanjian",  
             password: "vanjian666",  
             onSuccess: (e) => {
-                this.client.subscribe('task/#');
                 this.client.subscribe(`terminal/${this.$route.query.token}`);
                 this.$nextTick(()=>{
                     this.getModelUrl();
@@ -885,10 +884,20 @@ export default {
         };
         //注册连接断开处理事件  
         this.client.onMessageArrived = (message)=> {
-            let res = JSON.parse(message.payloadString)
-            if(res.taskId){
-                this.taskId = res.taskId
-                this.getProccess()
+            switch (message.destinationName) {
+                case `terminal/${this.$route.query.token}`:
+                    let res = JSON.parse(message.payloadString)
+                    if(res.taskId){
+                        this.taskId = res.taskId
+                        this.getProccess()
+                    }
+                    break;
+                case `preloadEnd/${this.taskId}`:
+                    this.closePre()
+                    break;
+            
+                default:
+                    break;
             }
         };
     },
@@ -905,6 +914,7 @@ export default {
         message.destinationName = mess;
         message.qos=0;
         this.client.send(message);
+        this.closeProgress()
     },
     // 关闭预启动
     closePre(){
@@ -913,16 +923,23 @@ export default {
             keepalive: true
         });
     },
+    // 关闭普通模型
+    closeProgress(){
+        fetch(`${this.$config.VUE_APP_REQUEST_URL}/cloudServiceProcess/endProgressBrow?taskId=${this.taskId}`, {
+            method: 'POST',
+            keepalive: true
+        });
+    },
     // 监听刷新浏览器
     unLoad(){
+        document.addEventListener('visibilitychange', (event)=> {
+            if (document.visibilityState === 'hidden') {
+                this.sendMqtt()
+            }
+        });
         if (this.isMobile()) {
             window.addEventListener('pagehide', ()=> {
                 this.sendMqtt()
-            });
-            document.addEventListener('visibilitychange', (event)=> {
-                if (document.visibilityState === 'hidden') {
-                    this.sendMqtt()
-                }
             });
         } else {
             window.addEventListener('beforeunload', (event)=> {
@@ -1029,6 +1046,9 @@ export default {
             this.webUrl = res.data.url;
             this.taskId = res.data.taskId;
             this.preType = res.data.preType==='1' ? true : false
+            this.client.subscribe(`task/${this.taskId}/#`);
+            this.client.subscribe(`preloadEnd/${this.taskId}`);
+            this.sendToIframe(10300,false);
             console.info('🚀🚀🚀taskId🚀🚀🚀taskId🚀🚀🚀taskId:',this.taskId);
             if(this.preType){
                 preloadStart({ taskId: this.taskId })

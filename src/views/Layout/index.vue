@@ -100,11 +100,11 @@
                     </div>
                     <div class="serverBox" v-else>
                         <div class="serverItem">
-                            <div class="serverPer" :class="{colorGray:!total.useStore}">{{ total.useStore&&(total.useStore/total.store*100).toFixed(2) || 0 }}%</div>
+                            <div class="serverPer" :class="{colorGray:!total.useStore}">{{ total.useStore&&(Number(total.useStore)/Number(total.store)*100).toFixed(2) || 0 }}%</div>
                             <el-progress :text-inside="true" :stroke-width="16" :percentage="Number(total.useStore/total.store*100) || 0" :show-text="false" color="#02AAF0"></el-progress>
                             <div class="serverUsed">
                                 <img src="./img/cunchu.png" alt="" />
-                                <span>已用储存 {{ total.useStore }}GB/{{ total.store }}GB</span>
+                                <span>已用储存 {{ (+total.useStore).toFixed(2) }}GB/{{ total.store }}GB</span>
                             </div>
                         </div>
                         <div class="serverItem">
