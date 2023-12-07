@@ -225,7 +225,7 @@ export default {
                 });
                 if(this.isGroup&&resData.children.length){
                     this.tableData.unshift({ ...resData, num: resData.children.length })
-                }else{
+                }else if(resData.children.length){
                     this.tableData = resData.children
                 }
                 this.$emit('update:total',this.tableData.length)
