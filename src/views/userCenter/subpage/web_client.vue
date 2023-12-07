@@ -893,7 +893,8 @@ export default {
                     }
                     break;
                 case `preloadEnd/${this.taskId}`:
-                    this.closePre()
+                    // 关闭视频流
+                    this.sendToIframe(10400,true);
                     break;
             
                 default:
