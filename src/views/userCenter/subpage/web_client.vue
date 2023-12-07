@@ -932,18 +932,14 @@ export default {
     },
     // 监听刷新浏览器
     unLoad(){
-        document.addEventListener('visibilitychange', (event)=> {
-            console.log('🚀🚀🚀',event,document.hidden);
-            if (document.hidden) {
-                this.sendMqtt()
-            }
+        window.addEventListener('beforeunload', (event)=> {
+            this.sendMqtt()
+        });
+        window.addEventListener('unload', (event)=> {
+            this.sendMqtt()
         });
         if (this.isMobile()) {
             window.addEventListener('pagehide', ()=> {
-                this.sendMqtt()
-            });
-        } else {
-            window.addEventListener('beforeunload', (event)=> {
                 this.sendMqtt()
             });
         }
