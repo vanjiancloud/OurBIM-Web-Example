@@ -1105,7 +1105,7 @@ import { EventBus } from '@/utils/bus.js'
                     time: this.clickPlayTime || 0
                 }
                 MODELAPI.VIEWANIMPREVIEW(params).then((res)=>{
-                    if(res.data.code === 200){
+                    if(res.data.code === 0){
                         this.playFlags = '2';
                         if(this.videoIndex!==null){
                             this.$set(this.viewPointLists[this.videoIndex],'playFlags','2')

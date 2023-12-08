@@ -1,6 +1,6 @@
 const serverConfig = {
     development: { // 小牛云
-        VUE_APP_REQUEST_URL: 'https://xr.ourbim.com:10011/vjapi',
+        VUE_APP_REQUEST_URL: 'http://120.232.132.37:11011/vjapi',
         ADMIN_REQUEST_URL: 'https://manage.ourbim.com:10012',
         CAD_REQUEST_URL: 'https://xr.ourbim.com:10088/vjapi',
         CAD_Web: 'http://120.86.64.201:5023/bim_CAD/',

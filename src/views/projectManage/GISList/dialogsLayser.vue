@@ -6,22 +6,22 @@
             </el-form-item>
             <el-form-item label="图层类型：" prop="layerType">
                 <el-select v-model="form.layerType " placeholder="请选择" style="width:100%">
-                    <el-option :value="item.value" v-for="(item,index) in layerTypeList" :key="index" :disabled="item.value==='OurGIS'">{{ item.note }}</el-option>
+                    <el-option :value="item.key" v-for="(item,index) in layerTypeList" :key="index">{{ item.name }}</el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="图层地址：" prop="fileUrl">
                 <el-input v-model="form.fileUrl" placeholder="请输入"></el-input>
             </el-form-item>
-            <el-form-item label="GIS信息：" required v-if="form.layerType==='3dtiles'">
+            <!-- <el-form-item label="GIS信息：" required v-if="form.layerType==='3dtiles'">
                 <el-col :span="7">
                     <el-form-item prop="longitude">
-                        <el-input v-model="form.longitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:4}"></el-input>
+                        <el-input v-model="form.longitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:8}"></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col class="GISMark" :span="1">°</el-col>
                 <el-col :span="7">
                     <el-form-item prop="latitude">
-                        <el-input v-model="form.latitude" placeholder="纬度" v-only-number="{min:-90,max:90,precision:4}"></el-input>
+                        <el-input v-model="form.latitude" placeholder="纬度" v-only-number="{min:-90,max:90,precision:8}"></el-input>
                     </el-form-item>
                 </el-col>
                 <el-col class="GISMark" :span="1">°</el-col>
@@ -31,7 +31,7 @@
                     </el-form-item>
                 </el-col>
                 <el-col class="GISMark" :span="1">m</el-col>
-            </el-form-item>
+            </el-form-item> -->
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="hide">取 消</el-button>
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import { gisLayer } from "./json"
 import { getDict } from '@/api/dict.js'
 export default {
     components: {},
@@ -68,31 +69,32 @@ export default {
                 fileUrl: [
                     {
                         required: true,
-                        message: '请输入图层地址',
-                        trigger: 'blur'
+                        message: '请输入正确的图层地址',
+                        trigger: 'blur',
+                        pattern: /^(http(s)?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-.\/?%&=]*)?$/, 
                     }
                 ],
-                longitude: [
-                    {
-                        required: true,
-                        message: '请输入经度(-180°~180°)',
-                        trigger: 'blur'
-                    }
-                ],
-                latitude: [
-                    {
-                        required: true,
-                        message: '请输入纬度(-90°~90°)',
-                        trigger: 'blur'
-                    }
-                ],
-                altitude: [
-                    {
-                        required: true,
-                        message: '请输入海拔高度',
-                        trigger: 'blur'
-                    }
-                ],
+                // longitude: [
+                //     {
+                //         required: true,
+                //         message: '请输入经度(-180°~180°)',
+                //         trigger: 'blur'
+                //     }
+                // ],
+                // latitude: [
+                //     {
+                //         required: true,
+                //         message: '请输入纬度(-90°~90°)',
+                //         trigger: 'blur'
+                //     }
+                // ],
+                // altitude: [
+                //     {
+                //         required: true,
+                //         message: '请输入海拔高度',
+                //         trigger: 'blur'
+                //     }
+                // ],
             },
             layerTypeList: [] //图层类型
         }
@@ -101,23 +103,24 @@ export default {
     computed: {},
     created() {},
     mounted() {
-        this.getType()
+        // this.getType()
     },
     methods: {
-        show(title, row) {
+        show(title, row, gisPlugin) {
             this.title = title
             this.dialogVisible = true
             this.$nextTick(() => {
                 this.$refs.form.clearValidate()
+                this.layerTypeList = gisLayer.filter(e => { return e.type === gisPlugin })
                 this.form = row
             })
         },
         hide() {
             this.dialogVisible = false
         },
-        async getType() {
-            this.layerTypeList = (await getDict('layerType')).data
-        },
+        // async getType() {
+        //     this.layerTypeList = (await getDict('layerType')).data
+        // },
         submit() {
             this.$refs.form.validate((valid) => {
                 if (!valid) return false

@@ -20,20 +20,52 @@
                         :key="item"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="GIS坐标系：" v-if="form.isGis === 'true'">
-                <el-select v-model="form.gisCoordinateType" placeholder="请选择GIS坐标系">
-                    <el-option value="WGS-84" label="WGS-84"></el-option>
-                    <el-option value="GCJ-02" label="GCJ-02"></el-option>
-                    <el-option value="BD-09" label="BD-09"></el-option>
+            <div class="flexStart">          
+                <el-form-item label="服务支持组件:" prop="gisPlugin" v-if="form.isGis === 'true'">
+                    <el-select v-model="form.gisPlugin" placeholder="请选择" @change="changeGisPlugin">
+                        <el-option :value="item.key" :label="item.name" v-for="(item,index) in gisPluginList" :key="index" :disabled="item.key==='arcGIS'"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="GIS坐标系：" v-if="form.isGis === 'true'">
+                    <el-select v-model="form.gisCoordinateType" placeholder="请选择GIS坐标系">
+                        <el-option value="WGS-84" label="WGS-84"></el-option>
+                        <el-option value="GCJ-02" label="GCJ-02"></el-option>
+                        <el-option value="BD-09" label="BD-09"></el-option>
+                    </el-select>
+                </el-form-item>
+            </div>
+            <el-form-item label="GIS底图:" prop="gisSuperMapInfo" v-if="form.isGis === 'true'">
+                <el-select v-model="form.gisSuperMapInfo" placeholder="请选择" multiple style="width:100%">
+                    <el-option :value="item.key" :label="item.name" v-for="(item,index) in mapInfoList" :key="index"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item :label="form.isGis==='true' ? 'GIS信息:' : '子模型列表:'" required v-if="form.appType === '3' || (form.appType === '0' && form.isGis === 'true')">
+            <el-form-item label="项目GIS原点:" required v-if="form.isGis === 'true'">
+                <el-col :span="7">
+                    <el-form-item prop="gisLongitude">
+                        <el-input v-model="form.gisLongitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:8}"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col class="GISMark" :span="1">°</el-col>
+                <el-col :span="7">
+                    <el-form-item prop="gisLatitude">
+                        <el-input v-model="form.gisLatitude" placeholder="纬度" v-only-number="{min:-90,max:90,precision:8}"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col class="GISMark" :span="1">°</el-col>
+                <el-col :span="7">
+                    <el-form-item prop="gisAltitude">
+                        <el-input v-model="form.gisAltitude" placeholder="海拔高度"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col class="GISMark" :span="1">m</el-col>
+            </el-form-item>
+            <el-form-item :label="form.isGis==='true' ? 'BIM模型:' : '子模型列表:'" required v-if="form.appType === '3' || (form.appType === '0' && form.isGis === 'true')">
                 <el-card class="box-card">
                     <div v-for="(GISitem, index) in form.gisInfo" :key="index" class="flexStart">
                         <el-tooltip effect="dark" :content="GISitem.name" placement="top">
                             <div class="wordEllipsis"> {{ GISitem.name }} </div>
                         </el-tooltip>
-                        <div v-if="form.isGis === 'true'" class="flexStart">
+                        <!-- <div v-if="form.isGis === 'true'" class="flexStart">
                             <el-form-item :prop="'gisInfo.' + index + '.longitude'"
                                 :rules="[{ required: true, validator: validaLongitude, trigger: 'blur' }]">
                                 <el-input size="small" placeholder="请输入经度" v-model="GISitem.longitude"
@@ -52,7 +84,7 @@
                                     style="width:86%"></el-input>
                                 <span class="gis-input-label">m</span>
                             </el-form-item>
-                        </div>
+                        </div> -->
                         <el-button v-if="form.gisInfo.length > 2" type="text" class="blueText"
                             @click="delModel(index)">移除</el-button>
                     </div>
@@ -117,6 +149,7 @@
 </template>
 
 <script>
+import { gisPluginList, gisSuperMapList } from "@/views/projectManage/GISList/json"
 import SingleUpload from "@/components/Upload/singleUpload.vue"
 import { updateProject } from "@/api/my.js";
 export default {
@@ -132,35 +165,48 @@ export default {
         }
     },
     data() {
-        const validaLongitude = (rule, value, callback) => {
-            if (!value) {
-                callback(new Error('经度不能为空'))
+        // const validaLongitude = (rule, value, callback) => {
+        //     if (!value) {
+        //         callback(new Error('经度不能为空'))
+        //     }
+        //     if (Number(value) > 180 || Number(value) < -180) {
+        //         callback(new Error('经度范围为-180~180'))
+        //     } else {
+        //         callback()
+        //     }
+        // }
+        // const validaLatitude = (rule, value, callback) => {
+        //     if (!value) {
+        //         callback(new Error('纬度不能为空'))
+        //     }
+        //     if (Number(value) > 90 || Number(value) < -90) {
+        //         callback(new Error('纬度范围为-90~90'))
+        //     } else {
+        //         callback()
+        //     }
+        // }
+        const validGisSuperMapInfo = (rule, value, callback) => {
+            if(value && value.length === 1 && value[0] === 'cta'){
+                callback(new Error('天地图地形注记不能单独添加'));
+            }else{
+                callback();
             }
-            if (Number(value) > 180 || Number(value) < -180) {
-                callback(new Error('经度范围为-180~180'))
-            } else {
-                callback()
-            }
-        }
-        const validaLatitude = (rule, value, callback) => {
-            if (!value) {
-                callback(new Error('纬度不能为空'))
-            }
-            if (Number(value) > 90 || Number(value) < -90) {
-                callback(new Error('纬度范围为-90~90'))
-            } else {
-                callback()
-            }
-        }
+        };
         return {
-            validaLongitude,
-            validaLatitude,
+            // validaLongitude,
+            // validaLatitude,
+            gisPluginList,
             dialogVisible: false,
             form: {
                 gisCoordinateType: "WGS-84",
             },
             rules: {
-                maxInstance: [{ required: true, message: "请输入1-9999的正整数", trigger: "blur" }]
+                maxInstance: [{ required: true, message: "请输入1-9999的正整数", trigger: "blur" }],
+                gisPlugin: { required: true, message: '请选择服务支持组件', trigger: 'blur' },
+                gisSuperMapInfo: { required: false, validator: validGisSuperMapInfo, trigger: 'blur' },
+                gisLongitude: [{required: true,message: '请输入经度(-180°~180°)',trigger: 'blur'}],
+                gisLatitude: [{required: true,message: '请输入纬度(-90°~90°)',trigger: 'blur'}],
+                gisAltitude: [{required: true,message: '请输入海拔高度',trigger: 'blur'}],
             },
             options: [
                 {
@@ -173,8 +219,8 @@ export default {
                 },
             ],
             modelList: [],//还未被选的模型
-            // GISModel: [],//全部的gis服务，只显示status为2的数据
             selectGisList: [],//还未被选的服务
+            mapInfoList: [],//底图
         }
     },
     watch: {},
@@ -188,7 +234,9 @@ export default {
             this.$nextTick(() => {
                 this.$refs.form.clearValidate()
                 this.form = row
+                this.changeGisPlugin()
                 this.$set(this.form, 'gisCoordinateType', row.gisCoordinateType || 'WGS-84')
+                this.$set(this.form, 'gisSuperMapInfo', row.gisSuperMapInfo && row.gisSuperMapInfo.split(',') || [])
                 let gisInfo = this.form.gisInfo && (JSON.parse(this.form.gisInfo).constructor === Object ? [JSON.parse(this.form.gisInfo)] : JSON.parse(this.form.gisInfo)) || []
                 let newGisInfo = this.form.combineId&&this.form.combineId.split(',').map((e,i) => {
                     return {
@@ -202,6 +250,12 @@ export default {
         },
         hide() {
             this.dialogVisible = false
+        },
+        changeGisPlugin(val) {
+            if(val){
+                this.form.gisSuperMapInfo = []
+            }
+            this.mapInfoList = gisSuperMapList.filter(e => { return e.type === this.form.gisPlugin })
         },
         // 点击添加模型按钮
         addModelClick(type = false) {
@@ -235,12 +289,6 @@ export default {
                 }
             })
         },
-        // getGISProject() {
-        //     getGISProjectList({ userId: Getuserid() }).then(res => {
-        //         // 只显示status为2的数据
-        //         this.GISModel = res.data?.list && res.data.list.filter(item => item.status === '2') || []
-        //     })
-        // },
         // 找出未被选中的gis服务数据
         showSelectGis(type = false) {
             let arr = this.form.gisServerMap && Object.keys(this.form.gisServerMap) || []
@@ -251,7 +299,7 @@ export default {
         },
         addGisServe(data) {
             const obj = this.selectGisList.find(item => { return item.gisId === data })
-            this.$set(this.form, 'gisServerMap', { [obj.gisId]: obj.gisServerName })
+            this.$set(this.form, 'gisServerMap', { ...this.form?.gisServerMap, [obj.gisId]: obj.gisServerName })
             this.selectGisList = []
             this.form.selectGis = ''
         },
@@ -285,7 +333,8 @@ export default {
                     // 如果不是链接模型,这里的数据就需要传对象,链接模型则需要传数组
                     gisInfo: this.form.appType !== '3' ? JSON.stringify(this.form.gisInfo?.[0]) : JSON.stringify(this.form.gisInfo),
                     combineId: this.form.gisInfo&&this.form.gisInfo.map(e => e.appId).join(',')||'',
-                    gisServerList: this.form.gisServerMap&&Object.keys(this.form.gisServerMap).join(',')||''
+                    gisServerList: this.form.gisServerMap&&Object.keys(this.form.gisServerMap).join(',')||'',
+                    gisSuperMapInfo: this.form?.gisSuperMapInfo.join(',') || '',
                 }
                 delete data.gisServerMap
                 delete data.sonAppMap
@@ -319,4 +368,5 @@ export default {
     white-space: nowrap; //强制在一行显示
     overflow: hidden; //溢出隐藏
     text-overflow: ellipsis; //显示省略号
-}</style>
+}
+</style>

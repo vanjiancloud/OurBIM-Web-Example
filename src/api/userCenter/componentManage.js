@@ -84,3 +84,12 @@ export function moveModel(params, data) {
         data
     })
 }
+
+// gis列表
+export function getGisList(params) {
+    return request({
+        url: '/appli/getModelGisServer',
+        method: 'get',
+        params
+    })
+}

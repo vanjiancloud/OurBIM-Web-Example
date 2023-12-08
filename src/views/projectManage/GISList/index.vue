@@ -18,7 +18,11 @@
             <el-table-column prop="gisServerName" label="项目名称" />
             <el-table-column prop="gisId" label="项目ID" />
             <el-table-column prop="createTime" label="上传日期" />
-            <el-table-column prop="fileSize" label="大小" />
+            <el-table-column prop="fileSize" label="大小">
+                <template slot-scope="scope">
+                    {{ scope.row.fileSize=== '\\--' ? scope.row.fileSize : scope.row.fileSize + 'MB' }}
+                </template>
+            </el-table-column>
             <el-table-column prop="layerType" label="数据类型" />
             <el-table-column prop="status" label="状态">
                 <template slot-scope="scope">
@@ -88,21 +92,26 @@
         <DialogsDrag ref="DialogsDrag" :limit="1" numType="uploadGISNum" @getFile="getFileDrag" @onSuccess="getList" @beforeUpload="beforeUpload">
             <template v-slot:append>
                 <el-form :model="form" :rules="rules" ref="form" label-width="130px" class="layerForm">
-                    <el-form-item label="图层类型：" prop="layerType">
-                        <el-select v-model="form.layerType " placeholder="请选择" style="width:100%">
-                            <el-option :value="item.value" v-for="(item,index) in layerTypeList" :key="index" :disabled="item.value==='OurGIS'">{{ item.note }}</el-option>
+                    <el-form-item label="服务支持组件：" prop="gisPlugin">
+                        <el-select v-model="form.gisPlugin" placeholder="请选择" @change="changeGisPlugin" style="width:100%">
+                            <el-option :value="item.key" :label="item.name" v-for="(item,index) in gisPluginList" :key="index" :disabled="item.key==='arcGIS'"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="GIS信息：" required v-if="form.layerType==='3dtiles'">
+                    <el-form-item label="图层类型：" prop="layerType">
+                        <el-select v-model="form.layerType " placeholder="请选择" style="width:100%">
+                            <el-option :value="item.key" v-for="(item,index) in layerTypeList" :key="index">{{ item.name }}</el-option>
+                        </el-select>
+                    </el-form-item>
+                    <!-- <el-form-item label="GIS信息：" required v-if="form.layerType==='3dtiles'">
                         <el-col :span="7">
                             <el-form-item prop="longitude">
-                                <el-input v-model="form.longitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:4}"></el-input>
+                                <el-input v-model="form.longitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:8}"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col class="GISMark" :span="1">°</el-col>
                         <el-col :span="7">
                             <el-form-item prop="latitude">
-                                <el-input v-model="form.latitude" placeholder="纬度" v-only-number="{min:-90,max:90,precision:4}"></el-input>
+                                <el-input v-model="form.latitude" placeholder="纬度" v-only-number="{min:-90,max:90,precision:8}"></el-input>
                             </el-form-item>
                         </el-col>
                         <el-col class="GISMark" :span="1">°</el-col>
@@ -112,7 +121,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col class="GISMark" :span="1">m</el-col>
-                    </el-form-item>
+                    </el-form-item> -->
                 </el-form>
             </template>
         </DialogsDrag>
@@ -120,6 +129,7 @@
 </template>
 
 <script>
+import { gisPluginList, gisLayer } from "./json"
 import { getDict } from "@/api/dict.js"
 import { Getuserid } from "@/store/index.js";
 import { getList, deleteList } from "@/api/GISList.js";
@@ -132,6 +142,7 @@ export default {
     props: {},
     data() {
         return {
+            gisPluginList,
             loading:false,
             isList: true,
             tableData: [],
@@ -148,8 +159,11 @@ export default {
                 5: "删除失败",
             },
             layerTypeList: [],
-            form:{},
+            form:{
+                gisPlugin: 'cesium'
+            },
             rules: {
+                gisPlugin: [{ required: true, message: "请选择服务支持组件", trigger: "blur" }],
                 layerType: [
                     {
                         required: true,
@@ -157,27 +171,27 @@ export default {
                         trigger: 'blur'
                     }
                 ],
-                longitude: [
-                    {
-                        required: true,
-                        message: '请输入经度(-180°~180°)',
-                        trigger: 'blur'
-                    }
-                ],
-                latitude: [
-                    {
-                        required: true,
-                        message: '请输入纬度(-90°~90°)',
-                        trigger: 'blur'
-                    }
-                ],
-                altitude: [
-                    {
-                        required: true,
-                        message: '请输入海拔高度',
-                        trigger: 'blur'
-                    }
-                ],
+                // longitude: [
+                //     {
+                //         required: true,
+                //         message: '请输入经度(-180°~180°)',
+                //         trigger: 'blur'
+                //     }
+                // ],
+                // latitude: [
+                //     {
+                //         required: true,
+                //         message: '请输入纬度(-90°~90°)',
+                //         trigger: 'blur'
+                //     }
+                // ],
+                // altitude: [
+                //     {
+                //         required: true,
+                //         message: '请输入海拔高度',
+                //         trigger: 'blur'
+                //     }
+                // ],
             },
             timer: null //轮询
         };
@@ -191,13 +205,19 @@ export default {
     created() {},
     mounted() {
         this.getList();
-        this.getType()
+        // this.getType()
         this.setTime()
+        this.changeGisPlugin(this.form.gisPlugin)
     },
     destroyed() {
         window.clearInterval(this.timer)
     },
     methods: {
+        // 切换服务组件
+        changeGisPlugin(val){
+            this.form.layerType = ''
+            this.layerTypeList = gisLayer.filter(e => { return e.type === val })
+        },
         onChange(e){
             this.isList = e
         },
@@ -212,9 +232,9 @@ export default {
                 },0)
             },10000)
         },
-        async getType(){
-            this.layerTypeList = (await getDict('layerType')).data
-        },
+        // async getType(){
+        //     this.layerTypeList = (await getDict('layerType')).data
+        // },
         // 新建GIS服务项目
         AddGISProgect(title, row = {}) {
             this.$refs.DialogsProject.show(title, JSON.parse(JSON.stringify(row)));
@@ -286,6 +306,7 @@ export default {
             }).catch(() => {});
         },
         toProject(row){
+            this.$message.info('功能未实现')
             console.log('🚀🚀🚀',row);
         }
     },

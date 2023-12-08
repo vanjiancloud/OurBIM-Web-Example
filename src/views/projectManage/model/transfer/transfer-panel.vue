@@ -341,7 +341,7 @@
 
 <style lang="less" scoped>
 .right-panel {
-  width: 680px !important;
+  // width: 680px !important;
 }
 .el-transfer-panel__item {
   margin: 10px 0 10px 0 !important;

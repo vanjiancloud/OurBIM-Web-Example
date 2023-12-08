@@ -2,13 +2,14 @@
 <template>
     <Drawer ref="Drawer" title="模型浏览器" direction="ltr" @onClose="close()">
         <template v-slot="{ drawer }">
+            <Tab v-model="tabValue" :data="tabList" @onTab="onTab" />
             <div class="search">
                 <el-input v-model="search" size="mini" placeholder="请输入您要搜索的内容" prefix-icon="el-icon-search"
                     @change="searchContent()" @keydown.native.stop>
                 </el-input>
             </div>
             <!-- 树 -->
-            <el-tree class="set-tree" ref="tree" empty-text="暂无数据" :props="props" :expand-on-click-node="false" :load="loadNode" @check="isShowCom" :filter-node-method="filterNode"
+            <el-tree v-if="drawer && tabValue===0" class="set-tree" ref="tree" empty-text="暂无数据" :props="props" :expand-on-click-node="false" :load="loadNode" @check="isShowCom" :filter-node-method="filterNode"
                 :show-checkbox="true" highlight-current node-key="uuid" lazy>
                 <span class="custom-tree-node" :class="{'tree-select': activeTree && node.data.uuid === activeTree.uuid}" slot-scope="{node,data}" @click="handleTree(node)">
                     <span class="label-span">{{ node.label }}</span>
@@ -28,18 +29,22 @@
 
             <!-- 构件操作图标 -->
             <OperatingTools ref="OperatingTools" v-if="drawer && hasLock()" :data="data"/>
+
+            <GisTree v-if="drawer && tabValue===1" :data="data"/>
         </template>
     </Drawer>
 </template>
 
 <script>
+import Tab from "@/components/Tab/index.vue";
 import { doAction, setGizmoMode } from "@/api/userCenter/index";
 import { getComponents, lockAfterInfo, lockControl, freezeCom, deleteCustomCom, focusComponent, controlComShowOrHide, getModelLocation } from "@/api/userCenter/componentManage.js";
 import Drawer from "@/components/Drawer/index.vue";
 import OperatingTools from "@/components/OperatingTools";
 import { EventBus } from '@/utils/bus.js'
+import GisTree from './gisTree.vue'
 export default {
-    components: { Drawer, OperatingTools },
+    components: { Drawer, OperatingTools, Tab, GisTree },
     props: {
         data: {
             type: Object,
@@ -54,6 +59,15 @@ export default {
     },
     data() {
         return {
+            tabValue: 0,
+            tabList: [
+                {
+                    name: "BIM模型",
+                },
+                {
+                    name: "GIS数据服务",
+                },
+            ],
             appType: null,
             search: '',
             treeParentData: [],//tree一级数据
@@ -84,6 +98,9 @@ export default {
         close() {
             this.$refs.Drawer.hide()
             EventBus.$emit('eventTool', 'browser')
+        },
+        onTab(e){
+            this.tabValue = e.index
         },
         // 搜索
         searchContent() {

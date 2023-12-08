@@ -15,11 +15,16 @@
           <el-form-item label="项目缩略图：">
             <SingleUpload v-model="form.thumbnail" url="/appli/uploadThumbnail"/>
           </el-form-item>
-          <el-form-item label="GIS坐标系：" v-if="title==='编辑'" prop="gisCoordinateType">
+          <el-form-item label="服务支持组件：" prop="gisPlugin" v-if="form.layerType==='OurGIS'">
+                <el-select v-model="form.gisPlugin" placeholder="请选择" @change="form.ourGISLayerList = []">
+                    <el-option :value="item.key" :label="item.name" v-for="(item,index) in gisPluginList" :key="index" :disabled="item.key==='arcGIS'"></el-option>
+                </el-select>
+          </el-form-item>
+          <!-- <el-form-item label="GIS坐标系：" v-if="title==='编辑'" prop="gisCoordinateType">
             <el-select v-model="form.gisCoordinateType " placeholder="请选择" style="width:100%" v-if="title==='编辑'">
               <el-option :value="item.value" :label="item.note" v-for="(item,index) in gisCoordinateTypeList" :key="index"></el-option>
               </el-select>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="GIS图层：" prop="ourGISLayerList" v-if="form.layerType==='OurGIS'||title==='添加'">
             <el-button type="primary" @click="addLayer('添加')" plain class="bluePlainBtn1">添加图层</el-button>
             <el-table class="GISLayer" :data="form.ourGISLayerList" style="width: 100%" :show-header="false" border max-height="300">
@@ -38,16 +43,16 @@
               </el-table-column>
             </el-table>
           </el-form-item>
-          <el-form-item label="GIS信息：" required v-if="form.layerType==='3dtiles'">
+          <!-- <el-form-item label="GIS信息：" required v-if="form.layerType==='3dtiles'">
               <el-col :span="7">
                   <el-form-item prop="longitude">
-                      <el-input v-model="form.longitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:4}"></el-input>
+                      <el-input v-model="form.longitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:8}"></el-input>
                   </el-form-item>
               </el-col>
               <el-col class="GISMark" :span="1">°</el-col>
               <el-col :span="7">
                   <el-form-item prop="latitude">
-                      <el-input v-model="form.latitude" placeholder="纬度" v-only-number="{min:-90,max:90,precision:4}"></el-input>
+                      <el-input v-model="form.latitude" placeholder="纬度" v-only-number="{min:-90,max:90,precision:8}"></el-input>
                   </el-form-item>
               </el-col>
               <el-col class="GISMark" :span="1">°</el-col>
@@ -57,7 +62,7 @@
                   </el-form-item>
               </el-col>
               <el-col class="GISMark" :span="1">m</el-col>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="最大并发数：" v-if="title==='编辑'">
             <el-input v-model="form.maxInstance" v-only-number="{min:0,precision:0}" placeholder="请输入"></el-input>
           </el-form-item>
@@ -83,6 +88,7 @@
   </template>
   
   <script>
+  import { gisPluginList } from "./json"
   import { getDict } from "@/api/dict.js"
   import { Getuserid } from '@/store/index.js'
   import { addGISLayerServer, editGISLayerServer } from "@/api/GISList.js"
@@ -93,17 +99,22 @@
     props: {},
     data() {
       return {
+        gisPluginList,
         dialogVisible: false,
         title: "新建",
-        form: {ourGISLayerList:[]},
+        form: {
+            gisPlugin: 'cesium',
+            ourGISLayerList:[]
+        },
         rules: {
           gisServerName: [{ required: true, message: "请输入项目名称", trigger: "blur" }],
           ourGISLayerList: [{ required: true, message: "请添加图层", trigger: "blur" }],
-          gisCoordinateType: [{ required: true, message: "请选择GIS坐标系", trigger: "blur" }],
+          gisPlugin: [{ required: true, message: "请选择服务支持组件", trigger: "blur" }],
+        //   gisCoordinateType: [{ required: true, message: "请选择GIS坐标系", trigger: "blur" }],
         },
         doMouseList:[], //鼠标操作模式
         displayWindowList: [], //窗口显示模式
-        gisCoordinateTypeList: [],//GIS坐标系
+        // gisCoordinateTypeList: [],//GIS坐标系
       };
     },
     watch: {},
@@ -131,11 +142,11 @@
       async getType(){
         this.doMouseList = (await getDict('doMouse')).data
         this.displayWindowList = (await getDict('displayWindow')).data
-        this.gisCoordinateTypeList = (await getDict('gisCoordinateType')).data
+        // this.gisCoordinateTypeList = (await getDict('gisCoordinateType')).data
       },
       //添加、编辑图层
       addLayer(title,row = {},i){
-        this.$refs.DialogsLayser.show(title,{...row,index:i})
+        this.$refs.DialogsLayser.show(title,{...row,index:i}, this.form.gisPlugin)
       },
       // 图层添加到列表里面
       onLayerSuccess(data){
@@ -179,7 +190,8 @@
               let data = {
                   userId:Getuserid(),
                   gisServerName:this.form.gisServerName,
-                  thumbnail:this.form.thumbnail
+                  thumbnail:this.form.thumbnail,
+                  gisPlugin: this.form.gisPlugin
               }
               addGISLayerServer(data,JSON.stringify(this.form.ourGISLayerList)).then(res=>{
                   this.$parent.$parent.getList()

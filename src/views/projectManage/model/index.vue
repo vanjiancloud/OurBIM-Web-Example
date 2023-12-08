@@ -129,29 +129,55 @@
       title="链接模型"
       custom-class="integrate-dialog"
       :visible="linkModelDialog"
-      :width="value == 'GIS' ? '1090px' : '705px'"
+      width="705px"
       @close="closeLinkModel"
     >
-      <div>
-        <template>
-          <el-select v-model="value" :placeholder="value">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-          <el-select v-model="linkGisCoordinateType" placeholder="请选择GIS坐标系" :style="{'margin-left':'132px'}" v-if="value === 'GIS'">
-              <el-option value="WGS-84" label="WGS-84"></el-option>
-              <el-option value="GCJ-02" label="GCJ-02"></el-option>
-              <el-option value="BD-09" label="BD-09"></el-option>
-           </el-select>
-        </template>
-      </div>
-      <br />
-      <div>
+    <el-form :model="FormIntegrate" class="form-integrate" :rules="rulesIntegrate" ref="FormIntegrate" label-width="120px">
+        <div class="flexStart">         
+            <el-form-item label-width="0">
+                <el-select v-model="FormIntegrate.type">
+                    <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="服务支持组件:" prop="gisPlugin" v-if="FormIntegrate.type === 'gis'">
+                <el-select v-model="FormIntegrate.gisPlugin" placeholder="请选择" @change="changeGisPlugin">
+                    <el-option :value="item.key" :label="item.name" v-for="(item,index) in gisPluginList" :key="index" :disabled="item.key==='arcGIS'"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="GIS坐标系:" v-if="FormIntegrate.type === 'gis'">
+                <el-select v-model="FormIntegrate.gisCoordinateType" placeholder="请选择GIS坐标系">
+                    <el-option value="WGS-84" label="WGS-84"></el-option>
+                    <el-option value="GCJ-02" label="GCJ-02"></el-option>
+                    <el-option value="BD-09" label="BD-09"></el-option>
+                </el-select>
+            </el-form-item>
+        </div>
+         
+        <el-form-item label="项目GIS原点:" required v-if="FormIntegrate.type === 'gis'">
+            <el-col :span="7">
+                <el-form-item prop="gisLongitude">
+                    <el-input v-model="FormIntegrate.gisLongitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:8}"></el-input>
+                </el-form-item>
+            </el-col>
+            <el-col class="GISMark" :span="1">°</el-col>
+            <el-col :span="7">
+                <el-form-item prop="gisLatitude">
+                    <el-input v-model="FormIntegrate.gisLatitude" placeholder="纬度" v-only-number="{min:-90,max:90,precision:8}"></el-input>
+                </el-form-item>
+            </el-col>
+            <el-col class="GISMark" :span="1">°</el-col>
+            <el-col :span="7">
+                <el-form-item prop="gisAltitude">
+                    <el-input v-model="FormIntegrate.gisAltitude" placeholder="海拔高度"></el-input>
+                </el-form-item>
+            </el-col>
+            <el-col class="GISMark" :span="1">m</el-col>
+        </el-form-item>
+        <el-form-item label="GIS底图:" prop="gisSuperMapInfo" v-if="FormIntegrate.type === 'gis'">
+            <el-select v-model="FormIntegrate.gisSuperMapInfo" placeholder="请选择" multiple style="width:100%">
+                <el-option :value="item.key" :label="item.name" v-for="(item,index) in mapInfoList" :key="index"></el-option>
+            </el-select>
+        </el-form-item>
         <Transfer
           class="integrate-transfer"
           filterable
@@ -159,7 +185,6 @@
           :titles="['模型', '模型2']"
           v-model="ActiveLinkModel"
           :data="ListLinkModel"
-          :isCustomRight="value === 'GIS'"
           :props="{
             key: 'appid',
             label: 'appName',
@@ -168,7 +193,7 @@
         >
         </Transfer>
         <Transfer
-          v-if="value === 'GIS'"
+          v-if="FormIntegrate.type === 'gis'"
           class="integrate-transfer"
           filterable
           :titles="['GIS数据服务', 'GIS数据服务']"
@@ -181,13 +206,6 @@
           }"
         >
         </Transfer>
-        <el-form
-          :model="FormIntegrate"
-          class="form-integrate"
-          :rules="rulesIntegrate"
-          ref="FormIntegrate"
-          label-width="110px"
-        >
           <el-row>
             <el-col :span="12">
               <el-form-item label="链接模型名称" prop="appName">
@@ -200,8 +218,7 @@
               </el-form-item>
             </el-col>
           </el-row>
-        </el-form>
-      </div>
+    </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="closeLinkModel">取 消</el-button>
         <el-button type="primary" @click="SubmitIntegrate">确 定</el-button>
@@ -242,6 +259,7 @@
 </template>
 
 <script>
+import { gisPluginList, gisSuperMapList } from "@/views/projectManage/GISList/json"
 import {
   getProjectList,
   deleteProject,
@@ -305,30 +323,62 @@ export default {
             callback();
         }
     };
+    const validGisSuperMapInfo = (rule, value, callback) => {
+        if(value && value.length === 1 && value[0] === 'cta'){
+            callback(new Error('天地图地形注记不能单独添加'));
+        }else{
+            callback();
+        }
+    };
     return {
+        gisPluginList,
       isList: true,
-      GISInfo: '',    
-      isGis:'',
-      type:null,
+      GISInfo: '',
       options: [
         {
-          value: "GIS",
+          value: "gis",
           label: "OurGISEngine",
         },
         {
-          value: "BIM",
+          value: "bim",
           label: "OurBIMEngine",
         },
       ],
-      value: "BIM",
       timerFlag: true, //是否开启定时器轮询
       FormIntegrate: {
         appName: null,
+        type:'bim',
+        gisCoordinateType: 'WGS-84',
+        gisPlugin: 'cesium',
+        gisSuperMapInfo: []
       },
       rulesIntegrate: {
         appName: [
           { required: true, message: "请输入链接模型名称", trigger: "blur" },
         ],
+        gisLongitude: [
+            {
+                required: true,
+                message: '请输入经度(-180°~180°)',
+                trigger: 'blur'
+            }
+        ],
+        gisLatitude: [
+            {
+                required: true,
+                message: '请输入纬度(-90°~90°)',
+                trigger: 'blur'
+            }
+        ],
+        gisAltitude: [
+            {
+                required: true,
+                message: '请输入海拔高度',
+                trigger: 'blur'
+            }
+        ],
+        gisPlugin: { required: true, message: '请选择服务支持组件', trigger: 'blur' },
+        gisSuperMapInfo: { required: false, validator: validGisSuperMapInfo, trigger: 'blur' }
       },
       ActiveLinkModel: [],
       ActiveLinkGISModel: [],
@@ -338,7 +388,6 @@ export default {
       allModelData: [], //数据列表
       timer: null, // 模型列表接口请求定时器
       editDialogFormVisible: false,
-      linkGisCoordinateType:'WGS-84', // 链接模型时选择坐标系
       total: 0,
       pages: {
         pageNo: 1,
@@ -375,6 +424,7 @@ export default {
                 }
             ],
         },
+        mapInfoList: []
     }
   },
   computed: {
@@ -387,8 +437,13 @@ export default {
     this.setGetModelListTimer()
     this.getModelList()
     this.getGISProject()
+    this.changeGisPlugin()
   },
   methods: {
+    changeGisPlugin() {
+        this.FormIntegrate.gisSuperMapInfo = []
+        this.mapInfoList = gisSuperMapList.filter(e => { return e.type === this.FormIntegrate.gisPlugin })
+    },
     getGISProject() {
         getGISProjectList({ userId: Getuserid() }).then(res => {
             // 只显示status为2的数据
@@ -455,36 +510,27 @@ export default {
       }
       this.$refs["FormIntegrate"].validate(valid => {
         if (valid) {
-          let gisinfoList = [];
-          const userId = Getuserid();
-          const appName= this.FormIntegrate.appName;
-          if (this.value == "GIS") {
-            this.type = "gis";
-            this.isGis = true;
-            gisinfoList = this.GISInfo.map(item => {
-              const { appid, altitude, latitude, longitude }  = item
-              return { appId: appid, altitude, latitude, longitude }
-            })
-          } else {
-            this.type = "bim";
-            this.isGis = false;
-            gisinfoList = '';
-          }
-          let params = {
-            userId,
-            appName,
-            type : this.type,
-            bimList: this.ActiveLinkModel.join(','),
-            gisInfo: JSON.stringify(gisinfoList),
-            screenImg: this.FormIntegrate.screenImg, // 项目缩略图
-            isGis: this.isGis,
-            gisCoordinateType: this.value ==='BIM' ? 'WGS-84' : this.linkGisCoordinateType,
-          }
-          if (this.ActiveLinkGISModel.length !== 0) {
-            params.gisList = this.ActiveLinkGISModel.join(',')
-          }
-          
-          console.log('参数打印', params)
+            let params = {
+                userId: Getuserid(),
+                appName: this.FormIntegrate.appName,
+                screenImg: this.FormIntegrate.screenImg,
+                bimList: this.ActiveLinkModel.join(','),
+                isGis: this.FormIntegrate.type === 'gis',
+                gisCoordinateType: this.FormIntegrate.type ==='bim' ? 'WGS-84' : this.FormIntegrate.gisCoordinateType,
+            }
+            if (this.FormIntegrate.type === 'gis') {
+                let gisinfoList = this.GISInfo.map(item => {
+                    const { appid, altitude, latitude, longitude }  = item
+                    return { appId: appid, altitude, latitude, longitude }
+                })
+                params = {
+                    ...params,
+                    ...this.FormIntegrate,
+                    gisSuperMapInfo: this.FormIntegrate?.gisSuperMapInfo.join(',') || '',
+                    gisInfo: JSON.stringify(gisinfoList),
+                    gisList: this.ActiveLinkGISModel.join(',')
+                }
+            }
           MODELAPI.ADDINTEGRARE(params).then((res) => {
             if (res.data.code === 0) {
               this.getAllModelList();
