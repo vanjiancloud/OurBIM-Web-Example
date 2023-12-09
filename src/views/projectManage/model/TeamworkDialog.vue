@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { TeamModeApi } from "@/api/projectManage/model.js";
+import { getTeamUrl } from "@/api/projectManage/model.js";
 export default {
   props: {
     appId: {
