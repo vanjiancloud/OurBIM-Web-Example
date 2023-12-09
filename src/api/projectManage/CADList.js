@@ -1,7 +1,7 @@
 // import request from "@/utils/newRequest.js";
 import axios from 'axios'
 
-import config from '../../server.config'
+import config from '/server.config'
 export const cadRequestUrl = config.CAD_REQUEST_URL
 // 新建GIS数据服务
 export function addGISLayerServer(params, data) {

@@ -65,7 +65,7 @@
 <script>
 import { urlToblob } from "@/utils/file.js";
 import { Getuserid } from "@/store/index.js";
-import { getWebUrl } from "@/api/my.js";
+import { getWebUrl } from "@/api/projectManage/model.js";
 export default {
   data() {
     return {
@@ -96,18 +96,13 @@ export default {
         userid: Getuserid()
       })
         .then(res => {
-          if (res.data.code === 0) {
             this.isShow = 2;
-            this.formShare.qrurl = res.data.data.qrurl;
-            this.formShare.webShareUrl = res.data.data.webShareUrl;
-            this.$message.success(res.data.message);
-          } else {
-            this.$message.error(res.data.message);
-          }
+            this.formShare.qrurl = res.data.qrurl;
+            this.formShare.webShareUrl = res.data.webShareUrl;
+            this.$message.success(res.message);
           this.$common.closeLoading();
         })
         .catch(err => {
-          this.$message.error("分享失败,请重新选择");
           this.$common.closeLoading();
           this.hide()
         });

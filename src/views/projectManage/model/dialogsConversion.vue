@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { upgradeModle } from "@/api/my.js";
+import { upgradeModle } from "@/api/projectManage/model.js";
 export default {
     components: {},
     props: {},

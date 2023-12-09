@@ -65,6 +65,7 @@ export default {
                     name: "BIM模型",
                 },
                 {
+                    hidden: !(this.data.isGis && this.$route.query.appType == '3'),
                     name: "GIS数据服务",
                 },
             ],
@@ -90,7 +91,12 @@ export default {
     created() {
         this.appType = this.$route.query.appType
     },
-    mounted() { },
+    mounted() {
+        // if(this.data.isGis){
+        //     this.tabList[1].hidden = true
+        // }
+        console.log('🚀🚀🚀',this.tabList);
+    },
     methods: {
         show() {
             this.$refs.Drawer.show()

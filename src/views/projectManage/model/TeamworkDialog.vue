@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import TeamModeApi from "@/api/team_mode";
+import { TeamModeApi } from "@/api/projectManage/model.js";
 export default {
   props: {
     appId: {
@@ -95,13 +95,9 @@ export default {
       this.loading = true;
       TeamModeApi.getTeamUrl(params).then((res3) => {
         this.loading = false;
-        if (res3.data.code !== 0) {
-          this.$message.error(res3.data.message);
-          return;
-        }
         this.dialogVisible = true;
-        this.teamUrl = res3.data.data.webShareUrl;
-        this.codeImg = res3.data.data.qrurl;
+        this.teamUrl = res3.data.webShareUrl;
+        this.codeImg = res3.data.qrurl;
         this.nickNameReadonly = true;
       });
     },

@@ -37,7 +37,7 @@
   <script>
   import { getDict } from "@/api/dict.js"
   import { Getuserid } from '@/store/index.js'
-  import { addGISLayerServer, updateCADFileInfo } from "@/api/CADList.js"
+  import { addGISLayerServer, updateCADFileInfo } from "@/api/projectManage/CADList.js"
   export default {
     props: {},
     data() {

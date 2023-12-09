@@ -77,7 +77,7 @@
         <!-- (视图) -->
         <viewPhoto ref="viewPhoto" v-show="checkShow('view')" :viewPic="showViewPicture" :setProps="{ taskId }" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
         <!-- 浏览器构件树，构件管理 -->
-        <ComponentTree ref="ComponentTree" v-show="checkShow('browser')" :memberInfo.sync="memberInfo" :data="{ taskId, appId }"/>
+        <ComponentTree ref="ComponentTree" v-show="checkShow('browser')" :memberInfo.sync="memberInfo" :data="{ taskId, appId, isGis }"/>
         <!-- 定位码 -->
         <LocationCode ref="LocationCode" v-show="checkShow('locationCode')" :data="{ taskId, appId }"/>
         <!-- 底部工具栏 -->
@@ -843,7 +843,7 @@ export default {
     initMqtt(){
         const url = new URL(this.$config.VUE_APP_REQUEST_URL);
         var hostname = url.hostname,
-            port = 28083,
+            port = url.protocol === 'https:' ? 28083 : 8083,
             clientId = `mqtt_${Math.random().toString(16).slice(3)}`,
             timeout = 4000,
             keepAlive = 100,

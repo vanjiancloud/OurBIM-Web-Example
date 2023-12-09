@@ -260,13 +260,8 @@
 
 <script>
 import { gisPluginList, gisSuperMapList } from "@/views/projectManage/GISList/json"
-import {
-  getProjectList,
-  deleteProject,
-  getGISProjectList
-} from "@/api/my.js";
-import MODELAPI from "@/api/model_api";
-import { Getuserid } from "@/store/index.js";
+import { getList as getGISProjectList } from "@/api/projectManage/GISList.js";
+import { addCombineApp, getEnterToken, getProjectList, deleteProject } from "@/api/projectManage/model.js";
 import qs from "qs";
 import Pagination from "@/components/Pagination"
 import Share from "./share.vue"
@@ -428,6 +423,9 @@ export default {
     }
   },
   computed: {
+    userId() {
+        return this.$store.state.user.userId
+    },
     uploadingNum() {
       return this.$store.state.uploadingNum
     }
@@ -445,7 +443,7 @@ export default {
         this.mapInfoList = gisSuperMapList.filter(e => { return e.type === this.FormIntegrate.gisPlugin })
     },
     getGISProject() {
-        getGISProjectList({ userId: Getuserid() }).then(res => {
+        getGISProjectList({ userId: this.userId }).then(res => {
             // 只显示status为2的数据
             this.ListLinkGISModel = res.data?.list && res.data.list.filter(item => item.status === '2') || []
         })
@@ -511,7 +509,7 @@ export default {
       this.$refs["FormIntegrate"].validate(valid => {
         if (valid) {
             let params = {
-                userId: Getuserid(),
+                userId: this.userId,
                 appName: this.FormIntegrate.appName,
                 screenImg: this.FormIntegrate.screenImg,
                 bimList: this.ActiveLinkModel.join(','),
@@ -531,18 +529,11 @@ export default {
                     gisList: this.ActiveLinkGISModel.join(',')
                 }
             }
-          MODELAPI.ADDINTEGRARE(params).then((res) => {
-            if (res.data.code === 0) {
+            addCombineApp(params).then((res) => {
               this.getAllModelList();
               this.ActiveLinkModel = [];
               this.$refs["FormIntegrate"].resetFields();
               this.linkModelDialog = false
-            } else {
-              this.$message({
-                message: res.data.message,
-                type: "warning",
-              });
-            }
           });
         } else {
           return false;
@@ -564,16 +555,12 @@ export default {
     // 获取模型列表
     getModelList(){
         getProjectList({
-            userid: Getuserid(),
+            userid: this.userId,
             isHandle: 1,
             appType: 0
         }).then(res => {
-            if (res.data.code === 0) {
-            let resData = res.data.data.list
+            let resData = res.data.list
             this.ListLinkModel = resData.filter(item => item.appType !== '4')
-            } else {
-            this.ListLinkModel = []
-            }
         })
     },
 
@@ -602,22 +589,15 @@ export default {
       const params = {
         pageNo: this.pages.pageNo,
         pageSize: this.pages.pageSize,
-        userid: Getuserid()
+        userid: this.userId
       }
       getProjectList(params).then(res => {
-        if (res.data.code == "0") {
-          this.total = res.data.data.total
-          this.allModelData = res.data.data.list
-        } else if (res.data.code < 0) {
-          this.timerFlag = false
-          this.$message.warning(res.data.message)
-          this.allModelData = []
-        } else {
-          this.allModelData = []
-        }
+        this.total = res.data.total
+        this.allModelData = res.data.list
       })
       .catch((err) => {
-        // this.$message.error('请求失败')
+        this.timerFlag = false
+        this.allModelData = []
       })
     },
 
@@ -647,7 +627,7 @@ export default {
             message: "开始下载",
           });
           let params = {
-            userId: Getuserid(),
+            userId: this.userId,
             appId: row.appid,
           };
           let urlDownload =
@@ -699,19 +679,12 @@ export default {
     del(e) {
       deleteProject({
         appliId: e.appid,
-        userid: Getuserid(),
+        userid: this.userId,
       })
         .then((res) => {
-          if (res.data.code === 0) {
             this.$message.success(res.data.message);
             this.getAllModelList();
-          } else if (res.data.code === 1) {
-            this.$message.warning(res.data.message);
-          }
         })
-        .catch((err) => {
-          this.$message.error("删除失败");
-        });
     },
 
     //进入应用
@@ -720,7 +693,7 @@ export default {
         navigator.userAgent.match(/(iPad)/) ||
         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
       let isMac = /macintosh|mac os x/i.test(navigator.userAgent);
-      MODELAPI.GETBIMTOKEN({
+      getEnterToken({
         appid: e.appid,
       }).then((res) => {
           let query = {
@@ -730,7 +703,7 @@ export default {
             token: res.data.token,
             isGis: e.isGis,  // 用于控制 gis模型  时  渲染环境 图标隐藏
             reserveId: e.reserveId || '', // 有reserveId就是预启动项目 没有就不是
-            userId:Getuserid()
+            userId:this.userId
           };
           if (teamInfo) {
             query.userType = teamInfo.userType;
@@ -768,7 +741,7 @@ export default {
             modelActorLimitNum: this.conversionForm.modelActorLimitNum,
             singleActorLimitNum: this.conversionForm.singleActorLimitNum,
             fileUpload: file,
-            userId: Getuserid(),
+            userId: this.userId,
             url: "/appli/addProject",
             modelActor: this.conversionForm.modelActor,
             singleActor: this.conversionForm.singleActor,

@@ -1,20 +1,6 @@
 // 导入抽取的axios对象
 import request from '../utils/request'
 import newRequest from "@/utils/newRequest.js";
-// 导入字符串转换工具
-import qsStringify from 'qs-stringify'
-
-// 激活账号
-export function activation(data) {
-    const { code } = data
-    return request({
-        url: 'UserCenter/ActiveServlet',
-        method: 'POST',
-        params: {
-            code
-        }
-    })
-}
 
 // 获取邮箱密码登录
 export function login(params) {
@@ -103,98 +89,6 @@ export function updateJudgeMsg(data) {
     })
 }
 
-// 修改密码
-export function updatePassword(data) {
-    const { mobile, code, password } = data
-    return request({
-        url: '/UserCenter/updatePassword',
-        method: 'POST',
-        params: {
-            mobile,
-            code,
-            password
-        }
-    })
-}
-
-// 修改手机号
-export function updatePhone(data) {
-    return request({
-        url: '/UserCenter/updatePhone',
-        method: 'POST',
-        data
-    })
-}
-
-// 新建项目
-export function addProject(data) {
-    return request({
-        url: '/appli/addProject',
-        method: 'POST',
-        data: qsStringify(data)
-    })
-}
-
-// 上传项目模型
-export function ProjectModel(data) {
-    return request({
-        url: '/appli/postProjectModel',
-        method: 'POST',
-        data
-    })
-}
-
-// 获取项目列表
-export function getProjectList(data) {
-    return request({
-        url: '/appli/getApplicationList',
-        method: 'GET',
-        params: data
-    })
-}
-
-// 获取GIS服务列表
-export function getGISProjectList(data) {
-    return newRequest({
-        url: '/appli/getGISLayerList',
-        method: 'GET',
-        params: data
-    })
-}
-export function upgradeModle(params) { // 升级模型
-    return newRequest({
-        url: '/appli/upgradeBIMModel',
-        method: 'POST',
-        params
-    })
-}
-// 分享项目
-export function getWebUrl(data) {
-    return request({
-        url: '/appli/getWebUrl',
-        method: 'POST',
-        params: data
-
-    })
-}
-// 删除项目
-export function deleteProject(data) {
-    return request({
-        url: '/appli/deleteProject',
-        method: 'POST',
-        data: qsStringify(data)
-    })
-}
-
-// 编辑项目
-export function updateProject(params) {
-    return newRequest({
-        url: '/appli/updateProject',
-        method: 'POST',
-        params
-    })
-}
-
 // 获取用户已有信息
 export function getUserInfo(params) {
     return newRequest({
@@ -219,33 +113,6 @@ export function showDetail(data) {
         url: '/CountManager/getCountDetail',
         method: 'GET',
         params: data
-    })
-}
-
-// 获取服务订单数据列表
-export function getOrder(data) {
-    return request({
-        url: '/dingdanManager/searchDingdan',
-        method: 'POST',
-        data: qsStringify(data)
-    })
-}
-
-// 提交授权码
-export function updateSQM(data) {
-    return request({
-        url: '/dingdanManager/updateSQM',
-        method: 'POST',
-        data: qsStringify(data)
-    })
-}
-
-// 验证授权码
-export function verification(data) {
-    return request({
-        url: '/dingdanManager/verification',
-        method: 'POST',
-        data: qsStringify(data)
     })
 }
 

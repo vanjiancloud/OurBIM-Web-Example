@@ -1,6 +1,6 @@
 <template>
     <div class="tab">
-        <div v-for="(item, index) in data" :key="index" class="tab_item" :class="{ acticleTab: (value === index) }" @click="onTab(item, index)">
+        <div v-for="(item, index) in data" :key="index" v-if="!item.hidden" class="tab_item" :class="{ acticleTab: (value === index) }" @click="onTab(item, index)">
             {{ item.name }}
         </div>
     </div>

@@ -15,7 +15,7 @@
           <el-form-item label="项目缩略图：">
             <SingleUpload v-model="form.thumbnail" url="/appli/uploadThumbnail"/>
           </el-form-item>
-          <el-form-item label="服务支持组件：" prop="gisPlugin" v-if="form.layerType==='OurGIS'">
+          <el-form-item label="服务支持组件：" prop="gisPlugin" v-if="form.layerType==='OurGIS'||title==='添加'">
                 <el-select v-model="form.gisPlugin" placeholder="请选择" @change="form.ourGISLayerList = []">
                     <el-option :value="item.key" :label="item.name" v-for="(item,index) in gisPluginList" :key="index" :disabled="item.key==='arcGIS'"></el-option>
                 </el-select>
@@ -91,7 +91,7 @@
   import { gisPluginList } from "./json"
   import { getDict } from "@/api/dict.js"
   import { Getuserid } from '@/store/index.js'
-  import { addGISLayerServer, editGISLayerServer } from "@/api/GISList.js"
+  import { addGISLayerServer, editGISLayerServer } from "@/api/projectManage/GISList.js"
   import SingleUpload from "@/components/Upload/singleUpload.vue"
   import DialogsLayser from "./dialogsLayser.vue"
   export default {

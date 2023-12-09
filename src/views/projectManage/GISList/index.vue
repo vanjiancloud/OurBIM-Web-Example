@@ -132,7 +132,7 @@
 import { gisPluginList, gisLayer } from "./json"
 import { getDict } from "@/api/dict.js"
 import { Getuserid } from "@/store/index.js";
-import { getList, deleteList } from "@/api/GISList.js";
+import { getList, deleteList } from "@/api/projectManage/GISList.js";
 import DialogsProject from "./dialogsProject.vue";
 import DialogsDrag from "@/components/Upload/DialogsDrag.vue";
 import Pagination from "@/components/Pagination";

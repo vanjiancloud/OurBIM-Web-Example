@@ -34,7 +34,7 @@
 
 <script>
 import axios from 'axios'
-import { cadRequestUrl } from "@/api/CADList.js";
+import { cadRequestUrl } from "@/api/projectManage/CADList.js";
 export default {
     components: {},
     props: {

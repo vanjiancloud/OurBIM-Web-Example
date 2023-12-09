@@ -91,7 +91,7 @@
 
 <script>
 import { Getuserid } from "@/store/index.js"
-import { getList, deleteList, downLoadCAD } from "@/api/CADList.js"
+import { getList, deleteList, downLoadCAD } from "@/api/projectManage/CADList.js"
 import DialogsProject from "./dialogsProject.vue"
 import DragUpload from "@/components/Upload/dragUploadCAD.vue"
 import Pagination from "@/components/Pagination"
