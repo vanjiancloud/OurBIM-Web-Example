@@ -93,7 +93,7 @@ export default {
         params.userId = this.$route.query.user;
       }
       this.loading = true;
-      TeamModeApi.getTeamUrl(params).then((res3) => {
+      getTeamUrl(params).then((res3) => {
         this.loading = false;
         this.dialogVisible = true;
         this.teamUrl = res3.data.webShareUrl;
