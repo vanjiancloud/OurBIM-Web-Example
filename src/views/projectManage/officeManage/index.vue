@@ -2,7 +2,7 @@
     <div class="box">
         <div class="boxHeader">
             <div class="boxHeaderTitle">
-                您共有<span>{{ docuList.length }}</span>个项目
+                您共有<span>{{ tableData.length }}</span>个项目
             </div>
             <el-badge :value="uploadDoc" :hidden="!uploadDoc">
                 <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="addDoc">上传文档</el-button>

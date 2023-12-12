@@ -26,7 +26,7 @@
                                 <img src="@/assets/default/material.png"/>
                             </div>
                         </el-image>
-                        <div class="materialReset" @click.stop="resetMaterial(item,index)" v-if="materialAllInfo.matParam && materialAllInfo.matParam.baseParamsList && materialAllInfo.matParam.baseParamsList.length"><i class="el-icon-refresh-right"></i></div>
+                        <div class="materialReset" @click.stop="resetMaterial(item,index)" v-if="materialAllInfo.matParam && materialAllInfo.matParam.baseParamsList && materialAllInfo.matParam.baseParamsList.length && activeMaterialIndex === index"><i class="el-icon-refresh-right"></i></div>
                     </div>
                 </div>
                 <!-- 是否展开和收缩 -->
@@ -67,7 +67,7 @@
                             <div class="materialSlider" :key="index+1" v-else-if="item.label !== '等比缩放' && (((filterTexturesList('等比缩放')==1&&item.label!=='纵向缩放'&&item.label!=='横向缩放') || (filterTexturesList('等比缩放')==0&&item.label!=='缩放')))">
                                 <div>{{ item.label }}</div>
                                 <div class="slider">
-                                    <el-slider @change="onChange(0,$event,index)" v-model="item.paramValue1" :max="Number(item.max)" :min="Number(item.min)" :step="Number(item.min)<=0 ? 0.1 : ((Number(item.min)<=0.01) ? 0.01 : 1)"></el-slider>
+                                    <el-slider @change="onChange(0,$event,index)" v-model="item.paramValue1" :max="Number(item.max)" :min="Number(item.min)" :step="Number(item.max)<=10 ? 0.1 : ((Number(item.min)<=0.01) ? 0.01 : 1)"></el-slider>
                                     <input type="number" v-model.trim.number="item.paramValue" style="width:70px;height: 23px;" @change="updateMaterial()" />
                                     <span v-if="['横向偏移','纵向偏移'].includes(item.label)">mm</span>
                                     <span v-else-if="['角度'].includes(item.label)">°</span>

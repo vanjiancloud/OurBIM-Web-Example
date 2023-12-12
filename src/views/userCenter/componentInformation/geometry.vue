@@ -303,6 +303,28 @@
                         @keydown.native.stop @change="editWebUI()" />
                 </div>
             </div>
+            <!-- 样条线 -->
+            <div class="geometryItem webui" v-if="['矩形样条线', '圆形样条线'].includes(geometryObjForm.name)">
+                <div class="comTitle">样条线设置</div>
+                <div class="webuiItem" v-if="geometryObjForm.name === '矩形样条线'">
+                    <span>宽度：</span>
+                    <el-input class="input" v-model="lineForm.width" v-only-number="{min:0,precision:1}" size="mini" style="width: 85px;"
+                        @keydown.native.stop @change="editLine()" />
+                    <span class="webuiUnit">cm</span>
+                </div>
+                <div class="webuiItem" v-if="geometryObjForm.name === '矩形样条线'">
+                    <span>高度：</span>
+                    <el-input class="input" v-model="lineForm.height" v-only-number="{min:0,precision:1}" size="mini" style="width: 85px;"
+                        @keydown.native.stop @change="editLine()" />
+                    <span class="webuiUnit">cm</span>
+                </div>
+                <div class="webuiItem" v-if="geometryObjForm.name === '圆形样条线'">
+                    <span>半径：</span>
+                    <el-input class="input" v-model="lineForm.radius" v-only-number="{min:0,precision:1}" size="mini" style="width: 85px;"
+                        @keydown.native.stop @change="editLine()" />
+                    <span class="webuiUnit">cm</span>
+                </div>
+            </div>
             <!-- 参数化尺寸参数 -->
             <!-- <div class="parameter geometryItem">
                     <div class="comTitle"><img src="@/assets/images/component/title2.png"/>参数化尺寸参数</div>
@@ -573,6 +595,12 @@ export default {
                 width:'',
                 height:'',
                 url:''
+            },
+            // 样条线
+            lineForm: {
+                width: '10',
+                height: '10',
+                radius: '10'
             }
         };
     },
@@ -586,6 +614,7 @@ export default {
                 this.splashDamForm = this.$options.data().splashDamForm
                 this.fountainForm = this.$options.data().fountainForm
                 this.webuiForm = this.$options.data().webuiForm
+                this.lineForm = this.$options.data().lineForm
             }
             if(!val||val.id!=='1'){
                 return
@@ -599,10 +628,10 @@ export default {
                     if(['id','name','lightType'].includes(e.key)){
                         this.geometryObjForm[e.key] = e.value
                     }
-                    // 坐标
-                    if(e.key==='location'){
+                    // 坐标;比例,缩放
+                    if(e.key==='location' || e.key==='scale'){
                         let value = e.value.split(' ')
-                        this.geometryObjForm.location = {
+                        this.geometryObjForm[e.key] = {
                             x: value[0].split('=')[1],
                             y: value[1].split('=')[1],
                             z: value[2].split('=')[1]
@@ -616,19 +645,6 @@ export default {
                             y: value[1].split('=')[1],
                             r: value[2].split('=')[1]
                         }
-                    }
-                    //比例,缩放
-                    if(e.key==='scale'){
-                        let value = e.value.split(' ')
-                        this.geometryObjForm.scale = {
-                            x: value[0].split('=')[1],
-                            y: value[1].split('=')[1],
-                            z: value[2].split('=')[1]
-                        }
-                    }
-                    // 灯光开关
-                    if(e.key === 'affectsWorld'){
-                        this.geometryObjForm.affectsWorld = e.value
                     }
                     // 阴影开关,灯光开关,反射开关,反射源类型
                     if(['castShadow','affectsWorld','visiableOfReflection','reflectionSourceType'].includes(e.key)){
@@ -689,6 +705,10 @@ export default {
                         }else{
                             this.findParams(this.webuiForm,e)
                         }
+                    }
+                    // 样条线
+                    if(this.lineForm.hasOwnProperty(e.name)){
+                        this.findParams(this.lineForm,e)
                     }
                 })
                 this.$forceUpdate()
@@ -862,6 +882,27 @@ export default {
                 type:5,
                 ...this.webuiForm,
                 bgColor: this.formatColor(this.webuiForm.bgColor) && this.formatColor(this.webuiForm.bgColor).split(',')
+            }
+            this.editComApi(data)
+        },
+        // 样条线修改
+        editLine(){
+            let data = {
+                type: 6
+            }
+            if(this.geometryObjForm.name === '矩形样条线'){
+                data = {
+                    ...data,
+                    meshType: 'rectangle',
+                    width: this.lineForm.width,
+                    height: this.lineForm.height
+                }
+            }else{
+                data = {
+                    ...data,
+                    meshType: 'circle',
+                    radius: this.lineForm.radius
+                }
             }
             this.editComApi(data)
         }
