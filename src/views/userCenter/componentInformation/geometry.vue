@@ -324,6 +324,30 @@
                         @keydown.native.stop @change="editLine()" />
                     <span class="webuiUnit">cm</span>
                 </div>
+                <div class="coordinate">
+                    <div class="coordinateTitle">开始点位置：</div>
+                    <div class="coordinateItemInput">
+                        X<el-input-number v-model="lineForm.beginLocation.x" controls-position="right" size="mini"
+                            @keydown.native.stop @change="editLine()" />
+                        Y<el-input-number v-model="lineForm.beginLocation.y" controls-position="right" size="mini"
+                            @keydown.native.stop @change="editLine()" />
+                        Z<el-input-number v-model="lineForm.beginLocation.z" controls-position="right" size="mini"
+                            @keydown.native.stop @change="editLine()" />
+                        <i class="el-icon-refresh-right"></i>
+                    </div>
+                </div>
+                <div class="coordinate">
+                    <div class="coordinateTitle">结束点位置：</div>
+                    <div class="coordinateItemInput">
+                        X<el-input-number v-model="lineForm.endLocation.x" controls-position="right" size="mini"
+                            @keydown.native.stop @change="editLine()" />
+                        Y<el-input-number v-model="lineForm.endLocation.y" controls-position="right" size="mini"
+                            @keydown.native.stop @change="editLine()" />
+                        Z<el-input-number v-model="lineForm.endLocation.z" controls-position="right" size="mini"
+                            @keydown.native.stop @change="editLine()" />
+                        <i class="el-icon-refresh-right"></i>
+                    </div>
+                </div>
             </div>
             <!-- 参数化尺寸参数 -->
             <!-- <div class="parameter geometryItem">
@@ -600,7 +624,19 @@ export default {
             lineForm: {
                 width: '10',
                 height: '10',
-                radius: '10'
+                radius: '10',
+                '开始点坐标': '',
+                '结束点坐标': '',
+                beginLocation: {
+                    x:'',
+                    y:'',
+                    z:''
+                },
+                endLocation: {
+                    x:'',
+                    y:'',
+                    z:''
+                },
             }
         };
     },
@@ -708,7 +744,25 @@ export default {
                     }
                     // 样条线
                     if(this.lineForm.hasOwnProperty(e.name)){
-                        this.findParams(this.lineForm,e)
+                        if(e.name === '开始点坐标'){
+                            let value = e.value.split(' ')
+                            this.lineForm.beginLocation.x = value[0].split('=')[1]
+                            this.lineForm.beginLocation.y = value[1].split('=')[1]
+                            this.lineForm.beginLocation.z = value[2].split('=')[1]
+                            // this.$set(this.lineForm, 'beginLngAndLatX', value[0].split('=')[1])
+                            // this.$set(this.lineForm, 'beginLngAndLatY', value[1].split('=')[1])
+                            // this.$set(this.lineForm, 'beginLngAndLatZ', value[2].split('=')[1])
+                        } else if(e.name === '结束点坐标'){
+                            let value = e.value.split(' ')
+                            this.lineForm.endLocation.x = value[0].split('=')[1]
+                            this.lineForm.endLocation.y = value[1].split('=')[1]
+                            this.lineForm.endLocation.z = value[2].split('=')[1]
+                            // this.$set(this.lineForm, 'endLngAndLatX', value[0].split('=')[1])
+                            // this.$set(this.lineForm, 'endLngAndLatY', value[1].split('=')[1])
+                            // this.$set(this.lineForm, 'endLngAndLatZ', value[2].split('=')[1])
+                        }else{
+                            this.findParams(this.lineForm,e)
+                        }
                     }
                 })
                 this.$forceUpdate()
@@ -887,6 +941,7 @@ export default {
         },
         // 样条线修改
         editLine(){
+            let { width, height, radius, beginLocation, endLocation } = this.lineForm 
             let data = {
                 type: 6
             }
@@ -894,14 +949,16 @@ export default {
                 data = {
                     ...data,
                     meshType: 'rectangle',
-                    width: this.lineForm.width,
-                    height: this.lineForm.height
+                    width,
+                    height,
+                    beginLocation, endLocation
                 }
             }else{
                 data = {
                     ...data,
                     meshType: 'circle',
-                    radius: this.lineForm.radius
+                    radius,
+                    beginLocation, endLocation
                 }
             }
             this.editComApi(data)
