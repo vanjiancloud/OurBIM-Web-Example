@@ -55,7 +55,7 @@ export default {
         changeMaterial(matId){
             let params = {
                 taskId: this.data.taskId,
-                appId: this.$parent.$parent.findPakId(),
+                appId: this.$parent.$parent.findPakId() || this.data.appId,
                 matId,
                 isPublic: false,
                 isUpdateSameMaterial: false,

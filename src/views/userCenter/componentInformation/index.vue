@@ -300,7 +300,7 @@ export default {
         updateMaterial(){
             let params = {
                 taskId:this.data.taskId,
-                appId: this.$parent.pakidToAppid(this.componentAllInfo.pakId),
+                appId: this.$parent.pakidToAppid(this.componentAllInfo.pakId) || this.data.appId,
                 // baseColorTextureId:'',
                 // normalMapTextureId:''
             }
@@ -348,7 +348,7 @@ export default {
             }).then(() => {
                 let params = {
                     taskId:this.data.taskId,
-                    appId: this.$parent.pakidToAppid(this.componentAllInfo.pakId),
+                    appId: this.$parent.pakidToAppid(this.componentAllInfo.pakId) || this.data.appId,
                     matId:item.matId,
                     isPublic: false
                 }

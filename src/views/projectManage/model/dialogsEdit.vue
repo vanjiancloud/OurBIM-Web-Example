@@ -21,7 +21,7 @@
                 </el-select>
             </el-form-item>
             <div class="flexStart">          
-                <el-form-item label="服务支持组件:" prop="gisPlugin" v-if="form.isGis === 'true' && form.appType === '3'">
+                <el-form-item label="服务支持组件:" prop="gisPlugin" v-if="form.isGis === 'true'">
                     <el-select v-model="form.gisPlugin" placeholder="请选择" @change="changeGisPlugin">
                         <el-option :value="item.key" :label="item.name" v-for="(item,index) in gisPluginList" :key="index" :disabled="item.key==='arcGIS'"></el-option>
                     </el-select>
@@ -34,7 +34,7 @@
                     </el-select>
                 </el-form-item>
             </div>
-            <el-form-item label="GIS底图:" prop="gisSuperMapInfo" v-if="form.isGis === 'true' && form.appType === '3'">
+            <el-form-item label="GIS底图:" prop="gisSuperMapInfo" v-if="form.isGis === 'true'">
                 <el-select v-model="form.gisSuperMapInfo" placeholder="请选择" multiple style="width:100%">
                     <el-option :value="item.key" :label="item.name" v-for="(item,index) in mapInfoList" :key="index"></el-option>
                 </el-select>
@@ -100,7 +100,7 @@
                     </div>
                 </el-card>
             </el-form-item>
-            <el-form-item label="链接GIS数据服务：" v-if="form.isGis === 'true' && form.appType === '3'">
+            <el-form-item label="链接GIS数据服务：" v-if="form.isGis === 'true'">
                 <el-card class="box-card">
                     <div v-for="(value, key) in form.gisServerMap" class="flexBetween" :key="key">
                         <el-tooltip class="item" effect="dark" :content="value" placement="top">
