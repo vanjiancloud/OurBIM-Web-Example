@@ -69,8 +69,7 @@
                                 <div class="slider">
                                     <el-slider @change="onChange(0,$event,index)" v-model="item.paramValue1" :max="Number(item.max)" :min="Number(item.min)" :step="Number(item.max)<=10 ? 0.1 : ((Number(item.min)<=0.01) ? 0.01 : 1)"></el-slider>
                                     <input type="number" v-model.trim.number="item.paramValue" style="width:70px;height: 23px;" @change="updateMaterial()" />
-                                    <span v-if="['横向偏移','纵向偏移'].includes(item.label)">mm</span>
-                                    <span v-else-if="['角度'].includes(item.label)">°</span>
+                                    <span v-if="['角度'].includes(item.label)">°</span>
                                     <span v-else></span>
                                 </div>
                             </div>
@@ -104,8 +103,7 @@ import { getMaterialByMatId, resetMaterial, updateMaterial } from "@/api/userCen
 import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";
 import Tab from "@/components/Tab/index.vue";
-import Geometry from "./geometry.vue";
-import { Getuserid } from "@/store/index.js"; 
+import Geometry from "./geometry.vue"; 
 export default {
     components: { Tab, Drawer, Geometry },
     props: {

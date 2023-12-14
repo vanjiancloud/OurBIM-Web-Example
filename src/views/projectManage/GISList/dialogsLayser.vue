@@ -71,7 +71,7 @@ export default {
                         required: true,
                         message: '请输入正确的图层地址',
                         trigger: 'blur',
-                        pattern: /^(http(s)?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w-.\/?%&=]*)?$/, 
+                        pattern: /^http(s)?:\/\/[^\s]*/, 
                     }
                 ],
                 // longitude: [

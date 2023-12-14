@@ -67,7 +67,7 @@
         <!-- 资源库 -->
         <ResourcePool ref="ResourcePool" :data="{ taskId, userId, selectPark, materialData, pakIdMapweb }" v-show="checkShow('resource')"/>
         <!-- 构件信息 -->
-        <ComponentInformation ref="ComponentInformation" :data="{ taskId, memberInfo, materialData, pakIdMapweb, selectPark }" v-show="checkShow('componentInformation')"/>
+        <ComponentInformation ref="ComponentInformation" :data="{ taskId, memberInfo, materialData, pakIdMapweb, selectPark, isGis }" v-show="checkShow('componentInformation')"/>
         <!-- 天气 -->
         <Weather ref="Weather" :data="{ taskId, appId }" v-show="checkShow('renderingEnvironment')"/>
         <!-- 标签 -->
@@ -94,6 +94,7 @@ import { mapGetters } from 'vuex'
 import Drawer from '@/components/Drawer/index.vue'
 import { getProccess, preloadStart, doAction, setGizmoMode, getPakIdByAppId } from "@/api/userCenter/index";
 import { lockControl } from "@/api/userCenter/componentManage.js";
+import { requestGisServer } from "@/api/projectManage/GISList.js";
 import MODELAPI from "@/api/model_api";
 import viewCube from "@/components/web_client/view_cube";
 import roamNavigate from "@/components/web_client/roam_navigate";
@@ -1019,6 +1020,16 @@ export default {
     getModelUrl() {
       let appId = this.$route.query.appid;
       let size = this.handleWindowSize(true)
+        if(this.$route.query.gisList){
+            requestGisServer({gisId: appId, resX: size.width, resY: size.height}).then(res=>{
+                this.webUrl = res.data.url;
+                this.taskId = res.data.taskId;
+                this.initWebSocket();
+                this.controllerInfo.uiBar = false;
+                this.controllerInfo.viewCube = false;
+            })
+            return
+        }
       let params = {
         appliId: appId,
         token: this.$route.query.token,

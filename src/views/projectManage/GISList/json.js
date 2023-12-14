@@ -25,7 +25,7 @@ export const gisLayer = [
         name: '3DTiles'
     },
     {
-        type: 'supermap',
+        type: 'cesium',
         key: 'WMTS',
         name: 'WMTS'
     },

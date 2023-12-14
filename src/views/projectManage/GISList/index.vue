@@ -306,8 +306,8 @@ export default {
             }).catch(() => {});
         },
         toProject(row){
-            this.$message.info('功能未实现')
-            console.log('🚀🚀🚀',row);
+            let path = this.$router.resolve({ path: "/web_client", query: { appid: row.gisId, userId: row.userId, gisList:true, isGis: true }})
+            window.open(path.href);
         }
     },
 };

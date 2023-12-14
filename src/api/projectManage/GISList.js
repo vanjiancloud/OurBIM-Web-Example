@@ -42,3 +42,13 @@ export function deleteList(params) {
         params
     })
 }
+
+// 获取地址
+export function requestGisServer(data) {
+    return request({
+        url: '/appli/requestGisServer',
+        method: 'post',
+        data
+    })
+}
+

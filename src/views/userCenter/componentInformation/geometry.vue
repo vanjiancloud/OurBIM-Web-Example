@@ -943,22 +943,39 @@ export default {
         editLine(){
             let { width, height, radius, beginLocation, endLocation } = this.lineForm 
             let data = {
-                type: 6
+                type: 6,
+                beginLocation,
+                endLocation
             }
+            // if(this.data.isGis){
+            //     data = {
+            //         ...data,
+            //         beginLngAndLatX: beginLocation.x,
+            //         beginLngAndLatY: beginLocation.y,
+            //         beginLngAndLatZ: beginLocation.z,
+            //         endLngAndLatX: endLocation.x,  
+            //         endLngAndLatY: endLocation.y,   
+            //         endLngAndLatZ: endLocation.z
+            //     }
+            // }else{
+            //     data = {
+            //         ...data,
+            //         beginLocation,
+            //         endLocation
+            //     }
+            // }
             if(this.geometryObjForm.name === '矩形样条线'){
                 data = {
                     ...data,
                     meshType: 'rectangle',
                     width,
-                    height,
-                    beginLocation, endLocation
+                    height
                 }
             }else{
                 data = {
                     ...data,
                     meshType: 'circle',
-                    radius,
-                    beginLocation, endLocation
+                    radius
                 }
             }
             this.editComApi(data)
