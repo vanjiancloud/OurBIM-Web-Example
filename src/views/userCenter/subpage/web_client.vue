@@ -230,7 +230,7 @@ export default {
   mounted() {
     this.setTimeLoad();
     this.addMessageEvent();
-    if(this.$route.query.gisList){
+    if(!this.$route.query.gisList){
         this.getLinkModelAppid(); // 获取appid
     }
   },
