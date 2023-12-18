@@ -1,4 +1,5 @@
 import request from "@/utils/newRequest.js";
+import config from '../../../server.config'
 
 // 获取流程文字
 export function getProccess(params) {
@@ -97,4 +98,27 @@ export function getPakIdByAppId(params) {
         method: 'get',
         params
     })
+}
+
+export function requestOurBim(params) {
+    return request({
+        url: '/OurBim/testRequestOurBim',
+        method: 'POST',
+        params
+    })
+}
+
+// 获取流
+export function doRequestOurBimStream(data) {
+    return request({
+        url: '/OurBim/doRequestOurBimStream',
+        method: 'post',
+        data
+    })
+}
+
+// 建立websocket通信
+let WSBASEURL = config.VUE_APP_REQUEST_URL.replace('http://', 'ws://').replace('https://', 'wss://');
+export function connectWebsocket(params) {
+    return `${WSBASEURL}/websocket/${params}`
 }

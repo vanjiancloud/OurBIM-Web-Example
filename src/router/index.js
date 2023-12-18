@@ -211,6 +211,17 @@ const routes = [
         },
         hidden: true
     },
+    // 流页面
+    {
+        path: '/stream',
+        name: 'stream',
+        component: () =>
+            import ('../views/userCenter/subpage/stream.vue'),
+        meta: {
+            title: '应用详情'
+        },
+        hidden: true
+    },
 ]
 
 
@@ -235,7 +246,8 @@ router.beforeEach(function(to, from, next) {
             to.path !== '/protocol' &&
             to.path !== '/registerSucceed' &&
             to.path !== '/web_client' &&
-            to.path !== '/'
+            to.path !== '/' &&
+            to.path !== '/stream'
         ) {
             next('/login')
         } else {

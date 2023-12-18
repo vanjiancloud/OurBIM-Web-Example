@@ -7,23 +7,36 @@
 -->
 <template>
   <div class="bim-main">
-    <iframe allowfullscreen="true" :class="{'phone-bim':isMobile()}" v-if="webUrl" :src="webUrl" frameborder="0" id="show-bim"/>
+    <iframe
+      allowfullscreen="true"
+      :class="{'phone-bim':isMobile()}"
+      v-if="webUrl"
+      :src="webUrl"
+      frameborder="0"
+      id="show-bim"
+    ></iframe>
     <!-- 遮罩层 -->
-    <div class="hidden-bim" v-if="mask" :style="{background:`#000000 url(${logoImg.startUpBkgImg}) no-repeat center`}">
+    <div class="hidden-bim" v-if="isFade">
+      <div class="hidden-bim" :style="{background:`#000000 url(${logoImg.startUpBkgImg}) no-repeat center`}">
         <img :src="logoImg.startUpLogo" class="show-loading" alt="" />
         <div class="hidden-text">{{ baseExceptMessge }}</div>
+      </div>
+
+      <div class="proccessText" v-if="loadingProccessArr.length && baseExceptMessge === exceptionMessge[0]">
+        {{ loadingProccessArr[loadingProccess].text }} ({{loadingProccess+1}}/{{loadingProccessArr.length || 5}})
+      </div>
     </div>
     
     <div v-if="!isMobile()">      
       <transition name="el-fade-in-linear">
         <progress-bar
-          v-if="isProgress && propsProgress.data < 100"
+          v-if="isProgress"
           :propsProgress="propsProgress"
         ></progress-bar>
       </transition>
       <!-- 右上角 -->
       <view-cube
-        v-if="controllerInfo.viewCube&&controllerInfo.tagUiBar && !isFade"
+        v-if="controllerInfo.viewCube&&controllerInfo.tagUiBar"
         :userType="userType"
         @handleOrder="handleOrder"
         @goFront="goFront"
@@ -78,8 +91,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Drawer from '@/components/Drawer/index.vue'
-import { doAction, setGizmoMode, getPakIdByAppId, requestOurBim, connectWebsocket } from "@/api/userCenter/index";
-import { getLogo } from '@/api/server/parameter'
+import { getProccess, preloadStart, doAction, setGizmoMode, getPakIdByAppId, requestOurBim, connectWebsocket } from "@/api/userCenter/index";
 import { lockControl } from "@/api/userCenter/componentManage.js";
 import { requestGisServer } from "@/api/projectManage/GISList.js";
 import viewCube from "@/components/web_client/view_cube";
@@ -99,10 +111,13 @@ import LocationCode from "../locationCode/index.vue"; //定位码
 import Tool from "../Tool/index.vue"; //底部工具栏
 import DialogScale from "@/views/userCenter/resourcePool/DialogScale.vue"; //设置比例尺弹窗
 import { EventBus } from '@/utils/bus.js'
+require('@/utils/mqttws31.min.js')
+import { getLogo } from '@/api/server/parameter'
 import OperatingTools from "@/components/OperatingTools";
 
 export default {
   name: "look_app",
+  layout: "reset",
   components: {
     viewCube,
     progressBar,
@@ -124,12 +139,23 @@ export default {
   },
   data() {
     return {
-        mask:true,
-        logoImg:{
-            startUpLogo: require('@/assets/images/logo/logo.png'),
-            startUpBkgImg: require('@/assets/images/logo/loading.png')
-        },
-        baseExceptMessge: "环境加载中…",
+      logoImg:{
+        startUpLogo: require('@/assets/images/logo/logo.png'),
+        startUpBkgImg: require('@/assets/images/logo/loading.png')
+      },
+        // 加载流程
+      loadingProccess:0,
+      loadingProccessArr:[{
+        status: "success",
+        text: "准备统一权限认证"
+      }],
+    //   异常提示
+      exceptionMessge:[
+        "环境加载中…",
+        "长时间未交互，已自动断开，刷新即可重连",
+        "模型长时间未响应，请刷新重试"
+      ],
+      baseExceptMessge: "环境加载中…",
       userId: '',
       activeToolArr: [],//工具栏打开的内容
       isGis: false,
@@ -139,7 +165,7 @@ export default {
         data: 0,
       },
 
-      isProgress: false,
+      isProgress: true,
     //   uiBar： ，viewCube：导航里的viewCube，tagUiBar：底部栏显示隐藏，
       controllerInfo: {
         uiBar: true,
@@ -172,6 +198,7 @@ export default {
       copyingPictures: {},//临摹图信息
       client: null, //mqtt
       showOperatingTools: false,//是否打开操作轴
+      preload:false,//是否是预启动
     };
   },
   computed: {
@@ -179,9 +206,11 @@ export default {
   },
   watch: {},
   created() {
+    this.userId = this.$route.query.userId || Getuserid() || 'travels'
     this.getLogo("startUpLogo")
     this.getLogo("startUpBkgImg")
-    this.userId = this.$route.query.userId || Getuserid() || 'travels'
+    this.unLoad()
+    this.initMqtt()
     this.appId = this.$route.query.appid;
     this.isUiBar =
       this.$route.query.uibar === undefined || this.$route.query.uibar === true
@@ -190,12 +219,12 @@ export default {
       // 如果是云应用就去掉遮罩层和操作栏以及加载进度---
       if(this.$route.query.appType === '5'){
         this.isFade = false;
+        this.isProgress =false;
       }
 
     // appType  0:普通模型(isGis: GIS模型)   1:漫游模型   3:链接模型(isGis: GIS链接模型)  4:示例模型    5:云应用
     this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
-    this.getModelUrl()
-    },
+  },
   mounted() {
     this.setTimeLoad();
     this.addMessageEvent();
@@ -203,37 +232,17 @@ export default {
   },
   destroyed(){
     console.log('🚀🚀🚀destroyed------------');
+    this.sendMqtt()
     this.clearTimePass();
     this.closeWebSocket();
   },
   deactivated(){
     console.log('🚀🚀🚀deactivated------------');
+    this.sendMqtt()
     this.clearTimePass();
     this.closeWebSocket();
   },
   methods: {
-    // 获取中logo
-    getLogo(type){
-        let url = `${this.$config.VUE_APP_REQUEST_URL}/cloudServiceImg/downloadImg?userId=${this.$store.state.user.userId}&type=${type}&time=${new Date().getTime()}`
-        let data = {
-            userId: this.$store.state.user.userId,
-            type
-        }
-        getLogo(data).then(res=>{
-            if(res.message === "用户已上传图片"){
-                this.$set(this.logoImg, type, url)
-            }else{
-                this.$set(this.logoImg, type, this.$options.data().logoImg[type])
-            }
-        })
-    },
-    // 监听ifrmae
-    listenerIframe(){
-        this.$nextTick(() => {
-            const iframe = document.getElementById('show-bim')
-            iframe.addEventListener('load', ()=>{ this.mask = false }, true)
-        })
-    },
     // 是否打开操作轴
     openOperatingTools(e){
         this.showOperatingTools = e
@@ -251,6 +260,21 @@ export default {
                 this.$refs.OperatingTools.checkOprate({gizmoMode:'translate'})
             }
         });
+    },
+    // 获取中logo
+    getLogo(type){
+        let url = `${this.$config.VUE_APP_REQUEST_URL}/cloudServiceImg/downloadImg?userId=${this.$store.state.user.userId}&type=${type}&time=${new Date().getTime()}`
+        let data = {
+            userId: this.$store.state.user.userId,
+            type
+        }
+        getLogo(data).then(res=>{
+            if(res.message === "用户已上传图片"){
+                this.$set(this.logoImg, type, url)
+            }else{
+                this.$set(this.logoImg, type, this.$options.data().logoImg[type])
+            }
+        })
     },
     // 点击底部工具栏后操作
     toolSuccess(e){
@@ -372,7 +396,7 @@ export default {
                 let errType = [0,1].includes(res.type)
                 if(errType){
                     this.closeWebSocket();
-                    this.mask = true;
+                    this.isFade = true;
                     this.baseExceptMessge = res.message
                 }
             }
@@ -555,12 +579,24 @@ export default {
     },
     initWebSocket() {
       //初始化weosocket
+      /**
+       * @Author: zk
+       * @Date: 2021-02-24 13:42:13
+       * @description: 初始化socket通信
+       * 1 单击构件
+       * 2.场景部分加载
+       * 3 返回关注视角
+       * 4 返回主视图信息
+       * 5 多选构件
+       * 6 启动事件
+       * 7 点击空白
+       * 8 初始化成功 加载进度
+       */
       const wsuri = connectWebsocket(this.taskId);
       this.websock = new WebSocket(wsuri);
       this.websock.onmessage = (e) => {
         if (e.data.length > 20) {
           this.isFade = false
-          this.isProgress = true;
           let realData = JSON.parse(e.data);
           // 添加外部网站和ourbim的全部通信，有些为了兼容之前的使用请不要删除其他的通信
           let allInfo = {
@@ -599,7 +635,8 @@ export default {
             // 多选构件
             this.sentParentIframe({ prex: "ourbimMessage", type: 20002, data: "", message: "" });
           } else if(realData.id === "6"){
-            this.sendToIframe(10200,'false');
+            this.isFade = false
+            this.sendToIframe(10200,'false',"");
           } 
           else if (realData.id === "7") {
             // 点击空白地方初始化
@@ -609,7 +646,7 @@ export default {
             this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {} })
             this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: {} })
           } else if (realData.id === "8") {
-            this.sendToIframe(10200,'false');
+            this.sendToIframe(10200,'false',"");
             // 加载过程
             let messageInfo = {
               prex: "ourbimMessage",
@@ -620,7 +657,7 @@ export default {
               message: "",
             };
             this.sentParentIframe(messageInfo);
-            // this.baseExceptMessge = this.exceptionMessge[0]
+            this.baseExceptMessge = this.exceptionMessge[0]
             const progress = Number(
               String(Number(realData.progress) * 100).substring(0, 3)
             );
@@ -630,7 +667,8 @@ export default {
               this.propsProgress.data < 100
             ) {
               this.propsProgress.data = progress;
-              // id为8的时候进度条大于0就隐藏第一层遮罩层           
+              // id为8的时候进度条大于0就隐藏第一层遮罩层
+              this.isFade = false               
               if (progress === 100) {
                 // 定位主视图
                 setTimeout(() => {
@@ -642,7 +680,11 @@ export default {
               this.limitZoomSpeed();
               // 加载完成
               this.listenWindowSize();
-              this.isProgress = false;
+              let noneTimer = setTimeout(() => {
+                this.isProgress = false;
+                clearTimeout(noneTimer);
+              }, 1000);
+              this.getMonitor();
             }
           } else if (realData.id === "9") {
             let messageInfo = {
@@ -794,6 +836,114 @@ export default {
       };
       this.websock.onerror = (e) => {};
     },
+    /*
+      注释中所提到的后台即为发布端/订阅端
+    */
+    initMqtt(){
+        const url = new URL(this.$config.VUE_APP_REQUEST_URL);
+        var hostname = url.hostname,
+            port = url.protocol === 'https:' ? 28083 : 8083,
+            clientId = `mqtt_${Math.random().toString(16).slice(3)}`,
+            timeout = 4000,
+            keepAlive = 100,
+            cleanSession = false,
+            ssl = url.protocol === 'https:';
+        this.client = new Paho.MQTT.Client(hostname, port, clientId);
+        var options = {
+            invocationContext: {
+                host: hostname,
+                port: port,
+                path: this.client.path,
+                clientId: clientId
+            },
+            timeout: timeout,
+            keepAliveInterval: keepAlive,
+            cleanSession: cleanSession,
+            useSSL: ssl,
+            userName: "vanjian",  
+            password: "vanjian666",  
+            onSuccess: (e) => {
+                this.client.subscribe(`terminal/${this.$route.query.token}`);
+                this.$nextTick(()=>{
+                    this.getModelUrl();
+                })
+            },
+            onFailure: (e) => {
+                console.log("onFailure",e);
+            }
+        };
+        this.client.connect(options);
+
+        // 注册消息接收处理事件
+        this.client.onConnectionLost = (responseObject)=> {
+            if (responseObject.errorCode !== 0) {
+                console.log("onConnectionLost:" + responseObject.errorMessage);
+                console.log("连接已断开");
+            }
+        };
+        //注册连接断开处理事件  
+        this.client.onMessageArrived = (message)=> {
+            switch (message.destinationName) {
+                case `terminal/${this.$route.query.token}`:
+                    let res = JSON.parse(message.payloadString)
+                    if(res.taskId){
+                        this.taskId = res.taskId
+                        this.getProccess()
+                    }
+                    break;
+                case `preloadEnd/${this.taskId}`:
+                    // 关闭视频流
+                    this.sendToIframe(10400,true);
+                    break;
+            
+                default:
+                    break;
+            }
+        };
+    },
+    // 发送关闭进程消息到mqtt
+    sendMqtt() {
+        if(!this.taskId) return
+        if(this.preType){
+            // 预启动关闭
+            this.closePre()
+            return
+        }
+        let mess = `task/${this.taskId}/js/close`
+        var message = new Paho.MQTT.Message(JSON.stringify({timestamp:new Date().getTime()}));
+        message.destinationName = mess;
+        message.qos=0;
+        this.client.send(message);
+        this.closeProgress()
+    },
+    // 关闭预启动
+    closePre(){
+        fetch(`${this.$config.VUE_APP_REQUEST_URL}/cloudServicePreStart/preloadClose?taskId=${this.taskId}`, {
+            method: 'POST',
+            keepalive: true
+        });
+    },
+    // 关闭普通模型
+    closeProgress(){
+        fetch(`${this.$config.VUE_APP_REQUEST_URL}/cloudServiceProcess/endProgressBrow?taskId=${this.taskId}`, {
+            method: 'POST',
+            keepalive: true
+        });
+    },
+    // 监听刷新浏览器
+    unLoad(){
+        window.addEventListener('beforeunload', (event)=> {
+            this.sendMqtt()
+        });
+        window.addEventListener('unload', (event)=> {
+            this.sendMqtt()
+        });
+        if (this.isMobile()) {
+            window.addEventListener('pagehide', ()=> {
+                this.sendMqtt()
+            });
+        }
+    },
     limitZoomSpeed() {
       // 限制缩放速度
       if (this.isMobile()) {
@@ -818,10 +968,9 @@ export default {
         wx.miniProgram.getEnv((res) => {
           if (res.miniprogram) {
             this.isFade = true;
-            this.baseExceptMessge = '长时间未交互，已自动断开，刷新即可重连'
+            this.baseExceptMessge = this.exceptionMessge[1]
             this.clearTimePass();
             this.closeWebSocket();
-            this.sendToIframe()
           }
         });
       }
@@ -838,6 +987,33 @@ export default {
         clearTimeout(loadTimer);
       }, e);
     },
+    // 获取流程文字
+    getProccess(){
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        let count = 0;//计算请求次数
+        const getResponse = ()=>{
+            if(this.baseExceptMessge !== this.exceptionMessge[0]) return
+            getProccess({taskId:this.taskId}).then(async res=>{
+                this.loadingProccessArr = res.data
+                for (let i = 0; i < res.data.length; i++) {
+                    if(!this.isFade || this.loadingProccessArr[this.loadingProccessArr.length-1].status==='success' || count > 30) return
+                    const element = res.data[i];
+                    if(element.status==="waiting"){
+                        this.loadingProccess = i
+                        count++
+                        setTimeout(getResponse(),1200)
+                        return
+                    }else if(element.status==="success" && (count === 0 || (this.loadingProccess < i))){
+                        this.loadingProccess = i
+                    }
+                    await sleep(200);
+                }
+            })
+        }
+        getResponse()
+    },
     // 获取流地址
     getModelUrl() {
       let appId = this.$route.query.appid;
@@ -847,13 +1023,16 @@ export default {
                 this.webUrl = res.data.url;
                 this.taskId = res.data.taskId;
                 this.initWebSocket();
-                this.listenerIframe()
+                this.controllerInfo.uiBar = false;
+                this.controllerInfo.viewCube = false;
             })
             return
         }
       let params = {
         appliId: appId,
         token: this.$route.query.token,
+        resX: size.width,
+        resY: size.height
       };
       const { userType, nickName, code } = this.$route.query;
       if (userType !== undefined && userType !== null) {
@@ -871,10 +1050,16 @@ export default {
       }
       requestOurBim(params)
         .then((res) => {
-            this.webUrl = res.data.url.replace('https://www.ourbim.com/v3', 'http://172.16.100.145:8888');
-            // this.webUrl = res.data.url;
+            this.webUrl = res.data.url;
             this.taskId = res.data.taskId;
-            this.listenerIframe()
+            this.preType = res.data.preType==='1' ? true : false
+            this.client.subscribe(`task/${this.taskId}/#`);
+            this.client.subscribe(`preloadEnd/${this.taskId}`);
+            this.sendToIframe(10300,false);
+            console.info('🚀🚀🚀taskId🚀🚀🚀taskId🚀🚀🚀taskId:',this.taskId);
+            if(this.preType){
+                preloadStart({ taskId: this.taskId })
+            }
             // 保存code
             if (res.data.code) {
               this.shareCode = res.data.code;
@@ -948,25 +1133,68 @@ export default {
         this.webUrl = null;
       }
     },
+    getMonitor() {
+        document.addEventListener("keydown", (e) => {
+          if([37,38,39,40,229].includes(e.keyCode)) return
+          this.sendToIframe(
+            10010,
+            {
+              key: e.code,
+              keyCode: e.keyCode,
+              repeat: e.repeat,
+            },
+            ""
+          );
+        },true);
+        document.addEventListener("keyup", (e) => {
+          if([37,38,39,40,229].includes(e.keyCode)) return
+          this.sendToIframe(
+            10011,
+            {
+              key: e.code,
+              keyCode: e.keyCode,
+              repeat: e.repeat,
+            },
+            ""
+          );
+        },true);
+    },
     sentParentIframe(e) {
+      /**
+       * @Author: zk
+       * @Date: 2021-04-27 11:42:25
+       * @description:
+       * 参考readme
+       */
       window.parent.postMessage(e, "*");
     },
-    sendToIframe(type, data, message = '') {
+    sendToIframe(type, data, message) {
+      /**
+       * @Author: zk
+       * @Date: 2020-09-29 10:18:33
+       * @description: postmessage通信
+       */
       let realIframe = document.getElementById("show-bim");
       if (realIframe) {
-        realIframe.contentWindow.postMessage({
+        realIframe.contentWindow.postMessage(
+          {
             prex: "pxymessage", // 约定的消息头部
             type: type, // 消息类型
             data: data, // 具体数据
             message: message, // 附加信息
-        },"*");
+          },
+          "*"
+        );
       }
     },
     // 获取pakid
     getLinkModelAppid(){
-        getPakIdByAppId({ appId:this.appId }).then(res=>{
-            this.pakAndAppid = res.data;
-        })
+      let params = {
+        appId:this.appId
+      }
+      getPakIdByAppId(params).then(res=>{
+        this.pakAndAppid = res.data;
+      })
     },
     // 根据pakId 找到appId
     pakidToAppid(str){
@@ -987,7 +1215,54 @@ export default {
   width: 100vw;
   overflow: hidden;
   position: relative;
-  background: #010026;
+
+  .hidden-bim {
+    position: absolute;
+    z-index: 300;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: 100% 100%!important;
+
+    @-webkit-keyframes bgp {
+      0% {
+        background-position: 0 0;
+      }
+      100% {
+        background-position: -100% 0;
+      }
+    }
+    .hidden-text {
+      letter-spacing: 1px;
+      margin-top: 130px;
+      position: absolute;
+      animation: bgp 3s infinite linear;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-size: 18px;
+        letter-spacing: 1px;
+        background: linear-gradient(157deg, #46AFFF 0%, #8D39FF 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .show-loading {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 30px;
+    }
+
+    .proccessText{
+      color: #ffffff;
+      position: absolute;
+      bottom: 10vh;
+      z-index: 999;
+    }
+  }
 
   #show-bim {
     height: 100vh;

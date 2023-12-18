@@ -177,3 +177,55 @@
         top: 158px !important;
     }
 }
+
+
+
+
+
+.hidden-bim {
+    position: absolute;
+    z-index: 300;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: 100% 100%!important;
+
+    @-webkit-keyframes bgp {
+        0% {
+            background-position: 0 0;
+        }
+        100% {
+            background-position: -100% 0;
+        }
+    }
+    .hidden-text {
+        letter-spacing: 1px;
+        margin-top: 130px;
+        position: absolute;
+        animation: bgp 3s infinite linear;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-size: 18px;
+        letter-spacing: 1px;
+        background: linear-gradient(157deg, #46AFFF 0%, #8D39FF 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .show-loading {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 30px;
+    }
+
+    .proccessText{
+        color: #ffffff;
+        position: absolute;
+        bottom: 10vh;
+        z-index: 999;
+    }
+}

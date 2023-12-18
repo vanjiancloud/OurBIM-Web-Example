@@ -7,12 +7,7 @@
  */
 import newRequest from "@/utils/newRequest.js";
 import request from '../utils/request'
-import qsStringify from "qs-stringify"
 import axios from 'axios'
-import config from '../../server.config'
-
-
-let WSBASEURL = config.VUE_APP_REQUEST_URL.replace('http://', 'ws://').replace('https://', 'wss://');
 
 
 const MODELAPI = {
@@ -27,17 +22,6 @@ const MODELAPI = {
                 callback(progress)
             }
         })
-    },
-    GETMODELINFO: params => {
-        return newRequest({
-            url: '/OurBim/requestOurBim',
-            method: 'POST',
-            data: qsStringify(params)
-        })
-    },
-    // 建立websocket通信
-    CREATESOCKET: params => {
-        return `${WSBASEURL}/websocket/${params}`
     },
 
     // 获取关注视角

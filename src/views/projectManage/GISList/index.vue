@@ -129,6 +129,7 @@
 </template>
 
 <script>
+import { getEnterToken } from "@/api/projectManage/model.js";
 import { gisPluginList, gisLayer } from "./json"
 import { getDict } from "@/api/dict.js"
 import { Getuserid } from "@/store/index.js";
@@ -306,8 +307,10 @@ export default {
             }).catch(() => {});
         },
         toProject(row){
-            let path = this.$router.resolve({ path: "/web_client", query: { appid: row.gisId, userId: row.userId, gisList:true, isGis: true }})
-            window.open(path.href);
+            getEnterToken({appid: row.gisId}).then((res) => {
+                let path = this.$router.resolve({ path: "/web_client", query: { appid: row.gisId, userId: row.userId, gisList:true, isGis: true, token: res.data.token }})
+                window.open(path.href);
+            })
         }
     },
 };
