@@ -102,7 +102,7 @@
                             <el-option :value="item.key" v-for="(item,index) in layerTypeList" :key="index">{{ item.name }}</el-option>
                         </el-select>
                     </el-form-item>
-                    <!-- <el-form-item label="GIS信息：" required v-if="form.layerType==='3dtiles'">
+                    <el-form-item label="GIS信息：" required>
                         <el-col :span="7">
                             <el-form-item prop="longitude">
                                 <el-input v-model="form.longitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:8}"></el-input>
@@ -121,7 +121,7 @@
                             </el-form-item>
                         </el-col>
                         <el-col class="GISMark" :span="1">m</el-col>
-                    </el-form-item> -->
+                    </el-form-item>
                 </el-form>
             </template>
         </DialogsDrag>
@@ -172,27 +172,27 @@ export default {
                         trigger: 'blur'
                     }
                 ],
-                // longitude: [
-                //     {
-                //         required: true,
-                //         message: '请输入经度(-180°~180°)',
-                //         trigger: 'blur'
-                //     }
-                // ],
-                // latitude: [
-                //     {
-                //         required: true,
-                //         message: '请输入纬度(-90°~90°)',
-                //         trigger: 'blur'
-                //     }
-                // ],
-                // altitude: [
-                //     {
-                //         required: true,
-                //         message: '请输入海拔高度',
-                //         trigger: 'blur'
-                //     }
-                // ],
+                longitude: [
+                    {
+                        required: true,
+                        message: '请输入经度(-180°~180°)',
+                        trigger: 'blur'
+                    }
+                ],
+                latitude: [
+                    {
+                        required: true,
+                        message: '请输入纬度(-90°~90°)',
+                        trigger: 'blur'
+                    }
+                ],
+                altitude: [
+                    {
+                        required: true,
+                        message: '请输入海拔高度',
+                        trigger: 'blur'
+                    }
+                ],
             },
             timer: null //轮询
         };

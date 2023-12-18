@@ -8,7 +8,7 @@
         :close-on-click-modal="false"
         top="10vh"
       >
-        <el-form :model="form" :rules="rules" ref="form" label-width="130px">
+        <el-form :model="form" :rules="rules" ref="form" label-width="140px">
           <el-form-item label="项目名称：" prop="gisServerName">
             <el-input v-model="form.gisServerName" placeholder="请输入"></el-input>
           </el-form-item>
@@ -25,6 +25,26 @@
               <el-option :value="item.value" :label="item.note" v-for="(item,index) in gisCoordinateTypeList" :key="index"></el-option>
               </el-select>
           </el-form-item> -->
+            <el-form-item label="项目初始点坐标：" required>
+                <el-col :span="7">
+                    <el-form-item prop="longitude">
+                        <el-input v-model="form.longitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:8}"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col class="GISMark" :span="1">°</el-col>
+                <el-col :span="7">
+                    <el-form-item prop="latitude">
+                        <el-input v-model="form.latitude" placeholder="纬度" v-only-number="{min:-90,max:90,precision:8}"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col class="GISMark" :span="1">°</el-col>
+                <el-col :span="7">
+                    <el-form-item prop="altitude">
+                        <el-input type="number" v-model.number="form.altitude" placeholder="海拔高度"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col class="GISMark" :span="1">m</el-col>
+            </el-form-item>
           <el-form-item label="GIS图层：" prop="ourGISLayerList" v-if="form.layerType==='OurGIS'||title==='添加'">
             <el-button type="primary" @click="addLayer('添加')" plain class="bluePlainBtn1">添加图层</el-button>
             <el-table class="GISLayer" :data="form.ourGISLayerList" style="width: 100%" :show-header="false" border max-height="300">
@@ -43,26 +63,6 @@
               </el-table-column>
             </el-table>
           </el-form-item>
-          <!-- <el-form-item label="GIS信息：" required v-if="form.layerType==='3dtiles'">
-              <el-col :span="7">
-                  <el-form-item prop="longitude">
-                      <el-input v-model="form.longitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:8}"></el-input>
-                  </el-form-item>
-              </el-col>
-              <el-col class="GISMark" :span="1">°</el-col>
-              <el-col :span="7">
-                  <el-form-item prop="latitude">
-                      <el-input v-model="form.latitude" placeholder="纬度" v-only-number="{min:-90,max:90,precision:8}"></el-input>
-                  </el-form-item>
-              </el-col>
-              <el-col class="GISMark" :span="1">°</el-col>
-              <el-col :span="7">
-                  <el-form-item prop="altitude">
-                      <el-input type="number" v-model.number="form.altitude" placeholder="海拔高度"></el-input>
-                  </el-form-item>
-              </el-col>
-              <el-col class="GISMark" :span="1">m</el-col>
-          </el-form-item> -->
           <el-form-item label="最大并发数：" v-if="title==='编辑'">
             <el-input v-model="form.maxInstance" v-only-number="{min:0,precision:0}" placeholder="请输入"></el-input>
           </el-form-item>
@@ -111,6 +111,27 @@
           ourGISLayerList: [{ required: true, message: "请添加图层", trigger: "blur" }],
           gisPlugin: [{ required: true, message: "请选择服务支持组件", trigger: "blur" }],
         //   gisCoordinateType: [{ required: true, message: "请选择GIS坐标系", trigger: "blur" }],
+            longitude: [
+                {
+                    required: true,
+                    message: '请输入经度(-180°~180°)',
+                    trigger: 'blur'
+                }
+            ],
+            latitude: [
+                {
+                    required: true,
+                    message: '请输入纬度(-90°~90°)',
+                    trigger: 'blur'
+                }
+            ],
+            altitude: [
+                {
+                    required: true,
+                    message: '请输入海拔高度',
+                    trigger: 'blur'
+                }
+            ],
         },
         doMouseList:[], //鼠标操作模式
         displayWindowList: [], //窗口显示模式
