@@ -44,7 +44,7 @@ export default {
             ],
             baseExceptMessge: "环境加载中…",
             preType:false,//是否是预启动
-            taskId: ''
+            taskId: '',
         }
     },
     watch: {},
@@ -152,7 +152,7 @@ export default {
             }).catch((e)=>{
                 if(e?.message){
                     this.baseExceptMessge = e.message
-                    this.sentToParentIframe(this.baseExceptMessge,1)
+                    this.sentToParentIframe(this.baseExceptMessge, 'error')
                 }
             })
         },
@@ -314,13 +314,13 @@ export default {
             window.addEventListener("message",(e) => {
                 let res = e.data
                 if (res.prex === "ourbimBaseMessage") {
-                    let errType = [0,1].includes(res.type)
-                    if(errType){
+                    if(res.type === 'error'){
                         this.mask = true;
                         this.baseExceptMessge = res.message
                         this.sentToParentIframe(this.baseExceptMessge,res.type)
                     }
                     if(res.type === 200){
+                        // 模型打开成功
                         this.mask = false;
                     }
                 }

@@ -7,22 +7,9 @@
  */
 import newRequest from "@/utils/newRequest.js";
 import request from '../utils/request'
-import axios from 'axios'
 
 
 const MODELAPI = {
-
-    DOWNLOADFILE: (params, callback) => {
-        return axios({
-            url: '/FileStorge/downloadModelFile',
-            method: 'get',
-            params,
-            responseType: 'blob',
-            onDownloadProgress(progress) {
-                callback(progress)
-            }
-        })
-    },
 
     // 获取关注视角
     LISTFOLLOWPOINT: params => {

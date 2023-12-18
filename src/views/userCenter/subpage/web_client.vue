@@ -160,7 +160,6 @@ export default {
       socketTimer: null,
       shadowType: null,
       isUiBar: true,
-      iTime: {},
       userType: null,
       // （材质库）
       materialData: {},
@@ -369,8 +368,7 @@ export default {
         window.addEventListener("message",(e) => {
             let res = e.data
             if (res.prex === "ourbimBaseMessage") {
-                let errType = [0,1].includes(res.type)
-                if(errType){
+                if(res.type === 'error'){
                     this.closeWebSocket();
                     this.mask = true;
                     this.baseExceptMessge = res.message
@@ -395,20 +393,6 @@ export default {
         },
         false
       );
-    },
-    listenWindowSize() {
-      // 移动端不更新分辨率
-      if(this.isMobile()){
-        return
-      }
-      // 监听窗口大小变化 id=14 height
-      this.handleWindowSize();
-      window.onresize = () => {
-        clearTimeout(this.iTime);
-        this.iTime = setTimeout(() => {
-          this.handleWindowSize();
-        }, 200);
-      };
     },
     handleWindowSize(type = false) {
       const viewWidth = window.innerWidth; //获取可视区域宽度
@@ -620,7 +604,6 @@ export default {
               message: "",
             };
             this.sentParentIframe(messageInfo);
-            // this.baseExceptMessge = this.exceptionMessge[0]
             const progress = Number(
               String(Number(realData.progress) * 100).substring(0, 3)
             );
@@ -640,8 +623,6 @@ export default {
             }
             if (Number(realData.progress) === 1) {
               this.limitZoomSpeed();
-              // 加载完成
-              this.listenWindowSize();
               this.isProgress = false;
             }
           } else if (realData.id === "9") {
@@ -661,24 +642,6 @@ export default {
             this.showUiBar();
           } else if (realData.id === "11") {
             this.sentParentIframe({ prex: "ourbimMessage", type: 30003, data: {tagId: realData.tagId}, message: "" });
-          } else if (realData.id === "12") {
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 10002,
-              data: {
-                progress: Number(realData.progress),
-              },
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
-            if (Number(realData.progress) === 1) {
-                let uaInfo = navigator.userAgent.toLowerCase();
-              if (uaInfo.match(/MicroMessenger/i) != "micromessenger") {
-                this.delMaskTimer(500);
-              } else {
-                this.delMaskTimer(1000 * 5);
-              }
-            } // 13cube返回数据
           } else if (realData.id === "14") {
             // 添加构件，但是按了 ESC
             if (this.controllerInfo.uiBar) {
@@ -695,9 +658,6 @@ export default {
                 // 点击构件打开坐标轴
                 this.$refs.ResourcePool.checkOprate(realData);
               }
-          } else if (realData.id === "16") {
-            // 距离上一次操作时长
-            this.exitMiniprogram(realData.lastOperationTime);
           } else if (realData.id === "17") {
             if(this.$refs.ComponentTree){
               realData.uuids.map((v) => {
@@ -812,32 +772,6 @@ export default {
         this.controllerInfo.tagUiBar = true;
       }
     },
-    exitMiniprogram(time) {
-      // 微信小程序长时间未操作，返回项目列表页
-      if (time > 60) {
-        wx.miniProgram.getEnv((res) => {
-          if (res.miniprogram) {
-            this.isFade = true;
-            this.baseExceptMessge = '长时间未交互，已自动断开，刷新即可重连'
-            this.clearTimePass();
-            this.closeWebSocket();
-            this.sendToIframe()
-          }
-        });
-      }
-    },
-    delMaskTimer(e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-06-02 18:08:55
-       * @description: 去除遮罩时限
-       * @param {*} setTimeout
-       */
-      let loadTimer = setTimeout(() => {
-        this.isFade = false;
-        clearTimeout(loadTimer);
-      }, e);
-    },
     // 获取流地址
     getModelUrl() {
       let appId = this.$route.query.appid;
@@ -869,10 +803,8 @@ export default {
       if (code) {
         params.code = code;
       }
-      requestOurBim(params)
-        .then((res) => {
-            this.webUrl = res.data.url.replace('https://www.ourbim.com/v3', 'http://172.16.100.145:8888');
-            // this.webUrl = res.data.url;
+      requestOurBim(params).then((res) => {
+            this.webUrl = res.data.url;
             this.taskId = res.data.taskId;
             this.listenerIframe()
             // 保存code
@@ -924,7 +856,7 @@ export default {
     setTimeLoad() {
       this.loadTimer = setTimeout(() => {
         if (this.isFade === true) {
-          this.baseExceptMessge = this.exceptionMessge[2]
+          this.baseExceptMessge = '模型长时间未响应，请刷新重试'
           this.closeWebSocket();
         }
         clearTimeout(this.loadTimer);

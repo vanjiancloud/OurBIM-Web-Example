@@ -102,7 +102,7 @@ export function getPakIdByAppId(params) {
 
 export function requestOurBim(params) {
     return request({
-        url: '/OurBim/testRequestOurBim',
+        url: '/OurBim/requestOurBim',
         method: 'POST',
         params
     })
