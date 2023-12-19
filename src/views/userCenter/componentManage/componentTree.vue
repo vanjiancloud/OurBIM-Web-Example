@@ -65,7 +65,7 @@ export default {
                     name: "BIM模型",
                 },
                 {
-                    hidden: !(this.data.isGis && this.$route.query.appType == '3'),
+                    hidden: !this.data.isGis,
                     name: "GIS数据服务",
                 },
             ],

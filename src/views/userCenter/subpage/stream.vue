@@ -50,6 +50,7 @@ export default {
     watch: {},
     computed: {},
     created() {
+        this.taskId = this.$route.query.taskId
         this.getLogo("startUpLogo")
         this.getLogo("startUpBkgImg")
         this.unLoad()
@@ -138,7 +139,7 @@ export default {
                 token: this.$route.query.token,
                 resX: size.width,
                 resY: size.height,
-                taskId: this.$route.query.taskId
+                taskId: this.taskId
             }
             doRequestOurBimStream(data).then(res=>{
                 this.iframeUrl = res.data.url
