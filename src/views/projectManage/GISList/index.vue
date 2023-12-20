@@ -102,7 +102,7 @@
                             <el-option :value="item.key" v-for="(item,index) in layerTypeList" :key="index">{{ item.name }}</el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="GIS信息：" required>
+                    <el-form-item label="项目初始点坐标：" required>
                         <el-col :span="7">
                             <el-form-item prop="longitude">
                                 <el-input v-model="form.longitude" placeholder="经度" v-only-number="{min:-180,max:180,precision:8}"></el-input>

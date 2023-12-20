@@ -81,7 +81,6 @@ import Drawer from '@/components/Drawer/index.vue'
 import { doAction, setGizmoMode, getPakIdByAppId, requestOurBim, connectWebsocket } from "@/api/userCenter/index";
 import { getLogo } from '@/api/server/parameter'
 import { lockControl } from "@/api/userCenter/componentManage.js";
-import { requestGisServer } from "@/api/projectManage/GISList.js";
 import viewCube from "@/components/web_client/view_cube";
 import roamNavigate from "@/components/web_client/roam_navigate";
 import viewPhoto from "@/components/web_client/view_photo";
@@ -393,31 +392,6 @@ export default {
         },
         false
       );
-    },
-    handleWindowSize(type = false) {
-      const viewWidth = window.innerWidth; //获取可视区域宽度
-      const viewHeight = window.innerHeight; //获取可视区域高度
-      let height = "";
-      let width = "";
-      if (viewWidth > viewHeight) {
-        // 宽大于高 横屏
-        height = document.body.clientHeight;
-        width = document.body.clientWidth;
-      } else {
-        height = document.body.clientWidth;
-        width = document.body.clientHeight;
-      }
-      if(type){
-        return { width, height }
-      }
-      let params = {
-        taskid: this.taskId,
-        action: "platform",
-        plateType: this.isMobile() ? 1 : 0,
-        height: height,
-        width: width,
-      };
-      doAction(params)
     },
     handleType(e) {
       /**
@@ -752,7 +726,9 @@ export default {
           this.websock.send("Bang");
         }, 1000 * 30);
       };
-      this.websock.onerror = (e) => {};
+      this.websock.onerror = (e) => {
+        console.log('🚀🚀🚀websock错误',e);
+      };
     },
     limitZoomSpeed() {
       // 限制缩放速度
@@ -775,14 +751,11 @@ export default {
     // 获取流地址
     getModelUrl() {
       let appId = this.$route.query.appid;
-      let size = this.handleWindowSize(true)
         if(this.$route.query.gisList){
-            requestGisServer({gisId: appId, resX: size.width, resY: size.height, token: this.$route.query.token}).then(res=>{
-                this.webUrl = res.data.url;
-                this.taskId = res.data.taskId;
-                this.initWebSocket();
-                this.listenerIframe()
-            })
+            let path = this.$router.resolve({ path: "/stream", query: { appid: appId, userId: this.userId, gisList:true, isGis: true, token: this.$route.query.token }})
+            this.webUrl = path.href;
+            this.initWebSocket();
+            this.listenerIframe()
             return
         }
       let params = {
