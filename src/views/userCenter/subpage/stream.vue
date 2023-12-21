@@ -18,7 +18,6 @@
 <script>
 import { getLogo } from '@/api/server/parameter'
 import { getProccess, preloadStart, doRequestOurBimStream } from "@/api/userCenter/index";
-import { requestGisServer } from "@/api/projectManage/GISList.js";
 require('@/utils/mqttws31.min.js')
 export default {
     components: {},
@@ -141,20 +140,6 @@ export default {
                 resX: size.width,
                 resY: size.height,
                 taskId: this.taskId
-            }
-            if(this.$route.query.gisList){
-                let param = { gisId: this.$route.query.appid, resX: size.width, resY: size.height, token: this.$route.query.token, taskId: this.taskId }
-                requestGisServer(param).then(res=>{
-                    this.iframeUrl = res.data.url;
-                    this.client.subscribe(`task/${this.taskId}/#`);
-                    this.client.subscribe(`preloadEnd/${this.taskId}`);
-                }).catch((e)=>{
-                    if(e?.message){
-                        this.baseExceptMessge = e.message
-                        this.sentToParentIframe(this.baseExceptMessge, 'error')
-                    }
-                })
-                return
             }
             doRequestOurBimStream(data).then(res=>{
                 this.iframeUrl = res.data.url

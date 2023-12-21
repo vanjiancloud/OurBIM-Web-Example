@@ -6,7 +6,7 @@
             </el-form-item>
             <el-form-item label="图层类型：" prop="layerType">
                 <el-select v-model="form.layerType " placeholder="请选择" style="width:100%">
-                    <el-option :value="item.key" v-for="(item,index) in layerTypeList" :key="index">{{ item.name }}</el-option>
+                    <el-option :label="item.name" :value="item.key" v-for="(item,index) in layerTypeList" :key="index"/>
                 </el-select>
             </el-form-item>
             <el-form-item label="图层地址：" prop="fileUrl">

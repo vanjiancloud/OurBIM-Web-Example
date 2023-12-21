@@ -770,11 +770,8 @@ export default {
         params.code = code;
       }
       requestOurBim(params).then((res) => {
-            if(this.$route.query.gisList){
-                this.webUrl = res.data.url + '&gisList=true'
-            }else{
-                this.webUrl = res.data.url;
-            }
+            // this.webUrl = res.data.url.replace('https://www.ourbim.com/v3', 'http://172.16.100.145:8888');
+            this.webUrl = res.data.url;
             this.taskId = res.data.taskId;
             this.listenerIframe()
             // 保存code
