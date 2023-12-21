@@ -91,7 +91,7 @@
         <!-- 上传GIS数据 -->
         <DialogsDrag ref="DialogsDrag" :limit="1" numType="uploadGISNum" @getFile="getFileDrag" @onSuccess="getList" @beforeUpload="beforeUpload">
             <template v-slot:append>
-                <el-form :model="form" :rules="rules" ref="form" label-width="130px" class="layerForm">
+                <el-form :model="form" :rules="rules" ref="form" label-width="140px" class="layerForm">
                     <el-form-item label="服务支持组件：" prop="gisPlugin">
                         <el-select v-model="form.gisPlugin" placeholder="请选择" @change="changeGisPlugin" style="width:100%">
                             <el-option :value="item.key" :label="item.name" v-for="(item,index) in gisPluginList" :key="index" :disabled="item.key==='arcGIS'"></el-option>

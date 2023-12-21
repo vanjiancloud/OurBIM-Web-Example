@@ -751,13 +751,6 @@ export default {
     // 获取流地址
     getModelUrl() {
       let appId = this.$route.query.appid;
-        if(this.$route.query.gisList){
-            let path = this.$router.resolve({ path: "/stream", query: { appid: appId, userId: this.userId, gisList:true, isGis: true, token: this.$route.query.token }})
-            this.webUrl = path.href;
-            this.initWebSocket();
-            this.listenerIframe()
-            return
-        }
       let params = {
         appliId: appId,
         token: this.$route.query.token,
@@ -777,7 +770,11 @@ export default {
         params.code = code;
       }
       requestOurBim(params).then((res) => {
-            this.webUrl = res.data.url;
+            if(this.$route.query.gisList){
+                this.webUrl = res.data.url + '&gisList=true'
+            }else{
+                this.webUrl = res.data.url;
+            }
             this.taskId = res.data.taskId;
             this.listenerIframe()
             // 保存code

@@ -143,7 +143,7 @@ export default {
                 taskId: this.taskId
             }
             if(this.$route.query.gisList){
-                let param = { gisId: this.$route.query.appid, resX: size.width, resY: size.height, token: this.$route.query.token }
+                let param = { gisId: this.$route.query.appid, resX: size.width, resY: size.height, token: this.$route.query.token, taskId: this.taskId }
                 requestGisServer(param).then(res=>{
                     this.iframeUrl = res.data.url;
                     this.client.subscribe(`task/${this.taskId}/#`);
@@ -339,7 +339,7 @@ export default {
                         // 模型打开成功
                         setTimeout(()=>{
                             this.mask = false;
-                        },300)
+                        },800)
                     }
                 }
                 if(res.prex === "pxymessage"){

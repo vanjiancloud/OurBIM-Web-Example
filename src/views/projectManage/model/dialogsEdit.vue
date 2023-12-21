@@ -118,11 +118,11 @@
             <el-form-item label="最大并发数：" prop="maxInstance">
                 <el-input v-model="form.maxInstance" v-only-number="{max:9999,min:1,precision:0}"></el-input>
             </el-form-item>
-            <el-form-item class="startNumber" label="启动参数:" v-if="form.appType === '5'">
+            <el-form-item label="启动参数:" v-if="form.appType === '5'">
                 <el-input v-model="form.startNum"></el-input>
             </el-form-item>
-            <el-form-item class="orStart" label="是否预启动:" v-if="form.appType !== '5'">
-                <el-radio-group v-model="form.isReserve">
+            <el-form-item label="是否预启动:" v-if="form.appType !== '5'">
+                <el-radio-group v-model="form.isPre">
                     <el-radio label="true">是</el-radio>
                     <el-radio label="false">否</el-radio>
                 </el-radio-group>
@@ -143,7 +143,7 @@
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="hide">取 消</el-button>
-            <el-button class="blueBtn" type="primary" @click="submit">确 定</el-button>
+            <el-button class="blueBtn" type="primary" @click="submit" :loading="btnLoading">确 定</el-button>
         </span>
     </el-dialog>
 </template>
@@ -221,6 +221,7 @@ export default {
             modelList: [],//还未被选的模型
             selectGisList: [],//还未被选的服务
             mapInfoList: [],//底图
+            btnLoading: false,
         }
     },
     watch: {},
@@ -338,10 +339,14 @@ export default {
                 }
                 delete data.gisServerMap
                 delete data.sonAppMap
+                this.btnLoading = true
                 updateProject(data).then(() => {
+                    this.btnLoading = false
                     this.$message.success('项目信息更新成功')
                     this.hide()
                     this.$parent.$parent.getAllModelList()
+                }).catch(()=>{
+                    this.btnLoading = false
                 })
             })
         }
