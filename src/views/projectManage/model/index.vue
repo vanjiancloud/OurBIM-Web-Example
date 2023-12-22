@@ -225,7 +225,7 @@
       </span>
     </el-dialog>
 
-    <DialogsDrag ref="DialogsDrag" numType="uploadingNum" accept=".rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.fbx,.FBX,.obj,.stp,.xyz,.txt,.pts,.las"
+    <DialogsDrag ref="DialogsDrag" numType="uploadingNum" accept=".rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.fbx,.FBX,.obj,.stp,.xyz,.txt,.pts,.las,.nwd"
     @getFile="getFileDrag" @onSuccess="getAllModelList" @beforeUpload="beforeUpload">
         <template v-slot:append>
             <el-form :model="conversionForm" :rules="conversionRules" ref="conversionForm" label-width="0" class="conversionForm">
