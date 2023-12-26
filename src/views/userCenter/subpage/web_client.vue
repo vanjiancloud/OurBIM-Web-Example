@@ -10,7 +10,7 @@
     <iframe allowfullscreen="true" :class="{'phone-bim':isMobile()}" v-if="webUrl" :src="webUrl" frameborder="0" id="show-bim"/>
     <!-- 遮罩层 -->
     <div class="hidden-bim" v-if="mask" :style="{background:`#000000 url(${logoImg.startUpBkgImg}) no-repeat center`}">
-        <img :src="logoImg.startUpLogo" class="show-loading" alt="" />
+        <img v-if="logoImg.startUpLogo" :src="logoImg.startUpLogo" class="show-loading" alt="" />
         <div class="hidden-text">{{ baseExceptMessge }}</div>
     </div>
     
@@ -125,8 +125,8 @@ export default {
     return {
         mask:true,
         logoImg:{
-            startUpLogo: require('@/assets/images/logo/logo.png'),
-            startUpBkgImg: require('@/assets/images/logo/loading.png')
+            startUpLogo: '',
+            startUpBkgImg: ''
         },
         baseExceptMessge: "环境加载中…",
       userId: '',
@@ -178,11 +178,10 @@ export default {
   watch: {},
   created() {
     this.userId = this.$route.query.userId || Getuserid() || 'travels'
+    this.getLogo("startUpLogo")
+    this.getLogo("startUpBkgImg")
     this.appId = this.$route.query.appid;
-    this.isUiBar =
-      this.$route.query.uibar === undefined || this.$route.query.uibar === true
-        ? true
-        : false;
+    this.isUiBar = !this.$route.query.uibar || this.$route.query.uibar
       // 如果是云应用就去掉遮罩层和操作栏以及加载进度---
       if(this.$route.query.appType === '5'){
         this.isFade = false;
@@ -190,8 +189,6 @@ export default {
 
     // appType  0:普通模型(isGis: GIS模型)   1:漫游模型   3:链接模型(isGis: GIS链接模型)  4:示例模型    5:云应用
     this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
-    this.getLogo("startUpLogo")
-    this.getLogo("startUpBkgImg")
     this.getModelUrl()
     },
   mounted() {
@@ -217,11 +214,15 @@ export default {
             userId: this.userId,
             type
         }
+        let imgs = {
+            startUpLogo: require('@/assets/images/logo/logo.png'),
+            startUpBkgImg: require('@/assets/images/logo/loading.png')
+        }
         getLogo(data).then(res=>{
             if(res.message === "用户已上传图片"){
                 this.$set(this.logoImg, type, url)
             }else{
-                this.$set(this.logoImg, type, this.$options.data().logoImg[type])
+                this.$set(this.logoImg, type, imgs[type])
             }
         })
     },
@@ -770,8 +771,8 @@ export default {
         params.code = code;
       }
       requestOurBim(params).then((res) => {
-            // this.webUrl = res.data.url.replace('https://www.ourbim.com/v3', 'http://172.16.100.145:8888');
-            this.webUrl = res.data.url;
+            this.webUrl = res.data.url.replace('https://www.ourbim.com/v3', 'http://172.16.100.145:8888');
+            // this.webUrl = res.data.url;
             this.taskId = res.data.taskId;
             this.listenerIframe()
             // 保存code

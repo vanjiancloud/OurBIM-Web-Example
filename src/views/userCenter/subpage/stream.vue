@@ -4,7 +4,7 @@
         <!-- 遮罩层 -->
         <div class="hidden-bim" v-if="mask">
             <div class="hidden-bim" :style="{background:`#000000 url(${logoImg.startUpBkgImg}) no-repeat center`}">
-                <img :src="logoImg.startUpLogo" class="show-loading" alt="" />
+                <img v-if="logoImg.startUpLogo" :src="logoImg.startUpLogo" class="show-loading" alt="" />
                 <div class="hidden-text">{{ baseExceptMessge }}</div>
             </div>
 
@@ -27,8 +27,8 @@ export default {
             iframeUrl: '',
             mask: true,
             logoImg:{
-                startUpLogo: require('@/assets/images/logo/logo.png'),
-                startUpBkgImg: require('@/assets/images/logo/loading.png')
+                startUpLogo: '',
+                startUpBkgImg: ''
             },
                 // 加载流程
             loadingProccess:0,
@@ -81,11 +81,15 @@ export default {
                 userId: this.$route.query.userId,
                 type
             }
+            let imgs = {
+                startUpLogo: require('@/assets/images/logo/logo.png'),
+                startUpBkgImg: require('@/assets/images/logo/loading.png')
+            }
             getLogo(data).then(res=>{
                 if(res.message === "用户已上传图片"){
                     this.$set(this.logoImg, type, url)
                 }else{
-                    this.$set(this.logoImg, type, this.$options.data().logoImg[type])
+                    this.$set(this.logoImg, type, imgs[type])
                 }
             })
         },
