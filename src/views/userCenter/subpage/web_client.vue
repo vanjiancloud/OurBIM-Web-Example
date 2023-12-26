@@ -224,6 +224,8 @@ export default {
             }else{
                 this.$set(this.logoImg, type, imgs[type])
             }
+        }).catch(()=>{
+            this.$set(this.logoImg, type, imgs[type])
         })
     },
     // 监听ifrmae

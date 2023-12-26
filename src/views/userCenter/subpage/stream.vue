@@ -91,6 +91,8 @@ export default {
                 }else{
                     this.$set(this.logoImg, type, imgs[type])
                 }
+            }).catch(()=>{
+                this.$set(this.logoImg, type, imgs[type])
             })
         },
         // 获取流程文字
