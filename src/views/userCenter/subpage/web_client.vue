@@ -177,8 +177,6 @@ export default {
   },
   watch: {},
   created() {
-    this.getLogo("startUpLogo")
-    this.getLogo("startUpBkgImg")
     this.userId = this.$route.query.userId || Getuserid() || 'travels'
     this.appId = this.$route.query.appid;
     this.isUiBar =
@@ -192,6 +190,8 @@ export default {
 
     // appType  0:普通模型(isGis: GIS模型)   1:漫游模型   3:链接模型(isGis: GIS链接模型)  4:示例模型    5:云应用
     this.isGis = (this.$route.query.isGis&&eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin&&eval(this.$route.query.weatherBin.toLowerCase())) || false
+    this.getLogo("startUpLogo")
+    this.getLogo("startUpBkgImg")
     this.getModelUrl()
     },
   mounted() {
@@ -212,9 +212,9 @@ export default {
   methods: {
     // 获取中logo
     getLogo(type){
-        let url = `${this.$config.VUE_APP_REQUEST_URL}/cloudServiceImg/downloadImg?userId=${this.$store.state.user.userId}&type=${type}&time=${new Date().getTime()}`
+        let url = `${this.$config.VUE_APP_REQUEST_URL}/cloudServiceImg/downloadImg?userId=${this.userId}&type=${type}&time=${new Date().getTime()}`
         let data = {
-            userId: this.$store.state.user.userId,
+            userId: this.userId,
             type
         }
         getLogo(data).then(res=>{

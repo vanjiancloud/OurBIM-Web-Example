@@ -76,9 +76,9 @@ export default {
         },
         // 获取中logo
         getLogo(type){
-            let url = `${this.$config.VUE_APP_REQUEST_URL}/cloudServiceImg/downloadImg?userId=${this.$store.state.user.userId}&type=${type}&time=${new Date().getTime()}`
+            let url = `${this.$config.VUE_APP_REQUEST_URL}/cloudServiceImg/downloadImg?userId=${this.$route.query.userId}&type=${type}&time=${new Date().getTime()}`
             let data = {
-                userId: this.$store.state.user.userId,
+                userId: this.$route.query.userId,
                 type
             }
             getLogo(data).then(res=>{
