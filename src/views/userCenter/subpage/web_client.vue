@@ -771,8 +771,8 @@ export default {
         params.code = code;
       }
       requestOurBim(params).then((res) => {
-            this.webUrl = res.data.url.replace('https://www.ourbim.com/v3', 'http://172.16.100.145:8888');
-            // this.webUrl = res.data.url;
+            // this.webUrl = res.data.url.replace('https://www.ourbim.com/v3', 'http://172.16.100.145:8888');
+            this.webUrl = res.data.url;
             this.taskId = res.data.taskId;
             this.listenerIframe()
             // 保存code
