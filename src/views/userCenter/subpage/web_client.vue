@@ -181,7 +181,7 @@ export default {
     this.getLogo("startUpLogo")
     this.getLogo("startUpBkgImg")
     this.appId = this.$route.query.appid;
-    this.isUiBar = this.$route.query.uibar === undefined || this.$route.query.uibar
+    this.isUiBar = this.$route.query.uibar === undefined || this.$route.query.uibar==true
       // 如果是云应用就去掉遮罩层和操作栏以及加载进度---
       if(this.$route.query.appType === '5'){
         this.isFade = false;
