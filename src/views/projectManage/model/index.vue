@@ -4,6 +4,17 @@
       <div class="boxHeader">
           <div class="boxHeaderTitle">您共有<span>{{total}}</span>个项目</div>
           <div>
+            <el-form :inline="true" :model="searchForm" style="display: inline-block;" class="searchListForm">
+                <el-form-item label="项目名称：">
+                    <el-input v-model="searchForm.appName" placeholder="请输入"></el-input>
+                </el-form-item>
+                <el-form-item label="项目ID：">
+                    <el-input v-model="searchForm.appId" placeholder="请输入"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" class="blueBtn" @click="onSearch">查询</el-button>
+                </el-form-item>
+            </el-form>
               <!-- <el-button type="primary" class="blueBtn" @click="createProject()">新建BIM项目</el-button> -->
               <!-- 上传GIS数据的关闭弹窗后显示正在上传的个数  -->
               <el-badge :value="uploadingNum" :hidden="!uploadingNum" style="margin:0 16px">
@@ -340,6 +351,7 @@ export default {
         },
       ],
       timerFlag: true, //是否开启定时器轮询
+      searchForm:{},
       FormIntegrate: {
         appName: null,
         type:'bim',
@@ -438,6 +450,10 @@ export default {
     this.changeGisPlugin()
   },
   methods: {
+    onSearch(){
+        this.pages = this.$options.data().pages
+        this.getAllModelList();
+    },
     changeGisPlugin() {
         this.FormIntegrate.gisSuperMapInfo = []
         this.mapInfoList = gisSuperMapList.filter(e => { return e.type === this.FormIntegrate.gisPlugin })
@@ -589,7 +605,8 @@ export default {
       const params = {
         pageNo: this.pages.pageNo,
         pageSize: this.pages.pageSize,
-        userid: this.userId
+        userid: this.userId,
+        ...this.searchForm
       }
       getProjectList(params).then(res => {
         this.total = res.data.total
