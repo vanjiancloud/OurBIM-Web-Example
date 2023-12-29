@@ -236,12 +236,12 @@ export default {
                 this.closePre()
                 return
             }
+            this.closeProgress()
             let mess = `task/${this.taskId}/js/close`
             var message = new Paho.MQTT.Message(JSON.stringify({timestamp:new Date().getTime()}));
             message.destinationName = mess;
             message.qos=0;
             this.client.send(message);
-            this.closeProgress()
         },
         // 关闭预启动
         closePre(){
