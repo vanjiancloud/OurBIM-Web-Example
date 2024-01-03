@@ -1,6 +1,6 @@
 <template>
     <div class="stream">
-        <iframe class="iframe" allowfullscreen="true" v-if="iframeUrl" :src="iframeUrl" frameborder="0" @mouseover="setFocus()"></iframe>
+        <iframe class="iframe" allowfullscreen="true" v-if="iframeUrl" :src="iframeUrl" frameborder="0" @mouseover="setFocus()" @mouseout="leaveFocus()"></iframe>
         <!-- 遮罩层 -->
         <div class="hidden-bim" v-if="mask">
             <div class="hidden-bim" :style="{background:`#000000 url(${logoImg.startUpBkgImg}) no-repeat center`}">
@@ -67,6 +67,9 @@ export default {
     methods: {
         setFocus(){
             document.querySelector('.iframe').contentWindow.focus()
+        },
+        leaveFocus(){
+            document.querySelector('.iframe').contentWindow.blur()
         },
         isMobile() {
             let flag = navigator.userAgent.match(

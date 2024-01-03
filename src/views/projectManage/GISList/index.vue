@@ -20,7 +20,7 @@
             <el-table-column prop="createTime" label="上传日期" />
             <el-table-column prop="fileSize" label="大小">
                 <template slot-scope="scope">
-                    {{ scope.row.fileSize=== '\\--' ? scope.row.fileSize : scope.row.fileSize + 'MB' }}
+                    {{ scope.row.fileSize=== '\\--' ? scope.row.fileSize : fileUnit(scope.row.fileSize) }}
                 </template>
             </el-table-column>
             <el-table-column prop="layerType" label="数据类型" />
@@ -129,6 +129,7 @@
 </template>
 
 <script>
+import { fileUnit } from "@/utils/file.js";
 import { getEnterToken } from "@/api/projectManage/model.js";
 import { gisPluginList, gisLayer } from "./json"
 import { getDict } from "@/api/dict.js"
@@ -143,6 +144,7 @@ export default {
     props: {},
     data() {
         return {
+            fileUnit,
             gisPluginList,
             loading:false,
             isList: true,

@@ -21,31 +21,31 @@
             <el-table-column prop="projectId" label="项目ID" />
             <el-table-column label="码率">
                 <template slot-scope="scope">
-                    <el-select v-model="scope.row.codeRate" placeholder="请选择" @change="edit(scope.row)">
+                    <el-select v-model="scope.row.codeRate" placeholder="请选择" @change="edit(scope.row)" :disabled="scope.row.status==='1'">
                         <el-option :label="item" :value="item" v-for="item in codeRate" :key="item"></el-option>
                     </el-select>
                 </template>
             </el-table-column>
             <el-table-column prop="num" label="帧率">
                 <template slot-scope="scope">
-                    <el-select v-model="scope.row.frameRate" placeholder="请选择" @change="edit(scope.row)">
+                    <el-select v-model="scope.row.frameRate" placeholder="请选择" @change="edit(scope.row)" :disabled="scope.row.status==='1'">
                         <el-option :label="item" :value="item" v-for="item in frameRate" :key="item"></el-option>
                     </el-select>
                 </template>
             </el-table-column>
             <el-table-column label="预启动数量">
                 <template slot-scope="scope">
-                    <el-input v-model="scope.row.preStartNum" placeholder="请输入正整数" v-only-number="{min:0,precision:0}" @change="edit(scope.row)"></el-input>
+                    <el-input v-model="scope.row.preStartNum" placeholder="请输入正整数" v-only-number="{min:0,precision:0}" @change="edit(scope.row)" :disabled="scope.row.status==='1'"></el-input>
                 </template>
             </el-table-column>
             <el-table-column label="分辨率尺寸X">
                 <template slot-scope="scope">
-                    <el-input v-model.number="scope.row.resX" placeholder="请输入正整数" v-only-number="{min:0,precision:0}" @change="edit(scope.row)"></el-input>
+                    <el-input v-model.number="scope.row.resX" placeholder="请输入正整数" v-only-number="{min:0,precision:0}" @change="edit(scope.row)" :disabled="scope.row.status==='1'"></el-input>
                 </template>
             </el-table-column>
             <el-table-column label="分辨率尺寸Y">
                 <template slot-scope="scope">
-                    <el-input v-model.number="scope.row.resY" placeholder="请输入正整数" v-only-number="{min:0,precision:0}" @change="edit(scope.row)"></el-input>
+                    <el-input v-model.number="scope.row.resY" placeholder="请输入正整数" v-only-number="{min:0,precision:0}" @change="edit(scope.row)" :disabled="scope.row.status==='1'"></el-input>
                 </template>
             </el-table-column>
             <el-table-column prop="serverRunningNum" label="服务器运行数"/>
@@ -129,9 +129,9 @@ export default {
         },
         // 添加\编辑预启动项目
         add(){
-            if(Number(this.openPreTotal) >= Number(this.preTotal.preConcurrency)){
-                return this.$message.warning("授权的并发资源配额不足，不能添加。")
-            }
+            // if(Number(this.openPreTotal) >= Number(this.preTotal.preConcurrency)){
+            //     return this.$message.warning("授权的并发资源配额不足，不能添加。")
+            // }
             this.$refs.DialogAdd.show()
         },
         // 编辑项目
@@ -151,6 +151,7 @@ export default {
                 startRow(row.id).then(()=>{
                     this.$message.success("已启用！")
                     this.getList()
+                    this.getOpenPreTotalData()
                 })
             }).catch(() => {});
         },
@@ -164,6 +165,7 @@ export default {
                 stopRow(row.id).then(()=>{
                     this.$message.success("已禁用！")
                     this.getList()
+                    this.getOpenPreTotalData()
                 })
             }).catch(() => {});
         },
@@ -177,6 +179,7 @@ export default {
                 deleteRow({id:row.id}).then(()=>{
                     this.$message.success("删除成功！")
                     this.getList()
+                    this.getOpenPreTotalData()
                 })
             }).catch(() => {});
         }

@@ -56,3 +56,15 @@ export function downFile(fileUrl, name) {
 			window.URL.revokeObjectURL(url);
 		});
 }
+
+// 文件单位转化
+export function fileUnit(val){
+	let numVal = Number(val)
+	if (numVal < 1024) {
+		return numVal + 'MB'
+	} else if(numVal/1024 < 1024) {
+		return (numVal/1024).toFixed(2) + 'GB'
+	} else if(numVal/1024/1024 < 1024) {
+		return (numVal/1024/1024).toFixed(2) + 'TB'
+	}
+}
