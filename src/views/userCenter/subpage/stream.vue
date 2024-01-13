@@ -153,12 +153,12 @@ export default {
             doRequestOurBimStream(data).then(res=>{
                 this.iframeUrl = `${res.data.url}&webUrl=${this.$config.VUE_APP_REQUEST_URL}`
                 this.preType = res.data.preType==='1' ? true : false
-                this.client.subscribe(`task/${this.taskId}/#`);
-                this.client.subscribe(`preloadEnd/${this.taskId}`);
                 if(this.preType){
                     preloadStart({ taskId: this.taskId })
                 }
                 this.getMonitor();
+                this.client.subscribe(`task/${this.taskId}/#`);
+                this.client.subscribe(`preloadEnd/${this.taskId}`);
             }).catch((e)=>{
                 if(e?.message){
                     this.baseExceptMessge = e.message

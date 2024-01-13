@@ -305,13 +305,14 @@ export default {
                 this.handleMultModle();
             } else {
                 this.getList({key:"vanjian"}).then((res) => {
-                    this.$refs.tree.updateKeyChildren("vanjian", res);
+                    this.$refs.tree && this.$refs.tree.updateKeyChildren("vanjian", res);
                 })
             }
         },
         // 查看有没有合模的自定义构件
         // 合模必然有 uuid vanjian1
         handleMultModle() {
+            if(!this.$refs.tree) return
             const godNodeList = this.$refs.tree.getNode("vanjian1").parent.childNodes;
             const mult = godNodeList.find((item) => {
                 return item.data.typeId === "comp";
@@ -327,7 +328,7 @@ export default {
             }else{
                 // 如果有了自定义构件列表
                 this.getList({key:uuid}).then((res) => {
-                    this.$refs.tree.updateKeyChildren(uuid, res);
+                    this.$refs.tree && this.$refs.tree.updateKeyChildren(uuid, res);
                 })
             }
         },

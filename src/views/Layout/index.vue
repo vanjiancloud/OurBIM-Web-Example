@@ -190,12 +190,12 @@ export default {
                     address: '北方地区',
                     codeImg: require('./img/sun.png')
                 },
-                {
-                    name: '苏经理',
-                    phone: '177 7177 7957',
-                    address: '中部地区',
-                    codeImg: require('./img/su.jpg')
-                },
+                // {
+                //     name: '苏经理',
+                //     phone: '177 7177 7957',
+                //     address: '中部地区',
+                //     codeImg: require('./img/su.jpg')
+                // },
                 {
                     name: '小万',
                     phone: '186 2283 7275',
