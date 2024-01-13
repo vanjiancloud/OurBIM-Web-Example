@@ -57,9 +57,9 @@
         <!-- 天气 -->
         <Weather ref="Weather" :data="{ taskId, appId }" v-show="checkShow('renderingEnvironment')"/>
         <!-- 标签 -->
-        <Label ref="Label" v-show="checkShow('label')" :setProps="{ taskId, appId }" @setTagClick="setTagClick" />
-        <!-- 标签库(未上线) -->
-        <!-- <TagLibrary ref="TagLibrary" v-show="checkShow('label')" :data="{ taskId, appId }"/> -->
+        <Label ref="Label" v-show="checkShow('label')" :data="{ taskId, appId, clickTagData, userId }" />
+        <!-- 标签库 -->
+        <TagLibrary ref="TagLibrary" v-show="checkShow('label')" :data="{ taskId, appId }"/>
         <!-- (视图) -->
         <viewPhoto ref="viewPhoto" v-show="checkShow('view')" :viewPic="showViewPicture" :setProps="{ taskId }" :taskId="taskId" @closeClick="showViewPicture='0'"></viewPhoto>
         <!-- 浏览器构件树，构件管理 -->
@@ -170,6 +170,7 @@ export default {
       copyingPictures: {},//临摹图信息
       client: null, //mqtt
       showOperatingTools: false,//是否打开操作轴
+      clickTagData: null,//点击标签的数据id=9
     };
   },
   computed: {
@@ -280,7 +281,7 @@ export default {
             // 标签
             case 'label':
                 this.$refs.Label.show()
-                // this.$refs.TagLibrary.show()
+                this.$refs.TagLibrary.show()
                 break;
             // 视图
             case 'view':
@@ -500,20 +501,6 @@ export default {
     closePart(type) {
         EventBus.$emit('eventTool', type)
     },
-    setTagClick(e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-05-12 16:49:12
-       * @description: 标签树是否选中
-       */
-      let messageInfo = {
-        prex: "ourbimMessage",
-        type: 30001,
-        data: e,
-        message: "",
-      };
-      this.sentParentIframe(messageInfo);
-    },
     initWebSocket() {
       //初始化weosocket
       const wsuri = connectWebsocket(this.taskId);
@@ -603,6 +590,7 @@ export default {
               this.isProgress = false;
             }
           } else if (realData.id === "9") {
+            this.clickTagData = realData
             let messageInfo = {
                 prex: "ourbimMessage",
                 type: 30001,

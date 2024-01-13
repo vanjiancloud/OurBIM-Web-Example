@@ -16,6 +16,7 @@ export default new Vuex.Store({
         uploadDoc: 0,
         uploadCom: 0,
         uploadGISNum: 0, //上传gis数据服务模块的上传的数
+        tagUploadNum: 0, //上传标签数量
     },
     mutations: {
         changeState(state, data) {

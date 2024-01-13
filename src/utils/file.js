@@ -16,6 +16,32 @@ export function urlToblob(url, func) {
 	};
 }
 
+// base64转blob
+export function base64ToBlob(dataurl) {
+	let arr = dataurl.split(','),
+		mime = arr[0].match(/:(.*?);/)[1],
+		bstr = atob(arr[1]),
+		n = bstr.length,
+		u8arr = new Uint8Array(n)
+	while (n--) {
+		u8arr[n] = bstr.charCodeAt(n)
+	}
+	return new Blob([u8arr], { type: mime })
+}
+
+// base64转file
+export function base64toFile(base64Str, fileName) {
+	let arr = base64Str.split(',');
+	let mime = arr[0].match(/:(.*?);/)[1];
+	let bstr = atob(arr[1]);
+	let n = bstr.length;
+	let u8arr = new Uint8Array(n);
+	while (n--) {
+		u8arr[n] = bstr.charCodeAt(n);
+	}
+	return new File([u8arr], fileName, { type: mime })
+}
+
 
 // 使用fetch函数下载文件
 export function downFile(fileUrl, name) {
@@ -55,6 +81,24 @@ export function downFile(fileUrl, name) {
 			document.body.removeChild(link);
 			window.URL.revokeObjectURL(url);
 		});
+}
+
+// 转base64
+export function getBase64(file) {
+	return new Promise(function(resolve, reject) {
+		let reader = new FileReader()
+		let imgResult = ''
+		reader.readAsDataURL(file)
+		reader.onload = function() {
+			imgResult = reader.result
+		}
+		reader.onerror = function(error) {
+			reject(error)
+		}
+		reader.onloadend = function() {
+			resolve(imgResult)
+		}
+	})
 }
 
 // 文件单位转化

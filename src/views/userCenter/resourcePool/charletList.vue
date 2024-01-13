@@ -8,7 +8,7 @@
         <!-- 搜索 -->
         <div class="search">
             <el-input v-model="search" size="mini" placeholder="请输入您要搜索的内容" prefix-icon="el-icon-search" @change="searchContent()" @keydown.native.stop/>
-            <el-button v-if="levels.tab2Index===1" class="button" :class="{blueBtn1:levels.level ===1,blueBtn1:levels.level ===2}" 
+            <el-button v-if="levels.tab2Index===1" class="button blueBtn1" 
             type="primary" icon="el-icon-plus" size="mini" @click="createGroup(levels.level ===1?'新建分组':'上传贴图')">{{levels.level ===1?'新建分组':'上传贴图'}}</el-button>
         </div>
         <Tab v-model="levels.tab2Index" v-show="levels.level ===1" class="roundTab" :data="typeList" @onTab="onTypeTab" />

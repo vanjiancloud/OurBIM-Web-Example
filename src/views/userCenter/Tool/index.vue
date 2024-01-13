@@ -84,7 +84,7 @@
 <script>
 import { EventBus } from '@/utils/bus.js'
 import { comSwitch ,materialEditorControl } from "@/api/userCenter/resourcePool.js";
-import { controlTagShow } from '@/api/tag_tree.js'
+import { controlTagShow } from '@/api/resource/tag.js'
 import { doAction, conChoiceVisible, invertHidden, displayAllActor } from "@/api/userCenter/index";
 import { openLocate } from '@/api/userCenter/locationCode.js'
 export default {

@@ -9,7 +9,7 @@
         <!-- 贴图库 -->
         <Chartlet ref="Chartlet" v-if="activeName==='1'" :total.sync="total" :groupName.sync="groupName"/>
         <!-- 标签库 -->
-        <Tag ref="Tag" v-if="activeName==='2'"/>
+        <Tag ref="Tag" v-if="activeName==='2'" :total.sync="total" :groupName.sync="groupName"/>
     </el-tabs>
 </template>
 
@@ -38,21 +38,21 @@ export default {
     mounted() { },
     methods: {
         // 切换tab
-        handleClick(tab) {
-            switch (tab.name) {
-                case '0':
-                    this.$refs.Components.getList()
-                    break;
-                case '1':
-                    this.$refs.Chartlet.getList()
-                    break;
-                case '2':
-                    this.$refs.Tag.getList()
-                    break;            
-                default:
-                    break;
-            }
-        },
+        // handleClick(tab) {
+        //     switch (tab.name) {
+        //         case '0':
+        //             this.$refs.Components.getList()
+        //             break;
+        //         case '1':
+        //             this.$refs.Chartlet.getList()
+        //             break;
+        //         case '2':
+        //             this.$refs.Tag.getList()
+        //             break;            
+        //         default:
+        //             break;
+        //     }
+        // },
         // 返回一级
         back(){
             this.groupName = ''

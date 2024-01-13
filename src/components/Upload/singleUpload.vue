@@ -3,7 +3,7 @@
     <el-upload action="#" :show-file-list="false" :accept="accept" :on-change="onChange" :before-upload="beforeAvatarUpload" :auto-upload="autoUpload" :http-request="httpRequest" :disabled="disabled">
         <template v-if="value">
             <img :src="autoUpload?value:changeImg(value)" class="avatar" />
-            <span class="delete" @click.stop="deleteImg"><i class="el-icon-close"></i></span>
+            <span v-if="deleteIcon" class="delete" @click.stop="deleteImg"><i class="el-icon-close"></i></span>
         </template>
         <slot name="icon" v-else>
             <i class="el-icon-plus avatar-uploader-icon"></i>           
@@ -46,6 +46,16 @@ export default {
         params:{
             type: Object,
             default:()=> {},
+        },
+        // 是否显示删除图标
+        deleteIcon:{
+            type: Boolean,
+            default: true,
+        },
+        // 没上传完成是否显示图片
+        showImg:{
+            type: Boolean,
+            default: true,
         }
     },
     data() {
@@ -69,7 +79,8 @@ export default {
             return URL.createObjectURL(file)
         },
         onChange(file){
-            if(!this.autoUpload){
+            this.$emit("onChangeFile", file);
+            if(!this.autoUpload && this.showImg){
                 this.imageUrl = file.raw;
             }
         },
@@ -100,7 +111,7 @@ export default {
                 }
             }else{
                 formData.append("fileUpload", param.file);
-                formData.append("userId", Getuserid());
+                formData.append("userId", Getuserid() || this.$route.query.userId);
             }
             request({
                 method: "post",
@@ -109,7 +120,9 @@ export default {
             }).then((res) => {
                 this.imageUrl = res.data;
                 this.$emit("input", res.data);
-                this.$emit("success", res.data);
+                setTimeout(()=>{
+                    this.$emit("success", res.data);
+                },20)
             });
         },
     },

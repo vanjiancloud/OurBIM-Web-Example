@@ -136,7 +136,7 @@ export default {
                     }
                     this.loading = false;
                     param.onSuccess(res);
-                    this.$emit("onSuccess", res.data)
+                    this.$emit("onSuccess", res.data, { fileName: param.file.name })
                     this.hide();
                 }).catch(() => {
                     // 失败状态
