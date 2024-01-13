@@ -15,8 +15,8 @@
         </div>
         <!-- 内容 -->
         <div class="content">
-            <div class="contentItem" v-for="(item,index) in contentList" :key="index" @click="toLevel2(item)">
-                <el-image class="img" :src="item.tagUrl" lazy></el-image>
+            <div class="contentItem" v-for="(item,index) in contentList" :key="index">
+                <el-image class="img" :src="item.tagUrl" lazy @click="toLevel2(item)"></el-image>
                 <div>{{item.name}}</div>
                 <div class="iconBottom" v-if="levels.tab1Index ===1">
                     <i class="el-icon-edit editIcon" @click.stop="createGroup(levels.level ===1?'编辑分组':'编辑标签样板',item)"></i>
