@@ -869,7 +869,7 @@ export default {
 
 <style lang="less" scoped>
 .operatingStyle{
-    left: 5%;
+    left: 300px;
     right: initial;
 }
 .bim-main {
