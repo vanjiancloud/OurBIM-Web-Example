@@ -1,5 +1,5 @@
 <template>
-    <el-form class="editTag" ref="form" :model="form" label-width="80px">
+    <el-form class="editTag" ref="form" :model="form" label-width="80px" v-if="data.clickTagData">
         <el-form-item label="标签名称">
             <el-input v-model="form.labelName" @keydown.native.stop @change="edit()"></el-input>
         </el-form-item>
@@ -216,6 +216,7 @@ export default {
     },
     watch: {
         'data.clickTagData'(val){
+            if(!val) return
             this.form = this.$options.data().form
             if(val.type==='anchor'){
                 this.form = { ...this.form, labelNameFontSize: 20, sectionFontSize: 20, textContentFontSize:16, ...val }

@@ -47,7 +47,7 @@
                 </div>
             </el-tree>
             <!-- 编辑标签 -->
-            <EditTag :data="data" v-if="data.clickTagData"/>
+            <EditTag :data="data"/>
         </div>
         <!-- 编辑标签名称 -->
         <DialogEditTagName ref="DialogEditTagName" :data="data"/>
