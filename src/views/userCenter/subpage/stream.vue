@@ -262,6 +262,9 @@ export default {
         },
         // 监听刷新浏览器
         unLoad(){
+            window.addEventListener('error', (e)=>{
+                this.sendMqtt()
+            });
             window.addEventListener('beforeunload', (event)=> {
                 this.sendMqtt()
             });
