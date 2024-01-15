@@ -15,6 +15,7 @@
             <el-tree
                 ref="refTag"
                 class="tree"
+                :class="{treeHeight:data.clickTagData}"
                 :data="DataTagTree"
                 :props="propsTag"
                 :expand-on-click-node="false"
@@ -47,7 +48,7 @@
                 </div>
             </el-tree>
             <!-- 编辑标签 -->
-            <EditTag :data="data"/>
+            <EditTag :data="data" @onSuccess="reloadTree()" style="height: 47%;overflow: auto;"/>
         </div>
         <!-- 编辑标签名称 -->
         <DialogEditTagName ref="DialogEditTagName" :data="data"/>
@@ -238,6 +239,10 @@ export default {
     }
 }
 .tag-tree {
+    .treeHeight{
+        height: 47%;
+        overflow: auto;
+    }
     .tree{
         /deep/ .el-upload {
             width: 20px;

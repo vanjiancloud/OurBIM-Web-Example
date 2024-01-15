@@ -253,7 +253,7 @@ export default {
             let arrIndex = 0;
             // 表头和内容数组拼接起来回显
             let newSlotList = this.form.tagStyle && (new Array(this.form.slotNum.column).fill(this.form.tagStyle.title)).concat(this.form.tagStyle.slotList)
-            for (let i = 0; i < this.form.slotNum.row; i++) {    
+            for (let i = 0; i < this.form.slotNum.row+1; i++) {    
                 slotList = []
                 for (let index = 0; index < this.form.slotNum.column; index++) {
                     this.$set(obj, 'text' + (index+1), this.form.tableStyle[i]?.[`text${index+1}`] || ((i===0&&index===0) ? 'Title' : this.numberToLLetter(index+1)+i))

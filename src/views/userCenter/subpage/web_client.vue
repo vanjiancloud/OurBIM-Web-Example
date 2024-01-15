@@ -835,7 +835,6 @@ export default {
       if (this.websock) {
         this.websock.close(); //离开路由之后断开websocket连接
         this.websock = null;
-        this.webUrl = null;
       }
     },
     sentParentIframe(e) {

@@ -1,10 +1,10 @@
 <template>
     <el-form class="editTag" ref="form" :model="form" label-width="80px" v-if="data.clickTagData">
         <el-form-item label="标签名称">
-            <el-input v-model="form.labelName" @keydown.native.stop @change="edit()"></el-input>
+            <el-input v-model="form.labelName" @keydown.native.stop @change="editAndReList()"></el-input>
         </el-form-item>
-        <el-form-item label="标签类型" prop="type">
-            <el-cascader v-model="form.changeType" :options="newTagtypeList" :props="{ expandTrigger: 'hover', label: 'name', value:'key' }" @change="changeType"></el-cascader>
+        <el-form-item label="标签样式" prop="type">
+            <el-cascader popper-class="styleCascader" v-model="form.changeType" :options="newTagtypeList" :props="{ expandTrigger: 'hover', label: 'name', value:'key' }" @change="changeType"></el-cascader>
         </el-form-item>
         <el-form-item prop="type" label-width="0">
             <div class="coordinate">            
@@ -21,21 +21,21 @@
                 <template v-if="form.type==='customizeInWorld'">
                     <div class="TagTitle" style="margin: -15px 10px 0 10px;">角度：</div>
                     <div class="coordinateItemInput">
-                        P<el-input-number v-model="form.location.x" controls-position="right" size="mini"
+                        P<el-input-number v-model="form.rotation.p" controls-position="right" size="mini"
                             @keydown.native.stop @change="edit()" />
-                        Y<el-input-number v-model="form.location.y" controls-position="right" size="mini"
+                        Y<el-input-number v-model="form.rotation.y" controls-position="right" size="mini"
                             @keydown.native.stop @change="edit()" />
-                        R<el-input-number v-model="form.location.z" controls-position="right" size="mini"
+                        R<el-input-number v-model="form.rotation.r" controls-position="right" size="mini"
                             @keydown.native.stop @change="edit()" />
                         <i class="el-icon-refresh-right"></i>
                     </div>
                     <div class="TagTitle" style="margin: -15px 10px 0 10px;">比例：</div>
                     <div class="coordinateItemInput">
-                        X<el-input-number v-model="form.location.x" controls-position="right" size="mini"
+                        X<el-input-number v-model="form.scale.x" controls-position="right" size="mini"
                             @keydown.native.stop @change="edit()" />
-                        Y<el-input-number v-model="form.location.y" controls-position="right" size="mini"
+                        Y<el-input-number v-model="form.scale.y" controls-position="right" size="mini"
                             @keydown.native.stop @change="edit()" />
-                        Z<el-input-number v-model="form.location.z" controls-position="right" size="mini"
+                        Z<el-input-number v-model="form.scale.z" controls-position="right" size="mini"
                             @keydown.native.stop @change="edit()" />
                         <i class="el-icon-refresh-right"></i>
                     </div>
@@ -49,10 +49,10 @@
             </el-form-item>
             <el-form-item label-width="0">
                 <div class="TagTitle">图标尺寸</div>
-                <span class="unit">长</span>
+                <span class="unit">宽</span>
                 <el-input v-model="form.iconSize.width" @keydown.native.stop placeholder="宽度(px)" style="width: 30%;;margin-left: 8px;" @change="edit()"></el-input>
                 <span class="unit">px</span>
-                <span class="unit">宽</span>
+                <span class="unit">高</span>
                 <el-input v-model="form.iconSize.height" @keydown.native.stop placeholder="高度(px)" style="width: 30%;margin-left: 8px;" @change="edit()"></el-input>
                 <span class="unit">px</span>
             </el-form-item>
@@ -108,7 +108,7 @@
                 <SingleUpload v-model="form.tagUrl" url="/tagControl/uploadTagImg" accept="image/png" @success="uploadSuccess"></SingleUpload>
             </el-form-item>
             <el-form-item v-if="form.type==='customizeInWorld'" label="面板发光强度" label-width="130px">
-                <el-input v-model="form.title" @keydown.native.stop v-only-number="{precision:0}"></el-input>
+                <el-input v-model="form.intensityOfEmissiveColor" @keydown.native.stop v-only-number="{precision:1}" @change="edit()"></el-input>
             </el-form-item>
             <el-form-item label="数据面板背景图片" label-width="130px">
                 <SingleUpload v-model="form.iconPath" url="/tagControl/uploadTagImg" accept="image/png" @success="uploadSuccessBg"></SingleUpload>
@@ -139,7 +139,7 @@
         <template v-else>
             <el-form-item label-width="0">
                 <div class="TagTitle">图标尺寸</div>
-                <span class="TagTitle">长</span>
+                <span class="unit">长</span>
                 <el-input v-model="form.iconSize.width" @keydown.native.stop placeholder="宽度(px)" style="width: 30%;;margin-left: 8px;" @change="edit()"></el-input>
                 <span class="unit">px</span>
                 <span class="unit">宽</span>
@@ -154,14 +154,14 @@
             </el-form-item>
             <el-form-item label="线框颜色" class="colorBox">
                 <div class="colorContent">
-                    <el-color-picker @change="edit" v-model="form.color1" show-alpha></el-color-picker>
-                    <span>{{ form.color }}</span>
+                    <el-color-picker v-model="form.color1" show-alpha></el-color-picker>
+                    <span>{{ form.color1 }}</span>
                 </div>
             </el-form-item>
             <el-form-item label="文字颜色" class="colorBox">
                 <div class="colorContent">
-                    <el-color-picker @change="edit" v-model="form.color2" show-alpha></el-color-picker>
-                    <span>{{ form.color }}</span>
+                    <el-color-picker v-model="form.color2" show-alpha></el-color-picker>
+                    <span>{{ form.color2 }}</span>
                 </div>
             </el-form-item>
         </template>
@@ -173,7 +173,7 @@
 </template>
 
 <script>
-import { listUserTag, updateTags, sendDataToTag, updateTagStyle } from '@/api/resource/tag.js'
+import { listUserTag, updateTags, sendDataToTag } from '@/api/resource/tag.js'
 import { TagtypeList, fontType } from './json'
 import SingleUpload from "@/components/Upload/singleUpload.vue"
 export default {
@@ -191,6 +191,16 @@ export default {
             form: {
                 changeType: [],
                 location: {},
+                scale: {
+                    x:1,
+                    y:1,
+                    z:1
+                },
+                rotation: {
+                    p:0,
+                    y:0,
+                    r:0
+                },
                 iconSize: {},
                 slotNum: {
                     row:4,
@@ -237,6 +247,22 @@ export default {
                     x: location[0].split('=')[1],
                     y: location[1].split('=')[1],
                     z: location[2].split('=')[1]
+                }
+            }
+            if(val.scale){
+                let scale = val.scale.split(' ')
+                this.form.scale = {
+                    x: scale[0].split('=')[1],
+                    y: scale[1].split('=')[1],
+                    z: scale[2].split('=')[1]
+                }
+            }
+            if(val.rotation){
+                let rotation = val.rotation.split(' ')
+                this.form.rotation = {
+                    p: rotation[0].split('=')[1],
+                    y: rotation[1].split('=')[1],
+                    r: rotation[2].split('=')[1]
                 }
             }
             if(val.iconSize){
@@ -322,15 +348,22 @@ export default {
             let fontColorArr = new Array(this.form.slotNum.column).fill(tagData.titleColor).concat(tagData.slotColorList)
             let titleDataArr = new Array(this.form.slotNum.column).fill(tagData.titleData).concat(tagData.slotDataList)
             let newSlotList = this.form.tagStyleInfo && (new Array(this.form.slotNum.column).fill(JSON.parse(this.form.tagStyleInfo.title))).concat(JSON.parse(this.form.tagStyleInfo.slotList))
-            for (let i = 0; i < this.form.slotNum.row; i++) {    
+            for (let i = 0; i < this.form.slotNum.row+1; i++) {    
                 slotList = []
                 for (let index = 0; index < this.form.slotNum.column; index++) {
                     let hasList = newSlotList[arrIndex]
-                    let fontColor = fontColorArr[arrIndex] || hasList.fontColor
+                    let fontColor = fontColorArr[arrIndex] || hasList?.fontColor || this.styleForm.fontColor
                     let slotDataList = titleDataArr[arrIndex]
                     let title = this.form.tableStyle[i]?.[`text${index+1}`] || slotDataList || ((i===0&&index===0) ? 'Title' : this.numberToLLetter(index+1)+i)
                     this.$set(obj, 'text' + (index+1), title)
-                    slotList.push({...hasList,margin: hasList.margin.split(','),padding: hasList.padding.split(','), size: { width: hasList.size.split('*')[0], height:hasList.size.split('*')[1]},titleData:title,fontColor})
+                    slotList.push({
+                        ...hasList,
+                        margin: hasList?.margin.split(',') || this.styleForm.margin,
+                        padding: hasList?.padding.split(',') || this.styleForm.padding, 
+                        size: { width: hasList?.size.split('*')[0] || this.styleForm.size.width, height: hasList?.size.split('*')[1] || this.styleForm.size.height},
+                        titleData:title,
+                        fontColor
+                    })
                     arrIndex++;
                 }
                 arr.push({ ...JSON.parse(JSON.stringify(obj)), slotList })
@@ -338,7 +371,8 @@ export default {
             this.form.tableStyle = arr
         },
         edit(){
-            let { labelName, autoHiddenDistance, tagId, type, location, section, textContent, labelNameFontSize, sectionFontSize, textContentFontSize, bAnchorAlwaysDisplay } = this.form
+            let { labelName, autoHiddenDistance, tagId, type, location, rotation, scale, section, textContent, 
+                labelNameFontSize, sectionFontSize, textContentFontSize, bAnchorAlwaysDisplay, intensityOfEmissiveColor } = this.form
             let newUrl = this.form.tagUrl && this.form.tagUrl.substring(this.form.tagUrl.lastIndexOf("\/") + 1,this.form.tagUrl.length)
             let data = {
                 labelName,
@@ -373,7 +407,15 @@ export default {
                     ...data,
                     tagUrl: newUrl,
                     iconPath,
-                    tagStyleId:this.form.tagStyleInfo.labelStyleUuid
+                    tagStyleId:this.form.tagStyleInfo.labelStyleUuid,
+                }
+                if(type === 'customizeInWorld'){
+                    data = {
+                        ...data,
+                        rotation:`P=${rotation.p} Y=${rotation.y} R=${rotation.r}`,
+                        scale:`X=${scale.x} Y=${scale.y} Z=${scale.z}`,
+                        intensityOfEmissiveColor,
+                    }
                 }
             }else{
                 data = {
@@ -384,13 +426,18 @@ export default {
             }
             updateTags({ taskId: this.form.taskid }, [data]).then(()=>{
                 this.$message.success('修改成功')
-                this.getTagData(tagId)
             })
         },
         // 改变标签类型
         changeType(e){
             this.form.type = e[e.length-1]
             this.edit()
+        },
+        editAndReList(){
+            this.edit()
+            setTimeout(()=>{
+                this.$emit('onSuccess')
+            },500)
         },
         // 数据表的内容接口请求
         editDataApi(){
@@ -434,15 +481,10 @@ export default {
             this.styleForm.titleData = obj[`text${this.focusInput.colIndex+1}`]
             this.editDataApi()
         },
-        editStyle(){
-            // updateTagStyle({taskId:this.data.taskId,tagStyleId:this.form.tagInfo.tagStyleId},styleData).then(()=>{
-            //     this.$message.success('修改成功')
-            // })
-        },
         uploadSuccess(e){
             if(e){
                 this.$set(this.form, 'tagUrl', `${this.$config.VUE_APP_REQUEST_URL}/tag/${e}`)
-                this.edit()
+                this.editAndReList()
             }
         },
         uploadSuccessBg(e){
@@ -455,6 +497,7 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+
 .focusInput{
     border: 2px solid #3e9af8;
     border-radius: 5px;
@@ -537,6 +580,13 @@ export default {
     }
     .el-table--border::after, .el-table--group::after, .el-table::before{
         background: rgba(36, 38, 43, 1);
+    }
+}
+</style>
+<style lang="less">
+.styleCascader{
+    .el-cascader-panel{
+        flex-direction: row-reverse;
     }
 }
 </style>
