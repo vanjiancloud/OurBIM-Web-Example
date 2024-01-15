@@ -1,5 +1,6 @@
 <template>
     <el-form class="editTag" ref="form" :model="form" label-width="80px" v-if="data.clickTagData">
+        <div class="tagBigTitle">标签信息</div>
         <el-form-item label="标签名称">
             <el-input v-model="form.labelName" @keydown.native.stop @change="editAndReList()"></el-input>
         </el-form-item>
@@ -497,7 +498,13 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-
+.tagBigTitle{
+    font-size: 16px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    font-weight: 500;
+    color: #00AAF0;
+    margin: 0 0 15px 0;
+}
 .focusInput{
     border: 2px solid #3e9af8;
     border-radius: 5px;
