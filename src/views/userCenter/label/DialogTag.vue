@@ -312,13 +312,20 @@ export default {
                 };
                 if(this.form.tagId){
                     if(this.form.type!=='default'){
-                        updateTagStyle({taskId:this.data.taskId,tagStyleId:this.form.tagInfo.tagStyleId},styleData)
+                        updateTagStyle({taskId:this.data.taskId,tagStyleId:this.form.tagInfo.tagStyleId},styleData).then(()=>{
+                            editUserTag(data).then(() => {
+                                this.$message.success('修改成功！')
+                                this.hide();
+                                this.$parent.$parent.getTagList(this.form.parentId);
+                            });
+                        })
+                    }else{
+                        editUserTag(data).then(() => {
+                            this.$message.success('修改成功！')
+                            this.hide();
+                            this.$parent.$parent.getTagList(this.form.parentId);
+                        });
                     }
-                    editUserTag(data).then(() => {
-                        this.$message.success('修改成功！')
-                        this.hide();
-                        this.$parent.$parent.getTagList(this.form.parentId);
-                    });
                 }else{
                     if(this.form.type!=='default'){
                         addTagStyle({taskId:this.data.taskId},styleData).then(res=>{

@@ -151,6 +151,8 @@ export default {
                 taskId: this.taskId
             }
             doRequestOurBimStream(data).then(res=>{
+                console.info(`%cTaskId:${this.taskId}`,"font-size:18px;background:#67c23a;color:#ffffff")
+                console.info(`%cIP:${new URLSearchParams(res.data.url).get('renderServerIp')}`,"font-size:18px;background:#67c23a;color:#ffffff")
                 this.iframeUrl = `${res.data.url}&webUrl=${this.$config.VUE_APP_REQUEST_URL}`
                 this.preType = res.data.preType==='1' ? true : false
                 if(this.preType){

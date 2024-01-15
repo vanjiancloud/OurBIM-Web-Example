@@ -95,7 +95,6 @@ export default {
         // if(this.data.isGis){
         //     this.tabList[1].hidden = true
         // }
-        console.log('🚀🚀🚀',this.tabList);
     },
     methods: {
         show() {
