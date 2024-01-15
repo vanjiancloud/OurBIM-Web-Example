@@ -408,7 +408,7 @@ export default {
                     ...data,
                     tagUrl: newUrl,
                     iconPath,
-                    tagStyleId:this.form.tagStyleInfo.labelStyleUuid,
+                    tagInfo:{ tagStyleId:this.form.changeType[this.form.changeType.length-1] }
                 }
                 if(type === 'customizeInWorld'){
                     data = {
@@ -431,7 +431,7 @@ export default {
         },
         // 改变标签类型
         changeType(e){
-            this.form.type = e[e.length-1]
+            this.form.type = e[0]
             this.edit()
         },
         editAndReList(){
