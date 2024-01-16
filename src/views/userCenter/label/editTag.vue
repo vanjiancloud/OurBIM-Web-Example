@@ -315,6 +315,7 @@ export default {
             }
         },
         rgbaToHex(rgba){
+            if(!rgba) return ''
             if(rgba.indexOf('#')>-1){
                 return rgba
             }
