@@ -188,7 +188,7 @@ export default {
     data() {
         return {
             fontType,
-            newTagtypeList: [],
+            newTagtypeList: TagtypeList,
             form: {
                 changeType: [],
                 location: {},
