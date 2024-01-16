@@ -48,10 +48,10 @@
                 </div>
             </el-tree>
             <!-- 编辑标签 -->
-            <EditTag :data="data" @onSuccess="reloadTree()" style="height: 47%;overflow: auto;"/>
+            <EditTag ref="EditTag" :data="data" @onSuccess="reloadTree()" style="height: 47%;overflow: auto;"/>
         </div>
         <!-- 编辑标签名称 -->
-        <DialogEditTagName ref="DialogEditTagName" :data="data"/>
+        <DialogEditTagName ref="DialogEditTagName" :data="data" @onSuccess="editTagName"/>
         <DialogUploadImg ref="DialogUploadImg" :data="data"/>
     </Drawer>
 </template>
@@ -224,6 +224,13 @@ export default {
             const reamVal = data.fileName.indexOf(value) !== -1
             return reamVal
         },
+        // 编辑名称后更新标签信息
+        editTagName(){
+            if(this.data.clickTagData){
+                this.reloadTree();
+                this.$refs.EditTag.getAppIdTag();
+            }
+        }
     }
 }
 </script>

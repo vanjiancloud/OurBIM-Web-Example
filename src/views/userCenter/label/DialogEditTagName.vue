@@ -64,7 +64,7 @@ export default {
                 updateTag(data).then(() => {
                     this.$message.success('修改成功！')
                     this.hide();
-                    this.$parent.$parent.reloadTree();
+                    this.$emit('onSuccess')
                 });
             })
         },

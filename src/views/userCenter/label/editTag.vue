@@ -174,7 +174,7 @@
 </template>
 
 <script>
-import { listUserTag, updateTags, sendDataToTag } from '@/api/resource/tag.js'
+import { listUserTag, updateTags, sendDataToTag, clickTag } from '@/api/resource/tag.js'
 import { TagtypeList, fontType } from './json'
 import SingleUpload from "@/components/Upload/singleUpload.vue"
 export default {
@@ -228,6 +228,14 @@ export default {
     watch: {
         'data.clickTagData'(val){
             if(!val) return
+            this.getData(val)
+        }
+    },
+    computed: {},
+    created() {},
+    mounted() {},
+    methods: {
+        getData(val){
             this.form = this.$options.data().form
             if(val.type==='anchor'){
                 this.form = { ...this.form, labelNameFontSize: 20, sectionFontSize: 20, textContentFontSize:16, ...val }
@@ -279,12 +287,7 @@ export default {
                 this.$set(this.form,'changeType',[val.type])
             }
             this.typeData()
-        }
-    },
-    computed: {},
-    created() {},
-    mounted() {},
-    methods: {
+        },
         // 类型数据
         typeData(){
             let arr = [
@@ -408,7 +411,7 @@ export default {
                     ...data,
                     tagUrl: newUrl,
                     iconPath,
-                    tagInfo:{ tagStyleId:this.form.changeType[this.form.changeType.length-1] }
+                    labelStyleUuid: this.form.changeType[this.form.changeType.length-1] 
                 }
                 if(type === 'customizeInWorld'){
                     data = {
@@ -427,12 +430,21 @@ export default {
             }
             updateTags({ taskId: this.form.taskid }, [data]).then(()=>{
                 this.$message.success('修改成功')
+                this.getAppIdTag()
             })
+        },
+        // 获取标签数据
+        getAppIdTag(){
+            let params = {
+                taskId: this.data.taskId,
+                tagId: this.form.tagId
+            }
+            clickTag(params)
         },
         // 改变标签类型
         changeType(e){
             this.form.type = e[0]
-            this.edit()
+            this.editAndReList()
         },
         editAndReList(){
             this.edit()

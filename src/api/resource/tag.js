@@ -194,3 +194,12 @@ export function sendDataToTag(params,data) {
         data
     })
 }
+
+// 获取当前项目中具体的某个标签信息
+export function getAppIdTag(params){
+    return request({
+        url: '/tagControl/getAppIdTag',
+        method: 'get',
+        params
+    })
+}
