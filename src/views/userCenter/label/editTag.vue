@@ -71,10 +71,10 @@
             </el-form-item>
             <el-form-item label-width="0">
                 <div class="TagTitle">锚点图标尺寸</div>
-                <span class="unit">长</span>
+                <span class="unit">宽</span>
                 <el-input v-model="form.iconSize.width" @keydown.native.stop placeholder="宽度(px)" style="width: 30%;;margin-left: 8px;" @change="edit()"></el-input>
                 <span class="unit">px</span>
-                <span class="unit">宽</span>
+                <span class="unit">高</span>
                 <el-input v-model="form.iconSize.height" @keydown.native.stop placeholder="高度(px)" style="width: 30%;margin-left: 8px;" @change="edit()"></el-input>
                 <span class="unit">px</span>
             </el-form-item>
@@ -135,6 +135,26 @@
                     </div>
                 </el-form-item>
             </template>
+        </template>
+        <template v-else-if="['webui','webui3d'].includes(form.type)">
+            <el-form-item label-width="0">
+                <div class="TagTitle">WebUI面板尺寸</div>
+                <span class="unit">长</span>
+                <el-input v-model="form.iconSize.width" @keydown.native.stop placeholder="宽度(px)" style="width: 30%;;margin-left: 8px;" @change="edit()"></el-input>
+                <span class="unit">px</span>
+                <span class="unit">宽</span>
+                <el-input v-model="form.iconSize.height" @keydown.native.stop placeholder="高度(px)" style="width: 30%;margin-left: 8px;" @change="edit()"></el-input>
+                <span class="unit">px</span>
+            </el-form-item>
+            <el-form-item label="面板颜色" class="colorBox">
+                <div class="colorContent">
+                    <el-color-picker v-model="form.color" show-alpha></el-color-picker>
+                    <span>{{ form.color }}</span>
+                </div>
+            </el-form-item>
+            <el-form-item label="URL地址">
+                <el-input v-model="form.webUiUrl" @keydown.native.stop></el-input>
+            </el-form-item>
         </template>
         <!-- 其他类型普通标签 -->
         <template v-else>
@@ -299,7 +319,7 @@ export default {
             ]
             listUserTag({userId: this.data.userId}).then(res=>{
                 res.data.forEach(e=>{
-                    e.children.forEach(eChild=>{
+                    e.children&&e.children.forEach(eChild=>{
                         if(['anchorCustomize','customize','customizeInWorld'].includes(eChild.type)){
                             arr[0].children.push({ ...eChild, key: eChild.tagStyle.labelStyleUuid })
                         }
@@ -496,16 +516,12 @@ export default {
             this.editDataApi()
         },
         uploadSuccess(e){
-            if(e){
-                this.$set(this.form, 'tagUrl', `${this.$config.VUE_APP_REQUEST_URL}/tag/${e}`)
-                this.editAndReList()
-            }
+            this.$set(this.form, 'tagUrl', `${e ? this.$config.VUE_APP_REQUEST_URL+'/tag/'+e:''}`)
+            this.editAndReList()
         },
         uploadSuccessBg(e){
-            if(e){
-                this.$set(this.form, 'iconPath', `${this.$config.VUE_APP_REQUEST_URL}/tag/${e}`)
-                // this.edit()
-            }
+            this.$set(this.form, 'iconPath', `${e ? this.$config.VUE_APP_REQUEST_URL+'/tag/'+e:''}`)
+            // this.edit()
         },
     }
 }
@@ -525,8 +541,8 @@ export default {
 .editTag{
     color: #ffffff;
     border-top: 1px solid rgba(70, 70, 70, 1);
-    margin: 20px 0px;
-    padding: 15px 4px;
+    margin-top: 20px;
+    padding: 20px 4px 0 4px;
     /deep/.el-form-item__label{
         color: #ffffff;
     }

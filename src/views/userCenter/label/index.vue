@@ -48,7 +48,7 @@
                 </div>
             </el-tree>
             <!-- 编辑标签 -->
-            <EditTag ref="EditTag" :data="data" @onSuccess="reloadTree()" style="height: 47%;overflow: auto;"/>
+            <EditTag ref="EditTag" :data="data" @onSuccess="reloadTree()" style="height: 48.5%;overflow: auto;"/>
         </div>
         <!-- 编辑标签名称 -->
         <DialogEditTagName ref="DialogEditTagName" :data="data" @onSuccess="editTagName"/>
@@ -247,7 +247,7 @@ export default {
 }
 .tag-tree {
     .treeHeight{
-        height: 47%;
+        height: 49%;
         overflow: auto;
     }
     .tree{
@@ -264,7 +264,7 @@ export default {
     }
     .tree-content {
         margin: 0 auto;
-        height: ~'calc(100% - 130px)';
+        height: ~'calc(100% - 120px)';
         width: ~'calc(100% - 20px)';
         overflow-x: hidden;
         overflow-y: auto;

@@ -20,7 +20,15 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <template v-if="form.type !=='default'">
+            <el-form-item v-if="!['anchorCustomize','customize','customizeInWorld'].includes(form.type)" :label="['webui','webui3d'].includes(form.type)?'WebUI面板尺寸:':'图标尺寸:'">
+                <span class="TagTitle">宽</span>
+                <el-input v-model="form.iconSize.width" v-only-number="{min:0}" @keydown.native.stop placeholder="宽度(px)" style="width: 30%;;margin-left: 8px;"></el-input>
+                <span class="unit">px</span>
+                <span class="unit">高</span>
+                <el-input v-model="form.iconSize.height" v-only-number="{min:0}" @keydown.native.stop placeholder="高度(px)" style="width: 30%;margin-left: 8px;"></el-input>
+                <span class="unit">px</span>
+            </el-form-item>
+            <template v-if="['anchorCustomize','customize','customizeInWorld'].includes(form.type)">
                 <el-form-item prop="iconPath" label="数据面板背景图片">
                     <SingleUpload v-model="form.iconPath" url="/tagControl/uploadTagImg" accept="image/png" @success="uploadSuccessBg"></SingleUpload>
                 </el-form-item>
@@ -120,6 +128,17 @@
                     </el-form-item>
                 </template>
             </template>
+            <template v-if="['webui','webui3d'].includes(form.type)">
+                <el-form-item label="URL地址">
+                    <el-input v-model="form.tagInfo.url" @keydown.native.stop></el-input>
+                </el-form-item>
+                <el-form-item label="面板颜色" class="colorBox">
+                    <div class="colorContent">
+                        <el-color-picker v-model="form.tagInfo.color" show-alpha></el-color-picker>
+                        <span>{{ form.tagInfo.color }}</span>
+                    </div>
+                </el-form-item>
+            </template>
         </el-form>
         <span slot="footer" class="dialog-footer">
             <el-button @click="hide()">取 消</el-button>
@@ -160,11 +179,16 @@ export default {
                     width: 400,
                     height: 210
                 },
+                iconSize: {
+                    width: 300,
+                    height: 200
+                },
                 slotNum: {
                     row:4,
                     column:3,
                 },
-                tableStyle: []
+                tableStyle: [],
+                tagInfo: {}
             },
             // 样式表单
             styleForm: {
@@ -209,6 +233,11 @@ export default {
                         this.$set(this.form, 'labelSize', { width:row.tagStyle.labelSize.split('*')[0], height:row.tagStyle.labelSize.split('*')[1] })
                         this.$set(this.form, 'slotNum', { row:row.tagStyle.slotNum.split('*')[0], column:row.tagStyle.slotNum.split('*')[1] })
                     }
+                    if(row.tagInfo){
+                        if(row.tagInfo.iconSize){
+                            this.$set(this.form, 'iconSize', { width:row.tagInfo.iconSize.split('*')[0], height:row.tagInfo.iconSize.split('*')[1] })
+                        }
+                    }
                 }
                 if(row.parentId){
                     this.$set(this.form, 'parentId', row.parentId)
@@ -220,14 +249,10 @@ export default {
             this.dialogVisible = false;
         },
         uploadSuccess(e){
-            if(e){
-                this.$set(this.form, 'tagUrl', `${this.$config.VUE_APP_REQUEST_URL}/tag/${e}`)
-            }
+            this.$set(this.form, 'tagUrl', `${e ? this.$config.VUE_APP_REQUEST_URL+'/tag/'+e:''}`)
         },
         uploadSuccessBg(e){
-            if(e){
-                this.$set(this.form, 'iconPath', `${this.$config.VUE_APP_REQUEST_URL}/tag/${e}`)
-            }
+            this.$set(this.form, 'iconPath', `${e ? this.$config.VUE_APP_REQUEST_URL+'/tag/'+e:''}`)
         },
         // 合并列
         objectSpanMethods({ row, column, rowIndex, columnIndex }){
@@ -280,6 +305,20 @@ export default {
             this.styleForm = arr[colIndex]&&Object.keys(arr[colIndex]) ? arr[colIndex] : this.$options.data().styleForm
             this.form.tableStyle[rowIndex].slotList[colIndex] = this.styleForm
         },
+        addApi(data){
+            addUserTag(data).then(() => {
+                this.$message.success('添加成功！')
+                this.hide();
+                this.$parent.$parent.getTagList(this.form.parentId);
+            });
+        },
+        editApi(data){
+            editUserTag(data).then(() => {
+                this.$message.success('修改成功！')
+                this.hide();
+                this.$parent.$parent.getTagList(this.form.parentId);
+            });
+        },
         submit() {
             this.$refs.form.validate((valid) => {
                 if (!valid) return false;
@@ -305,42 +344,30 @@ export default {
                 }
 
                 let newUrl = this.form.tagUrl && this.form.tagUrl.substring(this.form.tagUrl.lastIndexOf("\/") + 1,this.form.tagUrl.length)
-                let { type, name, parentId, tagId, tagInfo } = this.form
+                let { type, name, parentId, tagId, tagInfo, iconSize } = this.form
                 let data = {
-                    type, name, parentId, tagId, tagInfo,
-                    tagUrl: newUrl
+                    type, name, parentId, tagId,
+                    tagUrl: newUrl,
+                    tagInfo:{
+                        ...tagInfo,
+                        iconSize: (iconSize.width || '') + '*' + (iconSize.height || '')
+                    }
                 };
                 if(this.form.tagId){
-                    if(this.form.type!=='default'){
+                    if(['anchorCustomize','customize','customizeInWorld'].includes(this.form.type)){
                         updateTagStyle({taskId:this.data.taskId,tagStyleId:this.form.tagInfo.tagStyleId},styleData).then(()=>{
-                            editUserTag(data).then(() => {
-                                this.$message.success('修改成功！')
-                                this.hide();
-                                this.$parent.$parent.getTagList(this.form.parentId);
-                            });
+                            this.editApi(data)
                         })
                     }else{
-                        editUserTag(data).then(() => {
-                            this.$message.success('修改成功！')
-                            this.hide();
-                            this.$parent.$parent.getTagList(this.form.parentId);
-                        });
+                        this.editApi(data)
                     }
                 }else{
-                    if(this.form.type!=='default'){
+                    if(['anchorCustomize','customize','customizeInWorld'].includes(this.form.type)){
                         addTagStyle({taskId:this.data.taskId},styleData).then(res=>{
-                            addUserTag({ ...data,tagInfo:{ tagStyleId:res.data } }).then(() => {
-                                this.$message.success('添加成功！')
-                                this.hide();
-                                this.$parent.$parent.getTagList(this.form.parentId);
-                            });
+                            this.addApi({ ...data,tagInfo:{ tagStyleId:res.data } })
                         })
-                    }else{
-                        addUserTag(data).then(() => {
-                            this.$message.success('添加成功！')
-                            this.hide();
-                            this.$parent.$parent.getTagList(this.form.parentId);
-                        });
+                    } else{
+                        this.addApi(data)
                     }
                 }
             })

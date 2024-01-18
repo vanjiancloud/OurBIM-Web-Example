@@ -81,9 +81,7 @@ export default {
     watch: {},
     computed: {},
     created() {},
-    mounted() {
-        this.getList()
-    },
+    mounted() {},
     destroyed () {
         EventBus.$off('eventTool')
     },
@@ -91,6 +89,7 @@ export default {
         show() {
             this.showDrawer = true
             this.$refs.Drawer.show()
+            this.getList()
         },
         close() {
             this.showDrawer = false
@@ -118,21 +117,39 @@ export default {
                 this.levels.level = 2;
                 this.levels.groupName = item.name;
                 this.levels.groupId = item.tagId
-                this.getTagList(item.tagId)
+                if(this.levels.tab1Index ===1){
+                    this.getTagList(item.tagId)
+                }else{
+                    this.contentList = item.children || []
+                }
                 return
             }
             if(this.levels.level === 2){
                 let newUrl = item.tagUrl && item.tagUrl.substring(item.tagUrl.lastIndexOf("\/") + 1,item.tagUrl.length)
+                let tagGroupId = this.$parent.$refs.Label.activeTree?.isFolder === '1' ? this.$parent.$refs.Label.activeTree?.id : ''
                 let data = {
                     taskId: this.data.taskId,
                     type: item.type,
                     tagName: item.name,
-                    tagUrl: newUrl
+                    tagUrl: ['anchorCustomize','customize','customizeInWorld','default','anchor'].includes(item.type) ? newUrl : '',
+                    tagGroupId
                 }
                 if(['anchorCustomize','customize','customizeInWorld'].includes(item.type)){
                     data = {
                         ...data,
                         tagStyleId: item.tagInfo.tagStyleId
+                    }
+                } else if(['webui','webui3d'].includes(item.type)){
+                    data = {
+                        ...data,
+                        url: item?.tagInfo?.url || 'https://www.ourbim.com',
+                        iconSize: item?.tagInfo?.iconSize,
+                        color: this.rgbaToHex(item?.tagInfo?.color)
+                    }
+                }else {
+                    data = {
+                        ...data,
+                        iconSize: item?.tagInfo?.iconSize,
                     }
                 }
                 this.$parent.hideTool(true);
@@ -145,6 +162,18 @@ export default {
                 return
             }
         },
+        rgbaToHex(rgba){
+            if(!rgba) return ''
+            if(rgba.indexOf('#')>-1){
+                return rgba
+            }
+            var values = rgba.replace(/rgba?\(/, '').replace(/\)/, '').replace(/[\s+]/g, '').split(',');
+            var a = parseFloat(values[3] || 1),
+            r = Math.floor(a * parseInt(values[0]) + (1 - a) * 255),
+            g = Math.floor(a * parseInt(values[1]) + (1 - a) * 255),
+            b = Math.floor(a * parseInt(values[2]) + (1 - a) * 255);
+            return "#" + ("0" + r.toString(16)).slice(-2) + ("0" + g.toString(16)).slice(-2) + ("0" + b.toString(16)).slice(-2);
+        },
         // 获取分组下的标签
         getTagList(groupIds){
             listUserTagByGroupId({ groupIds }).then(res=>{
@@ -152,6 +181,7 @@ export default {
             })
         },
         getList(){
+            if(this.levels.level !==1) return
             switch (this.levels.tab1Index) {
                 case 0:
                     this.getPublic()

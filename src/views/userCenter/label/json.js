@@ -5,6 +5,31 @@ export const typeList = [
         name: 'default普通图标标签',
     },
     {
+        key: 'round2d',
+        name: '2D圆形气泡'
+    },{
+        key: 'round3d',
+        name: '3D圆形气泡'
+    },{
+        key: 'bubble2d',
+        name: '2D矩形气泡'
+    },{
+        key: 'bubble3d',
+        name: '3D矩形气泡'
+    },{
+        key: 'quadrilateral',
+        name: '矩形框'
+    },{
+        key: 'squareCloud',
+        name: '矩形云线'
+    },{
+        key: 'circle',
+        name: '圆形框'
+    },{
+        key: 'anchor',
+        name: '锚点'
+    },
+    {
         key: 'anchorCustomize',
         name: 'anchorCustomize自定义锚点2D',
     },{
@@ -13,6 +38,12 @@ export const typeList = [
     },{
         key: 'customizeInWorld',
         name: 'customizeInWorld自定义数据面板3D',
+    },{
+        key: 'webui',
+        name: 'webui标签',
+    },{
+        key: 'webui3d',
+        name: 'webui3d标签',
     },
 ]
 
@@ -23,28 +54,34 @@ export const TagtypeList = [
     },
     {
         key: 'round2d',
-        name: 'round2d'
+        name: '2D圆形气泡'
     },{
         key: 'round3d',
-        name: 'round3d'
+        name: '3D圆形气泡'
     },{
         key: 'bubble2d',
-        name: 'bubble2d'
+        name: '2D矩形气泡'
     },{
         key: 'bubble3d',
-        name: 'bubble3d'
+        name: '3D矩形气泡'
     },{
         key: 'quadrilateral',
-        name: 'quadrilateral'
+        name: '矩形框'
     },{
         key: 'squareCloud',
-        name: 'squareCloud'
+        name: '矩形云线'
     },{
         key: 'circle',
-        name: 'circle'
+        name: '圆形框'
     },{
         key: 'anchor',
-        name: 'anchor'
+        name: '锚点'
+    },{
+        key: 'webui',
+        name: 'webui标签',
+    },{
+        key: 'webui3d',
+        name: 'webui3d标签',
     },
 ]
 
