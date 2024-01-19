@@ -20,7 +20,7 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item v-if="!['anchorCustomize','customize','customizeInWorld'].includes(form.type)" :label="['webui','webui3d'].includes(form.type)?'WebUI面板尺寸:':'图标尺寸:'">
+            <el-form-item v-if="!['customize','customizeInWorld'].includes(form.type)" :label="['webui','webui3d'].includes(form.type)?'WebUI面板尺寸:':'图标尺寸:'">
                 <span class="TagTitle">宽</span>
                 <el-input v-model="form.iconSize.width" v-only-number="{min:0}" @keydown.native.stop placeholder="宽度(px)" style="width: 30%;;margin-left: 8px;"></el-input>
                 <span class="unit">px</span>
@@ -180,8 +180,8 @@ export default {
                     height: 210
                 },
                 iconSize: {
-                    width: 300,
-                    height: 200
+                    width: 120,
+                    height: 110
                 },
                 slotNum: {
                     row:4,

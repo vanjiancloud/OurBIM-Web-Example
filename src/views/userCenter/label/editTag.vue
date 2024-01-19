@@ -1,6 +1,9 @@
 <template>
     <el-form class="editTag" ref="form" :model="form" label-width="80px" v-if="data.clickTagData">
         <div class="tagBigTitle">标签信息</div>
+        <el-form-item label="标签ID">
+            <div class="text">{{ form.tagId }}</div>
+        </el-form-item>
         <el-form-item label="标签名称">
             <el-input v-model="form.labelName" @keydown.native.stop @change="editAndReList()"></el-input>
         </el-form-item>
@@ -108,6 +111,15 @@
             <el-form-item v-if="form.type==='anchorCustomize'" label="锚点图标" label-width="130px">
                 <SingleUpload v-model="form.tagUrl" url="/tagControl/uploadTagImg" accept="image/png" @success="uploadSuccess"></SingleUpload>
             </el-form-item>
+            <el-form-item v-if="form.type==='anchorCustomize'" label-width="0">
+                <div class="TagTitle">图标尺寸</div>
+                <span class="unit">宽</span>
+                <el-input v-model="form.iconSize.width" @keydown.native.stop placeholder="宽度(px)" style="width: 30%;;margin-left: 8px;" @change="edit()"></el-input>
+                <span class="unit">px</span>
+                <span class="unit">高</span>
+                <el-input v-model="form.iconSize.height" @keydown.native.stop placeholder="高度(px)" style="width: 30%;margin-left: 8px;" @change="edit()"></el-input>
+                <span class="unit">px</span>
+            </el-form-item>
             <el-form-item v-if="form.type==='customizeInWorld'" label="面板发光强度" label-width="130px">
                 <el-input v-model="form.intensityOfEmissiveColor" @keydown.native.stop v-only-number="{precision:1}" @change="edit()"></el-input>
             </el-form-item>
@@ -148,12 +160,18 @@
             </el-form-item>
             <el-form-item label="面板颜色" class="colorBox">
                 <div class="colorContent">
-                    <el-color-picker v-model="form.color" show-alpha></el-color-picker>
+                    <el-color-picker v-model="form.color" show-alpha @change="edit()"></el-color-picker>
                     <span>{{ form.color }}</span>
                 </div>
             </el-form-item>
             <el-form-item label="URL地址">
-                <el-input v-model="form.webUiUrl" @keydown.native.stop></el-input>
+                <el-input v-model="form.webUiUrl" @keydown.native.stop @change="edit()"></el-input>
+            </el-form-item>
+            <el-form-item label="亮度" v-if="form.type==='webui3d'">
+                <el-input v-model="form.intensityOfEmissiveColor" @keydown.native.stop @change="edit()"></el-input>
+            </el-form-item>
+            <el-form-item label-width="0" v-if="form.type==='webui3d'">
+                <el-checkbox v-model="form.a">是否跟随摄像头转动</el-checkbox>
             </el-form-item>
         </template>
         <!-- 其他类型普通标签 -->
@@ -397,7 +415,7 @@ export default {
         },
         edit(){
             let { labelName, autoHiddenDistance, tagId, type, location, rotation, scale, section, textContent, 
-                labelNameFontSize, sectionFontSize, textContentFontSize, bAnchorAlwaysDisplay, intensityOfEmissiveColor } = this.form
+                webUiUrl,labelNameFontSize, sectionFontSize, textContentFontSize, bAnchorAlwaysDisplay, intensityOfEmissiveColor, } = this.form
             let newUrl = this.form.tagUrl && this.form.tagUrl.substring(this.form.tagUrl.lastIndexOf("\/") + 1,this.form.tagUrl.length)
             let data = {
                 labelName,
@@ -405,20 +423,18 @@ export default {
                 location,
                 uuid:tagId,
                 autoHiddenDistance,
+                iconSize: (this.form.iconSize.width||'') + '*' + (this.form.iconSize.height||''),
+                bgColor: this.rgbaToHex(this.form.color),
             }
             if(type==='default'){
                 data = {
                     ...data,
                     iconPath: newUrl,
-                    iconSize: (this.form.iconSize.width||'') + '*' + (this.form.iconSize.height||''),
-                    bgColor: this.rgbaToHex(this.form.color),
                 }
             } else if(type==='anchor'){
                 data = {
                     ...data,
                     iconPath: newUrl,
-                    iconSize: (this.form.iconSize.width||'') + '*' + (this.form.iconSize.height||''),
-                    bgColor: this.rgbaToHex(this.form.color),
                     section,
                     textContent,
                     labelNameFontSize,
@@ -442,11 +458,11 @@ export default {
                         intensityOfEmissiveColor,
                     }
                 }
-            }else{
+            }else if(['webui','webui3d'].includes(type)){
                 data = {
                     ...data,
-                    iconSize: (this.form.iconSize.width||'') + '*' + (this.form.iconSize.height||''),
-                    bgColor: this.rgbaToHex(this.form.color),
+                    intensityOfEmissiveColor,
+                    url:webUiUrl,
                 }
             }
             updateTags({ taskId: this.form.taskid }, [data]).then(()=>{
@@ -527,6 +543,9 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.text{
+    word-wrap: break-word;
+}
 .tagBigTitle{
     font-size: 16px;
     font-family: PingFangSC-Medium, PingFang SC;
@@ -539,8 +558,9 @@ export default {
     border-radius: 5px;
 }
 .editTag{
+    overflow: hidden auto;
     color: #ffffff;
-    border-top: 1px solid rgba(70, 70, 70, 1);
+    border-top: 2px solid #3f3737;
     margin-top: 20px;
     padding: 20px 4px 0 4px;
     /deep/.el-form-item__label{

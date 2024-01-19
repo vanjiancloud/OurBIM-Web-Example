@@ -25,30 +25,29 @@
                 :filter-node-method="filterNode"
                 node-key="id"
                 :load="loadTag"
+                :show-checkbox="true"
                 @node-expand="nodeExpand"
                 @node-collapse="nodeCollapse"
+                @check="isShowTag"
                 lazy
             >
                 <div
                     class="tag-slot" :class="{'tree-select': activeTree && data.id === activeTree.id}"
                     slot-scope="{ node, data }"
                 >
-                    <SingleUpload v-model="data.tagUrl" :autoUpload="false" :deleteIcon="false" :showImg="false" accept="image/png" @onChangeFile="onChangeFile($event,data)"></SingleUpload>
-                    <div class="label-tag" @click="handleTag(data)">{{ node.label }}</div>
+                    <div class="name">                     
+                        <SingleUpload v-model="data.tagUrl" :autoUpload="false" :deleteIcon="false" :showImg="false" accept="image/png" @onChangeFile="onChangeFile($event,data)"></SingleUpload>
+                        <div class="label-tag" @click="handleTag(data)">{{ node.label }}</div>
+                    </div>
                     <div class="handle-tag">
                         <img src="@/assets/images/tag/5.png" @click="editTag(data)" alt="" />
-                        <img
-                            v-if="data.isFolder === '0'"
-                            @click="locationTag(node)"
-                            src="@/assets/images/tag/7.png"
-                            alt=""
-                        />
+                        <i class="iconfont" :class="node.checked?'icon-yincang1':'icon-xianshi2'"></i>
                         <img src="@/assets/images/tag/6.png" @click="removeTag(node)" alt="" />
                     </div>
                 </div>
             </el-tree>
             <!-- 编辑标签 -->
-            <EditTag ref="EditTag" :data="data" @onSuccess="reloadTree()" style="height: 48.5%;overflow: auto;"/>
+            <EditTag ref="EditTag" :data="data" @onSuccess="reloadTree()" style="height: 48.5%;"/>
         </div>
         <!-- 编辑标签名称 -->
         <DialogEditTagName ref="DialogEditTagName" :data="data" @onSuccess="editTagName"/>
@@ -61,7 +60,7 @@ import SingleUpload from '@/components/Upload/singleUpload.vue'
 import DialogEditTagName from './DialogEditTagName.vue'
 import DialogUploadImg from './DialogUploadImg.vue'
 import EditTag from './editTag.vue'
-import { addTag, addTagGroup, clickTag, deleteTag, getTagList } from '@/api/resource/tag.js'
+import { addTag, addTagGroup, clickTag, deleteTag, getTagList, controlTagShow } from '@/api/resource/tag.js'
 import { EventBus } from '@/utils/bus.js'
 import Drawer from '@/components/Drawer/index.vue'
 
@@ -167,10 +166,10 @@ export default {
             this.$refs.DialogUploadImg.show(file, row)
         },
         // 点击定位到标签
-        locationTag(e) {
+        locationTag(tagId) {
             let params = {
                 taskId: this.data.taskId,
-                tagId: e.key
+                tagId
             }
             clickTag(params).then(res => {
                 this.$message.success(res.message)
@@ -201,6 +200,9 @@ export default {
         handleTag(data) {
             data.check = !data.check
             this.activeTree = data.check ? data : null
+            if(data.check && data.isFolder==='0'){
+                this.locationTag(data.id)
+            }
         },
         // 重新加载tree
         reloadTree() {
@@ -230,6 +232,15 @@ export default {
                 this.reloadTree();
                 this.$refs.EditTag.getAppIdTag();
             }
+        },
+        // 显示隐藏标签
+        isShowTag(data, e){
+            let params = {
+                tagId: data.id,
+                taskId:this.data.taskId,
+                lableVisibility: !e.checkedKeys.includes(data.id)
+            }
+            controlTagShow(params)
         }
     }
 }
@@ -246,17 +257,26 @@ export default {
     }
 }
 .tag-tree {
+    padding: 0 12px;
     .treeHeight{
         height: 49%;
         overflow: auto;
     }
-    .tree{
-        /deep/ .el-upload {
+    /deep/ .tree{
+        .el-upload {
             width: 20px;
             height: 20px;
             margin-right: 12px;
             background: none;
             border: none;
+        }
+        .el-checkbox {
+            position: absolute;
+            right: 34px;
+        }
+        .el-checkbox__inner {
+            background-color: transparent !important;
+            border-color: transparent !important;
         }
     }
     /deep/.el-tree-node {
@@ -265,29 +285,37 @@ export default {
     .tree-content {
         margin: 0 auto;
         height: ~'calc(100% - 120px)';
-        width: ~'calc(100% - 20px)';
+        width:100%;
         overflow-x: hidden;
         overflow-y: auto;
         .tag-slot {
-            width: 100%;
+            flex: 1;
             display: flex;
             align-items: center;
-            position: relative;
+            justify-content: space-between;
+            padding-right: 8px;
+            width: calc(100% - 50px);
+            .name{
+                display: flex;
+                align-items: center;
+                overflow: hidden;
+            }
             .label-tag {
-                width: ~'calc(100% - 120px)';
+                width: 100%;
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
             }
             .handle-tag {
-                width: 90px;
                 display: flex;
                 justify-content: flex-end;
                 align-items: center;
-                position: absolute;
-                right: 0;
                 img {
                     margin-left: 10px;
+                }
+                .iconfont{
+                    margin-left: 10px;
+                    font-size: 22px;
                 }
             }
         }

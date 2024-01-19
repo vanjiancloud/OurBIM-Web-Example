@@ -101,6 +101,7 @@ export default {
         onTab:throttle(function(e) {
             this.levels = this.$options.data().levels
             this.levels.tab1Index = e.index;
+            this.levels.tabName = e.name
             setTimeout(()=>{
                 this.getList()
             },500)
