@@ -364,7 +364,7 @@ export default {
                 }else{
                     if(['anchorCustomize','customize','customizeInWorld'].includes(this.form.type)){
                         addTagStyle({taskId:this.data.taskId},styleData).then(res=>{
-                            this.addApi({ ...data,tagInfo:{ tagStyleId:res.data } })
+                            this.addApi({ ...data, tagInfo: { ...data.tagInfo, tagStyleId:res.data } })
                         })
                     } else{
                         this.addApi(data)

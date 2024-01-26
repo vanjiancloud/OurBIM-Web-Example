@@ -133,7 +133,8 @@ export default {
                     type: item.type,
                     tagName: item.name,
                     tagUrl: ['anchorCustomize','customize','customizeInWorld','default','anchor'].includes(item.type) ? newUrl : '',
-                    tagGroupId
+                    tagGroupId,
+                    iconSize: item?.tagInfo?.iconSize,
                 }
                 if(['anchorCustomize','customize','customizeInWorld'].includes(item.type)){
                     data = {
@@ -144,13 +145,7 @@ export default {
                     data = {
                         ...data,
                         url: item?.tagInfo?.url || 'https://www.ourbim.com',
-                        iconSize: item?.tagInfo?.iconSize,
                         color: this.rgbaToHex(item?.tagInfo?.color)
-                    }
-                }else {
-                    data = {
-                        ...data,
-                        iconSize: item?.tagInfo?.iconSize,
                     }
                 }
                 this.$parent.hideTool(true);
