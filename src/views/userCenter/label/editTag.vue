@@ -8,7 +8,7 @@
             <el-input v-model="form.labelName" @keydown.native.stop @change="editAndReList()"></el-input>
         </el-form-item>
         <el-form-item label="标签样式" prop="type">
-            <el-cascader popper-class="styleCascader" v-model="form.changeType" :options="newTagtypeList" :props="{ expandTrigger: 'hover', label: 'name', value:'key' }" @change="changeType"></el-cascader>
+            <el-cascader ref="refCascader" popper-class="styleCascader" v-model="form.changeType" :options="newTagtypeList" :props="{ expandTrigger: 'hover', label: 'name', value:'key' }" @change="changeType"></el-cascader>
         </el-form-item>
         <el-form-item prop="type" label-width="0">
             <div class="coordinate">            
@@ -423,13 +423,13 @@ export default {
                 location,
                 uuid:tagId,
                 autoHiddenDistance,
-                iconSize: (this.form.iconSize.width||'') + '*' + (this.form.iconSize.height||''),
+                iconSize: (this.form.iconSize.width||'120') + '*' + (this.form.iconSize.height||'110'),
                 bgColor: this.rgbaToHex(this.form.color),
             }
             if(type==='default'){
                 data = {
                     ...data,
-                    iconPath: newUrl,
+                    iconPath: newUrl || "default.png",
                 }
             } else if(type==='anchor'){
                 data = {
@@ -481,7 +481,19 @@ export default {
         // 改变标签类型
         changeType(e){
             this.form.type = e[0]
-            this.editAndReList()
+            let data = e.length && this.$refs["refCascader"].getCheckedNodes()[0].data
+            this.$set(this.form, 'tagUrl',data?.tagUrl || '')
+            this.$set(this.form, 'iconPath',data?.tagStyle?.iconPath)
+            if(data?.tagInfo?.iconSize){
+                let iconSize = data.tagInfo.iconSize.split('*')
+                this.form.iconSize = {
+                    width: iconSize[0],
+                    height: iconSize[1],
+                }
+            }
+            setTimeout(()=>{
+                this.editAndReList()
+            },200)
         },
         editAndReList(){
             this.edit()
