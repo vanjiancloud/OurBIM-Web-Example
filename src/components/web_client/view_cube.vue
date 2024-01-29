@@ -107,9 +107,14 @@
 </template>
 
 <script>
+import { doAction } from "@/api/userCenter/index";
 export default {
   props: {
     userType: {},
+    taskId: {
+        type: String,
+        default: ''
+    },
   },
   data() {
     return {
@@ -180,7 +185,7 @@ export default {
           value: 0,
         },
       ],
-      activeOrder: null,
+      activeOrder: 6,
     };
   },
   created() {
@@ -910,10 +915,6 @@ export default {
        * @description: 重置角度
        */
       this.closeView();
-      // if (this.activeType === 2) {
-      // this.activeType = 1;
-      // this.$emit("handleType", 2);
-      // }
       if (this.realDownInfo.y < 0 && this.downInfo.y > 0) {
         if (this.realDownInfo.y === -45 && this.downInfo.y === 45) {
           let { x, y, z } = JSON.parse(JSON.stringify(this.downInfo));
@@ -1007,7 +1008,7 @@ export default {
           }, 100);
         }, 1010);
       }
-      this.$emit("handleOrder", this.activeOrder);
+      this.updateOrder(2);
     },
     changeType(e) {
       /**
@@ -1016,18 +1017,23 @@ export default {
        * @description: 切换状态
        */
       this.isCubeType = false;
-      if (e.value === 0 || e.value === 3) {
-        this.$emit("handleType", e.value);
+      if (e.value === 0) {
+        this.updateOrder(3)
+        return;
+      }
+      if (e.value === 3) {
+        this.updateOrder(1)
         return;
       }
       this.activeType = e.value;
-      this.$emit("handleType", e.value);
+        this.updateOrder(0)
     },
     resetActive(e) {
       this.activeType = e;
     },
     goFront() {
-      this.$emit("goFront");
+        // 定位主视图
+        this.updateOrder(4)
     },
     changeView() {
       /**
@@ -1047,6 +1053,53 @@ export default {
         this.isCubeType = false;
       }
     },
+    updateOrder(type) {
+        if (!this.taskId) {
+            return this.$message.warning("场景未加载，请刷新");
+        }
+        switch (type) {
+            case 0:
+                // 模式切换
+                let data = {
+                    action: "switchViewMode",
+                    projectionMode: this.activeType,
+                    viewMode: 2
+                }
+                this.doAction(data)
+                break;
+            case 1:
+                // 自定义主视图
+                this.doAction({ action: "setGodPos" })
+                break;
+            case 2:
+                // 六面体
+                this.doAction({ action: "cameraPosSpecial", sjid: this.activeOrder })
+                break;
+            case 3:
+                // 重置主视图
+                this.doAction({ action: "clearGodCamerashot" })
+                break;
+            case 4:
+                // 定位主视图
+                this.doAction({ action: "cameraPosAll" })
+                break;
+            default:
+                break;
+        }
+    },
+    doAction(data){
+        let params = {
+            taskid: this.taskId,
+            ...data
+        };
+        doAction(params).then((res) => {
+            if (params.action === "cameraPosAll" && res?.data) {
+                let realProject = res.data.projectionMode === "1" ? 1 : 2;
+                this.resetActive(realProject);
+            }
+            this.$message.success("指令下发成功")
+        })
+    }
   },
 };
 </script>

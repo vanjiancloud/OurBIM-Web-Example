@@ -25,9 +25,7 @@
       <view-cube
         v-if="controllerInfo.viewCube&&controllerInfo.tagUiBar && !isFade"
         :userType="userType"
-        @handleOrder="handleOrder"
-        @goFront="goFront"
-        @handleType="handleType"
+        :taskId="taskId"
         ref="getCube"
       ></view-cube>
     
@@ -151,13 +149,10 @@ export default {
       appId: null,
       taskId: null,
       isFade: true,
-      handleState: 0,
-      cubeState: 6,
       memberInfo: [], //属性信息
       loadTimer: null,
       websock: null,
       socketTimer: null,
-      shadowType: null,
       isUiBar: true,
       userType: null,
       // （材质库）
@@ -397,105 +392,10 @@ export default {
         false
       );
     },
-    handleType(e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-03-12 11:34:19
-       * @description: 选择类型 e 0: 重置主视图 1: 透视投影 2: 正交投影 3 自定义主视图
-       */
-      this.shadowType = e;
-      if (e === 0) {
-        this.handleState = 7;
-      } else if (e === 3) {
-        this.handleState = 2;
-      } else {
-        this.handleState = 1;
-      }
-      this.updateOrder();
-    },
-    goFront() {
-      /**
-       * @Author: zk
-       * @Date: 2021-04-08 11:47:29
-       * @description: 定位主视图
-       */
-      this.handleState = 10;
-      this.updateOrder();
-    },
     openTeamDialog() {
       this.$refs.teamworkDialogRef.openDialog({
         appid: this.appId,
       });
-    },
-    handleOrder(e) {
-      /**
-       * @Author: zk
-       * @Date: 2021-03-08 10:40:10
-       * @description: cube指令
-       */
-      this.handleState = 6;
-      this.cubeState = e;
-      this.updateOrder();
-    },
-    async updateOrder() {
-      /**
-       * @Author: zk
-       * @Date: 2020-09-14 15:16:16
-       * @description: 操作指令
-       */
-      if (!this.taskId) {
-        return this.$message.error("场景未加载，请刷新");
-      }
-      let params = {
-        taskid: this.taskId,
-      };
-      switch (this.handleState) {
-        case 1:
-          // 模式切换
-          params.action = "switchViewMode";
-          // 投影类型切换
-          if (this.shadowType === 2) {
-            // 正交 必须为上帝视角
-            params.projectionMode = 2;
-            params.viewMode = 2;
-          }
-          if (this.shadowType === 1) {
-            // 透视投影
-            params.projectionMode = 1;
-              params.viewMode = 2;
-          }
-          break;
-        case 2:
-          // 自定义主视图
-          params.action = "setGodPos";
-          break;
-        case 6:
-          // 六面体
-          params.action = "cameraPosSpecial";
-          params.sjid = this.cubeState;
-          break;
-        case 7:
-          // 重置主视图
-          params.action = "clearGodCamerashot";
-          break;
-        case 10:
-          // 定位主视图
-          params.action = "cameraPosAll";
-          break;
-        default:
-          break;
-      }
-      //模型操作
-      await doAction(params)
-        .then((res) => {
-            if (params.action === "cameraPosAll" && res && res.data) {
-              if (this.$refs.getCube) {
-                let realProject = res.data.projectionMode === "1" ? 1 : 2;
-                this.$refs.getCube.resetActive(realProject);
-              }
-            }
-            this.$message.success("指令下发成功")
-        })
     },
     // 关闭模块
     closePart(type) {
