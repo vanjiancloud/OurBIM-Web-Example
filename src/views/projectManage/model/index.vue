@@ -18,7 +18,7 @@
               <!-- <el-button type="primary" class="blueBtn" @click="createProject()">新建BIM项目</el-button> -->
               <!-- 上传GIS数据的关闭弹窗后显示正在上传的个数  -->
               <el-badge :value="uploadingNum" :hidden="!uploadingNum" style="margin:0 16px">
-                  <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="handleCreateProjectDialog" :disabled="!timerFlag">上传BIM模型</el-button>
+                  <el-button icon="el-icon-upload" class="blueBtn" type="primary" @click="handleCreateProjectDialog">上传BIM模型</el-button>
               </el-badge>
               <el-button type="primary" class="bluePlainBtn1" plain @click="showLinkModelDialog">链接模型</el-button>
           </div>
@@ -350,7 +350,6 @@ export default {
           label: "OurBIMEngine",
         },
       ],
-      timerFlag: true, //是否开启定时器轮询
       searchForm:{},
       FormIntegrate: {
         appName: null,
@@ -584,12 +583,10 @@ export default {
     // 比如：删除模型和上传模型操作比较耗时，需要轮询来获取最新的操作状态
     setGetModelListTimer () {
       this.timer = setInterval(() => {
-        if (this.timerFlag) {
             let hasChange = this.allModelData.some(e=>e.applidStatus==='1')
             if(hasChange){
                 this.getAllModelList();
             }
-        }
       }, 20000);
     },
 
@@ -613,8 +610,9 @@ export default {
         this.allModelData = res.data.list
       })
       .catch((err) => {
-        this.timerFlag = false
         this.allModelData = []
+        clearInterval(this.timer)
+        this.timer = null
       })
     },
 
