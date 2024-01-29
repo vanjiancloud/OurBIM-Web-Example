@@ -59,7 +59,7 @@
                 </el-col>
                 <el-col class="GISMark" :span="1">m</el-col>
             </el-form-item>
-            <el-form-item :label="form.isGis==='true' ? 'BIM模型:' : '子模型列表:'" required v-if="form.appType === '3' || (form.appType === '0' && form.isGis === 'true')">
+            <el-form-item :label="form.isGis==='true' ? 'BIM模型:' : '子模型列表:'" v-if="form.appType === '3' || (form.appType === '0' && form.isGis === 'true')">
                 <el-card class="box-card">
                     <div v-for="(GISitem, index) in form.gisInfo" :key="index" class="flexStart">
                         <el-tooltip effect="dark" :content="GISitem.name" placement="top">

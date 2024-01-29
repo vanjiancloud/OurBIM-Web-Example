@@ -656,5 +656,10 @@ export default {
     .el-cascader-panel{
         flex-direction: row-reverse;
     }
+    .el-cascader-node__postfix{
+        right: initial;
+        left: 6px;
+        rotate: 180deg;
+    }
 }
 </style>
