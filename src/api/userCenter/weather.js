@@ -128,3 +128,21 @@ export function setWindDirectionAndSpeed(params) {
         params,
     })
 }
+
+// 设置环境补光
+export function setLight(params) {
+    return request({
+        url: '/OurBim/setLight',
+        method: 'post',
+        params,
+    })
+}
+
+// 设置环境补光
+export function getLight(params) {
+    return request({
+        url: '/OurBim/getLight',
+        method: 'post',
+        params,
+    })
+}

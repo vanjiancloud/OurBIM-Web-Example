@@ -286,13 +286,31 @@
                 </el-radio-group>
             </div>
         </div>
+        <!-- 环境补光 -->
+        <div class="fillLight">
+            <div class="row-box">
+                <el-checkbox v-model="fillLight.check" label="环境补光" @change="changeFillLight"/>
+            </div>
+            <template v-if="fillLight.check">
+                <div class="fillLightItem">
+                    <div class="fillLightItem-name">强度</div>
+                    <div class="fillLightItem flexBetween">
+                        <el-slider v-model="fillLight.strengthSlider" :min="0" :max="100" class="slider" @change="changeFillLightSlider"></el-slider>
+                        <el-input v-model.number="fillLight.strength" size="small" class="input" @keydown.native.stop @change="changeFillLight"></el-input>
+                        <span>Lux</span>
+                    </div>
+                </div>
+                <el-checkbox style="margin-left: 20px;" v-model="fillLight.castShadows" label="投射阴影" @change="changeFillLight"/>
+            </template>
+        </div>
     </div>
   </template>
   
   <script>
   import { getDict } from "@/api/dict.js"
   import { getWeatherList, backgroundSetting, setWeatherSun, setWeatherLight, getWeatherParams, setWeatherColor, 
-    setWeatherTimeAndTimeSpeed, setWeatherType, setSunLightDirection, getCurrWeatherId, setWindDirectionAndSpeed } from '@/api/userCenter/weather.js'
+    setWeatherTimeAndTimeSpeed, setWeatherType, setSunLightDirection, getCurrWeatherId, setWindDirectionAndSpeed,
+    setLight, getLight } from '@/api/userCenter/weather.js'
   import { doAction } from "@/api/userCenter/index";
   import moment from 'moment'
   export default {
@@ -385,6 +403,7 @@
                 modelBackgroundType:''
             },
             bgType: [],//环境背景类型
+            fillLight: {},//环境补光
           }
       },
       created(){
@@ -401,6 +420,7 @@
             this.getWeatherList();
             this.changeColor(this.color1);
             this.getDictList()
+            this.getFillLight()
         },
         rgbaToArr(color) {
             var arr = []
@@ -1058,6 +1078,28 @@
             getDict('modelBackgroundRingType').then(res=>{
                 this.bgType = res.data.slice(0,1)
             })
+        },
+        getFillLight(){
+            getLight({ taskId: this.taskId }).then(res=>{
+                this.fillLight = res.data
+                this.$set(this.fillLight, 'strengthSlider', +res.data.strength)
+                this.$set(this.fillLight, 'castShadows', res.data.castShadows==='true')
+                this.$set(this.fillLight, 'check', res.data.castShadows==='true' || !!Number(res.data.strength))
+            })
+        },
+        changeFillLight(){
+            let data = {
+                taskId: this.taskId,
+                ...this.fillLight,
+            }
+            setLight(data).then(()=>{
+                this.$message.success('修改成功')
+                this.getFillLight()
+            })
+        },
+        changeFillLightSlider(){
+            this.fillLight.strength = this.fillLight.strengthSlider
+            this.changeFillLight()
         }
     }
   }
@@ -1629,5 +1671,25 @@
         margin-bottom: 10px;
     }
 }
-  </style>
+.fillLight{
+    padding: 0 10px 40px 16px;
+    color: #ffffff;
+    .fillLightItem{
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding-left: 20px;
+        .fillLightItem-name{
+            width: 41px;
+        }
+        .slider{
+            flex: 1;
+        }
+        .input{
+            width: 25%;
+            margin-left: 8px;
+        }
+    }
+}
+</style>
   
