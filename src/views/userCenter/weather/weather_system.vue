@@ -289,9 +289,9 @@
         <!-- 环境补光 -->
         <div class="fillLight">
             <div class="row-box">
-                <el-checkbox v-model="fillLight.check" label="环境补光"  @change="changeFillLightCheck"/>
+                <el-checkbox v-model="fillLight.affectWorld" label="环境补光"  @change="changeFillLight"/>
             </div>
-            <template v-if="fillLight.check">
+            <template v-if="fillLight.affectWorld">
                 <div class="fillLightItem">
                     <div class="fillLightItem-name">强度</div>
                     <div class="fillLightItem flexBetween">
@@ -1084,14 +1084,13 @@
                 this.fillLight = res.data
                 this.$set(this.fillLight, 'strengthSlider', +res.data.strength)
                 this.$set(this.fillLight, 'castShadows', res.data.castShadows==='true')
-                this.$set(this.fillLight, 'check', this.fillLight.castShadows || !!Number(res.data.strength))
+                this.$set(this.fillLight, 'affectWorld', res.data.affectWorld==='true')
             })
         },
         changeFillLight(){
-            let { strength, castShadows, affectWorld } = this.fillLight
             let data = {
                 taskId: this.taskId,
-                strength, castShadows, affectWorld,
+                ...this.fillLight
             }
             setLight(data).then(()=>{
                 this.$message.success('修改成功')
@@ -1102,20 +1101,6 @@
             this.fillLight.strength = this.fillLight.strengthSlider
             this.changeFillLight()
         },
-        changeFillLightCheck(e){
-            if(!e){
-                let data = {
-                    taskId: this.taskId,
-                    castShadows: false,
-                    strength: 0,
-                    affectWorld: this.fillLight.affectWorld
-                }
-                setLight(data).then(()=>{
-                    this.$message.success('修改成功')
-                    this.getFillLight()
-                })
-            }
-        }
     }
   }
   </script>
