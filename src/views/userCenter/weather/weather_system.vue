@@ -295,7 +295,7 @@
                 <div class="fillLightItem">
                     <div class="fillLightItem-name">强度</div>
                     <div class="fillLightItem flexBetween">
-                        <el-slider v-model="fillLight.strengthSlider" :min="0" :max="1" class="slider" @change="changeFillLightSlider"></el-slider>
+                        <el-slider v-model="fillLight.strengthSlider" :min="0" :max="1" :step="0.1" class="slider" @change="changeFillLightSlider"></el-slider>
                         <el-input v-model="fillLight.strength" size="small" class="input" @keydown.native.stop @change="changeFillLight" v-only-number="{min:0,precision:2}"></el-input>
                         <span>Lux</span>
                     </div>
@@ -1091,7 +1091,7 @@
             let { strength, castShadows, affectWorld } = this.fillLight
             let data = {
                 taskId: this.taskId,
-                strength, castShadows, affectWorld
+                strength, castShadows, affectWorld,
             }
             setLight(data).then(()=>{
                 this.$message.success('修改成功')
@@ -1106,9 +1106,9 @@
             if(!e){
                 let data = {
                     taskId: this.taskId,
-                    affectWorld,
                     castShadows: false,
-                    strength: 0
+                    strength: 0,
+                    affectWorld: this.fillLight.affectWorld
                 }
                 setLight(data).then(()=>{
                     this.$message.success('修改成功')
