@@ -289,7 +289,7 @@
         <!-- 环境补光 -->
         <div class="fillLight">
             <div class="row-box">
-                <el-checkbox v-model="fillLight.check" label="环境补光" @change="changeFillLight"/>
+                <el-checkbox v-model="fillLight.check" label="环境补光"  @change="changeFillLightCheck"/>
             </div>
             <template v-if="fillLight.check">
                 <div class="fillLightItem">
@@ -1084,7 +1084,7 @@
                 this.fillLight = res.data
                 this.$set(this.fillLight, 'strengthSlider', +res.data.strength)
                 this.$set(this.fillLight, 'castShadows', res.data.castShadows==='true')
-                this.$set(this.fillLight, 'check', res.data.castShadows==='true' || !!Number(res.data.strength))
+                this.$set(this.fillLight, 'check', this.fillLight.castShadows || !!Number(res.data.strength))
             })
         },
         changeFillLight(){
@@ -1100,6 +1100,20 @@
         changeFillLightSlider(){
             this.fillLight.strength = this.fillLight.strengthSlider
             this.changeFillLight()
+        },
+        changeFillLightCheck(e){
+            if(!e){
+                let data = {
+                    taskId: this.taskId,
+                    ...this.fillLight,
+                    castShadows: false,
+                    strength: 0
+                }
+                setLight(data).then(()=>{
+                    this.$message.success('修改成功')
+                    this.getFillLight()
+                })
+            }
         }
     }
   }
@@ -1379,7 +1393,6 @@
               }
           }
           .mainWeather{ // 天气
-            //   height: 306px;
               width: 280px;
               margin: 0 0 16px 7px;
               .titleWeather{
@@ -1451,38 +1464,6 @@
                       }
                   }
               }
-            //   .rainRain{
-            //       width: 100%;
-            //       height: 40px;
-            //       display: flex;
-            //       align-items: center;
-            //       box-sizing: border-box;
-            //       background: rgba(51,51,51,0.7);
-            //       border-radius: 6px;
-            //       border: 1px solid #575A62;
-            //       padding: 0 8px;
-            //       margin-bottom: 6px;
-            //       .rainImage{
-            //           width: 30px;
-            //           height: 20px;
-            //           margin-right: 2px;
-            //           img{
-            //               width: 100%;
-            //               height: 100%;
-            //           }
-            //       }
-            //       .rainName{
-            //           width: 16px;
-            //           height: 20px;
-            //           font-size: 14px;
-            //           color: #fff;
-            //       }
-            //       .rainSwitch{
-            //           width: 40px;
-            //           height: 20px;
-            //           margin-left: auto;
-            //       }
-            //   }
               .rain{
                 .imgCloude.imageRain{
                       width: 22px;
@@ -1666,7 +1647,7 @@
                           }
       }
 .background{
-    padding: 0 0 40px 16px;
+    padding: 0 0 10px 16px;
     .row-box{
         margin-bottom: 10px;
     }
@@ -1686,7 +1667,7 @@
             flex: 1;
         }
         .input{
-            width: 25%;
+            width: 28%;
             margin-left: 8px;
         }
     }
