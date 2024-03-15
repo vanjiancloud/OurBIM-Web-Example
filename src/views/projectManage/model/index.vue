@@ -713,7 +713,6 @@ export default {
       }).then((res) => {
           let query = {
             appid: e.appid,
-            locale: this.$i18n.locale,
             appType: e.appType,
             token: res.data.token,
             isGis: e.isGis,  // 用于控制 gis模型  时  渲染环境 图标隐藏

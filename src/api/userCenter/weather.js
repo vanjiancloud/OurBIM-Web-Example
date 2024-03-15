@@ -138,7 +138,7 @@ export function setLight(params) {
     })
 }
 
-// 设置环境补光
+// 获取环境补光
 export function getLight(params) {
     return request({
         url: '/OurBim/getLight',

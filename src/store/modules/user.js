@@ -38,16 +38,6 @@ const actions = {
             })
         })
     },
-    // 获取头部统计
-    getTotal({ commit, state }) {
-        return new Promise((resolve, reject) => {
-            userCenterUse({ userId: state.userId || JSON.parse(sessionStorage.getItem("userid"))}).then(async response => {
-                commit('CHANGE_TOTAL', response.data)
-            }).catch(error => {
-                reject(error)
-            })
-        })
-    },
     // 退出
     logout({ commit, state }) {
         return new Promise((resolve, reject) => {

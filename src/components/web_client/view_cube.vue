@@ -120,32 +120,32 @@ export default {
     return {
       faceList: [
         {
-          label: this.$t("webClient.cubeBox.direction[0]"),
+          label: "前",
           value: 0,
           className: "front",
         },
         {
-          label: this.$t("webClient.cubeBox.direction[1]"),
+          label: "后",
           value: 1,
           className: "back",
         },
         {
-          label: this.$t("webClient.cubeBox.direction[2]"),
+          label: "上",
           value: 2,
           className: "top",
         },
         {
-          label: this.$t("webClient.cubeBox.direction[3]"),
+          label: "下",
           value: 3,
           className: "bottom",
         },
         {
-          label: this.$t("webClient.cubeBox.direction[4]"),
+          label: "左",
           value: 4,
           className: "left",
         },
         {
-          label: this.$t("webClient.cubeBox.direction[5]"),
+          label: "右",
           value: 5,
           className: "right",
         },
@@ -169,44 +169,26 @@ export default {
       isAnimation: true,
       handleList: [
         {
-          label: this.$t("webClient.cubeBox.handle[0]"),
+          label: "正交投影",
           value: 2,
         },
         {
-          label: this.$t("webClient.cubeBox.handle[1]"),
+          label: "透视投影",
           value: 1,
         },
         {
-          label: this.$t("webClient.cubeBox.handle[2]"),
+          label: "自定义主视图",
           value: 3,
         },
         {
-          label: this.$t("webClient.cubeBox.handle[3]"),
+          label: "重置主视图",
           value: 0,
         },
       ],
       activeOrder: 6,
     };
   },
-  created() {
-    if (this.$route.query.locale) {
-      this.$i18n.locale = this.$route.query.locale;
-    } else {
-      this.$i18n.locale = "zh";
-    }
-    if (this.$i18n.locale) {
-      this.faceList[0].label = this.$t("webClient.cubeBox.direction[0]");
-      this.faceList[1].label = this.$t("webClient.cubeBox.direction[1]");
-      this.faceList[2].label = this.$t("webClient.cubeBox.direction[2]");
-      this.faceList[3].label = this.$t("webClient.cubeBox.direction[3]");
-      this.faceList[4].label = this.$t("webClient.cubeBox.direction[4]");
-      this.faceList[5].label = this.$t("webClient.cubeBox.direction[5]");
-      this.handleList[0].label = this.$t("webClient.cubeBox.handle[0]");
-      this.handleList[1].label = this.$t("webClient.cubeBox.handle[1]");
-      this.handleList[2].label = this.$t("webClient.cubeBox.handle[2]");
-      this.handleList[3].label = this.$t("webClient.cubeBox.handle[3]");
-    }
-  },
+  created() {},
   mounted() {
     window.addEventListener("click", this.clickOther);
   },

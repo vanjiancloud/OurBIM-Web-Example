@@ -189,7 +189,6 @@ export default {
     },
   mounted() {
     this.setTimeLoad();
-    this.addMessageEvent();
     this.getLinkModelAppid(); // 获取appid
   },
   destroyed(){
@@ -361,37 +360,6 @@ export default {
     showViewPic(valModel){
       this.showViewPicture = valModel;
     },
-      // 监听工具栏隐藏和显示
-    addMessageEvent() {
-        window.addEventListener("message",(e) => {
-            let res = e.data
-            if (res.prex === "ourbimBaseMessage") {
-                if(res.type === 'error'){
-                    this.closeWebSocket();
-                    this.mask = true;
-                    this.baseExceptMessge = res.message
-                }
-            }
-          if (e.data.prex === "ourbimMessage") {
-            // 控制栏显示隐藏
-            if (e.data.type === 1001) {
-              this.isUiBar = e.data.data;
-              this.controllerInfo.viewCube = e.data.data;
-            } else if (e.data.type === 1015) {
-              // viewCube的显示/隐藏
-              this.controllerInfo.viewCube = e.data.data;
-            } else if (e.data.type === 1002) {
-              // 选择工具栏隐藏
-              this.controllerInfo.hideTools = e.data.data || []
-            } else if (e.data.type === 1003) {
-              // 选择工具栏显示
-              this.controllerInfo.showTools = e.data.data || []
-            }
-          }
-        },
-        false
-      );
-    },
     openTeamDialog() {
       this.$refs.teamworkDialogRef.openDialog({
         appid: this.appId,
@@ -411,13 +379,6 @@ export default {
           this.isProgress = true;
           let realData = JSON.parse(e.data);
           // 添加外部网站和ourbim的全部通信，有些为了兼容之前的使用请不要删除其他的通信
-          let allInfo = {
-            prex: "ourbimMessage",
-            type: 10000,
-            data: realData,
-            message: realData.name,
-          };
-          this.sentParentIframe(allInfo);
           if (realData.id === "1") {
             if(this.$refs.ComponentInformation){
               this.$refs.ComponentInformation.activeMaterialIndex = 0 //切换点击构件默认选中为初始值
@@ -428,46 +389,21 @@ export default {
               realData.data.dynamicData = [{name:'构件名称',value:realData.data.name},{name:'构件ID',value:realData.data.uuid}].concat(realData.data.dynamicData)
             }
             this.memberInfo = realData?.data?.dynamicData.length ? realData.data.dynamicData : realData.rsInfo || []
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 20001,
-              data: realData.data ? {...realData.data,pakId:realData.pakId} : { uuid:realData.mN, pakId:realData.pakId, dynamicData:realData.rsInfo },
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
           } else if (realData.id === "3") {
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 20005,
-              data: realData,
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
+            
           } else if (realData.id === "5") {
             // 多选构件
-            this.sentParentIframe({ prex: "ourbimMessage", type: 20002, data: "", message: "" });
           } else if(realData.id === "6"){
             this.sendToIframe(10200,'false');
           } 
           else if (realData.id === "7") {
             // 点击空白地方初始化
-            this.sentParentIframe({ prex: "ourbimMessage", type: 20003, data: "", message: "" });
             this.memberInfo = []
             this.selectPark = null
             this.$store.dispatch('material/changeSetting',{ key: "componentAllInfo", value: {} })
             this.$store.dispatch('material/changeSetting',{ key: "materialAllInfo", value: {} })
           } else if (realData.id === "8") {
             this.sendToIframe(10200,'false');
-            // 加载过程
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 10003,
-              data: {
-                progress: Number(realData.progress),
-              },
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
             const progress = Number(
               String(Number(realData.progress) * 100).substring(0, 3)
             );
@@ -491,22 +427,10 @@ export default {
             }
           } else if (realData.id === "9") {
             this.clickTagData = realData
-            let messageInfo = {
-                prex: "ourbimMessage",
-                type: 30001,
-                data: {
-                    state: true,
-                    tagId: realData.tagId,
-                    tagType: 0,
-                },
-                message: "",
-            };
-            this.sentParentIframe(messageInfo);
           } else if (realData.id === "10") {
-            this.sentParentIframe({ prex: "ourbimMessage", type: 30002, data: {tagId: realData.tagId}, message: "" });
             this.showUiBar();
           } else if (realData.id === "11") {
-            this.sentParentIframe({ prex: "ourbimMessage", type: 30003, data: {tagId: realData.tagId}, message: "" });
+
           } else if (realData.id === "14") {
             // 添加构件，但是按了 ESC
             if (this.controllerInfo.uiBar) {
@@ -661,31 +585,13 @@ export default {
         params.code = code;
       }
       requestOurBim(params).then((res) => {
-            // this.webUrl = res.data.url.replace('https://www.ourbim.com/v3', 'http://172.16.100.145:8888');
             this.webUrl = res.data.url;
             this.taskId = res.data.taskId;
             this.listenerIframe()
             // 保存code
             if (res.data.code) {
               this.shareCode = res.data.code;
-              let messageInfo = {
-                prex: "ourbimMessage",
-                type: "shareCode",
-                data: this.shareCode,
-                message: "",
-              };
-              this.sentParentIframe(messageInfo);
             }
-
-            let messageInfo = {
-              prex: "ourbimMessage",
-              type: 10001,
-              data: {
-                taskId: res.data.taskId,
-              },
-              message: "",
-            };
-            this.sentParentIframe(messageInfo);
             this.initWebSocket();
             if (res.data.appliType !== "1") {
               if (this.isUiBar) {
@@ -736,9 +642,6 @@ export default {
         this.websock.close(); //离开路由之后断开websocket连接
         this.websock = null;
       }
-    },
-    sentParentIframe(e) {
-      window.parent.postMessage(e, "*");
     },
     sendToIframe(type, data, message = '') {
       let realIframe = document.getElementById("show-bim");
