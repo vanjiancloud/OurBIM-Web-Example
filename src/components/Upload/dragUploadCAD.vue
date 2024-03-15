@@ -1,4 +1,4 @@
-<!-- 拖拽上传,救命，就不能封装个组件吗，一个个粘贴复制写的一模一样
+<!-- 
     使用例子：
     @getFile="getFileDrag"
     getFileDrag(file, callback) {
