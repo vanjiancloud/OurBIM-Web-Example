@@ -22,8 +22,8 @@
                         @keydown.native.stop @change="edit()" />
                     <i class="el-icon-refresh-right"></i>
                 </div>
-                <template v-if="form.type==='customizeInWorld'">
-                    <div class="TagTitle" style="margin: -15px 10px 0 10px;">角度：</div>
+                <template v-if="['customizeInWorld','webui3d'].includes(form.type)">
+                    <div class="TagTitle" style="margin: 0 10px 0 10px;">角度：</div>
                     <div class="coordinateItemInput">
                         P<el-input-number v-model="form.rotation.p" controls-position="right" size="mini"
                             @keydown.native.stop @change="edit()" />
@@ -33,7 +33,7 @@
                             @keydown.native.stop @change="edit()" />
                         <i class="el-icon-refresh-right"></i>
                     </div>
-                    <div class="TagTitle" style="margin: -15px 10px 0 10px;">比例：</div>
+                    <div class="TagTitle" style="margin: 0 10px 0 10px;">比例：</div>
                     <div class="coordinateItemInput">
                         X<el-input-number v-model="form.scale.x" controls-position="right" size="mini"
                             @keydown.native.stop @change="edit()" />
@@ -147,6 +147,9 @@
                     </div>
                 </el-form-item>
             </template>
+            <el-form-item label-width="0" v-if="form.type==='customizeInWorld'">
+                <el-checkbox v-model="form.camerafollow" true-label="true" false-label="false" @change="edit()">是否跟随摄像头转动</el-checkbox>
+            </el-form-item>
         </template>
         <template v-else-if="['webui','webui3d'].includes(form.type)">
             <el-form-item label-width="0">
@@ -170,8 +173,8 @@
             <el-form-item label="亮度" v-if="form.type==='webui3d'">
                 <el-input v-model="form.intensityOfEmissiveColor" @keydown.native.stop @change="edit()"></el-input>
             </el-form-item>
-            <el-form-item label-width="0" v-if="form.type==='webui3d'">
-                <el-checkbox v-model="form.a">是否跟随摄像头转动</el-checkbox>
+            <el-form-item label-width="0" v-if="['webui3d'].includes(form.type)">
+                <el-checkbox v-model="form.camerafollow" true-label="true" false-label="false" @change="edit()">是否跟随摄像头转动</el-checkbox>
             </el-form-item>
         </template>
         <!-- 其他类型普通标签 -->
@@ -415,7 +418,7 @@ export default {
         },
         edit(){
             let { labelName, autoHiddenDistance, tagId, type, location, rotation, scale, section, textContent, 
-                webUiUrl,labelNameFontSize, sectionFontSize, textContentFontSize, bAnchorAlwaysDisplay, intensityOfEmissiveColor, } = this.form
+                webUiUrl,labelNameFontSize, sectionFontSize, textContentFontSize, bAnchorAlwaysDisplay, intensityOfEmissiveColor, camerafollow } = this.form
             let newUrl = this.form.tagUrl && this.form.tagUrl.substring(this.form.tagUrl.lastIndexOf("\/") + 1,this.form.tagUrl.length)
             let data = {
                 labelName,
@@ -456,6 +459,7 @@ export default {
                         rotation:`P=${rotation.p} Y=${rotation.y} R=${rotation.r}`,
                         scale:`X=${scale.x} Y=${scale.y} Z=${scale.z}`,
                         intensityOfEmissiveColor,
+                        camerafollow
                     }
                 }
             }else if(['webui','webui3d'].includes(type)){
@@ -463,6 +467,14 @@ export default {
                     ...data,
                     intensityOfEmissiveColor,
                     url:webUiUrl,
+                }
+                if(type === 'webui3d'){
+                    data = {
+                        ...data,
+                        camerafollow,
+                        rotation:`P=${rotation.p} Y=${rotation.y} R=${rotation.r}`,
+                        scale:`X=${scale.x} Y=${scale.y} Z=${scale.z}`,
+                    }
                 }
             }
             updateTags({ taskId: this.form.taskid }, [data]).then(()=>{

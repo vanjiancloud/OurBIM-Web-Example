@@ -1,14 +1,14 @@
 import Vue from 'vue'
 
 export default new Vue({
-  data () {
+  data() {
     return {
       loading: null // 加载
     }
   },
   methods: {
     // ==================== 开启加载 ====================
-    openLoading (str) {
+    openLoading(str) {
       this.loading = this.$loading({
         lock: false,
         text: str,
@@ -17,7 +17,7 @@ export default new Vue({
       })
     },
     // ==================== 关闭加载 ====================
-    closeLoading () {
+    closeLoading() {
       this.loading && this.loading.close()
     },
     // ==================== cookie解串 ====================
@@ -25,7 +25,7 @@ export default new Vue({
     //   return JSON.parse(name);
     // },
     // ==================== 删除数组指定元素 返回新数组 deOneArr(数组，元素) ====================
-    deOneArr (arr, str) {
+    deOneArr(arr, str) {
       let newArr = arr
       let index = newArr.indexOf(str)
       newArr.splice(index, 1)
@@ -33,14 +33,14 @@ export default new Vue({
     },
     // ==================== 判断字符串文件类型 ====================
     isAssetTypeAnImage(str) {
-     var index = str.lastIndexOf('.')
-     var ext = str.substr(index+1)
-     return [
-     'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff'].indexOf(ext.toLowerCase()) !== -1
+      var index = str.lastIndexOf('.')
+      var ext = str.substr(index + 1)
+      return [
+        'png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff'].indexOf(ext.toLowerCase()) !== -1
     },
     // ==================== 提示信息 ====================
     // type = success / error / warning / info, 输入'<br>'换行
-    message (text, type = 'info') {
+    message(text, type = 'info') {
       const h = this.$createElement
       let arr = []
       if (text.indexOf('<br>') > -1) {
@@ -58,20 +58,20 @@ export default new Vue({
     },
     // ==================== 数组找下标 ====================
     // arr[必填]: 数组 / val[必填]: 当前值 / valKey: 当前值键名
-    arrFindIndex (arr, val, valKey) {
+    arrFindIndex(arr, val, valKey) {
       if (!arr) arr = []
       return arr.findIndex(b => b === val || b + '' === val || b[valKey] === val || b[valKey] + '' === val)
     },
     // ==================== 数组找元素 ====================
     // arr[必填]: 数组 / val[必填]: 当前值 / valKey: 当前值键名 / expectKey: 目标键名
-    arrFindEl (arr, val, valKey, expectKey) {
+    arrFindEl(arr, val, valKey, expectKey) {
       if (!arr) arr = []
       const el = arr.find(b => b === val || b + '' === val || b[valKey] === val || b[valKey] + '' === val)
       return el ? (expectKey ? el[expectKey] : el) : null
     },
     // ==================== 日期格式 'YYYY-MM-DD hh:mm:ss:SS 星期W' ====================
     // H+: 也是时，但只显示(1-12) / Q+: 季度
-    dateFormat (date, format) {
+    dateFormat(date, format) {
       const week = ['\u65e5', '\u4e00', '\u4e8c', '\u4e09', '\u56db', '\u4e94', '\u516d']
       const str = {
         'M+': date.getMonth() + 1, // 月
@@ -96,7 +96,7 @@ export default new Vue({
       return fmt
     },
     // ==================== 获取日期 (返回原日期格式) ====================
-    getDate (type, num, time) {
+    getDate(type, num, time) {
       let date = time ? new Date(time) : new Date()
       let year = date.getFullYear()
       let month = date.getMonth() + 1
@@ -139,7 +139,7 @@ export default new Vue({
       return date
     },
     // ====================== 日期时间差 ====================
-    dateInterval (startTime, endtime, type = 'M') {
+    dateInterval(startTime, endtime, type = 'M') {
       if (!startTime || !endtime) return 0
       const startArr = this.dateFormat(new Date(startTime), 'YYYY-MM-DD').split('-')
       const endArr = this.dateFormat(new Date(endtime), 'YYYY-MM-DD').split('-')
@@ -163,7 +163,7 @@ export default new Vue({
       }
     },
     // ====================== 确认提示框 ====================
-    confirm (type = 'del', confirm, cancel) {
+    confirm(type = 'del', confirm, cancel) {
       const info = {
         del: { text: '此操作将永久删除该条数据，是否继续？' },
         batchDel: { text: '此操作将永久删除选中数据，是否继续？' },
@@ -183,7 +183,7 @@ export default new Vue({
       })
     },
     // ====================== 下载文件 ======================
-    download (url, name) {
+    download(url, name) {
       // window.open(url) // 该方法只能下载比如xls等不能直接打开的文件，对于png之类的文件会直接打开而非下载
       this.getBlob(url).then(blob => {
         if (window.navigator.msSaveOrOpenBlob) {
@@ -201,7 +201,7 @@ export default new Vue({
         }
       })
     },
-    getBlob (url) { // 解决跨域导致a.download无效，无法重命名的问题
+    getBlob(url) { // 解决跨域导致a.download无效，无法重命名的问题
       return new Promise(resolve => {
         const xhr = new XMLHttpRequest()
         xhr.open('GET', url, true)
@@ -214,7 +214,7 @@ export default new Vue({
     },
     // ====================== 小数运算 ======================
     // math[必填]: 运算符(+ - * / %) / num1[必填]: 数字1 / num2: 数字2
-    decimalMath (num1, math, num2) {
+    decimalMath(num1, math, num2) {
       let pow = 1
       const arr = [num1 + '', num2 + '']
       arr.forEach(b => {
@@ -238,7 +238,7 @@ export default new Vue({
     // 注: 开始时间小于结束时间，用于时间框，一般与@blur事件绑定
     // startStr: 开始时间字符串 / startTime: 开始时间 / endStr: 结束时间字符串 / endTime: 结束时间
     // comeback([startStr||endTime]): 回调函数([开始/结束时间字符串]), 不符合规则时清空时间
-    limitTime (startStr, startTime, endStr, endTime, comeback) {
+    limitTime(startStr, startTime, endStr, endTime, comeback) {
       if (!startTime || !endTime) return
       let start = new Date(startTime).getTime()
       let end = new Date(endTime).getTime()
@@ -249,12 +249,48 @@ export default new Vue({
       }
     },
     // ==================== 获取1级菜单名 ====================
-    getMenuName ($route) {
+    getMenuName($route) {
       const str = $route.path.replace('/home/', '')
       const menuName = str.indexOf('/') !== -1 ? str.substring(0, str.indexOf('/')) : str.substring(0)
       return menuName
     },
     // ==================== val 不为空 ====================
-    noNull (val) { return (val || val === 0 || val === false) }
+    noNull(val) { return (val || val === 0 || val === false) },
+    // 获取URL参数
+    getQueryString(url, paraName) {
+      const arrObj = url.split('?')
+      if (arrObj.length > 1) {
+        const arrPara = arrObj[1].split('&')
+        let arr
+        for (let i = 0; i < arrPara.length; i++) {
+          arr = arrPara[i].split('=')
+          // eslint-disable-next-line eqeqeq
+          if (arr != null && arr[0] == paraName) {
+            return arr[1]
+          }
+        }
+        return ''
+      } else {
+        return ''
+      }
+    },
+    // 字节转换单位
+    convertBytes(bytes) {
+      if (bytes === null || bytes === undefined) {
+        return bytes;
+      }
+      const units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+      let unitIndex = 0;
+      let convertedValue = bytes;
+
+      while (convertedValue >= 1024 && unitIndex < units.length - 1) {
+        convertedValue /= 1024;
+        unitIndex++;
+      }
+
+      // 保留两位小数
+      const formattedValue = parseFloat(convertedValue.toFixed(2));
+      return `${formattedValue} ${units[unitIndex]}`;
+    }
   }
 })

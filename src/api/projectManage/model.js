@@ -1,3 +1,10 @@
+/*
+ * @Autor: zk
+ * @Date: 2024-08-23 19:46:00
+ * @LastEditors: zk
+ * @LastEditTime: 2024-09-24 20:51:54
+ * @Description: 
+ */
 import request from '@/utils/newRequest.js'
 
 // 添加链接模型
@@ -37,11 +44,15 @@ export function deleteProject(params) {
 }
 
 // 编辑项目
-export function updateProject(params) {
+export function updateProject(params, data) {
     return request({
         url: '/appli/updateProject',
         method: 'POST',
-        params
+        params,
+        data,
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
     })
 }
 
@@ -68,5 +79,17 @@ export function getTeamUrl(params) {
         url: '/OurBim/getTeamUrl',
         method: 'get',
         params
+    })
+}
+// 编辑项目
+export function updateGisProject(params, data) {
+    return request({
+        url: '/appli/manageGISLinks',
+        method: 'POST',
+        params,
+        data,
+        headers: {
+            'Content-Type': 'multipart/form-data;'
+        }
     })
 }

@@ -1,0 +1,133 @@
+*{
+    box-sizing: border-box;
+}
+::v-deep.kf{
+    text-align: center;
+    >div{
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+    img{
+        width: 180px;
+        height: auto;
+    }
+}
+::v-deep.dot{
+    cursor: pointer;
+    width: 14px;
+    height: 14px;
+    margin-left: 8px;
+}
+::v-deep.dotContent{
+    font-size: 12px;
+    .dotTitle{
+        color: #24262B;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .dotDetail{
+        text-indent: 2em;
+    }
+}
+.button(){
+    margin-top: 34px;
+    width: 180px;
+}
+.priceBox{
+    margin-top: 60px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    .priceItem{
+        width: 282px;
+        background: #FFFFFF;
+        border-radius: 8px;
+        padding: 24px 20px;
+        text-align: center;
+        position: relative;
+        .priceTitle{
+            font-size: 18px;
+            font-weight: bold;
+            color: #3C4C5E;
+        }
+        .price{
+            margin-top: 28px;
+            color: rgba(85,94,105,0.61);
+            font-size: 13px;
+            span{
+                font-size: 36px;
+                color: #3C4C5E;
+                font-weight: 500;
+                margin-right: 8px;
+            }
+        }
+        .price1{
+            font-size: 24px;
+            color: #FF7C3E;
+            margin-top: 34px;
+            span{
+                color: #868F9B;
+                font-size: 24px;
+            }
+        }
+        .instructions{
+            color: rgba(60,76,94,0.7);
+            font-size: 13px;
+            margin-top: 20px;
+        }
+        .tips{
+            position: absolute;
+            top: 0;
+            left: 0;
+            font-size: 14px;
+            color: #28292E;
+            width: 100px;
+            .bg{
+                position: absolute;
+                left: -20px;
+                top: 19px;
+                z-index: 1;
+            }
+            .jinpai{
+                position: absolute;
+                right: 0px;
+                width: 40px;
+                height: auto;
+                top: 26px;
+                z-index: 2;
+            }
+            span{
+                position: absolute;
+                z-index: 10;
+                width: 100%;
+                top: 36px;
+                left: -22px;
+            }
+        }
+    }
+    .list{
+        margin: 47px 0 108px 0;
+        .listItem{
+            border-bottom: 1px solid #E9ECF0;
+            padding: 7px 0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            &:last-child{
+                border-bottom:0;
+            }
+            .listItemTitle{
+                color: rgba(83,95,106,0.6);
+                font-size: 13px;
+            }
+            .listItemValue{
+                color: #3C4C5E;
+                font-weight: bold;
+                >span{
+                    color: #727272;
+                }
+            }
+        }
+    }
+}

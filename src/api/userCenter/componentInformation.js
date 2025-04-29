@@ -30,3 +30,19 @@ export function modifyComParams(params,data) {
         data
     })
 }
+// 媒体播放器 提交视频流地址
+export function sendvideoUrl(params) {
+  return request({
+      url: '/comControl/sendvideoUrl',
+      method: 'POST',
+      params,
+  })
+}
+// 获取视频流地址
+export function getvideoUrl(params) {
+  return request({
+      url: '/comControl/getvideoUrl',
+      method: 'POST',
+      params,
+  })
+}

@@ -21,13 +21,23 @@ export const gisLayer = [
     },
     {
         type: 'cesium',
+        key: 'WMTS',
+        name: 'WMTS'
+    },
+    {
+        type: 'cesium',
+        key: 'WMS',
+        name: 'WMS'
+    },
+    {
+        type: 'cesium',
         key: '3dtiles',
         name: '3DTiles'
     },
     {
         type: 'cesium',
-        key: 'WMTS',
-        name: 'WMTS'
+        key: 'terrain',
+        name: 'Terrain'
     },
     {
         type: 'supermap',
@@ -42,6 +52,11 @@ export const gisLayer = [
 ]
 
 export const gisSuperMapList = [
+    {
+        type: 'cesium',
+        key: 'default',
+        name: '默认底图'
+    },
     {
         type: 'cesium',
         key: 'bingMap',

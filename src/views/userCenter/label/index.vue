@@ -34,10 +34,11 @@
                 <div
                     class="tag-slot" :class="{'tree-select': activeTree && data.id === activeTree.id}"
                     slot-scope="{ node, data }"
+                    @click="handleTag(data)"
                 >
                     <div class="name">                     
                         <SingleUpload v-model="data.tagUrl" :autoUpload="false" :deleteIcon="false" :showImg="false" accept="image/png" @onChangeFile="onChangeFile($event,data)"></SingleUpload>
-                        <div class="label-tag" @click="handleTag(data)">{{ node.label }}</div>
+                        <div class="label-tag">{{ node.label }}</div>
                     </div>
                     <div class="handle-tag">
                         <img src="@/assets/images/tag/5.png" @click="editTag(data)" alt="" />
@@ -172,7 +173,7 @@ export default {
                 tagId
             }
             clickTag(params).then(res => {
-                this.$message.success(res.message)
+                // this.$message.success(res.message)
             })
         },
         // 删除标签

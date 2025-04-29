@@ -120,32 +120,32 @@ export default {
     return {
       faceList: [
         {
-          label: "前",
+          label: '前',
           value: 0,
           className: "front",
         },
         {
-          label: "后",
+          label: '后',
           value: 1,
           className: "back",
         },
         {
-          label: "上",
+          label: '上',
           value: 2,
           className: "top",
         },
         {
-          label: "下",
+          label: '下',
           value: 3,
           className: "bottom",
         },
         {
-          label: "左",
+          label: '左',
           value: 4,
           className: "left",
         },
         {
-          label: "右",
+          label: '右',
           value: 5,
           className: "right",
         },
@@ -169,19 +169,19 @@ export default {
       isAnimation: true,
       handleList: [
         {
-          label: "正交投影",
+          label: '正交投影',
           value: 2,
         },
         {
-          label: "透视投影",
+          label: '透视投影',
           value: 1,
         },
         {
-          label: "自定义主视图",
+          label: '自定义主视图',
           value: 3,
         },
         {
-          label: "重置主视图",
+          label: '重置主视图',
           value: 0,
         },
       ],

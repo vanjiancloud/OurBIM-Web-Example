@@ -1,3 +1,10 @@
+/*
+ * @Autor: zk
+ * @Date: 2024-08-23 19:46:00
+ * @LastEditors: zk
+ * @LastEditTime: 2024-11-10 20:16:12
+ * @Description: 
+ */
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store/vuex.js'
@@ -32,7 +39,10 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     const res = response.data
-    if (res.code !== 0) {
+    if (res.code !== 0 && res.code !== 200) {
+      if(res.message === '该项目没有BIM构件'){
+        return Promise.reject(res)
+      }
       Message({
         message: res.message,
         type: 'error',

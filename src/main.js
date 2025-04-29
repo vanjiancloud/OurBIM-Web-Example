@@ -11,6 +11,8 @@ import less from 'less'
 // 引入复制链接插件
 import VueClipboard from 'vue-clipboard2'
 
+// 自动计算rem大小
+// import 'lib-flexible'
 // 引入国际化语言包
 import VueI18n from 'vue-i18n'
 import common from './utils/common.js' // 公共方法
@@ -25,8 +27,13 @@ Vue.use(VueI18n)
 Vue.use(VueCropper)
 Vue.use(less)
 Vue.use(VueClipboard)
-    // vue 使用element-ui的el-dialog时 由于滚动条隐藏和出现导致页面抖动问题的解决
+// vue 使用element-ui的el-dialog时 由于滚动条隐藏和出现导致页面抖动问题的解决
 ElementUI.Dialog.props.lockScroll.default = false
+// 可拖拽dialog
+// import dialogMinxins from './mixins/dialogMinxins.js';
+// ElementUI.Dialog.mixins.push(dialogMinxins);
+// ElementUI.Dialog.props.closeOnClickModal = { type: Boolean, default: false }
+// 
 Vue.use(ElementUI)
 
 // 引入vuex
@@ -34,21 +41,20 @@ import store from "./store/vuex.js"
 import config from '../server.config'
 
 Vue.prototype.$config = config
-    // 把$EventBus放到原型上
-Vue.prototype.$EventBus = new Vue()
-    // 把公共方法放到原型上
+// 把公共方法放到原型上
 Vue.prototype.$common = common
 Vue.config.productionTip = false
-    // 把echarts放到原型上
+const i18n = new VueI18n({ locale: 'zh' })
+// 把echarts放到原型上
 Vue.prototype.$echarts = echarts
 
 import onlyNumber from '@/directive/num'
 Vue.use(onlyNumber)
 import '@/icons'
 
-
 new Vue({
-    router,
-    store,
-    render: h => h(App)
+  router,
+  i18n,
+  store,
+  render: h => h(App)
 }).$mount('#app')

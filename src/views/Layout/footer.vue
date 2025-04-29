@@ -2,10 +2,10 @@
     <div class="footer">
         <div class="first">
             <a v-if="!statement" href="https://www.vanjian.com/" target="_blank">
-                Copyright © 2017-2023 万间网络科技（天津）有限公司 版权所有
+                Copyright © 2017-2025 万间网络科技（天津）有限公司 版权所有
             </a>
             <div v-if="statement">
-                <p class="first">Copyright © 2023 www.OurBIM.com, All Rights Reserved.</p>
+                <p class="first">Copyright © 2025 www.OurBIM.com, All Rights Reserved.</p>
                 <p>022-8633-0370</p>
             </div>
         </div>

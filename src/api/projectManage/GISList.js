@@ -6,7 +6,7 @@ export function addGISLayerServer(params, data) {
         url: `/appli/addGISLayerServer`,
         method: 'post',
         params,
-        data,
+        // data,
         headers: {
             'Content-Type': 'application/json'
         }
@@ -51,4 +51,12 @@ export function requestGisServer(data) {
         data
     })
 }
+// 分享项目
+export function getWebUrl(params) {
+    return request({
+        url: '/appli/getGISWebUrl',
+        method: 'POST',
+        params
 
+    })
+}

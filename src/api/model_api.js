@@ -5,6 +5,7 @@
  * @LastEditTime: 2021-06-09 11:10:08
  * @description: 
  */
+import newRequest from "@/utils/newRequest.js";
 import request from '../utils/request'
 
 

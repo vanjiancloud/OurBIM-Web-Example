@@ -1,6 +1,6 @@
 <!-- 重新转换 -->
 <template>
-    <el-dialog title="重新转换" :visible.sync="dialogVisible" width="480px" :before-close="hide" :close-on-click-modal="false">
+    <el-dialog title="重新转换" :visible.sync="dialogVisible" width="580px" :before-close="hide" :close-on-click-modal="false">
         <el-form :model="form" :rules="rules" ref="form" label-width="0">
             <el-form-item prop="modelActorLimitNum">
                 <el-checkbox label="模型体量优化" v-model="form.modelActor"></el-checkbox>
@@ -15,6 +15,7 @@
             <el-form-item prop="platform" label-width="110px" label="解析模型版本">
                 <el-radio-group v-model="form.platform" disabled>
                     <el-radio label="Windows">服务端版</el-radio>
+                    <el-radio label="Linux">Linux版</el-radio>
                     <el-radio label="Android">Android版</el-radio>
                     <el-radio label="IOS">IOS版</el-radio>
                 </el-radio-group>

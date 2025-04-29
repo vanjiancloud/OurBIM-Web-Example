@@ -36,18 +36,18 @@ export function getList(params) {
 
 // 删除图纸
 export function deleteList(params) {
-    return axios({
-        url: `${cadRequestUrl}/CADFile/deleteFileById`,
-        method: "post",
-        params
-    });
+  return axios({
+    url: `${cadRequestUrl}/CADFile/deleteFileById`,
+    method: "post",
+    params
+  });
 }
 
 // 下载图纸
 export function downLoadCAD(params) {
-    return axios({
-        url: `${cadRequestUrl}/CADFile/getFileDownloadUrl`,
-        method: "get",
-        params
-    });
+  return axios({
+    url: `${cadRequestUrl}/CADFile/getFileDownloadUrl`,
+    method: "get",
+    params
+  });
 }
