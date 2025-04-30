@@ -35,7 +35,7 @@ npm run lint
 ![天气环境和后期处理效果编辑](docs/images/7天气环境和后期处理效果编辑.png)
 ![场景建模编辑](docs/images/8场景建模编辑.png)
 ![模型材质编辑](docs/images/9模型材质编辑.png)
-![模型动画编辑.png](docs/images/10模型动画编辑.png)
+![模型动画编辑](docs/images/10模型动画编辑.png)
 ![AR定位码管理](docs/images/11AR定位码管理.png)
 <!-- ### Customize configuration -->
 <!-- See [Configuration Reference](https://cli.vuejs.org/config/). -->
