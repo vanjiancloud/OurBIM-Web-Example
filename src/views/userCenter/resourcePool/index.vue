@@ -11,7 +11,7 @@
         <!-- 贴图库 -->
         <CharletList ref="CharletList" v-if="levels.tab1Index === 2" :data="data" />
         <!-- 构件操作图标 -->
-        <OperatingTools ref="OperatingTools" v-if="drawer && !isAnimationLinkage" :data="data"/>
+        <OperatingTools ref="OperatingTools" v-if="drawer && !isAnimationLinkage" :data="data" />
       </template>
     </Drawer>
   </div>
@@ -130,15 +130,14 @@ export default {
     getList() {
       switch (this.levels.tab1Index) {
         case 0:
-          this.$refs.ComponentList && this.$refs.ComponentList.getPubilcList()
+          this.$refs.ComponentList && this.$refs.ComponentList.refreshData()
           break;
         case 1:
-          this.$refs.MaterialList && this.$refs.MaterialList.getPubilcList()
+          this.$refs.MaterialList && this.$refs.MaterialList.refreshData()
           break;
         case 2:
-          this.$refs.CharletList && this.$refs.CharletList.getPubilcList()
+          this.$refs.CharletList && this.$refs.CharletList.refreshData()
           break;
-
         default:
           break;
       }

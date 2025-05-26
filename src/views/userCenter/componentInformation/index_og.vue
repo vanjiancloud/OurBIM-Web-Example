@@ -12,7 +12,7 @@
     </div>
     <!-- 几何信息 -->
     <Geometry v-show="activeTab === 1" :data="data" />
-    <!-- 材质信息 -->
+    <!-- 材质球信息 -->
     <div class="material" v-if="activeTab === 2">
       <el-empty :image="require('@/assets/noData.png')" description="暂无材质信息，请打开资源库点击构件" :image-size="100"
         v-if="!(componentAllInfo.matList && componentAllInfo.matList.length)"></el-empty>
@@ -39,50 +39,33 @@
         <div class="isOpen" @click="isOpen = !isOpen"><i
             :class="{ 'el-icon-caret-top': isOpen, 'el-icon-caret-bottom': !isOpen }"></i></div>
       </div>
+      <!-- 材质属性信息 -->
       <template v-if="materialAllInfo.matParam">
-        <div class="componentTitle"
-          v-if="materialAllInfo.matParam.colorList && materialAllInfo.matParam.colorList.length > 0 && materialAllInfo.matParam.colorList.some(a => ['BaseColor', 'EmissionColor'].includes(a.paramName))">
-          颜色</div>
-        <!-- 颜色部分 -->
-        <el-row class="materialImg"
-          v-if="materialAllInfo.matParam.colorList && materialAllInfo.matParam.colorList.length">
-          <el-col :span="12" v-for="(color, index) in materialAllInfo.matParam.colorList" :key="index"
-            v-if="['BaseColor', 'EmissionColor'].includes(color.paramName)">
-            <div>
-              <span v-if="color.paramName == 'BaseColor'" class="title">基础颜色</span>
-              <span v-if="color.paramName == 'EmissionColor'" class="title">自发光颜色</span>
-              <el-color-picker v-model="form[color.paramName]" show-alpha @change="updateMaterial()"></el-color-picker>
-            </div>
-          </el-col>
-        </el-row>
-        <!-- 贴图部分 -->
-        <div class="materialImg"
-          v-if="materialAllInfo.matParam.texturesList && materialAllInfo.matParam.texturesList.length">
-          <div class="componentTitle"
-            v-if="materialAllInfo.matParam.texturesList && materialAllInfo.matParam.texturesList.length > 0 && materialAllInfo.matParam.texturesList.some(a => ['BaseColorMap', 'MetallicMap', 'RoughnessMap', 'EmissionMap', 'NormalMap'].includes(a.paramName))">
-            贴图</div>
-          <div class="chartlet" v-for="(texture, index) in materialAllInfo.matParam.texturesList" :key="index"
-            v-if="['BaseColorMap', 'MetallicMap', 'RoughnessMap', 'EmissionMap', 'NormalMap'].includes(texture.paramName)">
+        <div class="materialImg" v-if="materialAllInfo.matParam.colorList && materialAllInfo.matParam.colorList.length">
+          <span>颜色</span>
+          <el-color-picker v-model="form.color" show-alpha @change="updateMaterial()"></el-color-picker>
+          <div class="chartlet">
             <div class="chartletItem">
-              <span v-if="texture.paramName == 'BaseColorMap'" class="label">基础颜色贴图</span>
-              <span v-if="texture.paramName == 'MetallicMap'" class="label">金属度贴图</span>
-              <span v-if="texture.paramName == 'RoughnessMap'" class="label">粗糙度贴图</span>
-              <span v-if="texture.paramName == 'EmissionMap'" class="label">自发光贴图</span>
-              <span v-if="texture.paramName == 'NormalMap'" class="label">法线贴图</span>
-              <!-- <el-image class="img" :class="{ activeChartlet: activeChartlet === texture.paramName }"
-                :src="getChartletType(texture.paramName)" lazy @click.native="onChartlet(texture.paramName)">
+              <span>基础颜色贴图</span>
+              <el-image class="img" :class="{ activeChartlet: activeChartlet === '基础' }"
+                :src="getChartletType('BaseColorMap')" lazy @click.native="onChartlet('基础')">
                 <div slot="error" class="image-slot">
                   <i class="el-icon-plus plusIcon"></i>
                 </div>
-              </el-image> -->
-              <ImageTga class="img" :class="{ activeChartlet: activeChartlet === texture.paramName }"
-                :value="getChartletType(texture.paramName)" @click.native="onChartlet(texture.paramName)">
+              </el-image>
+              <div v-if="getChartletType('BaseColorMap')" class="deleteChartlet"
+                @click="deleteChartlet('BaseColorMap')"><i class="el-icon-delete"></i></div>
+            </div>
+            <div class="chartletItem" style="margin-left: 18px;">
+              <span>法线贴图</span>
+              <el-image class="img" :class="{ activeChartlet: activeChartlet === '法线' }"
+                :src="getChartletType('NormalMap')" lazy @click.native="onChartlet('法线')">
                 <div slot="error" class="image-slot">
                   <i class="el-icon-plus plusIcon"></i>
                 </div>
-              </ImageTga>
-              <div v-if="getChartletType(texture.paramName)" class="deleteChartlet"
-                @click="deleteChartlet(texture.paramName)"><i class="el-icon-delete"></i></div>
+              </el-image>
+              <div v-if="getChartletType('NormalMap')" class="deleteChartlet" @click="deleteChartlet('NormalMap')"><i
+                  class="el-icon-delete"></i></div>
             </div>
           </div>
         </div>
@@ -143,10 +126,10 @@ import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";
 import Tab from "@/components/Tab/index.vue";
 import Geometry from "./geometry.vue";
-import ImageTga from '@/components/Image/ImageTga.vue'
+import { rgbaToArray, arrayToRgba, arrToRgb, formatColor } from "@/utils/color.js";
 
 export default {
-  components: { Tab, Drawer, Geometry, ImageTga },
+  components: { Tab, Drawer, Geometry },
   props: {
     data: {
       type: Object,
@@ -170,10 +153,17 @@ export default {
       // 材质start-----------------------
       isOpen: false,
       activeMaterialIndex: 0, //默认选中的材质球
+      // 当前材质信息
       materialChartlet: {
+        // 基本信息
+        baseParamsList: [],
+        // 颜色信息
+        colorList: [],
+        // 角度 偏移 缩放等
         textureParamsList: [],
-        baseParamsList: []
-      }, //材质下面的信息,贴图，缩放
+        // 贴图信息
+        texturesList: [],
+      },
       activeChartlet: null,//贴图是否被选中
       form: {},
       // 材质end-----------------------
@@ -187,32 +177,31 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["material", "componentAllInfo", "materialAllInfo"]),
+    ...mapGetters(["componentAllInfo", "materialAllInfo"]),
   },
   created() {
     this.isGis = (this.$route.query.isGis && eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin && eval(this.$route.query.weatherBin.toLowerCase())) || false
     // 监听vuex中 materialAllInfo 更新
-    this.unwatchToken = this.$store.watch((state) => state.material.materialAllInfo, (newValue, oldValue) => {
+    this.$store.watch((state) => state.material.materialAllInfo, (newValue, oldValue) => {
       if (!newValue.matParam || !Object.keys(newValue.matParam).length) {
-        // this.unwatchToken()
         this.materialChartlet = this.$options.data().materialChartlet
         return
       }
-      this.materialChartlet.textureParamsList = this.formatBaseParams(this.getChartletParams())
+      // console.log('当前材质信息', newValue)
       this.materialChartlet.baseParamsList = this.formatBaseParams(newValue.matParam.baseParamsList)
-      this.formatColors(newValue.matParam.colorList)
+      this.materialChartlet.colorList = this.formatBaseParams(newValue.matParam.colorList)
+      this.materialChartlet.textureParamsList = this.formatBaseParams(this.getChartletParams())
+      this.materialChartlet.texturesList = this.formatBaseParams(newValue.matParam.texturesList)
+      // console.log(this.materialChartlet)
     }, { deep: true });
     // 监听 componentAllInfo 变化
     // this.$store.watch((state) => state.material.componentAllInfo, (newValue, oldValue) => {
     //   console.log(newValue)
     // }, { deep: true });
   },
-  mounted() {
-    EventBus.$on('updateMaterialMaps', this.updateMaterialByPool)
-  },
+  mounted() { },
   destroyed() {
-    EventBus.$off('eventTool');
-    EventBus.$off('updateMaterialMaps');
+    EventBus.$off('eventTool')
   },
   methods: {
     show() {
@@ -239,15 +228,7 @@ export default {
         this.$store.dispatch('material/changeSetting', { key: "materialLevel1Tab", value: 1 })
       }
     },
-    // 去掉rgba,去掉空格
-    formatColor(color) {
-      return color && color.slice(5, color.length - 1).replace(/\s*/g, '') || ''
-    },
-    // 颜色数组变rgba
-    arrToRgb(arr) {
-      if (!arr || !arr.length) return null
-      return `rgba(${Number(arr[0])},${Number(arr[1])},${Number(arr[2])},${Number(arr[3]) / 255})`
-    },
+
     /* 
         处理贴图
         颜色paramName：BaseColor  不同材质不同取值
@@ -255,25 +236,28 @@ export default {
         isUpdate：false:回显的时候转为rgba
     */
     formatColors(colorList, isUpdate) {
-      // console.log(colorList)
+      // rgba转换为数组
       if (isUpdate) {
         if (colorList.length) {
           try {
             colorList.forEach(e => {
-              e.paramValue = this.form[e.paramName] ? this.formatColor(this.form[e.paramName]).split(',') : []
+              e.paramValue = this.form.color ? formatColor(this.form.color).split(',') : []
+              throw new Error()
             })
           } catch (error) { }
         }
         return colorList
       } else {
+        // 数组转换为rgba
         if (colorList.length) {
           try {
             colorList.forEach(e => {
-              this.$set(this.form, e.paramName, this.arrToRgb(e.paramValue))
+              this.$set(this.form, 'color', arrToRgb(e.paramValue))
+              throw new Error()
             })
           } catch (error) { }
         } else {
-          // this.$set(this.form, 'color', null)
+          this.$set(this.form, 'color', null)
         }
       }
     },
@@ -309,6 +293,7 @@ export default {
         return !seen.has(JSON.stringify(item)) && seen.set(JSON.stringify(item), 1);
       });
       // end
+      // console.log(uniqueArr)
       return uniqueArr
     },
     formatBaseParams(data) {
@@ -329,10 +314,22 @@ export default {
     // 获取材质信息
     getMaterialInfo(matId) {
       getMaterialByMatId({ matId: matId || this.materialAllInfo.matId, isPublic: false }).then(res => {
-        let materialAllInfo = { ...this.componentAllInfo.matList[this.activeMaterialIndex], ...res.data, matParam: JSON.parse(res.data.matParam) }
+        // 当前选中的材质信息
+        let materialAllInfo = {
+          ...this.componentAllInfo.matList[this.activeMaterialIndex],
+          ...res.data,
+          matParam: {
+            ...this.componentAllInfo.matList[this.activeMaterialIndex].matParam,
+            ...JSON.parse(res.data.matParam)
+          }
+        }
+        materialAllInfo.matParam.colorList.map(a=>{
+          a.paramValue = arrToRgb(a.paramValue)
+          return a
+        })
+        // 保存信息
         this.changeSetting({ key: "materialAllInfo", value: materialAllInfo })
-        this.formatColors(materialAllInfo.matParam.colorList)
-        this.getChartletParams()
+        // this.getChartletParams()
       })
     },
     // 更新滑动条
@@ -345,40 +342,13 @@ export default {
       }
       this.updateMaterial()
     },
-    // 更新贴图
-    updateMaterialByPool(textureId) {
-      let params = {
-        taskId: this.data.taskId,
-        appId: this.$parent.pakidToAppid(this.componentAllInfo.pakId) || this.data.appId,
-        baseColorTextureId: this.material.openTexture === 'BaseColorMap' ? textureId : '',
-        normalMapTextureId: this.material.openTexture === 'NormalMap' ? textureId : '',
-        metallicMapTextureId: this.material.openTexture === 'MetallicMap' ? textureId : '',
-        roughnessMapTextureId: this.material.openTexture === 'RoughnessMap' ? textureId : '',
-        emissionMapTextureId: this.material.openTexture === 'EmissionMap' ? textureId : '',
-      }
-      let colorList = this.formatColors(this.materialAllInfo.matParam.colorList, true)
-      let data = [{
-        matId: this.materialAllInfo.matId,
-        pakId: this.componentAllInfo.pakId,
-        matParam: {
-          matId: this.materialAllInfo.matId,
-          ...this.materialAllInfo.matParam,
-          colorList,
-          ...this.materialChartlet
-        }
-      }]
-      updateMaterial(params, JSON.stringify(data)).then(() => {
-        this.$message.success('贴图替换成功')
-        this.getMaterialInfo(data.matId)
-      })
-    },
     // 更新材质
     updateMaterial() {
       let params = {
         taskId: this.data.taskId,
         appId: this.$parent.pakidToAppid(this.componentAllInfo.pakId) || this.data.appId,
-        // baseColorTextureId: '',
-        // normalMapTextureId: ''
+        // baseColorTextureId:'',
+        // normalMapTextureId:''
       }
       let colorList = this.formatColors(this.materialAllInfo.matParam.colorList, true)
       let data = [{
@@ -392,10 +362,13 @@ export default {
         }
       }]
       updateMaterial(params, JSON.stringify(data)).then(() => {
-        this.$message.success('材质替换成功')
+        this.$message.success('材质修改成功')
         this.getMaterialInfo(data.matId)
         EventBus.$emit('resourcePoolMaterialListRefresh')
       })
+        .catch(error => {
+          console.error(error)
+        })
     },
     // 点击贴图
     onChartlet(type) {
@@ -612,12 +585,8 @@ export default {
   }
 
   .materialImg {
-    .title {
-      color: #c2c5bc;
-    }
-
     .geometryText();
-    margin: 20px 0;
+    margin: 23px 0;
 
     span {
       padding: 0 8px 0 20px;
@@ -634,23 +603,14 @@ export default {
     }
 
     .chartlet {
-      // margin-top: 20px;
+      margin-top: 20px;
       display: flex;
       align-items: center;
-
-      &:not(:last-child) {
-        margin-bottom: 20px;
-      }
 
       .chartletItem {
         position: relative;
         display: flex;
         align-items: center;
-
-        .label {
-          color: #c2c5bc;
-          min-width: 98px;
-        }
 
         &:hover .deleteChartlet {
           display: block !important;

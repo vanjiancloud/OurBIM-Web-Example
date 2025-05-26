@@ -11,7 +11,8 @@
       <el-input v-model="search" size="mini" placeholder="请输入您要搜索的内容" prefix-icon="el-icon-search"
         @change="searchContent()" @keydown.native.stop />
       <el-button v-if="levels.tab2Index === 1" class="button blueBtn1" type="primary" icon="el-icon-plus" size="mini"
-        @click="createGroup(levels.level === 1 ? '新建分组' : '上传贴图')">{{ levels.level === 1 ? '新建分组' : '上传贴图' }}</el-button>
+        @click="createGroup(levels.level === 1 ? '新建分组' : '上传贴图')">{{ levels.level === 1 ? '新建分组' : '上传贴图'
+        }}</el-button>
     </div>
     <Tab v-model="levels.tab2Index" v-show="levels.level === 1" class="roundTab" :data="typeList" @onTab="onTypeTab" />
 
@@ -20,7 +21,13 @@
       <div class="content">
         <div class="contentItem" v-for="(item, index) in (levels.level === 2 ? contentLevel2List : contentList)"
           :key="index" @click="toLevel2(item)">
-          <el-image class="img" :src="item.imgPath" lazy>
+          <div class="subOperate" v-if="levels.tab2Index === 1">
+            <el-button type="primary" icon="el-icon-edit-outline" size="mini"
+              @click.stop="createGroup(levels.level === 1 ? '编辑分组' : '编辑贴图', item)"></el-button>
+            <el-button type="primary" icon="el-icon-delete" size="mini"
+              @click.stop="deleteGroup(levels.level, item)"></el-button>
+          </div>
+          <el-image class="img" :src="levels.level === 1 ? item.imgPath : item.pngPath" lazy>
             <div slot="placeholder" class="image-slot">
               <img src="@/assets/default/charlet.png" />
             </div>
@@ -30,10 +37,10 @@
           </el-image>
           <div>{{ item.groupName }}</div>
           <!-- 贴图-个人图的编辑删除 -->
-          <div class="iconBottom" v-if="levels.tab2Index === 1">
+          <!-- <div class="iconBottom" v-if="levels.tab2Index === 1">
             <i class="el-icon-edit editIcon" @click.stop="createGroup(levels.level === 1 ? '编辑分组' : '编辑贴图', item)"></i>
             <i class="el-icon-delete greyIcon" @click.stop="deleteGroup(levels.level, item)"></i>
-          </div>
+          </div> -->
         </div>
         <el-empty :image="require('@/assets/noData.png')" :image-size="100"
           v-if="levels.level === 2 ? !contentLevel2List.length : !contentList.length"></el-empty>
@@ -47,20 +54,23 @@
     <!-- 新建分组弹框 -->
     <DialogChartletGroup ref="DialogChartletGroup" />
     <!-- 上传贴图弹框 -->
-    <DialogChartlet ref="DialogChartlet" :groupList="searchToSaveList" />
+    <DialogChartlet ref="DialogChartlet" :groupList="searchToSaveList" @reloadTable="getTextureList" />
   </div>
 </template>
 
 <script>
 import { mapGetters, mapState } from 'vuex'
 import DialogChartletGroup from "./DialogChartletGroup.vue"; // 新建分组弹框
-import DialogChartlet from "./DialogCharlet.vue"; // 上传贴图弹框
+// import DialogChartlet from "./DialogCharlet.vue"; // 上传贴图弹框
+import DialogChartlet from "../../projectManage/resource/components/DialogCharlet.vue"; // 上传贴图弹框
 import { getTextureGroup, getTextureByGroupId } from "@/api/userCenter/resourcePool.js";
 import { deleteMaterialTexture } from '@/api/resource/chartlet.js'
 import { throttle } from 'lodash'
 import Tab from "@/components/Tab/index.vue";
 import Pagination from "@/components/Pagination/index.vue";
 import addMaterial from './addMaterial.js'
+import { EventBus } from '@/utils/bus.js'
+
 export default {
   components: { Tab, Pagination, DialogChartletGroup, DialogChartlet },
   mixins: [addMaterial],
@@ -88,6 +98,8 @@ export default {
         tab2Index: 0,//第二级tab切换
         groupId: null,//组id
         activeContent: null,
+        activeLevel1Content: {},//
+        activeLevel2Content: {},//
       }, //组名称,tab名称,默认一级
       contentList: [], //一级列表数据
       contentLevel2List: [], //二级列表数据
@@ -107,6 +119,28 @@ export default {
   created() { },
   mounted() { },
   methods: {
+    // 刷新数据
+    refreshData() {
+      switch (this.levels.tab2Index) {
+        // 公共库
+        case 0:
+          if (this.levels.level == 1) {
+            this.getPubilcList()
+          }
+          break;
+        // 个人库
+        case 1:
+          if (this.levels.level == 1) {
+            this.getUserList()
+          }
+          if (this.levels.level == 2) {
+            this.getTextureList(this.levels.activeLevel1Content.groupId)
+          }
+          break;
+        default:
+          break;
+      }
+    },
     // 公共库
     getPubilcList() {
       this.cancel && this.cancel();
@@ -189,12 +223,12 @@ export default {
     async toLevel2(item) {
       this.levels.activeContent = item
       if (this.levels.level === 1) {
+        this.levels.activeLevel1Content = item;
         this.search = ''
         this.pages = this.$options.data().pages;
         this.levels.level = 2;
         this.levels.groupName = item.groupName;
         this.levels.groupId = item.groupId
-
         switch (this.levels.tab2Index) {
           case 0:
 
@@ -215,6 +249,7 @@ export default {
         * 
       */
       if (this.levels.level === 2) {
+        this.levels.activeLevel2Content = item;
         switch (this.levels.tab2Index) {
           case 0:
 
@@ -223,7 +258,8 @@ export default {
             if (!this.material.openTexture) {
               return this.$message.warning('请选择要替换的贴图类型！')
             }
-            this.addMaterial({ textureId: item.textureId, isPublic: false })
+            // this.addMaterial({ textureId: item.textureId, isPublic: false })
+            EventBus.$emit('updateMaterialMaps', item.textureId)
             break;
 
           default:
@@ -260,7 +296,8 @@ export default {
           this.$refs.DialogChartletGroup.show(title, newRow);
           break;
         case '上传贴图': case '编辑贴图':
-          this.$refs.DialogChartlet.show(title, { ...newRow, groupId: this.levels.groupId });
+          // this.$refs.DialogChartlet.show(title, { ...newRow, groupId: this.levels.groupId });
+          this.$refs.DialogChartlet.show({ ...JSON.parse(JSON.stringify(row)), groupId: this.levels.groupId })
           break;
 
         default:
@@ -398,6 +435,30 @@ export default {
       i {
         margin: 0 10px;
       }
+    }
+
+    .subOperate {
+      position: absolute;
+      right: 4px;
+      top: 4px;
+      z-index: 1;
+      display: none;
+
+      button {
+        padding: 0;
+        font-size: 14px;
+        background: rgba(51, 51, 51, 0.8);
+        border: 0;
+        padding: 2px;
+
+        &:not(:first-child) {
+          margin-left: 4px;
+        }
+      }
+    }
+
+    &:hover .subOperate {
+      display: block;
     }
   }
 }

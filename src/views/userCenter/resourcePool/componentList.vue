@@ -75,7 +75,10 @@ export default {
         groupName: "",
         level: 1,
         tab2Index: 0,//第二级tab切换
-        hideContent: false //隐藏content
+        hideContent: false, //隐藏content
+        activeContent: {},//
+        activeLevel1Content: {},//
+        activeLevel2Content: {},//
       }, //组名称,tab名称,默认一级
       contentList: [], //一级列表数据
       contentLevel2List: [], //二级列表数据
@@ -95,6 +98,31 @@ export default {
   created() { },
   mounted() { },
   methods: {
+    // 刷新数据
+    refreshData() {
+      switch (this.levels.tab2Index) {
+        // 公共库
+        case 0:
+          if (this.levels.level == 1) {
+            this.getPubilcList()
+          }
+          if (this.levels.level == 2) {
+            this.getPublicList2(this.levels.activeLevel1Content)
+          }
+          break;
+        // 个人库
+        case 1:
+          if (this.levels.level == 1) {
+            this.getUserList()
+          }
+          if (this.levels.level == 2) {
+            this.getUserList2(this.levels.activeLevel1Content)
+          }
+          break;
+        default:
+          break;
+      }
+    },
     // 公共库
     getPubilcList() {
       this.cancel && this.cancel();
@@ -114,6 +142,12 @@ export default {
         this.pageData()
       })
     },
+    // 公共库二级
+    getPublicList2(item) {
+      this.contentLevel2List = item.rsComponent
+      this.searchToSaveList2 = JSON.parse(JSON.stringify(this.contentLevel2List))
+      this.pageDatas = JSON.parse(JSON.stringify(this.searchToSaveList2))
+    },
     // 个人库
     async getUserList() {
       this.cancel && this.cancel();
@@ -129,6 +163,18 @@ export default {
       this.searchToSaveList = JSON.parse(JSON.stringify(this.contentList))
       this.pageDatas = JSON.parse(JSON.stringify(this.contentList))
       this.pageData()
+    },
+    // 个人库二级
+    async getUserList2(item) {
+      this.contentLevel2List = item.rsComponent.map((e) => {
+        return {
+          comName: e.ourbimComponentInfo.comName,
+          comUrl: e.ourbimComponentInfo.comUrl,
+          ...e,
+        };
+      });
+      this.searchToSaveList2 = JSON.parse(JSON.stringify(this.contentLevel2List))
+      this.pageDatas = JSON.parse(JSON.stringify(this.searchToSaveList2))
     },
     // 点击返回第一级
     back() {
@@ -179,30 +225,20 @@ export default {
     }, 800),
     // 点击去二级构件
     async toLevel2(item) {
+      this.levels.activeContent = item;
       if (this.levels.level === 1) {
+        this.levels.activeLevel1Content = item;
         this.search = ''
         this.pages = this.$options.data().pages;
         this.levels.level = 2;
         this.levels.groupName = item.comName;
-
         switch (this.levels.tab2Index) {
           case 0:
-            this.contentLevel2List = item.rsComponent
-            this.searchToSaveList2 = JSON.parse(JSON.stringify(this.contentLevel2List))
-            this.pageDatas = JSON.parse(JSON.stringify(this.searchToSaveList2))
+            this.getPublicList2(item)
             break;
           case 1:
-            this.contentLevel2List = item.rsComponent.map((e) => {
-              return {
-                comName: e.ourbimComponentInfo.comName,
-                comUrl: e.ourbimComponentInfo.comUrl,
-                ...e,
-              };
-            });
-            this.searchToSaveList2 = JSON.parse(JSON.stringify(this.contentLevel2List))
-            this.pageDatas = JSON.parse(JSON.stringify(this.searchToSaveList2))
+            this.getUserList2(item)
             break;
-
           default:
             break;
         }
@@ -215,6 +251,7 @@ export default {
         * 
       */
       if (this.levels.level === 2) {
+        this.levels.activeLevel2Content = item;
         let data = {
           taskId: this.data.taskId,
           comName: item.comName,

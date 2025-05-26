@@ -106,7 +106,7 @@
       <!-- 图元参数 -->
       <div class="geometryItem coordinate" v-if="geometryObjForm.name === '图元'">
         <div class="comTitle">GIS遮罩多边形参数</div>
-        <el-table :data="dataPolygon" style="width: 100%" height="380">
+        <el-table :data="dataPolygon" style="width: 100%;" height="380">
           <el-table-column prop="uuid" label="覆盖GIS图层">
             <template slot-scope="scope">
               <div>
@@ -117,7 +117,6 @@
                 </el-select>
                 <div v-else v-text="getServerName(scope.row)"></div>
               </div>
-
             </template>
           </el-table-column>
           <el-table-column prop="materialLayer" label="图层顺序">
@@ -785,7 +784,7 @@ export default {
     'data.selectPark'(val) {
       // console.log('watch-geometry', val)
       this.gisPolygon = false;
-      if(val && val.id == '110'){
+      if (val && val.id == '110') {
         this.handleGeometryBus(val)
       }
       if (!val || ['1', '7'].includes(val.id)) {

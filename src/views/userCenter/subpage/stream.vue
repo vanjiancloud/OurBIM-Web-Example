@@ -195,6 +195,7 @@ export default {
         keepAliveInterval: keepAlive,
         cleanSession: cleanSession,
         useSSL: ssl,
+        // rejectUnauthorized: process.env.NODE_ENV === 'production', // 忽略证书验证（危险！仅开发使用）
         userName: "vanjian",
         password: "vanjian666",
         onSuccess: (e) => {

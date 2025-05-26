@@ -187,6 +187,7 @@ export default {
   },
   watch: {},
   created() {
+    console.log(process.env.NODE_ENV)
     this.userId = this.$route.query.userId || Getuserid() || 'travels'
     this.getLogo("startUpLogo")
     this.getLogo("startUpBkgImg")
@@ -422,7 +423,13 @@ export default {
     // 监听工具栏隐藏和显示
     addMessageEvent() {
       window.addEventListener("message", (e) => {
-        // console.log('web_client_listener_receive_postMessage', e)
+        // this.$message({
+        //   type: "info",
+        //   message: JSON.stringify(e.data),
+        //   duration: 0,
+        //   showClose: true,
+        // })
+        // console.log('web_client_addEventListener_message', e.data)
         let res = e.data
         if (res.prex === "ourbimBaseMessage") {
           if (res.type === 'error') {
@@ -692,7 +699,19 @@ export default {
           // 材质图片信息
           else if (realData.id === "29") {
             this.$set(this.materialData, 'rsInfo', realData.rsInfo)
-            this.materialData.matList?.length && this.materialData.matList.forEach(item => {
+            // this.materialData.matList?.length && this.materialData.matList.forEach(item => {
+            //   try {
+            //     this.materialData.rsInfo.forEach(e => {
+            //       if (item.matId === e.matId) {
+            //         this.$set(item, 'imgPath', e.imgPath )
+            //         throw new Error()
+            //       }
+            //     })
+            //   }
+            //   catch (error) { }
+            // })
+            let matList = JSON.parse(JSON.stringify(this.componentAllInfo.matList))
+            matList.forEach(item => {
               try {
                 this.materialData.rsInfo.forEach(e => {
                   if (item.matId === e.matId) {
@@ -700,10 +719,14 @@ export default {
                     throw new Error()
                   }
                 })
-              } catch (error) { }
+              }
+              catch (error) { }
             })
             // 设置全局 当前选中的构件信息
-            this.$store.dispatch('material/changeSetting', { key: "componentAllInfo", value: { matList: this.materialData.matList } || {} })
+            this.$store.dispatch('material/changeSetting', { key: "componentAllInfo", value: { matList } || {} })
+          }
+          else if (realData.id === "111") {
+            EventBus.$emit('waitReplaceByMatId',realData.rsInfo);
           }
           else if (realData.id === "33") {
             // 视点动画播放
@@ -748,6 +771,12 @@ export default {
         }, 1000 * 30);
       };
       this.websock.onerror = (e) => {
+        this.$message({
+          type: "error",
+          message: '🚀🚀🚀websock错误',
+          duration: 0,
+          showClose: true,
+        })
         console.log('🚀🚀🚀websock错误', e);
       };
     },
@@ -807,6 +836,7 @@ export default {
         this.webUrl = res.data.url;
         this.taskId = res.data.taskId;
         this.listenerIframe()
+        // this.$message.error(res.data.code + res.data)
         // 保存code
         if (res.data.code) {
           this.shareCode = res.data.code;

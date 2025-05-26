@@ -23,6 +23,7 @@
     "less": "^4.1.0",
     "less-loader": "^7.3.0",
     "lib-flexible": "^0.3.2",
+    "libtga": "^0.4.0",
     "moment": "^2.29.4",
     "postcss-px2rem": "^0.3.0",
     "qrcode": "^1.5.3",

@@ -1,23 +1,26 @@
 <template>
   <List @change="onChange">
     <template slot="title">
-      <div class="boxHeader">
+      <div class="boxHeader" style="display: flex; align-items: center;">
         <div class="boxHeaderTitle">您共有<span>{{ total }}</span>个项目</div>
-        <div>
-          <el-form :inline="true" :model="searchForm" style="display: inline-block;" class="searchListForm">
+        <!-- 右侧容器增加最小宽度限制 -->
+        <div style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 8px; ">
+          <!-- 搜索表单增加最小宽度并禁止收缩 -->
+          <el-form :inline="true" :model="searchForm" style="display: inline-flex; align-items: center;"
+            class="searchListForm">
             <el-form-item label="项目名称：">
-              <el-input v-model="searchForm.appName" placeholder="请输入"></el-input>
+              <!-- 输入框设置最小宽度并保持弹性 -->
+              <el-input v-model="searchForm.appName" placeholder="请输入" style="flex: 1; min-width: 80px;"></el-input>
             </el-form-item>
             <el-form-item label="项目ID：">
-              <el-input v-model="searchForm.appId" placeholder="请输入"></el-input>
+              <!-- 输入框设置最小宽度并保持弹性 -->
+              <el-input v-model="searchForm.appId" placeholder="请输入" style="flex: 1; min-width: 80px;"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" class="blueBtn" @click="onSearch">查询</el-button>
             </el-form-item>
           </el-form>
-          <!-- <el-button type="primary" class="blueBtn" @click="createProject()">新建BIM项目</el-button> -->
-          <!-- 上传GIS数据的关闭弹窗后显示正在上传的个数  -->
-          <el-badge :value="uploadingNum" :hidden="!uploadingNum" style="margin:0 16px">
+          <el-badge :value="uploadingNum" :hidden="!uploadingNum" style="margin:0 8px">
             <el-button icon="el-icon-upload" class="blueBtn" type="primary"
               @click="handleCreateProjectDialog">上传BIM模型</el-button>
           </el-badge>
@@ -120,7 +123,7 @@
             <el-button size="small" class="blueBtn" @click="GoApp(item)"
               :disabled="item.applidStatus !== '2' || item.currVersion !== 'V50'">打开模型</el-button>
             <el-button size="small" class="bluePlainBtn1" @click="teamWorkBtnClick(item)"
-              :disabled="!(item.applidStatus === '2' && item.appType !== '5')">协同模式</el-button>
+              :disabled="!(item.applidStatus === '2' && item.appType !== '5') || item.currVersion !== 'V50'">协同模式</el-button>
             <!-- <el-button type="text" class="blackText">互动模式</el-button> -->
           </div>
           <el-dropdown>
@@ -246,7 +249,7 @@
     </el-dialog>
 
     <DialogsDrag ref="DialogsDrag" numType="uploadingNum"
-      accept=".rvm,.rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.fbx,.FBX,.obj,.stp,.xyz,.txt,.pts,.las,.nwd"
+      accept=".rvm,.rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.fbx,.obj,.stp,.xyz,.txt,.pts,.las,.nwd"
       @getFile="getFileDrag" @onSuccess="getAllModelList" @beforeUpload="beforeUpload">
       <template v-slot:append>
         <el-form :model="conversionForm" :rules="conversionRules" ref="conversionForm" label-width="0"
@@ -265,7 +268,7 @@
           </el-form-item>
           <el-form-item prop="platform" label-width="110px" label="解析模型版本">
             <el-radio-group v-model="conversionForm.platform" disabled>
-              <el-radio label="Windows">服务端版</el-radio>
+              <el-radio label="Windows">Windows版</el-radio>
               <el-radio label="Linux">Linux版</el-radio>
               <el-radio label="Android">Android版</el-radio>
               <el-radio label="IOS">IOS版</el-radio>
@@ -517,7 +520,10 @@ export default {
     },
 
     handleCreateProjectDialog() {
-      this.conversionForm = this.$options.data().conversionForm
+      this.conversionForm = {
+        ...this.$options.data().conversionForm,
+        platform: this.$config.MODEL_SYSTEM_VERSION,
+      }
       this.$refs.DialogsDrag.show('上传模型')
     },
 
@@ -814,6 +820,16 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.searchListForm {
+  /deep/.el-form-item {
+    display: flex;
+
+    .el-form-item__content {
+      flex: 1;
+    }
+  }
+}
+
 .status1 {
   color: #FF7F28 !important;
 

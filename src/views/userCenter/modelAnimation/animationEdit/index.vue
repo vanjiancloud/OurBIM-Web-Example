@@ -58,7 +58,7 @@
               <el-col :span="8" v-for="(city, index) in materialData.citys" :key="index">
                 <el-checkbox class="material_box" :label="city.value">
                   <div class="contentItem">
-                    <el-image class="img" src="@/assets/default/charlet.png" lazy>
+                    <el-image class="img" :src="city.url" lazy>
                       <div slot="placeholder" class="image-slot">
                         <img src="@/assets/default/charlet.png" />
                       </div>
@@ -958,8 +958,8 @@ export default {
 
     .img {
       width: 100%;
-      // height: 85px;
-      object-fit: fill;
+      height: 85px;
+      // object-fit: fill;
       margin-bottom: 8px;
       background: #28292E;
       border-radius: 4px;

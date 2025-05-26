@@ -1,6 +1,5 @@
 <template>
-  <!-- 导入图纸 -->
-  <div class="drawing" v-if="levels.tab2Index === 0">
+  <div class="drawing" v-if="levels.tab2Index === 1">
     <div class="drawingLevel1" v-if="levels.level === 1">
       <div class="comTitle">导入图纸</div>
       <div class="drawingCon" @click="toLevel2()">
@@ -8,28 +7,37 @@
         <div class="drawingName">图纸</div>
       </div>
     </div>
-    <div class="drawingLevel2" v-if="levels.level === 2 && levels.hideContent">
+    <!-- <div class="drawingLevel2" v-if="levels.level === 2 && levels.hideContent">
       <div class="drawingLevel2Item" v-for="(item, index) in drawingList" :key="index" @click="onDrawing(item)">
-        <!-- 上传图纸 -->
-        <SingleUpload v-if="item.id === 1" ref="SingleUpload" class="drawingLevel2Img" accept="image/png"
+        <SingleUpload v-if="item.id === 1" ref="SingleUpload" class="drawingLevel2Img" :accept="uploadAccept"
           url="/buildSystem/blueprintImport" :params="{ taskId: data.taskId, fileUpload: null }">
           <svg-icon slot="icon" :icon-class="item.svgUrl" />
         </SingleUpload>
-        <!-- 调整比例尺 -->
         <div v-else class="drawingLevel2Img" :class="{ activeDraw: item.check }">
           <svg-icon :icon-class="item.svgUrl" />
         </div>
         <div class="drawingName">{{ item.name }}</div>
       </div>
+    </div> -->
+    <div class="drawingLevel2" v-if="levels.level === 2 && levels.hideContent">
+      <div v-for="(item, index) in drawingList" :key="index" @click="onDrawing(item)">
+        <SingleUpload v-if="item.id === 1" ref="SingleUpload" :accept="uploadAccept" url="/buildSystem/blueprintImport"
+          :params="{ taskId: data.taskId, fileUpload: null }">
+          <el-button slot="button" type="primary" size="small">上传图纸</el-button>
+        </SingleUpload>
+        <el-button v-else type="primary" size="small">导入在线图纸</el-button>
+      </div>
     </div>
+    <ImportOnlineDrawings ref="ImportOnlineDrawingsRef" />
   </div>
 </template>
 
 <script>
 import { doAction } from "@/api/userCenter/index";
-import SingleUpload from '@/components/Upload/singleUpload.vue'
+import SingleUpload from '@/components/Upload/drawingUpload.vue';
+import ImportOnlineDrawings from './importOnlineDrawings.vue';
 export default {
-  components: { SingleUpload },
+  components: { SingleUpload, ImportOnlineDrawings },
   props: {
     // 层级的数据
     levels: {
@@ -44,6 +52,7 @@ export default {
   },
   data() {
     return {
+      uploadAccept: '.dwg,.dxf,.pdf,.png',//'image/png'
       // 图纸
       drawingList: [
         {
@@ -52,10 +61,16 @@ export default {
           svgUrl: 'drawingAdd',
           check: false
         },
+        // {
+        //   id: 2,
+        //   name: '调整图纸比例尺',
+        //   svgUrl: 'drawingProportion',
+        //   check: false
+        // },
         {
-          id: 2,
-          name: '调整图纸比例尺',
-          svgUrl: 'drawingProportion',
+          id: 3,
+          name: '导入在线图纸',
+          svgUrl: 'drawingAdd',
           check: false
         }
       ]
@@ -87,7 +102,10 @@ export default {
             this.updateEdit({ action: 'endMeasure' })
           }
           break;
-
+        // 导入在线图纸
+        case 3:
+          this.$refs.ImportOnlineDrawingsRef.show();
+          break;
         default:
           break;
       }
