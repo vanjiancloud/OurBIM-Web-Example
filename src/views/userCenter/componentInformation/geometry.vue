@@ -1,441 +1,449 @@
 <!-- 几何信息 -->
 <template>
-  <div class="geometry">
-    <template v-if="geometryObjForm.id">
-      <!-- 坐标 -->
-      <div class="coordinate geometryItem" v-if="geometryObjForm.id && geometryObjForm.public && !gisPolygon">
-        <div class="comTitle">
-          <img v-if="geometryObjForm.lightType === 'pointLight'" src="@/assets/images/component/title4.png" />
-          <img v-if="geometryObjForm.lightType === 'spotLight'" src="@/assets/images/component/title3.png" />
-          <img v-if="geometryObjForm.lightType === 'sphereReflectionCapture'"
-            src="@/assets/images/component/title1.png" />
-          <img v-if="geometryObjForm.name === '水流仿真体'" src="@/assets/images/component/title5.png" />
-          <img v-if="geometryObjForm.name === '水源'" src="@/assets/images/component/title6.png" />
-          <img v-if="geometryObjForm.name === '喷泉'" src="@/assets/images/component/title7.png" />
-          <img v-if="geometryObjForm.name === '挡水坝'" src="@/assets/images/component/title8.png" />
-          {{ geometryObjForm.name }}
-        </div>
-        <div class="coordinateTitle">坐标：</div>
-        <div class="coordinateItemInput">
-          X<el-input-number v-model="geometryObjForm.location.x" controls-position="right" size="mini"
-            @keydown.native.stop @change="editCom()" />
-          Y<el-input-number v-model="geometryObjForm.location.y" controls-position="right" size="mini"
-            @keydown.native.stop @change="editCom()" />
-          Z<el-input-number v-model="geometryObjForm.location.z" controls-position="right" size="mini"
-            @keydown.native.stop @change="editCom()" />
-          <i class="el-icon-refresh-right"></i>
-        </div>
-        <div class="coordinateTitle">角度：</div>
-        <div class="coordinateItemInput">
-          P<el-input-number v-model="geometryObjForm.rotation.p" controls-position="right" size="mini"
-            @keydown.native.stop @change="editCom()" />
-          Y<el-input-number v-model="geometryObjForm.rotation.y" controls-position="right" size="mini"
-            @keydown.native.stop @change="editCom()" />
-          R<el-input-number v-model="geometryObjForm.rotation.r" controls-position="right" size="mini"
-            @keydown.native.stop @change="editCom()" />
-          <i class="el-icon-refresh-right"></i>
-        </div>
-        <div class="coordinateTitle">比例：</div>
-        <div class="coordinateItemInput">
-          X<el-input-number v-model="geometryObjForm.scale.x" controls-position="right" size="mini" @keydown.native.stop
-            @change="editCom()" />
-          Y<el-input-number v-model="geometryObjForm.scale.y" controls-position="right" size="mini" @keydown.native.stop
-            @change="editCom()" />
-          Z<el-input-number v-model="geometryObjForm.scale.z" controls-position="right" size="mini" @keydown.native.stop
-            @change="editCom()" />
-          <i class="el-icon-refresh-right"></i>
-        </div>
-      </div>
-      <div class="geometryItem coordinate" v-if="geometryObjForm.name === '媒体播放器'">
-        <div class="coordinateTitle">媒体播放器设置</div>
-        <div class="video_part">
-          <div class="coordinateTitle">选择视频源</div>
-          <div class="video_source">
-            <!-- <el-radio v-model="video.videoSource" label="1">视频流地址</el-radio> -->
-            <el-input v-model="video.videoUrl" placeholder="请输入在线视频流地址" size="mini"> <el-button slot="append"
-                type="primary" @click="videoUrlSubmit">确认</el-button></el-input>
-            <!-- <el-input v-model="video.videoUrl" placeholder="请输入在线视频流地址" size="mini"></el-input> -->
+  <div class="geometry_main">
+    <div class="geometry" v-if="topStore.topType == 0">
+      <template v-if="geometryObjForm.id || data.copyingPictures.id">
+        <!-- 通用坐标 -->
+        <div class="coordinate geometryItem" v-if="geometryObjForm.id && geometryObjForm.public && !gisPolygon">
+          <div class="comTitle">
+            <img v-if="geometryObjForm.lightType === 'pointLight'" src="@/assets/images/component/title4.png" />
+            <img v-if="geometryObjForm.lightType === 'spotLight'" src="@/assets/images/component/title3.png" />
+            <img v-if="geometryObjForm.lightType === 'sphereReflectionCapture'"
+              src="@/assets/images/component/title1.png" />
+            <img v-if="geometryObjForm.name === '水流仿真体'" src="@/assets/images/component/title5.png" />
+            <img v-if="geometryObjForm.name === '水源'" src="@/assets/images/component/title6.png" />
+            <img v-if="geometryObjForm.name === '喷泉'" src="@/assets/images/component/title7.png" />
+            <img v-if="geometryObjForm.name === '挡水坝'" src="@/assets/images/component/title8.png" />
+            {{ geometryObjForm.name }}
           </div>
-          <!-- <div class="video_source">
+          <div class="coordinateTitle">坐标：</div>
+          <div class="coordinateItemInput">
+            X<el-input-number v-model="geometryObjForm.location.x" controls-position="right" size="mini"
+              @keydown.native.stop @change="editCom()" />
+            Y<el-input-number v-model="geometryObjForm.location.y" controls-position="right" size="mini"
+              @keydown.native.stop @change="editCom()" />
+            Z<el-input-number v-model="geometryObjForm.location.z" controls-position="right" size="mini"
+              @keydown.native.stop @change="editCom()" />
+            <i class="el-icon-refresh-right"></i>
+          </div>
+          <div class="coordinateTitle">角度：</div>
+          <div class="coordinateItemInput">
+            P<el-input-number v-model="geometryObjForm.rotation.p" controls-position="right" size="mini"
+              @keydown.native.stop @change="editCom()" />
+            Y<el-input-number v-model="geometryObjForm.rotation.y" controls-position="right" size="mini"
+              @keydown.native.stop @change="editCom()" />
+            R<el-input-number v-model="geometryObjForm.rotation.r" controls-position="right" size="mini"
+              @keydown.native.stop @change="editCom()" />
+            <i class="el-icon-refresh-right"></i>
+          </div>
+          <div class="coordinateTitle">比例：</div>
+          <div class="coordinateItemInput">
+            X<el-input-number v-model="geometryObjForm.scale.x" controls-position="right" size="mini"
+              @keydown.native.stop @change="editCom()" />
+            Y<el-input-number v-model="geometryObjForm.scale.y" controls-position="right" size="mini"
+              @keydown.native.stop @change="editCom()" />
+            Z<el-input-number v-model="geometryObjForm.scale.z" controls-position="right" size="mini"
+              @keydown.native.stop @change="editCom()" />
+            <i class="el-icon-refresh-right"></i>
+          </div>
+        </div>
+
+        <!-- 个性化几何属性 摩方迁移过来的功能 -->
+        <geometryAttr :data="data" />
+
+        <div class="geometryItem coordinate" v-if="geometryObjForm.name === '媒体播放器'">
+          <div class="coordinateTitle">媒体播放器设置</div>
+          <div class="video_part">
+            <div class="coordinateTitle">选择视频源</div>
+            <div class="video_source">
+              <!-- <el-radio v-model="video.videoSource" label="1">视频流地址</el-radio> -->
+              <el-input v-model="video.videoUrl" placeholder="请输入在线视频流地址" size="mini"> <el-button slot="append"
+                  type="primary" @click="videoUrlSubmit">确认</el-button></el-input>
+              <!-- <el-input v-model="video.videoUrl" placeholder="请输入在线视频流地址" size="mini"></el-input> -->
+            </div>
+            <!-- <div class="video_source">
             <el-radio v-model="video.videoSource" label="2">上传视频文件</el-radio>
             <UploadVideo></UploadVideo>
           </div> -->
-          <!-- <div>
+            <!-- <div>
             <img class="img" src="@/assets/images/video/pause.png" v-if="video.videoPlay" @click="handleVideo('pause')"/>
             <img class="img" src="@/assets/images/video/play.png" v-else @click="handleVideo('play')"/>
             <img class="img" src="@/assets/images/video/reset.png" />
             <img class="img" src="@/assets/images/video/stop.png" />
           </div> -->
-        </div>
+          </div>
 
-      </div>
-      <!-- 图元坐标 -->
-      <div class="geometryItem coordinate" v-if="geometryObjForm.name === '图元'">
-        <div class="comTitle">GIS遮罩多边形</div>
-        <div class="coordinateTitle">坐标：</div>
-        <div class="coordinateItemInput">
-          X<el-input-number v-model="geometryObjForm.location.x" controls-position="right" size="mini"
-            @keydown.native.stop @change="editTuyuan()" />
-          Y<el-input-number v-model="geometryObjForm.location.y" controls-position="right" size="mini"
-            @keydown.native.stop @change="editTuyuan()" />
-          Z<el-input-number v-model="geometryObjForm.location.z" controls-position="right" size="mini"
-            @keydown.native.stop @change="editTuyuan()" />
-          <i class="el-icon-refresh-right"></i>
         </div>
-        <div class="coordinateTitle">角度：</div>
-        <div class="coordinateItemInput">
-          P<el-input-number v-model="geometryObjForm.rotation.p" controls-position="right" size="mini"
-            @keydown.native.stop @change="editTuyuan()" />
-          Y<el-input-number v-model="geometryObjForm.rotation.y" controls-position="right" size="mini"
-            @keydown.native.stop @change="editTuyuan()" />
-          R<el-input-number v-model="geometryObjForm.rotation.r" controls-position="right" size="mini"
-            @keydown.native.stop @change="editTuyuan()" />
-          <i class="el-icon-refresh-right"></i>
+        <!-- 图元坐标 -->
+        <div class="geometryItem coordinate" v-if="geometryObjForm.name === '图元'">
+          <div class="comTitle">GIS遮罩多边形</div>
+          <div class="coordinateTitle">坐标：</div>
+          <div class="coordinateItemInput">
+            X<el-input-number v-model="geometryObjForm.location.x" controls-position="right" size="mini"
+              @keydown.native.stop @change="editTuyuan()" />
+            Y<el-input-number v-model="geometryObjForm.location.y" controls-position="right" size="mini"
+              @keydown.native.stop @change="editTuyuan()" />
+            Z<el-input-number v-model="geometryObjForm.location.z" controls-position="right" size="mini"
+              @keydown.native.stop @change="editTuyuan()" />
+            <i class="el-icon-refresh-right"></i>
+          </div>
+          <div class="coordinateTitle">角度：</div>
+          <div class="coordinateItemInput">
+            P<el-input-number v-model="geometryObjForm.rotation.p" controls-position="right" size="mini"
+              @keydown.native.stop @change="editTuyuan()" />
+            Y<el-input-number v-model="geometryObjForm.rotation.y" controls-position="right" size="mini"
+              @keydown.native.stop @change="editTuyuan()" />
+            R<el-input-number v-model="geometryObjForm.rotation.r" controls-position="right" size="mini"
+              @keydown.native.stop @change="editTuyuan()" />
+            <i class="el-icon-refresh-right"></i>
+          </div>
+          <div class="coordinateTitle">比例：</div>
+          <div class="coordinateItemInput">
+            X<el-input-number v-model="geometryObjForm.scale.x" controls-position="right" size="mini"
+              @keydown.native.stop @change="editTuyuan()" />
+            Y<el-input-number v-model="geometryObjForm.scale.y" controls-position="right" size="mini"
+              @keydown.native.stop @change="editTuyuan()" />
+            Z<el-input-number v-model="geometryObjForm.scale.z" controls-position="right" size="mini"
+              @keydown.native.stop @change="editTuyuan()" />
+            <i class="el-icon-refresh-right"></i>
+          </div>
         </div>
-        <div class="coordinateTitle">比例：</div>
-        <div class="coordinateItemInput">
-          X<el-input-number v-model="geometryObjForm.scale.x" controls-position="right" size="mini" @keydown.native.stop
-            @change="editTuyuan()" />
-          Y<el-input-number v-model="geometryObjForm.scale.y" controls-position="right" size="mini" @keydown.native.stop
-            @change="editTuyuan()" />
-          Z<el-input-number v-model="geometryObjForm.scale.z" controls-position="right" size="mini" @keydown.native.stop
-            @change="editTuyuan()" />
-          <i class="el-icon-refresh-right"></i>
-        </div>
-      </div>
-      <!-- 图元参数 -->
-      <div class="geometryItem coordinate" v-if="geometryObjForm.name === '图元'">
-        <div class="comTitle">GIS遮罩多边形参数</div>
-        <el-table :data="dataPolygon" style="width: 100%;" height="380">
-          <el-table-column prop="uuid" label="覆盖GIS图层">
-            <template slot-scope="scope">
-              <div>
-                <el-select size="mini" v-if="!scope.row.uuid" v-model="scope.row.uuid" placeholder="请选择"
+        <!-- 图元参数 -->
+        <div class="geometryItem coordinate" v-if="geometryObjForm.name === '图元'">
+          <div class="comTitle">GIS遮罩多边形参数</div>
+          <el-table :data="dataPolygon" style="width: 100%;" height="380">
+            <el-table-column prop="uuid" label="覆盖GIS图层">
+              <template slot-scope="scope">
+                <div>
+                  <el-select size="mini" v-if="!scope.row.uuid" v-model="scope.row.uuid" placeholder="请选择"
+                    @change="changeLayer(scope.row)">
+                    <el-option v-for="item in dataLayer" :key="item.uuid" :label="item.gisServerName"
+                      :value="item.uuid">
+                    </el-option>
+                  </el-select>
+                  <div v-else v-text="getServerName(scope.row)"></div>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="materialLayer" label="图层顺序">
+              <template slot-scope="scope">
+                <el-select size="mini" v-model="scope.row.materialLayer" multiple placeholder="请选择"
                   @change="changeLayer(scope.row)">
-                  <el-option v-for="item in dataLayer" :key="item.uuid" :label="item.gisServerName" :value="item.uuid">
+                  <el-option v-for="item in dataSort" :key="item.value" :label="item.label" :value="item.value">
                   </el-option>
                 </el-select>
-                <div v-else v-text="getServerName(scope.row)"></div>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="materialLayer" label="图层顺序">
-            <template slot-scope="scope">
-              <el-select size="mini" v-model="scope.row.materialLayer" multiple placeholder="请选择"
-                @change="changeLayer(scope.row)">
-                <el-option v-for="item in dataSort" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-            </template>
-          </el-table-column>
-          <el-table-column fixed="right" label="操作">
-            <template slot-scope="scope">
-              <el-button v-if="scope.row.uuid" @click.native.prevent="deleteRow(scope.row)" type="text" size="small">
-                删除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-        <div class="handle-box">
-          <el-button type="primary" size="mini" @click="copyEle">复制图元</el-button>
-          <el-button type="primary" size="mini" @click="deleteCom()">删除图元</el-button>
-        </div>
-      </div>
-      <!-- 光源参数 -->
-      <div class="pointolite"
-        v-if="['spotLight', 'pointLight', 'areaLight', 'sphereReflection'].includes(geometryObjForm.lightType)">
-        <div class="comTitle">
-          <img src="@/assets/images/component/title2.png" />光源参数
-        </div>
-        <div class="switchBox">
-          <span class="itemSpan" v-if="geometryObjForm.lightType !== 'sphereReflection'"><span>灯光开关</span><el-switch
-              @change="changeLight" v-model="geometryObjForm.affectsWorld" active-value="true" inactive-value="false"
-              active-color="#409EFF" inactive-color="#727272"></el-switch></span>
-          <span class="itemSpan" v-if="geometryObjForm.lightType !== 'sphereReflection'"><span>阴影开关</span><el-switch
-              @change="changeLight" v-model="geometryObjForm.castShadow" active-value="true" inactive-value="false"
-              active-color="#409EFF" inactive-color="#727272"></el-switch></span>
-          <span class="itemSpan" v-if="geometryObjForm.lightType === 'sphereReflection'"><span>反射开关</span><el-switch
-              @change="changeLight" v-model="geometryObjForm.visiableOfReflection" active-value="true"
-              inactive-value="false" active-color="#409EFF" inactive-color="#727272"></el-switch></span>
-        </div>
-        <div class="colorBox itemSpan" v-if="geometryObjForm.lightType !== 'sphereReflection'">
-          <span>光源颜色</span>
-          <div>
-            <el-color-picker @change="changeLight" v-model="geometryObjForm.lightColor" show-alpha></el-color-picker>
-            <span>{{ geometryObjForm.lightColor && formatColor(geometryObjForm.lightColor) }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作">
+              <template slot-scope="scope">
+                <el-button v-if="scope.row.uuid" @click.native.prevent="deleteRow(scope.row)" type="text" size="small">
+                  删除
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+          <div class="handle-box">
+            <el-button type="primary" size="mini" @click="copyEle">复制图元</el-button>
+            <el-button type="primary" size="mini" @click="deleteCom()">删除图元</el-button>
           </div>
         </div>
-        <!-- 反射源类型 -->
-        <div class="sliderBox" v-if="['sphereReflection'].includes(geometryObjForm.lightType)">
-          <div style="margin-top:15px">反射源类型</div>
-          <el-radio-group v-model="geometryObjForm.reflectionSourceType" @change="changeLight">
-            <el-radio label="CapturedScene" size="large">捕获场景</el-radio>
-            <el-radio label="SpecifiedCubemap" size="large">立体贴图</el-radio>
-          </el-radio-group>
-        </div>
-        <template v-for="(item, index) in lightArr">
-          <div class="sliderBox" :key="index"
-            v-if="item.limits && item.limits.length ? item.limits.includes(geometryObjForm.lightType) : true">
-            <p>{{ item.name }}</p>
-            <div class="sliderParmer">
-              <el-slider class="slider" @change="changeLight(item.key, $event)"
-                v-model="geometryObjForm[item.key + '1']" :min="item.min" :max="item.max" :step="item.step"></el-slider>
-              <el-input class="sliderInput" v-model.trim="geometryObjForm[item.key]"
-                @change="changeLight(item.key, $event)" size="small" v-only-number="{ min: 0, precision: 1 }" />
-              <span class="sliderNum">{{ item.unit }}</span>
+        <!-- 光源参数 -->
+        <div class="pointolite"
+          v-if="['spotLight', 'pointLight', 'areaLight', 'sphereReflection'].includes(geometryObjForm.lightType)">
+          <div class="comTitle">
+            <img src="@/assets/images/component/title2.png" />光源参数
+          </div>
+          <div class="switchBox">
+            <span class="itemSpan" v-if="geometryObjForm.lightType !== 'sphereReflection'"><span>灯光开关</span><el-switch
+                @change="changeLight" v-model="geometryObjForm.affectsWorld" active-value="true" inactive-value="false"
+                active-color="#409EFF" inactive-color="#727272"></el-switch></span>
+            <span class="itemSpan" v-if="geometryObjForm.lightType !== 'sphereReflection'"><span>阴影开关</span><el-switch
+                @change="changeLight" v-model="geometryObjForm.castShadow" active-value="true" inactive-value="false"
+                active-color="#409EFF" inactive-color="#727272"></el-switch></span>
+            <span class="itemSpan" v-if="geometryObjForm.lightType === 'sphereReflection'"><span>反射开关</span><el-switch
+                @change="changeLight" v-model="geometryObjForm.visiableOfReflection" active-value="true"
+                inactive-value="false" active-color="#409EFF" inactive-color="#727272"></el-switch></span>
+          </div>
+          <div class="colorBox itemSpan" v-if="geometryObjForm.lightType !== 'sphereReflection'">
+            <span>光源颜色</span>
+            <div>
+              <el-color-picker @change="changeLight" v-model="geometryObjForm.lightColor" show-alpha></el-color-picker>
+              <span>{{ geometryObjForm.lightColor && formatColor(geometryObjForm.lightColor) }}</span>
             </div>
           </div>
-        </template>
-      </div>
+          <!-- 反射源类型 -->
+          <div class="sliderBox" v-if="['sphereReflection'].includes(geometryObjForm.lightType)">
+            <div style="margin-top:15px">反射源类型</div>
+            <el-radio-group v-model="geometryObjForm.reflectionSourceType" @change="changeLight">
+              <el-radio label="CapturedScene" size="large">捕获场景</el-radio>
+              <el-radio label="SpecifiedCubemap" size="large">立体贴图</el-radio>
+            </el-radio-group>
+          </div>
+          <template v-for="(item, index) in lightArr">
+            <div class="sliderBox" :key="index"
+              v-if="item.limits && item.limits.length ? item.limits.includes(geometryObjForm.lightType) : true">
+              <p>{{ item.name }}</p>
+              <div class="sliderParmer">
+                <el-slider class="slider" @change="changeLight(item.key, $event)"
+                  v-model="geometryObjForm[item.key + '1']" :min="item.min" :max="item.max"
+                  :step="item.step"></el-slider>
+                <el-input class="sliderInput" v-model.trim="geometryObjForm[item.key]"
+                  @change="changeLight(item.key, $event)" size="small" v-only-number="{ min: 0, precision: 1 }" />
+                <span class="sliderNum">{{ item.unit }}</span>
+              </div>
+            </div>
+          </template>
+        </div>
 
-      <!-- ####################################################特效水start#################################################### -->
-      <!-- 水流仿真体 -->
-      <template v-if="geometryObjForm.name === '水流仿真体'">
-        <div class="flow geometryItem">
-          <div class="comTitle">
-            <img src="@/assets/images/component/title2.png" />仿真区域设置
-          </div>
-          <div class="flowItem" v-if="flowForm.areaResolution">
-            <span>仿真区域分辨率： X</span>
-            <el-input-number v-model="flowForm.areaResolutionX" controls-position="right" size="mini"
-              @keydown.native.stop @change="editFlow()" />
-            Y<el-input-number v-model="flowForm.areaResolutionY" controls-position="right" size="mini"
-              @keydown.native.stop @change="editFlow()" />
-          </div>
-          <!-- <div class="flowItem">
+        <!-- ####################################################特效水start#################################################### -->
+        <!-- 水流仿真体 -->
+        <template v-if="geometryObjForm.name === '水流仿真体'">
+          <div class="flow geometryItem">
+            <div class="comTitle">
+              <img src="@/assets/images/component/title2.png" />仿真区域设置
+            </div>
+            <div class="flowItem" v-if="flowForm.areaResolution">
+              <span>仿真区域分辨率： X</span>
+              <el-input-number v-model="flowForm.areaResolutionX" controls-position="right" size="mini"
+                @keydown.native.stop @change="editFlow()" />
+              Y<el-input-number v-model="flowForm.areaResolutionY" controls-position="right" size="mini"
+                @keydown.native.stop @change="editFlow()" />
+            </div>
+            <!-- <div class="flowItem">
                         <span>仿真区域尺寸(M)：X</span>
                         <el-input-number v-model="flowForm.areaResolution" controls-position="right" size="mini"
                             @keydown.native.stop @change="editFlow()" />
                         Y<el-input-number v-model="flowForm.areaResolution" controls-position="right" size="mini"
                             @keydown.native.stop @change="editFlow()" />
                                             </div> -->
-          <div class="flowItem">
-            <span>仿真区域像素尺寸：</span>
-            <el-input class="input" v-model="flowForm.areaPixelSize" v-only-number="{ precision: 0 }" size="mini"
-              @keydown.native.stop @change="editFlow()" />
+            <div class="flowItem">
+              <span>仿真区域像素尺寸：</span>
+              <el-input class="input" v-model="flowForm.areaPixelSize" v-only-number="{ precision: 0 }" size="mini"
+                @keydown.native.stop @change="editFlow()" />
+            </div>
+            <div class="flowItem">
+              <span>仿真区域高度(cm)：</span>
+              <el-input class="input" v-model="flowForm.simulationHeight" v-only-number="{ min: 0, precision: 1 }"
+                size="mini" @keydown.native.stop @change="editFlow()" />
+            </div>
+            <div class="flowItem">
+              <el-checkbox v-model="flowForm.debugPreview" @change="editFlow()">调试模式</el-checkbox>
+            </div>
           </div>
-          <div class="flowItem">
-            <span>仿真区域高度(cm)：</span>
-            <el-input class="input" v-model="flowForm.simulationHeight" v-only-number="{ min: 0, precision: 1 }"
-              size="mini" @keydown.native.stop @change="editFlow()" />
+          <div class="flow geometryItem">
+            <div class="comTitle">水表面仿真</div>
+            <div class="flowItem">
+              <span>水表面类型：</span>
+              <el-select v-model="flowForm.fluxSurface" placeholder="请选择" size="mini" style="width: 50%;"
+                @change="editFlow()">
+                <el-option v-for="item in waterSurfaceList" :key="item.key" :label="item.name" :value="item.key">
+                </el-option>
+              </el-select>
+            </div>
           </div>
-          <div class="flowItem">
-            <el-checkbox v-model="flowForm.debugPreview" @change="editFlow()">调试模式</el-checkbox>
+          <div class="flow geometryItem">
+            <div class="comTitle">仿真计算</div>
+            <div class="flowItem">
+              <span>迭代计算时长(s）：</span>
+              <el-input class="input" v-model="flowForm.simulationDuration" v-only-number="{ precision: 1 }" size="mini"
+                @keydown.native.stop @change="editFlow()" />
+            </div>
+            <div class="flowItem">
+              <span>迭代计算间隔：</span>
+              <el-input class="input" v-model="flowForm.iterativeInterval" v-only-number="{ precision: 4 }" size="mini"
+                @keydown.native.stop @change="editFlow()" />
+            </div>
           </div>
-        </div>
-        <div class="flow geometryItem">
-          <div class="comTitle">水表面仿真</div>
-          <div class="flowItem">
-            <span>水表面类型：</span>
-            <el-select v-model="flowForm.fluxSurface" placeholder="请选择" size="mini" style="width: 50%;"
-              @change="editFlow()">
-              <el-option v-for="item in waterSurfaceList" :key="item.key" :label="item.name" :value="item.key">
+          <div class="flowBtn flexBetween">
+            <el-button class="blueBtn" type="primary" size="small" @click="flowOperate('start')">开 始</el-button>
+            <el-button class="grayPlain" plain type="primary" size="small" @click="flowOperate('close')">停
+              止</el-button>
+            <el-button class="bluePlainBtn1" plain type="primary" size="small" @click="flowOperate('restart')">重
+              启</el-button>
+          </div>
+        </template>
+        <!-- 水源 -->
+        <div class="water geometryItem" v-if="geometryObjForm.name === '水源'">
+          <div class="comTitle">
+            <img src="@/assets/images/component/title2.png" />水源设置
+          </div>
+          <div class="waterItem">
+            <span>水量：</span>
+            <el-input class="input" v-model="waterForm.volume" v-only-number="{ min: 0, precision: 1 }" size="mini"
+              @keydown.native.stop @change="editWater()" />
+          </div>
+          <div class="waterItem">
+            <span>水流速度<span style="font-size:12px">(m/s)</span>：</span>
+            X<el-input-number v-model="waterForm.velocityX" controls-position="right" size="mini" @keydown.native.stop
+              @change="editWater()" />
+            Y<el-input-number v-model="waterForm.velocityY" controls-position="right" size="mini" @keydown.native.stop
+              @change="editWater()" />
+          </div>
+          <div class="waterItem">
+            <span>水源形状：</span>
+            <el-select v-model="waterForm.shape" placeholder="请选择" size="mini" style="width: 50%;"
+              @change="editWater()">
+              <el-option v-for="item in shapeList" :key="item.key" :label="item.name" :value="item.key">
               </el-option>
             </el-select>
           </div>
-        </div>
-        <div class="flow geometryItem">
-          <div class="comTitle">仿真计算</div>
-          <div class="flowItem">
-            <span>迭代计算时长(s）：</span>
-            <el-input class="input" v-model="flowForm.simulationDuration" v-only-number="{ precision: 1 }" size="mini"
-              @keydown.native.stop @change="editFlow()" />
+          <div class="waterItem">
+            <span>水源模式：</span>
+            <el-select v-model="waterForm.mode" placeholder="请选择" size="mini" style="width: 50%;" @change="editWater()">
+              <el-option v-for="item in modeList" :key="item.key" :label="item.name" :value="item.key">
+              </el-option>
+            </el-select>
           </div>
-          <div class="flowItem">
-            <span>迭代计算间隔：</span>
-            <el-input class="input" v-model="flowForm.iterativeInterval" v-only-number="{ precision: 4 }" size="mini"
-              @keydown.native.stop @change="editFlow()" />
+          <div class="waterItem">
+            <span>水流边缘：</span>
+            <el-input class="input" v-model="waterForm.edge" v-only-number="{ min: 0, precision: 1 }" size="mini"
+              @keydown.native.stop @change="editWater()" />
           </div>
-        </div>
-        <div class="flowBtn flexBetween">
-          <el-button class="blueBtn" type="primary" size="small" @click="flowOperate('start')">开 始</el-button>
-          <el-button class="grayPlain" plain type="primary" size="small" @click="flowOperate('close')">停
-            止</el-button>
-          <el-button class="bluePlainBtn1" plain type="primary" size="small" @click="flowOperate('restart')">重
-            启</el-button>
-        </div>
-      </template>
-      <!-- 水源 -->
-      <div class="water geometryItem" v-if="geometryObjForm.name === '水源'">
-        <div class="comTitle">
-          <img src="@/assets/images/component/title2.png" />水源设置
-        </div>
-        <div class="waterItem">
-          <span>水量：</span>
-          <el-input class="input" v-model="waterForm.volume" v-only-number="{ min: 0, precision: 1 }" size="mini"
-            @keydown.native.stop @change="editWater()" />
-        </div>
-        <div class="waterItem">
-          <span>水流速度<span style="font-size:12px">(m/s)</span>：</span>
-          X<el-input-number v-model="waterForm.velocityX" controls-position="right" size="mini" @keydown.native.stop
-            @change="editWater()" />
-          Y<el-input-number v-model="waterForm.velocityY" controls-position="right" size="mini" @keydown.native.stop
-            @change="editWater()" />
-        </div>
-        <div class="waterItem">
-          <span>水源形状：</span>
-          <el-select v-model="waterForm.shape" placeholder="请选择" size="mini" style="width: 50%;" @change="editWater()">
-            <el-option v-for="item in shapeList" :key="item.key" :label="item.name" :value="item.key">
-            </el-option>
-          </el-select>
-        </div>
-        <div class="waterItem">
-          <span>水源模式：</span>
-          <el-select v-model="waterForm.mode" placeholder="请选择" size="mini" style="width: 50%;" @change="editWater()">
-            <el-option v-for="item in modeList" :key="item.key" :label="item.name" :value="item.key">
-            </el-option>
-          </el-select>
-        </div>
-        <div class="waterItem">
-          <span>水流边缘：</span>
-          <el-input class="input" v-model="waterForm.edge" v-only-number="{ min: 0, precision: 1 }" size="mini"
-            @keydown.native.stop @change="editWater()" />
-        </div>
-        <div class="waterItem">
-          <span>区域影响强度：</span>
-          <el-input class="input" v-model="waterForm.intensity" v-only-number="{ min: 0, precision: 1 }" size="mini"
-            @keydown.native.stop @change="editWater()" />
-        </div>
-        <div class="waterItem">
-          <span>水源活动时长：</span>
-          <el-input class="input" v-model="waterForm.duration" v-only-number="{ precision: 1 }" size="mini"
-            @keydown.native.stop @change="editWater()" />
-        </div>
-        <div class="waterItem">
-          <el-checkbox v-model="waterForm.bActivate" true-label="true" false-label="false"
-            @change="editWater()">水源自动激活</el-checkbox>
-        </div>
-      </div>
-      <!-- 挡水坝 -->
-      <div class="geometryItem" v-if="geometryObjForm.name === '挡水坝'">
-        <div class="comTitle">
-          <img src="@/assets/images/component/title2.png" />挡水坝设置
-        </div>
-        <el-checkbox v-model="splashDamForm.bVisible" true-label="false" false-label="true"
-          @change="editSplashDam()">打破/拆除</el-checkbox>
-      </div>
-      <!-- 喷泉设置 -->
-      <div class="coordinate geometryItem" v-if="geometryObjForm.name === '喷泉'">
-        <div class="comTitle">
-          <img src="@/assets/images/component/title2.png" />喷泉设置
-        </div>
-        <div class="coordinateTitle">喷泉角度：</div>
-        <div class="coordinateItemInput">
-          P<el-input-number v-model="fountainForm.fountainRotationP" controls-position="right" size="mini"
-            @keydown.native.stop @change="editFountain()" />
-          Y<el-input-number v-model="fountainForm.fountainRotationY" controls-position="right" size="mini"
-            @keydown.native.stop @change="editFountain()" />
-          R<el-input-number v-model="fountainForm.fountainRotationR" controls-position="right" size="mini"
-            @keydown.native.stop @change="editFountain()" />
-          <i class="el-icon-refresh-right"></i>
-        </div>
-        <div class="coordinateTitle">喷泉尺寸：</div>
-        <div class="coordinateItemInput">
-          X<el-input-number v-model="fountainForm.fountainScaleX" controls-position="right" size="mini"
-            @keydown.native.stop @change="editFountain()" />
-          Y<el-input-number v-model="fountainForm.fountainScaleY" controls-position="right" size="mini"
-            @keydown.native.stop @change="editFountain()" />
-          Z<el-input-number v-model="fountainForm.fountainScaleZ" controls-position="right" size="mini"
-            @keydown.native.stop @change="editFountain()" />
-          <i class="el-icon-refresh-right"></i>
-        </div>
-        <div class="coordinateTitle">扩散宽度</div>
-        <div class="slider">
-          <el-slider @change="editFountain()" v-model="fountainForm.spreadWidth" :min="0" :max="1"
-            :step="0.1"></el-slider>
-          <el-input class="sliderInput" v-model.trim="fountainForm.spreadWidth" @change="editFountain()" size="small"
-            v-only-number="{ min: 0, precision: 1 }" />
-        </div>
-      </div>
-      <!-- ####################################################特效水end#################################################### -->
-
-
-      <!-- webui -->
-      <div class="geometryItem webui" v-if="geometryObjForm.name === 'WebUi-3d'">
-        <div class="comTitle">WebUI设置</div>
-        <div class="webuiItem">
-          <span>是否跟随摄像头：</span>
-          <el-switch @change="editWebUI()" v-model="webuiForm.isFollowedCamera" :active-value="true"
-            :inactive-value="false" active-color="#409EFF" inactive-color="#727272"></el-switch>
-        </div>
-        <div class="webuiItem">
-          <span>宽度：</span>
-          <el-input class="input" v-model="webuiForm.width" v-only-number="{ min: 0, precision: 1 }" size="mini"
-            style="width: 85px;" @keydown.native.stop @change="editWebUI()" />
-          <span class="webuiUnit">cm</span>
-        </div>
-        <div class="webuiItem">
-          <span>高度：</span>
-          <el-input class="input" v-model="webuiForm.height" v-only-number="{ min: 0, precision: 1 }" size="mini"
-            style="width: 85px;" @keydown.native.stop @change="editWebUI()" />
-          <span class="webuiUnit">cm</span>
-        </div>
-        <div class="webuiItem">
-          <span>亮度：</span>
-          <el-input class="input" v-model="webuiForm.fengBrightness" v-only-number="{ min: 0, precision: 1 }"
-            size="mini" style="width: 85px;" @keydown.native.stop @change="editWebUI()" />
-        </div>
-        <div class="webuiItem colorBox">
-          <span>颜色及透明度</span>
-          <div>
-            <el-color-picker @change="editWebUI()" v-model="webuiForm.bgColor" show-alpha></el-color-picker>
-            <span>{{ webuiForm.bgColor && formatColor(webuiForm.bgColor) }}</span>
+          <div class="waterItem">
+            <span>区域影响强度：</span>
+            <el-input class="input" v-model="waterForm.intensity" v-only-number="{ min: 0, precision: 1 }" size="mini"
+              @keydown.native.stop @change="editWater()" />
+          </div>
+          <div class="waterItem">
+            <span>水源活动时长：</span>
+            <el-input class="input" v-model="waterForm.duration" v-only-number="{ precision: 1 }" size="mini"
+              @keydown.native.stop @change="editWater()" />
+          </div>
+          <div class="waterItem">
+            <el-checkbox v-model="waterForm.bActivate" true-label="true" false-label="false"
+              @change="editWater()">水源自动激活</el-checkbox>
           </div>
         </div>
-        <div class="webuiItem">
-          <span>URL：</span>
-          <el-input class="input" v-model="webuiForm.url" type="textarea" :autosize="{ minRows: 2 }" placeholder="请输入内容"
-            size="mini" @keydown.native.stop @change="editWebUI()" />
+        <!-- 挡水坝 -->
+        <div class="geometryItem" v-if="geometryObjForm.name === '挡水坝'">
+          <div class="comTitle">
+            <img src="@/assets/images/component/title2.png" />挡水坝设置
+          </div>
+          <el-checkbox v-model="splashDamForm.bVisible" true-label="false" false-label="true"
+            @change="editSplashDam()">打破/拆除</el-checkbox>
         </div>
-      </div>
-      <!-- 样条线 -->
-      <div class="geometryItem webui" v-if="['矩形样条线', '圆形样条线'].includes(geometryObjForm.name)">
-        <div class="comTitle">样条线设置</div>
-        <div class="webuiItem" v-if="geometryObjForm.name === '矩形样条线'">
-          <span>宽度：</span>
-          <el-input class="input" v-model="lineForm.width" v-only-number="{ min: 0, precision: 1 }" size="mini"
-            style="width: 85px;" @keydown.native.stop @change="editLine()" />
-          <span class="webuiUnit">cm</span>
-        </div>
-        <div class="webuiItem" v-if="geometryObjForm.name === '矩形样条线'">
-          <span>高度：</span>
-          <el-input class="input" v-model="lineForm.height" v-only-number="{ min: 0, precision: 1 }" size="mini"
-            style="width: 85px;" @keydown.native.stop @change="editLine()" />
-          <span class="webuiUnit">cm</span>
-        </div>
-        <div class="webuiItem" v-if="geometryObjForm.name === '圆形样条线'">
-          <span>半径：</span>
-          <el-input class="input" v-model="lineForm.radius" v-only-number="{ min: 0, precision: 1 }" size="mini"
-            style="width: 85px;" @keydown.native.stop @change="editLine()" />
-          <span class="webuiUnit">cm</span>
-        </div>
-        <div class="coordinate">
-          <div class="coordinateTitle">开始点位置：</div>
+        <!-- 喷泉设置 -->
+        <div class="coordinate geometryItem" v-if="geometryObjForm.name === '喷泉'">
+          <div class="comTitle">
+            <img src="@/assets/images/component/title2.png" />喷泉设置
+          </div>
+          <div class="coordinateTitle">喷泉角度：</div>
           <div class="coordinateItemInput">
-            X<el-input-number v-model="lineForm.beginLocation.x" controls-position="right" size="mini"
-              @keydown.native.stop @change="editLine()" />
-            Y<el-input-number v-model="lineForm.beginLocation.y" controls-position="right" size="mini"
-              @keydown.native.stop @change="editLine()" />
-            Z<el-input-number v-model="lineForm.beginLocation.z" controls-position="right" size="mini"
-              @keydown.native.stop @change="editLine()" />
+            P<el-input-number v-model="fountainForm.fountainRotationP" controls-position="right" size="mini"
+              @keydown.native.stop @change="editFountain()" />
+            Y<el-input-number v-model="fountainForm.fountainRotationY" controls-position="right" size="mini"
+              @keydown.native.stop @change="editFountain()" />
+            R<el-input-number v-model="fountainForm.fountainRotationR" controls-position="right" size="mini"
+              @keydown.native.stop @change="editFountain()" />
             <i class="el-icon-refresh-right"></i>
           </div>
-        </div>
-        <div class="coordinate">
-          <div class="coordinateTitle">结束点位置：</div>
+          <div class="coordinateTitle">喷泉尺寸：</div>
           <div class="coordinateItemInput">
-            X<el-input-number v-model="lineForm.endLocation.x" controls-position="right" size="mini"
-              @keydown.native.stop @change="editLine()" />
-            Y<el-input-number v-model="lineForm.endLocation.y" controls-position="right" size="mini"
-              @keydown.native.stop @change="editLine()" />
-            Z<el-input-number v-model="lineForm.endLocation.z" controls-position="right" size="mini"
-              @keydown.native.stop @change="editLine()" />
+            X<el-input-number v-model="fountainForm.fountainScaleX" controls-position="right" size="mini"
+              @keydown.native.stop @change="editFountain()" />
+            Y<el-input-number v-model="fountainForm.fountainScaleY" controls-position="right" size="mini"
+              @keydown.native.stop @change="editFountain()" />
+            Z<el-input-number v-model="fountainForm.fountainScaleZ" controls-position="right" size="mini"
+              @keydown.native.stop @change="editFountain()" />
             <i class="el-icon-refresh-right"></i>
           </div>
+          <div class="coordinateTitle">扩散宽度</div>
+          <div class="slider">
+            <el-slider @change="editFountain()" v-model="fountainForm.spreadWidth" :min="0" :max="1"
+              :step="0.1"></el-slider>
+            <el-input class="sliderInput" v-model.trim="fountainForm.spreadWidth" @change="editFountain()" size="small"
+              v-only-number="{ min: 0, precision: 1 }" />
+          </div>
         </div>
-      </div>
-      <!-- 参数化尺寸参数 -->
-      <!-- <div class="parameter geometryItem">
+        <!-- ####################################################特效水end#################################################### -->
+
+
+        <!-- webui -->
+        <div class="geometryItem webui" v-if="geometryObjForm.name === 'WebUi-3d'">
+          <div class="comTitle">WebUI设置</div>
+          <div class="webuiItem">
+            <span>是否跟随摄像头：</span>
+            <el-switch @change="editWebUI()" v-model="webuiForm.isFollowedCamera" :active-value="true"
+              :inactive-value="false" active-color="#409EFF" inactive-color="#727272"></el-switch>
+          </div>
+          <div class="webuiItem">
+            <span>宽度：</span>
+            <el-input class="input" v-model="webuiForm.width" v-only-number="{ min: 0, precision: 1 }" size="mini"
+              style="width: 85px;" @keydown.native.stop @change="editWebUI()" />
+            <span class="webuiUnit">cm</span>
+          </div>
+          <div class="webuiItem">
+            <span>高度：</span>
+            <el-input class="input" v-model="webuiForm.height" v-only-number="{ min: 0, precision: 1 }" size="mini"
+              style="width: 85px;" @keydown.native.stop @change="editWebUI()" />
+            <span class="webuiUnit">cm</span>
+          </div>
+          <div class="webuiItem">
+            <span>亮度：</span>
+            <el-input class="input" v-model="webuiForm.fengBrightness" v-only-number="{ min: 0, precision: 1 }"
+              size="mini" style="width: 85px;" @keydown.native.stop @change="editWebUI()" />
+          </div>
+          <div class="webuiItem colorBox">
+            <span>颜色及透明度</span>
+            <div>
+              <el-color-picker @change="editWebUI()" v-model="webuiForm.bgColor" show-alpha></el-color-picker>
+              <span>{{ webuiForm.bgColor && formatColor(webuiForm.bgColor) }}</span>
+            </div>
+          </div>
+          <div class="webuiItem">
+            <span>URL：</span>
+            <el-input class="input" v-model="webuiForm.url" type="textarea" :autosize="{ minRows: 2 }"
+              placeholder="请输入内容" size="mini" @keydown.native.stop @change="editWebUI()" />
+          </div>
+        </div>
+        <!-- 样条线 -->
+        <div class="geometryItem webui" v-if="['矩形样条线', '圆形样条线'].includes(geometryObjForm.name)">
+          <div class="comTitle">样条线设置</div>
+          <div class="webuiItem" v-if="geometryObjForm.name === '矩形样条线'">
+            <span>宽度：</span>
+            <el-input class="input" v-model="lineForm.width" v-only-number="{ min: 0, precision: 1 }" size="mini"
+              style="width: 85px;" @keydown.native.stop @change="editLine()" />
+            <span class="webuiUnit">cm</span>
+          </div>
+          <div class="webuiItem" v-if="geometryObjForm.name === '矩形样条线'">
+            <span>高度：</span>
+            <el-input class="input" v-model="lineForm.height" v-only-number="{ min: 0, precision: 1 }" size="mini"
+              style="width: 85px;" @keydown.native.stop @change="editLine()" />
+            <span class="webuiUnit">cm</span>
+          </div>
+          <div class="webuiItem" v-if="geometryObjForm.name === '圆形样条线'">
+            <span>半径：</span>
+            <el-input class="input" v-model="lineForm.radius" v-only-number="{ min: 0, precision: 1 }" size="mini"
+              style="width: 85px;" @keydown.native.stop @change="editLine()" />
+            <span class="webuiUnit">cm</span>
+          </div>
+          <div class="coordinate">
+            <div class="coordinateTitle">开始点位置：</div>
+            <div class="coordinateItemInput">
+              X<el-input-number v-model="lineForm.beginLocation.x" controls-position="right" size="mini"
+                @keydown.native.stop @change="editLine()" />
+              Y<el-input-number v-model="lineForm.beginLocation.y" controls-position="right" size="mini"
+                @keydown.native.stop @change="editLine()" />
+              Z<el-input-number v-model="lineForm.beginLocation.z" controls-position="right" size="mini"
+                @keydown.native.stop @change="editLine()" />
+              <i class="el-icon-refresh-right"></i>
+            </div>
+          </div>
+          <div class="coordinate">
+            <div class="coordinateTitle">结束点位置：</div>
+            <div class="coordinateItemInput">
+              X<el-input-number v-model="lineForm.endLocation.x" controls-position="right" size="mini"
+                @keydown.native.stop @change="editLine()" />
+              Y<el-input-number v-model="lineForm.endLocation.y" controls-position="right" size="mini"
+                @keydown.native.stop @change="editLine()" />
+              Z<el-input-number v-model="lineForm.endLocation.z" controls-position="right" size="mini"
+                @keydown.native.stop @change="editLine()" />
+              <i class="el-icon-refresh-right"></i>
+            </div>
+          </div>
+        </div>
+        <!-- 参数化尺寸参数 -->
+        <!-- <div class="parameter geometryItem">
                     <div class="comTitle"><img src="@/assets/images/component/title2.png"/>参数化尺寸参数</div>
                     <div class="parameterItem">
                         <span>内半径</span>
@@ -453,8 +461,8 @@
                         <i class="el-icon-refresh-right"></i>
                     </div>
                                         </div> -->
-      <!-- 文字信息 -->
-      <!-- <div class="word">
+        <!-- 文字信息 -->
+        <!-- <div class="word">
                     <div class="wordTextarea">
                         <span>文字内容</span>
                         <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 8}" placeholder="请输入内容" v-model="form.textarea2"></el-input>
@@ -486,8 +494,13 @@
                         <i class="el-icon-refresh-right"></i>
                     </div>
                                         </div> -->
-    </template>
-    <el-empty :image="require('@/assets/noData.png')" :image-size="100" v-else></el-empty>
+        <el-button v-if="data.copyingPictures.id" type="primary" size="mini" @click="onDrawing">调整比例尺</el-button>
+      </template>
+      <el-empty :image="require('@/assets/noData.png')" :image-size="100" v-else></el-empty>
+    </div>
+    <div v-if="topStore.topType == 1">
+      <FaceAttr ref="FaceAttrRef" />
+    </div>
   </div>
 </template>
 
@@ -498,10 +511,15 @@ import { updateComsCoordinate, fluidOperate, modifyComParams, sendvideoUrl, getv
 import { EventBus } from '@/utils/bus.js'
 import { log } from 'console';
 import UploadVideo from './uploadVideo.vue';
+import { doAction } from "@/api/userCenter/index";
+import geometryAttr from "./geometryAttr.vue";
+import FaceAttr from "./FaceAttr.vue";
 
 export default {
   components: {
-    UploadVideo
+    UploadVideo,
+    geometryAttr,
+    FaceAttr,
   },
   props: {
     data: {
@@ -923,7 +941,11 @@ export default {
       }
     }
   },
-  computed: {},
+  computed: {
+    topStore() {
+      return this.$store.state.top
+    },
+  },
   created() {
     this.getLayerList()
   },
@@ -936,6 +958,24 @@ export default {
   methods: {
     setBus() {
       // EventBus.$on('onBimMessage', this.handleGeometryBus)
+    },
+    // 调整比例尺
+    onDrawing() {
+      this.updateEdit({ action: 'distance' }, '调整图纸比例尺')
+    },
+    // action事件
+    updateEdit(obj, type) {
+      let params = {
+        taskid: this.data.taskId,
+        ...obj
+      }
+      doAction(params).then((res) => {
+        if (type === '调整图纸比例尺') {
+          this.$message.warning('请先在临摹图上拾取已知实际距离的两点')
+          return
+        }
+        this.$message.success(res.message)
+      })
     },
     // 媒体播放器操作
     handleVideo(a) {
@@ -1364,6 +1404,11 @@ export default {
       }
     }
   }
+}
+
+.geometry_main {
+  height: calc(100% - 105px);
+  overflow: auto;
 }
 
 .geometry {

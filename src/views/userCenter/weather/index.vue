@@ -2,7 +2,7 @@
 <template>
   <Drawer ref="Drawer" title="天气环境" direction="rtl" @onClose="close">
     <Tab v-model="activeTab" :data="tabList" />
-    <WeatherSystem v-if="activeTab === 0" :appId="data.appId" :taskId="data.taskId" />
+    <WeatherSystem v-if="activeTab === 0" :appId="data.appId" :taskId="data.taskId" :isBuild="data.isBuild"/>
     <LaterPeriod v-if="activeTab === 1" :data="data" />
   </Drawer>
 </template>

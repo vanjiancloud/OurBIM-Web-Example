@@ -427,6 +427,7 @@ export default {
     toProject(row) {
       getEnterToken({ appid: row.gisId }).then((res) => {
         let path = this.$router.resolve({ path: "/web_client", query: { appid: row.gisId, userId: row.userId, gisList: true, isGis: true, token: res.data.token } })
+        // console.log(path)
         window.open(path.href);
       })
     }

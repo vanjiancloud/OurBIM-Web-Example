@@ -179,3 +179,29 @@ export function updateScale(params, data) {
     data
   })
 }
+// 查询上传cad文件
+export function selectCadFile(params, data) {
+  return request({
+    url: `/cadManage/selectCadFile`,
+    method: 'post',
+    params,
+    data
+  })
+}
+// 导入在线图纸
+export function inputOnlineCadFile(params) {
+  return request({
+    url: `/cadManage/inputOnlineCadFile`,
+    method: "post",
+    params
+  });
+}
+// 图纸导入ourbim
+export function blueprintImportOurbim(params, data) {
+  return request({
+    url: `/buildSystem/blueprintImportOurbim`,
+    method: 'post',
+    params,
+    data
+  })
+}

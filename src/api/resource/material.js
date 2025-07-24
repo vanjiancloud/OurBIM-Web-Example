@@ -63,6 +63,14 @@ export function updateCustomizeMaterial(data) {
     data
   })
 }
+// 更新项目材质并替换
+export function updateCustomizeMaterialByTask(data) {
+  return request({
+    url: '/customizeMaterial/updateCustomizeMaterialByTask',
+    method: 'post',
+    data
+  })
+}
 // 删除自定义材质
 export function deleteCustomizeMaterial(params) {
   return request({

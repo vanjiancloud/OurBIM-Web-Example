@@ -51,6 +51,7 @@ export default {
       },
       treeParentData: [],//tree一级数据
       activeTree: null,//选中状态
+      componentVisibility: JSON.parse(sessionStorage.getItem(`componentVisibility_${this.data.taskId}`)) || {},
     }
   },
   watch: {
@@ -74,10 +75,10 @@ export default {
     EventBus.$off('onBimMessage', this.handleBus)
     EventBus.$off('onGisLayer')
   },
-  // beforeDestroy(){
-  //   EventBus.$off('onBimMessage')
-  //   EventBus.$off('onGisLayer')
-  // },
+  beforeDestroy() {
+    // 组件卸载前将状态保存到sessionStorage
+    sessionStorage.setItem(`componentVisibility_${this.data.taskId}`, JSON.stringify(this.componentVisibility));
+  },
   methods: {
     setBus() {
       EventBus.$on('onBimMessage', this.handleBus)
@@ -109,13 +110,18 @@ export default {
             uuid: ele.type == '1' ? ele.uuid : ele.id
           })
         });
-        // console.log(realData)
         this.treeParentData = realData || [];
         // const realObj = this.treeParentData.find(item => item.gisServerName === '自定义GIS图元')
         // if (realObj) {
         //     this.listKey = [uuid]
         // }
         this.$nextTick(() => {
+          // 生成需要勾选的uuid列表（componentVisibility中为true表示需要隐藏，对应node.checked为true）
+          const checkedKeys = Object.keys(this.componentVisibility)
+            .filter(uuid => this.componentVisibility[uuid]);
+          if (this.$refs.refTree) {
+            this.$refs.refTree.setCheckedKeys(checkedKeys);
+          }
           if (this.search) {
             this.onSearch(this.search)
           }
@@ -123,9 +129,10 @@ export default {
       });
     },
     isShowCom(data, e) {
-      if (!data.uuid) {
-        return
-      }
+      if (!data.uuid) return;
+      // 关键修改：同步更新缓存状态（e.checkedKeys包含uuid时表示勾选，对应隐藏）
+      this.componentVisibility[data.uuid] = e.checkedKeys.includes(data.uuid);
+      // 
       const params = {
         taskId: this.data.taskId,
         uuid: data.uuid,

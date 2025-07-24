@@ -7,98 +7,43 @@
 -->
 <template>
   <div :class="userType == 1 ? 'box-main userType' : 'box-main'">
-    <div
-      id="box"
-      :class="isAnimation ? 'box-transition' : ''"
-      :style="{
-        transform: `perspective(800px) rotateX(${realDownInfo.x}deg) rotateY(${realDownInfo.y}deg) rotateZ(${realDownInfo.z}deg)`,
-      }"
-    >
-      <div
-        v-for="(item, index) in faceList"
-        :key="index"
-        @click.stop="handleBody(item.value)"
-        :class="[
-          item.className,
-          activeFace === item.value ? 'active-face' : '',
-          'face-' + index,
-        ]"
-      >
+    <div id="box" :class="isAnimation ? 'box-transition' : ''" :style="{
+      transform: `perspective(800px) rotateX(${realDownInfo.x}deg) rotateY(${realDownInfo.y}deg) rotateZ(${realDownInfo.z}deg)`,
+    }">
+      <div v-for="(item, index) in faceList" :key="index" @click.stop="handleBody(item.value)" :class="[
+        item.className,
+        activeFace === item.value ? 'active-face' : '',
+        'face-' + index,
+      ]">
         <span v-text="item.label"></span>
         <!-- 边 -->
-        <div
-          class="edge-0"
-          @click.stop="handleEdge(index, 0)"
-          @mouseenter="setEdge(index, 0, true)"
-          @mouseleave="setEdge(index, 0, false)"
-        ></div>
-        <div
-          class="edge-1"
-          @click.stop="handleEdge(index, 1)"
-          @mouseenter="setEdge(index, 1, true)"
-          @mouseleave="setEdge(index, 1, false)"
-        ></div>
-        <div
-          class="edge-2"
-          @click.stop="handleEdge(index, 2)"
-          @mouseenter="setEdge(index, 2, true)"
-          @mouseleave="setEdge(index, 2, false)"
-        ></div>
-        <div
-          class="edge-3"
-          @click.stop="handleEdge(index, 3)"
-          @mouseenter="setEdge(index, 3, true)"
-          @mouseleave="setEdge(index, 3, false)"
-        ></div>
+        <div class="edge-0" @click.stop="handleEdge(index, 0)" @mouseenter="setEdge(index, 0, true)"
+          @mouseleave="setEdge(index, 0, false)"></div>
+        <div class="edge-1" @click.stop="handleEdge(index, 1)" @mouseenter="setEdge(index, 1, true)"
+          @mouseleave="setEdge(index, 1, false)"></div>
+        <div class="edge-2" @click.stop="handleEdge(index, 2)" @mouseenter="setEdge(index, 2, true)"
+          @mouseleave="setEdge(index, 2, false)"></div>
+        <div class="edge-3" @click.stop="handleEdge(index, 3)" @mouseenter="setEdge(index, 3, true)"
+          @mouseleave="setEdge(index, 3, false)"></div>
         <!-- 点 -->
-        <div
-          class="spot-0"
-          @click.stop="handleSpot(index, 0)"
-          @mouseenter="setSpot(index, 0, true)"
-          @mouseleave="setSpot(index, 0, false)"
-        ></div>
-        <div
-          class="spot-1"
-          @click.stop="handleSpot(index, 1)"
-          @mouseenter="setSpot(index, 1, true)"
-          @mouseleave="setSpot(index, 1, false)"
-        ></div>
-        <div
-          class="spot-2"
-          @click.stop="handleSpot(index, 2)"
-          @mouseenter="setSpot(index, 2, true)"
-          @mouseleave="setSpot(index, 2, false)"
-        ></div>
-        <div
-          class="spot-3"
-          @click.stop="handleSpot(index, 3)"
-          @mouseenter="setSpot(index, 3, true)"
-          @mouseleave="setSpot(index, 3, false)"
-        ></div>
+        <div class="spot-0" @click.stop="handleSpot(index, 0)" @mouseenter="setSpot(index, 0, true)"
+          @mouseleave="setSpot(index, 0, false)"></div>
+        <div class="spot-1" @click.stop="handleSpot(index, 1)" @mouseenter="setSpot(index, 1, true)"
+          @mouseleave="setSpot(index, 1, false)"></div>
+        <div class="spot-2" @click.stop="handleSpot(index, 2)" @mouseenter="setSpot(index, 2, true)"
+          @mouseleave="setSpot(index, 2, false)"></div>
+        <div class="spot-3" @click.stop="handleSpot(index, 3)" @mouseenter="setSpot(index, 3, true)"
+          @mouseleave="setSpot(index, 3, false)"></div>
       </div>
     </div>
-    <img
-      class="go-front"
-      @click.stop="goFront"
-      src="@/assets/images/todo/home.png"
-      mode=""
-    />
+    <img class="go-front" @click.stop="goFront" src="@/assets/images/todo/home.png" mode="" />
     <div class="drop-down">
-      <img
-        class="handle-down"
-        @click.stop="changeView"
-        src="@/assets/images/todo/drop_down.png"
-        alt=""
-      />
+      <img class="handle-down" @click.stop="changeView" src="@/assets/images/todo/drop_down.png" alt="" />
       <transition name="el-zoom-in-top">
         <div class="cube-type" v-if="isCubeType">
           <div v-for="(item, index) in handleList" :key="index">
-            <div
-              :class="activeType === item.value ? 'active-type' : ''"
-              v-text="item.label"
-              class="select-type"
-              @click.stop="changeType(item)"
-            ></div>
+            <div :class="activeType === item.value ? 'active-type' : ''" v-text="item.label" class="select-type"
+              @click.stop="changeType(item)"></div>
           </div>
         </div>
       </transition>
@@ -112,8 +57,8 @@ export default {
   props: {
     userType: {},
     taskId: {
-        type: String,
-        default: ''
+      type: String,
+      default: ''
     },
   },
   data() {
@@ -188,7 +133,7 @@ export default {
       activeOrder: 6,
     };
   },
-  created() {},
+  created() { },
   mounted() {
     window.addEventListener("click", this.clickOther);
   },
@@ -453,7 +398,7 @@ export default {
               y: -180,
               z: 0,
             };
-            this.activeOrder = 13;       
+            this.activeOrder = 13;
           } else if (e === 1) {
             // 右
             this.downInfo = {
@@ -1008,14 +953,14 @@ export default {
         return;
       }
       this.activeType = e.value;
-        this.updateOrder(0)
+      this.updateOrder(0)
     },
     resetActive(e) {
       this.activeType = e;
     },
     goFront() {
-        // 定位主视图
-        this.updateOrder(4)
+      // 定位主视图
+      this.updateOrder(4)
     },
     changeView() {
       /**
@@ -1036,51 +981,53 @@ export default {
       }
     },
     updateOrder(type) {
-        if (!this.taskId) {
-            return this.$message.warning("场景未加载，请刷新");
-        }
-        switch (type) {
-            case 0:
-                // 模式切换
-                let data = {
-                    action: "switchViewMode",
-                    projectionMode: this.activeType,
-                    viewMode: 2
-                }
-                this.doAction(data)
-                break;
-            case 1:
-                // 自定义主视图
-                this.doAction({ action: "setGodPos" })
-                break;
-            case 2:
-                // 六面体
-                this.doAction({ action: "cameraPosSpecial", sjid: this.activeOrder })
-                break;
-            case 3:
-                // 重置主视图
-                this.doAction({ action: "clearGodCamerashot" })
-                break;
-            case 4:
-                // 定位主视图
-                this.doAction({ action: "cameraPosAll" })
-                break;
-            default:
-                break;
-        }
+      if (!this.taskId) {
+        return this.$message.warning("场景未加载，请刷新");
+      }
+      this.$store.commit('bim/setPlaneViewStatus', 1)
+      this.$store.dispatch('bim/changeMode', { e: '3D', mode: true });
+      switch (type) {
+        case 0:
+          // 模式切换
+          let data = {
+            action: "switchViewMode",
+            projectionMode: this.activeType,
+            viewMode: 2
+          }
+          this.doAction(data)
+          break;
+        case 1:
+          // 自定义主视图
+          this.doAction({ action: "setGodPos" })
+          break;
+        case 2:
+          // 六面体
+          this.doAction({ action: "cameraPosSpecial", sjid: this.activeOrder })
+          break;
+        case 3:
+          // 重置主视图
+          this.doAction({ action: "clearGodCamerashot" })
+          break;
+        case 4:
+          // 定位主视图
+          this.doAction({ action: "cameraPosAll" })
+          break;
+        default:
+          break;
+      }
     },
-    doAction(data){
-        let params = {
-            taskid: this.taskId,
-            ...data
-        };
-        doAction(params).then((res) => {
-            if (params.action === "cameraPosAll" && res?.data) {
-                let realProject = res.data.projectionMode === "1" ? 1 : 2;
-                this.resetActive(realProject);
-            }
-            this.$message.success("指令下发成功")
-        })
+    doAction(data) {
+      let params = {
+        taskid: this.taskId,
+        ...data
+      };
+      doAction(params).then((res) => {
+        if (params.action === "cameraPosAll" && res?.data) {
+          let realProject = res.data.projectionMode === "1" ? 1 : 2;
+          this.resetActive(realProject);
+        }
+        this.$message.success("指令下发成功")
+      })
     }
   },
 };
@@ -1091,6 +1038,7 @@ export default {
   position: fixed;
   top: 26px;
   right: 80px;
+
   .go-front {
     width: 24px;
     height: 24px;
@@ -1098,18 +1046,21 @@ export default {
     top: -12px;
     left: -30px;
   }
+
   .drop-down {
     position: absolute;
     background: rgb(131, 236, 187);
     width: 100%;
     right: -65px;
     top: 52px;
+
     .handle-down {
       width: 20px;
       height: 20px;
       position: absolute;
       right: 0;
     }
+
     .cube-type {
       position: absolute;
       top: 20px;
@@ -1119,15 +1070,18 @@ export default {
       background: #f3f3f3;
       color: #a5a5a4;
       text-align: center;
+
       .select-type {
         cursor: pointer;
       }
+
       .active-type {
         color: #ff6600;
       }
     }
   }
 }
+
 .userType {
   right: 300px;
 }
@@ -1140,11 +1094,12 @@ export default {
   left: 30%;
   transform-style: preserve-3d;
 }
+
 .box-transition {
   transition: all 1s;
 }
 
-#box div{
+#box div {
   overflow: hidden;
   display: flex;
   justify-content: center;
@@ -1159,8 +1114,9 @@ export default {
   background-size: cover;
   color: #a5a5a4;
 }
+
 // 解决 #box div 加上 overflow: hidden;后  viewcube某些角度无法点击问题
-#box>div{
+#box>div {
   overflow: inherit;
 }
 
@@ -1168,6 +1124,7 @@ export default {
 .active-face {
   color: #ff6600 !important;
 }
+
 .front {
   transform: translateZ(34px);
   background: url("~@/assets/images/todo/front.png");
@@ -1197,6 +1154,7 @@ export default {
   transform: translateY(34px) rotateX(-90deg) rotateY(0deg);
   background: url("~@/assets/images/todo/front.png");
 }
+
 .edgeLine(@left, @top, @height, @width) {
   height: @height !important;
   width: @width !important;
@@ -1224,6 +1182,7 @@ export default {
 .edge-3 {
   .edgeLine(0, 0, 100%, 3px);
 }
+
 .spotAll(@left, @top) {
   width: 16px !important;
   height: 16px !important;
@@ -1253,6 +1212,7 @@ export default {
 .spot-3 {
   .spotAll(60px, 60px);
 }
+
 .active-bgi {
   background-color: #ff6600;
 }

@@ -12,13 +12,24 @@
             : 'auto',
       }" />
     </el-tooltip>
+    <el-divider direction="vertical"></el-divider>
+    <topBar ref="topBarRef" :data="data" />
+    <el-tooltip effect="dark" content="保存" placement="bottom">
+      <div class="addBtn"> <svg-icon icon-class="save" class="draw-icon" @click="changeCase('commit')" /></div>
+    </el-tooltip>
+    <el-tooltip effect="dark" content="退出" placement="bottom">
+      <div class="addBtn" v-if="topStore.topType === 1"><svg-icon class="svg-icon draw-icon" icon-class="tuichu"
+          @click="onChangeOut" style="color: #fff;width: 24px;height: 20px;" /></div>
+    </el-tooltip>
   </div>
 </template>
 
 <script>
 import { setGizmoMode, setGizmoModeType, closeComEdit } from "@/api/userCenter/index";
+import topBar from "./topBar.vue";
+
 export default {
-  components: {},
+  components: { topBar },
   props: {
     // taskId必传
     data: {
@@ -26,6 +37,14 @@ export default {
       default: () => { },
       required: true
     }
+  },
+  computed: {
+    topStore() {
+      return this.$store.state.top
+    },
+    // designStore() {
+    //   return this.$store.state.design
+    // }
   },
   data() {
     return {
@@ -67,10 +86,15 @@ export default {
     };
   },
   watch: {},
-  computed: {},
   created() { },
   mounted() { },
   methods: {
+    // 保存方案
+    changeCase(e) {
+      this.$store.dispatch('bim/changeCase', 'commit').then(() => {
+        this.$message.success('保存成功')
+      })
+    },
     // 那五个操作------------缩放,旋转,移动,轴心,笔刷
     onOprate(item) {
       if (item.check) {
@@ -165,19 +189,40 @@ export default {
         }
       })
     },
+    onChangeOut() {
+      const _this = this;
+      this.$confirm(`您将要退出面层编辑，是否继续！`, '提示', {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(function () {
+        _this.$store.dispatch('design/changeDrawType', null);
+        _this.$store.dispatch('top/changeTopDesign', 0);
+        _this.$store.commit('design/changeType', 1);
+        _this.$store.commit('bim/setPlaneViewStatus', 1);
+        _this.$store.dispatch('bim/changeMode', { e: '3D', mode: true });
+        _this.$refs.topBarRef.changeThree();
+        // router.push('/design/model')
+      })
+    },
   },
 };
 </script>
 <style lang="less" scoped>
 .toolList {
   position: absolute;
-  right: -250px;
+  // right: -250px;
+  left: 300px;
+  width: max-content;
   top: 0;
   height: 40px;
   background: rgba(13, 22, 40, 0.7);
   border-radius: 4px;
   line-height: 40px;
   padding: 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   img {
     width: 24px;
@@ -186,5 +231,26 @@ export default {
     vertical-align: middle;
     margin: 0 10px;
   }
+
+  .draw-icon {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    vertical-align: middle;
+    margin: 0 10px;
+
+    /deep/ svg {
+      height: 100%;
+      width: 100%;
+    }
+  }
+}
+
+.addBtn {
+  height: 40px;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

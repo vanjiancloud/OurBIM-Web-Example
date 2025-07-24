@@ -3,7 +3,8 @@
     <div class="weatherClassify">
       <div class="selectGroup">
         <el-radio-group v-model="radio" class="singleSelect" @input="radioChange">
-          <el-radio :label="0" class="envirTemplate" v-if="!isGis">
+          <!-- <el-radio :label="0" class="envirTemplate" v-if="!isGis"> -->
+          <el-radio :label="0" class="envirTemplate">
             <div class="templateBox">
               <div class="templateName">环境模板</div>
               <div class="templateInfo" v-if="radio === 0">
@@ -15,7 +16,8 @@
               </div>
             </div>
           </el-radio>
-          <el-radio :label="1" class="solidBackground" v-if="!isGis">
+          <!-- <el-radio :label="1" class="solidBackground" v-if="!isGis"> -->
+          <el-radio :label="1" class="solidBackground">
             <div class="boxSolidBackground">
               <div class="solidName">纯色背景</div>
               <div class="colorBox" v-if="radio === 1">
@@ -214,7 +216,8 @@
       </div>
     </div>
     <!-- 环境背景 -->
-    <div class="background" v-if="!isGis">
+    <!-- <div class="background" v-if="!isGis"> -->
+    <div class="background">
       <div class="row-box">
         <el-checkbox v-model="backgroundSetting.groundCheck" label="环境背景" @change="changeBackground" />
       </div>
@@ -265,6 +268,10 @@ export default {
       default: "",
     },
     taskId: {
+      type: String,
+      default: "",
+    },
+    isBuild: {
       type: String,
       default: "",
     },
@@ -353,11 +360,15 @@ export default {
   created() {
     this.isGis = (this.$route.query.isGis && eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin && eval(this.$route.query.weatherBin.toLowerCase())) || false
     this.show()
+
+    if (this.isBuild == 'true') {
+      this.backgroundSetting.groundCheck = true
+    }
   },
   mounted() {
-    if (this.isGis) {
-      document.querySelector('.weatherClassify').style.height = '200px';
-    }
+    // if (this.isGis) {
+    //   document.querySelector('.weatherClassify').style.height = '200px';
+    // }
   },
   methods: {
     show() {
@@ -410,11 +421,12 @@ export default {
     },
     radioChange(val) {
       if (val == 2) {
-        if (!this.isGis) {
-          this.changeWea(this.getTwoIds('parameter'));
-        } else {
-          this.getWeatherParams('need');
-        }
+        // if (!this.isGis) {
+        //   this.changeWea(this.getTwoIds('parameter'));
+        // } else {
+        //   this.getWeatherParams('need');
+        // }
+        this.changeWea(this.getTwoIds('parameter'));
       } else if (val == 0) {
         if (this.valueTemplate) {
           this.changeWea(this.valueTemplate);
@@ -438,12 +450,13 @@ export default {
         this.lessOptions = res.data.filter(item => {
           return (item.weatherName === '参数化天气' || item.weatherName === '轮廓线-可变背景色') ? false : true
         })
-        if (!this.isGis) {
-          this.getWeatherId(); // 获取当前天气
-        } else {
-          this.radio = 2
-          this.getWeatherParams('none');
-        }
+        // if (!this.isGis) {
+        //   this.getWeatherId(); // 获取当前天气
+        // } else {
+        //   this.radio = 2
+        //   this.getWeatherParams('none');
+        // }
+        this.getWeatherId(); // 获取当前天气
       });
     },
     valueChangeBtn(val) { // 选择天气改变时

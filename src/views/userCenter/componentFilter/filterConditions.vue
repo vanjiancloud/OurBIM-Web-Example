@@ -4,7 +4,7 @@
       width="460px" :before-close="hide" :lock-scroll="false">
       <el-form class="filterForm" ref="form" :style="{ 'width': '100%' }" :model="form" :rules="rules" label-width="0"
         size="small">
-        <el-row :gutter="10" v-for="(item, index) in form.list" :key="index">
+        <el-row :gutter="10" v-for="(item, index) in form.list" :key="item.id || index">
           <el-col :span="18">
             <div style="display: flex;align-items: center;">
               <el-form-item label="" :prop="`list.${index}.a`" style="flex: 1">
@@ -25,8 +25,9 @@
           </el-col>
           <el-col :span="24" style="display: flex;justify-content: flex-start;" v-if="index != form.list.length - 1">
             <el-form-item label="" :prop="`list.${index}.conditionJudge`">
-              <el-select v-model="item.conditionJudge" placeholder="请选择" size="mini" style="width: 100px;">
-                <el-option v-for="item in options1" :key="item.value" :label="item.label" :value="item.value">
+              <el-select v-model="item.conditionJudge" placeholder="请选择" size="mini" style="width: 100px;"
+                @change="(v)=>conditionJudgeChange(v,item,index)">
+                <el-option v-for="opt in options1" :key="opt.value" :label="opt.label" :value="opt.value">
                 </el-option>
               </el-select>
             </el-form-item>
@@ -191,11 +192,15 @@ export default {
       this.$refs.ConditionRef.show();
     },
     add(obj) {
-      this.form.list.push(obj);
-      this.form.list.map(a => {
-        a.conditionJudge = 'and';
-        return a;
-      })
+      this.form.list.push(obj); // 添加新条件到数组末尾
+      // 当数组长度≥2时，设置倒数第二条的 conditionJudge 为 'and'
+      if (this.form.list.length >= 2) {
+        const prevIndex = this.form.list.length - 2; // 倒数第二条的索引
+        this.form.list[prevIndex].conditionJudge = 'and'; // 直接修改响应式属性
+      }
+    },
+    conditionJudgeChange(v,item,index) {
+      this.$set(this.form.list, index, item)
     },
     edit(obj, index) {
       // console.log(obj,index)

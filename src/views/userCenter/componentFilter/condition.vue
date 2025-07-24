@@ -27,7 +27,7 @@
         <div style="display: flex;align-items: center;justify-content: space-between;" v-if="validPercentage > 0">
           <el-progress :percentage="validPercentage" :text-inside="true" :stroke-width="12"
             style="flex: 1;"></el-progress>
-          <div style="margin-left: 10px;" v-if="showCount">{{ form.conditionCount || '0'}}个</div>
+          <div style="margin-left: 10px;" v-if="showCount">{{ form.conditionCount || '0' }}个</div>
         </div>
       </el-form-item>
     </el-form>
@@ -148,10 +148,11 @@ export default {
     submit() {
       this.$refs.form.validate((valid) => {
         if (!valid) return false;
+        const newObj = { ...this.form, id: Date.now() };
         if (this.currentIndex !== null) {
-          this.$emit('edit', this.form, this.currentIndex)
+          this.$emit('edit', newObj, this.currentIndex)
         } else {
-          this.$emit('add', this.form)
+          this.$emit('add', newObj)
         }
         this.hide()
       })

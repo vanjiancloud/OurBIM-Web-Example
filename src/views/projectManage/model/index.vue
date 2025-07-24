@@ -20,6 +20,7 @@
               <el-button type="primary" class="blueBtn" @click="onSearch">查询</el-button>
             </el-form-item>
           </el-form>
+          <el-button type="primary" class="blueBtn" @click="onNewCase">新建BIM项目</el-button>
           <el-badge :value="uploadingNum" :hidden="!uploadingNum" style="margin:0 8px">
             <el-button icon="el-icon-upload" class="blueBtn" type="primary"
               @click="handleCreateProjectDialog">上传BIM模型</el-button>
@@ -217,14 +218,14 @@
             </el-radio-group>
           </el-form-item>
         </div>
-        <Transfer class="integrate-transfer" filterable ref="linkModel" :titles="['模型', '模型2']"
+        <Transfer class="integrate-transfer" filterable ref="linkModel" :titles="['模型', '链接模型']"
           v-model="ActiveLinkModel" :data="ListLinkModel" :props="{
             key: 'appid',
             label: 'appName',
           }" @getData="handleChange">
         </Transfer>
         <Transfer v-if="FormIntegrate.type === 'gis'" class="integrate-transfer" filterable
-          :titles="['GIS数据服务', 'GIS数据服务']" v-model="ActiveLinkGISModel" :data="ListLinkGISModel" :isGIS="true" :props="{
+          :titles="['GIS数据服务', '链接GIS数据服务']" v-model="ActiveLinkGISModel" :data="ListLinkGISModel" :isGIS="true" :props="{
             key: 'gisId',
             label: 'gisServerName',
           }">
@@ -283,6 +284,8 @@
     </DialogsDrag>
     <!-- 编辑 -->
     <DialogsEdit ref="DialogsEdit" :ListLinkModel="ListLinkModel" :GISModel="ListLinkGISModel" />
+    <!-- 新建bim项目 -->
+    <DialogNew ref="DialogNewRef" @onSearch="onSearch" />
   </List>
 </template>
 
@@ -299,6 +302,7 @@ import DialogsConversion from "./dialogsConversion.vue"
 import DialogsDrag from "@/components/Upload/DialogsDrag.vue";
 import List from "@/components/List/index.vue";
 import DialogsEdit from "./dialogsEdit.vue";
+import DialogNew from './dialogNew.vue';
 
 export default {
   components: {
@@ -309,7 +313,8 @@ export default {
     DialogsConversion,
     DialogsDrag,
     List,
-    DialogsEdit
+    DialogsEdit,
+    DialogNew,
   },
   filters: {
     modelType(e) {
@@ -467,6 +472,9 @@ export default {
     this.changeGisPlugin()
   },
   methods: {
+    onNewCase() {
+      this.$refs.DialogNewRef.show()
+    },
     onSearch() {
       this.pages = this.$options.data().pages
       this.getAllModelList();
@@ -749,7 +757,8 @@ export default {
           token: res.data.token,
           isGis: e.isGis,  // 用于控制 gis模型  时  渲染环境 图标隐藏
           reserveId: e.reserveId || '', // 有reserveId就是预启动项目 没有就不是
-          userId: this.userId
+          userId: this.userId,
+          isBuild: e.isBuild === 'true' ? 'true' : 'false',
         };
         if (teamInfo) {
           query.userType = teamInfo.userType;

@@ -44,7 +44,7 @@
       <!-- 构件操作图标 -->
       <OperatingTools ref="OperatingTools" v-if="drawer && hasLock()" :data="data" />
 
-      <GisTree ref="refGis" v-if="drawer && tabValue === 1" :data="data" :search="search"/>
+      <GisTree ref="refGis" v-if="drawer && tabValue === 1" :data="data" :search="search" />
       <dialog-link ref="refLink" :GISModel="ListLinkGISModel" :data="data" />
       <dialog-set ref="refSet" :data="data" />
     </template>
@@ -110,6 +110,7 @@ export default {
         },
       },
       activeTree: null,//选中状态
+      componentVisibility: JSON.parse(sessionStorage.getItem(`componentVisibility_${this.data.taskId}`)) || {},
     };
   },
   watch: {},
@@ -127,6 +128,10 @@ export default {
     // if(this.data.isGis){
     //     this.tabList[1].hidden = true
     // }
+  },
+  beforeDestroy() {
+    // 组件卸载前将状态保存到sessionStorage
+    sessionStorage.setItem(`componentVisibility_${this.data.taskId}`, JSON.stringify(this.componentVisibility));
   },
   methods: {
     onSet() {
@@ -203,8 +208,18 @@ export default {
     // 加载子树数据的方法，仅当 lazy 属性为true 时生效
     loadNode(node, resolve) {
       this.getList(node).then((res) => {
+        // if (node.level === 0) {
+        //   this.treeParentData = res
+        // }
+        // res.length && res.forEach((item) => {
+        //   // // 点击锁🔒
+        //   // this.$set(item, 'lockCheck', false)
+        //   // //选中聚焦
+        //   // this.$set(item, 'check', false)
+        // });
+        // return resolve(res);
         if (node.level === 0) {
-          this.treeParentData = res
+          this.treeParentData = res;
         }
         res.length && res.forEach((item) => {
           // 点击锁🔒
@@ -212,7 +227,18 @@ export default {
           //选中聚焦
           this.$set(item, 'check', false)
         });
-        return resolve(res);
+        resolve(res); // 先将数据传递给树组件渲染
+
+        // 节点渲染完成后设置选中状态（关键修改）
+        this.$nextTick(() => {
+          // 生成需要选中的uuid列表（根据缓存）
+          const checkedKeys = Object.keys(this.componentVisibility)
+            .filter(uuid => this.componentVisibility[uuid]);
+          // 调用setCheckedKeys设置选中状态
+          if (this.$refs.tree) {
+            this.$refs.tree.setCheckedKeys(checkedKeys);
+          }
+        });
       }).catch(() => {
         return resolve([]);
       });
@@ -269,6 +295,8 @@ export default {
         }).then((res) => {
           this.$message.success(res.message)
           this.updateTree(node.data.uuid);
+          // 清理已删除构件的缓存状态
+          delete this.componentVisibility[uuid];
         });
       }).catch(() => { });
     },
@@ -343,12 +371,16 @@ export default {
     },
     // 点击显示或隐藏构件
     isShowCom(data, e) {
+      const isHidden = !e.checkedKeys.includes(data.uuid);
+      // 缓存当前构件的隐藏状态
+      this.componentVisibility[data.uuid] = !isHidden;
+      // 
       if (data.typeId === "comp") {
         // 自定义构件
         let params = {
           comId: data.uuid,
           taskId: this.data.taskId,
-          lableVisibility: !e.checkedKeys.includes(data.uuid)
+          lableVisibility: !e.checkedKeys.includes(data.uuid),
         }
         controlComShowOrHide(params)
       } else {

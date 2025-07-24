@@ -41,7 +41,9 @@
 </template>
 
 <script>
-import { updatePassword } from '../../api/my'
+import { updatePassword, updatePasswordEmail } from '../../api/my';
+const phoneReg = /^1[3-9]\d{9}$/;
+const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export default {
   name: 'newPassword',
   data() {
@@ -98,7 +100,14 @@ export default {
     toNext() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.newPas()
+          const isPhone = phoneReg.test(this.form.mobile);
+          const isEmail = emailReg.test(this.form.mobile);
+          if (isPhone) {
+            this.newPas()
+          }
+          if (isEmail) {
+            this.newPasEmail()
+          }
         }
       })
     },
@@ -121,7 +130,26 @@ export default {
           console.log(err)
           this.$message.error('验证码验证失败')
         })
-    }
+    },
+    newPasEmail() {
+      updatePasswordEmail({
+        email: this.form.mobile,
+        // code: this.form.code,
+        password: this.form.password
+      })
+        .then(res => {
+          console.log(res)
+          if (res.data.code === 0) {
+            this.$router.replace('../../resetSucceed')
+          } else {
+            this.$message.error('验证码验证失败')
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message.error('验证码验证失败')
+        })
+    },
   }
 }
 </script>

@@ -72,7 +72,7 @@ export default {
         return this.$message.warning('请选择要替换的构件！')
       }
       let params = {
-        appId: this.$parent.$parent.findPakId() || this.data.appId,
+        appId: this.$route.query.appid,
         matId: matId || this.materialAllInfo.matId,
         isPublic,
         // baseColorTextureId: this.material.openTexture === 'BaseColorMap' ? textureId : '',

@@ -193,6 +193,7 @@ export default {
     this.isGis = (this.$route.query.isGis && eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin && eval(this.$route.query.weatherBin.toLowerCase())) || false
     // 监听vuex中 materialAllInfo 更新
     this.unwatchToken = this.$store.watch((state) => state.material.materialAllInfo, (newValue, oldValue) => {
+      // console.log(newValue)
       if (!newValue.matParam || !Object.keys(newValue.matParam).length) {
         // this.unwatchToken()
         this.materialChartlet = this.$options.data().materialChartlet

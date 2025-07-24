@@ -1,7 +1,7 @@
 <template>
   <div style="min-height: 100vh;background-color: #fff;">
-    <div class="box" v-if="!mobile">
-      <div class="picture">
+    <div :class="isMobile ? 'mobile_box' : 'box'">
+      <div class="picture" v-if="!isMobile">
         <img src="./img/img.png" alt="" />
       </div>
       <!-- 注册页面 -->
@@ -14,6 +14,7 @@
               <img src="./img/logo.png" alt="" />
             </div>
           </div>
+          <div style="color: #5B636C;font-size: 18px;text-align: center;">手机/邮箱注册</div>
           <!-- 主体区域 -->
           <div class="body">
             <el-form ref="ruleForm" :model="ruleForm" :rules="rules">
@@ -25,13 +26,15 @@
               </el-form-item> -->
               <!-- 手机号 -->
               <el-form-item label="" prop="mobile">
-                <el-input v-model="ruleForm.mobile" placeholder="请输入手机号码" @blur="mobileBlur">
+                <el-input v-model="ruleForm.mobile" placeholder="请输入手机/邮箱号" @blur="mobileBlur" auto-complete="off"
+                  autocomplete="new-password">
                   <i slot="prefix" class="el-icon-mobile-phone"></i>
                 </el-input>
               </el-form-item>
               <!-- 验证码 -->
               <el-form-item label="" prop="code">
-                <el-input v-model="ruleForm.code" placeholder="请输入短信验证码">
+                <el-input v-model="ruleForm.code" placeholder="请输入手机/邮箱验证码" class="verification" auto-complete="off"
+                  autocomplete="new-password">
                   <el-button class="code" slot="suffix" type="text" :disabled="isSend" @click="getcode">
                     {{ btnMes }}
                   </el-button>
@@ -40,13 +43,15 @@
               </el-form-item>
               <!-- 密码 -->
               <el-form-item label="" prop="password">
-                <el-input show-password v-model="ruleForm.password" placeholder="请设置6至20位登录密码">
+                <el-input show-password v-model="ruleForm.password" placeholder="请设置6至20位登录密码" name="registerPassword"
+                  autocomplete="new-password">
                   <i slot="prefix" class="el-icon-lock"></i>
                 </el-input>
               </el-form-item>
               <!-- 再次输入密码 -->
               <el-form-item label="" prop="newPassword">
-                <el-input show-password v-model="ruleForm.newPassword" placeholder="请再次输入登录密码">
+                <el-input show-password v-model="ruleForm.newPassword" placeholder="请再次输入登录密码"
+                  name="registerNewPassword" autocomplete="new-password">
                   <i slot="prefix" class="el-icon-lock"></i>
                 </el-input>
               </el-form-item>
@@ -74,83 +79,21 @@
         Copyright © 2025 www.OurBIM.com, <br />All Rights Reserved.
       </div>
     </div>
-    <div class="mobile_box" v-else>
-      <div class="right">
-        <div class="zhuce">
-          <!-- 头部区域 -->
-          <div class="header">
-            <a @click="GoBack"> <i class="el-icon-arrow-left"></i></a>
-            <div class="logo">
-              <img src="./img/logo.png" alt="" />
-            </div>
-          </div>
-          <!-- 主体区域 -->
-          <div class="body">
-            <el-form ref="ruleForm" :model="ruleForm" :rules="rules">
-              <!-- 邮箱 -->
-              <!-- <el-form-item label="" prop="email">
-                <el-input v-model="ruleForm.email" placeholder="请输入邮箱" @blur="emailBlur">
-                  <i slot="prefix" class="el-icon-message"></i>
-                </el-input>
-              </el-form-item> -->
-              <!-- 手机号 -->
-              <el-form-item label="" prop="mobile">
-                <el-input v-model="ruleForm.mobile" placeholder="请输入手机号码" @blur="mobileBlur">
-                  <i slot="prefix" class="el-icon-mobile-phone"></i>
-                </el-input>
-              </el-form-item>
-              <!-- 验证码 -->
-              <el-form-item label="" prop="code">
-                <el-input v-model="ruleForm.code" placeholder="请输入短信验证码">
-                  <el-button class="code" slot="suffix" type="text" :disabled="isSend" @click="getcode">
-                    {{ btnMes }}
-                  </el-button>
-                  <i slot="prefix" class="el-icon-s-comment"></i>
-                </el-input>
-              </el-form-item>
-              <!-- 密码 -->
-              <el-form-item label="" prop="password">
-                <el-input show-password v-model="ruleForm.password" placeholder="请设置6至20位登录密码">
-                  <i slot="prefix" class="el-icon-lock"></i>
-                </el-input>
-              </el-form-item>
-              <!-- 再次输入密码 -->
-              <el-form-item label="" prop="newPassword">
-                <el-input show-password v-model="ruleForm.newPassword" placeholder="请再次输入登录密码">
-                  <i slot="prefix" class="el-icon-lock"></i>
-                </el-input>
-              </el-form-item>
-              <!-- 勾选状态 -->
-              <el-form-item label="" prop="checked" class="check">
-                <el-checkbox v-model="ruleForm.checked">我同意</el-checkbox>
-                <a class="link" @click="toxieyi" style="text-decoration: none; font-size: 16px">
-                  《OurBIM用户服务协议》
-                </a>
-              </el-form-item>
-            </el-form>
-            <!-- 底部区域 -->
-            <div class="footer">
-              <div>
-                <el-button type="primary" class="btn" @click="register" :loading="isLoading">注册</el-button>
-              </div>
-              <div class="footer-size">
-                <el-button type="text" @click="toLogoin">已有账号，立即登录</el-button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+
   </div>
 </template>
 
 <script>
 import {
   getRegister,
+  addUserEmail,
   repeatMobile,
   repeatEmail,
   sendMsgCode,
+  sendMsgEmailCode,
 } from "@/api/my.js";
+const phoneReg = /^1[3-9]\d{9}$/;  // 复用现有正则
+const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export default {
   name: "register",
   data() {
@@ -177,10 +120,20 @@ export default {
       // 验证规则
       rules: {
         mobile: [
-          { required: true, message: "请输入手机号", trigger: "blur" },
+          { required: true, message: "请输入手机号或邮箱", trigger: "blur" },
+          // {
+          //   pattern: /^1[0-9]{1}[0-9]{9}$/,
+          //   message: "请输入正确的11位手机号",
+          //   trigger: "blur",
+          // },
           {
-            pattern: /^1[0-9]{1}[0-9]{9}$/,
-            message: "请输入正确的11位手机号",
+            validator: (rule, value, callback) => {
+              if (phoneReg.test(value) || emailReg.test(value)) {
+                callback(); // 校验通过
+              } else {
+                callback(new Error("请输入正确的手机号（11位数字）或邮箱（如：user@example.com）"));
+              }
+            },
             trigger: "blur",
           },
         ],
@@ -274,12 +227,11 @@ export default {
           },
         ],
       },
-      // mobile: null,
       windowWidth: window.innerWidth,
     };
   },
   computed: {
-    mobile() {
+    isMobile() {
       // return this.windowWidth < 768 ? '移动端' : 'PC 端';
       return this.windowWidth < 768
     }
@@ -287,19 +239,12 @@ export default {
   mounted() {
     // 监听窗口大小变化
     window.addEventListener('resize', this.handleResize);
-    // window.onresize = () => {
-    //   this.mobile = this.isMobile();
-    // };
-    // window.addEventListener('resize', function () {
-    //   this.mobile = this.isMobile();
-    // });
   },
   beforeDestroy() {
     // 移除监听事件，防止内存泄漏
     window.removeEventListener('resize', this.handleResize);
   },
   created() {
-    // this.mobile = this.isMobile();
   },
   watch: {
     $route(to, from) {
@@ -318,13 +263,13 @@ export default {
     handleResize() {
       this.windowWidth = window.innerWidth;
     },
-    isMobile() {
-      let flag = navigator.userAgent.match(
-        /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
-      );
-      // console.log(flag)
-      return flag;
-    },
+    // isMobile() {
+    //   let flag = navigator.userAgent.match(
+    //     /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
+    //   );
+    //   // console.log(flag)
+    //   return flag;
+    // },
     GoBack() {
       /**
        * @Author: zk
@@ -353,7 +298,18 @@ export default {
     register() {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
-          this.doRegister();
+          const isPhone = phoneReg.test(this.ruleForm.mobile);
+          const isEmail = emailReg.test(this.ruleForm.mobile);
+          if (!isPhone && !isEmail) {
+            this.$message.error("请输入正确的手机号或邮箱");
+            return;
+          }
+          if (isPhone) {
+            this.doRegister();
+          }
+          if (isEmail) {
+            this.doRegisterEmail();
+          }
         }
       });
     },
@@ -400,6 +356,29 @@ export default {
           this.$message.error("注册失败，请检查网络或稍后重试");
         });
     },
+    // 邮箱注册
+    doRegisterEmail() {
+      addUserEmail({
+        email: this.ruleForm.mobile,
+        password: this.ruleForm.password,
+        code: this.ruleForm.code,
+      }).then((res) => {
+        if (res.data.code === 0) {
+          this.$message.success("注册成功");
+          this.$router.push("/registerSucceed");
+        } else if (res.data.code === 1) {
+          this.$message.warning(res.data.message);
+        } else if (res.data.code === 2) {
+          this.$message.error(res.data.message);
+        } else if (res.data.code === 3) {
+          this.$message.error(res.data.message);
+        }
+      })
+        .catch((err) => {
+          console.log(err);
+          this.$message.error("注册失败，请检查网络或稍后重试");
+        });
+    },
     // 点击跳转用户协议
     toxieyi() {
       this.$router.push("/protocol");
@@ -409,7 +388,18 @@ export default {
     getcode() {
       this.$refs.ruleForm.validateField("mobile", (codeError) => {
         if (!codeError) {
-          this.toGetCode();
+          const isPhone = phoneReg.test(this.ruleForm.mobile);
+          const isEmail = emailReg.test(this.ruleForm.mobile);
+          if (!isPhone && !isEmail) {
+            this.$message.error("请输入正确的手机号或邮箱");
+            return;
+          }
+          if (isPhone) {
+            this.toGetCode();
+          }
+          if (isEmail) {
+            this.toGetCodeEmail();
+          }
         }
       });
     },
@@ -423,7 +413,6 @@ export default {
         msgType: this.ruleForm.msgType,
       })
         .then((res) => {
-          console.log(res);
           if (res.data.code === 0) {
             this.$message.success("获取成功");
             // 监听定时器
@@ -432,12 +421,52 @@ export default {
               this.delay--;
             }, 1000);
           } else if (res.data.code === 1) {
+            this.isSend = false;
+            this.btnMes = `发送验证码`;
             this.$message.error("短信请求失败");
           } else {
+            this.isSend = false;
+            this.btnMes = `发送验证码`;
             this.$message.error("短信请求失败，您的操作过于频繁，请稍后在试");
           }
         })
         .catch((err) => {
+          this.isSend = false;
+          this.btnMes = `发送验证码`;
+          console.log(err);
+          this.$message.error("获取失败");
+        });
+    },
+    // 获取邮箱验证码
+    toGetCodeEmail() {
+      // 禁用发送验证码按钮
+      this.isSend = true;
+      this.btnMes = `发送验证码中...`;
+      sendMsgEmailCode({
+        email: this.ruleForm.mobile,
+        type: '0'
+      })
+        .then((res) => {
+          if (res.data.code === 0) {
+            this.$message.success("获取成功");
+            // 监听定时器
+            this.interId = setInterval(() => {
+              this.btnMes = `${this.delay}S后继续`;
+              this.delay--;
+            }, 1000);
+          } else if (res.data.code === 1) {
+            this.isSend = false;
+            this.btnMes = `发送验证码`;
+            this.$message.error("验证码请求失败");
+          } else {
+            this.isSend = false;
+            this.btnMes = `发送验证码`;
+            this.$message.error("验证码请求失败，您的操作过于频繁，请稍后在试");
+          }
+        })
+        .catch((err) => {
+          this.isSend = false;
+          this.btnMes = `发送验证码`;
           console.log(err);
           this.$message.error("获取失败");
         });
@@ -455,11 +484,10 @@ export default {
         mobile: this.ruleForm.mobile,
       })
         .then((res) => {
-          console.log(res);
           if (res.data.code === 0) {
-            this.$message.success(res.data.message);
+            this.$message.success('账号可以添加' || res.data.message);
           } else if (res.data.code === 1) {
-            this.$message.error(res.data.message);
+            this.$message.error('账号已存在' || res.data.message);
           }
         })
         .catch((err) => {
@@ -537,14 +565,14 @@ export default {
 
         // background-color: green;
         .logo {
-          width: 50%;
-          height: 100%;
+          // width: 50%;
+          // height: 100%;
           margin: 0 auto;
           margin-left: 60px;
 
           img {
-            width: 100%;
-            height: 100%;
+            width: 70%;
+            // height: 100%;
           }
         }
 
@@ -588,9 +616,9 @@ export default {
 
         // 输入框
         /deep/ .el-input__inner {
-          font-size: 16px;
-          width: 100%;
-          padding-left: 70px;
+          // font-size: 16px;
+          // width: 100%;
+          padding-left: 60px;
           color: #000;
         }
 
@@ -606,29 +634,38 @@ export default {
 
         // 我同意选中框
         /deep/ .el-checkbox__inner {
-          width: 16px;
-          height: 16px;
+          width: 20px;
+          height: 20px;
         }
 
         // 输入框内图标
         /deep/ .el-input__prefix {
-          font-size: 16px;
-          line-height: 4vh;
-          margin: 0 20px;
+          font-size: 20px;
+          line-height: 40px;
+          margin-left: 16px;
         }
 
         // 对钩
         /deep/ .el-checkbox__inner::after {
-          width: 6px;
-          height: 9px;
+          width: 9px;
+          height: 13px;
+          color: #00aaf0;
         }
 
         .link {
           cursor: pointer;
         }
 
+        /deep/.verification {
+          &.el-input--suffix .el-input__inner {
+            padding-right: 88px !important;
+          }
+
+        }
+
         .code {
-          font-size: 12px;
+          font-size: 14px;
+          margin-right: 8px;
         }
 
         .check {
@@ -643,9 +680,9 @@ export default {
         // height: 20vh;
         // background-color: red;
         .btn {
-          height: 5vh;
+          // height: 5vh;
           width: 100%;
-          font-size: 2.5vh;
+          font-size: 18px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -654,11 +691,11 @@ export default {
         }
 
         .footer-size {
-          text-align: center;
+          text-align: right;
 
           .el-button {
             color: #00aaf0;
-            font-size: 2vh;
+            font-size: 16px;
           }
         }
       }
@@ -770,9 +807,9 @@ export default {
 
         // 输入框
         /deep/ .el-input__inner {
-          font-size: 16px;
-          width: 100%;
-          padding-left: 70px;
+          // font-size: 16px;
+          // width: 100%;
+          padding-left: 60px;
           color: #000;
         }
 
@@ -801,8 +838,9 @@ export default {
 
         // 对钩
         /deep/ .el-checkbox__inner::after {
-          width: 6px;
-          height: 9px;
+          width: 9px;
+          height: 13px;
+          color: #00aaf0;
         }
 
         .link {

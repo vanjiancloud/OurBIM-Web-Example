@@ -1,7 +1,10 @@
 <template>
   <div style="min-height: 100vh;background-color: #fff;">
-    <div class="login-container" v-if="!mobile">
-      <div class="picture">
+    <div class="mobile_top_bg" style="background: #fff;" v-if="mobile">
+      <img src="./mobile_bg.png" alt="" style="width: 100%;" />
+    </div>
+    <div :class="mobile ? 'phone-container' : 'login-container'">
+      <div class="picture" v-if="!mobile">
         <img src="./img.png" alt="" />
       </div>
       <div class="right">
@@ -21,7 +24,7 @@
               <i>账号登录</i>
             </span>
             <span @click="isshow = 1" :class="{ color: isshow == 1 }">
-              <i>短信登录</i>
+              <i>验证码登录</i>
             </span>
           </div>
           <!-- 邮箱登录的表单 -->
@@ -30,7 +33,7 @@
             <!-- 邮箱 -->
             <el-form-item prop="loginName">
               <div class="fonts">账号</div>
-              <el-input v-model="form.loginName" placeholder="请输入邮箱或手机号" @input="InputPassword">
+              <el-input v-model="form.loginName" placeholder="请输入手机号/邮箱" @input="InputPassword">
                 <i slot="prefix" class="el-input__icon el-icon-message"></i>
               </el-input>
             </el-form-item>
@@ -82,18 +85,18 @@
             <!--  手机号验证码通过双向绑定获取里面的值 -->
             <!-- 手机号 -->
             <el-form-item prop="mobile">
-              <div class="fonts">手机号</div>
-              <el-input v-model="mobForm.mobile" placeholder="请输入手机号" @input="InputPassword">
+              <div class="fonts">账号</div>
+              <el-input v-model="mobForm.mobile" placeholder="请输入邮箱或手机号" @input="InputPassword">
                 <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
               </el-input>
             </el-form-item>
             <!-- 验证码 -->
             <el-form-item prop="code">
               <div class="fonts">验证码</div>
-              <el-input v-model="mobForm.code" placeholder="请输入短信验证码">
+              <el-input v-model="mobForm.code" placeholder="请输入短信/邮箱验证码">
                 <!-- 验证码按钮 -->
                 <el-button slot="suffix" class="code" :disabled="isSend" @click="getVerification" type="text">{{ btnMes
-                }}</el-button>
+                  }}</el-button>
                 <i slot="prefix" class="el-input__icon el-icon-s-comment"></i>
               </el-input>
             </el-form-item>
@@ -128,148 +131,23 @@
           </el-form>
         </div>
       </div>
-      <div class="wenzi">
+      <div class="wenzi" v-if="!mobile">
         Copyright © 2025 www.OurBIM.com, <br />
         All Rights Reserved.
-      </div>
-    </div>
-    <div v-else>
-      <div class="mobile_top_bg" style="background: #fff;">
-        <img src="./mobile_bg.png" alt="" style="width: 100%;" />
-      </div>
-      <div class="phone-container">
-        <div class="right">
-          <div class="login-form-wrap">
-            <!-- .logo区域 -->
-            <div class="login-head">
-              <!-- <a href="http://www.ourbim.com">
-                <i class="el-icon-arrow-left"></i>
-              </a> -->
-              <div class="logo">
-                <img src="./logo.png" alt="" />
-              </div>
-            </div>
-            <!-- 登录的不同状态 -->
-            <div class="state">
-              <span @click="isshow = 0" :class="{ color: isshow == 0 }">
-                <i>账号登录</i>
-              </span>
-              <span @click="isshow = 1" :class="{ color: isshow == 1 }">
-                <i>短信登录</i>
-              </span>
-            </div>
-            <!-- 邮箱登录的表单 -->
-            <el-form :rules="rules" :model="form" ref="form" class="login-form" v-show="isshow == 0">
-              <!--  邮箱密码通过双向绑定获取 -->
-              <!-- 邮箱 -->
-              <el-form-item prop="loginName">
-                <div class="fonts">账号</div>
-                <el-input v-model="form.loginName" placeholder="请输入邮箱或手机号" @input="InputPassword">
-                  <i slot="prefix" class="el-input__icon el-icon-message"></i>
-                </el-input>
-              </el-form-item>
-              <!-- 密码 -->
-              <el-form-item prop="password">
-                <div class="fonts">密码</div>
-                <el-input v-model="form.password" placeholder="请输入登录密码" type="password" show-password>
-                  <i slot="prefix" class="el-input__icon el-icon-unlock"></i>
-                </el-input>
-              </el-form-item>
-              <el-form-item>
-                <div class="fonts">选择版本：</div>
-                <el-radio-group v-model="version" @change="changeVersion">
-                  <el-radio :label="2">OurBIM 2.0</el-radio>
-                  <el-radio :label="3">OurBIM 3.0</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <!-- 勾选框 -->
-              <el-form-item prop="isAgree">
-                <el-checkbox class="checkbox" label="记住密码" name="type" v-model="form.isAgree"></el-checkbox>
-                <span @click="changePassword" class="titles">忘记密码?</span>
-                <span @click="register" class="titles">注册新用户</span>
-              </el-form-item>
-              <!-- 登录按钮 -->
-              <el-form-item>
-                <el-button @click="emailLogin" type="primary" class="login-btn">
-                  {{ logIn }}
-                  <i class="el-icon-loading" v-if="isLoading"></i>
-                </el-button>
-              </el-form-item>
-              <el-form-item>
-                <el-tooltip placement="top" effect="light" popper-class="custom-tooltip-wxlogin">
-                  <div slot="content"><img src="./wxlogin.jpg" style="width: 8rem;"></div>
-                  <el-button class="login-btn2">
-                    {{ wxLogIn }}
-                  </el-button>
-                </el-tooltip>
-              </el-form-item>
-            </el-form>
-
-            <!-- 手机登录的表单 -->
-            <el-form :rules="rules" :model="mobForm" ref="mobForm" class="login-form" v-show="isshow == 1">
-              <!--  手机号验证码通过双向绑定获取里面的值 -->
-              <!-- 手机号 -->
-              <el-form-item prop="mobile">
-                <div class="fonts">手机号</div>
-                <el-input v-model="mobForm.mobile" placeholder="请输入手机号" @input="InputPassword">
-                  <i slot="prefix" class="el-input__icon el-icon-mobile-phone"></i>
-                </el-input>
-              </el-form-item>
-              <!-- 验证码 -->
-              <el-form-item prop="code">
-                <div class="fonts">验证码</div>
-                <el-input v-model="mobForm.code" placeholder="请输入短信验证码">
-                  <!-- 验证码按钮 -->
-                  <el-button slot="suffix" class="code" :disabled="isSend" @click="getVerification" type="text">{{
-                    btnMes
-                  }}</el-button>
-                  <i slot="prefix" class="el-input__icon el-icon-s-comment"></i>
-                </el-input>
-              </el-form-item>
-              <el-form-item>
-                <div class="fonts">选择版本：</div>
-                <el-radio-group v-model="version" @change="changeVersion">
-                  <el-radio :label="2">OurBIM 2.0</el-radio>
-                  <el-radio :label="3">OurBIM 3.0</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <!-- 勾选框 -->
-              <el-form-item prop="isAgree">
-                <el-checkbox class="checkbox" label="记住手机号" name="type" v-model="mobForm.checkbox"></el-checkbox>
-                <span @click="changePassword" class="titles">忘记密码?</span>
-                <span @click="register" class="titles">注册新用户</span>
-              </el-form-item>
-              <!-- 登录按钮 -->
-              <el-form-item>
-                <el-button @click="Mobilelogin" type="primary" class="login-btn">
-                  {{ logIn }}
-                  <i class="el-icon-loading" v-if="isLoading"></i>
-                </el-button>
-              </el-form-item>
-              <el-form-item>
-                <el-tooltip placement="top" effect="light" popper-class="custom-tooltip-wxlogin">
-                  <div slot="content"><img src="./wxlogin.jpg" style="width: 8rem;"></div>
-                  <el-button class="login-btn2">
-                    {{ wxLogIn }}
-                  </el-button>
-                </el-tooltip>
-              </el-form-item>
-            </el-form>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { sendMsgCode, login, loginMobile } from "@/api/my.js";
+import { sendMsgCode, sendMsgEmailCode, login, loginMobile, loginEmailCode } from "@/api/my.js";
 import { setuserid } from "@/store/index.js";
 import { Setuserid } from "@/store/index.js";
 import { setemail, getemail, delemail } from "@/store/index.js";
 import { setpassword, getpassword, delpassword } from "@/store/index.js";
 import { setmobile, getmobile, delmobile } from "@/store/index.js";
-
+const phoneReg = /^1[3-9]\d{9}$/;
+const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export default {
   name: "login",
   data() {
@@ -303,6 +181,16 @@ export default {
             message: "请输入邮箱或手机号",
             trigger: "blur",
           },
+          {
+            validator: (rule, value, callback) => {
+              if (phoneReg.test(value) || emailReg.test(value)) {
+                callback(); // 校验通过
+              } else {
+                callback(new Error("请输入正确的手机号或邮箱"));
+              }
+            },
+            trigger: "blur",
+          },
           // {
           //   // pattern: /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
           //pattern: /^([a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+)|(1[0-9]{1}[0-9]{9})$/,
@@ -311,10 +199,20 @@ export default {
           // }
         ],
         mobile: [
-          { required: true, message: "请输入手机号", trigger: "blur" },
+          { required: true, message: "请输入手机号或邮箱", trigger: "blur" },
+          //   {
+          //     pattern: /^1[0-9]{1}[0-9]{9}$/,
+          //     message: "请输入正确的11位手机号",
+          //     trigger: "blur",
+          //   },
           {
-            pattern: /^1[0-9]{1}[0-9]{9}$/,
-            message: "请输入正确的11位手机号",
+            validator: (rule, value, callback) => {
+              if (phoneReg.test(value) || emailReg.test(value)) {
+                callback(); // 校验通过
+              } else {
+                callback(new Error("请输入正确的手机号（11位数字）或邮箱（如：user@example.com）"));
+              }
+            },
             trigger: "blur",
           },
         ],
@@ -351,7 +249,7 @@ export default {
   computed: {
     mobile() {
       // return this.windowWidth < 768 ? '移动端' : 'PC 端';
-      return this.windowWidth < 768
+      return this.windowWidth < 768 || this.isMobile();
     }
   },
   mounted() {
@@ -453,7 +351,14 @@ export default {
     Mobilelogin() {
       this.$refs.mobForm.validate((valid) => {
         if (valid) {
-          this.mobLogin()
+          const isPhone = phoneReg.test(this.mobForm.mobile);
+          const isEmail = emailReg.test(this.mobForm.mobile);
+          if (isPhone) {
+            this.mobLogin()
+          }
+          if (isEmail) {
+            this.mobLoginEmail()
+          }
         }
       });
     },
@@ -483,6 +388,27 @@ export default {
       this.logIn = "登录中";
       this.isLoading = true;
       loginMobile({ mobile: this.mobForm.mobile, code: this.mobForm.code }).then(res => {
+        this.isLoading = false;
+        this.logIn = "登录";
+        sessionStorage.setItem("userInfo", JSON.stringify(res.data));
+        setuserid(res.data.userid);
+        // 存储用户信息userid，到sessionStorage
+        Setuserid(res.data.userid);
+        setmobile(this.mobForm.mobile);
+        if (this.mobForm.checkbox === false) {
+          delmobile();
+        }
+        this.goPage()
+      }).catch((err) => {
+        this.logIn = "登录";
+        this.isLoading = false;
+      });
+    },
+    // 邮件验证码登录
+    mobLoginEmail() {
+      this.logIn = "登录中";
+      this.isLoading = true;
+      loginEmailCode({ loginName: this.mobForm.mobile, code: this.mobForm.code }).then(res => {
         this.isLoading = false;
         this.logIn = "登录";
         sessionStorage.setItem("userInfo", JSON.stringify(res.data));
@@ -534,7 +460,14 @@ export default {
       this.$refs.mobForm.validateField("mobile", (codeError) => {
         // 验证通过把结构赋值写载这里
         if (!codeError) {
-          this.toGetCode();
+          const isPhone = phoneReg.test(this.mobForm.mobile);
+          const isEmail = emailReg.test(this.mobForm.mobile);
+          if (isPhone) {
+            this.toGetCode();
+          }
+          if (isEmail) {
+            this.toGetCodeEmail();
+          }
         }
       });
     },
@@ -547,7 +480,6 @@ export default {
         msgType: this.mobForm.msgType,
       })
         .then((res) => {
-          console.log(res);
           if (res.data.code === 0) {
             this.$message.success("获取成功");
             // 开启定时器
@@ -559,6 +491,33 @@ export default {
             this.$message.error("短信请求失败");
           } else {
             this.$message.error("短信请求失败，您的操作过于频繁，请稍后在试");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          this.$message.error("获取失败");
+        });
+    },
+    // 获取邮箱验证码
+    toGetCodeEmail() {
+      this.isSend = true;
+      this.btnMes = `正在发送验证码...`;
+      sendMsgEmailCode({
+        email: this.mobForm.mobile,
+        type: '1',
+      })
+        .then((res) => {
+          if (res.data.code === 0) {
+            this.$message.success("获取成功");
+            // 开启定时器
+            this.interId = setInterval(() => {
+              this.delay--;
+              this.btnMes = `${this.delay}S后继续`;
+            }, 1000);
+          } else if (res.data.code === 1) {
+            this.$message.error("验证码请求失败");
+          } else {
+            this.$message.error("验证码请求失败，您的操作过于频繁，请稍后在试");
           }
         })
         .catch((err) => {
@@ -659,6 +618,7 @@ export default {
 
       /deep/ .el-checkbox__label {
         font-size: 16px;
+        margin-top: 10px;
         // color: #00aaf0;
       }
 

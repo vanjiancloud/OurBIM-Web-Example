@@ -6,15 +6,22 @@
     </el-select>
     <span slot="footer" class="dialog-footer">
       <el-button @click="close">取 消</el-button>
-      <el-button type="primary" @click="close">确 定</el-button>
+      <el-button type="primary" @click="submit">确 定</el-button>
     </span>
   </el-dialog>
 </template>
 <script>
 import { Getuserid } from "@/store/index.js"
 import { getList } from "@/api/projectManage/CADList.js"
+import { inputOnlineCadFile } from "@/api/userCenter/resourcePool.js";
 
 export default {
+  props: {
+    data: {
+      type: Object,
+      default: () => { }
+    }
+  },
   data() {
     return {
       dialogVisible: false,
@@ -27,7 +34,7 @@ export default {
   },
   methods: {
     show() {
-      this.value = '',
+      this.value = '';
       this.dialogVisible = true;
     },
     close() {
@@ -47,7 +54,25 @@ export default {
       }).catch(() => {
         this.options = []
       })
-    }
+    },
+    submit() {
+      const { sourceFilePath, extand, fileName, fileSize } = this.options.find(item => item.userFileId === this.value)
+      const params = {
+        taskId: this.data.taskId,
+        sourceFilePath,
+        extand,
+        fileName,
+        fileSize,
+      }
+      // console.log(params)
+      inputOnlineCadFile(params).then(res=>{
+        if(res.code === 0){
+          this.$message.success(res.message)
+          this.close()
+          this.$emit('success')
+        }
+      })
+    },
   }
 };
 </script>

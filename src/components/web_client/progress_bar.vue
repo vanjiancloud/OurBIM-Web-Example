@@ -6,13 +6,9 @@
  * @description: 
 -->
 <template>
-  <div class="el-bg-inner-running">
-    <el-progress
-      type="line"
-      :percentage="getProgress.data ? getProgress.data : 0"
-      :stroke-width="16"
-      :text-inside="true"
-    >
+  <div :class="isMobile ? 'el-bg-inner-running-mobile' : 'el-bg-inner-running'">
+    <el-progress type="line" :percentage="getProgress.data ? getProgress.data : 0" :stroke-width="16"
+      :text-inside="true">
     </el-progress>
     <div class="load-tip">
       BIM模型加载中…
@@ -25,7 +21,11 @@ export default {
   props: {
     propsProgress: {
       type: Object,
-      default: () => {}
+      default: () => { }
+    },
+    isMobile: {
+      type: Boolean,
+      default: false
     },
   },
   watch: {
@@ -37,7 +37,8 @@ export default {
       getProgress: null
     }
   },
-  created () {
+  created() {
+    // console.log('this.isMobile', this.isMobile)
     this.getProgress = this.propsProgress
   },
 };
@@ -49,20 +50,58 @@ export default {
   bottom: 80px;
   width: 20%;
   left: 40%;
+
   .el-progress__text {
     color: #fff;
     font-size: 8px;
   }
+
   .el-progress-bar__outer {
-      // height: 6px!important;
-      background-color: rgba(0, 0, 0, 0.6)!important;
-    }
-    .el-progress-bar__inner {
-      line-height: 0;
-      background-color: #00AAF0;
-    }
-  .load-tip{
-    background-color: rgba(17,17,17,0.88);
+    // height: 6px!important;
+    background-color: rgba(0, 0, 0, 0.6) !important;
+  }
+
+  .el-progress-bar__inner {
+    line-height: 0;
+    background-color: #00AAF0;
+  }
+
+  .load-tip {
+    background-color: rgba(17, 17, 17, 0.88);
+    color: #fff;
+    margin: 10px 0;
+    padding: 5px;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-align: center;
+  }
+}
+
+.el-bg-inner-running-mobile {
+  height: 0px;
+  position: absolute;
+  transform: rotate(90deg);
+  top: 50%;
+  left: 2%;
+  transform-origin: center;
+
+  .el-progress__text {
+    color: #fff;
+    font-size: 8px;
+  }
+
+  .el-progress-bar__outer {
+    // height: 6px!important;
+    background-color: rgba(0, 0, 0, 0.6) !important;
+  }
+
+  .el-progress-bar__inner {
+    line-height: 0;
+    background-color: #00AAF0;
+  }
+
+  .load-tip {
+    background-color: rgba(17, 17, 17, 0.88);
     color: #fff;
     margin: 10px 0;
     padding: 5px;

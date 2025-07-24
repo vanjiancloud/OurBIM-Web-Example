@@ -51,3 +51,12 @@ export function downLoadCAD(params) {
     params
   });
 }
+
+// 分享图纸
+export function shareCad(params) {
+  return axios({
+    url: `${cadRequestUrl}/CADFile/getDocShareUrlNew`,
+    method: "get",
+    params
+  });
+}

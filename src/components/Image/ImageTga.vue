@@ -1,9 +1,12 @@
 <template>
   <div>
     <el-image :src="imgPath" fit="fill" style="height: 100%;width: 100%;">
-      <slot name="error">
+      <div slot="placeholder" class="image-slot">
         <i class="el-icon-plus plusIcon"></i>
-      </slot>
+      </div>
+      <div slot="error" class="image-slot">
+        <i class="el-icon-plus plusIcon"></i>
+      </div>
     </el-image>
   </div>
 </template>
@@ -11,6 +14,7 @@
 <script>
 const libtga = require('libtga').default; // 仅当模块导出为ES6 default时需要
 export default {
+  name: 'ImageTga',
   props: {
     value: {
       type: String,
@@ -23,10 +27,12 @@ export default {
       async handler(val) {
         if (val) {
           if (val.toLowerCase().endsWith('.tga')) {
-            this.imgPath = await this.parseTgaFile(val)
+            this.imgPath = await this.parseTgaFile(val) || '#';
           } else {
-            this.imgPath = val
+            this.imgPath = val || '#';
           }
+        } else {
+          this.imgPath = '#'
         }
       },
       immediate: true,
@@ -71,6 +77,7 @@ export default {
         return canvas.toDataURL('image/png');
       } catch (error) {
         console.error('解析TGA文件失败:', error);
+        return '#'; // 解析失败时返回无效 URL
       } finally {
       }
     },

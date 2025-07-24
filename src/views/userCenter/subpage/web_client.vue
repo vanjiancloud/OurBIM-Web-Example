@@ -15,17 +15,15 @@
       <img v-if="logoImg.startUpLogo" :src="logoImg.startUpLogo" class="show-loading" alt="" />
       <div class="hidden-text">{{ baseExceptMessge }}</div>
     </div>
-
+    <transition name="el-fade-in-linear">
+      <progress-bar v-if="isProgress && propsProgress.data < 100" class="mobile-rotate" :propsProgress="propsProgress"
+        :isMobile="mobile"></progress-bar>
+    </transition>
     <!-- <div v-if="!isMobile()"> -->
     <div v-if="!mobile">
-      <transition name="el-fade-in-linear">
-        <progress-bar v-if="isProgress && propsProgress.data < 100" :propsProgress="propsProgress"></progress-bar>
-      </transition>
       <!-- 右上角 -->
       <view-cube v-if="controllerInfo.viewCube && controllerInfo.tagUiBar && !isFade" :userType="userType"
         :taskId="taskId" ref="getCube"></view-cube>
-
-
       <!-- 协同模式弹窗 -->
       <teamwork-dialog ref="teamworkDialogRef" :shareCode="shareCode" :appId="appId"></teamwork-dialog>
       <div class="invite-team-friend" v-if="userType === '1'">
@@ -45,10 +43,10 @@
           v-show="checkShow('resource')" />
         <!-- 构件信息 -->
         <ComponentInformation ref="ComponentInformation"
-          :data="{ taskId, memberInfo, materialData, pakIdMapweb, selectPark, isGis, deletePolygon }"
+          :data="{ taskId, memberInfo, materialData, pakIdMapweb, selectPark, isGis, deletePolygon, copyingPictures }"
           v-show="checkShow('componentInformation')" />
         <!-- 天气 -->
-        <Weather ref="Weather" :data="{ taskId, appId }" v-show="checkShow('renderingEnvironment')" />
+        <Weather ref="Weather" :data="{ taskId, appId, isBuild }" v-show="checkShow('renderingEnvironment')" />
         <!-- 标签 -->
         <Label ref="Label" v-show="checkShow('label')" :data="{ taskId, appId, clickTagData, userId }" />
         <!-- 标签库 -->
@@ -72,7 +70,9 @@
           :data="{ taskId, appId, selectPark, multiComponents, isGis, hideTools: controllerInfo.hideTools, showTools: controllerInfo.showTools }"
           @onSuccess="toolSuccess" />
         <!-- 设置比例尺弹窗 -->
-        <DialogScale ref="DialogScale" :data="copyingPictures" />
+        <DialogScale ref="DialogScale" :data="copyingPictures" />、
+        <!-- 墙/样条线/面层顶部绘制菜单 -->
+        <DrawMenu ref="DrawMenuRef" :data="{ taskId, userId, selectPark, materialData, pakIdMapweb }" />
       </div>
     </div>
   </div>
@@ -104,6 +104,11 @@ import Tool from "../Tool/index.vue"; //底部工具栏
 import DialogScale from "@/views/userCenter/resourcePool/DialogScale.vue"; //设置比例尺弹窗
 import { EventBus } from '@/utils/bus.js'
 import OperatingTools from "@/components/OperatingTools";
+import DrawMenu from "@/views/userCenter/DrawMenu/index.vue";
+import {
+  backgroundSetting
+} from '@/api/userCenter/weather.js'
+import { updateBuildState } from "@/api/projectManage/model.js";
 
 export default {
   name: "look_app",
@@ -127,7 +132,7 @@ export default {
     OperatingTools,
     ComponentFilter,
     ModelAnimation,
-
+    DrawMenu,
   },
   data() {
     return {
@@ -157,6 +162,7 @@ export default {
       },
       webUrl: null,
       appId: null,
+      isBuild: null,
       taskId: null,
       isFade: true,
       memberInfo: [], //属性信息
@@ -187,12 +193,13 @@ export default {
   },
   watch: {},
   created() {
-    console.log(process.env.NODE_ENV)
+    // console.log(process.env.NODE_ENV)
     this.userId = this.$route.query.userId || Getuserid() || 'travels'
     this.getLogo("startUpLogo")
     this.getLogo("startUpBkgImg")
     this.appId = this.$route.query.appid;
-    this.isUiBar = this.$route.query.uibar === undefined || this.$route.query.uibar == true
+    this.isUiBar = this.$route.query.uibar === undefined || this.$route.query.uibar == true;
+    this.isBuild = this.$route.query.isBuild;
     // 如果是云应用就去掉遮罩层和操作栏以及加载进度---
     if (this.$route.query.appType === '5') {
       this.isFade = false;
@@ -243,10 +250,10 @@ export default {
       // console.log(window.orientation)
       if (this.isMobile()) {
         if (window.innerWidth > window.innerHeight) {
-          console.log('横屏')
+          // console.log('横屏')
           this.mobile = false
         } else {
-          console.log('竖屏')
+          // console.log('竖屏')
           this.mobile = true
         }
         // this.mobile = false
@@ -280,6 +287,7 @@ export default {
       this.$nextTick(() => {
         const iframe = document.getElementById('show-bim')
         iframe.addEventListener('load', () => { this.mask = false }, true)
+        // console.log('去掉外层mask');
       })
     },
     // 是否打开操作轴
@@ -523,6 +531,7 @@ export default {
               message: "",
             };
             this.sentParentIframe(messageInfo);
+            this.changeMember(realData)
           }
           else if (realData.id === "3") {
             let messageInfo = {
@@ -550,6 +559,17 @@ export default {
             this.multiComponents = []
             this.$store.dispatch('material/changeSetting', { key: "componentAllInfo", value: {} })
             this.$store.dispatch('material/changeSetting', { key: "materialAllInfo", value: {} })
+            // 摩方绘制功能迁移
+            this.$store.dispatch('design/changeDrawType', null);
+            this.$store.commit('design/checkMember', []);
+            this.$store.dispatch('design/changeMaterInfo', null);
+            this.$store.commit('design/changeMember', null);
+            this.$store.commit('design/changeMemberId', null);
+            this.$store.commit('design/changeEvent', null);
+            this.$store.commit('top/changeFaceInfo', null)
+            // this.$store.dispatch('bim/changeControlMode', null)
+            //this.changeControl('off')
+            // 
           }
           else if (realData.id === "8") {
             this.sendToIframe(10200, 'false');
@@ -566,13 +586,14 @@ export default {
             const progress = Number(
               String(Number(realData.progress) * 100).substring(0, 3)
             );
+            // console.log(progress)
             if (
               progress >= 0 &&
               progress <= 100 &&
               this.propsProgress.data < 100
             ) {
               this.propsProgress.data = progress;
-              // id为8的时候进度条大于0就隐藏第一层遮罩层           
+              // id为8的时候进度条大于0就隐藏第一层遮罩层
               if (progress === 100) {
                 // 定位主视图
                 setTimeout(() => {
@@ -581,8 +602,10 @@ export default {
               }
             }
             if (Number(realData.progress) === 1) {
+              this.initBuild();
               this.limitZoomSpeed();
               this.isProgress = false;
+              this.$store.commit('design/changeModelState', true);
             }
           }
           else if (realData.id === "9") {
@@ -616,6 +639,9 @@ export default {
               this.controllerInfo.tagUiBar = true;
               this.hideTool(false)
             }
+            // 迁移摩方绘制功能
+            this.$store.commit('design/changeLibNode', null);
+            this.$store.dispatch('design/changeDrawType', null);
           }
           else if (realData.id === "15") {
             this.selectPark = realData //选择构件
@@ -657,6 +683,10 @@ export default {
               let url = realData.object;
               this.outPic(url);
             }
+          }
+          else if (realData.id === '31') {
+            // 构件系统参数信息
+            this.$store.dispatch('member/changeSystem', realData.rsInfo)
           }
           // 构件材质信息
           else if (realData.id === "28") {
@@ -726,7 +756,10 @@ export default {
             this.$store.dispatch('material/changeSetting', { key: "componentAllInfo", value: { matList } || {} })
           }
           else if (realData.id === "111") {
-            EventBus.$emit('waitReplaceByMatId',realData.rsInfo);
+            EventBus.$emit('waitReplaceByMatId', realData.rsInfo);
+          }
+          else if (realData.id === '32') {
+            this.$store.commit('top/changeLineType', null)
           }
           else if (realData.id === "33") {
             // 视点动画播放
@@ -734,15 +767,15 @@ export default {
               this.$refs.viewPhoto.WebSocketData = realData
             }
           }
+          // 面层信息
+          else if (realData.id === '38') {
+            this.$store.commit('top/changeFaceInfo', realData.object)
+          }
           else if (realData.id === "41") {
             // 定位码放置完成
             if (this.$refs.LocationCode) {
               this.$refs.LocationCode.placeCode(realData.codeID)
             }
-          }
-          else if (realData.id === "42") {
-            // 临摹图信息
-            this.copyingPictures = realData
           }
           else if (realData.id === "52") {
             //GIS属性推送事件
@@ -751,6 +784,11 @@ export default {
           else if (realData.id === "53") {
             //返回删除的多边形uuid
             this.deletePolygon = realData?.deletePolygon
+          }
+          // 之前接收ws42 现在改成55
+          else if (realData.id === "55") {
+            // 临摹图信息
+            this.copyingPictures = realData
           }
           else if (["101", "102"].includes(realData.id)) {
             // 101 编辑关键帧返回参数
@@ -780,6 +818,17 @@ export default {
         console.log('🚀🚀🚀websock错误', e);
       };
     },
+    changeMember(e) {
+      if (!e) return
+      const { object, mN, rsInfo, data } = e
+      let newDynamicData = []
+      if (data && data.dynamicData) {
+        newDynamicData = data.dynamicData.map(e => { return { ...e, label: e.name } })
+      }
+      this.$store.commit('design/changeMemberId', mN);
+      this.$store.commit('design/changeMember', object || rsInfo || newDynamicData);
+      this.$store.commit('design/changeMemberInfo', rsInfo);
+    },
     // 转换为数组对象的函数
     convertToObjectArray(obj) {
       var array = [];
@@ -802,6 +851,31 @@ export default {
         };
         doAction(params)
       }
+    },
+    initBuild() {
+      const params = {
+        taskId: this.taskId,
+      }
+      updateBuildState(params).then(() => {
+        if (this.isBuild == 'true') {
+          this.setBackgroundSetting()
+        }
+      })
+    },
+    // 设置环境背景
+    setBackgroundSetting() {
+      let params = {
+        taskId: this.taskId,
+        appId: this.appId
+      }
+      let data = {
+        bshow: true,
+        modelBackgroundType: 'gridLine',
+        modelBackgroundRingType: 'city'
+      }
+      backgroundSetting(params, data).then((res) => {
+        // console.log(res)
+      })
     },
     showUiBar() {
       // 显示面板
@@ -835,6 +909,7 @@ export default {
         // this.webUrl = res.data.url.replace('https://www.ourbim.com/v3', 'http://172.16.100.145:8888');
         this.webUrl = res.data.url;
         this.taskId = res.data.taskId;
+        this.$store.commit('design/changeTaskId', res.data.taskId);
         this.listenerIframe()
         // this.$message.error(res.data.code + res.data)
         // 保存code
@@ -913,6 +988,7 @@ export default {
     sentParentIframe(e) {
       window.parent.postMessage(e, "*");
     },
+    // 发送消息给子页面
     sendToIframe(type, data, message = '') {
       let realIframe = document.getElementById("show-bim");
       if (realIframe) {

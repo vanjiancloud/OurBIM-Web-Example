@@ -3,15 +3,15 @@
     <div class="roam_navigate">
       <div class="middle">
         <el-radio-group v-model="radio" class="singleSelect" @change="changeRadio">
-          <el-radio :label="2" class="needBlock" v-if="!isGis"><span
-              class="viewModel">{{ personView[0].name }}</span></el-radio>
+          <el-radio :label="2" class="needBlock" v-if="!isGis"><span class="viewModel">{{ personView[0].name
+              }}</span></el-radio>
           <el-radio :label="1" class="needBlock"><span class="viewModel">{{ personView[1].name }}</span></el-radio>
           <el-radio class="needNone selfView" disabled>
             <div>
               <el-checkbox @change="weight" v-model="checkWeight" :disabled="radio === 1 ? false : true"
                 class="firstSelect">{{ checkListArr[0].name }}</el-checkbox>
-              <el-checkbox @change="broke" v-model="checkBroken"
-                :disabled="radio === 1 ? false : true">{{ checkListArr[1].name }}</el-checkbox>
+              <el-checkbox @change="broke" v-model="checkBroken" :disabled="radio === 1 ? false : true">{{
+                checkListArr[1].name }}</el-checkbox>
             </div>
             <div class="turnHeight" style="padding-top: 15px;">
               <span>{{ words[0] }}</span>
@@ -25,8 +25,8 @@
           <el-radio :label="3" class="needBlock"><span class="viewModel">{{ personView[2].name }}</span></el-radio><br>
           <el-radio class="needNone followView" disabled>
             <div class="upTwo">
-              <el-select @change="changeSelect" :disabled="radio === 3 ? false : true" v-model="value" placeholder="请选择对象"
-                size="mini">
+              <el-select @change="changeSelect" :disabled="radio === 3 ? false : true" v-model="value"
+                placeholder="请选择对象" size="mini">
                 <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
               </el-select>

@@ -429,7 +429,7 @@ export default {
         }
       } else {
         // 新建/编辑材质
-        this.$refs.DialogMeterial.show({ ...JSON.parse(JSON.stringify(item)), groupId: this.levels.activeLevel1Content.groupId })
+        this.$refs.DialogMeterial.show({ ...JSON.parse(JSON.stringify(item)), groupId: this.levels.activeLevel1Content.groupId, tab2Index: this.levels.tab2Index, taskId: this.data.taskId })
       }
     },
     // 复制材质球

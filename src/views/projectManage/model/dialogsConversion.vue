@@ -100,7 +100,12 @@ export default {
       }
       this.$nextTick(() => {
         this.$refs.form.clearValidate()
-        this.form = { ...this.form, ...row }
+        this.form = {
+          ...this.form,
+          ...row,
+          modelActor: row.modelActorLimitNum ? true : false,
+          singleActor: row.singleActorLimitNum ? true : false,
+        }
       })
     },
     hide() {

@@ -40,28 +40,34 @@ const routes = [
           title: 'GIS数据服务'
         }
       },
+      {
+        path: 'resource',
+        component: () => import('@/views/projectManage/resource/index.vue'),
+        meta: {
+          title: '资源库管理'
+        }
+      },
+    ]
+  }, {
+    path: '/account',
+    component: Layout,
+    meta: { title: '账号管理', icon: 'menu4' },
+    children: [
+      {
+        path: 'userAccount',
+        component: () => import('@/views/account/userAccount/index.vue'),
+        meta: {
+          title: '账号信息'
+        }
+      }, {
+        path: 'password',
+        component: () => import('@/views/account/password/index.vue'),
+        meta: {
+          title: '安全设置'
+        }
+      }
     ]
   },
-  //  {
-  //   path: '/account',
-  //   component: Layout,
-  //   meta: { title: '账号管理', icon: 'menu4' },
-  //   children: [
-  //     {
-  //       path: 'userAccount',
-  //       component: () => import('@/views/account/userAccount/index.vue'),
-  //       meta: {
-  //         title: '账号信息'
-  //       }
-  //     }, {
-  //       path: 'password',
-  //       component: () => import('@/views/account/password/index.vue'),
-  //       meta: {
-  //         title: '安全设置'
-  //       }
-  //     }
-  //   ]
-  // },
   // 忘记密码
   {
     path: '/changePassword',

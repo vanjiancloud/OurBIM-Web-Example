@@ -19,16 +19,47 @@
         <div class="drawingName">{{ item.name }}</div>
       </div>
     </div> -->
-    <div class="drawingLevel2" v-if="levels.level === 2 && levels.hideContent">
+    <div class="drawingLevel2" v-if="levels.level === 2 && levels.hideContent && cadLevel == 1">
       <div v-for="(item, index) in drawingList" :key="index" @click="onDrawing(item)">
-        <SingleUpload v-if="item.id === 1" ref="SingleUpload" :accept="uploadAccept" url="/buildSystem/blueprintImport"
+        <!-- <SingleUpload v-if="item.id === 1" ref="SingleUpload" :accept="uploadAccept" url="/buildSystem/blueprintImport"
           :params="{ taskId: data.taskId, fileUpload: null }">
+          <el-button slot="button" type="primary" size="small">上传图纸</el-button>
+        </SingleUpload> -->
+        <SingleUpload v-if="item.id === 1" ref="SingleUpload" :accept="uploadAccept" url="/cadManage/uploadCadFile"
+          :params="{ taskId: data.taskId, fileUpload: null }" @success="getList">
           <el-button slot="button" type="primary" size="small">上传图纸</el-button>
         </SingleUpload>
         <el-button v-else type="primary" size="small">导入在线图纸</el-button>
       </div>
     </div>
-    <ImportOnlineDrawings ref="ImportOnlineDrawingsRef" />
+
+    <!-- 导入在线图纸 -->
+    <ImportOnlineDrawings ref="ImportOnlineDrawingsRef" :data="{ ...data }" @success="getList" />
+
+    <div class="content" v-if="levels.level === 2 && levels.groupName == '图纸'">
+      <div class="contentItem" v-for="(item, index) in (cadLevel == 1 ? cadList : cadList2)" :key="index"
+        @click="openCadList(item)">
+        <div class="img-container">
+          <div v-if="item.status != 4" class="loading-mask">
+            <i class="el-icon-loading loading-icon"></i>
+          </div>
+          <el-image v-else class="img" :src="item.thumbnail" lazy>
+            <div slot="placeholder" class="image-slot">
+              <img src="@/assets/default/listCAD.png" />
+            </div>
+            <div slot="error" class="image-slot">
+              <img src="@/assets/default/listCAD.png" />
+            </div>
+          </el-image>
+        </div>
+        <div :title="cadLevel == 1 ? item.fileName : `${item.fileName}_${index + 1}`">{{ cadLevel == 1 ? item.fileName
+          :
+          `${item.fileName}_${index + 1}` }}
+        </div>
+      </div>
+      <!-- <el-empty :image="require('@/assets/noData.png')" :image-size="100"
+        v-if="levels.level === 2 ? !contentLevel2List.length : !contentList.length"></el-empty> -->
+    </div>
   </div>
 </template>
 
@@ -36,6 +67,8 @@
 import { doAction } from "@/api/userCenter/index";
 import SingleUpload from '@/components/Upload/drawingUpload.vue';
 import ImportOnlineDrawings from './importOnlineDrawings.vue';
+import { selectCadFile, blueprintImportOurbim } from "@/api/userCenter/resourcePool.js";
+
 export default {
   components: { SingleUpload, ImportOnlineDrawings },
   props: {
@@ -52,6 +85,9 @@ export default {
   },
   data() {
     return {
+      cadList: [],
+      cadList2: [],
+      cadLevel: 1,
       uploadAccept: '.dwg,.dxf,.pdf,.png',//'image/png'
       // 图纸
       drawingList: [
@@ -73,17 +109,76 @@ export default {
           svgUrl: 'drawingAdd',
           check: false
         }
-      ]
+      ],
+      timer: null,
     };
   },
-  watch: {},
+  watch: {
+    cadLevel: {
+      handler(newVal, oldVal) {
+        this.checkTimer(); // 直接调用统一检查方法
+      }
+    }
+  },
   computed: {},
   created() { },
-  mounted() { },
+  mounted() {
+  },
+  beforeDestroy() {
+    this.destroyTimer()
+  },
   methods: {
+    destroyTimer() {
+      if (this.timer) {
+        clearInterval(this.timer)
+        this.timer = null
+      }
+    },
+    checkTimer() {
+      this.destroyTimer(); // 先清除旧定时器
+      // 当cadLevel为1且存在未完成解析的文件时，启动定时器
+      if (this.cadLevel == 1 && this.cadList.some(item => item.status != 4)) {
+        this.timer = setInterval(() => {
+          this.getList();
+        }, 1000 * 5);
+      }
+    },
+    setCadLevel(v) {
+      this.cadLevel = v
+    },
+    getList() {
+      selectCadFile({ taskId: this.data.taskId }).then(res => {
+        this.cadList = res.data;
+        this.checkTimer();
+      })
+    },
+    openCadList(item) {
+      if (item.status != 4) return
+      if (item.fileImgs) {
+        this.setCadLevel(2);
+        this.$emit('setCadGroupName', item.fileName)
+        this.cadList2 = item.fileImgs.split(',').map(a => {
+          return {
+            fileName: item.fileName,
+            thumbnail: a,
+            status: 4,
+          }
+        })
+      } else {
+        // console.log(item)
+        blueprintImportOurbim({
+          taskId: this.data.taskId,
+          httpPath: item.thumbnail
+        }).then(res => {
+          this.$message.success(res.message)
+        })
+      }
+    },
     // 点击到第二层级
     toLevel2() {
       this.$emit('toDrawLevel', { level: 2, name: '图纸' })
+      this.setCadLevel(1);
+      this.getList()
     },
     // 点击相应的操作
     onDrawing(item) {
@@ -208,6 +303,117 @@ export default {
         .activeDraw();
       }
     }
+  }
+}
+
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+
+  .contentItem {
+    width: (92/3%);
+    font-size: 12px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    color: #ffffff;
+    text-align: center;
+    cursor: pointer;
+    box-sizing: border-box;
+    position: relative;
+
+    &:hover .iconBottom {
+      display: block;
+    }
+
+    .img {
+      width: 100%;
+      height: 85px;
+      object-fit: fill;
+      margin-bottom: 8px;
+      background: #28292E;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      /deep/.el-image__error,
+      /deep/.el-image__inner,
+      /deep/.el-image__placeholder {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+      }
+    }
+
+    >div {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .iconBottom {
+      position: absolute;
+      bottom: 25px;
+      width: 100%;
+      height: 32px;
+      line-height: 32px;
+      background: rgba(37, 39, 40, 0.77);
+      border-radius: 0px 0px 2px 2px;
+      text-align: center;
+      display: none;
+
+      i {
+        margin: 0 10px;
+      }
+    }
+  }
+}
+
+.content {
+  .contentItem {
+    .img-container {
+      position: relative;
+
+      /* 关键定位属性 */
+      .img {
+        /* 保持原有img样式 */
+      }
+
+      .loading-mask {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 85px;
+        margin-bottom: 8px;
+        /* 与图片高度一致 */
+        background: rgba(37, 39, 40, 0.7);
+        border-radius: 4px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .loading-icon {
+          font-size: 24px;
+          color: #fff;
+          animation: rotate 1.5s linear infinite;
+          /* 旋转动画 */
+        }
+      }
+    }
+  }
+}
+
+/* 定义旋转动画 */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>
