@@ -3,19 +3,19 @@
   <div class="geometry_main">
     <div class="geometry" v-if="topStore.topType == 0">
       <template v-if="geometryObjForm.id || data.copyingPictures.id">
+        <div class="comTitle">
+          <img v-if="geometryObjForm.lightType === 'pointLight'" src="@/assets/images/component/title4.png" />
+          <img v-if="geometryObjForm.lightType === 'spotLight'" src="@/assets/images/component/title3.png" />
+          <img v-if="geometryObjForm.lightType === 'sphereReflectionCapture'"
+            src="@/assets/images/component/title1.png" />
+          <img v-if="geometryObjForm.actorType === '水流仿真体'" src="@/assets/images/component/title5.png" />
+          <img v-if="geometryObjForm.actorType === '水源'" src="@/assets/images/component/title6.png" />
+          <img v-if="geometryObjForm.actorType === '喷泉'" src="@/assets/images/component/title7.png" />
+          <img v-if="geometryObjForm.actorType === '挡水坝'" src="@/assets/images/component/title8.png" />
+          {{ geometryObjForm.name }}
+        </div>
         <!-- 通用坐标 -->
         <div class="coordinate geometryItem" v-if="geometryObjForm.id && geometryObjForm.public && !gisPolygon">
-          <div class="comTitle">
-            <img v-if="geometryObjForm.lightType === 'pointLight'" src="@/assets/images/component/title4.png" />
-            <img v-if="geometryObjForm.lightType === 'spotLight'" src="@/assets/images/component/title3.png" />
-            <img v-if="geometryObjForm.lightType === 'sphereReflectionCapture'"
-              src="@/assets/images/component/title1.png" />
-            <img v-if="geometryObjForm.name === '水流仿真体'" src="@/assets/images/component/title5.png" />
-            <img v-if="geometryObjForm.name === '水源'" src="@/assets/images/component/title6.png" />
-            <img v-if="geometryObjForm.name === '喷泉'" src="@/assets/images/component/title7.png" />
-            <img v-if="geometryObjForm.name === '挡水坝'" src="@/assets/images/component/title8.png" />
-            {{ geometryObjForm.name }}
-          </div>
           <div class="coordinateTitle">坐标：</div>
           <div class="coordinateItemInput">
             X<el-input-number v-model="geometryObjForm.location.x" controls-position="right" size="mini"
@@ -39,11 +39,11 @@
           <div class="coordinateTitle">比例：</div>
           <div class="coordinateItemInput">
             X<el-input-number v-model="geometryObjForm.scale.x" controls-position="right" size="mini"
-              @keydown.native.stop @change="editCom()" />
+              @keydown.native.stop @change="editCom()" :disabled="disabledScale" />
             Y<el-input-number v-model="geometryObjForm.scale.y" controls-position="right" size="mini"
-              @keydown.native.stop @change="editCom()" />
+              @keydown.native.stop @change="editCom()" :disabled="disabledScale" />
             Z<el-input-number v-model="geometryObjForm.scale.z" controls-position="right" size="mini"
-              @keydown.native.stop @change="editCom()" />
+              @keydown.native.stop @change="editCom()" :disabled="disabledScale" />
             <i class="el-icon-refresh-right"></i>
           </div>
         </div>
@@ -51,7 +51,7 @@
         <!-- 个性化几何属性 摩方迁移过来的功能 -->
         <geometryAttr :data="data" />
 
-        <div class="geometryItem coordinate" v-if="geometryObjForm.name === '媒体播放器'">
+        <div class="geometryItem coordinate" v-if="geometryObjForm.actorType === '媒体播放器'">
           <div class="coordinateTitle">媒体播放器设置</div>
           <div class="video_part">
             <div class="coordinateTitle">选择视频源</div>
@@ -75,7 +75,7 @@
 
         </div>
         <!-- 图元坐标 -->
-        <div class="geometryItem coordinate" v-if="geometryObjForm.name === '图元'">
+        <div class="geometryItem coordinate" v-if="geometryObjForm.actorType === '图元'">
           <div class="comTitle">GIS遮罩多边形</div>
           <div class="coordinateTitle">坐标：</div>
           <div class="coordinateItemInput">
@@ -109,7 +109,7 @@
           </div>
         </div>
         <!-- 图元参数 -->
-        <div class="geometryItem coordinate" v-if="geometryObjForm.name === '图元'">
+        <div class="geometryItem coordinate" v-if="geometryObjForm.actorType === '图元'">
           <div class="comTitle">GIS遮罩多边形参数</div>
           <el-table :data="dataPolygon" style="width: 100%;" height="380">
             <el-table-column prop="uuid" label="覆盖GIS图层">
@@ -197,7 +197,7 @@
 
         <!-- ####################################################特效水start#################################################### -->
         <!-- 水流仿真体 -->
-        <template v-if="geometryObjForm.name === '水流仿真体'">
+        <template v-if="geometryObjForm.actorType === '水流仿真体'">
           <div class="flow geometryItem">
             <div class="comTitle">
               <img src="@/assets/images/component/title2.png" />仿真区域设置
@@ -263,7 +263,7 @@
           </div>
         </template>
         <!-- 水源 -->
-        <div class="water geometryItem" v-if="geometryObjForm.name === '水源'">
+        <div class="water geometryItem" v-if="geometryObjForm.actorType === '水源'">
           <div class="comTitle">
             <img src="@/assets/images/component/title2.png" />水源设置
           </div>
@@ -281,7 +281,7 @@
           </div>
           <div class="waterItem">
             <span>水源形状：</span>
-            <el-select v-model="waterForm.shape" placeholder="请选择" size="mini" style="width: 50%;"
+            <el-select class="select" v-model="waterForm.shape" placeholder="请选择" size="mini" style="width: 50%;"
               @change="editWater()">
               <el-option v-for="item in shapeList" :key="item.key" :label="item.name" :value="item.key">
               </el-option>
@@ -289,7 +289,8 @@
           </div>
           <div class="waterItem">
             <span>水源模式：</span>
-            <el-select v-model="waterForm.mode" placeholder="请选择" size="mini" style="width: 50%;" @change="editWater()">
+            <el-select class="select" v-model="waterForm.mode" placeholder="请选择" size="mini" style="width: 50%;"
+              @change="editWater()">
               <el-option v-for="item in modeList" :key="item.key" :label="item.name" :value="item.key">
               </el-option>
             </el-select>
@@ -315,7 +316,7 @@
           </div>
         </div>
         <!-- 挡水坝 -->
-        <div class="geometryItem" v-if="geometryObjForm.name === '挡水坝'">
+        <div class="geometryItem" v-if="geometryObjForm.actorType === '挡水坝'">
           <div class="comTitle">
             <img src="@/assets/images/component/title2.png" />挡水坝设置
           </div>
@@ -323,7 +324,7 @@
             @change="editSplashDam()">打破/拆除</el-checkbox>
         </div>
         <!-- 喷泉设置 -->
-        <div class="coordinate geometryItem" v-if="geometryObjForm.name === '喷泉'">
+        <div class="coordinate geometryItem" v-if="geometryObjForm.actorType === '喷泉'">
           <div class="comTitle">
             <img src="@/assets/images/component/title2.png" />喷泉设置
           </div>
@@ -359,7 +360,7 @@
 
 
         <!-- webui -->
-        <div class="geometryItem webui" v-if="geometryObjForm.name === 'WebUi-3d'">
+        <div class="geometryItem webui" v-if="geometryObjForm.actorType === 'WebUi-3d'">
           <div class="comTitle">WebUI设置</div>
           <div class="webuiItem">
             <span>是否跟随摄像头：</span>
@@ -397,21 +398,21 @@
           </div>
         </div>
         <!-- 样条线 -->
-        <div class="geometryItem webui" v-if="['矩形样条线', '圆形样条线'].includes(geometryObjForm.name)">
+        <div class="geometryItem webui" v-if="['矩形样条线', '圆形样条线'].includes(geometryObjForm.actorType)">
           <div class="comTitle">样条线设置</div>
-          <div class="webuiItem" v-if="geometryObjForm.name === '矩形样条线'">
+          <div class="webuiItem" v-if="geometryObjForm.actorType === '矩形样条线'">
             <span>宽度：</span>
             <el-input class="input" v-model="lineForm.width" v-only-number="{ min: 0, precision: 1 }" size="mini"
               style="width: 85px;" @keydown.native.stop @change="editLine()" />
             <span class="webuiUnit">cm</span>
           </div>
-          <div class="webuiItem" v-if="geometryObjForm.name === '矩形样条线'">
+          <div class="webuiItem" v-if="geometryObjForm.actorType === '矩形样条线'">
             <span>高度：</span>
             <el-input class="input" v-model="lineForm.height" v-only-number="{ min: 0, precision: 1 }" size="mini"
               style="width: 85px;" @keydown.native.stop @change="editLine()" />
             <span class="webuiUnit">cm</span>
           </div>
-          <div class="webuiItem" v-if="geometryObjForm.name === '圆形样条线'">
+          <div class="webuiItem" v-if="geometryObjForm.actorType === '圆形样条线'">
             <span>半径：</span>
             <el-input class="input" v-model="lineForm.radius" v-only-number="{ min: 0, precision: 1 }" size="mini"
               style="width: 85px;" @keydown.native.stop @change="editLine()" />
@@ -442,6 +443,33 @@
             </div>
           </div>
         </div>
+        <!-- 机电管线 -->
+        <!-- <div class="geometryItem webui" v-if="['矩形管道', '圆形管道', '椭圆形管道', '槽型管道', '连接管件'].includes(geometryObjForm.actorType)">
+          <div class="coordinate">
+            <div class="coordinateTitle">开始点位置：</div>
+            <div class="coordinateItemInput">
+              X<el-input-number v-model="elecPipeForm.beginLocation.x" controls-position="right" size="mini"
+                @keydown.native.stop @change="editLine()" />
+              Y<el-input-number v-model="elecPipeForm.beginLocation.y" controls-position="right" size="mini"
+                @keydown.native.stop @change="editLine()" />
+              Z<el-input-number v-model="elecPipeForm.beginLocation.z" controls-position="right" size="mini"
+                @keydown.native.stop @change="editLine()" />
+              <i class="el-icon-refresh-right"></i>
+            </div>
+          </div>
+          <div class="coordinate">
+            <div class="coordinateTitle">结束点位置：</div>
+            <div class="coordinateItemInput">
+              X<el-input-number v-model="elecPipeForm.endLocation.x" controls-position="right" size="mini"
+                @keydown.native.stop @change="editLine()" />
+              Y<el-input-number v-model="elecPipeForm.endLocation.y" controls-position="right" size="mini"
+                @keydown.native.stop @change="editLine()" />
+              Z<el-input-number v-model="elecPipeForm.endLocation.z" controls-position="right" size="mini"
+                @keydown.native.stop @change="editLine()" />
+              <i class="el-icon-refresh-right"></i>
+            </div>
+          </div>
+        </div> -->
         <!-- 参数化尺寸参数 -->
         <!-- <div class="parameter geometryItem">
                     <div class="comTitle"><img src="@/assets/images/component/title2.png"/>参数化尺寸参数</div>
@@ -495,6 +523,7 @@
                     </div>
                                         </div> -->
         <el-button v-if="data.copyingPictures.id" type="primary" size="mini" @click="onDrawing">调整比例尺</el-button>
+        <el-button v-if="data.copyingPictures.id" type="primary" size="mini" @click="onDelBlueprint">删除</el-button>
       </template>
       <el-empty :image="require('@/assets/noData.png')" :image-size="100" v-else></el-empty>
     </div>
@@ -509,11 +538,11 @@ import { moveModel } from "@/api/userCenter/componentManage.js";
 import { updateEle, listLayer, updateLayer, copyEle, delEle } from "@/api/projectManage/element.js";
 import { updateComsCoordinate, fluidOperate, modifyComParams, sendvideoUrl, getvideoUrl } from "@/api/userCenter/componentInformation.js";
 import { EventBus } from '@/utils/bus.js'
-import { log } from 'console';
 import UploadVideo from './uploadVideo.vue';
 import { doAction } from "@/api/userCenter/index";
 import geometryAttr from "./geometryAttr.vue";
 import FaceAttr from "./FaceAttr.vue";
+import { cadblueprintDelete } from "@/api/userCenter/resourcePool.js";
 
 export default {
   components: {
@@ -651,6 +680,7 @@ export default {
         model: false,//是否是整个模型
         id: '',//构件的id
         name: '',//光源名称
+        actorType: '',// 构件类型
         lightType: '',//光源类型
         location: { x: '', y: '', z: '' },//坐标
         rotation: { p: '', y: '', r: '' },//角度
@@ -756,6 +786,18 @@ export default {
           z: ''
         },
       },
+      elecPipeForm: {
+        beginLocation: {
+          x: '',
+          y: '',
+          z: ''
+        },
+        endLocation: {
+          x: '',
+          y: '',
+          z: ''
+        },
+      },
       dataLayer: [], // 图层
       dataPolygon: [
         {
@@ -787,6 +829,7 @@ export default {
         videoPlay: false,
       },
       gisPolygon: false,
+      disabledScale: false,//是否禁用比例
     };
   },
   watch: {
@@ -799,149 +842,178 @@ export default {
       }
     },
     // 点击选择构件
-    'data.selectPark'(val) {
-      // console.log('watch-geometry', val)
-      this.gisPolygon = false;
-      if (val && val.id == '110') {
-        this.handleGeometryBus(val)
-      }
-      if (!val || ['1', '7'].includes(val.id)) {
-        this.geometryObjForm = this.$options.data().geometryObjForm
-        this.flowForm = this.$options.data().flowForm
-        this.waterForm = this.$options.data().waterForm
-        this.splashDamForm = this.$options.data().splashDamForm
-        this.fountainForm = this.$options.data().fountainForm
-        this.webuiForm = this.$options.data().webuiForm
-        this.lineForm = this.$options.data().lineForm
-      }
-      if (!val || val.id !== '1') {
-        return
-      }
-      this.geometryObjForm.public = !!val.object
-      if (val.object) {
-        this.geometryObjForm.id = val.mN
-        this.geometryObjForm.model = val.model
-        // 处理光源信息
-        val.rsInfo.forEach(e => {
-          if (['id', 'name', 'lightType'].includes(e.key)) {
-            this.geometryObjForm[e.key] = e.value
-          }
-          // 坐标;比例,缩放
-          if (e.key === 'location' || e.key === 'scale') {
-            let value = e.value.split(' ')
-            this.geometryObjForm[e.key] = {
-              x: value[0].split('=')[1],
-              y: value[1].split('=')[1],
-              z: value[2].split('=')[1]
-            }
-          }
-          // 角度
-          if (e.key === 'rotation') {
-            let value = e.value.split(' ')
-            this.geometryObjForm.rotation = {
-              p: value[0].split('=')[1],
-              y: value[1].split('=')[1],
-              r: value[2].split('=')[1]
-            }
-          }
-          // 阴影开关,灯光开关,反射开关,反射源类型
-          if (['castShadow', 'affectsWorld', 'visiableOfReflection', 'reflectionSourceType'].includes(e.key)) {
-            this.geometryObjForm[e.key] = e.value
-          }
-          // 灯光颜色
-          if (e.key === 'lightColor') {
-            this.geometryObjForm.lightColor = this.arrToRgb(JSON.parse(e.value))
-          }
-          // 灯光强度,内辐射角,外辐射角,衰减半径,影响半径,光源半径,光源长度,光源亮度
-          if (['brightness', 'sourceLength', 'sourceRadius', 'influenceRadius', 'intensity', 'radiationAngleOfInner',
-            'radiationAngleOfOuter', 'attenuationRadius', 'barnDoorAngle', 'barnDoorLength', 'sourceWidth', 'sourceHeight'].includes(e.key)) {
-            this.geometryObjForm[e.key] = Number(e.value)
-            this.$set(this.geometryObjForm, e.key + '1', Number(e.value))
-          }
-          // 水流仿真体
-          if (this.flowForm.hasOwnProperty(e.key)) {
-            this.findParams(this.flowForm, e)
-            if (e.key === 'areaResolution') {
-              this.flowForm.areaResolutionX = e.value.split(' ')[0].split('=')[1]
-              this.flowForm.areaResolutionY = e.value.split(' ')[1].split('=')[1]
-            }
-          }
-          // 水源
-          if (this.waterForm.hasOwnProperty(e.key)) {
-            this.findParams(this.waterForm, e)
-            if (e.key === 'velocity') {
-              this.waterForm.velocityX = e.value.split(' ')[0].split('=')[1]
-              this.waterForm.velocityY = e.value.split(' ')[1].split('=')[1]
-            }
-          }
-          // 挡水坝
-          if (this.splashDamForm.hasOwnProperty(e.key)) {
-            this.findParams(this.splashDamForm, e)
-          }
-          // 喷泉
-          if (this.fountainForm.hasOwnProperty(e.key)) {
-            if (e.key === 'fountainRotation') {
-              this.fountainForm.fountainRotationP = e.value.split(' ')[0].split('=')[1]
-              this.fountainForm.fountainRotationY = e.value.split(' ')[1].split('=')[1]
-              this.fountainForm.fountainRotationR = e.value.split(' ')[2].split('=')[1]
-            }
-            if (e.key === 'fountainScale') {
-              this.fountainForm.fountainScaleX = e.value.split(' ')[0].split('=')[1]
-              this.fountainForm.fountainScaleY = e.value.split(' ')[1].split('=')[1]
-              this.fountainForm.fountainScaleZ = e.value.split(' ')[2].split('=')[1]
-            }
-            if (e.key === 'spreadWidth') {
-              this.fountainForm.spreadWidth = Number(e.value)
-            }
-          }
-          // webui
-          if (this.webuiForm.hasOwnProperty(e.name)) {
-            if (e.name === 'bgColor') {
-              this.webuiForm.bgColor = this.arrToRgb(JSON.parse(e.value))
-            } else if (e.name === 'isFollowedCamera') {
-              this.webuiForm.isFollowedCamera = JSON.parse(e.value)
-            } else {
-              this.findParams(this.webuiForm, e)
-            }
-          }
-          // 样条线
-          if (this.lineForm.hasOwnProperty(e.key)) {
-            if (e.name === '开始点坐标') {
-              let value = e.value.split(' ')
-              this.lineForm.beginLocation.x = value[0].split('=')[1]
-              this.lineForm.beginLocation.y = value[1].split('=')[1]
-              this.lineForm.beginLocation.z = value[2].split('=')[1]
-            } else if (e.name === '结束点坐标') {
-              let value = e.value.split(' ')
-              this.lineForm.endLocation.x = value[0].split('=')[1]
-              this.lineForm.endLocation.y = value[1].split('=')[1]
-              this.lineForm.endLocation.z = value[2].split('=')[1]
-            } else if (e.name === '半径') {
-              this.lineForm.radius = e.value
-            } else if (e.name === '宽度') {
-              this.$set(this.lineForm, "width", e.value)
-            } else if (e.name === '高度') {
-              this.$set(this.lineForm, "height", e.value)
-            } else {
-              if (['width', 'height'].includes(e.key)) return
-              this.findParams(this.lineForm, e)
-            }
-          }
-        })
-        if (this.geometryObjForm.name == '媒体播放器') {
-          getvideoUrl({
-            taskId: this.data.taskId,
-            uuid: this.geometryObjForm.id
-          }).then(res => {
-            this.video.videoUrl = res.data
-          })
+    'data.selectPark': {
+      deep: true,
+      handler(val, oldval) {
+        // console.log('watch-data.selectPark', val,this.topStore.topType)
+        this.gisPolygon = false;
+        if (val && val.id == '110') {
+          this.handleGeometryBus(val)
         }
-        // console.log('点击选择构件', JSON.parse(JSON.stringify(this.geometryObjForm)))
-        this.$forceUpdate()
+        if (!val || ['1', '7'].includes(val.id)) {
+          this.geometryObjForm = this.$options.data().geometryObjForm
+          this.flowForm = this.$options.data().flowForm
+          this.waterForm = this.$options.data().waterForm
+          this.splashDamForm = this.$options.data().splashDamForm
+          this.fountainForm = this.$options.data().fountainForm
+          this.webuiForm = this.$options.data().webuiForm
+          this.lineForm = this.$options.data().lineForm
+        }
+        if (!val || val.id !== '1') {
+          return
+        }
+        this.geometryObjForm.public = !!val.object
+        if (val.object) {
+          let rootTypeInfo = Array.isArray(val.object) ? val.object.find(item => item.key === 'rootTypeInfo')?.type : '';
+          // 机电管线和连接点特殊处理
+          if (['pipe', 'conn'].includes(rootTypeInfo)) {
+            this.disabledScale = true
+          } else {
+            this.disabledScale = false
+          }
+          // 
+          this.geometryObjForm.id = val.mN;
+          this.geometryObjForm.model = val.model;
+          // 
+          val.rsInfo.forEach(e => {
+            if (['id', 'name', 'lightType', 'actorType'].includes(e.key)) {
+              this.geometryObjForm[e.key] = e.value
+            }
+            // 坐标;比例,缩放
+            if (e.key === 'location' || e.key === 'scale') {
+              let value = e.value.split(' ')
+              this.geometryObjForm[e.key] = {
+                x: value[0].split('=')[1],
+                y: value[1].split('=')[1],
+                z: value[2].split('=')[1]
+              }
+            }
+            // 角度
+            if (e.key === 'rotation') {
+              let value = e.value.split(' ')
+              this.geometryObjForm.rotation = {
+                p: value[0].split('=')[1],
+                y: value[1].split('=')[1],
+                r: value[2].split('=')[1]
+              }
+            }
+            // 阴影开关,灯光开关,反射开关,反射源类型
+            if (['castShadow', 'affectsWorld', 'visiableOfReflection', 'reflectionSourceType'].includes(e.key)) {
+              this.geometryObjForm[e.key] = e.value
+            }
+            // 灯光颜色
+            if (e.key === 'lightColor') {
+              this.geometryObjForm.lightColor = this.arrToRgb(JSON.parse(e.value))
+            }
+            // 灯光强度,内辐射角,外辐射角,衰减半径,影响半径,光源半径,光源长度,光源亮度
+            if (['brightness', 'sourceLength', 'sourceRadius', 'influenceRadius', 'intensity', 'radiationAngleOfInner',
+              'radiationAngleOfOuter', 'attenuationRadius', 'barnDoorAngle', 'barnDoorLength', 'sourceWidth', 'sourceHeight'].includes(e.key)) {
+              this.geometryObjForm[e.key] = Number(e.value)
+              this.$set(this.geometryObjForm, e.key + '1', Number(e.value))
+            }
+            // 水流仿真体
+            if (this.flowForm.hasOwnProperty(e.key)) {
+              this.findParams(this.flowForm, e)
+              if (e.key === 'areaResolution') {
+                this.flowForm.areaResolutionX = e.value.split(' ')[0].split('=')[1]
+                this.flowForm.areaResolutionY = e.value.split(' ')[1].split('=')[1]
+              }
+            }
+            // 水源
+            if (this.waterForm.hasOwnProperty(e.key)) {
+              this.findParams(this.waterForm, e)
+              if (e.key === 'velocity') {
+                this.waterForm.velocityX = e.value.split(' ')[0].split('=')[1]
+                this.waterForm.velocityY = e.value.split(' ')[1].split('=')[1]
+              }
+            }
+            // 挡水坝
+            if (this.splashDamForm.hasOwnProperty(e.key)) {
+              this.findParams(this.splashDamForm, e)
+            }
+            // 喷泉
+            if (this.fountainForm.hasOwnProperty(e.key)) {
+              if (e.key === 'fountainRotation') {
+                this.fountainForm.fountainRotationP = e.value.split(' ')[0].split('=')[1]
+                this.fountainForm.fountainRotationY = e.value.split(' ')[1].split('=')[1]
+                this.fountainForm.fountainRotationR = e.value.split(' ')[2].split('=')[1]
+              }
+              if (e.key === 'fountainScale') {
+                this.fountainForm.fountainScaleX = e.value.split(' ')[0].split('=')[1]
+                this.fountainForm.fountainScaleY = e.value.split(' ')[1].split('=')[1]
+                this.fountainForm.fountainScaleZ = e.value.split(' ')[2].split('=')[1]
+              }
+              if (e.key === 'spreadWidth') {
+                this.fountainForm.spreadWidth = Number(e.value)
+              }
+            }
+            // webui
+            if (this.webuiForm.hasOwnProperty(e.name)) {
+              if (e.name === 'bgColor') {
+                this.webuiForm.bgColor = this.arrToRgb(JSON.parse(e.value))
+              } else if (e.name === 'isFollowedCamera') {
+                this.webuiForm.isFollowedCamera = JSON.parse(e.value)
+              } else {
+                this.findParams(this.webuiForm, e)
+              }
+            }
+            // 样条线
+            if (this.lineForm.hasOwnProperty(e.key)) {
+              if (e.name === '开始点坐标') {
+                let value = e.value.split(' ')
+                this.lineForm.beginLocation.x = value[0].split('=')[1]
+                this.lineForm.beginLocation.y = value[1].split('=')[1]
+                this.lineForm.beginLocation.z = value[2].split('=')[1]
+              } else if (e.name === '结束点坐标') {
+                let value = e.value.split(' ')
+                this.lineForm.endLocation.x = value[0].split('=')[1]
+                this.lineForm.endLocation.y = value[1].split('=')[1]
+                this.lineForm.endLocation.z = value[2].split('=')[1]
+              } else if (e.name === '半径') {
+                this.lineForm.radius = e.value
+              } else if (e.name === '宽度') {
+                this.$set(this.lineForm, "width", e.value)
+              } else if (e.name === '高度') {
+                this.$set(this.lineForm, "height", e.value)
+              } else {
+                if (['width', 'height'].includes(e.key)) return
+                this.findParams(this.lineForm, e)
+              }
+            }
+            // 机电管线
+            // if (this.elecPipeForm.hasOwnProperty(e.key)) {
+            //   if (e.name === '开始点坐标') {
+            //     let value = e.value.split(' ')
+            //     this.elecPipeForm.beginLocation.x = value[0].split('=')[1]
+            //     this.elecPipeForm.beginLocation.y = value[1].split('=')[1]
+            //     this.elecPipeForm.beginLocation.z = value[2].split('=')[1]
+            //   }
+            //   else if (e.name === '结束点坐标') {
+            //     let value = e.value.split(' ')
+            //     this.elecPipeForm.endLocation.x = value[0].split('=')[1]
+            //     this.elecPipeForm.endLocation.y = value[1].split('=')[1]
+            //     this.elecPipeForm.endLocation.z = value[2].split('=')[1]
+            //   }
+            // }
+          })
+          if (this.geometryObjForm.actorType == '媒体播放器') {
+            getvideoUrl({
+              taskId: this.data.taskId,
+              uuid: this.geometryObjForm.id
+            }).then(res => {
+              this.video.videoUrl = res.data
+            })
+          }
+          // console.log('点击选择构件', JSON.parse(JSON.stringify(this.geometryObjForm)))
+          this.$forceUpdate()
+        }
       }
     }
   },
   computed: {
+    designStore() {
+      return this.$store.state.design
+    },
     topStore() {
       return this.$store.state.top
     },
@@ -961,12 +1033,30 @@ export default {
     },
     // 调整比例尺
     onDrawing() {
+      // 设置调整比例尺状态 true
+      this.$store.commit('design/changeScale', true);
       this.updateEdit({ action: 'distance' }, '调整图纸比例尺')
+    },
+    onDelBlueprint() {
+      let params = {
+        taskId: this.data.taskId,
+        uuids: this.data.copyingPictures.id,
+      }
+      this.$confirm('您将要删除此构件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        cadblueprintDelete(params).then(() => {
+          this.$message.success('刪除成功！');
+          EventBus.$emit('reloadComponentTree', this.data.copyingPictures.id)
+        })
+      })
     },
     // action事件
     updateEdit(obj, type) {
       let params = {
-        taskid: this.data.taskId,
+        taskId: this.data.taskId,
         ...obj
       }
       doAction(params).then((res) => {
@@ -1100,7 +1190,7 @@ export default {
           y: realRotation[1].split('=')[1],
           r: realRotation[2].split('=')[1]
         }
-        this.geometryObjForm.name = '图元'
+        this.geometryObjForm.actorType = '图元'
         this.gisPolygon = true;
         this.geometryObjForm.id = uuid
         this.geometryObjForm.polygonInfo = JSON.parse(polygonInfo).polygonInfo
@@ -1216,19 +1306,54 @@ export default {
           }
         ]
       } else {
-        data = [
-          {
-            uuid: this.geometryObjForm.id,
-            comName: this.geometryObjForm.name,
-            newLocation: this.geometryObjForm.location,
-            newRotation: this.geometryObjForm.rotation,
-            newScale: this.geometryObjForm.scale
-          }
-        ]
+        let rootTypeInfo = this.designStore.pipeGeometryAttr.find(item => item.key === 'rootTypeInfo')?.type;
+        if (['pipe', 'conn'].includes(rootTypeInfo)) {
+          // let beginLocation = this.designStore.pipeGeometryAttr.find(item => item.key === '开始点坐标')?.parseValue;
+          // let endLocation = this.designStore.pipeGeometryAttr.find(item => item.key === '结束点坐标')?.parseValue;
+          data = [
+            {
+              uuid: this.geometryObjForm.id,
+              comName: this.geometryObjForm.name,
+              newLocation: this.geometryObjForm.location,
+              newRotation: this.geometryObjForm.rotation,
+              newScale: this.geometryObjForm.scale,
+              length: this.getObjArrayValue(this.designStore.pipeGeometryAttr, 'length'),
+              width: this.getObjArrayValue(this.designStore.pipeGeometryAttr, 'width'),
+              height: this.getObjArrayValue(this.designStore.pipeGeometryAttr, 'height'),
+              thickness: this.getObjArrayValue(this.designStore.pipeGeometryAttr, 'thickness'),
+              diameter: this.getObjArrayValue(this.designStore.pipeGeometryAttr, 'diameter'),
+              type: this.getObjArrayValue(this.designStore.pipeGeometryAttr, 'type'),
+              // beginLocation: {
+              //   x: beginLocation[0],
+              //   y: beginLocation[1],
+              //   z: beginLocation[2]
+              // },
+              // endLocation: {
+              //   x: endLocation[0],
+              //   y: endLocation[1],
+              //   z: endLocation[2]
+              // },
+
+            }
+          ]
+        } else {
+          data = [
+            {
+              uuid: this.geometryObjForm.id,
+              comName: this.geometryObjForm.name,
+              newLocation: this.geometryObjForm.location,
+              newRotation: this.geometryObjForm.rotation,
+              newScale: this.geometryObjForm.scale
+            }
+          ]
+        }
       }
       updateComsCoordinate(params, data).then(() => {
         this.$message.success('修改坐标成功！')
       })
+    },
+    getObjArrayValue(arr, key) {
+      return arr.find(a => a.key == key)?.value
     },
     // 图元编辑
     editTuyuan() {
@@ -1416,6 +1541,15 @@ export default {
   font-size: 14px;
   color: #ffffff;
 
+  .comTitle {
+    display: block; // 改为块级元素以支持换行
+    margin-bottom: 8px;
+    line-height: 1.4; // 增加行高让内容更易读
+    word-break: break-all; // 强制单词内换行
+    white-space: normal; // 允许换行
+    max-width: 100%; // 确保不超出容器宽度
+  }
+
   i {
     font-size: 20px;
     color: #9FAFC2;
@@ -1478,7 +1612,7 @@ export default {
   .light {}
 
   .pointolite {
-    padding-right: 15px;
+    // padding-right: 15px;
 
     .sliderBox {
       display: initial;
@@ -1570,14 +1704,18 @@ export default {
     .waterItem {
       font-size: 14px;
       margin-top: 16px;
+      display: flex;
+      align-items: center;
 
       >span {
         width: 100px;
         display: inline-block;
       }
 
-      .input {
-        width: 90px;
+      .input,
+      .select {
+        // width: 90px;
+        flex: 1;
       }
     }
   }

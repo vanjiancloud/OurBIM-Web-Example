@@ -1,6 +1,6 @@
 <!-- 贴图库 -->
 <template>
-  <div>
+  <div style="height: 100%;">
     <!-- 点击到二级构件 -->
     <div class="level2" v-if="levels.level === 2">
       <span @click="back" class="backLevel1"><i class="el-icon-arrow-left"></i>{{ levels.tabName }}</span> / <span
@@ -9,7 +9,7 @@
     <!-- 搜索 -->
     <div class="search">
       <el-input v-model="search" size="mini" placeholder="请输入您要搜索的内容" prefix-icon="el-icon-search"
-        @change="searchContent()" @keydown.native.stop />
+        @input="searchContent()" @keydown.native.stop />
       <el-button v-if="levels.tab2Index === 1" class="button blueBtn1" type="primary" icon="el-icon-plus" size="mini"
         @click="createGroup(levels.level === 1 ? '新建分组' : '上传贴图')">{{ levels.level === 1 ? '新建分组' : '上传贴图'
         }}</el-button>
@@ -52,9 +52,9 @@
       :total="pageDatas.length" :page="pages.page" @pagination="pagination" />
 
     <!-- 新建分组弹框 -->
-    <DialogChartletGroup ref="DialogChartletGroup" />
+    <DialogChartletGroup ref="DialogChartletGroup" :data="{ ...data }" />
     <!-- 上传贴图弹框 -->
-    <DialogChartlet ref="DialogChartlet" :groupList="searchToSaveList" @reloadTable="getTextureList" />
+    <DialogChartlet ref="DialogChartlet" :groupList="searchToSaveList" @reloadTable="getTextureList" :data="{ ...data }"/>
   </div>
 </template>
 
@@ -370,7 +370,7 @@ export default {
 
 .contentWrap {
   padding: 0 12px;
-  height: calc(100vh - 252px);
+  height: calc(100% - 252px);
   overflow: auto;
 }
 

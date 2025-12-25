@@ -126,12 +126,16 @@ import { template_noOpacity, template_opacity } from './template.js';
 
 export default {
   components: { SingleUpload, MapsPop },
-  // props: {
-  //   parentData: {
-  //     type: Array,
-  //     default: () => []
-  //   }
-  // },
+  props: {
+    // parentData: {
+    //   type: Array,
+    //   default: () => []
+    // }
+    data: {
+      type: Object,
+      default: () => { }
+    }
+  },
   data() {
     return {
       title: '',
@@ -202,7 +206,7 @@ export default {
     },
     getGroupList() {
       let params = {
-        userId: Getuserid()
+        userId: this.data?.userId || Getuserid()
       }
       selectCustomizeMaterialGroup(params).then(res => {
         this.parentData = res.data || []
@@ -300,7 +304,7 @@ export default {
           })
         } else {
           let data = {
-            userId: Getuserid(),
+            userId: this.data?.userId || Getuserid(),
             matName: this.form.matName,
             isGroup: '1',
             parentId: this.form.groupId,

@@ -21,7 +21,11 @@ export default {
       this.actionType = type;
       // 公共库
       if (type == '1') {
-        getMaterialByMatId({ matId: matId || this.materialAllInfo.matId, isPublic }).then(res => {
+        getMaterialByMatId({
+          matId: matId || this.materialAllInfo.matId,
+          isPublic,
+          taskId: this.data.taskId,
+        }).then(res => {
           if (isPublic) {
             this.addMaterial({ matId: res.data.matId, matParam: JSON.parse(res.data.matParam) })
           }
@@ -29,13 +33,21 @@ export default {
       }
       // 个人库
       if (type == '2') {
-        getMaterialByMatId({ matId: matId || this.materialAllInfo.matId, isPublic }).then(res => {
+        getMaterialByMatId({
+          matId: matId || this.materialAllInfo.matId,
+          isPublic,
+          taskId: this.data.taskId,
+        }).then(res => {
           this.addMaterialToApp({ matId: res.data.matId, matParam: JSON.parse(res.data.matParam) })
         })
       }
       // 项目库
       if (type == '3') {
-        getMaterialByMatId({ matId: matId || this.materialAllInfo.matId, isPublic }).then(res => {
+        getMaterialByMatId({
+          matId: matId || this.materialAllInfo.matId,
+          isPublic,
+          taskId: this.data.taskId,
+        }).then(res => {
           let matList = JSON.parse(JSON.stringify(this.componentAllInfo.matList))
           matList[this.material.activeMaterialIndex].matId = res.data.matId
           this.$store.dispatch('material/changeSetting', { key: "componentAllInfo", value: { matList } })
@@ -75,6 +87,7 @@ export default {
         appId: this.$route.query.appid,
         matId: matId || this.materialAllInfo.matId,
         isPublic,
+        taskId: this.data.taskId,
         // baseColorTextureId: this.material.openTexture === 'BaseColorMap' ? textureId : '',
         // normalMapTextureId: this.material.openTexture === 'NormalMap' ? textureId : ''
       }
@@ -106,7 +119,11 @@ export default {
       }]
       changeMaterialByInstruction(params, JSON.stringify(data)).then(res => {
         // this.getMaterial(matId, false)
-        getMaterialByMatId({ matId: matId, isPublic: false }).then(res => {
+        getMaterialByMatId({
+          matId: matId,
+          isPublic: false,
+          taskId: this.data.taskId,
+        }).then(res => {
           this.$store.dispatch('material/changeSetting', {
             key: "materialAllInfo",
             value: {

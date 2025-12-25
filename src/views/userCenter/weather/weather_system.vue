@@ -35,170 +35,216 @@
               </div>
             </div>
           </el-radio>
-          <el-radio :label="2" class="mySetting">个性化设置</el-radio>
+          <el-radio :label="2" :class="radio == 2 ? 'mySetting_acvive' : 'mySetting'">
+            <div class="label">个性化设置</div>
+            <div class="settingContent" v-if="radio == 2">
+              <div class="boxTimeHour">
+                <div class="timeHour">
+                  <div class="hourName">时间</div>
+                  <div class="selectTime">
+                    <el-time-picker class="picker" v-model="hourValue" @change="hourClick" :picker-options="{
+                      selectableRange: '00:00:00 - 23:59:59'
+                    }" :clearable="false" size="mini" format='HH:mm' :disabled="radio == 2 ? false : true">
+                    </el-time-picker>
+                  </div>
+                </div>
+                <div class="hourSpeed">
+                  <div class="speedName">时速</div>
+                  <div class="speedNumber">
+                    <el-input :disabled="radio == 2 ? false : true" :min="0" :step="0.01" :max="24" v-model="inputSpeed"
+                      @blur="hourSpeedBlur"></el-input>
+                  </div>
+                  <div class="speedInfo">小时/秒</div>
+                </div>
+              </div>
+              <div class="timeProgressBox">
+                <el-slider v-model="valueSlider" @change="timeHourChange" :min="0" :max="24" :step="0.01" :marks="marks"
+                  :disabled="radio == 2 ? false : true">
+                </el-slider>
+              </div>
+              <div class="boxTimeHour dateTimeBox dateTimeBox2">
+                <div class="timeHour dateTime">
+                  <div class="hourName">日期</div>
+                  <div class="selectTime selectDate">
+                    <el-date-picker class="picker" v-model="valueDate" type="date" :clearable="false" size="mini"
+                      format='MM-dd' @change="clickDateTime" :disabled="radio == 2 ? false : true">
+                    </el-date-picker>
+                  </div>
+                </div>
+                <div class="hourSpeed latitudeBox">
+                  <div class="speedName latitudeName">纬度</div>
+                  <div class="speedNumber latitudeSelect">
+                    <el-input :disabled="radio == 2 ? false : true" v-model="inputLatitude"
+                      @blur="latitudeChange"></el-input>
+                  </div>
+                  <div class="speedInfo latitudeInfo">°</div>
+                </div>
+              </div>
+              <!-- 天气 -->
+              <div class="mainWeather">
+                <div class="titleWeather">天空</div>
+                <div class="sun">
+                  <div>
+                    <span>天空光颜色</span>
+                    <el-color-picker class="colorSelect" show-alpha v-model="form.sunLightColor"
+                      @change="colorChange"></el-color-picker>
+                  </div>
+                  <div>
+                    <span>天空光强度</span>
+                    <el-slider v-model.number="form.sunLightIntensity" :min="0" :max="10"
+                      @change="colorChange"></el-slider>
+                  </div>
+                </div>
+                <div class="sun">
+                  <div>
+                    <span>天空光阴影</span>
+                    <el-switch v-model="form.sky" active-color="#409eff" inactive-color="#191a1c"
+                      @change="lightTypeChange($event, 'sky')" :width="30"></el-switch>
+                    <span style="margin-left:15px">太阳光阴影</span>
+                    <el-switch v-model="form.direction" active-color="#409eff" inactive-color="#191a1c"
+                      @change="lightTypeChange($event, 'direction')" :width="30"></el-switch>
+                  </div>
+                </div>
+                <div class="titleWeather">天气</div>
+                <div class="cloude">
+                  <div class="cloudeSelect">
+                    <div class="imgCloude">
+                      <img :src="require('@/assets/images/weatherSys/cloudeImage.png')" alt="">
+                    </div>
+                    <div class="nameCloude">云</div>
+                    <div class="switchCloude">
+                      <el-switch v-model="valueCloude" @change="btnWeatherClick('1')"
+                        :disabled="radio == 2 ? false : true" active-color="#409EFF" inactive-color="#191a1c">
+                      </el-switch>
+                    </div>
+                  </div>
+                  <div class="timeProgressBox cloudeProgress" v-if="valueCloude">
+                    <el-slider v-model="valueSliderCloude" :min="0" :max="3" :step="1" :marks="marksCloude"
+                      :disabled=!this.valueCloude @change="strongChange('cloude')">
+                    </el-slider>
+                  </div>
+                </div>
+                <div class="cloude rain">
+                  <div class="cloudeSelect">
+                    <div class="imgCloude imageRain">
+                      <img :src="require('@/assets/images/weatherSys/rainImage.png')" alt="">
+                    </div>
+                    <div class="nameCloude nameRain">雨</div>
+                    <div class="switchCloude">
+                      <el-switch v-model="valueRain" :disabled="radio == 2 ? false : true"
+                        @change="btnWeatherClick('2')" active-color="#409EFF" inactive-color="#191a1c">
+                      </el-switch>
+                    </div>
+                  </div>
+                  <div class="timeProgressBox cloudeProgress" v-if="valueRain">
+                    <el-slider v-model="valueSliderRain" class="progressSnow" :min="0" :max="3" :step="1"
+                      :marks="marksRain" :disabled=!this.valueRain @change="strongChange('rain')">
+                    </el-slider>
+                  </div>
+                </div>
+                <div class="cloude sonw">
+                  <div class="cloudeSelect">
+                    <div class="imgCloude imageSnow">
+                      <img :src="require('@/assets/images/weatherSys/snowImage.png')" alt="">
+                    </div>
+                    <div class="nameCloude nameSnow">雪</div>
+                    <div class="switchCloude">
+                      <el-switch v-model="valueSnow" :disabled="radio == 2 ? false : true"
+                        @change="btnWeatherClick('3')" active-color="#409EFF" inactive-color="#191a1c">
+                      </el-switch>
+                    </div>
+                  </div>
+                  <div class="timeProgressBox cloudeProgress" v-if="valueSnow">
+                    <el-slider v-model="valueSliderSnow" class="progressSnow" :min="0" :max="3" :step="1"
+                      :marks="marksSnow" :disabled=!this.valueSnow @change="strongChange('snow')">
+                    </el-slider>
+                  </div>
+                </div>
+                <div class="cloude fog">
+                  <div class="cloudeSelect">
+                    <div class="imgCloude imageFog">
+                      <img :src="require('@/assets/images/weatherSys/fogImage.png')" alt="">
+                    </div>
+                    <div class="nameCloude nameFog">雾</div>
+                    <div class="switchCloude">
+                      <el-switch v-model="valueFog" :disabled="radio == 2 ? false : true" @change="btnWeatherClick('4')"
+                        active-color="#409EFF" inactive-color="#191a1c">
+                      </el-switch>
+                    </div>
+                  </div>
+                  <div class="timeProgressBox cloudeProgress" v-if="valueFog">
+                    <el-slider v-model="valueSliderFog" class="progressSnow" :min="0" :max="2" :step="1"
+                      :marks="marksFog" :disabled=!this.valueFog @change="strongChange('fog')">
+                    </el-slider>
+                  </div>
+                </div>
+              </div>
+              <!-- 风 -->
+              <div class="wind">
+                <div class="direction">
+                  <div class="windDirectin">风向</div>
+                  <div class="windSpeed">
+                    <el-input type="number" :disabled="radio == 2 ? false : true" :min="0" :max="360"
+                      v-model="inputWind" @blur="blurWind" size="mini"></el-input>
+                  </div>
+                  <div class="windInfo">°</div>
+                </div>
+                <div class="remarks">取值0 ～360 ，东风0 ，顺时针方向</div>
+                <div class="direction speed">
+                  <div class="windDirectin">风速</div>
+                  <div class="windSpeed">
+                    <el-input type="number" :disabled="radio == 2 ? false : true" :min="1" :max="12"
+                      v-model="inputSpeedWind" @blur="blurWind" size="mini"></el-input>
+                  </div>
+                  <div class="windInfo speedNumber">m/s</div>
+                </div>
+              </div>
+            </div>
+          </el-radio>
+          <el-radio :label="3" :class="radio == 3 ? 'mySetting_acvive' : 'mySetting'">
+            <div class="label">HDRI环绕背景</div>
+            <!-- 环境背景 -->
+            <div class="environment" v-if="radio == 3">
+              <el-form ref="modelEnvironmentForm" :model="modelEnvironment" label-width="auto">
+                <el-form-item label="CubeMap贴图" prop="weatherId">
+                  <ImageSelect v-model="modelEnvironment.weatherId" :options="imageOptions" @delete="cubeMapDelete"
+                    @refresh="getCubeMapList" @change="changeEnvironment" />
+                </el-form-item>
+                <el-form-item label="半球尺寸">
+                  <el-slider v-model="modelEnvironment.size" show-input :show-input-controls="false" :min="0"
+                    :max="999999999" :step="1" @change="changeEnvironment">
+                  </el-slider>
+                </el-form-item>
+                <el-form-item label="光照强度">
+                  <el-slider v-model="modelEnvironment.intensity" show-input :show-input-controls="false" :min="0"
+                    :max="10" :step="1" @change="changeEnvironment">
+                  </el-slider>
+                </el-form-item>
+                <!-- <el-form-item label="清晰度">
+          <el-slider v-model="modelEnvironment.resolution" show-input :show-input-controls="false" :min="0" :max="100"
+            :step="1" @change="changeEnvironment">
+          </el-slider>
+        </el-form-item> -->
+                <!-- <el-form-item label="CubeMap分辨率">
+          <el-select v-model="modelEnvironment.resolution" placeholder="请选择" style="width: 100%">
+            <el-option v-for="item in options2" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item> -->
+                <el-form-item label="" label-width="0">
+                  <el-checkbox v-model="modelEnvironment.castShadow" label="投射阴影" style="margin-left: 20px;"
+                    @change="changeEnvironment" />
+                </el-form-item>
+                <el-form-item label="" label-width="0">
+                  <el-checkbox v-model="modelEnvironment.useCameraProjection" label="中心跟随相机" style="margin-left: 20px;"
+                    @change="changeEnvironment" />
+                </el-form-item>
+              </el-form>
+            </div>
+          </el-radio>
         </el-radio-group>
-        <div class="boxTimeHour" v-if="radio == 2">
-          <div class="timeHour">
-            <div class="hourName">时间</div>
-            <div class="selectTime">
-              <el-time-picker class="picker" v-model="hourValue" @change="hourClick" :picker-options="{
-                selectableRange: '00:00:00 - 23:59:59'
-              }" :clearable="false" size="mini" format='HH:mm' :disabled="radio == 2 ? false : true">
-              </el-time-picker>
-            </div>
-          </div>
-          <div class="hourSpeed">
-            <div class="speedName">时速</div>
-            <div class="speedNumber">
-              <el-input :disabled="radio == 2 ? false : true" :min="0" :step="0.01" :max="24" v-model="inputSpeed"
-                @blur="hourSpeedBlur"></el-input>
-            </div>
-            <div class="speedInfo">小时/秒</div>
-          </div>
-        </div>
-        <div class="timeProgressBox" v-if="radio == 2">
-          <el-slider v-model="valueSlider" @change="timeHourChange" :min="0" :max="24" :step="0.01" :marks="marks"
-            :disabled="radio == 2 ? false : true">
-          </el-slider>
-        </div>
-        <div class="boxTimeHour dateTimeBox dateTimeBox2" v-if="radio == 2">
-          <div class="timeHour dateTime">
-            <div class="hourName">日期</div>
-            <div class="selectTime selectDate">
-              <el-date-picker class="picker" v-model="valueDate" type="date" :clearable="false" size="mini"
-                format='MM-dd' @change="clickDateTime" :disabled="radio == 2 ? false : true">
-              </el-date-picker>
-            </div>
-          </div>
-          <div class="hourSpeed latitudeBox">
-            <div class="speedName latitudeName">纬度</div>
-            <div class="speedNumber latitudeSelect">
-              <el-input :disabled="radio == 2 ? false : true" v-model="inputLatitude" @blur="latitudeChange"></el-input>
-            </div>
-            <div class="speedInfo latitudeInfo">°</div>
-          </div>
-        </div>
-        <div class="bottomBox" v-if="radio == 2"></div>
       </div>
     </div>
-    <!-- 天气 -->
-    <div class="mainWeather" v-if="radio == 2">
-      <div class="titleWeather">天空</div>
-      <div class="sun">
-        <div>
-          <span>天空光颜色</span>
-          <el-color-picker class="colorSelect" show-alpha v-model="form.sunLightColor"
-            @change="colorChange"></el-color-picker>
-        </div>
-        <div>
-          <span>天空光强度</span>
-          <el-slider v-model.number="form.sunLightIntensity" :min="0" :max="10" @change="colorChange"></el-slider>
-        </div>
-      </div>
-      <div class="sun">
-        <div>
-          <span>天空光阴影</span>
-          <el-switch v-model="form.sky" active-color="#409eff" inactive-color="#191a1c"
-            @change="lightTypeChange($event, 'sky')"></el-switch>
-          <span style="margin-left:15px">太阳光阴影</span>
-          <el-switch v-model="form.direction" active-color="#409eff" inactive-color="#191a1c"
-            @change="lightTypeChange($event, 'direction')"></el-switch>
-        </div>
-      </div>
-      <div class="titleWeather">天气</div>
-      <div class="cloude">
-        <div class="cloudeSelect">
-          <div class="imgCloude">
-            <img :src="require('@/assets/images/weatherSys/cloudeImage.png')" alt="">
-          </div>
-          <div class="nameCloude">云</div>
-          <div class="switchCloude">
-            <el-switch v-model="valueCloude" @change="btnWeatherClick('1')" :disabled="radio == 2 ? false : true"
-              active-color="#409EFF" inactive-color="#191a1c">
-            </el-switch>
-          </div>
-        </div>
-        <div class="timeProgressBox cloudeProgress" v-if="valueCloude">
-          <el-slider v-model="valueSliderCloude" :min="0" :max="3" :step="1" :marks="marksCloude"
-            :disabled=!this.valueCloude @change="strongChange('cloude')">
-          </el-slider>
-        </div>
-      </div>
-      <div class="cloude rain">
-        <div class="cloudeSelect">
-          <div class="imgCloude imageRain">
-            <img :src="require('@/assets/images/weatherSys/rainImage.png')" alt="">
-          </div>
-          <div class="nameCloude nameRain">雨</div>
-          <div class="switchCloude">
-            <el-switch v-model="valueRain" :disabled="radio == 2 ? false : true" @change="btnWeatherClick('2')"
-              active-color="#409EFF" inactive-color="#191a1c">
-            </el-switch>
-          </div>
-        </div>
-        <div class="timeProgressBox cloudeProgress" v-if="valueRain">
-          <el-slider v-model="valueSliderRain" class="progressSnow" :min="0" :max="3" :step="1" :marks="marksRain"
-            :disabled=!this.valueRain @change="strongChange('rain')">
-          </el-slider>
-        </div>
-      </div>
-      <div class="cloude sonw">
-        <div class="cloudeSelect">
-          <div class="imgCloude imageSnow">
-            <img :src="require('@/assets/images/weatherSys/snowImage.png')" alt="">
-          </div>
-          <div class="nameCloude nameSnow">雪</div>
-          <div class="switchCloude">
-            <el-switch v-model="valueSnow" :disabled="radio == 2 ? false : true" @change="btnWeatherClick('3')"
-              active-color="#409EFF" inactive-color="#191a1c">
-            </el-switch>
-          </div>
-        </div>
-        <div class="timeProgressBox cloudeProgress" v-if="valueSnow">
-          <el-slider v-model="valueSliderSnow" class="progressSnow" :min="0" :max="3" :step="1" :marks="marksSnow"
-            :disabled=!this.valueSnow @change="strongChange('snow')">
-          </el-slider>
-        </div>
-      </div>
-      <div class="cloude fog">
-        <div class="cloudeSelect">
-          <div class="imgCloude imageFog">
-            <img :src="require('@/assets/images/weatherSys/fogImage.png')" alt="">
-          </div>
-          <div class="nameCloude nameFog">雾</div>
-          <div class="switchCloude">
-            <el-switch v-model="valueFog" :disabled="radio == 2 ? false : true" @change="btnWeatherClick('4')"
-              active-color="#409EFF" inactive-color="#191a1c">
-            </el-switch>
-          </div>
-        </div>
-        <div class="timeProgressBox cloudeProgress" v-if="valueFog">
-          <el-slider v-model="valueSliderFog" class="progressSnow" :min="0" :max="2" :step="1" :marks="marksFog"
-            :disabled=!this.valueFog @change="strongChange('fog')">
-          </el-slider>
-        </div>
-      </div>
-    </div>
-    <!-- 风 -->
-    <div class="wind" v-if="radio == 2">
-      <div class="direction">
-        <div class="windDirectin">风向</div>
-        <div class="windSpeed">
-          <el-input type="number" :disabled="radio == 2 ? false : true" :min="0" :max="360" v-model="inputWind"
-            @blur="blurWind" size="mini"></el-input>
-        </div>
-        <div class="windInfo">°</div>
-      </div>
-      <div class="remarks">取值0 ～360 ，东风0 ，顺时针方向</div>
-      <div class="direction speed">
-        <div class="windDirectin">风速</div>
-        <div class="windSpeed">
-          <el-input type="number" :disabled="radio == 2 ? false : true" :min="1" :max="12" v-model="inputSpeedWind"
-            @blur="blurWind" size="mini"></el-input>
-        </div>
-        <div class="windInfo speedNumber">m/s</div>
-      </div>
-    </div>
+
     <!-- 轮廓描边 -->
     <div class="contourLine" v-if="false">
       <el-checkbox v-model="checkedLine">模型描边轮廓线</el-checkbox>
@@ -215,18 +261,20 @@
         </div>
       </div>
     </div>
-    <!-- 环境背景 -->
+
+    <!-- 网格线 -->
     <!-- <div class="background" v-if="!isGis"> -->
+
     <div class="background">
       <div class="row-box">
-        <el-checkbox v-model="backgroundSetting.groundCheck" label="环境背景" @change="changeBackground" />
+        <el-checkbox v-model="backgroundSetting.groundCheck" label="网格线" @change="changeBackground" />
       </div>
-      <div class="row-box" v-if="backgroundSetting.groundCheck" style="margin-left:5%">
+      <!-- <div class="row-box" v-if="backgroundSetting.groundCheck" style="margin-left:5%">
         <el-radio-group v-model="backgroundSetting.modelBackgroundRingType" @change="changeBackground">
           <el-radio label="bshow">网格线</el-radio>
           <el-radio label="city" v-for="(item, index) in bgType" :key="index">{{ item.note }} </el-radio>
         </el-radio-group>
-      </div>
+      </div> -->
     </div>
     <!-- 环境补光 -->
     <div class="fillLight">
@@ -256,12 +304,19 @@ import { getDict } from "@/api/dict.js"
 import {
   getWeatherList, backgroundSetting, setWeatherSun, setWeatherLight, getWeatherParams, setWeatherColor,
   setWeatherTimeAndTimeSpeed, setWeatherType, setSunLightDirection, getCurrWeatherId, setWindDirectionAndSpeed,
-  setLight, getLight
+  setLight, getLight,
+  updateHDRIWeatherInfo,
+  selectHDRIWeatherInfo,
 } from '@/api/userCenter/weather.js'
 import { doAction } from "@/api/userCenter/index";
 import moment from 'moment'
+import ImageSelect from '@/components/ImageSelect/index.vue'
+import { Getuserid } from '@/store/index.js'
+
 export default {
-  components: {},
+  components: {
+    ImageSelect
+  },
   props: {
     appId: {
       type: String,
@@ -345,7 +400,51 @@ export default {
         sky: true,//天空光阴影
         direction: true//太阳光阴影
       },
-      //   环境背景
+      // 环境背景
+      modelEnvironment: {
+        enable: false,
+        weatherId: '',
+        size: 1000,
+        intensity: 1,
+        resolution: 100,
+        castShadow: true,
+        useCameraProjection: true,
+      },
+      options2: [
+        {
+          value: '512',
+          label: '512'
+        },
+        {
+          value: '1024',
+          label: '1024'
+        },
+        {
+          value: '2048',
+          label: '2048'
+        },
+        {
+          value: '4096',
+          label: '4096'
+        },
+        {
+          value: '8192',
+          label: '8192'
+        }
+      ],
+      imageOptions: [
+        // {
+        //   value: '1',
+        //   label: '室外场景1',
+        //   image: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+        // },
+        // {
+        //   value: '2',
+        //   label: '室外场景1231233123132',
+        //   image: 'https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'
+        // },
+      ],
+      //   网格线
       backgroundSetting: {
         bshow: false,
         lineBaseColor: '',
@@ -373,6 +472,8 @@ export default {
   methods: {
     show() {
       this.getWeatherList();
+      this.getCubeMapList();
+      this.getCubeMapData();
       this.changeColor(this.color1);
       this.getDictList()
       this.getFillLight()
@@ -427,7 +528,8 @@ export default {
         //   this.getWeatherParams('need');
         // }
         this.changeWea(this.getTwoIds('parameter'));
-      } else if (val == 0) {
+      }
+      else if (val == 0) {
         if (this.valueTemplate) {
           this.changeWea(this.valueTemplate);
         } else {
@@ -438,13 +540,24 @@ export default {
           this.valueTemplate = this.lessOptions[number].id;
           this.changeWea(this.valueTemplate);
         }
-      } else if (val == 1) {
+      }
+      else if (val == 1) {
         this.changeWea(this.getTwoIds('backgroundColor'));
       }
+      // 环境背景
+      if (val == 3) {
+        this.modelEnvironment.enable = true
+        this.changeEnvironment()
+      } else {
+        this.modelEnvironment.enable = false
+        this.changeEnvironment()
+      }
     },
-    getWeatherList() { // 获取天气环境
+    getWeatherList() {
+      // 获取天气环境
       getWeatherList({
         appId: this.appId,
+        taskId: this.taskId,
       }).then((res) => {
         this.optionsTemplate = res.data;
         this.lessOptions = res.data.filter(item => {
@@ -459,12 +572,76 @@ export default {
         this.getWeatherId(); // 获取当前天气
       });
     },
+    // 
+    getCubeMapList() {
+      getWeatherList({
+        userId: Getuserid(),
+        isHdri: 1,
+        taskId: this.taskId,
+      }).then(res => {
+        this.imageOptions = res.data.map(item => {
+          return {
+            value: item.id,
+            label: item.weatherName,
+            image: item.img,
+            isHdri: item.isHdri,
+          }
+        })
+        if ((!this.modelEnvironment.weatherId || this.modelEnvironment.weatherId === '') && this.imageOptions.length > 0) {
+          this.modelEnvironment.weatherId = this.imageOptions[0].value
+        }
+      })
+    },
+    getCubeMapData() {
+      selectHDRIWeatherInfo({
+        appId: this.appId,
+        taskId: this.taskId
+      }).then((res) => {
+        if (res.data) {
+          res.data.size = res.data.size || 1000;
+          res.data.intensity = res.data.intensity || 1;
+          res.data.resolution = res.data.resolution || 100;
+          res.data.castShadow = res.data.castShadow === 'false' || res.data.castShadow === false ? false : true;
+          res.data.useCameraProjection = res.data.useCameraProjection === 'false' || res.data.useCameraProjection === false ? false : true;
+          if (!res.data.weatherId && this.imageOptions.length > 0) {
+            res.data.weatherId = this.imageOptions[0].value
+          }
+          // 遍历所有属性，进行类型转换
+          Object.keys(res.data).forEach(key => {
+            const value = res.data[key];
+            // 将字符串 "true"/"false" 转换为布尔值
+            if (typeof value === 'string') {
+              if (value === 'true') {
+                res.data[key] = true;
+              } else if (value === 'false') {
+                res.data[key] = false;
+              }
+              // 将字符串数字转换为数字类型（特别是 el-slider 需要的数字类型）
+              else if (!isNaN(Number(value)) && value !== '') {
+                res.data[key] = Number(value);
+              }
+            }
+          });
+        }
+        this.modelEnvironment = res.data
+        if (this.modelEnvironment.enable) {
+          this.radio = 3
+        }
+      })
+    },
+    cubeMapDelete(item) {
+      if (this.modelEnvironment.weatherId == item.value) {
+        this.modelEnvironment.weatherId = undefined
+      }
+      this.getCubeMapList();
+    },
     valueChangeBtn(val) { // 选择天气改变时
       this.changeWea(val);
     },
     getWeatherParams(flag) { // 获取参数化天气信息
       let params = {
         appId: this.appId,
+        taskId: this.taskId,
       }
       getWeatherParams(params).then(res => {
         let allData = res.data;
@@ -592,7 +769,7 @@ export default {
     },
     changeWea(weatherId) { // 改变天气请求
       let parasm = {
-        taskid: this.taskId,
+        taskId: this.taskId,
         action: 'switchWeather',
         weahterId: weatherId
       }
@@ -743,15 +920,20 @@ export default {
         let index = null;
         this.optionsTemplate.forEach(item => {
           if (item.id == res.data) {
-            if (item.weatherName === '参数化天气') {
+            if (this.modelEnvironment.enable) {
+              this.radio = 3
+            }
+            else if (item.weatherName === '参数化天气') {
               this.radio = 2
               this.getWeatherParams('none');
-            } else if (item.weatherName === '轮廓线-可变背景色') {
+            }
+            else if (item.weatherName === '轮廓线-可变背景色') {
               this.radio = 1
               setTimeout(() => {
                 this.changeBackgroundColor(this.rgbChange(this.color1));
               }, 1000);
-            } else {
+            }
+            else {
               this.radio = 0
             }
           }
@@ -992,6 +1174,27 @@ export default {
         this.messageFlag = true;
       }, 3000)
     },
+    changeEnvironment() {
+      const { enable, weatherId, size, intensity, resolution, castShadow, useCameraProjection } = this.modelEnvironment;
+      const params = {
+        taskId: this.taskId
+      }
+      const data = {
+        appId: this.appId,
+        pakPath: '',
+        size,
+        location: '',
+        intensity,
+        enable,
+        useCameraProjection,
+        resolution,
+        weatherId,
+        castShadow,
+      }
+      updateHDRIWeatherInfo(params, data).then(res => {
+
+      })
+    },
     // 环境背景,网格线
     changeBackground() {
       let params = {
@@ -1001,30 +1204,15 @@ export default {
       let data = {}
       let check = this.backgroundSetting.groundCheck
       // 关闭就清空选项
-      if (!this.backgroundSetting.modelBackgroundRingType) return
       const settingFuntion = (params, data) => {
         backgroundSetting(params, data).then(() => {
           this.$message.success('修改成功')
-          this.backgroundSetting.modelBackgroundRingType = check ? this.backgroundSetting.modelBackgroundRingType : ''
         })
       }
-      if (this.backgroundSetting.modelBackgroundRingType === 'bshow') {
-        settingFuntion(params, { modelBackgroundType: 'ring', modelBackgroundRingType: 'city', visibility: false })
-        // 环境背景
-        data = {
-          bshow: check,
-          modelBackgroundType: 'gridLine',
-          modelBackgroundRingType: 'city'
-        }
-      } else {
-        // 关闭网格线
-        settingFuntion(params, { bshow: false, modelBackgroundType: 'gridLine', modelBackgroundRingType: 'city' })
-        // 其他环境背景
-        data = {
-          modelBackgroundType: 'ring',
-          modelBackgroundRingType: this.backgroundSetting.modelBackgroundRingType,
-          visibility: check
-        }
+      data = {
+        bshow: check,
+        modelBackgroundType: 'gridLine',
+        modelBackgroundRingType: 'city'
       }
       setTimeout(() => {
         settingFuntion(params, data)
@@ -1089,13 +1277,13 @@ export default {
 .systemWeather {
   width: 100%;
   height: calc(100% - 90px);
-  overflow-x: hidden;
+  overflow-x: auto;
   overflow-y: auto;
 
   .weatherClassify {
     width: 272px;
     //   height: 300px;
-    margin: 0 0 14px 15px;
+    margin: 0 0 0 15px;
 
     .selectGroup {
       .singleSelect {
@@ -1104,11 +1292,13 @@ export default {
         flex-direction: column;
 
         ::v-deep .el-radio {
-          height: 49px;
+          // height: 49px;
+          min-height: 49px;
           display: flex;
           align-items: center;
           margin-right: 0;
-          border-top: 1px solid #464646;
+          // border-top: 1px solid #464646;
+          border-bottom: 1px solid #464646;
 
           .el-radio__inner {
             width: 16px;
@@ -1223,7 +1413,25 @@ export default {
           }
         }
 
+        .mySetting_acvive {
+          align-items: flex-start;
+          padding-top: 20px;
+
+          .label {
+            margin-bottom: 20px;
+            color: #ffffff;
+          }
+
+          .settingContent {
+            margin-top: 10px;
+            width: 94%;
+            position: relative;
+            left: -20px;
+          }
+        }
+
         .mySetting {
+          align-items: center;
 
           // 个性化
           ::v-deep .el-radio__label {
@@ -1268,7 +1476,7 @@ export default {
           margin-right: 16px;
 
           .hourName {
-            width: 28px;
+            width: 32px;
             height: 20px;
             margin: auto 0;
           }
@@ -1404,17 +1612,18 @@ export default {
 
   .mainWeather {
     // 天气
-    width: 280px;
-    margin: 0 0 16px 7px;
+    width: 100%;
+    margin-top: 10px;
+    // margin: 10px 0 16px 7px;
 
     .titleWeather {
       box-sizing: border-box;
       width: 100%;
       height: 20px;
       font-size: 14px;
-      color: #fff;
+      color: rgba(255, 255, 255, 0.7);
       margin-bottom: 8px;
-      padding-left: 8px;
+      // padding-left: 8px;
     }
 
     .cloude {
@@ -1567,12 +1776,12 @@ export default {
   .wind {
     // 风
     box-sizing: border-box;
-    width: 272px;
-    height: 126px;
-    margin: 0 0 15px 15px;
-    padding-top: 15px;
-    border-top: 1px solid #464646;
-    border-bottom: 1px solid #464646;
+    width: 100%;
+    // height: 126px;
+    // margin: 0 0 15px 15px;
+    padding: 15px 0;
+    // border-top: 1px solid #464646;
+    // border-bottom: 1px solid #464646;
 
     .direction {
       width: 100%;
@@ -1712,11 +1921,49 @@ export default {
   }
 }
 
+.divider {
+  background-color: #464646;
+  height: 1px;
+  margin: 0;
+}
+
 .background {
-  padding: 0 0 10px 16px;
+  padding: 10px 0 10px 16px;
 
   .row-box {
     margin-bottom: 10px;
+  }
+}
+
+.environment {
+  // padding: 0 10px 0 16px;
+  width: 100%;
+  color: #ffffff;
+  position: relative;
+  left: -10px;
+
+  ::v-deep .el-form-item {
+    margin-bottom: 8px;
+  }
+
+  ::v-deep .el-form-item__label {
+    color: #ffffff;
+  }
+
+  ::v-deep .el-slider {
+    display: flex;
+
+    .el-slider__input {
+      width: 38%;
+      margin-left: 8px;
+      order: 2
+    }
+
+    .el-slider__runway.show-input {
+      order: 1;
+      flex: 1;
+      margin-right: 0;
+    }
   }
 }
 

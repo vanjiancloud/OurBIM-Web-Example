@@ -1,5 +1,5 @@
 <template>
-  <div style="min-height: 100vh;background-color: #fff;">
+  <div style="min-height: 100vh;background-color: #fff;" v-if="!isAutoLogging">
     <div class="mobile_top_bg" style="background: #fff;" v-if="mobile">
       <img src="./mobile_bg.png" alt="" style="width: 100%;" />
     </div>
@@ -96,7 +96,7 @@
               <el-input v-model="mobForm.code" placeholder="请输入短信/邮箱验证码">
                 <!-- 验证码按钮 -->
                 <el-button slot="suffix" class="code" :disabled="isSend" @click="getVerification" type="text">{{ btnMes
-                  }}</el-button>
+                }}</el-button>
                 <i slot="prefix" class="el-input__icon el-icon-s-comment"></i>
               </el-input>
             </el-form-item>
@@ -137,15 +137,26 @@
       </div>
     </div>
   </div>
+  <div v-else
+    style="min-height: 100vh;background-color: #fff;display: flex;align-items: center;justify-content: center;">
+    <div style="text-align: center;">
+      <i class="el-icon-loading" style="font-size: 48px;"></i>
+      <p style="margin-top: 20px;">正在自动登录...</p>
+    </div>
+  </div>
 </template>
 
 <script>
-import { sendMsgCode, sendMsgEmailCode, login, loginMobile, loginEmailCode } from "@/api/my.js";
+import { sendMsgCode, sendMsgEmailCode, login, loginMobile, loginEmailCode, loginByToken } from "@/api/my.js";
 import { setuserid } from "@/store/index.js";
 import { Setuserid } from "@/store/index.js";
 import { setemail, getemail, delemail } from "@/store/index.js";
 import { setpassword, getpassword, delpassword } from "@/store/index.js";
 import { setmobile, getmobile, delmobile } from "@/store/index.js";
+import { setToken } from '@/utils/auth';
+import { encryption } from '@/utils/util.js';
+import { encrypt, decrypt } from '@/utils/jsencrypt.js'
+
 const phoneReg = /^1[3-9]\d{9}$/;
 const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export default {
@@ -223,7 +234,7 @@ export default {
             trigger: "blur",
           },
           {
-            pattern: /^[\w.~!@#$%^&*_?+><]{6,20}$/,
+            pattern: /^[\w.~!@#$%^&_+><]{6,20}$/,
             message: "请输入密码,字符为英文&数字&英文符号，位数6-20",
             trigger: "blur",
           },
@@ -244,6 +255,8 @@ export default {
       version: 3,
       // mobile: null,
       windowWidth: window.innerWidth,
+      isAutoLogging: false,
+      authToken: '',
     };
   },
   computed: {
@@ -296,6 +309,13 @@ export default {
     } else if (localStorage.getItem("mobile") === null) {
       this.mobForm.mobile = "";
     }
+
+    const authToken = this.$route.query.auth_token;
+    if (authToken) {
+      this.authToken = authToken;
+      this.verifyExternalToken(authToken);
+    }
+
   },
   methods: {
     handleResize() {
@@ -305,7 +325,6 @@ export default {
       let flag = navigator.userAgent.match(
         /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
       );
-      // console.log(flag)
       return flag;
     },
     changeVersion(e) {
@@ -362,14 +381,39 @@ export default {
         }
       });
     },
+    // 外部第三方登录验证
+    verifyExternalToken(token) {
+      try {
+        loginByToken({ token }).then(res => {
+          if (res.code === 0) {
+            this.isLoading = false;
+            this.logIn = "登录";
+            sessionStorage.setItem("userInfo", JSON.stringify(res.data));
+            setToken(res.data.token)
+            Setuserid(res.data.userid);
+            this.goPage()
+          } else {
+            this.$message.error('系统认证失败，请手动登录');
+          }
+        })
+      } catch (error) {
+        this.$message.error('系统认证失败，请手动登录');
+      }
+    },
     // 账号登录接口
     doLogin() {
+      const params = { loginName: this.form.loginName, password: this.form.password }
+      const encryptionParams = encryption({
+        data: params,
+        param: ['password']
+      })
       this.logIn = "登录中";
       this.isLoading = true;
-      login({ loginName: this.form.loginName, password: this.form.password }).then(res => {
+      login(encryptionParams).then(res => {
         this.isLoading = false;
         this.logIn = "登录";
         sessionStorage.setItem("userInfo", JSON.stringify(res.data));
+        setToken(res.data.token)
         setemail(this.form.loginName);
         setpassword(this.form.password);
         Setuserid(res.data.userid);
@@ -391,6 +435,7 @@ export default {
         this.isLoading = false;
         this.logIn = "登录";
         sessionStorage.setItem("userInfo", JSON.stringify(res.data));
+        setToken(res.data.token)
         setuserid(res.data.userid);
         // 存储用户信息userid，到sessionStorage
         Setuserid(res.data.userid);
@@ -412,6 +457,7 @@ export default {
         this.isLoading = false;
         this.logIn = "登录";
         sessionStorage.setItem("userInfo", JSON.stringify(res.data));
+        setToken(res.data.token)
         setuserid(res.data.userid);
         // 存储用户信息userid，到sessionStorage
         Setuserid(res.data.userid);
@@ -429,7 +475,12 @@ export default {
       const href = window.location.href
       let oauthCallback = this.$common.getQueryString(href, 'oauth_callback')
       oauthCallback = decodeURIComponent(oauthCallback)
-      this.$router.push(oauthCallback || "/");
+      this.$router.push({
+        path: oauthCallback || "/",
+        query: {
+          ...(this.authToken && { auth_token: this.authToken }),
+        }
+      });
     },
     // 取cookie
     getCookie: function (key) {

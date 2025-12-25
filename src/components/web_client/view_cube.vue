@@ -1,10 +1,3 @@
-<!--
- * @Author: zk
- * @Date: 2021-03-08 09:27:06
- * @LastEditors: zk
- * @LastEditTime: 2021-04-26 13:14:16
- * @description: 
--->
 <template>
   <div :class="userType == 1 ? 'box-main userType' : 'box-main'">
     <div id="box" :class="isAnimation ? 'box-transition' : ''" :style="{
@@ -1018,7 +1011,7 @@ export default {
     },
     doAction(data) {
       let params = {
-        taskid: this.taskId,
+        taskId: this.taskId,
         ...data
       };
       doAction(params).then((res) => {
@@ -1045,6 +1038,7 @@ export default {
     position: absolute;
     top: -12px;
     left: -30px;
+    filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3)) drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2)) drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.1));
   }
 
   .drop-down {
@@ -1059,6 +1053,7 @@ export default {
       height: 20px;
       position: absolute;
       right: 0;
+      filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.3)) drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2)) drop-shadow(3px 3px 6px rgba(0, 0, 0, 0.1));
     }
 
     .cube-type {

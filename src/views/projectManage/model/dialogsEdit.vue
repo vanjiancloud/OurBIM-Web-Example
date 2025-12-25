@@ -39,7 +39,7 @@
           <el-option :value="item.key" :label="item.name" v-for="(item, index) in mapInfoList" :key="index"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="是否启动地形:" v-if="form.isGis === 'true'">
+      <el-form-item label="是否启动地形:" prop="gisTerrain" v-if="form.isGis === 'true'">
         <el-radio-group v-model="form.gisTerrain">
           <el-radio label="true">是</el-radio>
           <el-radio label="false">否</el-radio>
@@ -111,7 +111,7 @@
           </div>
         </el-card>
       </el-form-item>
-      <el-form-item label="链接GIS数据服务：" v-if="form.isGis === 'true'">
+      <el-form-item label="链接GIS数据服务：" prop="gisServerMap" v-if="form.isGis === 'true'">
         <el-card class="box-card">
           <div v-for="(value, key) in form.gisServerMap" class="flexBetween" :key="key">
             <el-tooltip class="item" effect="dark" :content="value" placement="top">
@@ -228,15 +228,21 @@ export default {
       dialogVisible: false,
       form: {
         gisCoordinateType: "WGS-84",
-        gisTerrain: "true"
+        gisTerrain: "true",
+        isLuman: 'true',
       },
       rules: {
         maxInstance: [{ required: true, message: "请输入1-9999的正整数", trigger: "blur" }],
         gisPlugin: { required: true, message: '请选择服务支持组件', trigger: 'blur' },
-        gisSuperMapInfo: { required: false, validator: validGisSuperMapInfo, trigger: 'blur' },
         gisLongitude: [{ required: true, message: '请输入经度(-180°~180°)', trigger: 'blur' }],
         gisLatitude: [{ required: true, message: '请输入纬度(-90°~90°)', trigger: 'blur' }],
         gisAltitude: [{ required: true, message: '请输入海拔高度', trigger: 'blur' }],
+        gisSuperMapInfo: [
+          { required: false, validator: validGisSuperMapInfo, trigger: 'blur' },
+          { required: true, message: '请选择GIS底图', trigger: 'blur' }
+        ],
+        gisTerrain: [{ required: true, message: '请选择是否启动地形', trigger: 'blur' }],
+        gisServerMap: [{ required: false, message: '请添加GIS数据服务', trigger: 'blur' }],
       },
       options: [
         {

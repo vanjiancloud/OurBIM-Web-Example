@@ -25,6 +25,7 @@
 <script>
 import { editPassword } from '@/api/expenseManage.js'
 import { Getuserid } from '@/store/index.js'
+import { encryption } from '@/utils/util.js';
 
 export default {
   name: 'password',
@@ -40,8 +41,22 @@ export default {
     }
     return {
       rules: {
-        oldPassword: [{ required: true, message: '请输入原密码' }],
-        newPassword: [{ required: true, message: '请输入新密码' }],
+        oldPassword: [
+          { required: true, message: '请输入原密码' },
+          {
+            pattern: /^[\w.~!@#$%^&*_?+><]{6,20}$/,
+            message: "请输入密码,字符为英文&数字&英文符号，位数6-20",
+            trigger: "blur",
+          }
+        ],
+        newPassword: [
+          { required: true, message: '请输入新密码' },
+          {
+            pattern: /^[\w.~!@#$%^&*_?+><]{6,20}$/,
+            message: "请输入密码,字符为英文&数字&英文符号，位数6-20",
+            trigger: "blur",
+          }
+        ],
         confirmPassword: [{ required: true, validator: validatePass2, trigger: ['blur', 'change'] }]
       },
       passwordForm: {
@@ -57,9 +72,13 @@ export default {
         ...this.passwordForm,
         userId: Getuserid()
       }
+      const editParams = encryption({
+        data: params,
+        param: ['newPassword', 'confirmPassword', 'oldPassword']
+      })
       this.$refs.passwordForm.validate(valid => {
         if (valid) {
-          editPassword(params).then(res => {
+          editPassword(editParams).then(res => {
             this.$message.success('修改成功')
           })
         }

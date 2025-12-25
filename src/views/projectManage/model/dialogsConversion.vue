@@ -6,14 +6,18 @@
       <el-form-item prop="modelActorLimitNum">
         <el-checkbox label="模型体量优化" v-model="form.modelActor"></el-checkbox>
         <span class="text" v-if="form.modelActor">模型构件数阈值</span>
-        <el-input v-if="form.modelActor" v-model="form.modelActorLimitNum" placeholder="请输入" style="width:150px;"
-          v-only-number="{ min: 0 }"></el-input>
+        <!-- <el-input v-if="form.modelActor" v-model="form.modelActorLimitNum" placeholder="请输入" style="width:150px;"
+          v-only-number="{ min: 0 }"></el-input> -->
+        <el-input-number v-if="form.modelActor" v-model="form.modelActorLimitNum" placeholder="请输入" :min="1"
+          :max="9999999999" :controls="false" step-strictly></el-input-number>
       </el-form-item>
       <el-form-item prop="singleActorLimitNum">
         <el-checkbox label="模型材质优化" v-model="form.singleActor"></el-checkbox>
         <span class="text" v-if="form.singleActor">单构件面数阈值</span>
-        <el-input v-if="form.singleActor" v-model="form.singleActorLimitNum" placeholder="请输入" style="width:150px;"
-          v-only-number="{ min: 0 }"></el-input>
+        <!-- <el-input v-if="form.singleActor" v-model="form.singleActorLimitNum" placeholder="请输入" style="width:150px;"
+          v-only-number="{ min: 0 }"></el-input> -->
+        <el-input-number v-if="form.singleActor" v-model="form.singleActorLimitNum" placeholder="请输入" :min="1"
+          :max="9999999999" :controls="false" step-strictly></el-input-number>
       </el-form-item>
       <el-form-item prop="platform" label-width="110px" label="解析模型版本">
         <el-radio-group v-model="form.platform" disabled>

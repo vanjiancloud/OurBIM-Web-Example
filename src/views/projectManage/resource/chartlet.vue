@@ -4,7 +4,29 @@
       <div class="boxHeader">
         <div class="boxHeaderTitle" v-if="isGroup">您共有<span>{{ total }}</span>个贴图分组</div>
         <div class="boxHeaderTitle" v-if="!isGroup">当前分组有<span>{{ total }}</span>个贴图文件</div>
-        <div>
+        <div class="header_row">
+          <el-form :inline="true" :model="searchForm" style="display: inline-flex; align-items: center;"
+            class="searchListForm">
+            <el-form-item label="分组名称:" v-if="isGroup">
+              <el-input v-model="searchForm.groupName" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="分组ID:" v-if="isGroup">
+              <el-input v-model="searchForm.groupId" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="贴图名称:" v-if="!isGroup">
+              <el-input v-model="searchForm.textureName" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="贴图ID:" v-if="!isGroup">
+              <el-input v-model="searchForm.textureId" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" class="blueBtn" @click="onSearch">查询</el-button>
+            </el-form-item>
+          </el-form>
           <el-button class="blueBtn" type="primary" @click="add()" v-if="isGroup">新建分组</el-button>
           <el-badge :value="uploadCom" :hidden="!uploadCom" v-if="!isGroup">
             <el-button class="blueBtn" type="primary" @click="addChartlet()">上传贴图</el-button>
@@ -127,6 +149,12 @@ export default {
       parentData: [],//一级数据，二级编辑换组使用
       parentId: '',//父级id
       isGroup: true, //是否是分组
+      searchForm: {
+        groupName: '',
+        groupId: '',
+        textureName: '',
+        textureId: ''
+      }
     };
   },
   watch: {},
@@ -145,12 +173,21 @@ export default {
     },
     // 返回一级
     back() {
+      this.searchForm = this.$options.data().searchForm
       this.getList()
+    },
+    onSearch() {
+      if (this.isGroup) {
+        this.getList();
+      } else {
+        this.getTextureList(this.parentId)
+      }
     },
     getList() {
       this.$emit('update:groupName', '')
       let params = {
-        userId: Getuserid()
+        userId: Getuserid(),
+        ...this.searchForm
       }
       this.loading = true
       list(params).then(res => {
@@ -167,6 +204,7 @@ export default {
     getTextureList(groupId) {
       let params = {
         userId: Getuserid(),
+        ...this.searchForm,
         groupId
       }
       this.loading = true
@@ -208,6 +246,7 @@ export default {
     // 点击进入详情
     cellClick(row) {
       if (this.isGroup && row.isGroup === '1') {
+        this.searchForm = this.$options.data().searchForm
         this.getTextureList(row.groupId)
         this.parentId = row.groupId
         this.$emit('update:groupName', row.groupName)
@@ -231,5 +270,13 @@ export default {
   width: 180px !important;
   flex: initial;
   min-width: initial;
+}
+
+.header_row {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
 }
 </style>

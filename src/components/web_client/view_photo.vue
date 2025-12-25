@@ -225,7 +225,7 @@
       </template>
     </Drawer>
     <!-- 编辑视点的名称 -->
-    <el-dialog title="编辑" :visible="dialogVisible" @close="dialogVisibleClose" width="25%" :append-to-body="true"
+    <el-dialog title="编辑" :visible="dialogVisible" @close="dialogVisibleClose" width="460px" :append-to-body="true"
       :close-on-click-modal="false">
       <el-form :model="editForm" :rules="rules" ref="editForm">
         <el-form-item label="名称:" label-width="80px" prop="inputName">
@@ -238,8 +238,8 @@
       </span>
     </el-dialog>
     <!-- 新建空的视点动画的名称（或改变视点间的时间） -->
-    <el-dialog title="动画分组" :visible.sync="newBlockView" :close-on-click-modal="false" @close="closeNewView" width="25%"
-      :append-to-body="true">
+    <el-dialog title="动画分组" :visible.sync="newBlockView" :close-on-click-modal="false" @close="closeNewView"
+      width="460px" :append-to-body="true">
       <el-form v-if="flagTime === ''" :model="newViewForm" :rules="ruleNewView" ref="newViewForm"
         @submit.native.prevent>
         <el-form-item label="名称:" label-width="80px" prop="name">
@@ -491,11 +491,11 @@ export default {
         }
       }
     },
-    activeAnimation(val){
-      if(val == -1){
-        this.$emit('hideViewSubMenu',false);
-      }else{
-        this.$emit('hideViewSubMenu',true);
+    activeAnimation(val) {
+      if (val == -1) {
+        this.$emit('hideViewSubMenu', false);
+      } else {
+        this.$emit('hideViewSubMenu', true);
       }
     },
     WebSocketData(val) {
@@ -546,7 +546,8 @@ export default {
       let params = {
         tidMouse: currentTid,
         leftTidIndex: newBefoTid,
-        viewId: this.animViewId
+        viewId: this.animViewId,
+        taskId: this.getProps.taskId,
       }
       MODELAPI.UPDATEORDERBYMOUSE(params).then((res) => {
         if (res.data.code === 200) {
@@ -622,7 +623,7 @@ export default {
       // 跳转视图
       if (this.active !== -1) {
         let params = {
-          taskid: this.getProps.taskId,
+          taskId: this.getProps.taskId,
           action: "moveToViewPoint",
           camerashotId: e.tid,
         };
@@ -680,7 +681,7 @@ export default {
        * @description: 添加视点
        */
       let params = {
-        taskid: this.getProps.taskId,
+        taskId: this.getProps.taskId,
         action: "addViewPoint",
       };
       this.UpdateOrder(params).then(() => {
@@ -695,7 +696,7 @@ export default {
        */
       setTimeout(() => {
         let params = {
-          taskid: this.getProps.taskId,
+          taskId: this.getProps.taskId,
         };
         MODELAPI.LISTFOLLOWPOINT(params)
           .then((res) => {
@@ -758,6 +759,7 @@ export default {
             let params = {
               viewId: this.animViewIdedit,
               newName: this.editForm.inputName,
+              taskId: this.taskId,
             }
             MODELAPI.CHANGENAMEANIM(params).then((res) => {
               if (res.data.code === 200) {
@@ -900,7 +902,8 @@ export default {
             let params = {
               viewId: this.animViewId,
               tid: this.newTime.timeTid,
-              time: this.newTime.time
+              time: this.newTime.time,
+              taskId: this.getProps.taskId,
             }
             MODELAPI.UPDATEPLAYTIME(params).then((res) => {
               if (res.data.code === 200) {
@@ -923,7 +926,8 @@ export default {
         type: 'warning'
       }).then(() => {
         let params = {
-          viewId: e.viewId
+          viewId: e.viewId,
+          taskId: this.getProps.taskId,
         }
         MODELAPI.DELETEANIM(params).then((res) => {
           if (res.data.code === 200) {
@@ -946,7 +950,8 @@ export default {
     // 根据视图动画id获取视图动画里的视点
     viewsPointesGet(idView) {
       let params = {
-        viewId: idView
+        viewId: idView,
+        taskId: this.getProps.taskId,
       }
       MODELAPI.GETANIMBYVIEW(params).then((res) => {
         this.animaViewPointer = res.data.data || [];
@@ -1005,7 +1010,7 @@ export default {
         this.num3 = 0;
         this.activePoints = index;
         let params = {
-          taskid: this.getProps.taskId,
+          taskId: this.getProps.taskId,
           action: "moveToViewPoint",
           camerashotId: item.tid,
         };
@@ -1354,6 +1359,7 @@ export default {
 }
 
 .view_photo {
+  height: calc(100% - 55.5px);
   color: white;
 
   .search {
@@ -1404,11 +1410,11 @@ export default {
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  height: calc(100vh - 125px);
+  height: calc(100% - 125px);
   width: 100%;
   padding-left: 25px;
-  overflow: hidden;
-  overflow-y: auto;
+  overflow: auto;
+  // overflow-y: auto;
 
   .picBox {
     width: 120px;

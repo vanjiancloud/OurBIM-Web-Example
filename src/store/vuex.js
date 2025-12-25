@@ -8,7 +8,9 @@ import top from './modules/topStore';
 import design from "./modules/design";
 import bim from "./modules/bim";
 import member from "./modules/member";
-
+import model from './modules/model';
+import animation from "./modules/animation";
+import customAnimation from './modules/customAnimation';
 // 挂载Vue
 Vue.use(Vuex)
 
@@ -35,6 +37,9 @@ export default new Vuex.Store({
     design,
     bim,
     member,
+    model,
+    animation,
+    customAnimation,
   },
   getters
 })

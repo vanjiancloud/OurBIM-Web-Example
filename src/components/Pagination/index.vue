@@ -1,16 +1,8 @@
 <template>
   <div class="pagination">
-    <el-pagination
-      :background="background"
-      :current-page.sync="currentPage"
-      :page-size.sync="pageSize"
-      :layout="layout"
-      :page-sizes="pageSizes"
-      :total="total"
-      :pager-count="pagerCount"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
+    <el-pagination :background="background" :current-page.sync="currentPage" :page-size.sync="pageSize" :layout="layout"
+      :page-sizes="pageSizes" :total="total" :pager-count="pagerCount" @size-change="handleSizeChange"
+      @current-change="handleCurrentChange" />
   </div>
 </template>
 
@@ -51,9 +43,9 @@ export default {
       type: Boolean,
       default: false
     },
-    pagerCount:{
-        type: Number,
-        default: 7
+    pagerCount: {
+      type: Number,
+      default: 7
     }
   },
   computed: {
@@ -90,14 +82,19 @@ export default {
   margin-top: 40px;
   text-align: right;
 }
+
 ::v-deep.el-pagination.is-background .el-pager li:not(.disabled).active {
   background: #5ec8f3;
   border-radius: 100%;
 }
-::v-deep .el-pagination.is-background .btn-next, ::v-deep .el-pagination.is-background .btn-prev, ::v-deep .el-pagination.is-background .el-pager li{
+
+::v-deep .el-pagination.is-background .btn-next,
+::v-deep .el-pagination.is-background .btn-prev,
+::v-deep .el-pagination.is-background .el-pager li {
   background: none;
 }
-::v-deep .el-input__inner{
+
+::v-deep .el-input__inner {
   border-radius: 4px;
 }
 </style>

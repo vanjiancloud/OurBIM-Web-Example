@@ -1,12 +1,11 @@
-// import request from "@/utils/newRequest.js";
-import axios from 'axios'
-
+import request from '@/utils/cadRequest.js'
 import config from '/server.config'
 export const cadRequestUrl = config.CAD_REQUEST_URL
+
 // 新建GIS数据服务
 export function addGISLayerServer(params, data) {
-  return axios({
-    url: `${cadRequestUrl}/appli/addGISLayerServer`,
+  return request({
+    url: `/appli/addGISLayerServer`,
     method: "post",
     params,
     data,
@@ -18,8 +17,8 @@ export function addGISLayerServer(params, data) {
 
 // 编辑图纸
 export function updateCADFileInfo(data) {
-  return axios({
-    url: `${cadRequestUrl}/CADFile/updateFileInfo`,
+  return request({
+    url: `/CADFile/updateFileInfo`,
     method: "post",
     data
   });
@@ -27,8 +26,8 @@ export function updateCADFileInfo(data) {
 
 // cad列表
 export function getList(params) {
-  return axios({
-    url: `${cadRequestUrl}/CADFile/getUserAllFile`,
+  return request({
+    url: `/CADFile/getUserAllFile`,
     method: "get",
     params
   });
@@ -36,8 +35,8 @@ export function getList(params) {
 
 // 删除图纸
 export function deleteList(params) {
-  return axios({
-    url: `${cadRequestUrl}/CADFile/deleteFileById`,
+  return request({
+    url: `/CADFile/deleteFileById`,
     method: "post",
     params
   });
@@ -45,8 +44,8 @@ export function deleteList(params) {
 
 // 下载图纸
 export function downLoadCAD(params) {
-  return axios({
-    url: `${cadRequestUrl}/CADFile/getFileDownloadUrl`,
+  return request({
+    url: `/CADFile/getFileDownloadUrl`,
     method: "get",
     params
   });
@@ -54,8 +53,8 @@ export function downLoadCAD(params) {
 
 // 分享图纸
 export function shareCad(params) {
-  return axios({
-    url: `${cadRequestUrl}/CADFile/getDocShareUrlNew`,
+  return request({
+    url: `/CADFile/getDocShareUrlNew`,
     method: "get",
     params
   });

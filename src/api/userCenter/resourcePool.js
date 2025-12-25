@@ -199,9 +199,38 @@ export function inputOnlineCadFile(params) {
 // 图纸导入ourbim
 export function blueprintImportOurbim(params, data) {
   return request({
-    url: `/buildSystem/blueprintImportOurbim`,
+    // url: `/buildSystem/blueprintImportOurbim`,
+    // url: `/cadImport/blueprintImportOurbim`,
+    url: `/buildSystem/cadblueprintImportOurbim`,
     method: 'post',
     params,
     data
+  })
+}
+// 删除图纸
+export function deleteCadFile(params, data) {
+  return request({
+    url: `/cadManage/deleteCadFile`,
+    method: 'post',
+    params,
+    data
+  })
+}
+// 模型场景图纸构件删除
+export function cadblueprintDelete(params, data) {
+  return request({
+    url: `/buildSystem/cadblueprintDelete`,
+    method: 'post',
+    params: params,
+    data: data
+  })
+}
+// 设置图纸属性
+export function cadblueprintSet(params, data) {
+  return request({
+    url: `/buildSystem/cadblueprintSet`,
+    method: 'post',
+    params: params,
+    data: data
   })
 }

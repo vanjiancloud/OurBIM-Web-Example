@@ -92,6 +92,8 @@ import {
   sendMsgCode,
   sendMsgEmailCode,
 } from "@/api/my.js";
+import { encryption } from "@/utils/util.js";
+
 const phoneReg = /^1[3-9]\d{9}$/;  // 复用现有正则
 const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export default {
@@ -156,7 +158,7 @@ export default {
             trigger: "blur",
           },
           {
-            pattern: /^[\w.]{6,20}$/,
+            pattern: /^[\w.~!@#$%^&_+><]{6,20}$/,
             message: "请设置密码,字符为英文&数字&英文符号，位数6-20",
             trigger: "blur",
           },
@@ -329,16 +331,17 @@ export default {
     },
     // 点击注册
     doRegister() {
-      getRegister({
-        // email: this.ruleForm.email,
-        // name: this.ruleForm.name,
-        // company: this.ruleForm.company,
-        // sex: this.ruleForm.sex,
+      const params = {
         mobile: this.ruleForm.mobile,
         code: this.ruleForm.code,
         password: this.ruleForm.password,
         activeUrl: window.location.href.split("?")[0],
+      }
+      const encryptionParams = encryption({
+        data: params,
+        param: ['password']
       })
+      getRegister(encryptionParams)
         .then((res) => {
           if (res.data.code === 0) {
             this.$message.success("注册成功");
@@ -358,11 +361,16 @@ export default {
     },
     // 邮箱注册
     doRegisterEmail() {
-      addUserEmail({
+      const params = {
         email: this.ruleForm.mobile,
         password: this.ruleForm.password,
         code: this.ruleForm.code,
-      }).then((res) => {
+      }
+      const encryptionParams = encryption({
+        data: params,
+        param: ['password']
+      })
+      addUserEmail(encryptionParams).then((res) => {
         if (res.data.code === 0) {
           this.$message.success("注册成功");
           this.$router.push("/registerSucceed");

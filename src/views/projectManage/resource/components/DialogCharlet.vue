@@ -34,6 +34,12 @@ import MultipleUpload from "@/components/Upload/multipleUpload.vue";
 import { list, addChartlet, updateMaterialTexture, uploadMaterialTexturesBatch } from '@/api/resource/chartlet.js'
 export default {
   components: { SingleUpload, MultipleUpload },
+  props: {
+    data: {
+      type: Object,
+      default: () => { }
+    }
+  },
   data() {
     return {
       title: '',
@@ -60,7 +66,7 @@ export default {
   methods: {
     getGroupList() {
       let params = {
-        userId: Getuserid()
+        userId: this.data?.userId || Getuserid(),
       }
       list(params).then(res => {
         this.parentData = res.data || []
@@ -102,7 +108,7 @@ export default {
           })
         } else {
           let data = {
-            userId: Getuserid(),
+            userId: this.data?.userId || Getuserid(),
             ...this.form
           }
           // let formData = new FormData()

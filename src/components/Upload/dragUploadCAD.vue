@@ -36,6 +36,9 @@
 <script>
 import axios from 'axios'
 import { cadRequestUrl } from "@/api/projectManage/CADList.js";
+import { Getuserid } from '@/store/index.js'
+import { getToken } from '@/utils/auth';
+
 export default {
   components: {},
   props: {
@@ -121,6 +124,10 @@ export default {
           method: "post",
           url: `${cadRequestUrl}${data.url}`,
           data: formData,
+          headers: {
+            'token': Getuserid(),
+            'accessToken': getToken()
+          },
           onUploadProgress: (progressEvent) => {
             if (!progressEvent) return
             let percent = ((progressEvent.loaded / progressEvent.total) * 100) | 0;

@@ -12,7 +12,14 @@ export function updateBuildState(data) {
     data: qs.stringify(data)
   })
 }
-
+// 图纸初始化
+export function blueprintInit(params) {
+  return request({
+    url: `/cadImport/blueprintInit`,
+    method: 'post',
+    params,
+  })
+}
 // 添加链接模型
 export function addCombineApp(params) {
   return request({
@@ -61,8 +68,8 @@ export function updateProject(params, data) {
     }
   })
 }
-
-export function upgradeModle(params) { // 升级模型
+// 将版本升级，重新转化项目 api2.5
+export function upgradeModle(params) {
   return request({
     url: '/appli/upgradeBIMModel',
     method: 'POST',
@@ -199,5 +206,37 @@ export function updateMemberInfo(params, data) {
     method: 'post',
     params: params,
     data: data
+  })
+}
+// 选中构件轮廓线设置
+export function setOutLineParams(params) {
+  return request({
+    url: `/OurBim/setOutLineParams`,
+    method: 'post',
+    params,
+  })
+}
+// 发送构件信息，websocket推送构件表面积信息
+export function getAreaByActor(data) {
+  return request({
+    url: `/OurBim/getAreaByActor`,
+    method: 'post',
+    data,
+  })
+}
+// 新建构件模型
+export function createActorApp(params) {
+  return request({
+    url: `/appli/createActorApp`,
+    method: 'post',
+    params,
+  })
+}
+// 上传BIM模型
+export function addProject(data) {
+  return request({
+    url: `/appli/addProject`,
+    method: 'post',
+    data,
   })
 }

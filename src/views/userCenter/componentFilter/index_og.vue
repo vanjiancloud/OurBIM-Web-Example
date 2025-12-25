@@ -186,7 +186,10 @@ export default {
               animId: 0
             }]
           }
-          addActorToGroup({ groupId: this.activeTree.id }, actorEntityList).then(() => {
+          addActorToGroup({
+            groupId: this.activeTree.id,
+            taskId: this.data.taskId
+          }, actorEntityList).then(() => {
             this.$message.success('添加构件成功！')
             this.onActor()
             // this.getGroupList({ typeLabel: '2', id: this.activeTree.id }).then((res) => {
@@ -201,7 +204,8 @@ export default {
           let data = {
             actorId: this.activeTree.actorId,
             groupId: this.activeTree.groupId,
-            pakId: this.activeTree.pakId
+            pakId: this.activeTree.pakId,
+            taskId: this.data.taskId,
           }
           deleteActorByid(data).then(() => {
             this.$message.success('移出成功！')
@@ -268,7 +272,10 @@ export default {
           });
         }
         if (item.typeLabel === '2') {
-          deleteGroupById({ groupId: item.id }).then((res) => {
+          deleteGroupById({
+            groupId: item.id,
+            taskId: this.data.taskId,
+          }).then((res) => {
             this.$message.success(res.message)
             this.updateTree(item.id);
             if (item.id === this.activeTree.id) {

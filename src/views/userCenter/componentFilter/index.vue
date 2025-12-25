@@ -43,8 +43,8 @@
         </div>
       </el-tree>
 
-      <DialogsAddFile ref="DialogsAddFile" />
-      <DialogsGroup ref="DialogsGroup" />
+      <DialogsAddFile ref="DialogsAddFile" :data="{ ...data }" />
+      <DialogsGroup ref="DialogsGroup" :data="{ ...data }" />
       <!-- 过滤条件 -->
       <FilterConditions ref="FilterConditionsRef" :data="{ ...data, groupId: activeTree.id }" @getList="getList" />
     </template>
@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { getGroupListNew, getGroupList, deleteDirByid, deleteGroupById, addActorToGroup, deleteActorByid, setIsVisiable, setSelect, deleteActorByGroup, selectGroupActorJudge, delectGroupActorBatch } from '@/api/userCenter/componentFilter.js'
+import { getGroupListNew, getGroupList, deleteDirByid, deleteGroupById, addActorToGroup, deleteActorByid, setIsVisiable, setSelect, deleteActorByGroup, selectGroupActorJudge, delectGroupActorBatch, comFocusAll } from '@/api/userCenter/componentFilter.js'
 import { EventBus } from '@/utils/bus.js'
 import Drawer from "@/components/Drawer/index.vue";
 import DialogsAddFile from "./DialogsAddFile.vue";
@@ -72,11 +72,10 @@ export default {
       search: '',
       treeData: [],
       activeTree: {},
-      activeNode: null,
       props: {
         label: "groupName",
         isLeaf: (e) => {//指定是否为叶子结点,叶子结点即为最后一个结点
-          if (e.haveGroup === "1") {
+          if (e.haveGroup == "1") {
             return false;
           } else {
             return true;
@@ -185,6 +184,7 @@ export default {
         this.canRemove = true;
       }
     },
+    // 获取模型中选中的构件信息
     getSelectActors() {
       if (this.data.selectPark) {
         return [{ actorId: this.data.selectPark.mN, pakId: this.data.selectPark.pakId }];
@@ -202,6 +202,7 @@ export default {
     close() {
       this.$refs.Drawer.hide()
       EventBus.$emit('eventTool', 'componentFilter')
+      this.$store.commit('customAnimation/changeActiveTreeNode', null)
     },
     // 搜索
     searchContent() {
@@ -300,7 +301,14 @@ export default {
         type: '2'
       }).then((res) => {
         // console.log('查构件',res.data)
-        return res.data.map(e => { return { ...e, typeLabel: '3', groupName: e.actorName, } })
+        return res.data.map(e => {
+          return {
+            ...e,
+            typeLabel: '3',
+            groupName: e.actorName,
+            haveGroup: e.haveGroup ?? '0'
+          }
+        })
       });
       // console.log(groupList,list)
       return [...groupList, ...list]
@@ -329,7 +337,8 @@ export default {
           if (!this.activeTree.id) return this.$message.warning("请先选择要编辑的内容！");
           if (this.activeTree.typeLabel === '1') {
             this.$refs.DialogsAddFile.show('编辑', { taskId: this.data.taskId, ...this.activeTree })
-          } if (this.activeTree.typeLabel === '2') {
+          }
+          else if (this.activeTree.typeLabel === '2') {
             this.$refs.DialogsGroup.show('编辑', { taskId: this.data.taskId, parentId: this.activeTree.id, ...this.activeTree })
           }
           break;
@@ -356,7 +365,10 @@ export default {
               animId: 0
             }]
           }
-          addActorToGroup({ groupId: this.activeTree.id }, actorEntityList).then(() => {
+          addActorToGroup({
+            groupId: this.activeTree.id,
+            taskId: this.data.taskId,
+          }, actorEntityList).then(() => {
             this.$message.success('添加构件成功！')
             this.onActor()
             this.getList();
@@ -367,11 +379,13 @@ export default {
           })
           break;
         case 6:
+          // typeLabel 2分组 3构件
           if (this.activeTree.id && this.activeTree.typeLabel == '3') {
             let data = {
               actorId: this.activeTree.actorId,
               groupId: this.activeTree.groupId,
-              pakId: this.activeTree.pakId
+              pakId: this.activeTree.pakId,
+              taskId: this.data.taskId,
             }
             deleteActorByid(data).then(() => {
               this.$message.success('移出成功！')
@@ -421,55 +435,76 @@ export default {
     },
     onActor() {
       this.$emit('onActor')
+      console.log(this.activeTree)
       const params = {
-        type: this.activeNode.typeLabel,
+        type: this.activeTree.typeLabel,
         isSelect: '0',
-        id: this.activeNode.typeLabel === '3' ? this.activeNode.actorId : this.activeNode.id,
+        id: this.activeTree.typeLabel === '3' ? this.activeTree.actorId : this.activeTree.id,
         taskId: this.data.taskId,
-        pakId: this.activeNode.typeLabel === '3' ? this.activeNode.pakId : ''
+        pakId: this.activeTree.typeLabel === '3' ? this.activeTree.pakId : ''
       }
       setSelect(params)
     },
-    // 点击tree
-    onTree(data) {
-      // typeLabel 2-分组 3-构件
-      console.log('点击tree', JSON.parse(JSON.stringify(data)))
-      if (this.activeNode && this.activeNode.typeLabel == '2' && this.activeNode.id != data.id) {
-        // console.log('前一个', this.activeNode)
-        setSelect({
-          type: this.activeNode.typeLabel,
-          isSelect: '0',
-          id: this.activeNode.typeLabel === '3' ? this.activeNode.actorId : this.activeNode.id,
-          taskId: this.data.taskId,
-          pakId: this.activeNode.typeLabel === '3' ? this.activeNode.pakId : ''
-        }).then(() => {
-          // this.$message.success('指令下发成功！')
-          this.$emit('onActor')
-          this.onTree2(data)
-        })
-      } else {
-        this.onTree2(data)
+    // 取消选中所有构件
+    async initComFocusAll() {
+      const params = {
+        taskId: this.data.taskId,
+        action: 'cancelSelectComponent', //cancelSelectComponent-取消选中构件 selectComponent-选中
+        projectId: this.data.appId,
+        uuid: 'vanjian'
       }
+      return comFocusAll(params)
+    },
+    // 点击tree
+    async onTree(data) {
+      // typeLabel 2-分组 3-构件
+      // console.log('点击tree', JSON.parse(JSON.stringify(data)))
+      // // && this.activeTree.typeLabel == '2'
+      // console.log(this.activeTree,)
+      // if (this.activeTree && this.activeTree.id != data.id) {
+      //   // console.log('前一个', this.activeTree)
+      //   setSelect({
+      //     type: this.activeTree.typeLabel,
+      //     isSelect: '0',
+      //     id: this.activeTree.typeLabel === '3' ? this.activeTree.actorId : this.activeTree.id,
+      //     taskId: this.data.taskId,
+      //     pakId: this.activeTree.typeLabel === '3' ? this.activeTree.pakId : ''
+      //   }).then(() => {
+      //     // this.$message.success('指令下发成功！')
+      //     this.$emit('onActor')
+      //     this.onTree2(data)
+      //   })
+      // } else {
+      //   this.onTree2(data)
+      // }
+      this.initComFocusAll().then(() => {
+        this.onTree2(data);
+      })
     },
     onTree2(data) {
-      this.activeNode = data
-      data.check = !data.check
       if (data.id !== this.activeTree.id) {
         data.check = true
+      } else {
+        data.check = !data.check
       }
-      this.activeTree = data.check ? data : {}
-
-      let params = {
-        type: data.typeLabel,
-        isSelect: data.check ? '1' : '0',
-        id: data.typeLabel === '3' ? data.actorId : data.id,
-        taskId: this.data.taskId,
-        pakId: data.typeLabel === '3' ? data.pakId : ''
+      if (data.check) {
+        this.activeTree = data;
+        this.$store.commit('customAnimation/changeActiveTreeNode', data)
+        let params = {
+          taskId: this.data.taskId,
+          type: data.typeLabel,
+          isSelect: data.check ? '1' : '0',
+          id: data.typeLabel === '3' ? data.actorId : data.id,
+          pakId: data.typeLabel === '3' ? data.pakId : ''
+        }
+        setSelect(params).then(() => {
+          this.$message.success('指令下发成功！')
+        })
+      } else {
+        this.activeTree = {};
+        this.$store.commit('customAnimation/changeActiveTreeNode', null)
+        this.$emit('onActor')
       }
-      setSelect(params).then(() => {
-        this.$message.success('指令下发成功！')
-        if (!data.check) this.$emit('onActor')
-      })
     },
     // 删除构件后更新tree数据
     updateTree(id) {
@@ -483,7 +518,10 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       }).then(() => {
-        deleteGroupById({ groupId: item.id }).then((res) => {
+        deleteGroupById({
+          groupId: item.id,
+          taskId: this.data.taskId,
+        }).then((res) => {
           this.$message.success('删除成功！')
           // this.updateTree(item.id);
           this.getList();

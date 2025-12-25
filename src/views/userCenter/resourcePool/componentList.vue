@@ -1,7 +1,7 @@
 <!-- 构件库 -->
 <template>
-  <div>
-    <!-- 点击到二级构件 -->
+  <div style="height: 100%;">
+    <!-- 面包屑导航 -->
     <div class="level2" v-if="levels.level === 2">
       <span @click="back" class="backLevel1"><i class="el-icon-arrow-left"></i>{{ levels.tabName }}</span>
       <span @click="toCadLevel1" :class="levels.cadGroupName ? 'backLevel1' : 'level2Item'" v-if="levels.groupName"> /
@@ -12,14 +12,14 @@
     <!-- 搜索 -->
     <div class="search" v-if="!levels.hideContent">
       <el-input v-model="search" size="mini" placeholder="请输入您要搜索的内容" prefix-icon="el-icon-search"
-        @change="searchContent()" @keydown.native.stop />
+        @input="searchContent()" @keydown.native.stop />
     </div>
     <!-- 切换公共/个人 tabs -->
     <Tab v-model="levels.tab2Index" v-show="levels.level === 1" class="roundTab" :data="typeList" @onTab="onTypeTab" />
     <!-- 主体内容 -->
     <div class="contentWrap">
       <!-- 导入图纸 -->
-      <Drawing ref="Drawing" :levels="levels" :data="{ taskId: data.taskId }" @toDrawLevel="toDrawLevel"
+      <Drawing ref="Drawing" :levels="levels" :data="{ ...data }" @toDrawLevel="toDrawLevel"
         @setCadGroupName="setCadGroupName" />
       <!-- 构件内容资源 -->
       <div class="content" v-if="!levels.hideContent">
@@ -56,7 +56,7 @@ import Pagination from "@/components/Pagination/index.vue";
 import { getPublicList, addCom } from "@/api/userCenter/resourcePool.js";
 import MODELAPI from "@/api/model_api";
 import Drawing from "./drawing.vue"; //导入图纸
-import { addObject, addComponent } from '@/api/userCenter/drawMenu.js';
+import { addObject, addComponent, parametricComponentDraw, parametricComponentEdit } from '@/api/userCenter/drawMenu.js';
 
 export default {
   components: { Tab, Pagination, Drawing },
@@ -87,15 +87,20 @@ export default {
         activeLevel1Content: {},//
         activeLevel2Content: {},//
         cadGroupName: '',//图纸分组名称
-      }, //组名称,tab名称,默认一级
+      },
       contentList: [], //一级列表数据
       contentLevel2List: [], //二级列表数据
-      searchToSaveList: [],//因为事前端搜，所以需要一个字段去保存原有的数据一级
+      searchToSaveList: [],//因为是前端搜，所以需要一个字段去保存原有的数据一级
       searchToSaveList2: [],//因为是前端搜，所以需要一个字段去保存原有的数据二级
       pageDatas: [],//分页数据
       pages: {
         page: 1, //分页，第几页
         pageSize: 18,
+      },
+      // 历史页码状态保存
+      savedPageState: {
+        page: 1,
+        search: ''
       },
       //建筑结构一级数据
       buildingStructure: [
@@ -114,7 +119,7 @@ export default {
             {
               id: 'arcWall',
               parentId: "buildStructure",
-              comUrl: require('@/assets/images/resourcePool/wall-1.png'),
+              comUrl: require('@/assets/images/resourcePool/wall-1-ourbim.png'),
               comName: '弧形墙'
             },
             {
@@ -171,6 +176,65 @@ export default {
               comUrl: require('@/assets/images/resourcePool/build-2.png'),
               comName: '梁'
             },
+          ]
+        }
+      ],
+      //机电管线一级数据
+      pipeline: [
+        {
+          id: 'pipeline',
+          group: '机电管线',
+          comName: '机电管线',
+          comUrl: require('@/assets/images/resourcePool/pipeline.png'),
+          rsComponent: [
+            {
+              id: 'rectangle',
+              parentId: "pipeline",
+              comUrl: require('@/assets/images/resourcePool/pipe-1.png'),
+              comName: '矩形管道'
+            },
+            // {
+            //   id: 'conn',
+            //   parentId: "pipeline",
+            //   comUrl: require('@/assets/images/resourcePool/pipe-2.png'),
+            //   comName: '槽型管件'
+            // },
+            {
+              id: 'circle',
+              parentId: "pipeline",
+              comUrl: require('@/assets/images/resourcePool/pipe-3.png'),
+              comName: '圆形管道'
+            },
+            {
+              id: 'ellipse',
+              parentId: "pipeline",
+              comUrl: require('@/assets/images/resourcePool/pipe-4.png'),
+              comName: '椭圆形管道'
+            },
+            // {
+            //   id: 'conn',
+            //   parentId: "pipeline",
+            //   comUrl: require('@/assets/images/resourcePool/pipe-5.png'),
+            //   comName: '矩形管件'
+            // },
+            {
+              id: 'groove',
+              parentId: "pipeline",
+              comUrl: require('@/assets/images/resourcePool/pipe-6.png'),
+              comName: '槽型管道'
+            },
+            {
+              id: 'conn',
+              parentId: "pipeline",
+              comUrl: require('@/assets/images/resourcePool/pipe-7.png'),
+              comName: '连接管件'
+            },
+            // {
+            //   id: 'conn',
+            //   parentId: "pipeline",
+            //   comUrl: require('@/assets/images/resourcePool/pipe-8.png'),
+            //   comName: '椭圆形管件'
+            // }
           ]
         }
       ],
@@ -240,7 +304,7 @@ export default {
           }
         })
         // 加入自定义建筑结构
-        this.contentList = [...this.buildingStructure, ...apiContentList];
+        this.contentList = [...this.buildingStructure, ...this.pipeline, ...apiContentList];
         this.searchToSaveList = JSON.parse(JSON.stringify(this.contentList))
         this.pageDatas = JSON.parse(JSON.stringify(this.contentList))
         this.pageData()
@@ -270,24 +334,38 @@ export default {
     },
     // 个人库二级
     async getUserList2(item) {
-      this.contentLevel2List = item.rsComponent.map((e) => {
+      this.contentLevel2List = item?.rsComponent ? item.rsComponent.map((e) => {
         return {
           comName: e.ourbimComponentInfo.comName,
           comUrl: e.ourbimComponentInfo.comUrl,
           ...e,
         };
-      });
+      }) : [];
       this.searchToSaveList2 = JSON.parse(JSON.stringify(this.contentLevel2List))
       this.pageDatas = JSON.parse(JSON.stringify(this.searchToSaveList2))
     },
     // 点击返回第一级
     back() {
       this.levels.level = 1;
-      this.pages.page = this.$options.data().pages.page
-      this.search = ''
+      // 恢复之前保存的页面状态
+      this.pages.page = this.savedPageState.page;
+      this.search = this.savedPageState.search;
+      // this.pages.page = this.$options.data().pages.page
+      // this.search = ''
       this.levels.hideContent = false
       this.levels.cadGroupName = ''
-      this.searchContent()
+      // this.searchContent()
+      // 直接处理数据，不调用searchContent()避免页码被重置
+      let newContent = this.searchToSaveList
+      if (this.search) {
+        if (newContent.length) {
+          newContent = newContent.filter(e => { return e.comName.indexOf(this.search) > -1 })
+          this.contentList = newContent
+        }
+      } else {
+        this.contentList = this.searchToSaveList
+      }
+      this.pageData(newContent)
     },
     // 搜索内容----前端实现的
     searchContent() {
@@ -312,10 +390,13 @@ export default {
         this.pageData()
       }
     },
-    // 点击库类型
-    onTypeTab: throttle(function (e) {
+    // 切换库类型
+    onTypeTab(e) {
       this.levels.tab2Index = e.index;
       this.pages.page = this.$options.data().pages.page
+      this.search = this.$options.data().search;
+      this.contentList = this.$options.data().contentList;
+      this.contentLevel2List = this.$options.data().contentLevel2List;
       switch (e.index) {
         case 0:
           this.getPubilcList()
@@ -323,16 +404,19 @@ export default {
         case 1:
           this.getUserList()
           break;
-
         default:
           break;
       }
-    }, 800),
+    },
     // 点击去二级构件
     async toLevel2(item) {
       this.levels.activeContent = item;
       // 一级点击
       if (this.levels.level === 1) {
+        // 保存当前页面状态
+        this.savedPageState.page = this.pages.page;
+        this.savedPageState.search = this.search;
+        // 
         this.levels.activeLevel1Content = item;
         this.search = ''
         this.pages = this.$options.data().pages;
@@ -357,6 +441,10 @@ export default {
         // 建筑结构部分(摩方迁移)
         if (item.parentId == "buildStructure") {
           this.setBuildStructure(item);
+        }
+        // 机电管件部分
+        else if (item.parentId == "pipeline") {
+          this.setPipeline(item);
         }
         // 套线结构部分(摩方迁移)
         else if (['门套线', '木饰线', '地板', '瓷砖', '瓦片', '扶手线', '石膏线', '石套线', '地脚线', '灯槽线'].includes(item.comName)) {
@@ -414,7 +502,8 @@ export default {
     },
     // 绘制建筑结构
     setBuildStructure(e) {
-      this.buildDraw.activeDraw = this.buildDraw.activeDraw == e.id ? null : e.id;
+      // this.buildDraw.activeDraw = this.buildDraw.activeDraw == e.id ? null : e.id;
+      this.buildDraw.activeDraw = e.id;
       const params = {
         taskId: this.data.taskId,
         type: e.id
@@ -422,7 +511,7 @@ export default {
       // 开始绘制
       if (this.buildDraw.activeDraw) {
         this.$store.dispatch('bim/changeMode', { e: '2D' }).then(() => {
-          if (e.id == 'generalWall') {
+          if (e.id == 'generalWall' || e.id == 'arcWall') {
             this.$store.dispatch('design/changeDrawType', 0);
           }
           addObject(params)
@@ -432,6 +521,32 @@ export default {
         this.$store.dispatch('design/changeDrawType', null);
       }
     },
+    // 绘制机电管线
+    async setPipeline(item) {
+      // rectangle（矩形截面）,groove（槽形截面）, circle（圆形截面）, ellipse（椭圆形截面）  
+      if (['rectangle', 'groove', 'circle', 'ellipse', 'conn'].includes(item.id)) {
+        const pipelineForm = this.$store.state.design.pipelineForm;
+        // await parametricComponentEdit({ taskId: this.data.taskId }, {
+        //   function: "editor",
+        //   bActivate: true     //绘制模式是否激活
+        // })
+        await parametricComponentDraw({
+          taskId: this.data.taskId,
+        }, {
+          function: "draw",
+          bActivate: true, //绘制模式是否激活
+          type: item.id,
+          width: pipelineForm.width,
+          height: pipelineForm.height,
+          thickness: pipelineForm.thickness,
+          diameter: pipelineForm.diameter,
+          planeHeight: pipelineForm.planeHeight,
+        }).then(res => {
+          this.$store.commit('design/changePipelineType', item.id);
+          this.$store.dispatch('design/changeDrawType', 4);
+        })
+      }
+    },
     // 绘制套线结构
     onChangeNode(item) {
       const _this = this;
@@ -439,10 +554,6 @@ export default {
         _this.$store.dispatch('design/changeDrawType', null);
       }
       if (item && item.type === 'spline') {
-        // const timer = setTimeout(() => {
-        //   clearTimeout(timer)
-
-        // }, 100);
         _this.$store.dispatch('design/changeDrawType', 1);
       }
       if (item && item.type === 'pave') {
@@ -450,7 +561,7 @@ export default {
           _this.$message.warning('请先进行面层设计')
           return
         }
-        _this.$store.dispatch('design/changeDrawType', 3);
+        _this.$store.dispatch('design/changeDrawType', 2);
       }
       setTimeout(() => {
         this.addComponentInfo(item)
@@ -460,30 +571,41 @@ export default {
       const _this = this;
       const { memberId, memberInfo, bimUserId } = this.designStore;
       const { faceTypeData, paveType } = this.topStore;
-      const params = {
-        taskId: this.data.taskId,
-        comName: item.comName,
-        comId: item.comIdCustom,
-        userId: bimUserId,
+      try {
+        const params = {
+          taskId: this.data.taskId,
+          comName: item.comName,
+          comId: item.comIdCustom,
+          userId: bimUserId,
+        }
+        if (item.type === 'spline') {
+          params.skirtingLineType = item.defaultType;
+          // params.lineGroupType = item.comName;
+        } else if (item.type === 'pave') {
+          params.pave = paveType;
+        }
+        params.skirtingLineType = this.topStore.styleLine || item.defaultType
+        // 
+        let data = {}
+        let size = item.defaultValue && JSON.parse(item.defaultValue)
+        if (item.type === 'pave') {
+          data.id = memberId
+          data.meshID = item.comIdCustom
+          const typeObj = memberInfo.find(item => item.key === 'rootTypeInfo')
+          data.type = typeObj.type
+          let paveObj = faceTypeData.find(item => item.type === paveType)
+          paveObj.params.lengthOfUnit = size.length
+          paveObj.params.widthOfUnit = size.width
+          data = { ...data, ...paveObj.params }
+        }
+        // 
+        addComponent(params, data).then(() => {
+          _this.$message.success('指令下发成功');
+        })
+      } catch (err) {
+        _this.$message.warning('请先选择面层');
+        console.log(err)
       }
-      item.type === 'spline' ? params.skirtingLineType = item.defaultType :
-        item.type === 'pave' ? params.pave = paveType : ''
-      params.skirtingLineType = this.topStore.styleLine || item.defaultType
-      let data = {}
-      let size = item.defaultValue && JSON.parse(item.defaultValue)
-      if (item.type === 'pave') {
-        data.id = memberId
-        data.meshID = item.comIdCustom
-        const typeObj = memberInfo.find(item => item.key === 'rootTypeInfo')
-        data.type = typeObj.type
-        let paveObj = faceTypeData.find(item => item.type === paveType)
-        paveObj.params.lengthOfUnit = size.length
-        paveObj.params.widthOfUnit = size.width
-        data = { ...data, ...paveObj.params }
-      }
-      addComponent(params, data).then(() => {
-        _this.$message.success('指令下发成功');
-      })
     }
   }
 };
@@ -515,7 +637,7 @@ export default {
 
 .contentWrap {
   padding: 0 12px;
-  height: calc(100vh - 252px);
+  height: calc(100% - 252px);
   overflow: auto;
 }
 

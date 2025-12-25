@@ -97,7 +97,7 @@ export default {
   position: fixed;
   top: 0;
   background: rgba(16, 16, 16, 0.7);
-  z-index: 1001;
+  z-index: 1002;
 
   .isShow {
     width: 20px;

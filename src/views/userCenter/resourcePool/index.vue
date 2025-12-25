@@ -39,6 +39,7 @@ export default {
       tabList: [
         {
           name: "构件库",
+          hidden: false,
         },
         {
           name: "材质库",
@@ -49,16 +50,19 @@ export default {
       ],
       levels: {
         isClickTab: false,//是否点击一级的tab
-        tab1Index: 0,
+        tab1Index: this.data.modelType === 'com' ? 1 : 0,
       },
     };
   },
-  watch: {},
+  watch: {
+
+  },
   computed: {
     ...mapGetters(["componentAllInfo", "isAnimationLinkage"]),
-    ...mapState(['cancel'])
+    ...mapState(['cancel']),
   },
-  created() { },
+  created() {
+  },
   mounted() {
     // 点击材质信息监听tab切换
     this.$store.watch((state) => state.material.materialLevel1Tab, (newValue, oldValue) => {
@@ -71,7 +75,6 @@ export default {
     });
     // 资源库和动画模块联动
     this.$store.watch((state) => state.material.isAnimationLinkage, (newValue, oldValue) => {
-      console.log(newValue)
       if (newValue) {
         this.tabList = [
           {
@@ -89,7 +92,7 @@ export default {
         this.tabList = [
           {
             name: "构件库",
-            disabled: false,
+            hidden: false,
           },
           {
             name: "材质库",
@@ -106,6 +109,13 @@ export default {
   },
   methods: {
     show() {
+      this.tabList.forEach((item, index) => {
+        if (item.name === '构件库' && this.data.modelType === 'com') {
+          item.hidden = true
+        } else {
+          item.hidden = false
+        }
+      })
       this.$refs.Drawer.show()
       this.getList()
     },
@@ -122,10 +132,11 @@ export default {
       }
       this.levels.tab1Index = e.index;
       // 没打开不请求
-      if (!this.$refs.Drawer.drawer) return
-      setTimeout(() => {
-        this.getList()
-      }, 500)
+      if (this.$refs.Drawer && this.$refs.Drawer.drawer) {
+        setTimeout(() => {
+          this.getList()
+        }, 500)
+      }
     }, 800),
     getList() {
       switch (this.levels.tab1Index) {

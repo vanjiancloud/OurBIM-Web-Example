@@ -1,0 +1,123 @@
+<!-- 新建、编辑材质分组 -->
+<template>
+  <el-dialog :title="title + '场景'" :visible.sync="dialogVisible" width="50%" :before-close="hide"
+    :close-on-click-modal="false" append-to-body>
+    <el-form :model="form" :rules="rules" ref="form" label-width="158px">
+      <el-form-item label="场景名称：" prop="groupName">
+        <el-input v-model="form.groupName" placeholder="请输入"></el-input>
+      </el-form-item>
+      <el-form-item label="场景封面图：">
+        <SingleUpload v-model="form.fileUpload" :autoUpload="false" />
+      </el-form-item>
+      <el-form-item label="关联BIM/GIS模型：">
+        <el-select v-model="form.bimgis" placeholder="请选择">
+          <el-option label="模型1" value="1"></el-option>
+          <el-option label="模型2" value="2"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="关联CAD图纸：">
+        <el-select v-model="form.cad" placeholder="请选择">
+          <el-option label="图纸1" value="1"></el-option>
+          <el-option label="图纸2" value="2"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="关联平面图片：">
+        <SingleUpload v-model="form.planeImage" :autoUpload="false" />
+      </el-form-item>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="hide">取 消</el-button>
+      <el-button class="blueBtn" type="primary" @click="submit">确 定</el-button>
+    </span>
+  </el-dialog>
+</template>
+
+<script>
+import { Getuserid } from "@/store/index.js";
+import { addCustomizeMaterialGroup, updateCustomizeMaterialGroup } from '@/api/resource/material.js'
+import SingleUpload from "@/components/Upload/singleUpload.vue"
+
+export default {
+  components: { SingleUpload },
+  props: {},
+  data() {
+    return {
+      title: '新建',
+      dialogVisible: false,
+      form: {},
+      rules: {
+        groupName: [{ required: true, message: '请输入分组名称', trigger: 'blur' }]
+      }
+    }
+  },
+  watch: {},
+  computed: {},
+  created() { },
+  mounted() { },
+  methods: {
+    show(row) {
+      this.dialogVisible = true
+      this.$nextTick(() => {
+        this.$refs.form.clearValidate()
+        this.form = row
+        if (row.groupId) {
+          this.title = '编辑'
+          this.$set(this.form, 'fileUpload', row.matImgPath)
+        } else {
+          this.title = '新建'
+        }
+      })
+    },
+    hide() {
+      this.dialogVisible = false
+    },
+    submit() {
+      this.$refs.form.validate((valid) => {
+        if (!valid) return false
+        // if (this.form.groupId) {
+        //   let formData = new FormData();
+        //   let form2 = {
+        //     groupId: this.form.groupId,
+        //     groupName: this.form.groupName,
+        //     fileUpload: this.form.fileUpload,
+        //   }
+        //   for (const key in form2) {
+        //     formData.append([key], form2[key]);
+        //   }
+        //   updateCustomizeMaterialGroup(formData).then((res) => {
+        //     this.$message.success(res.message)
+        //     this.hide();
+        //     this.$emit('getList');
+        //   });
+        // } else {
+        //   let data = {
+        //     userId: Getuserid(),
+        //     isGroup: '0',
+        //     ...this.form,
+        //   };
+        //   let formData = new FormData();
+        //   for (const key in data) {
+        //     formData.append([key], data[key]);
+        //   }
+        //   addCustomizeMaterialGroup(formData).then((res) => {
+        //     this.$message.success(res.message)
+        //     this.hide();
+        //     this.$emit('getList');
+        //   });
+        // }
+      })
+    }
+  }
+}
+</script>
+<style lang="less" scoped>
+.uploadTip {
+  font-size: 12px;
+  color: #999999;
+}
+
+/deep/.el-upload {
+  width: 120px;
+  height: 120px;
+}
+</style>

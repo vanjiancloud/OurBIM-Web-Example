@@ -1,9 +1,9 @@
 <template>
   <el-dialog :title="title" :visible.sync="dialogVisible" :close-on-click-modal="false" append-to-body width="460px"
     :before-close="hide">
-    <el-form ref="form" :style="{ 'width': '90%' }" :model="form" :rules="rules" label-width="100px">
+    <el-form ref="form" :style="{ 'width': '90%' }" :model="form" :rules="rules" label-width="100px" @submit.native.prevent>
       <el-form-item label="名称:" prop="groupName">
-        <el-input v-model="form.groupName" @keydown.native.stop></el-input>
+        <el-input v-model="form.groupName"></el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -57,7 +57,8 @@ export default {
           let data = {
             type: 2,
             newName: this.form.groupName,
-            id: this.form.id
+            id: this.form.id,
+            taskId: this.data.taskId,
           }
           updateName(data).then(() => {
             this.$message.success('操作成功！')
@@ -65,7 +66,7 @@ export default {
             this.$parent.$parent.getList()
           });
         } else {
-          console.log('新建分组',this.form)
+          // console.log('新建分组',this.form)
           createGroupBatchNew(this.form).then(() => {
             this.$message.success('操作成功！')
             this.hide();

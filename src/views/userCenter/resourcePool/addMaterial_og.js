@@ -17,7 +17,11 @@ export default {
     // 获取材质信息
     // isPublic==true时 添加材质
     getMaterial(matId, isPublic = true) {
-      getMaterialByMatId({ matId: matId || this.materialAllInfo.matId, isPublic }).then(res => {
+      getMaterialByMatId({
+        matId: matId || this.materialAllInfo.matId,
+        isPublic,
+        taskId: this.data.taskId,
+      }).then(res => {
         if (isPublic) {
           this.addMaterial({ matId: res.data.matId, matParam: JSON.parse(res.data.matParam) })
         } else {

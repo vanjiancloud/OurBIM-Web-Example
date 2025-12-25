@@ -325,7 +325,7 @@ export default {
       //   // 如果距离上次双击时间小于阈值，不处理单击事件
       //   return;
       // }
-      console.log('click-dot', item);
+      console.log('点击关键帧', item);
       this.currentDotId = item.id;
       let params = {
         taskId: this.data.taskId,

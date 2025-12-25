@@ -25,7 +25,12 @@ import { Getuserid } from "@/store/index.js";
 import { selectCustomizeMaterialGroup, copyCustomizeMaterial, copyPublicMaterialToCustomMaterial, copyAppMaterialToCusTomMaterial } from '@/api/resource/material.js'
 
 export default {
-  props: {},
+  props: {
+    data: {
+      type: Object,
+      default: () => { }
+    }
+  },
   data() {
     return {
       title: '复制',
@@ -46,7 +51,7 @@ export default {
   methods: {
     getGroupList() {
       let params = {
-        userId: Getuserid()
+        userId: this.data?.userId || Getuserid()
       }
       selectCustomizeMaterialGroup(params).then(res => {
         this.groupList = res.data || []
@@ -76,7 +81,7 @@ export default {
           api = copyPublicMaterialToCustomMaterial;
           delete params.groupId;
           params.parentId = this.form.groupId;
-          params.userId = Getuserid();
+          params.userId = this.data?.userId || Getuserid();
         }
         if (this.form.tab2Index == 1) {
           // api = copyCustomizeMaterial;
@@ -88,7 +93,7 @@ export default {
           api = copyAppMaterialToCusTomMaterial;
           delete params.groupId;
           params.parentId = this.form.groupId;
-          params.userId = Getuserid();
+          params.userId = this.data?.userId || Getuserid();
         }
         api(params).then(res => {
           this.$message.success(res.message)

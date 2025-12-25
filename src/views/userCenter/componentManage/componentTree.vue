@@ -21,7 +21,8 @@
       <!-- 树 -->
       <el-tree v-if="drawer && tabValue === 0" class="set-tree" ref="tree" empty-text="暂无数据" :props="props"
         :expand-on-click-node="false" :load="loadNode" @check="isShowCom" :filter-node-method="filterNode"
-        :show-checkbox="true" highlight-current node-key="uuid" lazy>
+        :show-checkbox="true" highlight-current node-key="uuid" lazy :key="treeRenderKey"
+        :default-expanded-keys="expandedKeys" @node-expand="nodeExpand" @node-collapse="nodeCollapse">
         <span class="custom-tree-node" :class="{ 'tree-select': activeTree && node.data.uuid === activeTree.uuid }"
           slot-scope="{node,data}" @click="handleTree(node)">
           <span class="label-span">{{ node.label }}</span>
@@ -29,7 +30,7 @@
           <img src="@/assets/images/tag/6.png" @click.stop="deleteCom(node)" class="delect-com-icon"
             v-if="data.typeId === 'comp'" />
           <!-- 开锁和闭锁 -->
-          <span v-if="node.level === 1 && (appType === '3' || appType === '0') && !node.data.typeId">
+          <span v-if="isShowLock(node)">
             <i class="iconfont" :class="data.lockCheck ? 'icon-24gl-unlock4' : 'icon-24gl-lock2'"
               @click.stop="toggleLock(data)"></i>
           </span>
@@ -41,12 +42,14 @@
         </span>
       </el-tree>
 
+      <!-- GIS数据服务 -->
+      <GisTree ref="refGis" v-if="drawer && tabValue === 1" :data="data" :search="search" />
+      <!--  -->
+      <dialog-link ref="refLink" :GISModel="ListLinkGISModel" :data="data" />
+      <!--  -->
+      <dialog-set ref="refSet" :data="data" />
       <!-- 构件操作图标 -->
       <OperatingTools ref="OperatingTools" v-if="drawer && hasLock()" :data="data" />
-
-      <GisTree ref="refGis" v-if="drawer && tabValue === 1" :data="data" :search="search" />
-      <dialog-link ref="refLink" :GISModel="ListLinkGISModel" :data="data" />
-      <dialog-set ref="refSet" :data="data" />
     </template>
   </Drawer>
 </template>
@@ -91,8 +94,8 @@ export default {
           name: "BIM模型",
         },
         {
-          hidden: !this.data.isGis,
           name: "GIS数据服务",
+          hidden: !this.data.isGis,
         },
       ],
       appType: null,
@@ -111,6 +114,8 @@ export default {
       },
       activeTree: null,//选中状态
       componentVisibility: JSON.parse(sessionStorage.getItem(`componentVisibility_${this.data.taskId}`)) || {},
+      treeRenderKey: 0, // 添加这个属性用于强制重新渲染
+      expandedKeys: []  // 手动维护展开的节点key
     };
   },
   watch: {},
@@ -128,12 +133,22 @@ export default {
     // if(this.data.isGis){
     //     this.tabList[1].hidden = true
     // }
+    this.setBus()
+  },
+  destroyed() {
+    EventBus.$off('reloadComponentTree', this.reloadTreeData)
   },
   beforeDestroy() {
     // 组件卸载前将状态保存到sessionStorage
     sessionStorage.setItem(`componentVisibility_${this.data.taskId}`, JSON.stringify(this.componentVisibility));
   },
   methods: {
+    setBus() {
+      EventBus.$on('reloadComponentTree', this.reloadTreeData)
+    },
+    reloadTreeData(uuid) {
+      this.updateTree(uuid)
+    },
     onSet() {
       this.$refs.refSet.show()
     },
@@ -161,6 +176,9 @@ export default {
     },
     show() {
       this.$refs.Drawer.show()
+      setTimeout(() => {
+        this.updateComTreeAfterAddComs()
+      }, 100)
     },
     close() {
       this.$refs.Drawer.hide()
@@ -188,8 +206,32 @@ export default {
     },
     //遍历是否有锁打开了
     hasLock() {
-      let index = this.treeParentData.findIndex(e => { return e.lockCheck })
-      return index > -1
+      // let index = this.treeParentData.findIndex(e => { return e.lockCheck })
+      // return index > -1
+
+      // 如果树还未加载，直接返回false
+      if (!this.$refs.tree || !this.$refs.tree.root) {
+        return false;
+      }
+
+      // 递归遍历整个树结构查找是否有lockCheck为true的节点
+      const checkNodeHasLock = (nodes) => {
+        for (let node of nodes) {
+          if (node.data && node.data.lockCheck) {
+            return true;
+          }
+          // 递归检查子节点
+          if (node.childNodes && node.childNodes.length > 0) {
+            if (checkNodeHasLock(node.childNodes)) {
+              return true;
+            }
+          }
+        }
+        return false;
+      };
+
+      // 从根节点开始检查
+      return checkNodeHasLock(this.$refs.tree.root.childNodes);
     },
     // 获取树列表
     async getList(node) {
@@ -198,6 +240,7 @@ export default {
         uuid: node && node.key,
         pageNo: 1,
         pageSize: 20,
+        taskId: this.data.taskId,
       };
       let list = await getComponents(params).then((res) => {
         return res.data || [];
@@ -310,6 +353,11 @@ export default {
         this.$refs.tree.remove(nodeParent.data.uuid);
       }
     },
+    // 判断是否显示锁🔒
+    isShowLock(node) {
+      // return node.level === 1 && (this.appType === '3' || this.appType === '0') && !node.data.typeId
+      return node.data.tag === '子模型原始构件根节点'
+    },
     // 点击锁
     toggleLock(data = { lockCheck: false }) {
       if (data.uuid) {
@@ -341,7 +389,7 @@ export default {
               id: '1',
               mN: resData.appId,
               model: true,
-              object: {},
+              object: [],
               rsInfo: [
                 { key: 'name', name: '名称', value: data.name },
                 { key: 'location', name: '位置', value: resData.location },
@@ -393,39 +441,111 @@ export default {
         this.updateEdit(params)
       }
     },
-    // 添加构件后更新列表
-    updateComTreeAfterAddComs() {
-      if (this.appType === "3") {
-        // 合模
-        this.handleMultModle();
-      } else {
-        this.getList({ key: "vanjian" }).then((res) => {
-          this.$refs.tree && this.$refs.tree.updateKeyChildren("vanjian", res);
-        })
+    // 节点展开时
+    nodeExpand(data) {
+      if (data.uuid) {  // 添加空值检查
+        this.expandedKeys.push(data.uuid)
       }
     },
-    // 查看有没有合模的自定义构件
-    // 合模必然有 uuid vanjian1
-    handleMultModle() {
-      if (!this.$refs.tree) return
-      const godNodeList = this.$refs.tree.getNode("vanjian1").parent.childNodes;
-      const mult = godNodeList.find((item) => {
-        return item.data.typeId === "comp";
-      });
-
-      let uuid = mult ? mult.data.uuid : null;
-      // 如果没有自定义构件，保存最后一个节点，用来insertAfter节点
-      if (!uuid) {
-        this.getList().then((res) => {
-          let customMess = res[res.length - 1];
-          this.$refs.tree.insertAfter(customMess, godNodeList[godNodeList.length - 1].data.uuid);
-        })
-      } else {
-        // 如果有了自定义构件列表
-        this.getList({ key: uuid }).then((res) => {
-          this.$refs.tree && this.$refs.tree.updateKeyChildren(uuid, res);
-        })
+    // 节点收起时
+    nodeCollapse(data) {
+      if (data.uuid) {  // 添加空值检查
+        let index = this.expandedKeys.indexOf(data.uuid)
+        if (index > -1) {
+          this.expandedKeys.splice(index, 1)
+        }
       }
+    },
+    // 添加构件后更新列表
+    updateComTreeAfterAddComs() {
+      if (!this.$refs.tree) return;
+      // 🔥 革命性改进：基于节点路径保存展开状态
+      const expandedPathMap = this.saveExpansionPaths();
+      // console.log('保存的展开路径:', expandedPathMap);
+      // 强制重新渲染树
+      this.treeRenderKey++;
+
+      // 树重新渲染后基于路径恢复展开状态
+      this.$nextTick(() => {
+        this.restoreExpansionByPaths(expandedPathMap);
+      });
+    },
+    // 🔧 保存展开状态为路径映射
+    saveExpansionPaths() {
+      const pathMap = {};
+      const treeStore = this.$refs.tree.store;
+      this.expandedKeys.forEach(key => {
+        const node = treeStore.getNode(key);
+        if (node) {
+          // 构建从根节点到当前节点的路径
+          const path = this.buildNodePath(node);
+          pathMap[path] = {
+            key: key,
+            level: node.level,
+            label: node.label
+          };
+        }
+      });
+      return pathMap;
+    },
+    // 🔧 构建节点路径
+    buildNodePath(node) {
+      const path = [];
+      let currentNode = node;
+      while (currentNode && currentNode.level > 0) {
+        path.unshift(currentNode.label || currentNode.data?.comName || '');
+        currentNode = currentNode.parent;
+      }
+      return path.join('/');
+    },
+    // 🔧 基于路径恢复展开状态
+    restoreExpansionByPaths(pathMap) {
+      if (!pathMap || Object.keys(pathMap).length === 0) return;
+      const treeStore = this.$refs.tree.store;
+      const paths = Object.keys(pathMap).sort((a, b) => pathMap[a].level - pathMap[b].level);
+      // console.log('开始按路径恢复展开:', paths);
+      // 按层级顺序恢复
+      paths.forEach((path, index) => {
+        setTimeout(() => {
+          this.findAndExpandByPath(path, treeStore);
+        }, index * 300); // 每路径间隔300ms
+      });
+    },
+    // 🔧 根据路径查找并展开节点
+    findAndExpandByPath(targetPath, treeStore) {
+      const pathParts = targetPath.split('/').filter(part => part);
+      if (pathParts.length === 0) return;
+      // 从根节点开始查找
+      const findNodeRecursive = (nodes, pathIndex) => {
+        if (pathIndex >= pathParts.length) return null;
+
+        for (let node of nodes) {
+          const nodeLabel = node.label || node.data?.comName || '';
+          if (nodeLabel === pathParts[pathIndex]) {
+            if (pathIndex === pathParts.length - 1) {
+              // 找到目标节点
+              if (!node.expanded && !node.isLeaf) {
+                node.expand();
+                // console.log(`展开节点: ${targetPath}`);
+              }
+              return node;
+            } else {
+              // 继续向下查找
+              if (!node.expanded && node.hasChild) {
+                node.expand();
+                // 等待子节点加载完成
+                this.$nextTick(() => {
+                  findNodeRecursive(node.childNodes, pathIndex + 1);
+                });
+              }
+              return findNodeRecursive(node.childNodes, pathIndex + 1);
+            }
+          }
+        }
+        return null;
+      };
+      // 从根节点开始
+      findNodeRecursive(treeStore.root.childNodes, 0);
     },
     // 冻结与解冻
     freezeCom(node) {
@@ -444,7 +564,7 @@ export default {
     // action事件
     updateEdit(obj) {
       let params = {
-        taskid: this.data.taskId,
+        taskId: this.data.taskId,
         ...obj
       }
       doAction(params).then((res) => {

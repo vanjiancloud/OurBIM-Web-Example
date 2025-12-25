@@ -4,7 +4,29 @@
       <div class="boxHeader">
         <div class="boxHeaderTitle" v-if="isGroup">您共有<span>{{ total }}</span>个构件分组</div>
         <div class="boxHeaderTitle" v-if="!isGroup">当前分组有<span>{{ total }}</span>个构件</div>
-        <div>
+        <div class="header_row">
+          <el-form :inline="true" :model="searchForm" style="display: inline-flex; align-items: center;"
+            class="searchListForm">
+            <el-form-item label="分组名称:" v-if="isGroup">
+              <el-input v-model="searchForm.groupName" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="分组ID:" v-if="isGroup">
+              <el-input v-model="searchForm.id" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="构件名称:" v-if="!isGroup">
+              <el-input v-model="searchForm.comName" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="构件ID:" v-if="!isGroup">
+              <el-input v-model="searchForm.comId" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" class="blueBtn" @click="onSearch">查询</el-button>
+            </el-form-item>
+          </el-form>
           <el-button class="blueBtn" type="primary" @click="add()" v-if="isGroup">新建分组</el-button>
           <el-badge :value="uploadCom" :hidden="!uploadCom" v-if="!isGroup">
             <el-button class="blueBtn" type="primary" @click="uploadCompents()">上传构件</el-button>
@@ -79,7 +101,7 @@
         <template slot-scope="scope">
           <div class="flexBetween">
             <div>
-              <el-button :disabled="scope.row.ourbimComponentInfo.version != 'V50'" type="text" class="blueText"
+              <el-button :disabled="scope.row.ourbimComponentInfo.comStatus !== '2'" type="text" class="blueText"
                 @click.stop="openCom(scope.row)">打开构件</el-button>
               <el-button type="text" class="blueText" @click.stop="editCom(scope.row)">编辑</el-button>
             </div>
@@ -135,23 +157,24 @@
     <el-empty v-if="!isList && !tableData.length" :image="require('@/assets/noData.png')" :image-size="100"></el-empty>
 
     <!-- 新建\编辑分组 -->
-    <DialogsComGroup ref="DialogsComGroup" />
+    <DialogsComGroup ref="DialogsComGroup" @onSearch="onSearch" />
     <!-- 编辑构件 -->
-    <DialogsCom ref="DialogsCom" :parentData="parentData" />
+    <DialogsCom ref="DialogsCom" :parentData="parentData" @onSearch="onSearch" />
     <!-- 上传构件 -->
-    <DialogsDrag ref="DialogsDrag" numType="uploadCom"
-      accept=".rvm,.rvt,.ifc,.zip,.rfa,.ipt,.dgn,.dwg,.step,.fbx,.obj,.stp,.xyz,.txt,.pts,.las,.nwd"
-      @getFile="getFileDrag" @onSuccess="getList(parentId)" />
+    <DialogsDrag ref="DialogsDrag" numType="uploadCom" accept=".fbx,.obj" @getFile="getFileDrag"
+      @onSuccess="onUploadSuccess" />
   </List>
 </template>
 
 <script>
 import { Getuserid } from "@/store/index.js";
 import { list, deleteUserCom, upgradeUserCom } from '@/api/resource/components.js'
+import { getEnterToken, createActorApp, addProject } from "@/api/projectManage/model.js";
 import List from "@/components/List/index.vue";
 import DialogsComGroup from './components/DialogsComGroup.vue'
 import DialogsDrag from "@/components/Upload/DialogsDrag.vue";
 import DialogsCom from './components/DialogsCom.vue'
+
 export default {
   components: { List, DialogsComGroup, DialogsDrag, DialogsCom },
   props: {
@@ -184,6 +207,12 @@ export default {
         6: "升级中",
       },
       timer: null,
+      searchForm: {
+        groupName: '',
+        id: '',
+        comName: '',
+        comId: '',
+      }
     };
   },
   watch: {},
@@ -223,9 +252,37 @@ export default {
     },
     // 返回一级
     back() {
+      this.searchForm = this.$options.data().searchForm;
       this.getList();
       this.isGroup = true;
       this.parentId = '';
+    },
+    onSearch() {
+      this.getList(this.parentId == '' ? 'god' : this.parentId);
+    },
+    // 上传构件后续操作
+    onUploadSuccess(data, fileData) {
+      this.onSearch();
+      // if (data && fileData.file) {
+      //   const params = {
+      //     appid: data.replace('COM', 'BIMACTOR'),
+      //     platform: 'Windows',
+      //     modelActorLimitNum: '15000',
+      //     singleActorLimitNum: '500',
+      //     fileUpload: fileData.file,
+      //     userId: Getuserid(),
+      //     modelActor: true,
+      //     singleActor: true,
+      //   }
+      //   const formData = new FormData();
+      //   for (const key in params) {
+      //     formData.append([key], params[key]);
+      //   }
+      //   addProject(formData)
+      //     .catch((error) => {
+      //       console.log(error)
+      //     })
+      // }
     },
     getList(parentId = 'god') {
       this.destoryTimer()
@@ -239,7 +296,8 @@ export default {
       }
       let params = {
         userId: Getuserid(),
-        parentId
+        parentId,
+        ...this.searchForm
       }
       this.loading = true
       list(params).then(res => {
@@ -300,6 +358,7 @@ export default {
     // 点击进入详情
     cellClick(row) {
       if (this.isGroup && row.isGroup === '1') {
+        this.searchForm = this.$options.data().searchForm
         this.getList(row.id)
         this.parentId = row.id
         this.$emit('update:groupName', row.groupName)
@@ -325,13 +384,46 @@ export default {
         fileUpload: row.ourbimComponentInfo.comUrl,
         groupId: row.parentId,
         userId: Getuserid(),
-        comId: row.ourbimComponentInfo.comId
+        comId: row.ourbimComponentInfo.comId,
+        maxInstance: row.ourbimComponentInfo.maxInstance,
+        isLuman: row.ourbimComponentInfo.isLuman || 'true',
       }
       this.$refs.DialogsCom.show(data)
     },
     // 打开构件
-    openCom(row) {
-      this.$message('功能待开放！')
+    async openCom(e) {
+      // 新建构件模型
+      // let res = await createActorApp({
+      //   projectId: e.comId
+      // })
+      // if (res && res.code !== 0) {
+      //   return this.$message.error(res.message)
+      // }
+      // 获取构件模型token
+      getEnterToken({
+        appid: e.comId.replace('COM', 'BIMACTOR'),
+      }).then((res) => {
+        let query = {
+          appid: e.comId.replace('COM', 'BIMACTOR'),
+          locale: this.$i18n.locale,
+          appType: '0',
+          token: res.data.token,
+          isGis: false,
+          reserveId: e.reserveId || '', // 有reserveId就是预启动项目 没有就不是
+          userId: Getuserid(),
+          isBuild: 'true',
+          modelType: 'com'
+        };
+        if (e.appType == "5") {
+          window.open(res.data.url, "_blank");
+        } else {
+          const { href } = this.$router.resolve({
+            name: "web_client",
+            query: query,
+          });
+          window.open(href, "_blank");
+        }
+      });
     },
     // 重新转换
     conversionRow(row) {
@@ -369,5 +461,13 @@ export default {
   width: 180px !important;
   flex: initial;
   min-width: initial;
+}
+
+.header_row {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
 }
 </style>

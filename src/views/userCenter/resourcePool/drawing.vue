@@ -40,10 +40,12 @@
       <div class="contentItem" v-for="(item, index) in (cadLevel == 1 ? cadList : cadList2)" :key="index"
         @click="openCadList(item)">
         <div class="img-container">
-          <div v-if="item.status != 4" class="loading-mask">
-            <i class="el-icon-loading loading-icon"></i>
+          <!-- 操作栏 -->
+          <div class="subOperate" v-if="cadLevel == 1">
+            <el-button type="primary" icon="el-icon-delete" size="mini" @click.stop="deleteRow(item)"></el-button>
           </div>
-          <el-image v-else class="img" :src="item.thumbnail" lazy>
+          <!-- 图纸 -->
+          <el-image class="img" :src="item.thumbnail" lazy v-if="item.status == 4">
             <div slot="placeholder" class="image-slot">
               <img src="@/assets/default/listCAD.png" />
             </div>
@@ -51,6 +53,12 @@
               <img src="@/assets/default/listCAD.png" />
             </div>
           </el-image>
+          <div v-else-if="item.status == 5" class="loading-mask">
+            <div>解析失败</div>
+          </div>
+          <div v-else class="loading-mask">
+            <i class="el-icon-loading loading-icon"></i>
+          </div>
         </div>
         <div :title="cadLevel == 1 ? item.fileName : `${item.fileName}_${index + 1}`">{{ cadLevel == 1 ? item.fileName
           :
@@ -67,7 +75,7 @@
 import { doAction } from "@/api/userCenter/index";
 import SingleUpload from '@/components/Upload/drawingUpload.vue';
 import ImportOnlineDrawings from './importOnlineDrawings.vue';
-import { selectCadFile, blueprintImportOurbim } from "@/api/userCenter/resourcePool.js";
+import { selectCadFile, blueprintImportOurbim, deleteCadFile } from "@/api/userCenter/resourcePool.js";
 
 export default {
   components: { SingleUpload, ImportOnlineDrawings },
@@ -174,6 +182,24 @@ export default {
         })
       }
     },
+    // 删除图纸
+    deleteRow(item) {
+      const _this = this;
+      this.$confirm(`此操作将删除该图纸, 是否继续?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      }).then(() => {
+        deleteCadFile({
+          taskId: _this.data.taskId,
+          id: item.id
+        }).then(res => {
+          _this.$message.success('删除成功！');
+          _this.getList();
+        })
+      })
+        .catch(() => { });
+    },
     // 点击到第二层级
     toLevel2() {
       this.$emit('toDrawLevel', { level: 2, name: '图纸' })
@@ -208,7 +234,7 @@ export default {
     // action事件
     updateEdit(obj, type) {
       let params = {
-        taskid: this.data.taskId,
+        taskId: this.data.taskId,
         ...obj
       }
       doAction(params).then((res) => {
@@ -401,6 +427,30 @@ export default {
           animation: rotate 1.5s linear infinite;
           /* 旋转动画 */
         }
+      }
+
+      .subOperate {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        z-index: 1;
+        display: none;
+
+        button {
+          padding: 0;
+          font-size: 14px;
+          background: rgba(51, 51, 51, 0.8);
+          border: 0;
+          padding: 2px;
+
+          &:not(:first-child) {
+            margin-left: 4px;
+          }
+        }
+      }
+
+      &:hover .subOperate {
+        display: block;
       }
     }
   }

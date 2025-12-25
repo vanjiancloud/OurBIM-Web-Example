@@ -4,7 +4,29 @@
       <div class="boxHeader">
         <div class="boxHeaderTitle" v-if="isGroup">您共有<span>{{ total }}</span>个材质分组</div>
         <div class="boxHeaderTitle" v-if="!isGroup">当前分组有<span>{{ total }}</span>个材质素材</div>
-        <div>
+        <div class="header_row">
+          <el-form :inline="true" :model="searchForm" style="display: inline-flex; align-items: center;"
+            class="searchListForm">
+            <el-form-item label="分组名称:" v-if="isGroup">
+              <el-input v-model="searchForm.groupName" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="分组ID:" v-if="isGroup">
+              <el-input v-model="searchForm.groupId" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="材质名称:" v-if="!isGroup">
+              <el-input v-model="searchForm.matName" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="材质ID:" v-if="!isGroup">
+              <el-input v-model="searchForm.id" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" class="blueBtn" @click="onSearch">查询</el-button>
+            </el-form-item>
+          </el-form>
           <el-button class="blueBtn" type="primary" @click="add()" v-if="isGroup">新建分组</el-button>
           <el-badge :value="uploadCom" :hidden="!uploadCom" v-if="!isGroup">
             <el-button class="blueBtn" type="primary" @click="addMeterial()">新建材质</el-button>
@@ -136,9 +158,23 @@ export default {
       parentData: [],//一级数据，二级编辑换组使用
       parentId: '',//父级id
       isGroup: true, //是否是分组
+      searchForm: {
+        groupName: '',
+        groupId: '',
+        matName: '',
+        id: '',
+      },
     };
   },
-  watch: {},
+  watch: {
+    // isGroup: {
+    //   handler(newVal, oldVal) {
+    //     if (newVal !== oldVal) {
+    //       this.searchForm = this.$options.data().searchForm
+    //     }
+    //   }
+    // },
+  },
   computed: {
     uploadCom() {
       return this.$store.state.uploadCom
@@ -154,12 +190,21 @@ export default {
     },
     // 返回一级
     back() {
+      this.searchForm = this.$options.data().searchForm
       this.getList()
+    },
+    onSearch() {
+      if (this.isGroup) {
+        this.getList();
+      } else {
+        this.getTextureList(this.parentId)
+      }
     },
     getList() {
       this.$emit('update:groupName', '')
       let params = {
-        userId: Getuserid()
+        userId: Getuserid(),
+        ...this.searchForm
       }
       this.loading = true
       selectCustomizeMaterialGroup(params).then(res => {
@@ -177,6 +222,7 @@ export default {
       let params = {
         userId: Getuserid(),
         parentId: groupId,
+        ...this.searchForm
       }
       this.loading = true
       selectCustomizeMaterial(params).then(res => {
@@ -236,6 +282,7 @@ export default {
       // 材质分组 0  
       // 二级材质球 1
       if (this.isGroup && row.isGroup === '0') {
+        this.searchForm = this.$options.data().searchForm
         this.getTextureList(row.groupId)
         this.parentId = row.groupId
         this.$emit('update:groupName', row.groupName)
@@ -253,5 +300,13 @@ export default {
   width: 180px !important;
   flex: initial;
   min-width: initial;
+}
+
+.header_row {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
 }
 </style>

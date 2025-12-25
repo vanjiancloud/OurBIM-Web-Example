@@ -4,7 +4,7 @@
       <div class="middle">
         <el-radio-group v-model="radio" class="singleSelect" @change="changeRadio">
           <el-radio :label="2" class="needBlock" v-if="!isGis"><span class="viewModel">{{ personView[0].name
-              }}</span></el-radio>
+          }}</span></el-radio>
           <el-radio :label="1" class="needBlock"><span class="viewModel">{{ personView[1].name }}</span></el-radio>
           <el-radio class="needNone selfView" disabled>
             <div>
@@ -81,15 +81,15 @@ export default {
       personView: [
         {
           name: "第三人称模式",
-          value: 0,
+          // value: 0,
         },
         {
           name: "第一人称模式",
-          value: 1,
+          // value: 1,
         },
         {
           name: "跟随对象模式",
-          value: 2,
+          // value: 2,
         },
       ],
       checkWeight: false, // 重力 
@@ -239,14 +239,22 @@ export default {
   },
   created() {
     this.isGis = (this.$route.query.isGis && eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin && eval(this.$route.query.weatherBin.toLowerCase())) || false
-    this.params.viewMode = this.isGis ? 1 : 2
-    this.radio = this.isGis ? 1 : 2
     if (this.isGis) {
       this.checkWeight = false
       this.checkBroken = false
+      this.radio = 1
+      this.params.viewMode = 1
+    } else {
+      this.radio = 2
+      this.params.viewMode = 2
     }
   },
   beforeDestroy() { },
+  computed: {
+    initViewMode() {
+      return this.$store.state.model.viewMode
+    },
+  },
   watch: {
     radio: {
       handler(val, oldVal) {
@@ -256,10 +264,20 @@ export default {
       },
       immediate: true
     },
+    initViewMode: {
+      handler(val, oldVal) {
+        if (val) {
+          if (!this.isGis) {
+            this.radio = val
+            this.changeRadio(val)
+          }
+        }
+      },
+      immediate: true
+    }
   },
   methods: {
     show() {
-      // this.radio = this.isGis?1:2
       this.$refs.Drawer.show()
     },
     close() {
@@ -268,7 +286,7 @@ export default {
     },
     threeView() {
       let par = {
-        taskid: this.taskId,
+        taskId: this.taskId,
         action: 'switchViewMode',
         viewMode: this.isGis ? 1 : 2,
         projectionMode: 1
@@ -278,7 +296,7 @@ export default {
       })
     },
     requestFun() {
-      doAction({ ...this.params, taskid: this.taskId }).then((res) => {
+      doAction({ ...this.params, taskId: this.taskId }).then((res) => {
         this.$message.success(res.message);
       })
     },
@@ -373,7 +391,7 @@ export default {
     // action事件
     updateEdit(obj) {
       let params = {
-        taskid: this.taskId,
+        taskId: this.taskId,
         ...obj
       }
       doAction(params).then((res) => {
@@ -398,7 +416,7 @@ export default {
     // 导航地图
     roamMap(Switch) {
       let params = {
-        taskid: this.taskId,
+        taskId: this.taskId,
         action: 'minimapSethidden',
         Switch
       }
@@ -431,6 +449,8 @@ export default {
 }
 
 .roam_navigate {
+  overflow: auto;
+  height: calc(100% - 55.5px);
 
   // 中间
   .middle {

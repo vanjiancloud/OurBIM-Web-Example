@@ -19,6 +19,8 @@
 <script>
 import { getLogo } from '@/api/server/parameter'
 import { getProccess, preloadStart, doRequestOurBimStream } from "@/api/userCenter/index";
+import { encrypt, decrypt } from '@/utils/jsencrypt.js'
+
 require('@/utils/mqttws31.min.js')
 export default {
   components: {},
@@ -47,24 +49,32 @@ export default {
       preType: false,//是否是预启动
       taskId: '',
       quitEvent: false,//防止请求多次
+      islandscape: false,
+      showLogoControls: false,
     }
   },
   watch: {},
   computed: {},
   created() {
-    this.taskId = this.$route.query.taskId
-    this.getLogo("startUpLogo")
-    this.getLogo("startUpBkgImg")
-    this.unLoad()
-    this.initMqtt()
+    this.taskId = this.$route.query.taskId;
+    this.islandscape = this.$route.query.islandscape === 'true' || this.$route.query.islandscape === true;
+    this.showLogoControls = this.$route.query.showLogoControls === 'true' || this.$route.query.showLogoControls === true;
+    this.getLogo("startUpLogo");
+    this.getLogo("startUpBkgImg");
+    this.unLoad();
+    this.initMqtt();
     this.addMessageEvent();
   },
   mounted() { },
+  beforeDestroy() {
+    this.removeEventListeners();
+  },
   destroyed() {
-    this.sendMqtt()
+    this.sendMqtt();
   },
   deactivated() {
-    this.sendMqtt()
+    this.sendMqtt();
+    this.removeEventListeners();
   },
   methods: {
     setFocus() {
@@ -73,11 +83,31 @@ export default {
     leaveFocus() {
       document.querySelector('.iframe').contentWindow.blur()
     },
+    // 是否移动端
     isMobile() {
       let flag = navigator.userAgent.match(
         /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i
       );
       return flag;
+    },
+    // 是否手机端(排除平板)
+    isPhone() {
+      const userAgent = navigator.userAgent;
+      // 明确排除iPad
+      if (/iPad/i.test(userAgent)) return false;
+      // iPhone直接返回true
+      if (/iPhone/i.test(userAgent)) return true;
+      // Android设备：必须有Mobile标识且排除常见平板型号
+      if (/Android/i.test(userAgent)) {
+        // 排除常见平板型号
+        const tabletModels = /(MI PAD|MediaPad|HUAWEI.*MediaPad|Lenovo.*Tab|SM-T|Nexus 7|Nexus 9|Nexus 10)/i;
+        if (tabletModels.test(userAgent)) return false;
+        // 必须有Mobile标识
+        return /Mobile/i.test(userAgent);
+      }
+      // 其他手机设备
+      const phoneRegex = /(BlackBerry|IEMobile|Windows Phone|Symbian|webOS)/i;
+      return phoneRegex.test(userAgent);
     },
     // 获取中logo
     getLogo(type) {
@@ -131,17 +161,67 @@ export default {
       const scale = window.devicePixelRatio; // 获取缩放比例
       const viewWidth = window.innerWidth; //获取可视区域宽度
       const viewHeight = window.innerHeight; //获取可视区域高度
+      // console.log('viewWidth', viewWidth, 'viewHeight', viewHeight)
       let height = "";
       let width = "";
-      if (viewWidth > viewHeight) {
-        // 宽大于高 横屏
-        height = document.body.clientHeight;
-        width = document.body.clientWidth;
+
+      // 判断是否为移动端
+      const isMobile = this.isMobile();
+      const isPhone = this.isPhone();
+      // if (viewWidth > viewHeight) {
+      //   // 宽大于高 横屏
+      //   height = document.body.clientHeight;
+      //   width = document.body.clientWidth;
+      // } else {
+      //   height = document.body.clientWidth;
+      //   width = document.body.clientHeight;
+      // }
+      // return { width, height }
+
+      if (isMobile) {
+        // 移动端逻辑
+        if (this.islandscape) {
+          // islandscape=true 使用横屏宽高比 无论竖着还是横着都是横屏的宽高比 而且显示操作栏
+          if (viewWidth > viewHeight) {
+            // 已经是横屏，直接使用
+            height = document.body.clientHeight;
+            width = document.body.clientWidth;
+          } else {
+            // 竖屏设备，交换宽高以获取横屏比例
+            height = document.body.clientWidth;
+            width = document.body.clientHeight;
+          }
+        } else {
+          // islandscape=false 自适应宽高比 当前横屏打开就是横屏宽高比 竖屏打开就是竖屏宽高比 忽略后续手机旋转的动作
+          if (viewWidth < viewHeight) {
+            height = document.body.clientHeight;
+            width = document.body.clientWidth;
+          } else {
+            height = document.body.clientHeight;
+            width = document.body.clientWidth;
+          }
+        }
       } else {
-        height = document.body.clientWidth;
-        width = document.body.clientHeight;
+        // 非移动端，保持原有逻辑
+        if (viewWidth > viewHeight) {
+          height = document.body.clientHeight;
+          width = document.body.clientWidth;
+        } else {
+          height = document.body.clientWidth;
+          width = document.body.clientHeight;
+        }
       }
-      return { width, height }
+      // 手机端单独计算倍率 解决分辨率模糊问题
+      if (isPhone) {
+        const maxValue = Math.max(width, height);
+        if (maxValue < 2400) {
+          const scaleRatio = 2400 / maxValue;
+          width = Math.round(width * scaleRatio);
+          height = Math.round(height * scaleRatio);
+        }
+      }
+      console.log('islandscape', this.islandscape, { width, height })
+      return { width, height };
     },
     // 获取流
     getUrl() {
@@ -156,7 +236,9 @@ export default {
       doRequestOurBimStream(data).then(res => {
         console.info(`%cTaskId:${this.taskId}`, "font-size:18px;background:#67c23a;color:#ffffff")
         console.info(`%cIP:${new URLSearchParams(res.data.url).get('renderServerIp')}`, "font-size:18px;background:#67c23a;color:#ffffff")
-        this.iframeUrl = `${res.data.url}&webUrl=${this.$config.VUE_APP_REQUEST_URL}`
+        // islandscape-移动端是否横屏模式 
+        // showLogoControls-是否显示logo和控制条
+        this.iframeUrl = `${res.data.url}&webUrl=${this.$config.VUE_APP_REQUEST_URL}&islandscape=${this.islandscape}&showLogoControls=${this.showLogoControls}`
         this.preType = res.data.preType === '1' ? true : false
         if (this.preType) {
           preloadStart({ taskId: this.taskId })
@@ -196,8 +278,10 @@ export default {
         cleanSession: cleanSession,
         useSSL: ssl,
         // rejectUnauthorized: process.env.NODE_ENV === 'production', // 忽略证书验证（危险！仅开发使用）
-        userName: "vanjian",
-        password: "vanjian666",
+        // userName: "vanjian",
+        // password: "vanjian666",
+        userName: decrypt(this.$config.mqttUserName),
+        password: decrypt(this.$config.mqttPassword),
         onSuccess: (e) => {
           this.client.subscribe(`terminal/${this.$route.query.token}`);
           this.$nextTick(() => {
@@ -268,42 +352,97 @@ export default {
     },
     // 监听刷新浏览器
     unLoad() {
-      window.addEventListener('error', (e) => {
-        this.sendMqtt()
-      });
-      window.addEventListener('beforeunload', (event) => {
-        this.sendMqtt()
-      });
-      window.addEventListener('unload', (event) => {
-        this.sendMqtt()
-      });
+      // window.addEventListener('error', (e) => {
+      //   this.sendMqtt()
+      // });
+      // window.addEventListener('beforeunload', (event) => {
+      //   this.sendMqtt()
+      // });
+      // window.addEventListener('unload', (event) => {
+      //   this.sendMqtt()
+      // });
+      // if (this.isMobile()) {
+      //   window.addEventListener('pagehide', () => {
+      //     this.sendMqtt()
+      //   });
+      // }
+      window.addEventListener('error', this.handleError);
+      window.addEventListener('beforeunload', this.handleBeforeUnload);
+      window.addEventListener('unload', this.handleUnload);  // 修正为addEventListener
+      // 移动端额外添加
       if (this.isMobile()) {
-        window.addEventListener('pagehide', () => {
-          this.sendMqtt()
-        });
+        window.addEventListener('pagehide', this.handlePageHide);
       }
     },
+    // 定义各个事件处理函数
+    handleError() {
+      this.sendMqtt();
+    },
+
+    handleBeforeUnload(event) {
+      this.sendMqtt();
+    },
+
+    handleUnload() {
+      this.sendMqtt();
+    },
+
+    handlePageHide() {
+      this.sendMqtt();
+    },
+    // 添加移除监听器的方法
+    removeEventListeners() {
+      window.removeEventListener('error', this.handleError);
+      window.removeEventListener('beforeunload', this.handleBeforeUnload);
+      window.removeEventListener('unload', this.handleUnload);
+      if (this.isMobile()) {
+        window.removeEventListener('pagehide', this.handlePageHide);
+      }
+      // 添加键盘事件监听器的移除逻辑
+      document.removeEventListener("keydown", this.handleKeyDown, true);
+      document.removeEventListener("keyup", this.handleKeyUp, true);
+    },
+    handleKeyDown(e) {
+      if ([37, 38, 39, 40, 229].includes(e.keyCode)) return
+      this.sendToIframe(10010, {
+        key: e.code,
+        keyCode: e.keyCode,
+        repeat: e.repeat,
+      });
+    },
+    handleKeyUp(e) {
+      if ([37, 38, 39, 40, 229].includes(e.keyCode)) return
+      this.sendToIframe(10011, {
+        key: e.code,
+        keyCode: e.keyCode,
+        repeat: e.repeat,
+      });
+    },
     getMonitor() {
-      document.addEventListener("keydown", (e) => {
-        if ([37, 38, 39, 40, 229].includes(e.keyCode)) return
-        this.sendToIframe(10010,
-          {
-            key: e.code,
-            keyCode: e.keyCode,
-            repeat: e.repeat,
-          }
-        );
-      }, true);
-      document.addEventListener("keyup", (e) => {
-        if ([37, 38, 39, 40, 229].includes(e.keyCode)) return
-        this.sendToIframe(10011,
-          {
-            key: e.code,
-            keyCode: e.keyCode,
-            repeat: e.repeat,
-          }
-        );
-      }, true);
+      // document.addEventListener("keydown", (e) => {
+      //   // [37, 38, 39, 40, 229]分别是上下左右箭头和回车
+      //   if ([37, 38, 39, 40, 229].includes(e.keyCode)) return
+      //   // 按键1--49keyCode会控制controls的显隐
+      //   this.sendToIframe(10010,
+      //     {
+      //       key: e.code,
+      //       keyCode: e.keyCode,
+      //       repeat: e.repeat,
+      //     }
+      //   );
+      // }, true);
+      // document.addEventListener("keyup", (e) => {
+      //   if ([37, 38, 39, 40, 229].includes(e.keyCode)) return
+      //   this.sendToIframe(10011,
+      //     {
+      //       key: e.code,
+      //       keyCode: e.keyCode,
+      //       repeat: e.repeat,
+      //     }
+      //   );
+      // }, true);
+      document.addEventListener("keydown", this.handleKeyDown, true);
+      document.addEventListener("keyup", this.handleKeyUp, true);
     },
     // 向子页面发送消息
     sendToIframe(type, data, message) {

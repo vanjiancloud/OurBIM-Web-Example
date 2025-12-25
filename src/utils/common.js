@@ -291,6 +291,45 @@ export default new Vue({
       // 保留两位小数
       const formattedValue = parseFloat(convertedValue.toFixed(2));
       return `${formattedValue} ${units[unitIndex]}`;
+    },
+    /**
+ * 面积单位转换函数
+ * @param {number} value - 输入的面积值，单位为 cm²
+ * @param {string} targetUnit - 目标单位，可选值: 'm²', 'cm²', 'mm²', 'ft²', 'in²'
+ * @returns {number} 转换后的面积值
+ */
+    convertAreaUnit(value, targetUnit) {
+      // console.log('面积单位转换', value, targetUnit)
+      // 输入验证
+      if (typeof value !== 'number' || isNaN(value)) {
+        throw new Error('输入值必须是有效的数字');
+      }
+
+      const validUnits = ['m', 'cm', 'mm', 'ft', 'in'];
+      if (!validUnits.includes(targetUnit)) {
+        throw new Error(`目标单位必须是以下之一: ${validUnits.join(', ')},当前单位是${targetUnit}`);
+      }
+
+      // 所有转换都基于 cm² 进行
+      switch (targetUnit) {
+        case 'm':
+          // 1 m² = 10000 cm²
+          return value / 10000;
+        case 'cm':
+          // 保持原值
+          return value;
+        case 'mm':
+          // 1 cm² = 100 mm²
+          return value * 100;
+        case 'ft':
+          // 1 ft² ≈ 929.0304 cm²
+          return value / 929.0304;
+        case 'in':
+          // 1 in² ≈ 6.4516 cm²
+          return value / 6.4516;
+        default:
+          return value;
+      }
     }
   }
 })

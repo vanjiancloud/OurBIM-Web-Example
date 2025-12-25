@@ -244,7 +244,7 @@ export default {
 }
 
 .tag-tree {
-  padding: 0 12px;
+  // padding: 0 12px;
 
   .treeHeight {
     height: 49%;

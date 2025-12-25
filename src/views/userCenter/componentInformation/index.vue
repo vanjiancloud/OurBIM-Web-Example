@@ -47,10 +47,11 @@
         <el-row class="materialImg"
           v-if="materialAllInfo.matParam.colorList && materialAllInfo.matParam.colorList.length">
           <el-col :span="12" v-for="(color, index) in materialAllInfo.matParam.colorList" :key="index"
-            v-if="['BaseColor', 'EmissionColor'].includes(color.paramName)">
+            v-if="['BaseColor', 'EmissionColor', 'Color'].includes(color.paramName)">
             <div>
               <span v-if="color.paramName == 'BaseColor'" class="title">基础颜色</span>
               <span v-if="color.paramName == 'EmissionColor'" class="title">自发光颜色</span>
+              <span v-if="color.paramName == 'Color'" class="title">基础颜色</span>
               <el-color-picker v-model="form[color.paramName]" show-alpha @change="updateMaterial()"></el-color-picker>
             </div>
           </el-col>
@@ -193,7 +194,6 @@ export default {
     this.isGis = (this.$route.query.isGis && eval(this.$route.query.isGis.toLowerCase())) || (this.$route.query.weatherBin && eval(this.$route.query.weatherBin.toLowerCase())) || false
     // 监听vuex中 materialAllInfo 更新
     this.unwatchToken = this.$store.watch((state) => state.material.materialAllInfo, (newValue, oldValue) => {
-      // console.log(newValue)
       if (!newValue.matParam || !Object.keys(newValue.matParam).length) {
         // this.unwatchToken()
         this.materialChartlet = this.$options.data().materialChartlet
@@ -205,7 +205,6 @@ export default {
     }, { deep: true });
     // 监听 componentAllInfo 变化
     // this.$store.watch((state) => state.material.componentAllInfo, (newValue, oldValue) => {
-    //   console.log(newValue)
     // }, { deep: true });
   },
   mounted() {
@@ -329,7 +328,11 @@ export default {
     },
     // 获取材质信息
     getMaterialInfo(matId) {
-      getMaterialByMatId({ matId: matId || this.materialAllInfo.matId, isPublic: false }).then(res => {
+      getMaterialByMatId({
+        matId: matId || this.materialAllInfo.matId,
+        isPublic: false,
+        taskId: this.data.taskId,
+      }).then(res => {
         let materialAllInfo = { ...this.componentAllInfo.matList[this.activeMaterialIndex], ...res.data, matParam: JSON.parse(res.data.matParam) }
         this.changeSetting({ key: "materialAllInfo", value: materialAllInfo })
         this.formatColors(materialAllInfo.matParam.colorList)
@@ -478,7 +481,8 @@ export default {
 .material {
   padding: 0 30px 20px 30px;
   width: 100%;
-  height: calc(100vh - 105px);
+  // height: calc(100vh - 105px);
+  height: calc(100% - 105px);
   overflow: auto;
 }
 

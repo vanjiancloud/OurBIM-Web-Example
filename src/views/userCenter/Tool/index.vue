@@ -309,6 +309,14 @@ export default {
           check: false
         },
         {
+          url: require('@/assets/images/todo/unchecked/polyline.png'),
+          checkUrl: require('@/assets/images/todo/check/polyline.png'),
+          name: '多线段',
+          key: 'polylineMeasure',
+          value: 'continuousDistance',
+          check: false
+        },
+        {
           url: require('@/assets/images/todo/unchecked/jjcl.png'),
           checkUrl: require('@/assets/images/todo/check/jjcl.png'),
           name: '净距',
@@ -330,6 +338,14 @@ export default {
           name: '空间面积',
           key: 'spaceAreaMeasure',
           value: 'spaceArea',
+          check: false
+        },
+        {
+          url: require('@/assets/images/todo/unchecked/bmjcl.png'),
+          checkUrl: require('@/assets/images/todo/check/bmjcl.png'),
+          name: '表面积',
+          key: 'surfaceAreaMeasure',
+          value: 'surfaceArea',
           check: false
         },
         {
@@ -376,13 +392,14 @@ export default {
   methods: {
     onTool(item) {
       // console.log(item);
-      // 需要哪个同时选中传值就行
+      // 需要哪个同时选中传值nextNameArr就行
       const filterCheck = (preName, nextNameArr) => {
-        console.log('filterCheck', preName, nextNameArr)
+        // console.log('filterCheck', preName, nextNameArr)
         let isEnd = new Promise((resolve, reject) => {
           let total = null
           this.list.forEach((e, i) => {
             if (nextNameArr && nextNameArr.length) {
+              // 判断nextNameArr中是否包含当前项的key isExist-true时不包含-不能同时开启 isExist-false时包含-可以同时开启
               const isExist = nextNameArr.every(
                 (exit) => e.key !== exit
               )
@@ -426,6 +443,7 @@ export default {
           // 框选
           case 'selection':
             filterCheck(item.name, ['show', 'modelSectioning', 'measure', 'decompositionModel', 'roaming', 'label', 'view', 'modelAnimation', 'renderingEnvironment', 'resource', 'browser', 'componentInformation', 'locationCode', 'componentFilter'])
+            this.$store.commit('model/changeBoxSelection', true);
             this.updateEdit({
               action: 'componentBoxSelection',
               Switch: 'on'
@@ -529,6 +547,7 @@ export default {
     closeApi(key) {
       if (key === 'selection') {
         // 关闭框选功能
+        this.$store.commit('model/changeBoxSelection', false);
         this.updateEdit({
           action: 'componentBoxSelection',
           Switch: 'off'
@@ -601,7 +620,7 @@ export default {
           break
         // 显示的子菜单------------隔离图元
         case 'isolateElements':
-          console.log(this.data.selectPark, this.data.multiComponents.length)
+          // console.log(this.data.selectPark, this.data.multiComponents.length)
           if (!this.data.selectPark && this.data.multiComponents.length == 0)
             return this.$message.warning('请点击要隔离的图元!')
           invertHidden({ taskId: this.data.taskId }).then((res) => {
@@ -655,13 +674,24 @@ export default {
         case 'resetSectioning':
           this.updateEdit({ action: item.value })
           break
-        // 测量子菜单--------坐标，距离，净距，空间面积，角度
+        // 测量子菜单--------坐标/距离/净距/空间面积/角度/表面积
         case 'coordinateMeasure':
         case 'distanceMeasure':
+        case 'polylineMeasure':
         case 'minDistanceMeasure':
         case 'spaceAreaMeasure':
+        case 'surfaceAreaMeasure':
         case 'angleMeasure':
-          this.measureSubList.map((e) => {
+          // 表面积支持框选
+          if (item.key == 'surfaceAreaMeasure' && !item.check) {
+            this.$store.commit('model/changeSurfaceAreaMeasurement', true);
+          } else {
+            this.$store.commit('model/changeSurfaceAreaMeasurement', false);
+          }
+          // 设置调整比例尺状态 false 否则可能弹出比例尺设置弹窗
+          this.$store.commit('design/changeScale', false);
+          // 
+          this.measureSubList.forEach((e) => {
             if (e.key !== 'settingMeasure' && e.key !== item.key) {
               e.check = false
             }
@@ -676,7 +706,7 @@ export default {
           break
         // 视图子菜单--------创建视图
         case 'createView':
-          this.viewSubList.map((e) => {
+          this.viewSubList.forEach((e) => {
             if (e.key !== 'createView') {
               e.check = false
             }
@@ -692,7 +722,7 @@ export default {
           break
         // 视图子菜单--------视点动画
         case 'viewAnimation':
-          this.viewSubList.map((e) => {
+          this.viewSubList.forEach((e) => {
             if (e.key !== 'viewAnimation') {
               e.check = false
             }
@@ -713,6 +743,9 @@ export default {
     // 测量-----------设置单位和精度
     changeGauge(type) {
       this.updateEdit({ action: 'changePrecisionOrUnit', unit: this.setForm.unit, precision: this.setForm.precision })
+      // 同步更新store中的unit和precision
+      this.$store.commit('model/changeUnit', this.setForm.unit)
+      this.$store.commit('model/changePrecision', this.setForm.precision)
     },
     // 打开或关闭构件库添加构件
     comSwitch(flag) {
@@ -742,7 +775,7 @@ export default {
     // action事件
     updateEdit(obj) {
       let params = {
-        taskid: this.data.taskId,
+        taskId: this.data.taskId,
         ...obj
       }
       doAction(params).then((res) => {
@@ -890,7 +923,7 @@ export default {
 
 .set-form {
   /deep/ .el-form-item__label {
-    color: #ffffff;
+    // color: #ffffff;
     padding: 0;
   }
 

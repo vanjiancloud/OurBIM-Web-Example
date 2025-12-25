@@ -4,16 +4,14 @@
       <div class="boxHeader" style="display: flex; align-items: center;">
         <div class="boxHeaderTitle">您共有<span>{{ total }}</span>个项目</div>
         <!-- 右侧容器增加最小宽度限制 -->
-        <div style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 8px; ">
+        <div style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
           <!-- 搜索表单增加最小宽度并禁止收缩 -->
           <el-form :inline="true" :model="searchForm" style="display: inline-flex; align-items: center;"
             class="searchListForm">
-            <el-form-item label="项目名称：">
-              <!-- 输入框设置最小宽度并保持弹性 -->
+            <el-form-item label="项目名称:">
               <el-input v-model="searchForm.appName" placeholder="请输入" style="flex: 1; min-width: 80px;"></el-input>
             </el-form-item>
-            <el-form-item label="项目ID：">
-              <!-- 输入框设置最小宽度并保持弹性 -->
+            <el-form-item label="项目ID:">
               <el-input v-model="searchForm.appId" placeholder="请输入" style="flex: 1; min-width: 80px;"></el-input>
             </el-form-item>
             <el-form-item>
@@ -92,7 +90,7 @@
                 <el-dropdown-item v-if="!['1', '5', '6'].includes(scope.row.applidStatus)"
                   @click.native="handleCommand('编辑', scope.row)">编辑</el-dropdown-item>
                 <el-dropdown-item
-                  v-if="scope.row.applidStatus === '2' && (scope.row.appType === '0' && scope.row.isGis === 'false') && scope.row.fileSize != '0'"
+                  v-if="(scope.row.appType === '0' && scope.row.isGis === 'false') && scope.row.fileSize != '0'"
                   @click.native="handleCommand('下载', scope.row)">下载</el-dropdown-item>
                 <el-dropdown-item @click.native="handleCommand('重新转换', scope.row)">重新转换</el-dropdown-item>
                 <el-dropdown-item v-if="scope.row.applidStatus !== '5'"
@@ -136,8 +134,7 @@
                 @click.native="handleCommand('分享', item)">分享</el-dropdown-item>
               <el-dropdown-item v-if="!['1', '5', '6'].includes(item.applidStatus)"
                 @click.native="handleCommand('编辑', item)">编辑</el-dropdown-item>
-              <el-dropdown-item
-                v-if="item.applidStatus === '2' && (item.appType === '0' && item.isGis === 'false') && item.fileSize != '0'"
+              <el-dropdown-item v-if="(item.appType === '0' && item.isGis === 'false') && item.fileSize != '0'"
                 @click.native="handleCommand('下载', item)">下载</el-dropdown-item>
               <el-dropdown-item @click.native="handleCommand('重新转换', item)">重新转换</el-dropdown-item>
               <el-dropdown-item v-if="item.applidStatus !== '5'"
@@ -258,14 +255,18 @@
           <el-form-item prop="modelActorLimitNum">
             <el-checkbox label="模型体量优化" v-model="conversionForm.modelActor"></el-checkbox>
             <span v-if="conversionForm.modelActor" class="text">模型构件数阈值</span>
-            <el-input v-if="conversionForm.modelActor" v-model="conversionForm.modelActorLimitNum" placeholder="请输入"
-              style="width:150px;" v-only-number="{ min: 0 }"></el-input>
+            <!-- <el-input v-if="conversionForm.modelActor" v-model="conversionForm.modelActorLimitNum" 
+              style="width:150px;" v-only-number="{ min: 0 }"></el-input> -->
+            <el-input-number v-if="conversionForm.modelActor" v-model="conversionForm.modelActorLimitNum"
+              placeholder="请输入" :min="1" :max="9999999999" :controls="false" step-strictly></el-input-number>
           </el-form-item>
           <el-form-item prop="singleActorLimitNum">
             <el-checkbox label="模型材质优化" v-model="conversionForm.singleActor"></el-checkbox>
             <span v-if="conversionForm.singleActor" class="text">单构件面数阈值</span>
-            <el-input v-if="conversionForm.singleActor" v-model="conversionForm.singleActorLimitNum" placeholder="请输入"
-              style="width:150px;" v-only-number="{ min: 0 }"></el-input>
+            <!-- <el-input v-if="conversionForm.singleActor" v-model="conversionForm.singleActorLimitNum" placeholder="请输入"
+              style="width:150px;" v-only-number="{ min: 0 }"></el-input> -->
+            <el-input-number v-if="conversionForm.singleActor" v-model="conversionForm.singleActorLimitNum"
+              placeholder="请输入" :min="1" :max="9999999999" :controls="false" step-strictly></el-input-number>
           </el-form-item>
           <el-form-item prop="platform" label-width="110px" label="解析模型版本">
             <el-radio-group v-model="conversionForm.platform" disabled>
@@ -303,6 +304,8 @@ import DialogsDrag from "@/components/Upload/DialogsDrag.vue";
 import List from "@/components/List/index.vue";
 import DialogsEdit from "./dialogsEdit.vue";
 import DialogNew from './dialogNew.vue';
+import request from '@/utils/newRequest';
+import { getToken } from '@/utils/auth';
 
 export default {
   components: {
@@ -407,7 +410,9 @@ export default {
           }
         ],
         gisPlugin: { required: true, message: '请选择服务支持组件', trigger: 'blur' },
-        gisSuperMapInfo: { required: false, validator: validGisSuperMapInfo, trigger: 'blur' }
+        gisSuperMapInfo: [
+          { required: false, validator: validGisSuperMapInfo, trigger: 'blur' },
+        ]
       },
       ActiveLinkModel: [],
       ActiveLinkGISModel: [],
@@ -500,7 +505,7 @@ export default {
           this.$refs.Share.show(newRow.appid)
           break;
         case "编辑":
-          console.log('编辑', newRow);
+          // console.log('编辑', newRow);
           this.$refs.DialogsEdit.show(newRow)
           break;
         case "下载":
@@ -581,6 +586,7 @@ export default {
               gisList: this.ActiveLinkGISModel.join(',')
             }
           }
+          // console.log(params,this.ListLinkModel)
           addCombineApp(params).then((res) => {
             this.getAllModelList();
             this.ActiveLinkModel = [];
@@ -673,12 +679,13 @@ export default {
         cancelButtonText: "取消",
         type: "warning",
       })
-        .then(() => {
+        .then(async () => {
           this.$message({
             type: "warning",
             message: "开始下载",
           });
           let params = {
+            accessToken: getToken(),
             userId: this.userId,
             appId: row.appid,
           };
@@ -687,6 +694,29 @@ export default {
             "/FileStorge/downloadModelFile?" +
             qs.stringify(params)
           window.open(urlDownload)
+          // 调用通用下载函数
+          // this.$download.downloadHeader(
+          //   `${this.$config.VUE_APP_REQUEST_URL}/FileStorge/downloadModelFile`,
+          //   `${row.appName}`, // 文件名
+          //   { userId: this.userId, appId: row.appid }, // 查询参数
+          //   // 如需额外请求头可在此添加
+          // );
+          // try {
+          //   const response = await request({
+          //     url: '/FileStorge/downloadModelFile', // 使用相对路径，通过代理转发
+          //     method: 'GET',
+          //     params: { userId: this.userId, appId: row.appid },
+          //     responseType: 'blob', // 处理文件流
+          //   });
+          //   // 处理文件下载（创建 blob URL 等）
+          //   const url = window.URL.createObjectURL(new Blob([response]));
+          //   const link = document.createElement('a');
+          //   link.href = url;
+          //   link.download = row.appName; // 文件名
+          //   link.click();
+          // } catch (error) {
+          //   console.error('下载失败:', error);
+          // }
           return;
         })
         .catch(() => {
@@ -745,11 +775,9 @@ export default {
         navigator.userAgent.match(/(iPad)/) ||
         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
       let isMac = /macintosh|mac os x/i.test(navigator.userAgent);
-      // console.log('isiPad', isiPad, 'isMac', isMac)
       getEnterToken({
         appid: e.appid,
       }).then((res) => {
-        // console.log('res', res)
         let query = {
           appid: e.appid,
           locale: this.$i18n.locale,
@@ -764,9 +792,8 @@ export default {
           query.userType = teamInfo.userType;
           query.nickName = teamInfo.nickName;
         }
-        if (isiPad !== false || isMac !== false) {
-          // console.log(1, e.appType)
-          // 移动端
+        // || isMac !== false
+        if (isiPad !== false) {
           if (e.appType == "5") {
             window.open(res.data.url);
             return;
@@ -776,8 +803,6 @@ export default {
             query: query,
           });
         } else {
-          console.log(2, e.appType)
-          // PC端
           if (e.appType == "5") {
             window.open(res.data.url, "_blank");
             return;
@@ -786,6 +811,7 @@ export default {
             name: "web_client",
             query: query,
           });
+          // console.log(href)
           window.open(href, "_blank");
         }
       });

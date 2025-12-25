@@ -3,7 +3,7 @@
     :before-close="hide">
     <el-form ref="form" :style="{ 'width': '90%' }" :model="form" :rules="rules" label-width="98px" size="small">
       <el-form-item label="条件参数" prop="conditionParam">
-        <el-select v-model="form.conditionParam" filterable placeholder="请选择" style="width: 100%;">
+        <el-select v-model="form.conditionParam" filterable allow-create placeholder="请选择" style="width: 100%;">
           <el-option v-for="item in filterItemList" :key="item.id" :label="item.itemName" :value="item.itemName">
           </el-option>
         </el-select>
@@ -122,8 +122,9 @@ export default {
           taskId: this.data.taskId,
           groupId: this.data.groupId,
         }
-        let data = [this.form]
-        let res = await filterConditionCount(parmas, data)
+        // let data = [this.form]
+        // data[0].conditionJudge = null;
+        let res = await filterConditionCount(parmas, [{ ...this.form, conditionJudge: null }])
         this.form.conditionCount = res.data
       })
 

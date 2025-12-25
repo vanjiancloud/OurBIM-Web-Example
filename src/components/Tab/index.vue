@@ -44,8 +44,10 @@ export default {
   methods: {
     onTab(item, index) {
       // this.acticleTab = index;
-      this.$emit("input", index);
-      this.$emit("onTab", { index, ...item });
+      if (this.value !== index) {
+        this.$emit("input", index);
+        this.$emit("onTab", { index, ...item });
+      }
     },
   },
 };

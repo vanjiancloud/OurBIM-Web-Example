@@ -11,7 +11,21 @@
     <template slot="title">
       <div class="boxHeader">
         <div class="boxHeaderTitle">您共有<span>{{ total }}</span>个项目</div>
-        <div>
+        <div style="flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 8px;">
+          <el-form :inline="true" :model="searchForm" style="display: inline-flex; align-items: center;"
+            class="searchListForm">
+            <el-form-item label="项目名称:">
+              <el-input v-model="searchForm.gisServerName" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item label="项目ID:">
+              <el-input v-model="searchForm.gisId" placeholder="请输入" style="flex: 1; min-width: 80px;"
+                clearable></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" class="blueBtn" @click="onSearch">查询</el-button>
+            </el-form-item>
+          </el-form>
           <el-button style="margin-right:20px" icon="el-icon-plus" class="bluePlainBtn" plain type="primary"
             @click="AddGISProgect('添加')">新建GIS服务项目</el-button>
           <!-- 上传GIS数据的关闭弹窗后显示正在上传的个数  -->
@@ -188,6 +202,7 @@ import PartWMTS from './PartWMTS.vue'
 import PartTms from './PartTms.vue'
 import PartWMS from './PartWMS.vue'
 import PartShare from './PartShare.vue';
+import { getToken } from '@/utils/auth';
 
 export default {
   components: {
@@ -223,6 +238,10 @@ export default {
         longitude: null,
         latitude: null,
         altitude: null
+      },
+      searchForm: {
+        gisServerName: '',
+        gisId: ''
       },
       rules: {
         gisPlugin: [{ required: true, message: "请选择服务支持组件", trigger: "blur" }],
@@ -307,10 +326,18 @@ export default {
       this.form = this.$options.data().form
       this.$refs.DialogsDrag.show("上传GIS");
     },
+    onSearch() {
+      this.pages = this.$options.data().pages
+      this.getList();
+    },
     // 获取列表
     getList() {
       this.loading = true
-      getList({ ...this.pages, userId: Getuserid() }).then((res) => {
+      getList({
+        ...this.pages,
+        userId: Getuserid(),
+        ...this.searchForm
+      }).then((res) => {
         this.tableData = res.data.list;
         this.total = res.data.total;
         this.loading = false
@@ -394,6 +421,7 @@ export default {
             message: "开始下载",
           });
           let params = {
+            accessToken: getToken(),
             gisLayId: row.id,
           };
           let urlDownload =
@@ -401,6 +429,13 @@ export default {
             "/appli/downloadGISFile?" +
             qs.stringify(params)
           window.open(urlDownload)
+          // 调用通用下载函数
+          // this.$download.downloadHeader(
+          //   `${this.$config.VUE_APP_REQUEST_URL}/appli/downloadGISFile`,
+          //   `${row.gisServerName}`, // 文件名
+          //   { gisLayId: row.id }, // 查询参数
+          //   // 如需额外请求头可在此添加
+          // );
           return;
         })
         .catch(() => {

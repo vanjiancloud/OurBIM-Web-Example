@@ -10,6 +10,9 @@ import { MessageBox, Message } from 'element-ui'
 import store from '@/store/vuex.js'
 import { Getuserid } from '@/store/index.js'
 import config from '../../server.config'
+import { getToken } from '@/utils/auth';
+// import { saveAs } from 'file-saver'
+
 export const BASEURL = config.VUE_APP_REQUEST_URL
 // create an axios instance
 const CancelToken = axios.CancelToken;
@@ -18,7 +21,7 @@ const service = axios.create({
   baseURL: BASEURL,
   // withCredentials: true, // send cookies when cross-domain requests
   // timeout: 10000 // request timeout
-  cancelToken: new CancelToken(function executor(c){
+  cancelToken: new CancelToken(function executor(c) {
     store && store.commit("request/SET_CANCEL", c);
   })
 })
@@ -27,7 +30,10 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     const params = new URLSearchParams(window.location.href);
-    config.headers.common['token'] = Getuserid() || params.get('userId')
+    // console.log('getToken', getToken(), params.get('shareToken'))
+    config.headers.common['token'] = Getuserid() || params.get('userId');
+    config.headers.common['accessToken'] = params.get('shareToken') || params.get('token') || getToken();
+    // config.headers['Authorization'] =  getToken()
     return config
   },
   error => {
@@ -40,12 +46,12 @@ service.interceptors.response.use(
   response => {
     const res = response.data
     if (res.code !== 0 && res.code !== 200) {
-      if(res.message === '该项目没有BIM构件'){
+      if (res.message === '该项目没有BIM构件') {
         return Promise.reject(res)
       }
       Message({
         message: res.message,
-        type: 'error',
+        type: 'warning',
         duration: 5 * 1000
       })
       return Promise.reject(new Error(res.message))

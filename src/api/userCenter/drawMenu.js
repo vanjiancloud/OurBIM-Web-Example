@@ -60,3 +60,22 @@ export function updateObj(params, data) {
     data
   })
 }
+// 绘制机电管线
+// 打开开关时，进入绘制状态一，点击左键开始绘制组件进入绘制状态二，此后点击都是绘制状态二，处于绘制状态二时点击右键，删除正在生成的构件，回到绘制状态一，处于绘制状态一时再次点击右键退出绘制状态。
+export function parametricComponentDraw(params,data) {
+  return request({
+    url: `/parametricComponent/parametricComponentDraw`,
+    method: 'post',
+    params,
+    data
+  })
+}
+// 编辑模式开关
+export function parametricComponentEdit(params,data) {
+  return request({
+    url: `/parametricComponent/parametricComponentEdit`,
+    method: 'post',
+    params,
+    data
+  })
+}

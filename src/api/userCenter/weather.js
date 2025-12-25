@@ -57,6 +57,14 @@ export function getWeatherList(params) {
     params
   })
 }
+// 删除HDRI背景图
+export function deleteWeatherList(params) {
+  return request({
+    url: '/appli/deleteWeatherList',
+    method: 'delete',
+    params
+  })
+}
 
 // 获取模型参数化天气信息
 export function getWeatherParams(params) {
@@ -143,6 +151,41 @@ export function getLight(params) {
   return request({
     url: '/OurBim/getLight',
     method: 'post',
+    params,
+  })
+}
+
+// 上传cubeMap贴图
+export function uploadWeatherImage(params, data) {
+  return request({
+    url: '/weather/uploadWeatherImage',
+    method: 'post',
+    params,
+    data,
+  })
+}
+// 更新或新增天气背景图HDRI图片数据
+export function updateWeatherImageInfo(data) {
+  return request({
+    url: '/appli/updateWeatherImageInfo',
+    method: 'post',
+    data,
+  })
+}
+// 更新或新增HDRI天气信息
+export function updateHDRIWeatherInfo(params, data) {
+  return request({
+    url: '/hdriWeather/updateHDRIWeatherInfo',
+    method: 'post',
+    params,
+    data,
+  })
+}
+// 查询HDRI天气数据
+export function selectHDRIWeatherInfo(params) {
+  return request({
+    url: '/hdriWeather/selectHDRIWeatherInfo',
+    method: 'get',
     params,
   })
 }

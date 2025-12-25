@@ -20,7 +20,7 @@
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item v-for="(item, key) in types" :key="key" @click.native="addType({ item, key })">{{
                     item
-                    }}</el-dropdown-item>
+                  }}</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
               <svg-icon icon-class="forward" class="play rotate-180" @click="onLeft" />
@@ -107,14 +107,14 @@ export default {
       list: [],
       currentLine: {},
       types: {
+        0: "位置动画",
+        1: "材质动画",
+        2: "视点动画",
         // 1111:"音频动画",
         // 1111:"文字动画",
         // 1111:"天气动画",
         // 1111:"自定义动画",
         // 1111:"内置骨骼动画",
-        0: "位置动画",
-        1: "材质动画",
-        2: "视点动画",
         // 1111:"剖切动画",
         // 1111:"分解动画",
         // 1111:"路径动画",
@@ -196,9 +196,9 @@ export default {
     onLine(item) {
       this.currentLine = item
     },
+    // 查询动画列表下的动画事件列表
     getList() {
       selectAnimationEventFrameList({ animationId: this.currentItem.id }).then(res => {
-        // console.log('更新动画列表', res.data)
         this.list = res.data
       })
     },
@@ -262,7 +262,6 @@ export default {
     },
     // 添加帧成功
     addSuccess(res) {
-      // this.getList();
       this.$parent.$refs.ModelAnimationEdit.show(res)
     },
     closeEdit() {

@@ -191,7 +191,6 @@ export default {
     }, { deep: true });
     // 监听 componentAllInfo 变化
     // this.$store.watch((state) => state.material.componentAllInfo, (newValue, oldValue) => {
-    //   console.log(newValue)
     // }, { deep: true });
   },
   mounted() { },
@@ -313,7 +312,11 @@ export default {
     },
     // 获取材质信息
     getMaterialInfo(matId) {
-      getMaterialByMatId({ matId: matId || this.materialAllInfo.matId, isPublic: false }).then(res => {
+      getMaterialByMatId({
+        matId: matId || this.materialAllInfo.matId,
+        isPublic: false,
+        taskId: this.data.taskId,
+      }).then(res => {
         let materialAllInfo = { ...this.componentAllInfo.matList[this.activeMaterialIndex], ...res.data, matParam: JSON.parse(res.data.matParam) }
         this.changeSetting({ key: "materialAllInfo", value: materialAllInfo })
         this.formatColors(materialAllInfo.matParam.colorList)

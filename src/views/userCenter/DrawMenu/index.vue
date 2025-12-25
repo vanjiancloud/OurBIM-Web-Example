@@ -19,22 +19,18 @@
       <el-checkbox class="check-right" disabled v-model="checked1" label="吸附" />
       <el-checkbox v-model="isOrthogonal" label="正交" @change="changeOrthogonal" />
     </div>
-    <!-- 踢脚线 -->
+    <!-- 装饰样条线 -->
     <div class="menu-main" v-if="designStore.drawType === 1">
       <el-radio-group v-model="lineType" class="draw-group">
         <el-radio v-for="(item, index) in lineData" :key="index" @change="onChangeLine"
-          :class="lineData.length > (index + 1) ? 'border-radio' : ''" :label="item.value">{{
-            item.note
-          }}</el-radio>
+          :class="lineData.length > (index + 1) ? 'border-radio' : ''" :label="item.value">{{ item.note }}</el-radio>
       </el-radio-group>
     </div>
     <!-- 面层放样 -->
-    <div class="menu-main" v-if="designStore.drawType === 2 || designStore.drawType === 3">
+    <div class="menu-main" v-if="designStore.drawType === 2">
       <el-radio-group v-model="topStore.paveType" class="draw-group">
         <el-radio v-for="(item, index) in topStore.faceTypeData" :key="index" @change="onChangeType"
-          :label="item.type">{{
-            item.name
-          }}</el-radio>
+          :label="item.type">{{ item.name }}</el-radio>
       </el-radio-group>
       <el-divider direction="vertical" />
       <div class="loft-container">
@@ -47,11 +43,38 @@
       <el-checkbox class="check-right" disabled v-model="checked1" label="吸附" />
       <el-checkbox v-model="isOrthogonal" label="正交" @change="changeOrthogonal" />
     </div>
+    <!-- 机电管线 -->
+    <div class="menu-main" v-if="designStore.drawType === 4">
+      <div class="wall-land">
+        <template v-if="designStore.pipelineType === 'circle'">
+          <div>直径</div>
+          <el-input class="land-main" size="small" v-model="pipelineForm.diameter" @change="onChangePipeline" />
+          <div>cm</div>
+        </template>
+        <template v-else>
+          <div>宽度</div>
+          <el-input class="land-main" size="small" v-model="pipelineForm.width" @change="onChangePipeline" />
+          <div>cm</div>
+          <el-divider direction="vertical" />
+          <div>高度</div>
+          <el-input class="land-main" size="small" v-model="pipelineForm.height" @change="onChangePipeline" />
+          <div>cm</div>
+        </template>
+        <el-divider direction="vertical" />
+        <div>厚度</div>
+        <el-input class="land-main" size="small" v-model="pipelineForm.thickness" @change="onChangePipeline" />
+        <div>cm</div>
+        <el-divider direction="vertical" />
+        <div>偏移高度</div>
+        <el-input class="land-main" size="small" v-model="pipelineForm.planeHeight" @change="onChangePipeline" />
+        <div>cm</div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { updateWallInfo, addObject, listKey, addComponent } from '@/api/userCenter/drawMenu.js'
+import { updateWallInfo, addObject, listKey, addComponent, parametricComponentDraw } from '@/api/userCenter/drawMenu.js'
 
 export default {
   props: {
@@ -64,7 +87,7 @@ export default {
     return {
       lineData: null,
       wallThick: 240,
-      globalHeight: '',
+      globalHeight: 280,
       line: '1',
       lineType: null,
       isOrthogonal: false,
@@ -73,22 +96,25 @@ export default {
         { id: 0, type: 'extrusion_line', name: '线段', icon: 'zhixian' },
         { id: 1, name: '矩形', type: 'extrusion_rectangle', icon: 'zhengfangxing' },
         { id: 2, name: '圆', type: 'extrusion_circle', icon: 'tuoyuanxing' }
-      ]
+      ],
     }
   },
   watch: {
-    // 监听 designStore.drawType 变化（Vue 2 语法）
-    'designStore.drawType'(val) {
-      if (val === 1) {
-        const { pid, comName } = this.designStore.libNode
-        if (comName == '灯槽线') {
-          this.$store.dispatch('top/changeStyleLine', 'lampGrooveLine')
-          this.lineType = 'lampGrooveLine'
-        } else {
-          this.$store.dispatch('top/changeStyleLine', this.designStore.libNode.defaultType)
-          this.lineType = this.designStore.libNode.defaultType
+    'designStore.drawType': {
+      async handler(val) {
+        // 1--绘制套线结构(门套线等)
+        if (val === 1) {
+          // console.log('libNode',this.designStore.libNode)
+          await this.getKeyList()
+          const { pid, comName } = this.designStore.libNode
+          if (comName == '灯槽线') {
+            this.$store.dispatch('top/changeStyleLine', 'lampGrooveLine')
+            this.lineType = 'lampGrooveLine'
+          } else {
+            this.$store.dispatch('top/changeStyleLine', this.designStore.libNode.defaultType)
+            this.lineType = this.designStore.libNode.defaultType
+          }
         }
-        this.getKeyList()
       }
     }
   },
@@ -104,6 +130,9 @@ export default {
     },
     memberStore() {
       return this.$store.state.member
+    },
+    pipelineForm() {
+      return this.$store.state.design.pipelineForm
     }
   },
   created() {
@@ -122,7 +151,7 @@ export default {
       const params = { taskId: this.data.taskId, type: e.type }
       addObject(params)
     },
-    getKeyList() {
+    async getKeyList() {
       const params = { dictKey: 'skirtingLineType' }
       listKey(params).then(res => {
         this.lineData = res.data
@@ -151,8 +180,23 @@ export default {
         comId: this.designStore.libNode.comIdCustom,
         userId: this.designStore.bimUserId,
         skirtingLineType: item,
+        // lineGroupType: this.designStore.libNode.comName,
       }
       addComponent(params)
+    },
+    onChangePipeline() {
+      parametricComponentDraw({
+        taskId: this.data.taskId,
+      }, {
+        function: "draw",
+        bActivate: true, //绘制模式是否激活
+        type: this.designStore.pipelineType,
+        width: this.pipelineForm.width,
+        height: this.pipelineForm.height,
+        thickness: this.pipelineForm.thickness,
+        diameter: this.pipelineForm.diameter,
+        planeHeight: this.pipelineForm.planeHeight
+      })
     }
   },
 }

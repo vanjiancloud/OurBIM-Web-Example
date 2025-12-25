@@ -10,7 +10,14 @@ export function login(params) {
     params
   })
 }
-
+// 外部系统token登录
+export function loginByToken(params) {
+  return newRequest({
+    url: '/UserCenter/loginByToken',
+    method: 'POST',
+    params
+  })
+}
 // 获取手机短信登录
 export function loginMobile(params) {
   return newRequest({

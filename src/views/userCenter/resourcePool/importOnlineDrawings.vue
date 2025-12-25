@@ -41,13 +41,14 @@ export default {
       this.dialogVisible = false;
     },
     getOptions() {
+      // console.log(this.data)
       const params = {
         ...this.pages,
-        userId: Getuserid()
+        userId: this.data.userId || Getuserid()
       }
       getList(params).then((res) => {
-        if (res.data.code === 200) {
-          this.options = res.data.data
+        if (res.code === 200) {
+          this.options = res.data
         } else {
           this.options = []
         }
@@ -65,8 +66,8 @@ export default {
         fileSize,
       }
       // console.log(params)
-      inputOnlineCadFile(params).then(res=>{
-        if(res.code === 0){
+      inputOnlineCadFile(params).then(res => {
+        if (res.code === 0) {
           this.$message.success(res.message)
           this.close()
           this.$emit('success')

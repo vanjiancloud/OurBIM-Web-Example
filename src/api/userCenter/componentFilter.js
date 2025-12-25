@@ -191,3 +191,11 @@ export function delectGroupActorBatch(params, data) {
     data,
   })
 }
+// 模型构件的选中/取消选中（不区分自定义构件原始构件）
+export function comFocusAll(params) {
+  return request({
+    url: '/comControl/comFocusAll',
+    method: 'POST',
+    params,
+  })
+}

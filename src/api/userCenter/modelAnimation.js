@@ -131,3 +131,23 @@ export function playAnimation(params, data) {
     data
   })
 }
+
+
+// 自定义动画 构件动画
+// 查询自定义构件动画列表
+export function getAnimationGroupList(params) {
+  return request({
+    url: '/ActorFilterNew/getAnimationGroupList',
+    method: 'post',
+    params,
+  })
+}
+// 新增自定义构件动画
+export function createActorAnimationGroupBatch(params, data) {
+  return request({
+    url: '/ActorFilterNew/createActorAnimationGroupBatch',
+    method: 'post',
+    params,
+    data
+  })
+}

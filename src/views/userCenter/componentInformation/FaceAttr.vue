@@ -14,17 +14,19 @@
               <el-option v-for="opt in tileData" :key="opt.value" :label="opt.note" :value="opt.value" />
             </el-select>
             <!-- 阵列 -->
-            <el-select v-if="item.id === 3" v-model="faceInfo.arrayType" size="small" @change="onChange" multiple
-              collapse-tags>
-              <el-option v-for="opt in arrayData" :key="opt.value" :label="opt.note" :value="opt.value" />
-            </el-select>
+            <div v-if="item.id === 3">
+              <el-select v-model="faceInfo.arrayType" size="small" @change="onChange" multiple collapse-tags>
+                <el-option v-for="opt in arrayData" :key="opt.value" :label="opt.note" :value="opt.value" />
+              </el-select>
+              <slider-detail :options="gapOptions" @onChange="onChange" />
+            </div>
             <!-- 位置 -->
             <div v-if="item.id === 4">
               <el-select v-model="faceInfo.alignmentType" size="small" @change="onChange">
                 <el-option v-for="opt in alignData" :key="opt.value" :label="opt.note" :value="opt.value" />
               </el-select>
               <div class="slider-main">
-                <slider-detail :options="alignXOptions" @onChange="onChange"/>
+                <slider-detail :options="alignXOptions" @onChange="onChange" />
               </div>
               <slider-detail :options="alignYOptions" @onChange="onChange" />
               <slider-detail :options="angleOptions" @onChange="onChange" />
@@ -100,7 +102,12 @@ export default {
       } else {
         this.faceInfo = null
       }
-    }
+    },
+    'topStore.paveType'(val) {
+      if (val) {
+        this.getPave()
+      }
+    },
   },
   methods: {
     onChange() {
@@ -155,25 +162,27 @@ export default {
     },
     getKey(e) {
       const { faceInfo } = this.topStore
-      const obj = faceInfo.find(item => item.key === e)
+      const obj = faceInfo ? faceInfo.find(item => item.key === e) : null
       return obj ? obj.value : null
     },
     getPave() {
-      const { memberInfo } = this.designStore
+      // const { memberInfo } = this.designStore
       const { paveType } = this.topStore
-      const typeObj = memberInfo.find(item => item.key === 'rootTypeInfo')
+      // const typeObj = memberInfo ? memberInfo.find(item => item.key === 'rootTypeInfo') : {}
       const params = {
         meshID: this.getKey('meshID'),
         alignmentType: this.getKey('alignmentType'),
         id: this.getKey('id'),
-        type: typeObj ? typeObj.type : ''
+        // type: typeObj ? typeObj.type : ''
       }
 
       if (paveType === 'tile') {
         params.tileType = this.getKey('tileType')
         params.tileGapType = this.getKey('tileGapType')
+        this.gapOptions.label = '缝宽';
       } else {
-        params.arrayType = this.getKey('arrayType') ? this.getKey('arrayType').split(',') : []
+        params.arrayType = this.getKey('arrayType') ? this.getKey('arrayType').split(',') : [];
+        this.gapOptions.label = '间隔宽度';
       }
 
       this.alignXOptions.paramValue = this.getKey('horizontalOffset') || 0
@@ -221,6 +230,9 @@ export default {
   /deep/.slider-box .slider-label,
   /deep/.slider-box .slider-main .slider-unit {
     color: #C2C2C4;
+  }
+  /deep/.el-select{
+    margin-bottom: 18px;
   }
 }
 </style>

@@ -42,6 +42,8 @@
 
 <script>
 import { updatePassword, updatePasswordEmail } from '../../api/my';
+import { encryption } from "@/utils/util.js";
+
 const phoneReg = /^1[3-9]\d{9}$/;
 const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 export default {
@@ -64,7 +66,7 @@ export default {
             trigger: 'blur'
           },
           {
-            pattern: /^[\w.]{6,20}$/,
+            pattern: /^[\w.~!@#$%^&_+><]{6,20}$/,
             message: '请设置密码,字符为英文&数字&英文符号，位数6-20',
             trigger: 'blur'
           }
@@ -113,11 +115,16 @@ export default {
     },
     // 成功页面
     newPas() {
-      updatePassword({
+      const params = {
         mobile: this.form.mobile,
         code: this.form.code,
         password: this.form.password
+      }
+      const encryptionParams = encryption({
+        data: params,
+        param: ['password']
       })
+      updatePassword(encryptionParams)
         .then(res => {
           console.log(res)
           if (res.data.code === 0) {
@@ -132,11 +139,16 @@ export default {
         })
     },
     newPasEmail() {
-      updatePasswordEmail({
+      const params = {
         email: this.form.mobile,
         // code: this.form.code,
         password: this.form.password
+      }
+      const encryptionParams = encryption({
+        data: params,
+        param: ['password']
       })
+      updatePasswordEmail(encryptionParams)
         .then(res => {
           console.log(res)
           if (res.data.code === 0) {

@@ -57,7 +57,8 @@ export default {
           let data = {
             type: 1,
             newName: this.form.dirName,
-            id: this.form.id
+            id: this.form.id,
+            taskId: this.data.taskId,
           }
           updateName(data).then(() => {
             this.$message.success('操作成功！')

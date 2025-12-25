@@ -13,6 +13,7 @@ export default {
     listGroup: [],
     listMaterial: [],
     libNode: null,
+    // 0--绘制建筑结构(墙体等) 1--绘制套线结构(门套线等) 2--面层设计 4--绘制机电管线
     drawType: null,
     memberInfo: null,
     memberRsInfo: null,
@@ -30,6 +31,17 @@ export default {
     eventId: null,
     activeCopy: null,
     deleteComIds: [],
+    pipelineType: null, //当前绘制的机电管线构件类型
+    // 机电管线菜单默认值
+    pipelineForm: {
+      width: 10,
+      height: 5,
+      thickness: 0.5,
+      diameter: 10,
+      planeHeight: 100
+    },
+    // 机电管线个性化参数设置
+    pipeGeometryAttr: []
   },
   mutations: {
     // 所有直接修改 state 的操作移至 mutations（同步）
@@ -67,7 +79,10 @@ export default {
     changeMaps(state, e) { state.activeMaps = e },
     changeCopy(state, e) { state.activeCopy = e },
     deleteCom(state, e) { state.deleteComIds = e },
-    changeAllMaterialChecked(state, e) { state.allMaterialChecked = e }
+    changeAllMaterialChecked(state, e) { state.allMaterialChecked = e },
+    changePipelineType(state, e) { state.pipelineType = e },
+    changePipelineForm(state, e) { state.pipelineForm = e },
+    changePipeGeometryAttr(state, e) { state.pipeGeometryAttr = e },
   },
   actions: {
     // 包含逻辑/异步操作的方法移至 actions（可调用 mutations）

@@ -1,6 +1,6 @@
 <!-- 材质库 -->
 <template>
-  <div>
+  <div style="height: 100%;">
     <!-- 点击到二级构件 -->
     <div class="level2" v-if="levels.level === 2">
       <span @click="back" class="backLevel1"><i class="el-icon-arrow-left"></i>{{ levels.tabName }}</span> /
@@ -9,15 +9,15 @@
     <!-- 搜索 -->
     <div class="search">
       <el-input v-model="search" size="mini" placeholder="请输入您要搜索的内容" prefix-icon="el-icon-search"
-        @change="searchContent()" @keydown.native.stop />
+        @input="searchContent()" @keydown.native.stop />
       <el-button v-if="levels.tab2Index === 1" class="button blueBtn1" type="primary" icon="el-icon-plus" size="mini"
         @click="createItem()">{{ levels.level === 1 ? '新建分组' : '新建材质'
         }}</el-button>
     </div>
+    <!--  -->
     <Tab v-model="levels.tab2Index" v-show="levels.level === 1" class="roundTab" :data="typeList" @onTab="onTypeTab" />
-
+    <!-- 内容资源 -->
     <div class="contentWrap">
-      <!-- 内容资源 -->
       <div class="content">
         <!-- @mouseenter="handleMouseEnter(item)" @mouseleave="handleMouseLeave" -->
         <div class="contentItem" v-for="(item, index) in (levels.level === 2 ? contentLevel2List : contentList)"
@@ -29,9 +29,6 @@
           </div>
           <!-- 个人库操作 -->
           <div class="subOperate" v-if="levels.tab2Index == 1">
-            <!-- <i class="el-icon-document-copy"></i>
-            <i class="el-icon-edit-outline"></i>
-            <i class="el-icon-delete"></i> -->
             <el-button type="primary" icon="el-icon-document-copy" size="mini" @click.stop="copyMeterial(item)"
               v-if="levels.level == 2"></el-button>
             <el-button type="primary" icon="el-icon-edit-outline" size="mini"
@@ -46,7 +43,7 @@
               @click.stop="copyMeterial(item)"></el-button>
           </div>
           <!--  -->
-          <el-image class="img" :src="item.matImgPath ? item.matImgPath + `?t=${Date.now()}` : ''" lazy>
+          <el-image class="img" :src="item.matImgPath" lazy>
             <div slot="placeholder" class="image-slot">
               <img src="@/assets/default/material.png" />
             </div>
@@ -66,11 +63,11 @@
       :total="pageDatas.length" :page="pages.page" @pagination="pagination" />
 
     <!-- 新建/编辑分组 -->
-    <DialogsMeterialGroup ref="DialogsMeterialGroup" @getList="refreshData" />
+    <DialogsMeterialGroup ref="DialogsMeterialGroup" @getList="refreshData" :data="{ ...data }" />
     <!-- 新建/编辑材质 -->
-    <DialogMeterial ref="DialogMeterial" @reloadTable="refreshData" />
+    <DialogMeterial ref="DialogMeterial" @reloadTable="refreshData" :data="{ ...data }" />
     <!-- 复制材质球 -->
-    <CopyMeterial ref="CopyMeterialRef" @reloadTable="refreshData" />
+    <CopyMeterial ref="CopyMeterialRef" @reloadTable="refreshData" :data="{ ...data }" />
   </div>
 </template>
 
@@ -130,6 +127,11 @@ export default {
       pages: {
         page: 1, //分页，第几页
         pageSize: 18,
+      },
+      // 历史页码状态保存
+      savedPageState: {
+        page: 1,
+        search: ''
       },
       mouseEnterId: null,
       waitMatId: null,//当前个人材质库中点击替换的材质,等待websocket的id-55消息后在执行替换材质操作
@@ -197,9 +199,12 @@ export default {
       }
     },
     // 点击库类型
-    onTypeTab: throttle(function (e) {
+    onTypeTab(e) {
       this.levels.tab2Index = e.index;
       this.pages.page = this.$options.data().pages.page
+      this.search = this.$options.data().search;
+      this.contentList = this.$options.data().contentList;
+      this.contentLevel2List = this.$options.data().contentLevel2List;
       switch (e.index) {
         // 公共库
         case 0:
@@ -216,8 +221,8 @@ export default {
         default:
           break;
       }
-    }, 800),
-    // 公共库
+    },
+    // 公共库一级列表
     async getPubilcList() {
       this.cancel && this.cancel();
       this.contentList = (await getOurBIMMaterialGroup({ taskId: this.data.taskId })).data
@@ -225,6 +230,7 @@ export default {
       this.pageDatas = JSON.parse(JSON.stringify(this.contentList))
       this.pageData()
     },
+    // 公共库二级列表
     async getPubilcList2(item) {
       let params = {
         taskId: this.data.taskId,
@@ -235,44 +241,50 @@ export default {
       this.pageDatas = JSON.parse(JSON.stringify(this.searchToSaveList2))
       this.pageData()
     },
-    // 个人库
+    // 个人库一级列表
     async getUserList() {
       this.cancel && this.cancel();
-      this.contentList = (await selectCustomizeMaterialGroup({ userId: Getuserid() })).data
+      this.contentList = (
+        await selectCustomizeMaterialGroup({ userId: this.data.userId || Getuserid() })
+      ).data.map(item => {
+        return {
+          ...item,
+          matImgPath: item.matImgPath ? item.matImgPath + `?t=${Date.now()}` : ''
+        }
+      })
       this.searchToSaveList = JSON.parse(JSON.stringify(this.contentList))
       this.pageDatas = JSON.parse(JSON.stringify(this.contentList))
       this.pageData()
-      // getMaterialFromUser({userId: this.data.userId}).then((res)=>{
-      //     this.contentList = res.data?.length && res.data.map((e) => {
-      //             return {
-      //                 ...e,
-      //                 matImgPath: BASEURL + '/material/'+e.matImgPath,
-      //             };
-      //         }) || [];
-      //     this.searchToSaveList = JSON.parse(JSON.stringify(this.contentList))
-      //     this.pageData()
-      // })
     },
+    // 个人库二级列表
     async getUserList2(item) {
       let params = {
-        userId: Getuserid(),
+        userId: this.data.userId || Getuserid(),
         parentId: item.groupId,
       };
-      this.contentLevel2List = (await selectCustomizeMaterial(params)).data.map(e => { return { groupName: e.matName, ...e, } })
+      this.contentLevel2List = (
+        await selectCustomizeMaterial(params)
+      ).data.map(item => {
+        return {
+          ...item,
+          groupName: item.matName,
+          matImgPath: item.matImgPath ? item.matImgPath + `?t=${Date.now()}` : ''
+        }
+      })
       this.searchToSaveList2 = JSON.parse(JSON.stringify(this.contentLevel2List))
       this.pageDatas = JSON.parse(JSON.stringify(this.searchToSaveList2))
       this.pageData()
     },
-    // 项目库
+    // 项目库列表 默认只有一级
     async getProjectList() {
       this.cancel && this.cancel();
       getProjectMaterial({ taskId: this.data.taskId }).then((res) => {
-        this.contentList = res.data?.length && res.data.map((e) => {
+        this.contentList = res.data?.length && res.data.map((item) => {
           return {
-            ...e,
-            // matImgPath: BASEURL + '/material/' + e.matImgPath,
-            matImgPath: e.matImgPath,
-            groupName: e.matName,
+            ...item,
+            groupName: item.matName,
+            matImgPath: item.matImgPath ? item.matImgPath + `?t=${Date.now()}` : ''
+
           };
         }) || [];
         this.searchToSaveList = JSON.parse(JSON.stringify(this.contentList))
@@ -283,9 +295,21 @@ export default {
     // 点击返回第一级
     back() {
       this.levels.level = 1;
-      this.pages.page = this.$options.data().pages.page
-      this.search = ''
-      this.searchContent()
+      this.pages.page = this.savedPageState.page;
+      this.search = this.savedPageState.search;
+      // this.pages.page = this.$options.data().pages.page
+      // this.search = ''
+      // this.searchContent()
+      let newContent = this.searchToSaveList
+      if (this.search) {
+        if (newContent.length) {
+          newContent = newContent.filter(e => { return e.groupName.indexOf(this.search) > -1 })
+          this.contentList = newContent
+        }
+      } else {
+        this.contentList = this.searchToSaveList
+      }
+      this.pageData(newContent)
     },
     // 搜索内容----前端实现的
     searchContent() {
@@ -315,6 +339,10 @@ export default {
       this.levels.activeContent = item;
       // 一级分组
       if (this.levels.level === 1) {
+        // 保存当前页面状态
+        this.savedPageState.page = this.pages.page;
+        this.savedPageState.search = this.search;
+        // 
         this.levels.activeLevel1Content = item;
         // 清空搜索内容
         this.search = ''
@@ -492,7 +520,7 @@ export default {
 
 .contentWrap {
   padding: 0 12px;
-  height: calc(100vh - 252px);
+  height: calc(100% - 252px);
   overflow: auto;
 }
 

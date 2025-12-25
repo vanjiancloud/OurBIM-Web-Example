@@ -17,7 +17,10 @@
 </template>
 
 <script>
-import { updateScale } from "@/api/userCenter/resourcePool.js";
+// import { updateScale } from "@/api/userCenter/resourcePool.js";
+import { comSwitch, cadblueprintSet } from "@/api/userCenter/resourcePool.js";
+import { doAction } from "@/api/userCenter/index";
+
 export default {
   components: {},
   props: {
@@ -49,26 +52,42 @@ export default {
       })
     },
     hide() {
+      // 设置调整比例尺状态 false
+      this.$store.commit('design/changeScale', false);
       this.dialogVisible = false;
     },
     submit() {
       this.$refs.form.validate((valid) => {
         if (!valid) return false;
-        if (!this.data.id) {
-          this.$message.warning('请选择图纸测量！')
+        if (!this.data.copyingPictures.id) {
+          this.$message.warning('请选择要设置的图纸')
           return
         }
-        let params = {
-          taskId: this.data.taskid,
+        // let params = {
+        //   taskId: this.data.taskId,
+        // }
+        // let data = [
+        //   {
+        //     ...this.form,//要更改的图纸上的数值,非必传,用于计算模型中实际图纸的长度
+        //     uuid: this.data.object.uuid,//要修改的图纸id,必传
+        //     measureValue: this.data.measureValue,//图上测量出的值,非必传,用于计算模型中实际图纸的长度
+        //   }
+        // ]
+        // updateScale(params, data).then(() => {
+        //   this.hide();
+        // })
+        const params = {
+          taskId: this.data.taskId,
+          uuid: this.data.copyingPictures.id,
+          blueprintValue: this.form.blueprintValue,
+          measureValue: this.data.copyingPictures.measureValue,
         }
-        let data = [
-          {
-            ...this.form,//要更改的图纸上的数值,非必传,用于计算模型中实际图纸的长度
-            uuid: this.data.object.uuid,//要修改的图纸id,必传
-            measureValue: this.data.measureValue,//图上测量出的值,非必传,用于计算模型中实际图纸的长度
-          }
-        ]
-        updateScale(params, data).then(() => {
+        cadblueprintSet(params).then(() => {
+          doAction({
+            taskId: this.data.taskId,
+            action: 'endMeasure'
+          });
+          comSwitch({ taskId: this.data.taskId, flag: true })
           this.hide();
         })
       })

@@ -24,7 +24,12 @@ import { addCustomizeMaterialGroup, updateCustomizeMaterialGroup } from '@/api/r
 import SingleUpload from "@/components/Upload/singleUpload.vue"
 export default {
   components: { SingleUpload },
-  props: {},
+  props: {
+    data: {
+      type: Object,
+      default: () => { }
+    }
+  },
   data() {
     return {
       title: '新建',
@@ -76,7 +81,7 @@ export default {
           });
         } else {
           let data = {
-            userId: Getuserid(),
+            userId: this.data.userId || Getuserid(),
             isGroup: '0',
             ...this.form,
           };

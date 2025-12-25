@@ -146,7 +146,7 @@ export default {
     async changeAction({ }, e) {
       try {
         const taskId = await getTaskId(this);
-        await updateAction({ taskid: taskId, ...e });
+        await updateAction({ taskId: taskId, ...e });
       } catch (err) {
         return Promise.reject(err);
       }

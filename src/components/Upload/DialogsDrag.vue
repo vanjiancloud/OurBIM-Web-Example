@@ -15,8 +15,8 @@
         <img src="@/assets/images/common/icon.png" alt="" />
         <div class="dragUpLoadText">{{ title }}</div>
       </div>
-      <el-upload ref="upload" drag action="#" :auto-upload="false" :accept="accept" :limit="limit" :on-change="onChange"
-        :on-exceed="handleExceed" :http-request="httpRequest" multiple>
+      <el-upload ref="upload" drag action="#" :auto-upload="false" :limit="limit" :on-change="onChange"
+        :on-exceed="handleExceed" :http-request="httpRequest" multiple :accept="processedAccept">
         <img src="@/assets/images/common/file.png" />
         <div class="el-upload__text">
           <em>点击</em>或将文件拖拽到这里上传
@@ -63,7 +63,79 @@ export default {
     };
   },
   watch: {},
-  computed: {},
+  computed: {
+    // 处理accept属性的大小写问题 生成所有大小写组合
+    processedAcceptAll() {
+      if (!this.accept) return '';
+
+      // 将accept字符串分割为扩展名数组
+      const extensions = this.accept.split(',').map(ext => ext.trim());
+
+      // 为每个扩展名生成所有可能的大小写组合
+      const processedExtensions = extensions.flatMap(ext => {
+        // 移除可能的点号
+        const extWithoutDot = ext.startsWith('.') ? ext.slice(1) : ext;
+
+        // 如果是通配符或没有扩展名，直接返回
+        if (extWithoutDot === '*' || !extWithoutDot) return [ext];
+
+        // 生成所有可能的大小写组合
+        const generateAllCaseCombinations = (str) => {
+          const result = [];
+
+          const generate = (current, index) => {
+            if (index === str.length) {
+              result.push(current);
+              return;
+            }
+
+            // 添加小写版本
+            generate(current + str[index].toLowerCase(), index + 1);
+
+            // 添加大写版本
+            generate(current + str[index].toUpperCase(), index + 1);
+          };
+
+          generate('', 0);
+          return result;
+        };
+
+        // 生成所有组合并添加点号
+        return generateAllCaseCombinations(extWithoutDot).map(combination => `.${combination}`);
+      });
+      // 去重并合并为字符串
+      return [...new Set(processedExtensions)].join(',');
+    },
+    // 只生成全大写和全小写格式
+    processedAccept() {
+      if (!this.accept) return '';
+
+      // 将accept字符串分割为扩展名数组
+      const extensions = this.accept.split(',').map(ext => ext.trim());
+
+      // 为每个扩展名生成全小写和全大写两种形式
+      const processedExtensions = extensions.flatMap(ext => {
+        // 移除可能的点号
+        const extWithoutDot = ext.startsWith('.') ? ext.slice(1) : ext;
+
+        // 如果是通配符或没有扩展名，直接返回
+        if (extWithoutDot === '*' || !extWithoutDot) return [ext];
+
+        // 只生成全小写和全大写两种形式
+        const lowercase = extWithoutDot.toLowerCase();
+        const uppercase = extWithoutDot.toUpperCase();
+
+        // 避免重复（如果原扩展名本身就是全小写或全大写）
+        if (lowercase === uppercase) {
+          return [`.${lowercase}`];
+        }
+
+        return [`.${lowercase}`, `.${uppercase}`];
+      });
+      // 去重并合并为字符串
+      return [...new Set(processedExtensions)].join(',');
+    }
+  },
   created() { },
   mounted() { },
   methods: {
@@ -73,29 +145,55 @@ export default {
       this.loading = false;
       this.dialogVisible = true;
       this.$nextTick(() => {
-        // this.$refs.upload.clearFiles();
+        this.$refs.upload.clearFiles();
       });
     },
     hide() {
       this.dialogVisible = false;
     },
     onChange(file, fileList) {
-      let splitName = file.name.split('.')
-      const isJPG = this.accept.split(",").includes(`.${splitName[splitName.length - 1].toLowerCase()}`);
-      // const isJPG = this.accept.split(",").includes(file.raw.type);
-      if (!isJPG) {
+      // let splitName = file.name.split('.')
+      // const isJPG = this.accept.split(",").includes(`.${splitName[splitName.length - 1].toLowerCase()}`);
+      // // const isJPG = this.accept.split(",").includes(file.raw.type);
+      // console.log(isJPG)
+      // if (!isJPG) {
+      //   const idx = this.$refs.upload.uploadFiles.findIndex(
+      //     (e) => e.uid === file.uid
+      //   );
+      //   this.$refs.upload.uploadFiles.splice(idx, 1);
+      //   // 上传格式不正确！
+      //   this.$message.error("上传格式不正确！");
+      //   return false;
+      // }
+      // 获取文件扩展名（大小写不敏感）
+      let fileExtension = '';
+
+      if (file.name) {
+        const splitName = file.name.split('.');
+        if (splitName.length > 1) {
+          fileExtension = splitName[splitName.length - 1].toLowerCase();
+        }
+      }
+
+      // 验证文件类型 - 大小写不敏感
+      const acceptExtensions = this.accept.split(",").map(ext =>
+        ext.trim().toLowerCase().replace('.', '')
+      );
+
+      const isValidFile = fileExtension && acceptExtensions.includes(fileExtension);
+
+      if (!isValidFile) {
         const idx = this.$refs.upload.uploadFiles.findIndex(
           (e) => e.uid === file.uid
         );
         this.$refs.upload.uploadFiles.splice(idx, 1);
-        // 上传格式不正确！
-        this.$message.error("上传格式不正确！");
+        this.$message.warning("上传格式不正确！支持格式：" + this.accept);
         return false;
       }
     },
     handleExceed() {
       // 最多只能上传
-      this.$message.warning(`最多只能上传${this.limit}个`)
+      this.$message.warning(`最多只能上传${this.limit}个文件`)
     },
     httpRequest(param) {
       this.$notify({
@@ -112,7 +210,7 @@ export default {
       // 接口不是统一的，emit回去调用
       this.loading = true;
       this.$emit("getFile", param.file, (data) => {
-        console.log(data)
+        // console.log(data)
         const formData = new FormData();
         for (const key in data) {
           if (key !== "url") {
@@ -138,7 +236,10 @@ export default {
           }
           this.loading = false;
           param.onSuccess(res);
-          this.$emit("onSuccess", res.data, { fileName: param.file.name })
+          this.$emit("onSuccess", res.data, {
+            fileName: param.file.name,
+            file: param.file
+          })
           this.hide();
         }).catch(() => {
           // 失败状态

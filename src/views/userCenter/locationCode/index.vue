@@ -106,7 +106,10 @@ export default {
     },
     // 获取列表
     getList() {
-      getList({ appId: this.data.appId }).then((res) => {
+      getList({
+        appId: this.data.appId,
+        taskId: this.data.taskId,
+      }).then((res) => {
         this.list = res?.data || []
       })
     },
@@ -167,12 +170,14 @@ export default {
     downCode(item) {
       let data = {
         isAll: true,
-        appId: this.data.appId
+        appId: this.data.appId,
+        taskId: this.data.taskId
       }
       if (item) {
         data = {
           codeId: item.codeId,
-          isAll: false
+          isAll: false,
+          taskId: this.data.taskId
         }
       }
       window.open(`${this.$config.VUE_APP_REQUEST_URL}/ar/downloadLocator?${qs.stringify(data)}`)
